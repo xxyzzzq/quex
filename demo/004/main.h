@@ -18,17 +18,17 @@ using namespace std;
    extern FILE*  yyin;
    extern void   yyrestart(FILE*);
 
-   typedef int QUEX_TYPE_TOKEN_ID;
+   typedef int QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID;
 #else
    using namespace quex;
 #endif
 
-typedef QUEX_TYPE_TOKEN_ID   (*GetTokenIDFuncP)(void);
+typedef QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID   (*GetTokenIDFuncP)(void);
 typedef void                 (*ResetFuncP)(void);
 
 // main.cpp
-QUEX_TYPE_TOKEN_ID func_get_token_id();
-QUEX_TYPE_TOKEN_ID func_empty();
+QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID func_get_token_id();
+QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID func_empty();
 void               func_reset();
 
 size_t    get_file_size(const char*, bool SilentF=false);

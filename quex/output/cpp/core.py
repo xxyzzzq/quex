@@ -82,6 +82,7 @@ def write_configuration_header(Modes, IndentationSupportF):
         token_id_type             = token_descr.token_id_type.get_pure_code()
         token_line_n_type         = token_descr.line_number_type.get_pure_code()
         token_column_n_type       = token_descr.column_number_type.get_pure_code()
+        token_namespace           = token_descr.name_space
         token_namespace_str       = LanguageDB["$namespace-ref"](token_descr.name_space) 
         token_namespace_plain_str = make_safe_identifier(token_namespace_str)
     else:
@@ -89,6 +90,7 @@ def write_configuration_header(Modes, IndentationSupportF):
         token_id_type             = "uint32_t"
         token_line_n_type         = "size_t"
         token_column_n_type       = "size_t"
+        token_namespace           = "quex"
         token_namespace_str       = LanguageDB["$namespace-ref"](["quex"]) 
         token_namespace_plain_str = make_safe_identifier(token_namespace_str)
 
@@ -107,8 +109,10 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_TYPE_WITH_NAMESPACE$$",  token_namespace_str + token_class_name],
              ["$$TOKEN_TYPE$$",                 token_class_name],
              ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_class_name],
-             ["$$LINE_N_TYPE$$",                token_line_n_type],
-             ["$$COLUMN_N_TYPE$$",              token_column_n_type],
+             ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_namespace)],
+             ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_namespace)],
+             ["$$TOKEN_LINE_N_TYPE$$",          token_line_n_type],
+             ["$$TOKEN_COLUMN_N_TYPE$$",        token_column_n_type],
              ["$$TOKEN_PREFIX$$",               Setup.input_token_id_prefix],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
 

@@ -33,7 +33,7 @@ def _do(Descr):
 
     if Descr.copy.get_pure_code() == "":
         # Default copy operation: Plain Copy of token memory
-        copy_str = "__QUEX_STD_memcpy((void*)this, (void*)&That, sizeof(QUEX_TYPE_TOKEN));\n"
+        copy_str = "__QUEX_STD_memcpy((void*)this, (void*)&That, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE));\n"
     else:
         copy_str = Descr.copy.get_code()
 
@@ -46,8 +46,6 @@ def _do(Descr):
                       ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                       ["$$BODY$$",             Descr.body.get_code()],
-                      ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
-                      ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
                      ])
     return txt
@@ -126,7 +124,7 @@ def get_quick_setters(Descr):
         signature = map(lambda x: x[1].get_pure_code(), ArgList)
         if signature in used_signature_list:
             return ""
-        txt = "    void set(const QUEX_TYPE_TOKEN_ID ID, "
+        txt = "    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, "
         i = -1
         for name, type_info in ArgList:
             i += 1

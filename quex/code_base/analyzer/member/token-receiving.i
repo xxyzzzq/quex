@@ -23,7 +23,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                    QUEX_TYPE_TOKEN** result_pp) 
+                                    QUEX_TYPE_TOKEN_WITH_NAMESPACE** result_pp) 
     /* NOTE: As long as the 'receive()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
      *       does a couple af calls to 'receive()' before a rule triggers 
@@ -70,7 +70,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                    QUEX_TYPE_TOKEN* result_p) 
+                                    QUEX_TYPE_TOKEN_WITH_NAMESPACE* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
@@ -100,7 +100,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                              QUEX_TYPE_TOKEN* result_p) 
+                                              QUEX_TYPE_TOKEN_WITH_NAMESPACE* result_p) 
     {
         this->token = result_p;
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
@@ -126,9 +126,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_INLINE QUEX_TYPE_TOKEN*
+    QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                              QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
+                                              QUEX_TYPE_TOKEN_WITH_NAMESPACE* QueueMemoryBegin, QUEX_TYPE_TOKEN_WITH_NAMESPACE* QueueMemoryEnd) 
         /* RETURNS: Pointer to first token after the last filled in token. */
     {
         __quex_assert(QueueMemoryBegin != 0x0);

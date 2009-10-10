@@ -12,7 +12,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE* 
 QUEX_FIX(POST_CATEGORIZER_NODE, _new)(QUEX_TYPE_CHARACTER         FirstCharacter,
                                       const QUEX_TYPE_CHARACTER*  Remainder,
-                                      QUEX_TYPE_TOKEN_ID          TokenID)
+                                      QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID          TokenID)
 {
     QUEX_TYPE_POST_CATEGORIZER_NODE* me = MemoryManager_PostCategorizerNode_allocate(__QUEX_STD_strlen(Remainder));
     me->name_first_character = FirstCharacter;
@@ -42,7 +42,7 @@ QUEX_FIX(POST_CATEGORIZER, _construct)(QUEX_TYPE_POST_CATEGORIZER* me)
 QUEX_INLINE void
 QUEX_FIX(POST_CATEGORIZER, _enter)(QUEX_TYPE_POST_CATEGORIZER* me,
                                    const QUEX_TYPE_CHARACTER*  EntryName, 
-                                   const QUEX_TYPE_TOKEN_ID    TokenID)
+                                   const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID    TokenID)
 {
     QUEX_TYPE_CHARACTER                 FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*          Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
@@ -177,7 +177,7 @@ QUEX_FIX(POST_CATEGORIZER, _clear_recursively)(QUEX_TYPE_POST_CATEGORIZER*      
     MemoryManager_PostCategorizerNode_free(branch);
 }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_ID 
+QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID 
 QUEX_FIX(POST_CATEGORIZER, _get_token_id)(const QUEX_TYPE_POST_CATEGORIZER*  me,
                                           const QUEX_TYPE_CHARACTER*   Lexeme)
 {
@@ -221,7 +221,7 @@ QUEX_INLINE void
 QUEX_TYPE_POST_CATEGORIZER::clear()
 { QUEX_FIX(POST_CATEGORIZER, _clear)(this); }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_ID 
+QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID 
 QUEX_TYPE_POST_CATEGORIZER::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
 { return QUEX_FIX(POST_CATEGORIZER, _get_token_id)(this, Lexeme); }
 
@@ -231,7 +231,7 @@ QUEX_TYPE_POST_CATEGORIZER::remove(const QUEX_TYPE_CHARACTER* EntryName)
 
 QUEX_INLINE void
 QUEX_TYPE_POST_CATEGORIZER::enter(const QUEX_TYPE_CHARACTER*  EntryName, 
-                                  const QUEX_TYPE_TOKEN_ID    TokenID)
+                                  const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID    TokenID)
 { QUEX_FIX(POST_CATEGORIZER, _enter)(this, EntryName, TokenID); }
 #endif 
 

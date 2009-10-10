@@ -70,7 +70,7 @@ on the function ``get_token_id(...)``
    mode POST_CAT {
        ...
        [a-z]+ {
-           QUEX_TYPE_TOKEN_ID* token_id = self.post_categorizer.get_token_id(Lexeme);
+           QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID* token_id = self.post_categorizer.get_token_id(Lexeme);
            if( token_id != QUEX_TKN_UNINITIALIZED ) {
                self.send(QUEX_TKN_IDENTIFIER, Lexeme);
            }

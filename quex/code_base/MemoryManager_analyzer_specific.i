@@ -3,8 +3,8 @@
  */
 #include <quex/code_base/definitions>
 
-#ifndef QUEX_TYPE_TOKEN
-#   error "File requires definition of macro QUEX_TYPE_TOKEN"
+#ifndef QUEX_TYPE_TOKEN_WITH_NAMESPACE
+#   error "File requires definition of macro QUEX_TYPE_TOKEN_WITH_NAMESPACE"
 #endif
 #ifndef QUEX_TYPE_MEMENTO
 #   error "File requires definition of macro QUEX_TYPE_MEMENTO"
@@ -16,15 +16,15 @@
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-QUEX_INLINE QUEX_TYPE_TOKEN* 
+QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE* 
 QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(const size_t N)
 {
-    const size_t     MemorySize = sizeof(QUEX_TYPE_TOKEN) * N;
-    return (QUEX_TYPE_TOKEN*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    const size_t     MemorySize = sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * N;
+    return (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)__QUEX_ALLOCATE_MEMORY(MemorySize);
 }
 
 QUEX_INLINE void 
-QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(QUEX_TYPE_TOKEN* memory)
+QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(QUEX_TYPE_TOKEN_WITH_NAMESPACE* memory)
 {
     if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); 
 }
