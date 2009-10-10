@@ -116,7 +116,7 @@ DEPRECATED = {
   "input_token_class_name":  
      ("The specification of the customized token class name via flag '--token-class' has been\n" + \
       "deprecated. The file containing the token class definition needs to define a macro\n" + \
-      "QUEX_TYPE_TOKEN specifying  the token class.", "0.38.3"),
+      "QUEX_TYPE_TOKEN_WITH_NAMESPACE specifying  the token class.", "0.38.3"),
 }
  
 

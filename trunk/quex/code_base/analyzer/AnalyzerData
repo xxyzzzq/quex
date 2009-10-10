@@ -74,7 +74,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
         QuexTokenQueue                 _token_queue;  
 #       else
-        QUEX_TYPE_TOKEN*               token;         
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*               token;         
 #       endif
 
         /*_________________________________________________________________________

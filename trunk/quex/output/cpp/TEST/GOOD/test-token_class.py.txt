@@ -4,16 +4,16 @@
 
 #include <quex/code_base/definitions>
  
-#ifdef QUEX_TYPE_TOKEN
-#   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
+#ifdef QUEX_TYPE_TOKEN_WITH_NAMESPACE
+#   error "QUEX_TYPE_TOKEN_WITH_NAMESPACE has been defined before the inclusion of this file."
 #endif
 
-#ifndef    QUEX_TYPE_TOKEN_ID 
-#   define QUEX_TYPE_TOKEN_ID              size_t
+#ifndef    QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID 
+#   define QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID              size_t
 #endif
 
-#define QUEX_TYPE_TOKEN                    ::europa::deutschland::baden_wuertemberg::ispringen::MeinToken
-#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  MeinToken
+#define QUEX_TYPE_TOKEN_WITH_NAMESPACE                    ::europa::deutschland::baden_wuertemberg::ispringen::MeinToken
+#define QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE  MeinToken
 #define QUEX_TYPE_STR_TOKEN_COMPLETE       __EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MeinToken
 #define QUEX_TYPE_LINE_N                   size_t
 #define QUEX_TYPE_COLUMN_N                 size_t
@@ -103,28 +103,28 @@ public:
     void             set_stream_position(uint32_t& Value)         { content.stream_position = Value; }
 /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
 
-    void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID) { _id = ID; }
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const std::string& Value0)
     { _id = ID; my_name = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const std::vector<int>& Value0)
     { _id = ID; numbers = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0, const std::vector<int>& Value1)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const std::string& Value0, const std::vector<int>& Value1)
     { _id = ID; my_name = Value0; numbers = Value1; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const uint32_t& Value0)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const uint32_t& Value0)
     { _id = ID; content.stream_position = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const int16_t& Value0, const int16_t& Value1)
     { _id = ID; content.data_1.x = Value0; content.data_1.y = Value1; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const float& Value0, const short& Value1)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const float& Value0, const short& Value1)
     { _id = ID; content.data_0.number = Value0; content.data_0.index = Value1; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const uint16_t& Value0)
+    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const uint16_t& Value0)
     { _id = ID; content.who_is_that = Value0; }
 
 
     private:
-        QUEX_TYPE_TOKEN_ID    _id;
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID    _id;
     public:
-        QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
-        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID    type_id() const      { return _id; }
+        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID);
         const std::string     type_id_name() const { return map_id_to_name(_id); }
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN

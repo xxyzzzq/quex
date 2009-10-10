@@ -46,8 +46,8 @@
 #ifndef    QUEX_SETTING_MODE_STACK_SIZE
 #   define QUEX_SETTING_MODE_STACK_SIZE     (256)
 #endif
-#ifndef    QUEX_TYPE_TOKEN  
-#   define QUEX_TYPE_TOKEN  int
+#ifndef    QUEX_TYPE_TOKEN_WITH_NAMESPACE  
+#   define QUEX_TYPE_TOKEN_WITH_NAMESPACE  int
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

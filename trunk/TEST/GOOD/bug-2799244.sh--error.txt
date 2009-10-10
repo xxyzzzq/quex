@@ -3,11 +3,11 @@
 error.qx:2:warning: The implemented token type does not have a member which can
 error.qx:2:warning: directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
 error.qx:2:warning: 
-error.qx:2:warning:     content : const QUEX_TYPE_TOKEN*;
+error.qx:2:warning:     content : const QUEX_TYPE_TOKEN_WITH_NAMESPACE*;
 error.qx:2:warning: 
 error.qx:2:warning: or 
 error.qx:2:warning: 
-error.qx:2:warning:     content : std::basic_string<QUEX_TYPE_TOKEN>;
+error.qx:2:warning:     content : std::basic_string<QUEX_TYPE_TOKEN_WITH_NAMESPACE>;
 error.qx:2:warning: 
 error.qx:2:warning: This means, that you might not be able to pass the 'Lexeme' 
 error.qx:2:warning: to a token constructor. To disable this warning set one of 
@@ -45,11 +45,11 @@ command line:
 error.qx:2:warning: The implemented token type does not have a member which can
 error.qx:2:warning: directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
 error.qx:2:warning: 
-error.qx:2:warning:     content : const QUEX_TYPE_TOKEN*;
+error.qx:2:warning:     content : const QUEX_TYPE_TOKEN_WITH_NAMESPACE*;
 error.qx:2:warning: 
 error.qx:2:warning: or 
 error.qx:2:warning: 
-error.qx:2:warning:     content : std::basic_string<QUEX_TYPE_TOKEN>;
+error.qx:2:warning:     content : std::basic_string<QUEX_TYPE_TOKEN_WITH_NAMESPACE>;
 error.qx:2:warning: 
 error.qx:2:warning: This means, that you might not be able to pass the 'Lexeme' 
 error.qx:2:warning: to a token constructor. To disable this warning set one of 

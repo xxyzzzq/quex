@@ -25,7 +25,7 @@ it with the information for the current analysis step. The process behind the
 call to the receive function is called the *token passing policy*. They
 are subject of the subsequent sections.
 
-Let ``Token`` be a shorthand for ``QUEX_TYPE_TOKEN`` in the following 
+Let ``Token`` be a shorthand for ``QUEX_TYPE_TOKEN_WITH_NAMESPACE`` in the following 
 subsections.
 
 .. warning::

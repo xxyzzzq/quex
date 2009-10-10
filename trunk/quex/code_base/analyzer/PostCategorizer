@@ -21,7 +21,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         QUEX_TYPE_CHARACTER          name_first_character;
         const QUEX_TYPE_CHARACTER*   name_remainder;
 
-        QUEX_TYPE_TOKEN_ID           token_id;
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID           token_id;
 
         struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG*   lesser;
         struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG*   greater;
@@ -33,9 +33,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #       ifndef __QUEX_SETTING_PLAIN_C
         void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
-                                  const QUEX_TYPE_TOKEN_ID TokenID);
+                                  const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID);
         void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
-        QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
         void                clear();
         void                print_this();
 #       endif
@@ -50,7 +50,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void
     QUEX_FIX(POST_CATEGORIZER, _enter)(QUEX_TYPE_POST_CATEGORIZER*  me, 
                                        const QUEX_TYPE_CHARACTER*   EntryName, 
-                                       QUEX_TYPE_TOKEN_ID           TokenID);
+                                       QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID           TokenID);
 
     QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE*
     QUEX_FIX(POST_CATEGORIZER, _find)(const QUEX_TYPE_POST_CATEGORIZER* me, 
@@ -59,7 +59,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void
     QUEX_FIX(POST_CATEGORIZER, _insert)(QUEX_TYPE_POST_CATEGORIZER* me, 
                                         const QUEX_TYPE_CHARACTER*  EntryName, 
-                                        QUEX_TYPE_TOKEN_ID          TokenID);
+                                        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID          TokenID);
 
     QUEX_INLINE void
     QUEX_FIX(POST_CATEGORIZER, _remove)(QUEX_TYPE_POST_CATEGORIZER* me, 

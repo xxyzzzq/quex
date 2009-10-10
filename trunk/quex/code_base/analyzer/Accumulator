@@ -37,7 +37,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   ifndef __QUEX_SETTING_PLAIN_C
     public:
-        void  flush(const QUEX_TYPE_TOKEN_ID TokenID);
+        void  flush(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID);
         void  clear();
         void  add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
         void  add_chararacter(const QUEX_TYPE_CHARACTER);

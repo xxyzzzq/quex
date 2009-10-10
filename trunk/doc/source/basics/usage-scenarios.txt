@@ -36,15 +36,15 @@ and to apply the appropriate interaction scheme.
 
    .. code-block:: cpp
 
-          QUEX_TYPE_TOKEN*  receive(QUEX_TYPE_TOKEN*  begin, 
-                                    QUEX_TYPE_TOKEN*  end);
+          QUEX_TYPE_TOKEN_WITH_NAMESPACE*  receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE*  begin, 
+                                    QUEX_TYPE_TOKEN_WITH_NAMESPACE*  end);
 
    in case that a 'users_queue' token policy is applied. Or, with
    
    .. code-block:: cpp
 
           void              receive();
-          void              receive(QUEX_TYPE_TOKEN*   result_p);
+          void              receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE*   result_p);
 
    in case that a 'users_token' token policy is applied. Or, in the default
    case where a 'queue' token policy is applied the following functions
@@ -52,8 +52,8 @@ and to apply the appropriate interaction scheme.
 
    .. code-block:: cpp
 
-          void              receive(QUEX_TYPE_TOKEN*   result_p);
-          void              receive(QUEX_TYPE_TOKEN**  result_pp);
+          void              receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE*   result_p);
+          void              receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE**  result_pp);
 
    More about token policies can be reviewed in :ref:`Token Policy
    <sec-token-policies>`. 

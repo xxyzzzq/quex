@@ -3,13 +3,13 @@
 #include <cstring>
 #include <quex/code_base/test_environment/default_configuration>
 #define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_ID  int
+#define QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID  int
 #define QUEX_OPTION_STRING_ACCUMULATOR
 #define QUEX_TYPE_ACCUMULATOR    TestAccumulator
 #define QUEX_TYPE_ANALYZER       TestAnalyzer
 
 struct QUEX_TYPE_ANALYZER {
-    void  send(QUEX_TYPE_TOKEN_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
+    void  send(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
         printf("Lexical Analyzer Receives:\n");
         printf("   '%s'\n", Msg);
     }

@@ -552,11 +552,11 @@ _warning_msg = \
 """The implemented token type does not have a member which can
 directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
 
-    content : const QUEX_TYPE_TOKEN*;
+    content : const QUEX_TYPE_TOKEN_WITH_NAMESPACE*;
 
 or 
 
-    content : std::basic_string<QUEX_TYPE_TOKEN>;
+    content : std::basic_string<QUEX_TYPE_TOKEN_WITH_NAMESPACE>;
 
 This means, that you might not be able to pass the 'Lexeme' 
 to a token constructor. To disable this warning set one of 

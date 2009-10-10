@@ -8,7 +8,7 @@ using namespace std;
 using namespace quex;
 
 void                pseudo_analysis(quex::QuexAnalyzerEngine* me);
-QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
+QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID  test_core(TPLex&, const char*);
 
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
 #   define NAME "Pseudo Analysis;\n"
@@ -51,7 +51,7 @@ main(int argc, char** argv)
 }
 
 #if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
+QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID test_core(TPLex& qlex, const char* Choice)
 {
     quex::Token   token;
     quex::Token*  token_p;
@@ -68,7 +68,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 }
 
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
-QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
+QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID test_core(TPLex& qlex, const char* Choice)
 {        
     quex::Token Token;
     if( strcmp(Choice, "receive-1") == 0 ) { qlex.token = &Token; qlex.receive(); }
@@ -78,7 +78,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 }
 
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
-QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
+QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID test_core(TPLex& qlex, const char* Choice)
 {        
     quex::Token   MyArray[5];
     quex::Token*  water_mark = qlex.receive(MyArray, MyArray + 5);

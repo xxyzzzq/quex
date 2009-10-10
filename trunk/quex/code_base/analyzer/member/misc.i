@@ -33,7 +33,7 @@ QUEX_MEMFUNC(ANALYZER, seek)(const size_t CharacterIndex)
     QuexBuffer_seek(&this->engine.buffer, CharacterIndex);
 }
 
-QUEX_INLINE QUEX_TYPE_TOKEN*  
+QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*  
 QUEX_MEMFUNC(ANALYZER, token_object)()
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)

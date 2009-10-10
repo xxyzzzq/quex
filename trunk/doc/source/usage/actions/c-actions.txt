@@ -42,16 +42,16 @@ in the previous token senders. The first argument is the token-id and the
 remaining arguments are arguments as they are passed to the constructor of the
 token class. In particular they are the following:
 
-.. cfunction:: .send(QUEX_TYPE_TOKEN_ID)
+.. cfunction:: .send(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID)
 
     Which sends one token to the caller of the lexical analyzer with the given 
     token-id.
 
-.. cfunction:: .send_n(size_t N, QUEX_TYPE_TOKEN_ID)
+.. cfunction:: .send_n(size_t N, QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID)
 
     Sends a token with the given token-id ``N`` times.
 
-.. cfunction:: .send(QUEX_TYPE_TOKEN_ID, ContentT)
+.. cfunction:: .send(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID, ContentT)
 
     This is a templated function. It calls the ``.set`` function of the token
     class that corresponds the type ``ContentT``. For example::
@@ -87,7 +87,7 @@ token class. In particular they are the following:
 The token object which is currently ready to be sent can be accessed via the
 member function
 
-.. cfunction:: QUEX_TYPE_TOKEN*  token_object()
+.. cfunction:: QUEX_TYPE_TOKEN_WITH_NAMESPACE*  token_object()
 
 The pointer to this object may be used to prepare the token object *before* sending
 it out. Modes can be switched with the ``<<``-operator, as shown in the example, or
