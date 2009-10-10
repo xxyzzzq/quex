@@ -69,7 +69,7 @@ func_str = \
 QUEX_NAMESPACE_TOKEN_OPEN
 
 inline const char*
-QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID)
+QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
    static const char  uninitialized_string[] = "<UNINITIALIZED>";
@@ -152,7 +152,7 @@ def do(global_setup):
             token_info = lexer_mode.token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
-            token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID)%i)\n" % (setup.token_prefix,
+            token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_prefix,
                                                                            token_name, space(token_name), 
                                                                            token_info.number)
     # -- define the function for token names

@@ -7,7 +7,7 @@
 using namespace std;
 
 template <class T>
-void test(const char* Name, T& lexer, QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID_Termination)
+void test(const char* Name, T& lexer, QUEX_TYPE_TOKEN_ID TokenID_Termination)
 {
     printf("---------------------------------\n");
     printf(" %s:\n", Name);

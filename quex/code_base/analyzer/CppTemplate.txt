@@ -53,8 +53,8 @@ $$USER_DEFINED_HEADER$$
 #ifndef     QUEX_TYPE_TOKEN_WITH_NAMESPACE 
 #   error   "Error: No '#define' of QUEX_TYPE_TOKEN_WITH_NAMESPACE in file $$TOKEN_CLASS_DEFINITION_FILE$$."
 #endif
-#ifndef     QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID
-#   error   "Error: No '#define' of QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID in file $$TOKEN_CLASS_DEFINITION_FILE$$."
+#ifndef     QUEX_TYPE_TOKEN_ID
+#   error   "Error: No '#define' of QUEX_TYPE_TOKEN_ID in file $$TOKEN_CLASS_DEFINITION_FILE$$."
 #endif
 
 #include    <quex/code_base/definitions>
@@ -232,16 +232,16 @@ public:
 
     // (*) Token sending
     void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE& That);
-    void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID);
-    void        send_n(const int N, const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID);
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID);
+    void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
     template    <typename ContentT> 
-    void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID TokenID, ContentT Content);
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
     template    <typename X0_T, typename X1_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, X0_T X0, X1_T X1);
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1);
     template    <typename X0_T, typename X1_T, typename X2_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, X0_T X0, X1_T X1, X2_T X2);
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2);
     template    <typename X0_T, typename X1_T, typename X2_T, typename X3_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING

@@ -189,7 +189,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
-    txt += "#define QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID  bool\n"  
+    txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
     txt += "typedef void QUEX_TYPE_MODE;\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
     txt += "#include <quex/code_base/analyzer/configuration/default>\n"
@@ -315,7 +315,7 @@ def action(PatternName):
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
-typedef int QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID;              
+typedef int QUEX_TYPE_TOKEN_ID;              
 typedef void QUEX_TYPE_MODE;              
 /* #define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN */
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
