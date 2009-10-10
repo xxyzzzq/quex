@@ -32,7 +32,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
          * variable.                                                                      */
         size_t     remaining_repetitions_of_last_token_n;
 
-    } QUEX_TYPE_TOKEN_WITH_NAMESPACE_QUEUE;
+    } QUEX_TYPE_TOKEN_QUEUE;
 
 #   define QuexTokenQueue_init(me, Memory, MemoryEnd, SafetyBorder) \
           do {                                                                \

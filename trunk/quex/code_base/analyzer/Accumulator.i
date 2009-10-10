@@ -138,7 +138,7 @@ QuexAccumulator_add_character(QUEX_TYPE_ACCUMULATOR*     me,
 
 QUEX_INLINE void
 QuexAccumulator_flush(QUEX_TYPE_ACCUMULATOR*    me,
-                      const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID  TokenID)
+                      const QUEX_TYPE_TOKEN_ID  TokenID)
 {
     /* All functions must ensure that there is one cell left to store the terminating zero. */
     __quex_assert(me->text.end < me->text.memory_end);
@@ -171,7 +171,7 @@ QUEX_TYPE_ACCUMULATOR::print_this()
 { QUEX_FIX(ACCUMULATOR, _print_this)(this); }
 
 QUEX_INLINE void
-QUEX_TYPE_ACCUMULATOR::flush(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID  TokenID)
+QUEX_TYPE_ACCUMULATOR::flush(const QUEX_TYPE_TOKEN_ID  TokenID)
 { QUEX_FIX(ACCUMULATOR, _flush)(this, TokenID); }
 
 QUEX_INLINE void 

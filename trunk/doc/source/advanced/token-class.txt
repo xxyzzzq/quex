@@ -152,19 +152,19 @@ class
 
   .. code-block:: cpp
 
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID);
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID);
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const std::basic_string<QUEX_TYPE_CHARACTER>& Value0);
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const std::vector<int>& Value0);
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, 
              const std::vector<int>& Value1);
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const int16_t& Value0, const int16_t& Value1);
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const int8_t& Value0, const int8_t& Value1);
-    void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const uint16_t& Value0);
 
 Those are then implicitly used in the token senders. Note, that it is
@@ -478,27 +478,27 @@ which results in a generated token class in C++:
         { content.data_1.big_y = Value; }
 
 
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID) 
+        void set(const QUEX_TYPE_TOKEN_ID ID) 
         { _id = ID; }
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
         { _id = ID; name = Value0; }
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const std::vector<int>& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
         { _id = ID; number_list = Value0; }
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, const std::vector<int>& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, const std::vector<int>& Value1)
         { _id = ID; name = Value0; number_list = Value1; }
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const int16_t& Value0, const int16_t& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
         { _id = ID; content.data_1.big_x = Value0; content.data_1.big_y = Value1; }
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const int8_t& Value0, const int8_t& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const int8_t& Value0, const int8_t& Value1)
         { _id = ID; content.data_0.mini_x = Value0; content.data_0.mini_y = Value1; }
-        void set(const QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const uint16_t& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const uint16_t& Value0)
         { _id = ID; content.who_is_that = Value0; }
 
 
         private:
-            QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID    _id;
+            QUEX_TYPE_TOKEN_ID    _id;
         public:
-            QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID    type_id() const      { return _id; }
-            static const char*    map_id_to_name(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID);
+            QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
+            static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
             const std::string     type_id_name() const { return map_id_to_name(_id); }
 
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
@@ -539,7 +539,7 @@ following constraints:
 
     * The following macros need to be defined outside the class:
        
-      .. describe:: QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID
+      .. describe:: QUEX_TYPE_TOKEN_ID
 
          Defines the C-type to be used to store token-ids. It should at least
          be large enough to carry the largest token id number.
@@ -553,13 +553,13 @@ following constraints:
 
             #define QUEX_TYPE_TOKEN_WITH_NAMESPACE   my_space::lexer::MyToken
 
-      .. describe:: QUEX_TYPE_TOKEN_WITH_NAMESPACE_WITHOUT_NAMESPACE
+      .. describe:: QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
 
          The token class without the namespace prefix, e.g.
 
          .. code-block:: cpp
 
-            #define QUEX_TYPE_TOKEN_WITH_NAMESPACE_WITHOUT_NAMESPACE   MyToken
+            #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE   MyToken
        
       .. describe:: QUEX_TYPE_STR_TOKEN_COMPLETE
 
@@ -581,14 +581,14 @@ following constraints:
  
       .. code-block:: cpp
 
-         #ifndef    QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID 
-         #   define QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID              uint32_t
+         #ifndef    QUEX_TYPE_TOKEN_ID 
+         #   define QUEX_TYPE_TOKEN_ID              uint32_t
          #endif
          #ifdef QUEX_TYPE_TOKEN_WITH_NAMESPACE
          #   error "QUEX_TYPE_TOKEN_WITH_NAMESPACE has been defined before the inclusion of this file."
          #endif
          #define QUEX_TYPE_TOKEN_WITH_NAMESPACE                    quex::Token
-         #define QUEX_TYPE_TOKEN_WITH_NAMESPACE_WITHOUT_NAMESPACE  Token
+         #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
 
       Note, that the header file might be tolerant with respect to external definitions
       of the token id type. However, since it defines the token class, it must assume
@@ -632,7 +632,7 @@ following constraints:
     * It must provide a member function that tells about the token's via a 
       function with the following signature 
       
-      .. cfunction:: QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID   type_id()
+      .. cfunction:: QUEX_TYPE_TOKEN_ID   type_id()
 
     * There must be a ``__copy(...)`` member function that copies the content
       of the token.

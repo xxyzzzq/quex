@@ -20,13 +20,13 @@ QUEX_NAMESPACE_TOKEN_OPEN
     class QUEX_TYPE_TOKEN {
     public:
         // Quex Token Policy: _____________________________________________________
-        static const char*  map_id_to_name(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID);
+        static const char*  map_id_to_name(QUEX_TYPE_TOKEN_ID);
         //_________________________________________________________________________
         typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
     private:
 
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID _id;
+        QUEX_TYPE_TOKEN_ID _id;
         __string           _text;
         int                _number;
 
@@ -38,7 +38,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
         // note, that tokens are created in a bunch on the token stack and only
         // set with the .set(..) functions when pushed.
         //
-        QUEX_TYPE_TOKEN(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const QUEX_TYPE_CHARACTER* Text) { set(ID, Text); }
+        QUEX_TYPE_TOKEN(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text) { set(ID, Text); }
         ~QUEX_TYPE_TOKEN() { }
 
         // (*) convert data to string
@@ -48,7 +48,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
 
         // (*) member acces
         //     -- read
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID        type_id() const      { return _id; }
+        QUEX_TYPE_TOKEN_ID        type_id() const      { return _id; }
         const std::string         type_id_name() const { return map_id_to_name(_id); }
         const __string&           text() const         { return _text; }
         const std::string         utf8_text() const;
@@ -56,9 +56,9 @@ QUEX_NAMESPACE_TOKEN_OPEN
 
         //     -- write 
         void    set(const QUEX_TYPE_TOKEN&);
-        void    set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID);
-        void    set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const QUEX_TYPE_CHARACTER* Text);
-        void    set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const int   Number1);
+        void    set(QUEX_TYPE_TOKEN_ID ID);
+        void    set(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text);
+        void    set(QUEX_TYPE_TOKEN_ID ID, const int   Number1);
 
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
@@ -96,11 +96,11 @@ QUEX_NAMESPACE_TOKEN_OPEN
     }
 
     inline void    
-    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type, const QUEX_TYPE_CHARACTER* Text)
+    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_ID Type, const QUEX_TYPE_CHARACTER* Text)
     { _id = Type; _text = Text; }
 
     inline void    
-    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type, const int Number1)
+    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_ID Type, const int Number1)
     { _id = Type; _number = Number1; }
 
     inline void    
@@ -108,7 +108,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
     { __copy(Other); }
 
     inline void    
-    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type) 
+    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_ID Type) 
     { _id = Type; }
 
     inline std::ostream&
