@@ -332,7 +332,7 @@ class GetPot:
             return False
             
         # first run: from cursor to end
-        if check_match(self.cursor, len(self.argv), Args) == 1: return 1
+        if check_match(self.cursor, len(self.argv), Args) == 1: return True
                 
         if self.search_loop_f == 0: return False
 

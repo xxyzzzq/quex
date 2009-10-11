@@ -12,7 +12,7 @@ import quex.input.query as query
 import quex.input.codec_db as codec_db
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
-from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, DEPRECATED
+from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED
 
 def do(argv):
     global setup
@@ -40,6 +40,10 @@ def do(argv):
 
         if info[1] == FLAG:
             setup.__dict__[variable_name] = command_line.search(info[0])        
+
+        elif info[1] == NEGATED_FLAG:
+
+            setup.__dict__[variable_name] = not command_line.search(info[0])        
 
         elif info[1] == LIST:
             if not command_line.search(info[0]):
@@ -83,20 +87,20 @@ def do(argv):
     setup.buffer_limit_code          = __get_integer("buffer_limit_code")
     setup.control_character_code_list = [setup.buffer_limit_code]
 
-    setup.input_token_counter_offset = __get_integer("input_token_counter_offset")
+    setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_id_termination       = __get_integer("token_id_termination")
     setup.token_id_uninitialized     = __get_integer("token_id_uninitialized")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
     validate(setup, command_line, argv)
 
-    if setup.input_foreign_token_id_file != "": 
+    if setup.token_id_foreign_definition_file != "": 
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
         # Regular expression to find '#include <something>' and extract the 'something'
         # in a 'group'. Note that '(' ')' cause the storage of parts of the match.
         IncludeRE            = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
         #
-        parse_token_id_file(setup.input_foreign_token_id_file, setup.input_token_id_prefix, 
+        parse_token_id_file(setup.token_id_foreign_definition_file, setup.token_id_prefix, 
                             CommentDelimiterList, IncludeRE)
 
     # (*) return setup ___________________________________________________________________
@@ -159,10 +163,10 @@ def validate(setup, command_line, argv):
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   __get_supported_command_line_option_description(options))
 
-    if setup.input_derived_class_name != "" and \
-       setup.input_derived_class_file == "":
+    if setup.analyzer_derived_class_name != "" and \
+       setup.analyzer_derived_class_file == "":
             error_msg("Specified derived class '%s' on command line, but it was not\n" % \
-                      setup.input_derived_class_name + \
+                      setup.analyzer_derived_class_name + \
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
@@ -182,17 +186,17 @@ def validate(setup, command_line, argv):
                   "By default, quex automatically chooses the endian type of your system.")
 
     # token offset and several ids
-    if setup.input_token_counter_offset == setup.token_id_termination:
+    if setup.token_id_counter_offset == setup.token_id_termination:
         error_msg("Token id offset (--token-offset) == token id for termination (--token-id-termination)\n")
-    if setup.input_token_counter_offset == setup.token_id_uninitialized:
+    if setup.token_id_counter_offset == setup.token_id_uninitialized:
         error_msg("Token id offset (--token-offset) == token id for uninitialized (--token-id-uninitialized)\n")
     if setup.token_id_termination == setup.token_id_uninitialized:
         error_msg("Token id for termination (--token-id-termination) and uninitialized (--token-id-uninitialized)\n" + \
                   "are chosen to be the same. Maybe it works.", DontExitF=True)
-    if setup.input_token_counter_offset < setup.token_id_uninitialized:
+    if setup.token_id_counter_offset < setup.token_id_uninitialized:
         error_msg("Token id offset (--token-offset) < token id uninitialized (--token-id-uninitialized).\n" + \
                   "Maybe it works.", DontExitF=True)
-    if setup.input_token_counter_offset < setup.token_id_termination:
+    if setup.token_id_counter_offset < setup.token_id_termination:
         error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
                   "Maybe it works.", DontExitF=True)
     
@@ -208,18 +212,17 @@ def validate(setup, command_line, argv):
                   "Set appropriate values with --token-queue-size and --token-queue-safety-border.")
 
     # check that names are valid identifiers
-    __check_identifier(setup, "input_token_id_prefix", "Token prefix")
-    __check_identifier(setup, "output_engine_name",    "Engine name")
-    if setup.input_derived_class_name != "": 
-        __check_identifier(setup, "input_derived_class_name", "Derived class name")
+    __check_identifier(setup, "token_id_prefix",    "Token prefix")
+    __check_identifier(setup, "analyzer_class_name", "Engine name")
+    if setup.analyzer_derived_class_name != "": 
+        __check_identifier(setup, "analyzer_derived_class_name", "Derived class name")
     
     # __check_identifier("token_id_termination",     "Token id for termination")
     # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
-    __check_file_name(setup, "token_class_file",         "file containing token class definition")
-    __check_file_name(setup, "input_derived_class_file", "file containing user derived lexer class")
+    __check_file_name(setup, "token_class_file",            "file containing token class definition")
+    __check_file_name(setup, "analyzer_derived_class_file", "file containing user derived lexer class")
 
-    __check_file_name(setup, "input_foreign_token_id_file", "file containing user token ids")
-    __check_file_name(setup, "input_user_token_id_file",    "file containing user token ids")
+    __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids")
 
     __check_file_name(setup, "input_mode_files", "quex source file")
 
@@ -261,7 +264,6 @@ def validate(setup, command_line, argv):
             setup.engine_character_encoding_transformation_info = \
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)
                 
-
 def __check_file_name(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     CommandLineOption = SETUP_INFO[Candidate][0]
@@ -311,7 +313,7 @@ def __get_integer(MemberName):
 def __prepare_file_name(Suffix, FileStemIncludedF=False):
     global setup
     if FileStemIncludedF: FileName = Suffix
-    else:                 FileName = setup.output_engine_name + Suffix
+    else:                 FileName = setup.analyzer_class_name + Suffix
     if setup.output_directory == "": return FileName
     else:                            return os.path.normpath(setup.output_directory + "/" + FileName)
 

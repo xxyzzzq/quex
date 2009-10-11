@@ -181,7 +181,7 @@ def __parse_token_id_specification_by_character_code(fh):
 
 def __create_token_sender_by_character_code(fh, CharacterCode):
     prefix_less_token_name = "UCS_0x%06X" % CharacterCode
-    token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
+    token_id_str = Setup.token_id_prefix + prefix_less_token_name
     lexer_mode.token_id_db[prefix_less_token_name] = \
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self.send(%s);\n" % token_id_str
@@ -190,19 +190,19 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
     assert type(ArgListStr) == str
 
     # after 'send' the token queue is filled and one can safely return
-    if TokenName.find(Setup.input_token_id_prefix) != 0:
-        error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
+    if TokenName.find(Setup.token_id_prefix) != 0:
+        error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
                   "found: '%s'" % TokenName, fh)
 
     # occasionally add token id automatically to database
-    prefix_less_TokenName = TokenName[len(Setup.input_token_id_prefix):]
+    prefix_less_TokenName = TokenName[len(Setup.token_id_prefix):]
     if not lexer_mode.token_id_db.has_key(prefix_less_TokenName):
         # DO NOT ENFORCE THE TOKEN ID TO BE DEFINED, BECAUSE WHEN THE TOKEN ID
         # IS DEFINED IN C-CODE, THE IDENTIFICATION IS NOT 100% SAFE.
         msg = "Token id '%s' defined implicitly." % TokenName
         if TokenName in lexer_mode.token_id_db.keys():
             msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
-                   (Setup.input_token_id_prefix + TokenName)
+                   (Setup.token_id_prefix + TokenName)
             msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
         error_msg(msg, fh, DontExitF=True)
 
@@ -218,7 +218,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
         if arg.find("=") != -1: explicit_member_names_f = True
 
     if explicit_member_names_f:
-        if lexer_mode.token_type_definition == None:
+        if type(lexer_mode.token_type_definition) == dict:
             error_msg("Explicit name specifier in token sender only allowed in conjunction with\n" + \
                       "customized token clases. Use section 'token_type'.\n", fh)
         member_value_pairs = map(lambda x: x.split("="), tail_field_list)

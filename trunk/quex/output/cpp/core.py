@@ -24,7 +24,7 @@ def do(Modes, IndentationSupportF):
 
 def write_configuration_header(Modes, IndentationSupportF):
     OutputConfigurationFile   = Setup.output_file_stem + "-configuration"
-    LexerClassName            = Setup.output_engine_name
+    LexerClassName            = Setup.analyzer_class_name
     ConfigurationTemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
 
@@ -58,11 +58,11 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "QUEX_OPTION_DEBUG_TOKEN_SENDING",           Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_ENABLE_ICONV",                  Setup.converter_iconv_f)
     txt = __switch(txt, "QUEX_OPTION_ENABLE_ICU",                    Setup.converter_icu_f)
-    txt = __switch(txt, "QUEX_OPTION_INCLUDE_STACK",                 not Setup.no_include_stack_support_f)
+    txt = __switch(txt, "QUEX_OPTION_INCLUDE_STACK",                 Setup.include_stack_support_f)
     txt = __switch(txt, "QUEX_OPTION_LINE_NUMBER_COUNTING",          True)      
     txt = __switch(txt, "QUEX_OPTION_POST_CATEGORIZER",              Setup.post_categorizer_f)
-    txt = __switch(txt, "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK", not Setup.no_mode_transition_check_f)
-    txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            not Setup.disable_string_accumulator_f)
+    txt = __switch(txt, "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK", Setup.mode_transition_check_f)
+    txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE",      Setup.token_policy == "users_queue")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN",      Setup.token_policy == "users_token")
@@ -76,23 +76,22 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
 
     # -- token class related definitions
-    if lexer_mode.token_type_definition != None:
-        token_descr               = lexer_mode.token_type_definition
+    token_descr = lexer_mode.token_type_definition
+    if type(token_descr) == dict:
+        token_class_name          = token_descr["class_name"]
+        token_id_type             = token_descr["token_id_type"]
+        token_line_n_type         = token_descr["line_number_type"]
+        token_column_n_type       = token_descr["column_number_type"]
+        token_namespace           = token_descr["namespace"]
+    else:
         token_class_name          = token_descr.class_name 
         token_id_type             = token_descr.token_id_type.get_pure_code()
         token_line_n_type         = token_descr.line_number_type.get_pure_code()
         token_column_n_type       = token_descr.column_number_type.get_pure_code()
         token_namespace           = token_descr.name_space
-        token_namespace_str       = LanguageDB["$namespace-ref"](token_descr.name_space) 
-        token_namespace_plain_str = make_safe_identifier(token_namespace_str)
-    else:
-        token_class_name          = "Token"
-        token_id_type             = "uint32_t"
-        token_line_n_type         = "size_t"
-        token_column_n_type       = "size_t"
-        token_namespace           = "quex"
-        token_namespace_str       = LanguageDB["$namespace-ref"](["quex"]) 
-        token_namespace_plain_str = make_safe_identifier(token_namespace_str)
+
+    token_namespace_str       = LanguageDB["$namespace-ref"](token_namespace) 
+    token_namespace_plain_str = make_safe_identifier(token_namespace_str)
 
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
@@ -103,17 +102,17 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
-             ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.input_derived_class_name],
+             ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
              ["$$TOKEN_CLASS$$",                token_class_name],
              ["$$TOKEN_ID_TYPE$$",              token_id_type],
-             ["$$TOKEN_TYPE_WITH_NAMESPACE$$",  token_namespace_str + token_class_name],
              ["$$TOKEN_TYPE$$",                 token_class_name],
              ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_class_name],
+             ["$$NAMESPACE_TOKEN$$",            token_namespace_plain_str],
              ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_namespace)],
              ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_namespace)],
              ["$$TOKEN_LINE_N_TYPE$$",          token_line_n_type],
              ["$$TOKEN_COLUMN_N_TYPE$$",        token_column_n_type],
-             ["$$TOKEN_PREFIX$$",               Setup.input_token_id_prefix],
+             ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
 
     write_safely_and_close(OutputConfigurationFile, txt)
@@ -129,8 +128,8 @@ def write_engine_header(Modes):
                                    + "/analyzer/CppTemplate.txt").replace("//","/")
     CoreEngineDefinitionsHeader = (Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
-    LexerClassName              = Setup.output_engine_name
-    VersionID                   = Setup.input_application_version_id
+    LexerClassName              = Setup.analyzer_class_name
+    VersionID                   = Setup.user_application_version_id
     QuexVersionID               = Setup.QUEX_VERSION
 
     #    are bytes of integers Setup 'little endian' or 'big endian' ?
@@ -156,16 +155,11 @@ def write_engine_header(Modes):
          get_mode_class_related_code_fragments(Modes.values(), LexerClassName)
 
     # -- define a pointer that directly has the type of the derived class
-    if Setup.input_derived_class_name == "":
-        Setup.input_derived_class_name = LexerClassName
+    if Setup.analyzer_derived_class_name == "":
+        Setup.analyzer_derived_class_name = LexerClassName
         derived_class_type_declaration = ""
     else:
-        derived_class_type_declaration = "class %s;" % Setup.input_derived_class_name
-
-    # -- the friends of the class
-    friends_str = ""
-    for friend in Setup.input_lexer_class_friends:
-        friends_str += "    friend class %s;\n" % friend
+        derived_class_type_declaration = "class %s;" % Setup.analyzer_derived_class_name
 
     fh = open_file_or_die(QuexClassHeaderFileTemplate)
     template_code_txt = fh.read()
@@ -184,10 +178,9 @@ def write_engine_header(Modes):
                 ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(Setup.output_file_stem)],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
                 ["$$LEXER_BUILD_VERSION$$",          VersionID],
-                ["$$LEXER_CLASS_FRIENDS$$",          friends_str],
                 ["$$LEXER_CLASS_NAME$$",             LexerClassName],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",     derived_class_type_declaration],
-                ["$$LEXER_DERIVED_CLASS_NAME$$",     Setup.input_derived_class_name],
+                ["$$LEXER_DERIVED_CLASS_NAME$$",     Setup.analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",     mode_id_definition_str],
                 ["$$MODE_CLASS_FRIENDS$$",           friend_txt],
                 ["$$MODE_OBJECTS$$",                 mode_object_members_txt],
@@ -208,24 +201,26 @@ def write_engine_header(Modes):
     write_safely_and_close(QuexClassHeaderFileOutput, txt)
 
 def write_token_class_declaration():
+    
     txt = ""
-    if lexer_mode.token_type_definition == None:
-        txt += "namespace quex {\n"
-        txt += "    class Token;\n"
-        txt += "}\n"
+    if type(lexer_mode.token_type_definition) == dict: return
+        namespace = lexer_mode.token_type_definition["name_space"]
+        class_name = lexer_mode.token_type_definition["class_name"]
     else: 
-        TCD = lexer_mode.token_type_definition
-        txt += LanguageDB["$namespace-open"](TCD.name_space)
-        txt += "class %s;\n" % TCD.class_name
-        txt += LanguageDB["$namespace-close"](TCD.name_space)
+        namespace = lexer_mode.token_type_definition.name_space
+        class_name = lexer_mode.token_type_definition.class_name
+
+    txt += LanguageDB["$namespace-open"](namespace)
+    txt += "class %s;\n" % class_name
+    txt += LanguageDB["$namespace-close"](namespace)
     return txt
 
 def write_mode_class_implementation(Modes):
-    LexerClassName              = Setup.output_engine_name
+    LexerClassName              = Setup.analyzer_class_name
     TokenClassName              = Setup.input_token_class_name
     OutputFilestem              = Setup.output_file_stem
-    DerivedClassName            = Setup.input_derived_class_name
-    DerivedClassHeaderFileName  = Setup.input_derived_class_file
+    DerivedClassName            = Setup.analyzer_derived_class_name
+    DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
     ModeClassImplementationFile = Setup.output_code_file
 
     if DerivedClassHeaderFileName != "": txt = "#include<" + DerivedClassHeaderFileName +">\n"

@@ -10,7 +10,7 @@ from   quex.input.setup_parser                import __prepare_file_name
 LanguageDB = Setup.language_db
 
 def do():
-    if lexer_mode.token_type_definition == None: return
+    if type(lexer_mode.token_type_definition) == dict: return
 
     txt       = _do(lexer_mode.token_type_definition)
 

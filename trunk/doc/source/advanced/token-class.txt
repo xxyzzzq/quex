@@ -535,7 +535,7 @@ token class definition is done. A hand written token class must comply to the
 following constraints:
 
 
-    * The token class must be specified in namespace queχ.
+    * The token class must be specified in namespace quex.
 
     * The following macros need to be defined outside the class:
        

@@ -77,7 +77,7 @@ def do():
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
-    if lexer_mode.token_type_definition != None:
+    if type(lexer_mode.token_type_definition) != dict:
         UserCodeFragment_straighten_open_line_pragmas(lexer_mode.get_token_class_file_name(Setup), "C")
 
 def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
@@ -115,7 +115,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                  EndOfStreamAction              = PatternActionInfo(None, end_of_stream_action),
                                  PrintStateMachineF             = True,
                                  StateMachineName               = Mode.name,
-                                 AnalyserStateClassName         = Setup.output_engine_name,
+                                 AnalyserStateClassName         = Setup.analyzer_class_name,
                                  StandAloneAnalyserF            = False, 
                                  QuexEngineHeaderDefinitionFile = Setup.output_file_stem,
                                  ModeNameList                   = ModeNameList)

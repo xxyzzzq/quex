@@ -218,7 +218,7 @@ def parse_initial_mode_definition(fh):
 def parse_token_id_definitions(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
-    token_prefix = Setup.input_token_id_prefix
+    token_prefix = Setup.token_id_prefix
     db           = lexer_mode.token_id_db
 
     if not check(fh, "{"):

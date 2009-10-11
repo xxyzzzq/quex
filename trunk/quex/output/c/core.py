@@ -19,9 +19,9 @@ def do(Modes, setup):
     else:                    CoreEngineDefinitionsHeader += "definitions-plain-memory.h"
     QuexClassHeaderFileOutput   = setup.output_file_stem
     LexerClassName              = setup.output_engine_name
-    VersionID                   = setup.input_application_version_id
+    VersionID                   = setup.user_application_version_id
     QuexVersionID               = setup.QUEX_VERSION
-    DerivedClassHeaderFileName  = setup.input_derived_class_file
+    DerivedClassHeaderFileName  = setup.derived_class_file
     ModeClassImplementationFile = setup.output_code_file
 
 

@@ -17,7 +17,7 @@ def parse(fh, AllowNothingIsFineF=False):
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          BufferLimitCode            = Setup.buffer_limit_code,
-                                         DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f,
+                                         DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f,
                                          AllowNothingIsFineF        = AllowNothingIsFineF)
 
 
