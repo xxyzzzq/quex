@@ -3,8 +3,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE
 #define __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE
 
-#ifndef QUEX_TYPE_TOKEN_WITH_NAMESPACE
-#   error "QUEX_TYPE_TOKEN_WITH_NAMESPACE has not been defined before the inclusion of this file."
+#ifndef QUEX_TYPE_TOKEN_QUEUE
+#   error "QUEX_TYPE_TOKEN_QUEUE has not been defined before the inclusion of this file."
 #endif
 
 

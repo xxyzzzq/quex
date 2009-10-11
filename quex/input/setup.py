@@ -6,44 +6,44 @@ class something:
 
 LIST = -1
 FLAG = -2
+NEGATED_FLAG = -3
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                              [Default / Type]
+    "analyzer_class_name":            [["-o", "--engine"],                   "lexer"],    
+    "analyzer_derived_class_file":    [["--derived-class-file"],             ""],
+    "analyzer_derived_class_name":    [["--derived-class"],                  ""],
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
-    "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
-    "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
-    "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
-    "engine_character_encoding":      [["--codec"],                          ""],
-    "converter_iconv_f":              [["--iconv"],                          FLAG],
-    "converter_icu_f":                [["--icu"],                            FLAG],
-    "converter_user_new_func":        [["--converter-new", "--cn"],          ""],
     "byte_order":                     [["--endian"],                         "<system>"],
-    "input_application_version_id":   [["--version-id"],                     "0.0.0-pre-release"],
-    "no_include_stack_support_f":     [["--no-include-stack", "--nois"],     FLAG],
-    "input_derived_class_file":       [["--derived-class-file"],             ""],
-    "input_derived_class_name":       [["--derived-class"],                  ""],
-    "input_foreign_token_id_file":    [["--foreign-token-id-file"],          ""],  # provides foreign token-ids to
-    #                                                                              # be included in generated file.
-    "input_lexer_class_friends":      [["--friend-class"],                   LIST],
+    "dos_carriage_return_newline_f":  [["--no-DOS"],                           NEGATED_FLAG],
+    "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], NEGATED_FLAG],
+    "engine_character_encoding":      [["--codec"],                            ""],
+    "converter_iconv_f":              [["--iconv"],                            FLAG],
+    "converter_icu_f":                [["--icu"],                              FLAG],
+    "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
+    "include_stack_support_f":        [["--no-include-stack", "--nois"],       NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
     "token_class_file":               [["--token-class-file"],               "quex/code_base/token/Token"],
-    "token_type_disable_stringless_check_f": [["--token-type-no-stringless-check", "--ttnsc"], FLAG],
-    "input_token_counter_offset":     [["--token-offset"],                   "10000"],
+    "token_class_name":               [["--token-class-name"],               "quex::Token"],
+    "token_class_stringless_check_f": [["--token-type-no-stringless-check", "--ttnsc"], NEGATED_FLAG],
+    "token_id_foreign_definition_file":  [["--foreign-token-id-file"],          ""],  
+    "token_id_counter_offset":        [["--token-offset"],                   "10000"],
+    "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
+    "token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
     "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
-    "input_token_id_prefix":          [["--token-prefix"],                   "QUEX_TKN_"],
     "token_queue_size":               [["--token-queue-size"],               "64"],
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
-    "input_user_token_id_file":       [["--user-token-id-file"],             ""],  # disables token-id file generation!
-    "no_mode_transition_check_f":     [["--no-mode-transition-check"],       FLAG],
+    "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
+    "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
     "output_debug_f":                 [["--debug"],                          FLAG],
-    "output_engine_name":             [["-o", "--engine"],                   "lexer"],    
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
+    "output_directory":               [["--output-directory", "--odir"],     ""],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
-    "output_directory":               [["--output-directory", "--odir"],     ""],
+    "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
     "version_information":            [["--version", "-v"],                  FLAG],
     "help":                           [["--help", "-h"],                     FLAG],
@@ -64,6 +64,7 @@ SETUP_INFO = {
     "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
     "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
     "input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
+    "input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -117,6 +118,9 @@ DEPRECATED = {
      ("The specification of the customized token class name via flag '--token-class' has been\n" + \
       "deprecated. The file containing the token class definition needs to define a macro\n" + \
       "QUEX_TYPE_TOKEN_WITH_NAMESPACE specifying  the token class.", "0.38.3"),
+  "input_lexer_class_friends":  
+      ("Since version 0.46.3, friend classes are no longer defined on the command line. Please,\n"
+       "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3")
 }
  
 

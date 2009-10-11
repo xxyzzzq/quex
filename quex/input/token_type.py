@@ -215,14 +215,14 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
             if self.__member_can_accept_a_QUEX_TYPE_CHARACTER_string(info[0]):
                 member_for_QUEX_TYPE_CHARACTER_P_present_f = True
 
-        if Setup.token_type_disable_stringless_check_f: return
+        if not Setup.token_class_stringless_check_f: return
 
         if member_for_QUEX_TYPE_CHARACTER_P_present_f == False:
             error_msg(_warning_msg, 
                       self.file_name_of_token_type_definition,
                       self.line_n_of_token_type_definition,
                       DontExitF=True)
-            if Setup.disable_string_accumulator_f == False:
+            if Setup.string_accumulator_f == False:
                 error_msg(_warning_msg2, DontExitF=True)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]

@@ -25,14 +25,6 @@ class TokenInfo:
         self.positions    = [ Filename, LineN ]
         self.id           = None
 
-class Setup:
-    def __init__(self, GlobalSetup):
-
-        self.output_file      = GlobalSetup.output_token_id_file
-        self.token_prefix     = GlobalSetup.input_token_id_prefix
-        self.id_count_offset  = GlobalSetup.input_token_counter_offset
-        self.input_foreign_token_id_file = GlobalSetup.input_foreign_token_id_file
-        
 file_str = \
 """// -*- C++ -*- vim: set syntax=cpp:
 // PURPOSE: File containing definition of token-identifier and
@@ -94,7 +86,7 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 #endif
 """
 
-def do(global_setup):
+def do(setup):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
 
@@ -118,21 +110,14 @@ def do(global_setup):
     #     plus the suffix "--token-ids". Note, that the token id file is a
     #     header file.
     #
-    setup = Setup(global_setup)
     if len(lexer_mode.token_id_db.keys()) == 2:
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
         print "error: No token id other than %sTERMINATION and %sUNINITIALIZED are defined. " % \
-              (setup.token_prefix, setup.token_prefix)
+              (setup.token_id_prefix, setup.token_id_prefix)
         print "error: Quex refuses to proceed. Please, use the 'token { ... }' section to "
         print "error: specify at least one other token id."
         sys.exit(-1)
 
-    if global_setup.input_user_token_id_file != "":
-        ## print "(0) token ids provided by user"
-        ## print "   '%s'" % global_setup.input_user_token_id_file
-        global_setup.output_token_id_file = global_setup.input_user_token_id_file
-        return
-    
     #______________________________________________________________________________________
     L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
     def space(Name):
@@ -140,8 +125,8 @@ def do(global_setup):
 
     # -- define values for the token ids
     token_id_txt = ""
-    if setup.input_foreign_token_id_file != "":
-        token_id_txt += "#include\"%s\"\n" % setup.input_foreign_token_id_file
+    if setup.token_id_foreign_definition_file != "":
+        token_id_txt += "#include\"%s\"\n" % setup.token_id_foreign_definition_file
 
     else:
         token_names = lexer_mode.token_id_db.keys()
@@ -152,7 +137,7 @@ def do(global_setup):
             token_info = lexer_mode.token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
-            token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_prefix,
+            token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
                                                                            token_name, space(token_name), 
                                                                            token_info.number)
     # -- define the function for token names
@@ -161,25 +146,25 @@ def do(global_setup):
     for token_name in lexer_mode.token_id_db.keys():
         if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
         switch_cases += "   case %s%s:%s return token_id_str_%s;\n" % \
-                        (setup.token_prefix, token_name, space(token_name), token_name)
+                        (setup.token_id_prefix, token_name, space(token_name), token_name)
         token_names  += "   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
                         (token_name, space(token_name), token_name)
 
     name_space = ["quex"]
-    if lexer_mode.token_type_definition != None: 
+    if type(lexer_mode.token_type_definition) != dict:
         name_space = lexer_mode.token_type_definition.name_space
     
     file_str = file_str.replace("$$CONTENT$$", func_str)
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
-                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(global_setup)],
-                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(global_setup.output_file_stem)],
+                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(setup)],
+                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(setup.output_file_stem)],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],
                           ["$$TOKEN_NAMES$$",                 token_names],
-                          ["$$TOKEN_PREFIX$$",                setup.token_prefix]])
+                          ["$$TOKEN_PREFIX$$",                setup.token_id_prefix]])
 
-    write_safely_and_close(setup.output_file, content)
+    write_safely_and_close(setup.output_token_id_file, content)
 
 def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
     """This function somehow interprets the user defined token id file--if there is
@@ -230,7 +215,7 @@ if __name__ == "__main__":
     input_file       = cl.follow("", "-i")
     token_class_file = cl.follow("", "-t")
     token_class      = cl.follow("token", "--token-class-name")
-    token_counter_offset = cl.follow(1000, "--offset")
+    token_id_counter_offset = cl.follow(1000, "--offset")
     output_file          = cl.follow("", "-o")
     token_prefix         = cl.follow("TKN_", "--tp")
     
@@ -238,5 +223,5 @@ if __name__ == "__main__":
         print "error: please specify input (option '-i') and output file (option '-o')"
         sys.exit(-1)
         
-    do(Setup(input_file, output_file, token_class_file, token_class, token_prefix, token_counter_offset))
+    do(Setup(input_file, output_file, token_class_file, token_class, token_prefix, token_id_counter_offset))
 

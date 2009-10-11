@@ -50,13 +50,6 @@ $$USER_DEFINED_HEADER$$
 #include    "$$TOKEN_ID_DEFINITION_FILE$$"
 #include    "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
-#ifndef     QUEX_TYPE_TOKEN_WITH_NAMESPACE 
-#   error   "Error: No '#define' of QUEX_TYPE_TOKEN_WITH_NAMESPACE in file $$TOKEN_CLASS_DEFINITION_FILE$$."
-#endif
-#ifndef     QUEX_TYPE_TOKEN_ID
-#   error   "Error: No '#define' of QUEX_TYPE_TOKEN_ID in file $$TOKEN_CLASS_DEFINITION_FILE$$."
-#endif
-
 #include    <quex/code_base/definitions>
 
 #ifdef      __QUEX_OPTION_UNIT_TEST
@@ -317,8 +310,6 @@ private:
 
     // (*) All Modes are Friends _____________________________________________________
 $$MODE_CLASS_FRIENDS$$  
-    // (*) User defined Friends ______________________________________________________
-$$LEXER_CLASS_FRIENDS$$
 
 public:
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)

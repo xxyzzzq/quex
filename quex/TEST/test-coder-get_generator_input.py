@@ -35,7 +35,7 @@ for pattern, action in pattern_action_pair_list:
 quex.input.setup.setup.output_debug_f                = False
 quex.input.setup.setup.begin_of_stream_code          = 0x19
 quex.input.setup.setup.end_of_stream_code            = 0x1A
-quex.input.setup.setup.no_dos_carriage_return_newline_f = True
+quex.input.setup.setup.dos_carriage_return_newline_f = False
 
 
 mode = Mode(mode_descr)

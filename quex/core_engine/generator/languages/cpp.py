@@ -463,8 +463,8 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     
 def __frame_of_all(Code, Setup):
     class_name = Setup.output_file_stem
-    if Setup.input_derived_class_name != "":
-        class_name = Setup.input_derived_class_name
+    if Setup.analyzer_derived_class_name != "":
+        class_name = Setup.analyzer_derived_class_name
 
     return "#include \"%s\"\n" % Setup.output_file_stem     + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \

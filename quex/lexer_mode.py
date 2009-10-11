@@ -595,15 +595,26 @@ token_id_db = {}
 
 #-----------------------------------------------------------------------------------------
 # token_type_definition: Object that defines a (user defined) token class.
+#                        By default, it is a dictionary. A customized token class 
+#                        definition replaces the dictionary by a real object. Thus,
+#                        the distinction between customized and automatic can be done
+#                        by checking the type of token_type_definition being a dictionary 
+#                        or not.
 #-----------------------------------------------------------------------------------------
-token_type_definition = None
+token_type_definition = {
+    "class_name":         "Token",
+    "token_id_type":      "uint32_t",
+    "line_number_type":   "size_t"
+    "column_number_type": "size_t",
+    "name_space":         ["quex"],
+}
 
 def get_token_class_file_name(Setup):
     file_name = Setup.token_class_file
-    if token_type_definition != None:
+    if type(token_type_definition) != dict:
         file_name = token_type_definition.get_file_name()
         if file_name == "":
-            file_name = Setup.output_engine_name + "-token-class"
+            file_name = Setup.analyzer_class_name + "-token-class"
 
     return file_name
 

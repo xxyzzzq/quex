@@ -158,19 +158,9 @@ following command line options can be used.
         
         DEFAULT = <empty>
 
-.. cmdoption:: `--friend-class` name-list
-        
-        ``name-list`` = Names of classes that shall be friends of the
-        generated lexical analyser. This is to be used, if other classes 
-        need to have access to protected or private members of the      
-        analyser. It is only to be used by specialists. 
-        
-        DEFAULT = <empty>
+The following options support the definition of a independently customized token class:
 
-Additionally, there are options for specialists who want to provide their own
-token-class:
-
-.. cmdoption:: `--token-class-file` filename:
+.. cmdoption:: `--token-class-file` filename
         
         ``filename`` = Name of file that contains the definition of the
         token class. Note, that the setting provided here is possibly 
@@ -178,6 +168,24 @@ token-class:
         explicity (see :ref:`sec-customized-token-class`).
         
         DEFAULT = ``$(QUEX_PATH)/code_base/Token``
+
+.. cmdoption:: `--token-class-name` name
+
+        ``name`` is the name of the token class. Using '::'-separators it is possible
+        to defined the exact namespace in which the token class resides, e.g.::
+
+        > quex ... --token-class-name my_compiler::my_lexer::my_token
+
+        specifies that class ``my_token`` is the token class which is inside 
+        namespace ``my_lexer`` which is a nested namespace of space ``my_compiler``.
+
+.. cmpoption:: `--token-id-type` type-name
+
+        ``type-name`` defines the type of the token id. This defines internally the 
+        macro ``QUEX_TYPE_TOKEN_ID``. This macro is to be used when a customized
+        token class is defined. The types of Standard C99 'inttypes.h' are encouraged.
+
+        DEFAULT = ``uint32_t``
 
 .. cmdoption:: `--token-type-no-stringless-check`, `--ttnsc`
 
@@ -189,21 +197,6 @@ token-class:
 
         ``directory`` = name of the output directory where generated files are 
         to be written.
-
-Even if a non-quex token class is provided, the token-id generator may still 
-be useful. By default, it remains in place. The user, however, can specify the
-following option to disable it:
-
-.. cmdoption:: --user-token-id-file filename
-        
-        ``filename`` = Name of file that contains the definition of the
-        token-ids and the mapping function from numerical token-ids to
-        `std::string` objects, i.e. human readable names. Note, that under
-        normal circumstances, the setting of ``--foreign-token-id-file`` 
-        is sufficient. There the numeric values of tokens may be defined,
-        but no pretty printing or similar features.
-
-        DEFAULT = <disabled>
 
 There may be cases where the characters used to indicate buffer limit needs to
 be redefined, because the default value appear in a pattern footnote:[As for
