@@ -30,8 +30,9 @@
      * files are compiled with a different setting of the macros. The
      * undef of the include guards happens in the following file.           */
 #   include <quex/code_base/include-guard-undef>
+#   undef   __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
 #else
-#   define __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+#   define  __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN 
@@ -335,9 +336,9 @@ QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* explict call of placement new for all tokens in the chunk */
-    QuexTokenQueue_construct(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
+    QUEX_TYPE_TOKEN_QUEUE_construct(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QuexTokenQueue_construct(&me->_token_queue, 0);
+    QUEX_TYPE_TOKEN_QUEUE_construct(&me->_token_queue, 0);
 #   else
     me->token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #   endif
@@ -403,7 +404,7 @@ QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me,
                                  InputHandleT**        input_handle)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
-    QUEX_TYPE_MEMENTO* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
+    QUEX_TYPE_MEMENTO* memento = QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();
 
     /* Use placement 'new' for explicit call of constructor */
     new ((void*)memento) QUEX_TYPE_MEMENTO;
@@ -444,7 +445,7 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
     
     /* Counterpart to placement new: Explicit destructor call */
     memento->~QUEX_TYPE_MEMENTO_TAG();
-    MemoryManager_$$LEXER_CLASS_NAME$$Memento_free(memento);
+    QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(memento);
 #   undef self
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */

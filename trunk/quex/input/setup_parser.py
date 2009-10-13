@@ -163,6 +163,8 @@ def validate(setup, command_line, argv):
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   __get_supported_command_line_option_description(options))
 
+    setup.analyzer_name_space = ["quex"]
+
     if setup.analyzer_derived_class_name != "" and \
        setup.analyzer_derived_class_file == "":
             error_msg("Specified derived class '%s' on command line, but it was not\n" % \

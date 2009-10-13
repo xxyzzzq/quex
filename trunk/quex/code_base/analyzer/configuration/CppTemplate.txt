@@ -19,12 +19,8 @@
  *       deleted by "configuration/undefine".                                  */
 #ifdef     __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #   include   <quex/code_base/analyzer/configuration/undefine>
-    /* Indicate: NOT first time that a configuration is included.              */
-#   undef  __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION__VIRGIN
 #else
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
-    /* Indicate: first time that a configuration is included.                  */
-#   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION__VIRGIN
 #endif
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
@@ -317,36 +313,49 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
 #endif 
 
-#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data_tag
-#define QUEX_TYPE_ANALYZER_DATA      $$LEXER_CLASS_NAME$$Data
-#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
-#define QUEX_TYPE_DERIVED_ANALYZER   $$LEXER_DERIVED_CLASS_NAME$$
+#if defined(__QUEX_SETTING_PLAIN_C)
+#   define QUEX_NAME(NAME)        $$NAMESPACE_STR$$       ## NAME
+#   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
+#else
+#   define QUEX_NAME(NAME)        NAME
+#   define QUEX_TOKEN_NAME(NAME)  NAME
+#endif
+
+#define QUEX_TYPE_ANALYZER_DATA_TAG          QUEX_NAME(Data_tag)
+#define QUEX_TYPE_ANALYZER_DATA              QUEX_NAME(Data)
+#define QUEX_TYPE_ANALYZER                   QUEX_NAME($$LEXER_CLASS_NAME$$)
+#define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 
 /* Definition of the quex mode is left configurable, in case that future
  * implementations require it. 09y09m16d                                  */
-#define QUEX_TYPE_MODE_TAG           QuexMode_tag
-#define QUEX_TYPE_MODE               QuexMode
-#define QUEX_TYPE_MEMENTO_BASE       $$LEXER_CLASS_NAME$$MementoBase
-#define QUEX_TYPE_MEMENTO_TAG        $$LEXER_CLASS_NAME$$Memento_tag
-#define QUEX_TYPE_MEMENTO            $$LEXER_CLASS_NAME$$Memento
+#define QUEX_TYPE_MODE_TAG                   QUEX_NAME(QuexMode_tag)
+#define QUEX_TYPE_MODE                       QUEX_NAME(QuexMode)
 
-#define QUEX_TYPE_POST_CATEGORIZER           $$LEXER_CLASS_NAME$$Dictionary
-#define QUEX_TYPE_POST_CATEGORIZER_NODE      $$LEXER_CLASS_NAME$$DictionaryNode
-#define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  $$LEXER_CLASS_NAME$$DictionaryNode_tag
-#define QUEX_TYPE_ACCUMULATOR                $$LEXER_CLASS_NAME$$Accumulator
+#define QUEX_TYPE_MEMENTO_BASE               QUEX_NAME(MementoBase)
+#define QUEX_TYPE_MEMENTO_TAG                QUEX_NAME(Memento_tag)
+#define QUEX_TYPE_MEMENTO                    QUEX_NAME(Memento)
 
-#ifdef     __INCLUDE_INDICATOR_QUEX__CONFIGURATION__VIRGIN
-#   define QUEX_TYPE_TOKEN                    $$TOKEN_CLASS$$
-#   define QUEX_TYPE_TOKEN_QUEUE              QuexTokenQueue
+#define QUEX_TYPE_POST_CATEGORIZER           QUEX_NAME(Dictionary)
+#define QUEX_TYPE_POST_CATEGORIZER_NODE      QUEX_NAME(DictionaryNode)
+#define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  QUEX_NAME(DictionaryNode_tag)
+
+#define QUEX_TYPE_ACCUMULATOR                QUEX_NAME(Accumulator)
+
+#define QUEX_TYPE_TOKEN                      QUEX_TOKEN_NAME($$TOKEN_CLASS$$)
+#define QUEX_TYPE_TOKEN_QUEUE                QUEX_TOKEN_NAME(TokenQueue)
+#define QUEX_TYPE_TOKEN_WITH_NAMESPACE       $$NAMESPACE_TOKEN$$$$TOKEN_CLASS$$
+#define QUEX_TYPE_TOKEN_ID                   $$TOKEN_ID_TYPE$$
+#define QUEX_TYPE_STR_TOKEN_COMPLETE         $$TOKEN_TYPE_STR$$
+#define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
+#define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
+
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define     QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumnIndentation)
+#elif  defined(__QUEX_OPTION_COUNTER)
+#   define     QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumn)
 #else
-#   define QUEX_TYPE_TOKEN                    $$LEXER_CLASS_NAME$$$$TOKEN_CLASS$$
-#   define QUEX_TYPE_TOKEN_QUEUE              $$LEXER_CLASS_NAME$$QuexTokenQueue
+#   define     QUEX_TYPE_COUNTER             void*
 #endif
-#define QUEX_TYPE_TOKEN_WITH_NAMESPACE        $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
-#define QUEX_TYPE_TOKEN_ID                    $$TOKEN_ID_TYPE$$
-#define QUEX_TYPE_STR_TOKEN_COMPLETE          $$TOKEN_TYPE_STR$$
-#define QUEX_TYPE_TOKEN_LINE_N                $$TOKEN_LINE_N_TYPE$$
-#define QUEX_TYPE_TOKEN_COLUMN_N              $$TOKEN_COLUMN_N_TYPE$$
 
 #define QUEX_NAMESPACE_MAIN                  quex
 #define QUEX_NAMESPACE_MAIN_OPEN             namespace quex {
@@ -357,14 +366,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 //#define QUEX_NAMESPACE_TOKEN                 $$NAMESPACE_TOKEN$$ 
 #define QUEX_NAMESPACE_TOKEN_OPEN            $$NAMESPACE_TOKEN_OPEN$$
 #define QUEX_NAMESPACE_TOKEN_CLOSE           $$NAMESPACE_TOKEN_CLOSE$$
-
-#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define     QUEX_TYPE_COUNTER      CounterWithIndentation
-#elif  defined(__QUEX_OPTION_COUNTER)
-#   define     QUEX_TYPE_COUNTER      Counter
-#else
-#   define     QUEX_TYPE_COUNTER      void*
-#endif
 
 QUEX_NAMESPACE_MAIN_OPEN 
     struct QuexAnalyzerEngine_tag;

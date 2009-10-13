@@ -132,7 +132,7 @@ def do(setup):
         token_names = lexer_mode.token_id_db.keys()
         token_names.sort()
 
-        i = setup.id_count_offset
+        i = setup.token_id_counter_offset
         for token_name in token_names:
             token_info = lexer_mode.token_id_db[token_name] 
             if token_info.number == None: 
@@ -150,10 +150,6 @@ def do(setup):
         token_names  += "   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
                         (token_name, space(token_name), token_name)
 
-    name_space = ["quex"]
-    if type(lexer_mode.token_type_definition) != dict:
-        name_space = lexer_mode.token_type_definition.name_space
-    
     file_str = file_str.replace("$$CONTENT$$", func_str)
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],

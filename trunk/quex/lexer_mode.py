@@ -604,7 +604,7 @@ token_id_db = {}
 token_type_definition = {
     "class_name":         "Token",
     "token_id_type":      "uint32_t",
-    "line_number_type":   "size_t"
+    "line_number_type":   "size_t",
     "column_number_type": "size_t",
     "name_space":         ["quex"],
 }

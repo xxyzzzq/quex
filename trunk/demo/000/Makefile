@@ -45,6 +45,9 @@ $(APPLICATION): $(APPLICATION).o \
 %.o: %.cpp $(ENGINE_SOURCES)
 	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
+%.E: %.cpp $(ENGINE_SOURCES)
+	$(CC) -E $< -o $@ 
+
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 0x1000 \
 		 --post-categorizer

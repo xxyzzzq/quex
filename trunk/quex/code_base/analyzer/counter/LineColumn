@@ -15,26 +15,26 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     typedef struct {
         __CounterBase  base;
-    } Counter;
+    } CounterLineColumn;
 
-    QUEX_INLINE void  Counter_construct(Counter* me, struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
-    QUEX_INLINE void  Counter_copy_construct(Counter* me, const Counter* That);
-    QUEX_INLINE void  Counter_reset(Counter* me);
+    QUEX_INLINE void  CounterLineColumn_construct(CounterLineColumn* me, struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
+    QUEX_INLINE void  CounterLineColumn_copy_construct(CounterLineColumn* me, const CounterLineColumn* That);
+    QUEX_INLINE void  CounterLineColumn_reset(CounterLineColumn* me);
 
-    QUEX_INLINE void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
-    QUEX_INLINE void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
-    QUEX_INLINE void  Counter_count_FixNewlineN(Counter*             me,
+    QUEX_INLINE void  CounterLineColumn_count(CounterLineColumn* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
+    QUEX_INLINE void  CounterLineColumn_count_NoNewline(CounterLineColumn* me, const ptrdiff_t LexemeLength);
+    QUEX_INLINE void  CounterLineColumn_count_FixNewlineN(CounterLineColumn*             me,
                                                 QUEX_TYPE_CHARACTER* Lexeme,
                                                 QUEX_TYPE_CHARACTER* LexemeEnd,
                                                 const int            LineNIncrement);
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
-    __Counter_count_chars_to_newline_backwards(Counter* me, QUEX_TYPE_CHARACTER* Begin,
+    __CounterLineColumn_count_chars_to_newline_backwards(CounterLineColumn* me, QUEX_TYPE_CHARACTER* Begin,
                                              QUEX_TYPE_CHARACTER* End,
                                              const ptrdiff_t      LexemeLength,
                                              const bool           LicenseToIncrementLineCountF /*=false*/);
 
-    QUEX_INLINE void  Counter_print_this(Counter* me);
+    QUEX_INLINE void  CounterLineColumn_print_this(CounterLineColumn* me);
 
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE

@@ -38,7 +38,7 @@ namespace quex {
     QUEX_MEMFUNC(ANALYZER, send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
     {
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-        const int AvailableN = QuexTokenQueue_available_n(_token_queue);
+        const int AvailableN = QUEX_TYPE_TOKEN_QUEUE_available_n(_token_queue);
         const int N = RepetitionN > AvailableN ? AvailableN : RepetitionN;
         __quex_assert(N > 0);
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);

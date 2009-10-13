@@ -11,7 +11,7 @@ int       indentation[64];
 QuexMode  tester_mini_mode;
 
 void
-print(CounterWithIndentation& x, const char* TestString)
+print(CounterLineColumnIndentation& x, const char* TestString)
 {
     cout << "__________________________" << endl;
     // cout << "  before: " << x.base._line_number_at_begin << ", " << x.base._column_number_at_begin << endl;
@@ -26,10 +26,10 @@ print(CounterWithIndentation& x, const char* TestString)
 }
 
 void 
-test(const char* TestString, CounterWithIndentation& x)
+test(const char* TestString, CounterLineColumnIndentation& x)
 {
     Counter_shift_end_values_to_start_values(&x.base);
-    CounterWithIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, 
+    CounterLineColumnIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                                   (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -38,9 +38,9 @@ int
 main(int  argc, char** argv)
 {
     my_tester                y;
-    CounterWithIndentation   x;
+    CounterLineColumnIndentation   x;
 
-    CounterWithIndentation_construct(&x, &y);
+    CounterLineColumnIndentation_construct(&x, &y);
     y.counter = (Counter*)&x;
     x.base._line_number_at_end = 1;
         
