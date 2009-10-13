@@ -82,7 +82,7 @@ def write_configuration_header(Modes, IndentationSupportF):
         token_id_type             = token_descr["token_id_type"]
         token_line_n_type         = token_descr["line_number_type"]
         token_column_n_type       = token_descr["column_number_type"]
-        token_namespace           = token_descr["namespace"]
+        token_namespace           = token_descr["name_space"]
     else:
         token_class_name          = token_descr.class_name 
         token_id_type             = token_descr.token_id_type.get_pure_code()
@@ -95,7 +95,9 @@ def write_configuration_header(Modes, IndentationSupportF):
 
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
-             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(Setup.output_file_stem)],
+             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
+                                                         LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
+                                                             + "__" + Setup.analyzer_class_name)],
              ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$INITIAL_LEXER_MODE_ID$$",      LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
@@ -107,7 +109,7 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_ID_TYPE$$",              token_id_type],
              ["$$TOKEN_TYPE$$",                 token_class_name],
              ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_class_name],
-             ["$$NAMESPACE_TOKEN$$",            token_namespace_plain_str],
+             ["$$NAMESPACE_TOKEN$$",            token_namespace_str],
              ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_namespace)],
              ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_namespace)],
              ["$$TOKEN_LINE_N_TYPE$$",          token_line_n_type],
@@ -175,7 +177,9 @@ def write_engine_header(Modes):
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
                 ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
-                ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(Setup.output_file_stem)],
+                ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(
+                                                         LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
+                                                             + "__" + Setup.analyzer_class_name)],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
                 ["$$LEXER_BUILD_VERSION$$",          VersionID],
                 ["$$LEXER_CLASS_NAME$$",             LexerClassName],
@@ -203,11 +207,11 @@ def write_engine_header(Modes):
 def write_token_class_declaration():
     
     txt = ""
-    if type(lexer_mode.token_type_definition) == dict: return
-        namespace = lexer_mode.token_type_definition["name_space"]
+    if type(lexer_mode.token_type_definition) == dict: 
+        namespace  = lexer_mode.token_type_definition["name_space"]
         class_name = lexer_mode.token_type_definition["class_name"]
     else: 
-        namespace = lexer_mode.token_type_definition.name_space
+        namespace  = lexer_mode.token_type_definition.name_space
         class_name = lexer_mode.token_type_definition.class_name
 
     txt += LanguageDB["$namespace-open"](namespace)

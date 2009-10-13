@@ -72,9 +72,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
          *                                                                        
          *  Allow public access, for user's special tricks.                        */
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-        QuexTokenQueue                 _token_queue;  
+        QUEX_TYPE_TOKEN_QUEUE                 _token_queue;  
 #       else
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*               token;         
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*       token;         
 #       endif
 
         /*_________________________________________________________________________
@@ -82,14 +82,10 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
          *  /  ` /  \ |  | |\ |  |  |__  |__) 
          *  \__, \__/ \__/ | \|  |  |___ |  \ 
          *                                                                         
-         *  Dependent on setup all counting might be set to 'null operations'.     */
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_TYPE_COUNTER              counter;
-#       else
-        /* In case of no counting, we spend sizeof(void*) bytes for nothing, just
+         * Dependent on setup all counting might be set to 'null operations'.    
+         * In case of no counting, we spend sizeof(void*) bytes for nothing, just
          * to keep the code uniform.                                               */
-        void*                          counter; 
-#       endif
+        QUEX_TYPE_COUNTER              counter;
 
         /*_________________________________________________________________________
          *       __   __                            ___  __   __  

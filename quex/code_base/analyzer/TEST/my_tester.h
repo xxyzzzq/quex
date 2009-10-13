@@ -38,7 +38,7 @@ my_tester::my_tester()
     __current_mode_p = &tester_mini_mode; 
 }
 
-#include <../CounterWithIndentation.i>
+#include <../CounterLineColumnIndentation.i>
 #include <../Counter.i>
 
 #endif // __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H

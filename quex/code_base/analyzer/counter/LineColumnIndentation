@@ -36,54 +36,54 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         /*                                     * in the current line.                       */
         bool    _indentation_count_enabled_f; /* count whitespace for indentation?          */
         bool    _indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
-    } CounterWithIndentation;
+    } CounterLineColumnIndentation;
 
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me, struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
+    CounterLineColumnIndentation_construct(CounterLineColumnIndentation* me, struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
 
     QUEX_INLINE void
-    CounterWithIndentation_reset(CounterWithIndentation* me);
+    CounterLineColumnIndentation_reset(CounterLineColumnIndentation* me);
 
     QUEX_INLINE void
-    CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);
+    CounterLineColumnIndentation_copy_construct(CounterLineColumnIndentation* me, const CounterLineColumnIndentation* That);
 
     QUEX_INLINE void
-    CounterWithIndentation_init(CounterWithIndentation* me);
+    CounterLineColumnIndentation_init(CounterLineColumnIndentation* me);
 
     QUEX_INLINE void
-    CounterWithIndentation_on_end_of_file(CounterWithIndentation* me);
+    CounterLineColumnIndentation_on_end_of_file(CounterLineColumnIndentation* me);
 
     QUEX_INLINE void    
-    CounterWithIndentation_icount(CounterWithIndentation*  me,
+    CounterLineColumnIndentation_icount(CounterLineColumnIndentation*  me,
                                   QUEX_TYPE_CHARACTER*     Lexeme,
                                   QUEX_TYPE_CHARACTER*     LexemeEnd);
 
     QUEX_INLINE void
-    __CounterWithIndentation_count_whitespace_to_first_non_whitespace(CounterWithIndentation* me,
+    __CounterLineColumnIndentation_count_whitespace_to_first_non_whitespace(CounterLineColumnIndentation* me,
                                                                       QUEX_TYPE_CHARACTER* start_consideration_it, 
                                                                       QUEX_TYPE_CHARACTER* Begin,
                                                                       QUEX_TYPE_CHARACTER* End,
                                                                       const bool           LicenseToIncrementLineCountF);
     QUEX_INLINE void    
-    CounterWithIndentation_icount_NoNewline(CounterWithIndentation*  me,
+    CounterLineColumnIndentation_icount_NoNewline(CounterLineColumnIndentation*  me,
                                             QUEX_TYPE_CHARACTER*     Lexeme,
                                             const int                LexemeL);
     QUEX_INLINE void  
-    CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(CounterWithIndentation* me, 
+    CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace(CounterLineColumnIndentation* me, 
                                                                    const int ColumnNIncrement); 
 
     QUEX_INLINE void  
-    CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(CounterWithIndentation*  me, 
+    CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpace(CounterLineColumnIndentation*  me, 
                                                               const int                ColumnNIncrement);
 
     QUEX_INLINE void
-    CounterWithIndentation_count_indentation_aux(CounterWithIndentation*  me,
+    CounterLineColumnIndentation_count_indentation_aux(CounterLineColumnIndentation*  me,
                                                  QUEX_TYPE_CHARACTER*     start_consideration_it,
                                                  QUEX_TYPE_CHARACTER*     Begin,
                                                  QUEX_TYPE_CHARACTER*     End, 
                                                  const bool               LicenseToIncrementLineCountF);
     QUEX_INLINE void 
-    CounterWithIndentation_print_this(CounterWithIndentation* me);
+    CounterLineColumnIndentation_print_this(CounterLineColumnIndentation* me);
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 

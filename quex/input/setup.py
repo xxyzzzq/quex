@@ -49,6 +49,7 @@ SETUP_INFO = {
     "help":                           [["--help", "-h"],                     FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
+    "analyzer_name_space":                       "quex",
     #______________________________________________________________________________________________________
     "begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
     "end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
@@ -126,10 +127,11 @@ DEPRECATED = {
 
 setup = something()
 for key, entry in SETUP_INFO.items():
-    if type(entry) != list: continue
-    if entry[1] == LIST:   default_value = []
-    elif entry[1] == FLAG: default_value = False
-    else:                  default_value = entry[1]
+    if type(entry) != list:        continue
+    if entry[1] == LIST:           default_value = []
+    elif entry[1] == FLAG:         default_value = False
+    elif entry[1] == NEGATED_FLAG: default_value = True
+    else:                          default_value = entry[1]
     setup.__dict__[key] = default_value
 
 setup.language_db = quex_core_engine_generator_languages_db["C++"]

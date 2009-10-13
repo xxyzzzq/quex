@@ -11,7 +11,7 @@ int       indentation[64];
 QuexMode  tester_mini_mode;
 
 void
-print(CounterWithIndentation& x, const char* TestString)
+print(CounterLineColumnIndentation& x, const char* TestString)
 {
     cout << "__________________________" << endl;
     // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
@@ -26,40 +26,40 @@ print(CounterWithIndentation& x, const char* TestString)
 }
 
 void 
-test(const char* TestString, CounterWithIndentation& x)
+test(const char* TestString, CounterLineColumnIndentation& x)
 {
     Counter_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterWithIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    CounterLineColumnIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
 void 
-test_NoNewline(const char* TestString, CounterWithIndentation& x)
+test_NoNewline(const char* TestString, CounterLineColumnIndentation& x)
 {
     Counter_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterWithIndentation_icount_NoNewline(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
+    CounterLineColumnIndentation_icount_NoNewline(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
     print(x, TestString);
 }
 
 void 
-test_NoNewline_NeverStartOnWhitespace(const char* TestString, CounterWithIndentation& x)
+test_NoNewline_NeverStartOnWhitespace(const char* TestString, CounterLineColumnIndentation& x)
 {
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
     Counter_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(&x, strlen(TestString));
+    CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace(&x, strlen(TestString));
     print(x, TestString);
 }
 
 void 
-test_NoNewline_ContainsOnlySpace(const char* TestString, CounterWithIndentation& x)
+test_NoNewline_ContainsOnlySpace(const char* TestString, CounterLineColumnIndentation& x)
 {
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
     Counter_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(&x, strlen(TestString));
+    CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpace(&x, strlen(TestString));
     print(x, TestString);
 }
 
@@ -67,8 +67,8 @@ int
 main(int  argc, char** argv)
 {
     my_tester                y;
-    CounterWithIndentation   x;
-    CounterWithIndentation_construct(&x, &y);
+    CounterLineColumnIndentation   x;
+    CounterLineColumnIndentation_construct(&x, &y);
     y.counter = (Counter*)&x;
     x.base._line_number_at_end = 1;
         

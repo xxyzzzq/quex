@@ -42,18 +42,18 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
      *               case that no  token could be read.                                      */
     {
         /* Tokens are in queue --> take next token from queue                                */
-        if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
-            *result_pp = QuexTokenQueue_pop(_token_queue);
+        if( QUEX_TYPE_TOKEN_QUEUE_is_empty(_token_queue) == false ) {        
+            *result_pp = QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue);
             return;  
         } 
         else if( _token_queue.remaining_repetitions_of_last_token_n ) {
             --(_token_queue.remaining_repetitions_of_last_token_n);
-            *result_pp = QuexTokenQueue_back(_token_queue);
+            *result_pp = QUEX_TYPE_TOKEN_QUEUE_back(_token_queue);
             return;
         }
 
         /* Restart filling the queue from begin */
-        QuexTokenQueue_reset(_token_queue);
+        QUEX_TYPE_TOKEN_QUEUE_reset(_token_queue);
 
         /* In case a mode change happend inside the pattern actions, the function is forced
          * to return (see end of analyzer function at REENTRY label). If the tokenstack is
@@ -64,7 +64,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
             QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
-        *result_pp = QuexTokenQueue_pop(_token_queue);
+        *result_pp = QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue);
         return;
     }
 
@@ -73,18 +73,18 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                                     QUEX_TYPE_TOKEN_WITH_NAMESPACE* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
-        if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
-            result_p->__copy(*(QuexTokenQueue_pop(_token_queue)));
+        if( QUEX_TYPE_TOKEN_QUEUE_is_empty(_token_queue) == false ) {        
+            result_p->__copy(*(QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue)));
             return;  
         } 
         else if( _token_queue.remaining_repetitions_of_last_token_n ) {
             --(_token_queue.remaining_repetitions_of_last_token_n);
-            result_p->__copy(*(QuexTokenQueue_back(_token_queue)));
+            result_p->__copy(*(QUEX_TYPE_TOKEN_QUEUE_back(_token_queue)));
             return;
         }
 
         /* Restart filling the queue from begin */
-        QuexTokenQueue_reset(_token_queue);
+        QUEX_TYPE_TOKEN_QUEUE_reset(_token_queue);
 
         /* Analyze until there is some content in the queue */
         do {
@@ -92,7 +92,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
             QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
-        result_p->__copy(*QuexTokenQueue_pop(_token_queue));
+        result_p->__copy(*QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue));
 
         return;
     }
@@ -133,8 +133,8 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     {
         __quex_assert(QueueMemoryBegin != 0x0);
         __quex_assert(QueueMemoryEnd > QueueMemoryBegin);
-        QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd,
-                            QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
+        QUEX_TYPE_TOKEN_QUEUE_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd,
+                                   QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
         do {
             engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);

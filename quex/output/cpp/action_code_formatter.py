@@ -74,11 +74,11 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
     txt = "CounterBase_shift_end_values_to_start_values(&self.counter.base);\n"
 
     if EOF_ActionF:
-        txt += "    CounterWithIndentation_on_end_of_file(&self.counter);\n"
+        txt += "    CounterLineColumnIndentation_on_end_of_file(&self.counter);\n"
         return txt
 
     if PatternStateMachine == None:
-        return txt + "CounterWithIndentation_icount(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "CounterLineColumnIndentation_icount(&self.counter, Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -94,18 +94,18 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
         # IDEA: (case newline_n > 0) 
         #       Try to determine number of characters backwards to newline directly
         #       from the pattern state machine.
-        func = "CounterWithIndentation_icount(&self.counter, Lexeme, LexemeEnd);"       
+        func = "CounterLineColumnIndentation_icount(&self.counter, Lexeme, LexemeEnd);"       
 
     else:
         if character_n == -1: column_increment = "LexemeL"          # based on matched lexeme
         else:                 column_increment = "%i" % character_n # fixed length
             
         if starts_never_on_whitespace_f:
-            func = "CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(&self.counter, %s);" % column_increment
+            func = "CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace(&self.counter, %s);" % column_increment
         elif contains_only_spaces_f:
-            func = "CounterWithIndentation_icount_NoNewline_ContainsOnlySpaces(&self.counter, %s);" % column_increment
+            func = "CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpaces(&self.counter, %s);" % column_increment
         else:
-            func = "CounterWithIndentation_icount_NoNewline(&self.counter, Lexeme, LexemeL);"
+            func = "CounterLineColumnIndentation_icount_NoNewline(&self.counter, Lexeme, LexemeL);"
 
     return txt + func + "\n"
 

@@ -43,10 +43,10 @@ Counter	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i	/^Count
 CounterPseudo	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        CounterPseudo() { }$/;"	f	struct:quex::CounterPseudo
 CounterPseudo	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        CounterPseudo(const CounterPseudo&) { }$/;"	f	struct:quex::CounterPseudo
 CounterPseudo	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^    struct CounterPseudo {$/;"	s	namespace:quex	file:
-CounterType	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^    typedef CounterWithIndentation CounterType;$/;"	t	namespace:quex	file:
-CounterWithIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^    struct CounterWithIndentation $/;"	s	namespace:quex	file:
-CounterWithIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::CounterWithIndentation()$/;"	f	class:quex::CounterWithIndentation
-CounterWithIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::CounterWithIndentation(const CounterWithIndentation& That)$/;"	f	class:quex::CounterWithIndentation
+CounterType	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^    typedef CounterLineColumnIndentation CounterType;$/;"	t	namespace:quex	file:
+CounterLineColumnIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^    struct CounterLineColumnIndentation $/;"	s	namespace:quex	file:
+CounterLineColumnIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::CounterLineColumnIndentation()$/;"	f	class:quex::CounterLineColumnIndentation
+CounterLineColumnIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::CounterLineColumnIndentation(const CounterLineColumnIndentation& That)$/;"	f	class:quex::CounterLineColumnIndentation
 DEBUG_analyser_function_at_entry	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;$/;"	m	struct:quex::__QuexAnalyzerEngine_tag	file:
 FromCoding	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                         const char*       FromCoding,$/;"	v
 FromCoding	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                    const char*       FromCoding,$/;"	v
@@ -713,9 +713,9 @@ __copy	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_q
 __copy	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	/^$$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)$/;"	f	class:$$TOKEN_CLASS$$
 __copy	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^    Token::__copy(const Token& That) $/;"	f	class:quex::Token
 __count_chars_to_newline_backwards	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i	/^Counter::__count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,$/;"	f	class:quex::Counter
-__count_indentation_aux	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::__count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,$/;"	f	class:quex::CounterWithIndentation
+__count_indentation_aux	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::__count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,$/;"	f	class:quex::CounterLineColumnIndentation
 __count_newline_n_backwards	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i	/^Counter::__count_newline_n_backwards(QUEX_TYPE_CHARACTER* it,$/;"	f	class:quex::Counter
-__count_whitespace_to_first_non_whitespace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHARACTER* start_consideration_it, $/;"	f	class:quex::CounterWithIndentation
+__count_whitespace_to_first_non_whitespace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::__count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHARACTER* start_consideration_it, $/;"	f	class:quex::CounterLineColumnIndentation
 __current_mode_p	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        QUEX_TYPE_MODE*   __current_mode_p;$/;"	m	class:quex::CLASS	file:
 __file_handle_allocated_by_constructor	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        FILE*    __file_handle_allocated_by_constructor;$/;"	m	class:quex::CLASS	file:
 __increment_bottom	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::__increment_bottom() {$/;"	f	class:circular_queue
@@ -751,9 +751,9 @@ _external_owner_f	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^
 _front	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^        QUEX_TYPE_CHARACTER*  _front;         \/* first character in buffer (BLC)      *\/$/;"	m	struct:quex::__anon4	file:
 _id	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	/^        QUEX_TYPE_TOKEN_ID    _id;$/;"	m	class:$$TOKEN_TYPE$$	file:
 _id	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^        QUEX_TYPE_TOKEN_ID _id;$/;"	m	class:quex::Token	file:
-_indentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        int     _indentation;                 \/\/ number of columns to first non-whitespace$/;"	m	struct:quex::CounterWithIndentation	file:
-_indentation_count_enabled_f	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        bool    _indentation_count_enabled_f; \/\/ count whitespace for indentation?$/;"	m	struct:quex::CounterWithIndentation	file:
-_indentation_event_enabled_f	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        bool    _indentation_event_enabled_f; \/\/ trigger when first non-whitespace occurs?$/;"	m	struct:quex::CounterWithIndentation	file:
+_indentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        int     _indentation;                 \/\/ number of columns to first non-whitespace$/;"	m	struct:quex::CounterLineColumnIndentation	file:
+_indentation_count_enabled_f	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        bool    _indentation_count_enabled_f; \/\/ count whitespace for indentation?$/;"	m	struct:quex::CounterLineColumnIndentation	file:
+_indentation_event_enabled_f	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        bool    _indentation_event_enabled_f; \/\/ trigger when first non-whitespace occurs?$/;"	m	struct:quex::CounterLineColumnIndentation	file:
 _input_p	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^        QUEX_TYPE_CHARACTER*  _input_p;$/;"	m	struct:quex::__anon5	file:
 _lexeme_start_p	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^        QUEX_TYPE_CHARACTER*  _lexeme_start_p;$/;"	m	struct:quex::__anon5	file:
 _line_n	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	/^        QUEX_TYPE_LINE_N  _line_n;$/;"	m	class:$$TOKEN_TYPE$$	file:
@@ -769,7 +769,7 @@ _reset	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/misc.i	/^    CLASS
 _size	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^    int      _size;$/;"	m	class:circular_queue	file:
 _text	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^        __string           _text;$/;"	m	class:quex::Token	file:
 _the_lexer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator	/^        CLASS*                                  _the_lexer;     $/;"	m	struct:quex::QUEX_TYPE_ACCUMULATOR	file:
-_the_lexer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        CLASS*  _the_lexer;$/;"	m	struct:quex::CounterWithIndentation	file:
+_the_lexer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        CLASS*  _the_lexer;$/;"	m	struct:quex::CounterLineColumnIndentation	file:
 _the_lexer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack	/^        CLASS*   _the_lexer;$/;"	m	class:quex::IncludeStack	file:
 _token_queue	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        QuexTokenQueue    _token_queue;  \/\/ must be public or protected (accessed with 'self')$/;"	m	class:quex::CLASS	file:
 _top	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^    T*       _top;          \/\/ pointer to the top of stack$/;"	m	class:circular_queue	file:
@@ -844,7 +844,7 @@ current_mode_p	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeSta
 data	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/iconv-argument-types.h	/^        uint8_t ** data;$/;"	m	struct:__Adapter_FuncIconv_SecondArgument
 delete_self	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/Converter	/^        void    (*delete_self)(struct QuexConverter_tag*);$/;"	m	struct:quex::QuexConverter_tag	file:
 destruct	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller	/^        void     (*destruct)(struct __QuexBufferFiller_tag*);$/;"	m	struct:quex::__QuexBufferFiller_tag	file:
-disable_next_indentation_event	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }$/;"	f	struct:quex::CounterWithIndentation
+disable_next_indentation_event	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }$/;"	f	struct:quex::CounterLineColumnIndentation
 disable_next_indentation_event	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        void disable_next_indentation_event() { counter.disable_next_indentation_event(); }$/;"	f	class:quex::CLASS
 drop_last	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::drop_last() {$/;"	f	class:circular_queue
 dynamic_character_size_f	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/Converter	/^        bool    dynamic_character_size_f;$/;"	m	struct:quex::QuexConverter_tag	file:
@@ -872,10 +872,10 @@ handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/iconv/Conv
 has_base	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        bool (*has_base)(const QUEX_TYPE_MODE* Mode);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 has_entry_from	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        bool (*has_entry_from)(const QUEX_TYPE_MODE* Mode);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 has_exit_to	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        bool (*has_exit_to)(const QUEX_TYPE_MODE* Mode);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
-icount	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::icount(QUEX_TYPE_CHARACTER* Lexeme,$/;"	f	class:quex::CounterWithIndentation
-icount_NoNewline	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::icount_NoNewline(QUEX_TYPE_CHARACTER* Lexeme,$/;"	f	class:quex::CounterWithIndentation
-icount_NoNewline_ContainsOnlySpace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) $/;"	f	class:quex::CounterWithIndentation
-icount_NoNewline_NeverStartOnWhitespace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::icount_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) $/;"	f	class:quex::CounterWithIndentation
+icount	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::icount(QUEX_TYPE_CHARACTER* Lexeme,$/;"	f	class:quex::CounterLineColumnIndentation
+icount_NoNewline	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::icount_NoNewline(QUEX_TYPE_CHARACTER* Lexeme,$/;"	f	class:quex::CounterLineColumnIndentation
+icount_NoNewline_ContainsOnlySpace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) $/;"	f	class:quex::CounterLineColumnIndentation
+icount_NoNewline_NeverStartOnWhitespace	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::icount_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) $/;"	f	class:quex::CounterLineColumnIndentation
 id	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        int            id;$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 imaxabs	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	264;"	d
 imaxdiv	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	/^imaxdiv_t __cdecl imaxdiv(intmax_t numer, intmax_t denom)$/;"	f
@@ -885,7 +885,7 @@ include_push	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack
 indentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        int  indentation()                    { return counter._indentation; }$/;"	f	class:quex::CLASS
 init	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^        void  init() { }$/;"	f	struct:quex::CounterPseudo
 init	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i	/^Counter::init()$/;"	f	class:quex::Counter
-init	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::init()$/;"	f	class:quex::CounterWithIndentation
+init	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::init()$/;"	f	class:quex::CounterLineColumnIndentation
 input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                         InputHandleT*     input_handle,$/;"	v
 input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                    InputHandleT*     input_handle,$/;"	v
 input_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain	/^    QuexBufferFiller_Plain_new(InputHandleT* input_handle);$/;"	v
@@ -948,7 +948,7 @@ name_remainder	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCatego
 number	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^        int                       number()             { return _number; }$/;"	f	class:quex::Token
 off_type	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^        typedef uint32_t                           off_type;$/;"	t	class:quex::StrangeStream	file:
 on_conversion_discontinuity	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/Converter	/^        void    (*on_conversion_discontinuity)(struct QuexConverter_tag*);$/;"	m	struct:quex::QuexConverter_tag	file:
-on_end_of_file	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::on_end_of_file()$/;"	f	class:quex::CounterWithIndentation
+on_end_of_file	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^CounterLineColumnIndentation::on_end_of_file()$/;"	f	class:quex::CounterLineColumnIndentation
 on_entry	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        void (*on_entry)(CLASS*, const QUEX_TYPE_MODE* FromMode);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 on_exit	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        void (*on_exit)(CLASS*, const QUEX_TYPE_MODE* ToMode);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 on_indentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        void (*on_indentation)(CLASS*, const int Indentation);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
@@ -989,7 +989,7 @@ quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^namespace
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^namespace quex {$/;"	n	file:
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^namespace quex {$/;"	n	file:
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i	/^namespace quex { $/;"	n	file:
-quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^namespace quex { $/;"	n	file:
+quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterLineColumnIndentation.i	/^namespace quex { $/;"	n	file:
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^namespace quex { $/;"	n	file:
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^namespace quex {$/;"	n	file:
 quex	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack	/^namespace quex { $/;"	n	file:
