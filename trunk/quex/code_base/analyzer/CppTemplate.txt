@@ -270,11 +270,6 @@ public:
     { reset<void>((void*)0x0, CharacterEncodingName); }
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
-private:
-    //      -- include events (a file is included)
-    template<class InputHandleT> QUEX_TYPE_MEMENTO*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-    void                                             memento_unpack(QUEX_TYPE_MEMENTO*);
-
 public:
     template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                     const QUEX_TYPE_MODE&    mode, 
@@ -282,9 +277,15 @@ public:
     template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                     const int                MODE_ID         = -1, 
                                                     const char*              IANA_CodingName = 0x0);
-    bool              include_pop();
+    bool                               include_pop();
+
 protected:
-    void              include_stack_delete();
+    void                               include_stack_delete();
+
+private:
+    //      -- include events (a file is included)
+    template<class InputHandleT> QUEX_TYPE_MEMENTO*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
+    void                                             memento_unpack(QUEX_TYPE_MEMENTO*);
 #   endif
 
 public:
@@ -400,8 +401,8 @@ $$CONSTRUCTOR_EXTENSTION$$
 
 TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
 QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me, 
-                                 QUEX_TYPE_CHARACTER*  InputName, 
-                                 InputHandleT**        input_handle)
+                                  QUEX_TYPE_CHARACTER*  InputName, 
+                                  InputHandleT**        input_handle)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
     QUEX_TYPE_MEMENTO* memento = QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();

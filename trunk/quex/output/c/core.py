@@ -125,7 +125,7 @@ def do(Modes, setup):
                       ["%%PRETTY_INDENTATION%%",           "     " + " " * (len(LexerClassName)*2 + 2)],
                       ["%%QUEX_TEMPLATE_DIR%%",            setup.QUEX_TEMPLATE_DB_DIR],
                       ["%%QUEX_VERSION%%",                 QuexVersionID],
-                      ["%%TOKEN_CLASS%%",                  setup.input_token_class_name],
+                      ["%%TOKEN_CLASS%%",                  setup.token_class_name],
                       ["%%TOKEN_CLASS_DEFINITION_FILE%%",  token_class_definition_file_name],
                       ["%%TOKEN_ID_DEFINITION_FILE%%",     setup.output_token_id_file.replace("//","/")],
                       ["%%QUEX_OUTPUT_FILESTEM%%",         setup.output_file_stem],
@@ -148,7 +148,7 @@ def do(Modes, setup):
     mode_class_member_functions_txt = \
          blue_print(mode_class_member_functions_txt,
                 [["$$LEXER_CLASS_NAME$$",         LexerClassName],
-                             ["%%TOKEN_CLASS%%",              setup.input_token_class_name],
+                 ["%%TOKEN_CLASS%%",              setup.token_class_name],
                  ["%%LEXER_DERIVED_CLASS_NAME%%", setup.input_derived_class_name]])
     
     fh_out.write(mode_class_member_functions_txt)

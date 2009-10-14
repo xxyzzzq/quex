@@ -51,75 +51,75 @@ SETUP_INFO = {
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_name_space":                       "quex",
     #______________________________________________________________________________________________________
-    "begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
-    "end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
-    "flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
-    "input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
-    "input_token_id_db":              [["-t", "--token-id-db"],     LIST],                    # DEPRECATED
-    "leave_temporary_files_f":        [["--leave-tmp-files"],       FLAG],                    # DEPRECATED
-    "plain_memory_f":                 [["--plain-memory"],          FLAG],                    # DEPRECATED
-    "std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECATED
-    "yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECATED
-    "input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
-    "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
-    "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
-    "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
-    "input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
-    "input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
+    "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
+    "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
+    "XX_flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
+    "XX_input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
+    "XX_input_token_id_db":              [["-t", "--token-id-db"],     LIST],                    # DEPRECATED
+    "XX_leave_temporary_files_f":        [["--leave-tmp-files"],       FLAG],                    # DEPRECATED
+    "XX_plain_memory_f":                 [["--plain-memory"],          FLAG],                    # DEPRECATED
+    "XX_std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECATED
+    "XX_yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECATED
+    "XX_input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
+    "XX_string_accumulator_f":        [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
+    "XX_disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
+    "XX_disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
+    "XX_input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
+    "XX_input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
 }
 
 DEPRECATED = { 
-  "input_pattern_file": 
+  "XX_input_pattern_file": 
      ("Write a 'pattern { ... }' section inside the mode files instead.\n" + \
       "Syntax of the 'pattern { ... }' section and the previous file syntax\n" + \
       "are backward compatible.", "0.9.x"),        
-  "input_token_id_db":
+  "XX_input_token_id_db":
      ("Write a 'token { ... }' section inside the mode files instead.\n" + \
       "Syntax of the 'token { ... }' section and the previous file syntax\n" + \
       "are backward compatible.", "0.9.x"),        
-  "yywrap_is_ok_f":
+  "XX_yywrap_is_ok_f":
      ("Since the mentioned version, the flex core engine is no longer supported. The\n" + \
       "flag makes only sense for flex core engines.", "0.13.1"),
-  "flex_engine_f":
+  "XX_flex_engine_f":
      ("Since the mentioned version, the flex core engine is no longer supported. The\n" + \
       "flag makes only sense for flex core engines.", "0.13.1"),
-  "leave_temporary_files_f":
+  "XX_leave_temporary_files_f":
      ("Since the mentioned version, the flex core engine is no longer supported. The\n" + \
       "flag makes only sense for flex core engines.", "0.13.1"),
-  "plain_memory_f":                 
+  "XX_plain_memory_f":                 
      ("Since the mentioned version, quex does no longer need the '--plain-memory' command\n" + \
       "line argument. The engine can be used with plain memory directly. Please, consider\n" + \
       "reading the documentation on this issue.", "0.31.1"),
-  "std_istream_support_f":
+  "XX_std_istream_support_f":
      ("The lexical analyzer has a flexible interface now, for both C++ istreams and FILE*\n" + \
       "so that rigid setting with this option is superfluous", "0.13.1"),
-  "begin_of_stream_code":
+  "XX_begin_of_stream_code":
      ("Since the mentioned version, there is no need for end of stream and end of stream\n" + \
       "characters anymore. Options '--end-of-stream' and '--begin-of-stream' are no longer\n" + \
       "supported.", "0.25.2"),
-  "end_of_stream_code":
+  "XX_end_of_stream_code":
      ("Since the mentioned version, there is no need for end of stream and end of stream\n" + \
       "characters anymore. Options '--end-of-stream' and '--begin-of-stream' are no longer\n" + \
       "supported.", "0.25.2"),
-  "input_token_sending_via_queue_f":
+  "XX_input_token_sending_via_queue_f":
      ("The token queue was temporarily turned off by default. Since 0.31.5 the token queue is again\n" + \
       "turned on by default, since the lexical analysers can be described much more natural. If you\n" + \
       "want to disable the token queue, please, use '--no-token-queue', or '--ntq'.", "0.31.5"),
-  "string_accumulator_f":
+  "XX_string_accumulator_f":
      ("The string accumulator was temporarily turned off by default. Since 0.31.5 the it is again\n" + \
       "turned on by default. If you want to disable the token queue, please, use '--no-string-accumulator',\n" + \
       "or '--nsacc'.", "0.31.5"),
-  "disable_token_queue_f":
+  "XX_disable_token_queue_f":
      ("Since version 0.36.5 the flag '--no-token-queue' and '--ntq' have been deprecated.\n" + \
       "Use flag '--token-policy' or '--tp' instead.", "0.36.5"),     
-  "disable_return_token_id_f":      
+  "XX_disable_return_token_id_f":      
      ("Flag --no-return-token-id is no longer supported. In recent versions of quex\n" + \
       "token-IDs are not passed as return values at all.", "0.37.1"), 
-  "input_token_class_name":  
+  "XX_input_token_class_name":  
      ("The specification of the customized token class name via flag '--token-class' has been\n" + \
       "deprecated. The file containing the token class definition needs to define a macro\n" + \
       "QUEX_TYPE_TOKEN_WITH_NAMESPACE specifying  the token class.", "0.38.3"),
-  "input_lexer_class_friends":  
+  "XX_input_lexer_class_friends":  
       ("Since version 0.46.3, friend classes are no longer defined on the command line. Please,\n"
        "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3")
 }
@@ -128,7 +128,7 @@ DEPRECATED = {
 setup = something()
 for key, entry in SETUP_INFO.items():
     if type(entry) != list:        continue
-    if entry[1] == LIST:           default_value = []
+    if   entry[1] == LIST:         default_value = []
     elif entry[1] == FLAG:         default_value = False
     elif entry[1] == NEGATED_FLAG: default_value = True
     else:                          default_value = entry[1]

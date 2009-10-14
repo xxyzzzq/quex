@@ -16,8 +16,8 @@ body {
 }
 
 init {
-    include_depth = 0;
-    directory     = "example/";
+    self.include_depth = 0;
+    self.directory     = "example/";
 }
 
 memento {
