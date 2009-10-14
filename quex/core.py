@@ -87,7 +87,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
     # -- 'end of stream' action
     if not Mode.has_code_fragment_list("on_end_of_stream"):
-        txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
+        txt  = "self.send(%sTERMINATION);\n" % Setup.token_id_prefix 
         txt += "return;\n"
         Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
 

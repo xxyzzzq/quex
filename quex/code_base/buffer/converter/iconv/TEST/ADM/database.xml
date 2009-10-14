@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.12" date="Tue Oct  6 22:49:00 2009">
+<test-database execution-time-sec="0.12" date="Tue Oct 13 22:56:14 2009">
     <last-used-diff-display-program name=""/>
     <group name="Converter">
         <test title="Plain 32 bit" make-required="True" time-sum-sec="0.02"> 

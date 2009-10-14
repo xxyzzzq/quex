@@ -221,7 +221,7 @@ def write_token_class_declaration():
 
 def write_mode_class_implementation(Modes):
     LexerClassName              = Setup.analyzer_class_name
-    TokenClassName              = Setup.input_token_class_name
+    TokenClassName              = Setup.token_class_name
     OutputFilestem              = Setup.output_file_stem
     DerivedClassName            = Setup.analyzer_derived_class_name
     DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
@@ -237,7 +237,6 @@ def write_mode_class_implementation(Modes):
     for mode_name in Modes:
         mode_objects_txt += "        QUEX_TYPE_MODE  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
 
-    txt += "#define QUEX_TYPE_MODE  QuexMode\n" # % LexerClassName
     txt += "namespace quex {\n"
     txt += mode_objects_txt
     txt += mode_class_member_functions_txt

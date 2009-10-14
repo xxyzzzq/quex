@@ -321,8 +321,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TOKEN_NAME(NAME)  NAME
 #endif
 
-#define QUEX_TYPE_ANALYZER_DATA_TAG          QUEX_NAME(Data_tag)
-#define QUEX_TYPE_ANALYZER_DATA              QUEX_NAME(Data)
+#define QUEX_TYPE_ANALYZER_DATA_TAG          QUEX_NAME(AnalyzerData_tag)
+#define QUEX_TYPE_ANALYZER_DATA              QUEX_NAME(AnalyzerData)
 #define QUEX_TYPE_ANALYZER                   QUEX_NAME($$LEXER_CLASS_NAME$$)
 #define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 

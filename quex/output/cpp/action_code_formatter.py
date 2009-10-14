@@ -118,7 +118,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         return txt
 
     if PatternStateMachine == None:
-        return txt + "Counter_count(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "CounterLineColumn_count(&self.counter, Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -126,17 +126,17 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     if   newline_n == -1:
         # run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
-        return txt + "Counter_count(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "CounterLineColumn_count(&self.counter, Lexeme, LexemeEnd);\n"
 
     elif newline_n != 0:
         # TODO: Try to determine number of characters backwards to newline directly
         #       from the pattern state machine. (Those seldom cases won't bring much
         #       speed-up)
-        return txt + "Counter_count_FixNewlineN(&self.counter, Lexeme, LexemeEnd, %i);\n" % newline_n
+        return txt + "CounterLineColumn_count_FixNewlineN(&self.counter, Lexeme, LexemeEnd, %i);\n" % newline_n
 
     else:
         if character_n == -1: incr_str = "LexemeL"
         else:                 incr_str = repr(character_n) 
 
-        return txt + "Counter_count_NoNewline(&self.counter, %s);\n" % incr_str
+        return txt + "CounterLineColumn_count_NoNewline(&self.counter, %s);\n" % incr_str
 
