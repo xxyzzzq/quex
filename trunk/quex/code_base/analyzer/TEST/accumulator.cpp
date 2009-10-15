@@ -1,12 +1,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <quex/code_base/test_environment/default_configuration>
 #define QUEX_TYPE_CHARACTER char
 #define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_STRING_ACCUMULATOR
 #define QUEX_TYPE_ACCUMULATOR    TestAccumulator
 #define QUEX_TYPE_ANALYZER       TestAnalyzer
+#include <quex/code_base/analyzer/configuration/default>
 
 struct QUEX_TYPE_ANALYZER {
     void  send(QUEX_TYPE_TOKEN_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
@@ -21,7 +21,6 @@ struct QUEX_TYPE_ANALYZER {
     } counter;
 };
 
-#include <quex/code_base/test_environment/default_configuration>
 #include <quex/code_base/analyzer/Accumulator.i>
 
 int

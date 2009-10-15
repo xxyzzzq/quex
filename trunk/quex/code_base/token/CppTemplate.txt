@@ -2,23 +2,23 @@
  * (C) 2004-2009 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY
  */
-#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QUEX_TYPE_TOKEN
-#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QUEX_TYPE_TOKEN
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_CLASS$$
+#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_CLASS$$
 
 #include <quex/code_base/definitions>
  
-QUEX_NAMESPACE_TOKEN_OPEN
+$$NAMESPACE_OPEN$$
 
-class QUEX_TYPE_TOKEN {
+class $$TOKEN_CLASS$$ {
 public:
-    QUEX_TYPE_TOKEN();
-    QUEX_TYPE_TOKEN(const QUEX_TYPE_TOKEN& That);
-    void __copy(const QUEX_TYPE_TOKEN& That);
+    $$TOKEN_CLASS$$();
+    $$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That);
+    void __copy(const $$TOKEN_CLASS$$& That);
     /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
      *                BETTER USE __copy(That)                                */
-    QUEX_TYPE_TOKEN operator=(const QUEX_TYPE_TOKEN& That) 
+    $$TOKEN_CLASS$$ operator=(const $$TOKEN_CLASS$$& That) 
     { __copy(That); return *this; }
-    $$VIRTUAL_DESTRUCTOR$$~QUEX_TYPE_TOKEN();
+    $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_CLASS$$();
 
 $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
@@ -55,26 +55,31 @@ $$BODY$$
 };
 
 inline
-QUEX_TYPE_TOKEN::QUEX_TYPE_TOKEN()
+/* NOTE: If you get an error here, then your configuration
+ *       file does not declare QUEX_TYPE_TOKEN as $$TOKEN_CLASS$$. 
+ *       The following weirdly typed constructor shall break in
+ *       this particular case.                                        */
+$$TOKEN_CLASS$$::QUEX_TYPE_TOKEN()
+/*****************************************************/
 {
 $$CONSTRUCTOR$$
 }
 
 inline
-QUEX_TYPE_TOKEN::QUEX_TYPE_TOKEN(const QUEX_TYPE_TOKEN& That)
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
 {
     __copy(That);
 $$CONSTRUCTOR$$
 }
 
 inline
-QUEX_TYPE_TOKEN::~QUEX_TYPE_TOKEN()
+$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
 {
 $$DESTRUCTOR$$
 }
 
 inline void
-QUEX_TYPE_TOKEN::__copy(const QUEX_TYPE_TOKEN& That)
+$$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
 {
 $$COPY$$
     /* If the user even misses to copy the token id, then there's
@@ -90,6 +95,6 @@ $$COPY$$
 #endif
 }
 
-QUEX_NAMESPACE_TOKEN_CLOSE
+$$NAMESPACE_CLOSE$$
 
-#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QUEX_TYPE_TOKEN */
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_CLASS$$ */

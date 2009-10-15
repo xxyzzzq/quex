@@ -19,12 +19,6 @@
 
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
-#   ifdef __QUEX_OPTION_COUNTER
-    QUEX_INLINE void  Counter_shift_end_values_to_start_values(__CounterBase* me);
-#   else
-#      define Counter_shift_end_values_to_start_values(me)  /* empty */
-#   endif
-
     struct QUEX_TYPE_ANALYZER_DATA_TAG;
 
     typedef struct {

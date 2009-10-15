@@ -61,7 +61,7 @@ SETUP_INFO = {
     "XX_std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECATED
     "XX_yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECATED
     "XX_input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
-    "XX_string_accumulator_f":        [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
+    "XX_string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
     "XX_disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
     "XX_disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
     "XX_input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED

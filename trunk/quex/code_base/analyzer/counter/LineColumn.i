@@ -155,5 +155,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 
+#include <quex/code_base/analyzer/counter/Base.i>
+
 #endif /* defined(__QUEX_OPTION_COUNTER)     */
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I */

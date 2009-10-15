@@ -1,7 +1,7 @@
 #define QUEX_TYPE_CHARACTER char
 #define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_POST_CATEGORIZER
-#include <quex/code_base/test_environment/default_configuration>
+#include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/PostCategorizer.i>
 
 using namespace quex;

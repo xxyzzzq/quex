@@ -28,7 +28,7 @@ print(CounterLineColumnIndentation& x, const char* TestString)
 void 
 test(const char* TestString, CounterLineColumnIndentation& x)
 {
-    Counter_shift_end_values_to_start_values(&x.base);
+    CounterBase_shift_end_values_to_start_values(&x.base);
     CounterLineColumnIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                                   (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
@@ -41,7 +41,7 @@ main(int  argc, char** argv)
     CounterLineColumnIndentation   x;
 
     CounterLineColumnIndentation_construct(&x, &y);
-    y.counter = (Counter*)&x;
+    y.counter = (CounterLineColumn*)&x;
     x.base._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {

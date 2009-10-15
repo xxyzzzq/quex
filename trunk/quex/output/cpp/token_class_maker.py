@@ -47,6 +47,9 @@ def _do(Descr):
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
+                      ["$$TOKEN_CLASS$$",      Descr.class_name],
+                      ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
+                      ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
                      ])
     return txt
 
