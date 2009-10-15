@@ -49,7 +49,7 @@ SETUP_INFO = {
     "help":                           [["--help", "-h"],                     FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
-    "analyzer_name_space":                       "quex",
+    "analyzer_name_space":                       None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
     "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED

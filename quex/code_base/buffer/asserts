@@ -13,7 +13,7 @@
 #    include <quex/code_base/definitions>
 #    include <quex/code_base/buffer/Buffer>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     /* NOTE: In some cases, we cannot make the assumption that the end of the content text
      *       is terminated by the buffer limit code. Skippers set the content of this cell
@@ -96,7 +96,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer->_memory._front + 1, End);
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif
 

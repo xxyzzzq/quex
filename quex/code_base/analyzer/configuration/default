@@ -54,16 +54,16 @@
 #define QUEX_NAMESPACE_MAIN_REF              quex::
 #define QUEX_NAMESPACE_MAIN_OPEN             namespace quex {
 #define QUEX_NAMESPACE_MAIN_CLOSE            }
-#define QUEX_NAMESPACE_COMPONENTS_REF        quex:: 
-#define QUEX_NAMESPACE_COMPONENTS_OPEN       namespace quex { // namespace components {
-#define QUEX_NAMESPACE_COMPONENTS_CLOSE      } // }
+#define QUEX_NAMESPACE_MAIN_REF        quex:: 
+#define QUEX_NAMESPACE_MAIN_OPEN       namespace quex { // namespace components {
+#define QUEX_NAMESPACE_MAIN_CLOSE      } // }
 #else
 #define QUEX_NAMESPACE_MAIN_REF              
 #define QUEX_NAMESPACE_MAIN_OPEN             
 #define QUEX_NAMESPACE_MAIN_CLOSE            
-#define QUEX_NAMESPACE_COMPONENTS_REF        
-#define QUEX_NAMESPACE_COMPONENTS_OPEN       
-#define QUEX_NAMESPACE_COMPONENTS_CLOSE      
+#define QUEX_NAMESPACE_MAIN_REF        
+#define QUEX_NAMESPACE_MAIN_OPEN       
+#define QUEX_NAMESPACE_MAIN_CLOSE      
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN

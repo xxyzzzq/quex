@@ -6,7 +6,7 @@ import os
 from   quex.GetPot                 import GetPot
 from   quex.frs_py.file_in         import open_file_or_die, error_msg, error_msg_file_not_found, is_identifier, \
                                           extract_identifiers_with_specific_prefix, \
-                                          delete_comment, verify_word_in_list
+                                          delete_comment, verify_word_in_list, read_namespaced_name
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
 import quex.input.codec_db as codec_db
@@ -69,6 +69,13 @@ def do(argv):
     setup.QUEX_VERSION          = QUEX_VERSION
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
     setup.QUEX_TEMPLATE_DB_DIR  = QUEX_TEMPLATE_DB_DIR
+
+    # (*) Analyzer class name and name space
+    name_list = read_namespaced_name(setup.analyzer_class_name, "Analyzer Engine")[:-1]
+    print "##", name_list
+    setup.analyzer_class_name = name_list[-1]
+    setup.analyzer_name_space = name_list[:-1]
+    if setup.analyzer_name_space == []: setup.analyzer_name_space = ["quex"]
             
     # (*) Output files
     setup.output_file_stem        = __prepare_file_name("")

@@ -16,7 +16,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
     QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
@@ -109,7 +109,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         }
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

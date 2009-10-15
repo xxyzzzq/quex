@@ -10,7 +10,7 @@
 
 #include <quex/code_base/analyzer/configuration/validation>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void 
     QuexConverter_IConv_open(QuexConverter_IConv* me,
@@ -144,7 +144,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         return (QuexConverter*)me;
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 
 #include <quex/code_base/buffer/BufferFiller.i>

@@ -12,7 +12,7 @@
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <stdexcept>
 #endif
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE size_t  __QuexBufferFiller_forward_compute_fallback_region(QuexBuffer*  buffer,
                                                                            const size_t Distance_LexemeStart_to_InputP);
@@ -646,7 +646,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         return LoadedN;
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

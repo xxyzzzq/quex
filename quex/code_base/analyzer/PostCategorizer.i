@@ -6,7 +6,7 @@
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/analyzer/PostCategorizer>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
 
 QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE* 
@@ -235,7 +235,7 @@ QUEX_TYPE_POST_CATEGORIZER::enter(const QUEX_TYPE_CHARACTER*  EntryName,
 { QUEX_FIX(POST_CATEGORIZER, _enter)(this, EntryName, TokenID); }
 #endif 
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/MemoryManager.i>
 

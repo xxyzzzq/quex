@@ -7,7 +7,7 @@
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/buffer/Buffer>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
@@ -253,6 +253,6 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                                                                QUEX_TYPE_CHARACTER* Adr)
     { engine.buffer._input_p = Adr; }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 

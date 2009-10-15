@@ -17,7 +17,7 @@
 
 #include <quex/code_base/temporary_macros_on>
  
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
 struct __QuexBufferFiller_tag;
 
@@ -71,7 +71,7 @@ QUEX_INLINE size_t
 MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                      uint8_t* source_begin_p, uint8_t* source_end_p);
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
  
 #include <quex/code_base/temporary_macros_off>
 

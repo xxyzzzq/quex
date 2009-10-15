@@ -1,4 +1,4 @@
-<test-database execution-time-sec="192.80" date="Wed Oct 14 21:32:39 2009">
+<test-database execution-time-sec="190.27" date="Wed Oct 14 22:27:51 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="2.14"> 
@@ -192,14 +192,14 @@
                <choice name="" result="OK" time_sec="1.79" crc="-33376116"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" make-required="True" time-sum-sec="9.66"> 
+        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" make-required="True" time-sum-sec="7.67"> 
             <application file-name="bug-2095970-ntq.sh" info-request-time="1255378356L"/>
             <choice-list number="5" same_result="False">
                <choice name="Normal" result="OK" time_sec="2.04" crc="-1893520865"/>
                <choice name="NormalNoAsserts" result="OK" time_sec="1.83" crc="-1082393461"/>
                <choice name="NoModeDetection" result="OK" time_sec="2.04" crc="214531898"/>
                <choice name="NoModeDetectionNoAsserts" result="OK" time_sec="1.76" crc="1353294940"/>
-               <choice name="NoModeDetection_ErrorCase" result="FAIL" time_sec="1.99" crc="2101393151"/>
+               <choice name="NoModeDetection_ErrorCase" result="OK" time_sec="0.00" crc="1711466454"/>
             </choice-list>
         </test>
         <test title="1898125 invalid argument for --token-offset can crash 0.21.4" make-required="True" time-sum-sec="0.26"> 
@@ -250,10 +250,10 @@
                <choice name="" result="OK" time_sec="0.19" crc="1086595520"/>
             </choice-list>
         </test>
-        <test title="1895066 0.20.8 #line directive after header contents missing" make-required="True" time-sum-sec="0.12"> 
+        <test title="1895066 0.20.8 #line directive after header contents missing" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1895066.sh" info-request-time="1255378356L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.12" crc="-300999480"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-1769231169"/>
             </choice-list>
         </test>
         <test title="1902175 invalid escape in character set expression crashes 0.21.12" make-required="True" time-sum-sec="0.10"> 
@@ -365,10 +365,10 @@
                <choice name="" result="OK" time_sec="0.18" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.42"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1255378356L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.42" crc="913778437"/>
+               <choice name="" result="OK" time_sec="0.00" crc="1574622791"/>
             </choice-list>
         </test>
         <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" make-required="True" time-sum-sec="0.14"> 
