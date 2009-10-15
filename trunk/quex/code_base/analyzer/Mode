@@ -31,7 +31,7 @@
 #    endif
 #endif
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
     
     typedef struct QUEX_TYPE_MODE_TAG {  
         int                  id;
@@ -65,7 +65,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QuexMode_on_entry_exit_null_function(QUEX_TYPE_ANALYZER_DATA*, const QUEX_TYPE_MODE*) 
     { }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

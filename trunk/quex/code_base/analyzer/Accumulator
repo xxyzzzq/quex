@@ -17,7 +17,7 @@
 
 #include <quex/code_base/definitions>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     /* (*) pure text accumulation and flushing */
     typedef struct {
@@ -50,6 +50,6 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     void
     QUEX_FIX(ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR*, QUEX_TYPE_ANALYZER*);
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR */

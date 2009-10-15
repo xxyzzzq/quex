@@ -9,7 +9,7 @@
 #include <stddef.h>
 #endif
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -30,7 +30,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void  CounterBase_print_this(__CounterBase* me);
 
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   include <quex/code_base/analyzer/counter/LineColumn>

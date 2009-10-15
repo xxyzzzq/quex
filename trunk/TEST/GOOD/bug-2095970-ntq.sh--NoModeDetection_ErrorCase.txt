@@ -1,6 +1,6 @@
 g++ -I./ -I/home/fschaef/prj/quex/trunk -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED -ggdb -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED lexer.cpp Simple.cpp Simple-core-engine.cpp -o lexer 
 terminate called after throwing an instance of 'std::runtime_error'
-  what():  Mode change without immediate return from the lexical analyser.
+  what():  Mode change without immediate return from the lexical analyzer.
 ,------------------------------------------------------------------------------------
 | [START]
 clean

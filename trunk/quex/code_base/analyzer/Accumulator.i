@@ -21,7 +21,7 @@
 #define QuexAccumulator_print_this     QUEX_FIX(ACCUMULATOR, _print_this)
 #define QuexAccumulator_add_character  QUEX_FIX(ACCUMULATOR, _add_character)
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
 QuexAccumulator_construct(QUEX_TYPE_ACCUMULATOR* me, QUEX_TYPE_ANALYZER*    lexer)
@@ -187,7 +187,7 @@ QUEX_MEMFUNC(ACCUMULATOR, clear)()
 { QUEX_FIX(ACCUMULATOR, _clear)(this); }
 #endif
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #undef QuexAccumulator_construct      
 #undef QuexAccumulator_destruct       

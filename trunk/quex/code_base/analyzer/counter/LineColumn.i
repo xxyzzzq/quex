@@ -20,7 +20,7 @@
 #include <quex/code_base/analyzer/counter/LineColumn>
 #include <quex/code_base/analyzer/asserts>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     CounterLineColumn_construct(CounterLineColumn* me, QUEX_TYPE_ANALYZER_DATA* lexer)
@@ -153,7 +153,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         CounterBase_print_this((__CounterBase*)me);
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/analyzer/counter/Base.i>
 

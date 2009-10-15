@@ -10,7 +10,7 @@
 
 
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void BufferFiller_x_show_content(QuexBuffer* buffer); 
     QUEX_INLINE void BufferFiller_show_brief_content(QuexBuffer* buffer);
@@ -158,7 +158,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         fprintf(stdout, "\n");
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/buffer/Buffer.i>
 

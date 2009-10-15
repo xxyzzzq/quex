@@ -12,7 +12,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me, bool ByteOrderReversionF); 
     QUEX_INLINE void  QuexBuffer_init_analyzis(QuexBuffer*  me, bool ByteOrderReversionF);
@@ -626,7 +626,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->_byte_order_reversion_active_f ? "true" : "false");
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

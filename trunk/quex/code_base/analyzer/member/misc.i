@@ -6,7 +6,7 @@
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__       */
 #include <quex/code_base/analyzer/counter/Base>
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void    
 QUEX_MEMFUNC(ANALYZER, move_forward)(const size_t CharacterN)
@@ -85,5 +85,5 @@ QUEX_INLINE void
 QUEX_MEMFUNC(ANALYZER, byte_order_reversion_set)(bool Value)
 { engine.buffer._byte_order_reversion_active_f = Value; }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 

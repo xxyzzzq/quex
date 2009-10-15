@@ -10,7 +10,7 @@
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICU. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
 #endif
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QuexConverter_ICU_open(QuexConverter* alter_ego, 
@@ -161,7 +161,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         return (QuexConverter*)me;
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 
 #include <quex/code_base/buffer/BufferFiller.i>

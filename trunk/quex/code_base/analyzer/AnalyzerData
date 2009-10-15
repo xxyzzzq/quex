@@ -39,7 +39,7 @@
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     /* Forward declaration of the derived memento, which is used by the analyzer. */
@@ -132,6 +132,6 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     } QUEX_TYPE_MEMENTO_BASE;
 #   endif
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA */

@@ -10,7 +10,7 @@
 #   include <quex/code_base/analyzer/counter/LineColumnIndentation.i>
 #endif
 
-QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     CounterBase_init(__CounterBase* me)
@@ -69,7 +69,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #       endif
     }
 
-QUEX_NAMESPACE_COMPONENTS_CLOSE
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I */
 

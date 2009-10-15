@@ -19,6 +19,7 @@ import sys
 import codecs
 from copy    import copy
 from string  import split
+from StringIO import StringIO
 
 import quex.frs_py.similarity  as similarity
 
