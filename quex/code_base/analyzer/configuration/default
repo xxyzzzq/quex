@@ -74,12 +74,20 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #ifndef    QUEX_TYPE_ANALYZER_DATA
-#   define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerEngine
-#   define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerEngine_tag
+#   define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerData
+#   define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerData_tag
 #endif
 #ifndef    QUEX_TYPE_ANALYZER
-#   define QUEX_TYPE_ANALYZER     QuexAnalyzerEngine
-#   define QUEX_TYPE_ANALYZER_TAG QuexAnalyzerEngine_tag
+#   define QUEX_TYPE_ANALYZER     QuexAnalyzerData
+#   define QUEX_TYPE_ANALYZER_TAG QuexAnalyzerData_tag
+#endif
+
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define     QUEX_TYPE_COUNTER             CounterLineColumnIndentation
+#elif  defined(__QUEX_OPTION_COUNTER)
+#   define     QUEX_TYPE_COUNTER             CounterLineColumn
+#else
+#   define     QUEX_TYPE_COUNTER             void*
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT */

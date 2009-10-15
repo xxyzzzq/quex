@@ -28,7 +28,7 @@ print(CounterLineColumnIndentation& x, const char* TestString)
 void 
 test(const char* TestString, CounterLineColumnIndentation& x)
 {
-    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
+    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterLineColumnIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -36,7 +36,7 @@ test(const char* TestString, CounterLineColumnIndentation& x)
 void 
 test_NoNewline(const char* TestString, CounterLineColumnIndentation& x)
 {
-    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
+    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterLineColumnIndentation_icount_NoNewline(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
     print(x, TestString);
 }
@@ -47,7 +47,7 @@ test_NoNewline_NeverStartOnWhitespace(const char* TestString, CounterLineColumnI
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
+    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -58,7 +58,7 @@ test_NoNewline_ContainsOnlySpace(const char* TestString, CounterLineColumnIndent
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
+    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpace(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -69,7 +69,7 @@ main(int  argc, char** argv)
     my_tester                y;
     CounterLineColumnIndentation   x;
     CounterLineColumnIndentation_construct(&x, &y);
-    y.counter = (Counter*)&x;
+    y.counter = (CounterLineColumn*)&x;
     x.base._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {

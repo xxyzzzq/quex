@@ -1,16 +1,14 @@
-#ifndef __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__QToken__
-#define __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__QToken__
-#define QUEX_TYPE_TOKEN_WITH_NAMESPACE                    ::QToken
-#define QUEX_TYPE_TOKEN  QToken
-#define QUEX_TYPE_STR_TOKEN_COMPLETE       ____QToken
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QToken
+#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QToken
 class QToken {
     QToken();
     QToken(const QToken& That);
     void __copy(const QToken& That);
     QToken operator=(const QToken& That) 
     ~QToken();
-QToken::QToken()
+ *       file does not declare QUEX_TYPE_TOKEN as QToken. 
+QToken::QUEX_TYPE_TOKEN()
 QToken::QToken(const QToken& That)
 QToken::~QToken()
 QToken::__copy(const QToken& That)
-#endif /* __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__QToken__ */
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QToken */

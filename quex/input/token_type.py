@@ -222,7 +222,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
                       self.file_name_of_token_type_definition,
                       self.line_n_of_token_type_definition,
                       DontExitF=True)
-            if Setup.string_accumulator_f == False:
+            if Setup.string_accumulator_f == True:
                 error_msg(_warning_msg2, DontExitF=True)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]

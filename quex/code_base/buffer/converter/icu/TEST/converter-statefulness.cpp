@@ -1,5 +1,5 @@
 #include <cstring>
-#include <quex/code_base/test_environment/default_configuration>
+#include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #include <quex/code_base/unicode>
 using namespace std;

@@ -1,9 +1,9 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/test_environment/default_configuration>
-#include<quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include<quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 
 using namespace std;
 

@@ -21,13 +21,13 @@ def do(argv):
     command_line = GetPot(argv)
 
     if command_line.search("--version", "-v"):
-        print "Quex - A Mode Oriented Lexical Analyser"
+        print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Version " + QUEX_VERSION
         print "(C) 2006-2009 Frank-Rene Schaefer"
         sys.exit(0)
 
     if command_line.search("--help", "-h"):
-        print "Quex - A Mode Oriented Lexical Analyser"
+        print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.sourceforge.net."
         print "(C) 2006-2009 Frank-Rene Schaefer"
@@ -42,7 +42,6 @@ def do(argv):
             setup.__dict__[variable_name] = command_line.search(info[0])        
 
         elif info[1] == NEGATED_FLAG:
-
             setup.__dict__[variable_name] = not command_line.search(info[0])        
 
         elif info[1] == LIST:
