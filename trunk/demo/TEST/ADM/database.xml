@@ -1,172 +1,172 @@
-<test-database execution-time-sec="189.50" date="Tue Oct 13 22:55:47 2009">
+<test-database execution-time-sec="201.28" date="Thu Oct 15 23:10:24 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="16.06"> 
-            <application file-name="other-compilers-sun.sh" info-request-time="1255378353L"/>
+        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="20.12"> 
+            <application file-name="other-compilers-sun.sh" info-request-time="1255552481L"/>
             <choice-list number="6" same_result="False">
-               <choice name="000" result="OK" time_sec="2.37" crc="-10986171"/>
-               <choice name="001" result="OK" time_sec="2.33" crc="1333098089"/>
-               <choice name="002" result="OK" time_sec="2.99" crc="-687631361"/>
-               <choice name="003" result="OK" time_sec="3.69" crc="-1656945666"/>
-               <choice name="005" result="OK" time_sec="2.26" crc="1091421377"/>
-               <choice name="006" result="OK" time_sec="2.43" crc="-1768354765"/>
+               <choice name="000" result="OK" time_sec="2.90" crc="-10986171"/>
+               <choice name="001" result="OK" time_sec="2.67" crc="1333098089"/>
+               <choice name="002" result="OK" time_sec="3.80" crc="-687631361"/>
+               <choice name="003" result="OK" time_sec="4.28" crc="-1656945666"/>
+               <choice name="005" result="OK" time_sec="3.53" crc="1091421377"/>
+               <choice name="006" result="OK" time_sec="2.95" crc="-1768354765"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" make-required="True" time-sum-sec="16.38"> 
-            <application file-name="other-compilers-intel.sh" info-request-time="1255378353L"/>
+        <test title="Intel's icpc" make-required="True" time-sum-sec="18.94"> 
+            <application file-name="other-compilers-intel.sh" info-request-time="1255552481L"/>
             <choice-list number="6" same_result="False">
-               <choice name="000" result="OK" time_sec="2.87" crc="489948922"/>
-               <choice name="001" result="OK" time_sec="2.18" crc="-1613846080"/>
-               <choice name="002" result="OK" time_sec="2.60" crc="1894295425"/>
-               <choice name="003" result="OK" time_sec="3.42" crc="-566968410"/>
-               <choice name="005" result="OK" time_sec="2.03" crc="-1393780127"/>
-               <choice name="006" result="OK" time_sec="3.30" crc="443132966"/>
+               <choice name="000" result="OK" time_sec="3.48" crc="489948922"/>
+               <choice name="001" result="OK" time_sec="2.56" crc="-1613846080"/>
+               <choice name="002" result="OK" time_sec="3.20" crc="1894295425"/>
+               <choice name="003" result="OK" time_sec="4.20" crc="-566968410"/>
+               <choice name="005" result="OK" time_sec="2.85" crc="-1393780127"/>
+               <choice name="006" result="OK" time_sec="2.66" crc="443132966"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" make-required="True" time-sum-sec="4.58"> 
-            <application file-name="000.sh" info-request-time="1255378353L"/>
+        <test title="Single Mode Example" make-required="True" time-sum-sec="5.77"> 
+            <application file-name="000.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.18" crc="-424163482"/>
-               <choice name="DEBUG" result="OK" time_sec="2.40" crc="-424163482"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.64" crc="-424163482"/>
+               <choice name="DEBUG" result="OK" time_sec="3.13" crc="-424163482"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="5.00"> 
-            <application file-name="001.sh" info-request-time="1255378353L"/>
+        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="5.55"> 
+            <application file-name="001.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.43" crc="-2092421156"/>
-               <choice name="DEBUG" result="OK" time_sec="2.57" crc="-2092421156"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.62" crc="-2092421156"/>
+               <choice name="DEBUG" result="OK" time_sec="2.94" crc="-2092421156"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="6.01"> 
-            <application file-name="002.sh" info-request-time="1255378353L"/>
+        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="7.34"> 
+            <application file-name="002.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.86" crc="-1787106835"/>
-               <choice name="DEBUG" result="OK" time_sec="3.15" crc="-1787106835"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.21" crc="-1787106835"/>
+               <choice name="DEBUG" result="OK" time_sec="4.13" crc="-1787106835"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="18.92"> 
-            <application file-name="003.sh" info-request-time="1255378353L"/>
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="21.93"> 
+            <application file-name="003.sh" info-request-time="1255552481L"/>
             <choice-list number="5" same_result="True">
-               <choice name="BPC=2" result="OK" time_sec="3.80" crc="1800559765"/>
-               <choice name="BPC=2_NDEBUG" result="OK" time_sec="3.55" crc="1800559765"/>
-               <choice name="BPC=4" result="OK" time_sec="4.00" crc="1800559765"/>
-               <choice name="BPC=4_NDEBUG" result="OK" time_sec="3.61" crc="1800559765"/>
-               <choice name="BPC=wchar_t" result="OK" time_sec="3.96" crc="1800559765"/>
+               <choice name="BPC=2" result="OK" time_sec="4.67" crc="1800559765"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time_sec="4.12" crc="1800559765"/>
+               <choice name="BPC=4" result="OK" time_sec="4.55" crc="1800559765"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time_sec="3.80" crc="1800559765"/>
+               <choice name="BPC=wchar_t" result="OK" time_sec="4.79" crc="1800559765"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="19.55"> 
-            <application file-name="003-icu.sh" info-request-time="1255378353L"/>
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="20.19"> 
+            <application file-name="003-icu.sh" info-request-time="1255552481L"/>
             <choice-list number="5" same_result="True">
-               <choice name="BPC=2" result="OK" time_sec="4.07" crc="-2052519256"/>
-               <choice name="BPC=2_NDEBUG" result="OK" time_sec="3.72" crc="-2052519256"/>
-               <choice name="BPC=4" result="OK" time_sec="3.98" crc="-2052519256"/>
-               <choice name="BPC=4_NDEBUG" result="OK" time_sec="3.90" crc="-2052519256"/>
-               <choice name="BPC=wchar_t" result="OK" time_sec="3.87" crc="-2052519256"/>
+               <choice name="BPC=2" result="OK" time_sec="4.65" crc="-2052519256"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time_sec="3.90" crc="-2052519256"/>
+               <choice name="BPC=4" result="OK" time_sec="4.01" crc="-2052519256"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time_sec="3.80" crc="-2052519256"/>
+               <choice name="BPC=wchar_t" result="OK" time_sec="3.83" crc="-2052519256"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/004">
-        <test title="Benchmarking a C-Lexical Analyser" make-required="True" time-sum-sec="6.28"> 
-            <application file-name="004.sh" info-request-time="1255378353L"/>
+        <test title="Benchmarking a C-Lexical Analyser" make-required="True" time-sum-sec="6.10"> 
+            <application file-name="004.sh" info-request-time="1255552481L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="6.28" crc="1644232074"/>
+               <choice name="" result="OK" time_sec="6.10" crc="1644232074"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" make-required="True" time-sum-sec="9.15"> 
-            <application file-name="005.sh" info-request-time="1255378353L"/>
+        <test title="Including Files" make-required="True" time-sum-sec="8.98"> 
+            <application file-name="005.sh" info-request-time="1255552481L"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="2.37" crc="-1813164220"/>
-               <choice name="1_NDEBUG" result="OK" time_sec="2.23" crc="58412327"/>
-               <choice name="2" result="OK" time_sec="2.38" crc="1613540412"/>
+               <choice name="1" result="OK" time_sec="2.31" crc="-1813164220"/>
+               <choice name="1_NDEBUG" result="OK" time_sec="2.13" crc="58412327"/>
+               <choice name="2" result="OK" time_sec="2.37" crc="1613540412"/>
                <choice name="2_NDEBUG" result="OK" time_sec="2.17" crc="-5224027"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="4.82"> 
-            <application file-name="006.sh" info-request-time="1255378353L"/>
+        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="4.68"> 
+            <application file-name="006.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.31" crc="1767280044"/>
-               <choice name="DEBUG" result="OK" time_sec="2.51" crc="1767280044"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.24" crc="1767280044"/>
+               <choice name="DEBUG" result="OK" time_sec="2.44" crc="1767280044"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" make-required="True" time-sum-sec="5.40"> 
-            <application file-name="007.sh" info-request-time="1255378353L"/>
+        <test title="Miscellaneous Features" make-required="True" time-sum-sec="5.51"> 
+            <application file-name="007.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.55" crc="-884239353"/>
-               <choice name="DEBUG" result="OK" time_sec="2.85" crc="-884239353"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.63" crc="-884239353"/>
+               <choice name="DEBUG" result="OK" time_sec="2.89" crc="-884239353"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="5.54"> 
-            <application file-name="008.sh" info-request-time="1255378353L"/>
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="5.33"> 
+            <application file-name="008.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.62" crc="1304621319"/>
-               <choice name="DEBUG" result="OK" time_sec="2.92" crc="1304621319"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.58" crc="1304621319"/>
+               <choice name="DEBUG" result="OK" time_sec="2.75" crc="1304621319"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="5.65"> 
-            <application file-name="009.sh" info-request-time="1255378353L"/>
+        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="5.63"> 
+            <application file-name="009.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="2.92" crc="13704092"/>
-               <choice name="wlexer" result="OK" time_sec="2.73" crc="13704092"/>
+               <choice name="wlexer" result="OK" time_sec="2.71" crc="13704092"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="16.38"> 
-            <application file-name="010b.sh" info-request-time="1255378353L"/>
+        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="16.00"> 
+            <application file-name="010b.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="copy" result="OK" time_sec="13.32" crc="665696517"/>
-               <choice name="fill" result="OK" time_sec="3.06" crc="665696517"/>
+               <choice name="copy" result="OK" time_sec="12.92" crc="665696517"/>
+               <choice name="fill" result="OK" time_sec="3.08" crc="665696517"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="16.28"> 
-            <application file-name="010.sh" info-request-time="1255378353L"/>
+        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="16.27"> 
+            <application file-name="010.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="copy" result="OK" time_sec="13.12" crc="715182431"/>
-               <choice name="fill" result="OK" time_sec="3.15" crc="715182431"/>
+               <choice name="copy" result="OK" time_sec="13.20" crc="715182431"/>
+               <choice name="fill" result="OK" time_sec="3.06" crc="715182431"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="24.47"> 
-            <application file-name="010c.sh" info-request-time="1255378353L"/>
+        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="23.95"> 
+            <application file-name="010c.sh" info-request-time="1255552481L"/>
             <choice-list number="3" same_result="True">
-               <choice name="copy-conversion" result="OK" time_sec="15.04" crc="-139797804"/>
-               <choice name="copy-conversion-direct" result="OK" time_sec="4.70" crc="-139797804"/>
-               <choice name="fill-conversion-direct" result="OK" time_sec="4.72" crc="-139797804"/>
+               <choice name="copy-conversion" result="OK" time_sec="14.56" crc="-139797804"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="4.69" crc="-139797804"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="4.70" crc="-139797804"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/011">
         <test title="Engine Encoding (Example ISO8859-7)" make-required="True" time-sum-sec="4.51"> 
-            <application file-name="011.sh" info-request-time="1255378353L"/>
+            <application file-name="011.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="iso8859-7" result="OK" time_sec="2.25" crc="-643272444"/>
-               <choice name="utf8" result="OK" time_sec="2.26" crc="-643272444"/>
+               <choice name="iso8859-7" result="OK" time_sec="2.23" crc="-643272444"/>
+               <choice name="utf8" result="OK" time_sec="2.28" crc="-643272444"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" make-required="True" time-sum-sec="4.53"> 
-            <application file-name="011b.sh" info-request-time="1255378353L"/>
+        <test title="Engine Encoding UTF16" make-required="True" time-sum-sec="4.46"> 
+            <application file-name="011b.sh" info-request-time="1255552481L"/>
             <choice-list number="2" same_result="True">
-               <choice name="LE" result="OK" time_sec="2.30" crc="-918925803"/>
-               <choice name="BE" result="OK" time_sec="2.23" crc="-918925803"/>
+               <choice name="LE" result="OK" time_sec="2.26" crc="-918925803"/>
+               <choice name="BE" result="OK" time_sec="2.21" crc="-918925803"/>
             </choice-list>
         </test>
     </group>
