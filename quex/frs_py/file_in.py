@@ -104,31 +104,32 @@ def find_end_of_identifier(Txt, StartIdx, L):
     else:
         return L
 
-def read_namespaced_name(FileHandle_or_String, Meaning):
+def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
     string_f = False
     if type(FileHandle_or_String) in [str, unicode]:
         fh = StringIO(FileHandle_or_String)
         string_f = True
     else:
         fh = FileHandle_or_String
-    # NOTE: Catching of EOF happens in caller: parse(...)
-    if not check(fh, "="):
-        error_msg("Missing '=' for token_type name specification.", fh)
 
-    name_list = []
-    while 1 + 1 == 2:
-        skip_whitespace(fh)
-        name = read_identifier(fh)
+    try:
+        class_name = ""
+        name_list  = []
+        while 1 + 1 == 2:
+            skip_whitespace(fh)
+            name = read_identifier(fh)
 
-        if name == "": error_msg("Missing identifier in %s." % Meaning, fh)
-        name_list.append(name)
+            if name == "": break
+            if class_name == "": class_name = name
+            else:                name_list.append(name)
 
-        if   check(fh, "::"): continue
-        elif check(fh, ";"):  break
-        else:                 error_msg("Missing identifier in %s." % Meaning, fh)
+            if not check(fh, "::"): break
+    except:
+        pass
 
-    assert name_list != []
-    return name_list
+    if class_name == "" and not AllowEmptyF:
+        error_msg("Missing identifier in %s name specification." % Meaning, fh)
+    return class_name, name_list
 
 def get_text_line_n(Txt, Pos):
     line_n = 1

@@ -10,12 +10,12 @@ NEGATED_FLAG = -3
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                              [Default / Type]
-    "analyzer_class_name":            [["-o", "--engine"],                   "lexer"],    
-    "analyzer_derived_class_file":    [["--derived-class-file"],             ""],
-    "analyzer_derived_class_name":    [["--derived-class"],                  ""],
-    "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
-    "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
-    "byte_order":                     [["--endian"],                         "<system>"],
+    "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "quex::lexer"],    
+    "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
+    "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
+    "buffer_limit_code":              [["--buffer-limit"],                     "0x0"],
+    "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"],   "1"],
+    "byte_order":                     [["--endian"],                           "<system>"],
     "dos_carriage_return_newline_f":  [["--no-DOS"],                           NEGATED_FLAG],
     "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], NEGATED_FLAG],
     "engine_character_encoding":      [["--codec"],                            ""],
@@ -23,11 +23,11 @@ SETUP_INFO = {
     "converter_icu_f":                [["--icu"],                              FLAG],
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       NEGATED_FLAG],
-    "input_mode_files":               [["-i", "--mode-files"],               LIST],
-    "token_class_file":               [["--token-class-file"],               "quex/code_base/token/Token"],
-    "token_class_name":               [["--token-class-name"],               "quex::Token"],
-    "token_class_stringless_check_f": [["--token-type-no-stringless-check", "--ttnsc"], NEGATED_FLAG],
-    "token_id_foreign_definition_file":  [["--foreign-token-id-file"],          ""],  
+    "input_mode_files":               [["-i", "--mode-files"],                 LIST],
+    "token_class_file":               [["--token-class-file"],                 "quex/code_base/token/Token"],
+    "token_class_name":               [["--token-class", "--tc"],              "quex::Token"],
+    "token_class_stringless_check_f": [["--token-type-no-stringless-check",    "--ttnsc"], NEGATED_FLAG],
+    "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
     "token_id_counter_offset":        [["--token-offset"],                   "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
     "token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
@@ -50,6 +50,8 @@ SETUP_INFO = {
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_name_space":                       None,
+    "analyzer_derived_class_name_space":         None,
+    "token_class_name_space":                    None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
     "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
@@ -66,6 +68,7 @@ SETUP_INFO = {
     "XX_disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
     "XX_input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
     "XX_input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
+    "XX_token_class_name":               [["--token-class-name"],               ""],             # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -121,7 +124,10 @@ DEPRECATED = {
       "QUEX_TYPE_TOKEN_WITH_NAMESPACE specifying  the token class.", "0.38.3"),
   "XX_input_lexer_class_friends":  
       ("Since version 0.46.3, friend classes are no longer defined on the command line. Please,\n"
-       "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3")
+       "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3"),
+  "XX_token_class_name":
+      ("Command line option '--token-class--name' has been renamed to '--token-class'\n"
+       "for uniformity.", "0.46.3")
 }
  
 

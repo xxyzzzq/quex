@@ -531,49 +531,58 @@ The previous section introduced a convienent feature to specify customized
 token classes.  If this is for some reason not sufficient, a manually written
 token class can be provided. The user's artwork is communicated to quex via the
 command line argument ``--token-class-file`` which names the file where the
-token class definition is done. A hand written token class must comply to the
+token class definition is done. Additionally, the name and namespace of the 
+token class must be specified using the option ``--token-class``. For example::
+
+  > quex ... --token-class MySpace::MySubSpace::MyToken
+
+specifies that the name of the token class is ``MyToken`` which is located in
+the namespace ``MySubSpace`` which is located in the global namespace
+``MySpace``. This sets automatically the following macros in the configuration
+file:
+
+  .. describe:: QUEX_TYPE_TOKEN_WITH_NAMESPACE
+
+     The name of the token class defined in this file together with its
+     namespace.
+  
+     .. code-block:: cpp
+
+        #define QUEX_TYPE_TOKEN_WITH_NAMESPACE   my_space::lexer::MyToken
+
+  .. describe:: QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+
+     The token class without the namespace prefix, e.g.
+
+     .. code-block:: cpp
+
+        #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE   MyToken
+   
+  .. describe:: QUEX_TYPE_STR_TOKEN_COMPLETE
+
+     A C-identifier than reprepresents the token class together with the 
+     namespace prefix, e.g.
+
+     .. code-block:: cpp
+
+        #define QUEX_TYPE_STR_TOKEN_COMPLETE   __my_namespace__lexer__MyToken
+
+     The exact form of the specified identifier is unimportant. What matters is
+     that it is unique. This definition becomes important only when multiple 
+     lexical analyzers are used with multiple token classes. It is still required
+     for a complete token class definition.
+
+
+A hand written token class must comply to the
 following constraints:
 
-
-    * The token class must be specified in namespace quex.
-
-    * The following macros need to be defined outside the class:
+    * The following macro needs to be defined outside the class:
        
       .. describe:: QUEX_TYPE_TOKEN_ID
 
          Defines the C-type to be used to store token-ids. It should at least
          be large enough to carry the largest token id number.
 
-      .. describe:: QUEX_TYPE_TOKEN_WITH_NAMESPACE
-
-         The name of the token class defined in this file together with its
-         namespace.
-      
-         .. code-block:: cpp
-
-            #define QUEX_TYPE_TOKEN_WITH_NAMESPACE   my_space::lexer::MyToken
-
-      .. describe:: QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
-
-         The token class without the namespace prefix, e.g.
-
-         .. code-block:: cpp
-
-            #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE   MyToken
-       
-      .. describe:: QUEX_TYPE_STR_TOKEN_COMPLETE
-
-         A C-identifier than reprepresents the token class together with the 
-         namespace prefix, e.g.
-
-         .. code-block:: cpp
-
-            #define QUEX_TYPE_STR_TOKEN_COMPLETE   __my_namespace__lexer__MyToken
-
-         The exact form of the specified identifier is unimportant. What matters is
-         that it is unique. This definition becomes important only when multiple 
-         lexical analyzers are used with multiple token classes. It is still required
-         for a complete token class definition.
        
       It is essential to use macro functionality rather than a typedef, since
       later general definition files need to verify its definition. A good way
@@ -584,11 +593,6 @@ following constraints:
          #ifndef    QUEX_TYPE_TOKEN_ID 
          #   define QUEX_TYPE_TOKEN_ID              uint32_t
          #endif
-         #ifdef QUEX_TYPE_TOKEN_WITH_NAMESPACE
-         #   error "QUEX_TYPE_TOKEN_WITH_NAMESPACE has been defined before the inclusion of this file."
-         #endif
-         #define QUEX_TYPE_TOKEN_WITH_NAMESPACE                    quex::Token
-         #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
 
       Note, that the header file might be tolerant with respect to external definitions
       of the token id type. However, since it defines the token class, it must assume

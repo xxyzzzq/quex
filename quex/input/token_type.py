@@ -293,9 +293,9 @@ def parse_section(fh, descriptor, already_defined_list):
                         "Subsection '%s' not allowed in token_type section." % word, fh)
 
     if word == "name":
-        name_list = read_namespaced_name(fh, "token type name")
-        descriptor.class_name = name_list[-1]
-        descriptor.name_space = name_list[:-1]
+        verify_next_word(fh, "=")
+        descriptor.class_name, descriptor.name_space = read_namespaced_name(fh, "token_type name")
+        verify_next_word(fh, ";")
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True

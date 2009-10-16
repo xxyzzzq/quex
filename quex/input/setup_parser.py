@@ -29,7 +29,7 @@ def do(argv):
     if command_line.search("--help", "-h"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Please, consult the quex documentation for further help, or"
-        print "visit http://quex.sourceforge.net."
+        print "visit http://quex.org"
         print "(C) 2006-2009 Frank-Rene Schaefer"
         sys.exit(0)
 
@@ -70,12 +70,19 @@ def do(argv):
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
     setup.QUEX_TEMPLATE_DB_DIR  = QUEX_TEMPLATE_DB_DIR
 
-    # (*) Analyzer class name and name space
-    name_list = read_namespaced_name(setup.analyzer_class_name, "Analyzer Engine")[:-1]
-    print "##", name_list
-    setup.analyzer_class_name = name_list[-1]
-    setup.analyzer_name_space = name_list[:-1]
-    if setup.analyzer_name_space == []: setup.analyzer_name_space = ["quex"]
+    # (*) Classes and their namespace
+    setup.analyzer_class_name, setup.analyzer_name_space = \
+         read_namespaced_name(setup.analyzer_class_name, 
+                              "analyzer engine (options -o, --engine)")
+            
+    setup.analyzer_derived_class_name, setup.analyzer_derived_class_name_space = \
+         read_namespaced_name(setup.analyzer_derived_class_name, 
+                              "derived analyzer class (options --derived-class, --dc)",
+                              AllowEmptyF=True)
+
+    setup.token_class_name, setup.token_class_name_space = \
+         read_namespaced_name(setup.token_class_name, 
+                              "token class (options --token-class, --tc)")
             
     # (*) Output files
     setup.output_file_stem        = __prepare_file_name("")
@@ -151,9 +158,10 @@ def validate(setup, command_line, argv):
         for option in command_line_options:
             if command_line.search(option):
                 error_msg("Command line option '%s' is ignored.\n" % option + \
-                          "Last version of Quex supporting this option is version %s. Please, visit\n" % depreciated_since_version + \
-                          "http://quex.sourceforge.net for download---Or use a more advanced approach.\n" + \
-                          comment)
+                          comment + "\n" + \
+                          "Last version of Quex supporting this option is version %s. Please, visit\n" % \
+                          depreciated_since_version + \
+                          "http://quex.org for further information.")
                           
 
     # (*) Check for 'Straying' Options ___________________________________________________
