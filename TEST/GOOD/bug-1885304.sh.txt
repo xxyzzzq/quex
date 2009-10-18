@@ -525,9 +525,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include "Simple"
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
-#endif
-#if 0 /* Following comment is superfluous with current version, delete after everything ok! *//* The generated lexer header undef's the definitions at the end
- * so that multiple analyzer can be used. Here things must be redefined.*/
+
 #endif
 
 #include <quex/code_base/analyzer/Engine>
@@ -560,22 +558,17 @@ Simple_ONE_AND_ONLY_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me)
 #   ifdef     self
 #       undef self
 #   endif
+#   define self (*((QUEX_TYPE_ANALYZER*)me))
+
 #   ifdef     engine
 #       undef engine
 #   endif
-
 #   if defined(__QUEX_OPTION_PLAIN_ANALYZER_OBJECT)
 #      define engine  (me)
 #   else
 #      define engine  (&me->engine)
 #   endif
 
-#   if defined (__QUEX_SETTING_PLAIN_C)
-#      define self (*((QUEX_TYPE_ANALYZER*)me));
-#   else
-       using namespace quex;
-       QUEX_TYPE_ANALYZER& self = *((QUEX_TYPE_ANALYZER*)me);
-#   endif
     /* me = pointer to state of the lexical analyzer */
     quex::QUEX_TYPE_MODE&        ONE_AND_ONLY = QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
     QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
@@ -2623,7 +2616,7 @@ TERMINAL_35:
         self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
-#line 2133 "Simple-core-engine.cpp"
+#line 2122 "Simple-core-engine.cpp"
         
         }
     }
@@ -2671,7 +2664,7 @@ TERMINAL_7:
         self.send(QUEX_TKN_STRUCT);
         CONTINUE;
         
-#line 2181 "Simple-core-engine.cpp"
+#line 2170 "Simple-core-engine.cpp"
         
         }
     }
@@ -2698,7 +2691,7 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2208 "Simple-core-engine.cpp"
+#line 2197 "Simple-core-engine.cpp"
         
         }
     }
@@ -2725,7 +2718,7 @@ TERMINAL_10:
         self.send(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
-#line 2235 "Simple-core-engine.cpp"
+#line 2224 "Simple-core-engine.cpp"
         
         }
     }
@@ -2752,7 +2745,7 @@ TERMINAL_13:
         self.send(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
-#line 2262 "Simple-core-engine.cpp"
+#line 2251 "Simple-core-engine.cpp"
         
         }
     }
@@ -2779,7 +2772,7 @@ TERMINAL_16:
         self.send(QUEX_TKN_SEND);
         CONTINUE;
         
-#line 2289 "Simple-core-engine.cpp"
+#line 2278 "Simple-core-engine.cpp"
         
         }
     }
@@ -2806,7 +2799,7 @@ TERMINAL_19:
         self.send(QUEX_TKN_EXPECT);
         CONTINUE;
         
-#line 2316 "Simple-core-engine.cpp"
+#line 2305 "Simple-core-engine.cpp"
         
         }
     }
@@ -2832,7 +2825,7 @@ TERMINAL_22_DIRECT:
         self.send(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
-#line 2342 "Simple-core-engine.cpp"
+#line 2331 "Simple-core-engine.cpp"
         
         }
     }
@@ -2858,7 +2851,7 @@ TERMINAL_25_DIRECT:
         self.send(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
-#line 2368 "Simple-core-engine.cpp"
+#line 2357 "Simple-core-engine.cpp"
         
         }
     }
@@ -2884,7 +2877,7 @@ TERMINAL_28_DIRECT:
         self.send(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
-#line 2394 "Simple-core-engine.cpp"
+#line 2383 "Simple-core-engine.cpp"
         
         }
     }
@@ -2905,7 +2898,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self.send(QUEX_TKN_TERMINATION);
         
-#line 2415 "Simple-core-engine.cpp"
+#line 2404 "Simple-core-engine.cpp"
         
         }
                 }
@@ -3032,7 +3025,8 @@ __REENTRY_PREPARATION:
 }
 #include <quex/code_base/temporary_macros_off>
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
+} /* Closing Namespace 'quex' */
+
 #endif
 #include"Simple"
 namespace quex {

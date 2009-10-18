@@ -328,8 +328,14 @@ def __get_integer(MemberName):
 
 def __prepare_file_name(Suffix, FileStemIncludedF=False):
     global setup
-    if FileStemIncludedF: FileName = Suffix
-    else:                 FileName = setup.analyzer_class_name + Suffix
+    if FileStemIncludedF: 
+        FileName = Suffix
+    else:          
+        prefix = ""
+        for name in setup.analyzer_name_space:
+            prefix += name + "_"
+        FileName = prefix + setup.analyzer_class_name + Suffix
+
     if setup.output_directory == "": return FileName
     else:                            return os.path.normpath(setup.output_directory + "/" + FileName)
 

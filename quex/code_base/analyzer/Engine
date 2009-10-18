@@ -19,11 +19,9 @@
 QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_TYPE_MODE_TAG;
 
-    /* The following presents a minimal structure for a lexical analyzer to work with the 
-     * constructed engine. Actually, it should only be useful for unit tests. Else, it has
-     * more a documentary character telling: This is the heart of the matter--anything else
-     * is just decoration! Any 'real' lexical analyzer should be derived from this class. */
     typedef struct QuexAnalyzerEngine_tag {
+        /* Analyzer Engine: This class provides the minimum information for the analyzis
+         *                  process.                                                      */
         QuexBuffer                   buffer;
 
         /* Each mode has a dedicated analyzer function.  The function pointer
@@ -37,7 +35,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* When a mode change happens and the user does not 'return' but 'CONTINUE'
          * an error must be logged, since the following characters are still swallowed
          * by the current function and not the new one. For this one needs to return and
-         * then continue further. */
+         * then continue further.                                                         */
         QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyzer_function_at_entry;
 #       endif
 
@@ -52,14 +50,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                  const char*                  CharacterEncodingName, 
                                  const size_t                 TranslationBufferMemorySize,
                                  bool                         ByteOrderReversionF);
-
-    QUEX_INLINE void
-    QuexAnalyzerEngine_construct_for_direct_memory_access(QuexAnalyzerEngine*          me,
-                                                          QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                                                          QUEX_TYPE_CHARACTER*         Memory,
-                                                          const size_t                 MemorySize,
-                                                          const char*                  CharacterEncodingName, 
-                                                          const size_t                 TranslationBufferMemorySize);
 
     QUEX_INLINE void 
     QuexAnalyzerEngine_destruct(QuexAnalyzerEngine* me);

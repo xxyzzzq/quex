@@ -293,18 +293,22 @@ def parse_section(fh, descriptor, already_defined_list):
                         "Subsection '%s' not allowed in token_type section." % word, fh)
 
     if word == "name":
-        verify_next_word(fh, "=")
-        descriptor.class_name, descriptor.name_space = read_namespaced_name(fh, "token_type name")
-        verify_next_word(fh, ";")
+        if not check(fh, "="):
+            error_msg("Missing '=' in token_type 'name' specification.", fh)
+        descriptor.class_name, descriptor.name_space = read_namespaced_name(fh, "token_type")
+        if not check(fh, ";"):
+            error_msg("Missing terminating ';' in token_type 'name' specification.", fh)
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True
         verify_next_word(fh, ";")
 
     elif word == "file_name":
-        verify_next_word(fh, "=")
+        if not check(fh, "="):
+            error_msg("Missing '=' in token_type 'file_name' specification.", fh)
         descriptor.set_file_name(read_until_letter(fh, ";"))
-        verify_next_word(fh, ";")
+        if not check(fh, ";"):
+            error_msg("Missing terminating ';' in token_type 'file_name' specification.", fh)
 
     elif not check(fh, "{"):
         fh.seek(position)

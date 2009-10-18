@@ -30,10 +30,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                    const size_t BackwardDistance);
     QUEX_INLINE void    __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
 
-    QUEX_INLINE void
-    __BufferFiller_invert_byte_order(QUEX_TYPE_CHARACTER*  BufferMemoryBegin, 
-                                     QUEX_TYPE_CHARACTER*  BufferMemoryEnd);
-
     QUEX_INLINE size_t       
     __BufferFiller_read_characters(QuexBuffer*, QUEX_TYPE_CHARACTER*, const size_t);
 
