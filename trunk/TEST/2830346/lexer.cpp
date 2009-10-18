@@ -1,8 +1,8 @@
 #include<cstdio> 
 
-#include "max"
-#include "moritz"
-#include "boeck"
+#include "max_Lexer"
+#include "moritz_Lexer"
+#include "boeck_Lexer"
 
 using namespace std;
 
@@ -24,9 +24,9 @@ int
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    quex::max     max_lex("example.txt");
-    quex::moritz  moritz_lex("example.txt");
-    quex::boeck   boeck_lex("example.txt");
+    max::Lexer    max_lex("example.txt");
+    moritz::Lexer moritz_lex("example.txt");
+    boeck::Lexer  boeck_lex("example.txt");
 
     test("Max",    max_lex,    MAX_TKN_TERMINATION);
     test("Moritz", moritz_lex, MORITZ_TKN_TERMINATION);

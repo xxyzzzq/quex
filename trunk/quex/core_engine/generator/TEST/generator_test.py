@@ -12,9 +12,9 @@ from quex.lexer_mode             import PatternShorthand
 #
 from   quex.core_engine.generator.languages.core import db
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
-import quex.core_engine.generator.core          as generator
-import quex.core_engine.generator.state_coder.skipper_core     as skipper
-import quex.core_engine.regular_expression.core as regex
+import quex.core_engine.generator.core                     as generator
+import quex.core_engine.generator.state_coder.skipper_core as skipper
+import quex.core_engine.regular_expression.core            as regex
 
 SHOW_TRANSITIONS_STR  = "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
 SHOW_BUFFER_LOADS_STR = "" # "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
@@ -68,6 +68,31 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     compile_and_run(Language, source_code, AssertsActionvation_str)
 
+def run_this(Str):
+    try:
+        fh_out = open("tmp.out", "w")
+        fh_err = open("tmp.err", "w")
+        call_list = Str.split()
+        subprocess.call(call_list, stdout=fh_out, stderr=fh_err)
+        fh_out.close()
+        fh_err.close()
+        fh_out = open("tmp.out", "r")
+        fh_err = open("tmp.err", "r")
+        txt = fh_err.read() + fh_out.read()
+        # In the current version we forgive unused static functions
+        postponed_list = []
+        for line in txt.split("\n"):
+            if line.find("defined but not used") != -1:
+                postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
+            else:
+                print line
+        for line in postponed_list:
+            print line
+        os.remove("tmp.out")
+        os.remove("tmp.err")
+    except:
+        print "<<execution failed>>"
+
 def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     print "## (*) compiling generated engine code and test"    
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
@@ -91,28 +116,19 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
 
     # NOTE: QUEX_OPTION_ASSERTS is defined by AssertsActionvation_str (or not)
     compile_str = compiler + " %s %s " % (AssertsActionvation_str, filename_tmp) + \
-                  "-I./. -I$QUEX_PATH " + \
+                  "-I./. -I%s " % os.environ["QUEX_PATH"] + \
                   "-o %s.exe " % filename_tmp + \
                   "-ggdb " + \
                   SHOW_TRANSITIONS_STR + " " + \
                   SHOW_BUFFER_LOADS_STR
 
     print compile_str + "##" # DEBUG
-    os.system(compile_str)
+    run_this(compile_str)
     sys.stdout.flush()
 
     print "## (*) running the test"
-    try:
-        fh_out = open(filename_tmp + ".out", "w")
-        subprocess.call("./%s.exe" % filename_tmp, stdout=fh_out)
-        fh_out.close()
-        fh_out = open(filename_tmp + ".out", "r")
-        print fh_out.read()
-        os.remove("%s.exe" % filename_tmp)
-        os.remove("%s.out" % filename_tmp)
-    except:
-        print "<<compilation failed>>"
-    print "## (4) cleaning up"
+    run_this("./%s.exe" % filename_tmp)
+    os.remove("%s.exe" % filename_tmp)
     #os.remove(filename_tmp)
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
@@ -183,7 +199,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         AnalyserStateClassName = sm_name,
                         StandAloneAnalyserF    = True)
 
-    return txt
+    return generator.delete_unused_labels(txt)
 
 def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode, 
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
@@ -192,6 +208,10 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
     txt += "typedef void QUEX_TYPE_MODE;\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
+    txt += "#define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerEngine\n"
+    txt += "#define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerEngine_tag\n"
+    txt += "#define QUEX_TYPE_ANALYZER          QuexAnalyzerEngine\n"
+    txt += "#define QUEX_TYPE_ANALYZER_TAG      QuexAnalyzerEngine_tag\n"
     txt += "#include <quex/code_base/analyzer/configuration/default>\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
@@ -322,6 +342,10 @@ typedef void QUEX_TYPE_MODE;
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 $$TEST_CASE$$
+#define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerEngine
+#define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerEngine_tag
+#define QUEX_TYPE_ANALYZER          QuexAnalyzerEngine
+#define QUEX_TYPE_ANALYZER_TAG      QuexAnalyzerEngine_tag
 #include <quex/code_base/analyzer/configuration/default>
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
@@ -336,7 +360,9 @@ $$TEST_CASE$$
 bool analyzis_terminated_f = false;
 
 static void  Mr_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
-static void  Mrs_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+/* Do not declare Mrs as 'static' otherwise there might be complaints if it
+ * is never defined.                                                          */
+void  Mrs_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
 """
 
 test_program_db = { 
@@ -347,9 +373,8 @@ test_program_db = {
     int main(int argc, char** argv)
     {
         QuexAnalyzerEngine   lexer_state;
-        int            success_f = 0;
-        char           TestString[] = "\\0$$TEST_STRING$$\\0";
-        const size_t   MemorySize   = strlen(TestString+1) + 2;
+        QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
+        const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
         QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, (void*)0x0,
                                TestString, MemorySize, 0x0, 0, false);
@@ -360,6 +385,7 @@ test_program_db = {
         for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
             lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
+        return 0;
     }\n""",
 
     "ANSI-C": """
@@ -370,12 +396,9 @@ test_program_db = {
     int main(int argc, char** argv)
     {
         QuexAnalyzerEngine lexer_state;
-        int          success_f = 0;
         /**/
         const char*             test_string = "$$TEST_STRING$$";
         FILE*                   fh          = tmpfile();
-        QuexBufferFiller_Plain  buffer_filler;
-        const size_t            MemorySize  = $$BUFFER_SIZE$$;
 
         /* Write test string into temporary file */
         fwrite(test_string, strlen(test_string), 1, fh);
@@ -391,6 +414,7 @@ test_program_db = {
         printf("  ''\\n");
 
         fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
+        return 0;
     }\n""",
 
     "Cpp": """
@@ -405,7 +429,6 @@ test_program_db = {
         using namespace quex;
 
         QuexAnalyzerEngine lexer_state;
-        int          success_f = 0;
         /**/
         istringstream  istr("$$TEST_STRING$$");
 
@@ -417,6 +440,7 @@ test_program_db = {
         for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
             lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
+        return 0;
     }\n""",
 
     "Cpp_StrangeStream": """
@@ -431,7 +455,6 @@ test_program_db = {
         using namespace quex;
 
         QuexAnalyzerEngine lexer_state;
-        int          success_f = 0;
         /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
@@ -444,6 +467,7 @@ test_program_db = {
         for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
             lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
+        return 0;
     }\n""",
 }
 

@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     } __CounterBase;
 
     QUEX_INLINE void  CounterBase_init(__CounterBase* me);
-    QUEX_INLINE void  CounterBase_shift_end_values_to_start_values(__CounterBase* me) ;
+    QUEX_INLINE void  CounterBase_shift_end_values_to_start_values(__CounterBase* me);
     QUEX_INLINE void  CounterBase_count_newline_n_backwards(__CounterBase*       me, 
                                                             QUEX_TYPE_CHARACTER* it,
                                                             QUEX_TYPE_CHARACTER* Begin);

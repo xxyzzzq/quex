@@ -112,24 +112,35 @@ def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
     else:
         fh = FileHandle_or_String
 
+    # Parsing the namespace definition
     try:
-        class_name = ""
-        name_list  = []
+        name_list  = [""]   # Signalize Empty by <<name_list[-1] == "">>
         while 1 + 1 == 2:
             skip_whitespace(fh)
             name = read_identifier(fh)
-
             if name == "": break
-            if class_name == "": class_name = name
-            else:                name_list.append(name)
 
+            name_list[-1] = name
             if not check(fh, "::"): break
+            name_list.append("")
     except:
         pass
 
-    if class_name == "" and not AllowEmptyF:
-        error_msg("Missing identifier in %s name specification." % Meaning, fh)
-    return class_name, name_list
+    # Error Check
+    if name_list[-1] == "": # Empty, or last name missing?
+        if AllowEmptyF: 
+            return "", []
+        else:
+            if string_f: fh = -1
+            error_msg("Missing identifier in %s name specification." % Meaning, fh)
+
+    if string_f: 
+        trailing_chars = fh.read()
+        if trailing_chars != "":
+            error_msg("Trailing characters '%s' in '%s'\nfor %s name specification." % \
+                      (trailing_chars, FileHandle_or_String, Meaning))
+
+    return name_list[-1], name_list[:-1]
 
 def get_text_line_n(Txt, Pos):
     line_n = 1

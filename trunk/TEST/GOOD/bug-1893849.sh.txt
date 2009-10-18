@@ -1,2 +1,2 @@
-command line: Engine name must be a valid identifier ('-o', '--engine').
-command line: Received: 'Engin-e'
+command line: Trailing characters '-e' in 'Engin-e'
+command line: for analyzer engine (options -o, --engine) name specification.

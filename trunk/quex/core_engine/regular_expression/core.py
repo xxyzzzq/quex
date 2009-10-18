@@ -28,7 +28,7 @@
 #
 #########################################################################################       
 import sys
-import StringIO
+from StringIO import StringIO
 
 from quex.frs_py.file_in  import *
 
@@ -193,7 +193,7 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
                   "Found subsequent character '%s'." % tmp, 
                   stream)
 
-    if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)
+    if type(UTF8_String_or_Stream) == str: stream = StringIO(UTF8_String_or_Stream)
     else:                                  stream = UTF8_String_or_Stream    
 
     if PatternDict == None: PatternDict = {}

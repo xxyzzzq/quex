@@ -72,22 +72,17 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QU
 #   ifdef     self
 #       undef self
 #   endif
+#   define self (*((QUEX_TYPE_ANALYZER*)me))
+
 #   ifdef     engine
 #       undef engine
 #   endif
-
 #   if defined(__QUEX_OPTION_PLAIN_ANALYZER_OBJECT)
 #      define engine  (me)
 #   else
 #      define engine  (&me->engine)
 #   endif
 
-#   if defined (__QUEX_SETTING_PLAIN_C)
-#      define self (*((QUEX_TYPE_ANALYZER*)me));
-#   else
-       using namespace quex;
-       QUEX_TYPE_ANALYZER& self = *((QUEX_TYPE_ANALYZER*)me);
-#   endif
 """
 
 comment_on_post_context_position_init_str = """
@@ -462,25 +457,21 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     return txt
     
 def __frame_of_all(Code, Setup):
-    class_name = Setup.output_file_stem
-    if Setup.analyzer_derived_class_name != "":
-        class_name = Setup.analyzer_derived_class_name
+    LanguageDB = Setup.language_db
+    namespace_open  = LanguageDB["$namespace-open"](Setup.analyzer_name_space)
+    namespace_close = LanguageDB["$namespace-close"](Setup.analyzer_name_space)
+    # namespace_ref   = LanguageDB["$namespace-ref"](Setup.analyzer_name_space)
+    # if len(namespace_ref) > 2 and namespace_ref[:2] == "::":  namespace_ref = namespace_ref[2:]
+    # if len(namespace_ref) > 2 and namespace_ref[-2:] == "::": namespace_ref = namespace_ref[:-2]
+    # "using namespace " + namespace_ref + ";\n"       + \
 
     return "#include \"%s\"\n" % Setup.output_file_stem     + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
-           "namespace quex {\n"                             + \
+           namespace_open + "\n"                            + \
            "#endif\n"                                       + \
-           "#if 0 /* Following comment is superfluous with current version, delete after everything ok! */" + \
-           "/* The generated lexer header undef's the definitions at the end\n"                        + \
-           " * so that multiple analyzer can be used. Here things must be redefined.*/\n"              + \
-           "#define QUEX_TYPE_ANALYZER                    %s\n"         % class_name                   + \
-           "#define QUEX_TYPE_MODE                        %sQuexMode\n" % class_name                   + \
-           "#define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (%i)\n"       % Setup.token_id_uninitialized + \
-           "#define __QUEX_SETTING_TOKEN_ID_TERMINATION   (%i)\n"       % Setup.token_id_termination   + \
-           "#endif\n" + \
            Code                                             + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
-           "} // namespace quex\n"                          + \
+           namespace_close + "\n"                           + \
            "#endif\n" 
 
 def __get_if_in_character_set(ValueList):
