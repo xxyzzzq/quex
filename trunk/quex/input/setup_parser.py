@@ -85,11 +85,12 @@ def do(argv):
                               "token class (options --token-class, --tc)")
             
     # (*) Output files
-    setup.output_file_stem        = __prepare_file_name("")
-    setup.output_token_id_file    = __prepare_file_name("-token_ids")
-    setup.output_header_file      = __prepare_file_name("-internal.h")
-    setup.output_code_file        = __prepare_file_name(".cpp")
-    setup.output_core_engine_file = __prepare_file_name("-core-engine.cpp")
+    setup.output_file_stem          = __prepare_file_name("")
+    setup.output_configuration_file = __prepare_file_name("-configuration")
+    setup.output_token_id_file      = __prepare_file_name("-token_ids")
+    setup.output_header_file        = __prepare_file_name("-internal.h")
+    setup.output_code_file          = __prepare_file_name(".cpp")
+    setup.output_core_engine_file   = __prepare_file_name("-core-engine.cpp")
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 
@@ -332,8 +333,9 @@ def __prepare_file_name(Suffix, FileStemIncludedF=False):
         FileName = Suffix
     else:          
         prefix = ""
-        for name in setup.analyzer_name_space:
-            prefix += name + "_"
+        if setup.analyzer_name_space != ["quex"]:
+            for name in setup.analyzer_name_space:
+                prefix += name + "_"
         FileName = prefix + setup.analyzer_class_name + Suffix
 
     if setup.output_directory == "": return FileName
