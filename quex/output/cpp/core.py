@@ -23,7 +23,7 @@ def do(Modes, IndentationSupportF):
     write_mode_class_implementation(Modes)
 
 def write_configuration_header(Modes, IndentationSupportF):
-    OutputConfigurationFile   = Setup.output_file_stem + "-configuration"
+    OutputConfigurationFile   = Setup.output_configuration_file
     LexerClassName            = Setup.analyzer_class_name
     ConfigurationTemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
@@ -130,6 +130,7 @@ def write_engine_header(Modes):
                                    + "/analyzer/CppTemplate.txt").replace("//","/")
     CoreEngineDefinitionsHeader = (Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
+    LexerFileStem               = Setup.output_file_stem
     LexerClassName              = Setup.analyzer_class_name
     VersionID                   = Setup.user_application_version_id
     QuexVersionID               = Setup.QUEX_VERSION
@@ -181,8 +182,9 @@ def write_engine_header(Modes):
                                                          LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
-                ["$$LEXER_BUILD_VERSION$$",          VersionID],
+                ["$$USER_LEXER_VERSION$$",           VersionID],
                 ["$$LEXER_CLASS_NAME$$",             LexerClassName],
+                ["$$LEXER_CONFIG_FILE$$",            Setup.output_configuration_file],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",     derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",     Setup.analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",     mode_id_definition_str],

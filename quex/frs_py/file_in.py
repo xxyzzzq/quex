@@ -534,6 +534,7 @@ def make_safe_identifier(String, NoCodeF=True):
     txt = ""
     for letter in String:
         if letter.isalpha() or letter.isdigit() or letter == "_": txt += letter.upper()
+        elif letter == "::":                                      txt += "__"
         elif NoCodeF:                                             txt += "_" 
         else:                                                     txt += "_x%x_" % ord(letter)
     return txt

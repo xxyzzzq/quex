@@ -7,7 +7,12 @@ ENGINE = \
 		moritz_Lexer-core-engine.cpp \
 
 story: boeck_Lexer.cpp max_Lexer.cpp moritz_Lexer.cpp
-	g++ -ggdb lexer.cpp $(ENGINE) -o  story \
+	g++ -ggdb lexer.cpp $(ENGINE) -o  $@ \
+		-I$(QUEX_PATH) \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+
+story.E:
+	g++ -E lexer.cpp $(ENGINE) -o  $@ \
 		-I$(QUEX_PATH) \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
@@ -27,3 +32,4 @@ clean:
 	rm -rf $(ENGINE:.cpp=-token_ids)
 	rm -rf $(ENGINE:.cpp=-configuration)
 	rm -rf story
+	rm -rf story.E

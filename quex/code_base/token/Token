@@ -1,19 +1,18 @@
 /* -*- C++ -*-    vim: set syntax=cpp:
  * (C) 2004-2009 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY
  ************************************************************************************/
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN
 #define __QUEX_INCLUDE_GUARD__TOKEN__TOKEN
 
+
+#include <iostream>
+#include <string>
+
 #include <quex/code_base/definitions>
-
-#include<iostream>
-#include<string>
-
-/* Do not include <quex/code_base/definitions> at this point, since it defines the
- * token id type, if it is not defined. */
-#include<quex/code_base/asserts>
-#include<quex/code_base/unicode>
-#include<quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/asserts>
+#include <quex/code_base/unicode>
+#include <quex/code_base/compatibility/inttypes.h>
 
 QUEX_NAMESPACE_TOKEN_OPEN
 
