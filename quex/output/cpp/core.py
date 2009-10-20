@@ -110,6 +110,8 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_TYPE$$",                 token_class_name],
              ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_class_name],
              ["$$NAMESPACE_TOKEN$$",            token_namespace_str],
+             ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB["$namespace-open"](Setup.analyzer_name_space)],
+             ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB["$namespace-close"](Setup.analyzer_name_space)],
              ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_namespace)],
              ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_namespace)],
              ["$$TOKEN_LINE_N_TYPE$$",          token_line_n_type],
@@ -171,6 +173,7 @@ def write_engine_header(Modes):
 
     token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
 
+    print "##", Setup.analyzer_class_name, Setup.analyzer_name_space
     txt = template_code_txt
     txt = blue_print(txt,
             [
@@ -182,14 +185,14 @@ def write_engine_header(Modes):
                                                          LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
-                ["$$USER_LEXER_VERSION$$",           VersionID],
-                ["$$LEXER_CLASS_NAME$$",             LexerClassName],
-                ["$$LEXER_CONFIG_FILE$$",            Setup.output_configuration_file],
-                ["$$LEXER_DERIVED_CLASS_DECL$$",     derived_class_type_declaration],
-                ["$$LEXER_DERIVED_CLASS_NAME$$",     Setup.analyzer_derived_class_name],
-                ["$$QUEX_MODE_ID_DEFINITIONS$$",     mode_id_definition_str],
-                ["$$MODE_CLASS_FRIENDS$$",           friend_txt],
-                ["$$MODE_OBJECTS$$",                 mode_object_members_txt],
+                ["$$USER_LEXER_VERSION$$",               VersionID],
+                ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
+                ["$$LEXER_CONFIG_FILE$$",                Setup.output_configuration_file],
+                ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
+                ["$$LEXER_DERIVED_CLASS_NAME$$",         Setup.analyzer_derived_class_name],
+                ["$$QUEX_MODE_ID_DEFINITIONS$$",         mode_id_definition_str],
+                ["$$MODE_CLASS_FRIENDS$$",               friend_txt],
+                ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$MEMENTO_EXTENSIONS$$",               lexer_mode.memento_class_extension.get_code()],
                 ["$$MEMENTO_EXTENSIONS_PACK$$",          lexer_mode.memento_pack_extension.get_code()],
