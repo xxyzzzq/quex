@@ -216,3 +216,12 @@
 #ifdef    __QUEX_OPTION_WCHAR_T
 #   undef __QUEX_OPTION_WCHAR_T
 #endif
+#ifdef    QUEX_SETTING_VERSION 
+#   undef QUEX_SETTING_VERSION           /* see analyzer/CppTemplate.txt */
+#endif
+#ifdef    QUEX_SETTING_BUILD_DATE 
+#   undef QUEX_SETTING_BUILD_DATE        /* see analyzer/CppTemplate.txt */
+#endif
+#ifdef    QUEX_SETTING_ANALYZER_VERSION
+#   undef QUEX_SETTING_ANALYZER_VERSION  /* see analyzer/CppTemplate.txt */
+#endif

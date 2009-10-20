@@ -73,16 +73,23 @@ def do(argv):
     # (*) Classes and their namespace
     setup.analyzer_class_name, setup.analyzer_name_space = \
          read_namespaced_name(setup.analyzer_class_name, 
-                              "analyzer engine (options -o, --engine)")
+                              "analyzer engine (options -o, --engine, --analyzer-class)")
+    if setup.analyzer_name_space == []:
+        setup.analyzer_name_space = ["quex"]
+
             
+    # Token classes and derived classes have the freedom not to open a namespace,
+    # thus no check 'if namespace == []'.
+    setup.token_class_name, setup.token_class_name_space = \
+         read_namespaced_name(setup.token_class_name, 
+                              "token class (options --token-class, --tc)")
+
     setup.analyzer_derived_class_name, setup.analyzer_derived_class_name_space = \
          read_namespaced_name(setup.analyzer_derived_class_name, 
                               "derived analyzer class (options --derived-class, --dc)",
                               AllowEmptyF=True)
+        
 
-    setup.token_class_name, setup.token_class_name_space = \
-         read_namespaced_name(setup.token_class_name, 
-                              "token class (options --token-class, --tc)")
             
     # (*) Output files
     setup.output_file_stem          = __prepare_file_name("")
@@ -177,8 +184,6 @@ def validate(setup, command_line, argv):
     if ufos != []:
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   __get_supported_command_line_option_description(options))
-
-    setup.analyzer_name_space = ["quex"]
 
     if setup.analyzer_derived_class_name != "" and \
        setup.analyzer_derived_class_file == "":
