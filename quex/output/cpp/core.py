@@ -95,7 +95,7 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
              ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_descr.class_name],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
-             ["$$NAMESPACE_MAIN$$",             LanguageDB["$namespace-ref"](Setup.analyzer_name_space)],
+             ["$$NAMESPACE_MAIN$$",             LanguageDB["$namespace-ref"](Setup.analyzer_name_space)[:-2]],
              ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB["$namespace-open"](Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB["$namespace-close"](Setup.analyzer_name_space)],
              ["$$NAMESPACE_TOKEN$$",            LanguageDB["$namespace-ref"](token_descr.name_space)],
