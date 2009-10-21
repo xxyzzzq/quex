@@ -98,6 +98,7 @@ def do(argv):
     setup.output_header_file        = __prepare_file_name("-internal.h")
     setup.output_code_file          = __prepare_file_name(".cpp")
     setup.output_core_engine_file   = __prepare_file_name("-core-engine.cpp")
+    setup.output_token_class_file   = __prepare_file_name("-token.cpp")
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 

@@ -314,13 +314,15 @@ code section:
 
 .. describe:: body
 
-   This allows to add constructors, member functions, friend declarations, etc. being added
-   the token class. The content of this section is pasted as-is into the
+   This allows to add constructors, member functions, friend declarations, internal type definitions
+   etc. being added the token class. The content of this section is pasted as-is into the
    class body. Example:
 
    .. code-block:: cpp
 
       body {
+          typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
+
           void    register();
           void    de_register();
       private:
@@ -332,6 +334,39 @@ code section:
           safe manner the formal language to describe this would add significant
           complexity. Instead, defining the constructors in the ``body`` section
           is very ease and intuitive.
+
+In order to paste code fragments before and after the definition of the token class,
+the following two sections may be used.
+
+.. describe:: header
+
+    In this section header files may be mentioned or ``typedef``s may be made
+    which are required for the token class definition. For example, the definition of 
+    token class members of type ``std::complex`` and ``std::string`` requires the following
+    header section.
+
+    .. code-block:: cpp
+
+       header {
+          #include <string>
+          #include <complex>
+       }
+
+.. describe:: footer
+
+    This section contains code to be pasted after the token class definition. This
+    is useful for the definition of closely related functions which require the 
+    complete type definition. The code fragment below shows the example of an
+    output operator for the token type.
+
+    .. code-block:: cpp
+
+       footer {
+            inline std::ostream&
+            operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)
+            { ostr << std::string(Tok); return ostr; }
+       }
+
 
 The token class is written into a file that can be specified via
 

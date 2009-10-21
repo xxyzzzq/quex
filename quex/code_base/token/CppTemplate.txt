@@ -6,6 +6,8 @@
 #define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_CLASS$$
 
 #include <quex/code_base/definitions>
+
+$$HEADER$$
  
 $$NAMESPACE_OPEN$$
 

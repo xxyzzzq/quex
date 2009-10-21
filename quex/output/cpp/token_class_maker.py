@@ -10,11 +10,11 @@ from   quex.input.setup_parser                import __prepare_file_name
 LanguageDB = Setup.language_db
 
 def do():
-    if type(lexer_mode.token_type_definition) == dict: return
+    assert lexer_mode.token_type_definition != None
 
     txt       = _do(lexer_mode.token_type_definition)
 
-    file_name = lexer_mode.get_token_class_file_name(Setup)
+    file_name = lexer_mode.token_type_definition.get_file_name()
     file_name = __prepare_file_name(file_name, FileStemIncludedF=True)
     write_safely_and_close(file_name, txt) 
 
@@ -37,6 +37,8 @@ def _do(Descr):
     else:
         copy_str = Descr.copy.get_code()
 
+    print "##", Descr.header.get_code()
+
     txt = blue_print(template_str,
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
@@ -45,12 +47,15 @@ def _do(Descr):
                       ["$$COPY$$",             copy_str],
                       ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
+                      ["$$HEADER$$",           Descr.header.get_code()],
+                      ["$$FOOTER$$",           Descr.footer.get_code()],
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
                       ["$$TOKEN_CLASS$$",      Descr.class_name],
                       ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
                       ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
                      ])
+
     return txt
 
 def get_distinct_members(Descr):

@@ -35,7 +35,7 @@ def parse(fh, CodeFragmentName,
         fh.seek(-2,1)
         return None
     else:
-        error_msg("missing code fragment after %s definition." % CodeFragmentName, fh)
+        error_msg("Missing code fragment after %s definition." % CodeFragmentName, fh)
 
 def __parse_normal(fh, code_fragment_name):
     line_n = get_current_line_info_number(fh) + 1
