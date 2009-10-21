@@ -21,7 +21,7 @@ token_type {
    inheritable;
 
    copy {
-        id     = That.id;
+        _id    = That._id;
         text   = That.text;
         number = That.number;
    }

@@ -62,3 +62,4 @@ clean:
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.bak
+	rm -f *.E

@@ -118,6 +118,16 @@ followed by ``}``.
            column_number : unsigned;
        }
 
+   The standard members are implemented in the actual token class with a
+   preceeding underscore.  That means, ``id`` becomes ``_id``, ``line_number``
+   becomes ``_line_number`` and ``column_number`` becomes ``_column_number``.
+   Depending on the setting of the macros::
+
+        QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        QUEX_OPTION_LINE_NUMBER_COUNTING
+
+   The members are are enabled or disabled.
+
 .. data:: distinct
 
    .. code-block:: cpp
