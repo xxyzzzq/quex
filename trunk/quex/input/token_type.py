@@ -1,26 +1,32 @@
-from quex.frs_py.file_in                    import *
-from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragment
-from quex.input.code_fragment import __parse_normal as parse_normal_code_fragment
-from quex.input.setup                       import setup as Setup
+from   quex.frs_py.file_in                    import *
+from   quex.core_engine.generator.action_info import UserCodeFragment, CodeFragment
+import quex.input.code_fragment               as code_fragment
+from   quex.input.setup                       import setup as Setup
 
+token_type_code_fragment_db = { 
+        "constructor": True, "destructor": True, 
+        "copy":        True, "body":       True, 
+        "header":      True, "footer":     True,
+        }
 
 class TokenTypeDescriptorCore:
     """Object used during the generation of the TokenTypeDescriptor."""
     def __init__(self, Core=None):
         if Core == None:
-            self._file_name            = ""
-            self.class_name            = "Token"
+            self._file_name            = Setup.output_token_class_file
+            self.class_name            = Setup.token_class_name
             self.open_for_derivation_f = False
-            self.name_space            = ["quex"]
-            self.token_id_type      = CodeFragment("size_t")
-            self.column_number_type = CodeFragment("size_t")
-            self.line_number_type   = CodeFragment("size_t")
-            self.constructor        = CodeFragment("")
-            self.copy               = CodeFragment("")
-            self.destructor         = CodeFragment("")
-            self.body               = CodeFragment("")
+            self.name_space            = Setup.token_class_name_space
+            self.token_id_type         = CodeFragment("size_t")
+            self.column_number_type    = CodeFragment("size_t")
+            self.line_number_type      = CodeFragment("size_t")
+
             self.distinct_db = {}
             self.union_db    = {}
+
+            for name in token_type_code_fragment_db.keys():
+                self.__dict__[name] = CodeFragment("")
+
         else:
             self._file_name            = Core._file_name
             self.class_name            = Core.class_name
@@ -29,12 +35,13 @@ class TokenTypeDescriptorCore:
             self.token_id_type         = Core.token_id_type
             self.column_number_type    = Core.column_number_type
             self.line_number_type      = Core.line_number_type
-            self.constructor           = Core.constructor
-            self.copy                  = Core.copy
-            self.destructor            = Core.destructor
-            self.body                  = Core.body
+
             self.distinct_db           = Core.distinct_db
             self.union_db              = Core.union_db
+
+            for name in token_type_code_fragment_db.keys():
+                self.__dict__[name] = Core.__dict__[name]
+            
 
     def set_file_name(self, FileName):
         self._file_name = FileName
@@ -272,12 +279,11 @@ def parse(fh):
     return result
 
 def parse_section(fh, descriptor, already_defined_list):
+    global token_type_code_fragment_db
     assert type(already_defined_list) == list
 
-    SubsectionList = ["name", "file_name", 
-                      "standard", "distinct", "union", 
-                      "constructor", "destructor", "copy", "body",
-                      "inheritable"]
+    SubsectionList = ["name", "file_name", "standard", "distinct", "union", "inheritable"] \
+                      + token_type_code_fragment_db.keys()
 
     position = fh.tell()
     skip_whitespace(fh)
@@ -310,10 +316,6 @@ def parse_section(fh, descriptor, already_defined_list):
         if not check(fh, ";"):
             error_msg("Missing terminating ';' in token_type 'file_name' specification.", fh)
 
-    elif not check(fh, "{"):
-        fh.seek(position)
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
-
     elif word in ["standard", "distinct", "union"]:
         if   word == "standard": parse_standard_members(fh, descriptor, already_defined_list)
         elif word == "distinct": parse_distinct_members(fh, descriptor, already_defined_list)
@@ -323,23 +325,20 @@ def parse_section(fh, descriptor, already_defined_list):
             fh.seek(position)
             error_msg("Missing closing '}' at end of token_type section '%s'." % word, fh);
 
-    else:
-        # word in ["constructor", "destructor", "copy", "body"]
-        try:
-            code_fragment = parse_normal_code_fragment(fh, word)
-        except:
-            error_msg("End of file reached while parsing token_type section '%s'." % word, fh);
+    elif word in token_type_code_fragment_db.keys():
+        fragment     = code_fragment.parse(fh, word, AllowBriefTokenSenderF=False)        
+        descriptor.__dict__[word] = fragment
 
-        if   word == "constructor": descriptor.constructor = code_fragment
-        elif word == "destructor":  descriptor.destructor  = code_fragment
-        elif word == "copy":        descriptor.copy        = code_fragment
-        elif word == "body":        descriptor.body        = code_fragment
-        else: 
-            assert False, "This section should not be reachable"
+    else: 
+        assert False, "This code section section should not be reachable because 'word'\n" + \
+                      "was checked to fit in one of the 'elif' cases."
 
     return True
             
 def parse_standard_members(fh, descriptor, already_defined_list):
+    if not check(fh, "{"):
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+
     position = fh.tell()
 
     while 1 + 1 == 2:
@@ -365,12 +364,18 @@ def parse_standard_members(fh, descriptor, already_defined_list):
         already_defined_list.append([name, type_code_fragment])
 
 def parse_distinct_members(fh, descriptor, already_defined_list):
+    if not check(fh, "{"):
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+
     result = parse_variable_definition_list(fh, "distinct", already_defined_list)
     if result == {}: 
         error_msg("Missing variable definition in token_type 'distinct' section.", fh)
     descriptor.distinct_db = result
 
 def parse_union_members(fh, descriptor, already_defined_list):
+    if not check(fh, "{"):
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+
     result = parse_variable_definition_list(fh, "union", already_defined_list, 
                                                          GroupF=True)
     if result == {}: 

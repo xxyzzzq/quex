@@ -97,6 +97,9 @@ def do(setup):
            "TERMINATION token id must be defined by setup or user."
     assert lexer_mode.token_id_db.has_key("UNINITIALIZED"), \
            "UNINITIALIZED token id must be defined by setup or user."
+    assert lexer_mode.token_type_definition != None, \
+           "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
+           "handle this."
     # (*) Token ID File ________________________________________________________________
     #
     #     The token id file can either be specified as database of
@@ -154,7 +157,7 @@ def do(setup):
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
-                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(setup)],
+                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.token_type_definition.get_file_name()],
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(setup.output_file_stem)],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],
                           ["$$TOKEN_NAMES$$",                 token_names],

@@ -2,7 +2,7 @@ from copy import copy
 import os
 import sys
 
-from   quex.frs_py.file_in import error_msg, write_safely_and_close
+from   quex.frs_py.file_in import error_msg, write_safely_and_close, open_file_or_die
 
 from   quex.input.setup import setup as Setup
 import quex.lexer_mode                          as lexer_mode
@@ -34,6 +34,13 @@ def do():
     lexer_mode.token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
 
     mode_db = __get_mode_db(Setup)
+
+    if lexer_mode.token_type_definition == None:
+        DefaultTokenDefinitionFile = (Setup.QUEX_TEMPLATE_DB_DIR 
+                                       + "/token/Default.qx").replace("//","/")
+        fh = open_file_or_die(DefaultTokenDefinitionFile)
+        quex_file_parser.parse_section(fh)
+        fh.close()
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -78,7 +85,8 @@ def do():
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
     if type(lexer_mode.token_type_definition) != dict:
-        UserCodeFragment_straighten_open_line_pragmas(lexer_mode.get_token_class_file_name(Setup), "C")
+        assert lexer_mode.token_type_definition != None
+        UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
 
 def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 

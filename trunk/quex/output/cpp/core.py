@@ -17,6 +17,7 @@ LanguageDB = Setup.language_db
 
 
 def do(Modes, IndentationSupportF):
+    assert lexer_mode.token_type_definition != None
 
     write_engine_header(Modes)
     write_configuration_header(Modes, IndentationSupportF)
@@ -77,21 +78,7 @@ def write_configuration_header(Modes, IndentationSupportF):
 
     # -- token class related definitions
     token_descr = lexer_mode.token_type_definition
-    if type(token_descr) == dict:
-        token_class_name          = token_descr["class_name"]
-        token_id_type             = token_descr["token_id_type"]
-        token_line_n_type         = token_descr["line_number_type"]
-        token_column_n_type       = token_descr["column_number_type"]
-        token_namespace           = token_descr["name_space"]
-    else:
-        token_class_name          = token_descr.class_name 
-        token_id_type             = token_descr.token_id_type.get_pure_code()
-        token_line_n_type         = token_descr.line_number_type.get_pure_code()
-        token_column_n_type       = token_descr.column_number_type.get_pure_code()
-        token_namespace           = token_descr.name_space
-
-    token_namespace_str       = LanguageDB["$namespace-ref"](token_namespace) 
-    token_namespace_plain_str = make_safe_identifier(token_namespace_str)
+    token_namespace_plain_str = make_safe_identifier(LanguageDB["$namespace-ref"](token_descr.name_space))
 
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
@@ -102,20 +89,20 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$INITIAL_LEXER_MODE_ID$$",      LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
-             ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
-             ["$$TOKEN_CLASS$$",                token_class_name],
-             ["$$TOKEN_ID_TYPE$$",              token_id_type],
-             ["$$TOKEN_TYPE$$",                 token_class_name],
-             ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_class_name],
-             ["$$NAMESPACE_TOKEN$$",            token_namespace_str],
+             ["$$TOKEN_CLASS$$",                token_descr.class_name],
+             ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
+             ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_descr.class_name],
+             ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
+             ["$$NAMESPACE_MAIN$$",             LanguageDB["$namespace-ref"](Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB["$namespace-open"](Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB["$namespace-close"](Setup.analyzer_name_space)],
-             ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_namespace)],
-             ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_namespace)],
-             ["$$TOKEN_LINE_N_TYPE$$",          token_line_n_type],
-             ["$$TOKEN_COLUMN_N_TYPE$$",        token_column_n_type],
+             ["$$NAMESPACE_TOKEN$$",            LanguageDB["$namespace-ref"](token_descr.name_space)],
+             ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_descr.name_space)],
+             ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_descr.name_space)],
+             ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
+             ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
              ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
 
@@ -171,9 +158,8 @@ def write_engine_header(Modes):
     fh.close()
 
 
-    token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
+    token_class_file_name = lexer_mode.token_type_definition.get_file_name()
 
-    print "##", Setup.analyzer_class_name, Setup.analyzer_name_space
     txt = template_code_txt
     txt = blue_print(txt,
             [

@@ -595,36 +595,12 @@ token_id_db = {}
 
 #-----------------------------------------------------------------------------------------
 # token_type_definition: Object that defines a (user defined) token class.
-#                        By default, it is a dictionary. A customized token class 
-#                        definition replaces the dictionary by a real object. Thus,
-#                        the distinction between customized and automatic can be done
-#                        by checking the type of token_type_definition being a dictionary 
-#                        or not.
+#
+#                        The first token_type section defines the variable as 
+#                        a real 'TokenTypeDescriptor'.
+#
+#                        Default = None is detected by the input parser and triggers
+#                        the parsing of the default token type description. 
 #-----------------------------------------------------------------------------------------
-token_type_definition = {
-    "class_name":         "Token",
-    "token_id_type":      "uint32_t",
-    "line_number_type":   "size_t",
-    "column_number_type": "size_t",
-    "name_space":         ["quex"],
-}
+token_type_definition = None
 
-def get_token_class_file_name(Setup):
-    file_name = Setup.token_class_file
-    if type(token_type_definition) != dict:
-        file_name = token_type_definition.get_file_name()
-        if file_name == "":
-            file_name = Setup.analyzer_class_name + "-token-class"
-
-    return file_name
-
-__lexical_analyzer_class_name     = ""
-__lexical_analyzer_namespace_list = []
-def lexical_analyzer_class_name_set(ClassName, NamespaceSequence):
-    assert type(ClassName) in [str, unicode]
-    assert type(NamespaceSequence) == list
-    global __lexical_analyzer_class_name
-    global __lexical_analyzer_namespace_list
-
-    __lexical_analyzer_class_name     = UserCodeFragment(ClassName, fh.name, get_current_line_info_number(fh))
-    __lexical_analyzer_namespace_list = NamespaceSequence
