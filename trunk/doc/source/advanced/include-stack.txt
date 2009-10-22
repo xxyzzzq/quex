@@ -528,7 +528,7 @@ with a queue token policy requires some precaution to be taken. The
         if( Token.type_id() == QUEX_TKN_INCLUDE ) {
              qlex.receive(&Token);
              if( Token.type_id() != QUEX_TKN_FILE_NAME ) break;
-             qlex.include_push((const char*)Token.text().c_str());
+             qlex.include_push((const char*)Token.get_text().c_str());
         } 
 
     } while( Token.type_id() != QUEX_TKN_TERMINATION );

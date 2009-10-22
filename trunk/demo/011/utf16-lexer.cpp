@@ -28,7 +28,7 @@ main(int argc, char** argv)
         qlex.receive(&token);
 
         printf("%s\t", (char*)token.type_id_name().c_str());
-        for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token.text()).c_str();
+        for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token.get_text()).c_str();
             *iterator; ++iterator) {
             printf("%04X.", *iterator);
         }

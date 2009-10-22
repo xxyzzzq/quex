@@ -16,7 +16,7 @@ void test(const char* Name, T& lexer, QUEX_TYPE_TOKEN_ID TokenID_Termination)
         lexer.receive(&token);
         if( token.type_id() == TKN_OK ) continue;
         printf("%s\t", (char*)token.type_id_name().c_str());
-        printf("%s\n", (char*)(token.text()).c_str());
+        printf("%s\n", (char*)(token.get_text()).c_str());
     } while( token.type_id() != TokenID_Termination );
 }
 

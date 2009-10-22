@@ -38,7 +38,7 @@ main(int argc, char** argv)
 #           if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
             cout << token << endl;
 #           else
-            cout << (const char*)(token.type_id_name().c_str()) << " '" << (const char*)(token.text().c_str()) << "' " << endl;
+            cout << (const char*)(token.type_id_name().c_str()) << " '" << (const char*)(token.get_text().c_str()) << "' " << endl;
 #           endif
         } 
         else { 

@@ -61,38 +61,38 @@ QUEX_NAMESPACE_MAIN_OPEN
             break;
 
         case 2:
-            p[1] = NEXT | (byte3 & 0x3f);
-            p[0] = LEN2 | (byte3 >> 6) | ((byte2 & 0x07) << 2);
+            p[1] = (uint8_t)(NEXT | (byte3 & 0x3f));
+            p[0] = (uint8_t)(LEN2 | (byte3 >> 6) | ((byte2 & (uint8_t)0x07) << 2));
             break;
 
         case 3:
-            p[2] = NEXT | (byte3 & 0x3f);
-            p[1] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
-            p[0] = LEN3 | ((byte2 & 0xf0) >> 4);
+            p[2] = (uint8_t)(NEXT | (byte3 & (uint8_t)0x3f));
+            p[1] = (uint8_t)(NEXT | (byte3 >> 6) | ((byte2 & (uint8_t)0x0f) << 2));
+            p[0] = (uint8_t)(LEN3 | ((byte2 & (uint8_t)0xf0) >> 4));
             break;
 
         case 4:
-            p[3] = NEXT | (byte3 & 0x3f);
-            p[2] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
-            p[1] = NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4);
-            p[0] = LEN4 | ((byte1 & 0x1f) >> 2);
+            p[3] = (uint8_t)(NEXT | (byte3 & (uint8_t)0x3f));
+            p[2] = (uint8_t)(NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2));
+            p[1] = (uint8_t)(NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4));
+            p[0] = (uint8_t)(LEN4 | ((byte1 & 0x1f) >> 2));
             break;
 
         case 5:
-            p[4] = NEXT | (byte3 & 0x3f);
-            p[3] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
-            p[2] = NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4);
-            p[1] = NEXT | (byte1 >> 2);
-            p[0] = LEN5 | (byte0 & 0x03);
+            p[4] = (uint8_t)(NEXT | (byte3 & (uint8_t)0x3f));
+            p[3] = (uint8_t)(NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2));
+            p[2] = (uint8_t)(NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4));
+            p[1] = (uint8_t)(NEXT | (byte1 >> 2));
+            p[0] = (uint8_t)(LEN5 | (byte0 & 0x03));
             break;
 
         case 6:
-            p[5] = NEXT | (byte3 & 0x3f);
-            p[4] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
-            p[3] = NEXT | (byte2 >> 4) | ((byte1 & 0x03) << 4);
-            p[2] = NEXT | (byte1 >> 2);
-            p[1] = NEXT | (byte0 & 0x3f);
-            p[0] = LEN6 | ((byte0 & 0x40) >> 6);
+            p[5] = (uint8_t)(NEXT | (byte3 & (uint8_t)0x3f));
+            p[4] = (uint8_t)(NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2));
+            p[3] = (uint8_t)(NEXT | (byte2 >> 4) | ((byte1 & 0x03) << 4));
+            p[2] = (uint8_t)(NEXT | (byte1 >> 2));
+            p[1] = (uint8_t)(NEXT | (byte0 & (uint8_t)0x3f));
+            p[0] = (uint8_t)(LEN6 | ((byte0 & (uint8_t)0x40) >> 6));
             break;
         }
 

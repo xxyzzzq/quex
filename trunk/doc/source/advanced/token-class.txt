@@ -126,7 +126,8 @@ followed by ``}``.
         QUEX_OPTION_COLUMN_NUMBER_COUNTING
         QUEX_OPTION_LINE_NUMBER_COUNTING
 
-   The members are are enabled or disabled.
+   the members ``_line_number`` and ``_column_number`` are are enabled or 
+   disabled.
 
 .. data:: distinct
 
