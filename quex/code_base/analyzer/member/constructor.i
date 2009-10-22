@@ -102,8 +102,10 @@ QUEX_CONSTRUCTOR(ANALYZER, _FILE)(__QUEX_SETTING_THIS_POINTER
 QUEX_INLINE
 QUEX_DESTRUCTOR(ANALYZER)(__QUEX_SETTING_THIS_POINTER) 
 {
+    __QUEX_STD_fprintf(stderr, "Destruct Analyzer");
     QuexAnalyzerEngine_destruct(&this->engine);
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
+    __QUEX_STD_fprintf(stderr, "Destruct Token Queue");
     QUEX_TYPE_TOKEN_QUEUE_destruct(&_token_queue);
 #   endif
     if( __file_handle_allocated_by_constructor != 0x0 ) {
