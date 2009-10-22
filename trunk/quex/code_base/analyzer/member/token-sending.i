@@ -28,10 +28,14 @@ namespace quex {
     QUEX_INLINE void   
     QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_ID ID) 
     {
+        Unwinder  x(__func__);
+
         // self._token_queue->write_iterator->set(ID);
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
         QUEX_TOKEN_POLICY_SET_1(ID);
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
+
+        Unwinder  y("End2");
     }
 
     QUEX_INLINE void   
