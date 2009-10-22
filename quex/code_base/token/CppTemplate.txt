@@ -97,6 +97,8 @@ $$COPY$$
 #endif
 }
 
+$$FOOTER$$
+
 $$NAMESPACE_CLOSE$$
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_CLASS$$ */

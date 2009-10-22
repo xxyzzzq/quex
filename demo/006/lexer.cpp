@@ -27,7 +27,7 @@ main(int argc, char** argv)
 
         // (*) print out token information
         //     -- name of the token
-        cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
+        cout << Token.type_id_name() << "\t" << Token.get_text().c_str() << endl;
 
         ++number_of_tokens;
 

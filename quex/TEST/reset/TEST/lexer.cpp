@@ -61,7 +61,7 @@ main(int argc, char** argv)
                token.type_id_name().c_str(), token.utf8_text().c_str());
 #       else
         printf("(%2i, %2i)   \t%s '%s' \n", (int)qlex.line_number(), (int)qlex.column_number(),
-               token.type_id_name().c_str(), (const char*)token.text().c_str());
+               token.type_id_name().c_str(), (const char*)token.get_text().c_str());
 #       endif
 
     } while( token.type_id() != QUEX_TKN_TERMINATION );

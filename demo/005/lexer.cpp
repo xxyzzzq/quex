@@ -33,18 +33,18 @@ main(int argc, char** argv)
 
         // (*) print out token information
         //     -- name of the token
-        print(qlex, my_token, (const char*)my_token.text().c_str());
+        print(qlex, my_token, (const char*)my_token.get_text().c_str());
 
         if( my_token.type_id() == QUEX_TKN_INCLUDE ) { 
             qlex.receive(&my_token);
-            print(qlex, my_token, (const char*)my_token.text().c_str());
+            print(qlex, my_token, (const char*)my_token.get_text().c_str());
             if( my_token.type_id() != QUEX_TKN_IDENTIFIER ) {
                 continue_lexing_f = false;
                 print(qlex, "found 'include' without a subsequent filename. hm?\n");
                 break;
             }
-            print(qlex, ">> including: ", (const char*)my_token.text().c_str());
-            qlex.include_push<FILE>((QUEX_TYPE_CHARACTER*)my_token.text().c_str());
+            print(qlex, ">> including: ", (const char*)my_token.get_text().c_str());
+            qlex.include_push<FILE>((QUEX_TYPE_CHARACTER*)my_token.get_text().c_str());
         }
         else if( my_token.type_id() == QUEX_TKN_TERMINATION ) {
             if( qlex.include_pop() == false ) 
@@ -71,7 +71,7 @@ void  print(quex::tiny_lexer& qlex, quex::Token& my_token, bool TextF /* = false
 { 
     cout << space(qlex.include_depth) << my_token.line_number() << ": (" << my_token.column_number() << ")";
     cout << my_token.type_id_name();
-    if( TextF ) cout << "\t'" << my_token.text().c_str() << "'";
+    if( TextF ) cout << "\t'" << my_token.get_text().c_str() << "'";
     cout << endl;
 }
 

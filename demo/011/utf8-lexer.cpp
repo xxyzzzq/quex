@@ -21,7 +21,7 @@ main(int argc, char** argv)
 
         // (*) print out token information
         printf("%s\t", (char*)token.type_id_name().c_str());
-        printf("%s\n", (char*)(token.text()).c_str());
+        printf("%s\n", (char*)(token.get_text()).c_str());
 
         // (*) check against 'termination'
     } while( token.type_id() != TKN_TERMINATION );

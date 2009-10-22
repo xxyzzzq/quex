@@ -117,6 +117,9 @@ __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
     QUEX_ERROR_EXIT(const char* Msg)
     {
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
+        // Create a temporary object, to avoid strange effects on stack unwind
+        const char*  tmp = new char[strlen(Msg) + 1];
+        __QUEX_STD_memcpy((void*)tmp, (void*)Msg, (strlen(Msg) + 1) * sizeof(char));
         throw std::runtime_error(Msg);
 #       else
         __QUEX_STD_fprintf(stderr, Msg);

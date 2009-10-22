@@ -26,7 +26,7 @@ APPLICATION      = lexer
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS
+COMPILER = g++ -std=c++0x -Wconversion -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

@@ -61,7 +61,7 @@ void  print(quex::ISLexer& qlex, quex::Token& Token, bool TextF /* = false */)
 { 
     cout << space(qlex.include_depth) << Token.line_number() << ": (" << Token.column_number() << ")";
     cout << Token.type_id_name();
-    if( TextF ) cout << "\t'" << Token.text().c_str() << "'";
+    if( TextF ) cout << "\t'" << Token.get_text().c_str() << "'";
     cout << endl;
 }
 

@@ -29,7 +29,10 @@ int main(int argc, char** argv)
 #   if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
         cout << Token << endl;
 #   else
-        cout << (const char*)(Token.type_id_name().c_str()) << " '" << (const char*)(Token.text().c_str()) << "' " << endl;
+        cout << (const char*)(Token.type_id_name().c_str());
+        cout << " '";
+        cout << (const char*)(Token.get_text().c_str());
+        cout << "' " << endl;
 #   endif
     }
 }

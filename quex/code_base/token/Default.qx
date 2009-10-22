@@ -24,6 +24,14 @@ token_type {
         _id    = That._id;
         text   = That.text;
         number = That.number;
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+            _line_n = That._line_n;
+    #       endif
+    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            _column_n = That._column_n;
+    #       endif
+    #   endif
    }
 
    body {

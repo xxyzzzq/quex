@@ -37,8 +37,6 @@ def _do(Descr):
     else:
         copy_str = Descr.copy.get_code()
 
-    print "##", Descr.header.get_code()
-
     txt = blue_print(template_str,
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],

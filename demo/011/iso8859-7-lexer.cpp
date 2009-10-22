@@ -23,7 +23,7 @@ main(int argc, char** argv)
 
         // (*) print out token information
         printf("%s\t", (char*)token.type_id_name().c_str());
-        printf("%s\n",   (char*)Quex_iso8859_7_to_utf8_string(token.text()).c_str());
+        printf("%s\n",   (char*)Quex_iso8859_7_to_utf8_string(token.get_text()).c_str());
 #       if 0
         cout << "\t\t plain bytes: ";
         for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
