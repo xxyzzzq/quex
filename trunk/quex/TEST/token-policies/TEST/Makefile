@@ -36,6 +36,10 @@ users_queue.exe:      lexer.cpp  $(QUEX_CORE)
 	quex -i simple.qx -o TPLex --token-policy users_queue
 	$(CC) -I$(QUEX_PATH) -D__QUEX_OPTION_TEST_PSEUDO_ANALYSIS lexer.cpp $(ENGINE) -o $@
 
+debug.exe:      lexer.cpp  $(QUEX_CORE)
+	# quex -i simple.qx -o TPLex --token-policy users_queue
+	$(CC) -I$(QUEX_PATH) -D__QUEX_OPTION_TEST_PSEUDO_ANALYSIS lexer.cpp $(ENGINE) -o $@
+
 queue-real.exe:       lexer.cpp  $(QUEX_CORE)
 	quex -i real.qx -o TPLex --token-policy queue
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
