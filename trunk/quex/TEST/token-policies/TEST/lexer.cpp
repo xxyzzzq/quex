@@ -40,7 +40,6 @@ main(int argc, char** argv)
     if( argc < 2 ) return 0;
 #   endif
 
-    Unwinder   x(__func__);
     TPLex      qlex("real.txt");  /* In case of pseudo_analysis the file does not matter */
 
 #   if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
@@ -96,7 +95,6 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
 void pseudo_analysis(quex::AnalyzerData* me)
 {
-    Unwinder   x(__func__);
     TPLex&     self = *((TPLex*)me);
     static int i = 0;
 
