@@ -40,14 +40,18 @@ main(int argc, char** argv)
     if( argc < 2 ) return 0;
 #   endif
 
-    TPLex      qlex("real.txt");  /* In case of pseudo_analysis the file does not matter */
+    /* Allocating on 'heap' allows for easier memory violation detection via 'efence' */
+    TPLex*     qlex = new TPLex("real.txt");  /* In case of pseudo_analysis the file does not matter */
 
 #   if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
     cout << "Pseudo Analysis: Replace analysis pointer with own function.\n";
-    (&qlex.engine)->current_analyzer_function = pseudo_analysis;
+    cout << "Queue Size: " << QUEX_SETTING_TOKEN_QUEUE_SIZE << endl;
+    (&qlex->engine)->current_analyzer_function = pseudo_analysis;
 #   endif
 
-    while( test_core(qlex, argv[1]) != QUEX_TKN_TERMINATION );
+    while( test_core(*qlex, argv[1]) != QUEX_TKN_TERMINATION );
+
+    delete qlex;
 }
 
 #if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
