@@ -85,11 +85,8 @@ QUEX_TYPE_TOKEN_QUEUE_destruct(QUEX_TYPE_TOKEN_QUEUE* me)
 #   define QUEX_TYPE_TOKEN_QUEUE_available_n(me)  ((me).end - (me).write_iterator)
 
 #   ifdef QUEX_OPTION_ASSERTS
-
-static char tmp[] = "Oschi";
-
 QUEX_INLINE void  
-QUEX_TOKEN_QUEUE_ASSERT(QUEX_TYPE_TOKEN_QUEUE* me)
+QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(QUEX_TYPE_TOKEN_QUEUE* me)
 {
     __quex_assert(me->begin != 0x0);
     __quex_assert(me->read_iterator  >= me->begin);
@@ -97,19 +94,26 @@ QUEX_TOKEN_QUEUE_ASSERT(QUEX_TYPE_TOKEN_QUEUE* me)
     /* If the following breaks, it means that the given queue size was to small */
     __quex_assert(me->end_minus_safety_border >= me->begin + 1);
     if( me->write_iterator > me->end ) { 
-        __QUEX_STD_fprintf(stderr, "Throw now");
-#       if 1
-        QUEX_ERROR_EXIT(tmp);
-#       else
         QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
                         "       as a reaction to one single pattern match. Use quex's command line\n"
                         "       option --token-queue-safety-border, or define the macro\n"
                         "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
-#       endif
+    }
+}
+QUEX_INLINE void  
+QUEX_TOKEN_QUEUE_ASSERT(QUEX_TYPE_TOKEN_QUEUE* me)
+{
+    QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me);
+    if( me->write_iterator == me->end ) { 
+        QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
+                        "       as a reaction to one single pattern match. Use quex's command line\n"
+                        "       option --token-queue-safety-border, or define the macro\n"
+                        "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
     }
 }
 #   else
-#      define QUEX_TOKEN_QUEUE_ASSERT(me) /* empty */
+#      define QUEX_TOKEN_QUEUE_ASSERT(me)             /* empty */
+#      define QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me) /* empty */
 #   endif
 
 typedef struct {
