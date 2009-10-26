@@ -61,7 +61,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * function (which has recently been setup) is called again.                        */
         do {
             engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
-            QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
+            QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         *result_pp = QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue);
@@ -89,7 +89,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Analyze until there is some content in the queue */
         do {
             engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
-            QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
+            QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
         result_p->__copy(*QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue));
@@ -138,7 +138,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         do {
             engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
-            QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
+            QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return _token_queue.write_iterator;

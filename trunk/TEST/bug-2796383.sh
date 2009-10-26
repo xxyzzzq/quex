@@ -9,7 +9,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i $1.qx -o Simple --token-type-no-stringless-check
-cat Simple-token-class | awk '/set\_/ { print; } /get\_/ { print; } /union/ { print; } /content/ { print; }'
+cat Simple-token | awk '/set\_/ { print; } /get\_/ { print; } /union/ { print; } /content/ { print; }'
 
 # cleansening
 rm -f Simple*

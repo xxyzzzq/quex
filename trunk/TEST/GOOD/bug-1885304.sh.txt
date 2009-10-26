@@ -50,7 +50,7 @@ class Token;
 
 /* END: _______________________________________________________________________*/
 #include    "Simple-token_ids"
-#include    "quex/code_base/token/Token"
+#include    "Simple-token"
 
 #include    <quex/code_base/definitions>
 
@@ -3086,7 +3086,7 @@ __quex_assert(Indentation >= 0);
 
 /* The token class definition file can only be included after the two token identifiers have
  * been defined. Otherwise, it would rely on default values. */
-#include "quex/code_base/token/Token"
+#include "Simple-token"
 
 
 

@@ -197,15 +197,12 @@ def write_engine_header(Modes):
 
 def write_token_class_declaration():
     
-    txt = ""
-    if type(lexer_mode.token_type_definition) == dict: 
-        namespace  = lexer_mode.token_type_definition["name_space"]
-        class_name = lexer_mode.token_type_definition["class_name"]
-    else: 
-        namespace  = lexer_mode.token_type_definition.name_space
-        class_name = lexer_mode.token_type_definition.class_name
+    # A valid token_type_definition must have been parsed at this point
+    assert lexer_mode.token_type_definition != None
+    namespace  = lexer_mode.token_type_definition.name_space
+    class_name = lexer_mode.token_type_definition.class_name
 
-    txt += LanguageDB["$namespace-open"](namespace)
+    txt  = LanguageDB["$namespace-open"](namespace)
     txt += "class %s;\n" % class_name
     txt += LanguageDB["$namespace-close"](namespace)
     return txt

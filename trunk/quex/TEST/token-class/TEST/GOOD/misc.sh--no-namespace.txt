@@ -4,7 +4,7 @@ class QToken {
     QToken();
     QToken(const QToken& That);
     void __copy(const QToken& That);
-    QToken operator=(const QToken& That) 
+    QToken& operator=(const QToken& That) 
     ~QToken();
  *       file does not declare QUEX_TYPE_TOKEN as QToken. 
 QToken::QUEX_TYPE_TOKEN()
