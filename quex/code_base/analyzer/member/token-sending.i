@@ -15,12 +15,21 @@
 namespace quex { 
 #endif
 
+#ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   define __QUEX_ASSERT_SEND_ENTRY() \
+           QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue); \
+           QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+#else
+#   define __QUEX_ASSERT_SEND_ENTRY() \
+           QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+#endif
+
 #   define self (*this)
 
     QUEX_INLINE void   
     QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_WITH_NAMESPACE& That) 
     {
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+        __QUEX_ASSERT_SEND_ENTRY();
         QUEX_TOKEN_POLICY_SET(That);
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
     }
@@ -28,8 +37,7 @@ namespace quex {
     QUEX_INLINE void   
     QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_ID ID) 
     {
-        // self._token_queue->write_iterator->set(ID);
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+        __QUEX_ASSERT_SEND_ENTRY();
         QUEX_TOKEN_POLICY_SET_1(ID);
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
     }
@@ -37,15 +45,13 @@ namespace quex {
     QUEX_INLINE void   
     QUEX_MEMFUNC(ANALYZER, send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
     {
-#       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#       ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
         const int AvailableN = QUEX_TYPE_TOKEN_QUEUE_available_n(_token_queue);
         const int N = RepetitionN > AvailableN ? AvailableN : RepetitionN;
         __quex_assert(N > 0);
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-
-        QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
 
         for(int n=0; n < N; n++) {
+            __QUEX_ASSERT_SEND_ENTRY();
             QUEX_TOKEN_POLICY_SET_1(ID);
             QUEX_TOKEN_POLICY_PREPARE_NEXT();
         }
@@ -60,32 +66,32 @@ namespace quex {
 
 #   define self_send(ID) 
 
-#   define self_send1(ID, X0) \
-    do {                                                                                           \
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
-        QUEX_TOKEN_POLICY_SET_2(ID, X0);                                                           \
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+#   define self_send1(ID, X0)                        \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_2(ID, X0);             \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
     } while ( 0 )
 
-#   define self_send2(ID, X0, X1) \
-    do {                                                                                           \
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
-        QUEX_TOKEN_POLICY_SET_3(ID, X0, X1);                                                       \
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+#   define self_send2(ID, X0, X1)                    \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_3(ID, X0, X1);         \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
     } while ( 0 )
 
-#   define self_send3(ID, X0, X1, X2) \
-    do {                                                                                           \
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
-        QUEX_TOKEN_POLICY_SET_4(ID, X0, X1, X2);                                                   \
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+#   define self_send3(ID, X0, X1, X2)                \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_4(ID, X0, X1, X2);     \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
     } while ( 0 )
 
-#   define self_send4(ID, X0, X1, X2, X3) \
-    do {                                                                                           \
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
-        QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3);                                               \
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+#   define self_send4(ID, X0, X1, X2, X3)            \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3); \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
     } while ( 0 )
 
 #   ifndef __QUEX_SETTING_PLAIN_C

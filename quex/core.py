@@ -84,9 +84,9 @@ def do():
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
-    if type(lexer_mode.token_type_definition) != dict:
-        assert lexer_mode.token_type_definition != None
-        UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
+
+    assert lexer_mode.token_type_definition != None
+    UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
 
 def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 

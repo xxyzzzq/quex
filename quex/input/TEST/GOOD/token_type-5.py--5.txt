@@ -4,4 +4,4 @@ IN:
 
 OUT:
 
-string:1:error: Class name missing for token_type name specification.
+string:1:error: Missing identifier in token_type name specification.

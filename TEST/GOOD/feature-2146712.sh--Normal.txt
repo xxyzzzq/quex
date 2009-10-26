@@ -11,5 +11,6 @@
 ./a/b/c/d/lexer-core-engine.cpp
 ./a/b/c/d/lexer-token_ids
 ./a/b/c/d/lexer
+./a/b/c/d/lexer-token
 ./a/b/c/d/lexer.cpp
 ./a/b/c/d/lexer-configuration

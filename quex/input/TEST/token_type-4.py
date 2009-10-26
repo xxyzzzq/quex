@@ -5,6 +5,8 @@ import os
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.input.setup         
 quex.input.setup.setup.token_class_stringless_check_f = False
+quex.input.setup.setup.output_token_class_file = ""
+quex.input.setup.setup.token_class_name_space = ""
 
 
 from quex.input.token_type import *
@@ -26,8 +28,9 @@ def test(Tag, Txt):
     print 
     print "OUT:"
     print 
+    parse_section(sh, descr, [])
     try:
-        parse_section(sh, descr, [])
+        pass
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
     print TokenTypeDescriptor(descr)

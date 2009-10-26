@@ -14,9 +14,13 @@ class TokenTypeDescriptorCore:
     def __init__(self, Core=None):
         if Core == None:
             self._file_name            = Setup.output_token_class_file
+            if Setup.token_class_name.find("::") != -1:
+                Setup.token_class_name, Setup.token_class_name_space = \
+                        read_namespaced_name(Setup.token_class_name, 
+                                "token class (options --token-class, --tc)")
             self.class_name            = Setup.token_class_name
-            self.open_for_derivation_f = False
             self.name_space            = Setup.token_class_name_space
+            self.open_for_derivation_f = False
             self.token_id_type         = CodeFragment("size_t")
             self.column_number_type    = CodeFragment("size_t")
             self.line_number_type      = CodeFragment("size_t")
@@ -30,8 +34,8 @@ class TokenTypeDescriptorCore:
         else:
             self._file_name            = Core._file_name
             self.class_name            = Core.class_name
-            self.open_for_derivation_f = Core.open_for_derivation_f
             self.name_space            = Core.name_space
+            self.open_for_derivation_f = Core.open_for_derivation_f
             self.token_id_type         = Core.token_id_type
             self.column_number_type    = Core.column_number_type
             self.line_number_type      = Core.line_number_type
@@ -279,6 +283,14 @@ def parse(fh):
     return result
 
 def parse_section(fh, descriptor, already_defined_list):
+    pos = fh.tell()
+    try: 
+        return __parse_section(fh, descriptor, already_defined_list)
+    except EndOfStreamException:
+        fh.seek(pos)
+        error_msg("End of file reached while parsing token_type section.", fh)
+
+def __parse_section(fh, descriptor, already_defined_list):
     global token_type_code_fragment_db
     assert type(already_defined_list) == list
 
