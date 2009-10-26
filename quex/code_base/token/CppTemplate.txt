@@ -18,7 +18,7 @@ public:
     void __copy(const $$TOKEN_CLASS$$& That);
     /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
      *                BETTER USE __copy(That)                                */
-    $$TOKEN_CLASS$$ operator=(const $$TOKEN_CLASS$$& That) 
+    $$TOKEN_CLASS$$& operator=(const $$TOKEN_CLASS$$& That) 
     { __copy(That); return *this; }
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_CLASS$$();
 

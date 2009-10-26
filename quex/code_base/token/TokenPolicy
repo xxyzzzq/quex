@@ -38,14 +38,13 @@
 #    define __QUEX_CURRENT_TOKEN_P  (self._token_queue.write_iterator)
 
 #    define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
-            ++(self._token_queue.write_iterator); \
-            QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue);
+            ++(self._token_queue.write_iterator); 
 
 #    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
             self._token_queue.remaining_repetitions_of_last_token_n = N;
 
 #    define QUEX_TOKEN_POLICY_NO_TOKEN() \
-            (QUEX_TYPE_TOKEN_QUEUE_is_empty(_token_queue))
+            (QUEX_TYPE_TOKEN_QUEUE_is_empty(self._token_queue))
 
 #else
 
@@ -107,8 +106,8 @@
  * the token queue is reset.                                                          */
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(TOKEN_ID_TERMINATION) \
-           __quex_assert(   _token_queue.write_iterator == _token_queue.begin \
-                         || (_token_queue.write_iterator-1)->type_id() != TOKEN_ID_TERMINATION)
+           __quex_assert(    self._token_queue.write_iterator == self._token_queue.begin \
+                         || (self._token_queue.write_iterator-1)->type_id() != TOKEN_ID_TERMINATION)
 #else
 #   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(CLASS_NAME) 
            /* empty */
