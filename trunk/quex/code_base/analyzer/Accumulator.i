@@ -168,23 +168,23 @@ QuexAccumulator_print_this(QUEX_TYPE_ACCUMULATOR* me)
 #ifndef __QUEX_SETTING_PLAIN_C
 QUEX_INLINE void  
 QUEX_TYPE_ACCUMULATOR::print_this()
-{ QUEX_FIX(ACCUMULATOR, _print_this)(this); }
+{ QuexAccumulator_print_this(this); }
 
 QUEX_INLINE void
 QUEX_TYPE_ACCUMULATOR::flush(const QUEX_TYPE_TOKEN_ID  TokenID)
-{ QUEX_FIX(ACCUMULATOR, _flush)(this, TokenID); }
+{ QuexAccumulator_flush(this, TokenID); }
 
 QUEX_INLINE void 
 QUEX_TYPE_ACCUMULATOR::add_chararacter(const QUEX_TYPE_CHARACTER  Character)
-{ QUEX_FIX(ACCUMULATOR, _add_character)(this, Character); }
+{ QuexAccumulator_add_character(this, Character); }
 
 QUEX_INLINE void 
 QUEX_TYPE_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
-{ QUEX_FIX(ACCUMULATOR, _add)(this, Begin, End); }
+{ QuexAccumulator_add(this, Begin, End); }
 
 QUEX_INLINE void
 QUEX_MEMFUNC(ACCUMULATOR, clear)()
-{ QUEX_FIX(ACCUMULATOR, _clear)(this); }
+{ QuexAccumulator_clear(this); }
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

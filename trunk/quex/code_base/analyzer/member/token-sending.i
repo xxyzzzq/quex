@@ -11,9 +11,7 @@
 
 #include <quex/code_base/token/TokenPolicy>
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex { 
-#endif
+QUEX_NAMESPACE_MAIN_OPEN
 
 #ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   define __QUEX_ASSERT_SEND_ENTRY() \
@@ -123,7 +121,5 @@ namespace quex {
 
 #undef self
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} /* namespace quex { */
-#endif
+QUEX_NAMESPACE_MAIN_CLOSE
 
