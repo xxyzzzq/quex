@@ -637,7 +637,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, memory, MemorySize);
 
         if( buffer->_byte_order_reversion_active_f ) {
-            __Buffer_reverse_byte_order(memory, memory + LoadedN);
+            QuexBuffer_reverse_byte_order(memory, memory + LoadedN);
         }
         return LoadedN;
     }

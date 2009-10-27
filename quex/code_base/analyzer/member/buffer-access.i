@@ -39,7 +39,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         const size_t CopiedCharN = CopiedByteN / sizeof(QUEX_TYPE_CHARACTER);
 
         if( engine.buffer._byte_order_reversion_active_f ) 
-            __Buffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p + CopiedCharN);
+            QuexBuffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p + CopiedCharN);
 
         /* When lexing directly on the buffer, the end of file pointer is always set. */
         QuexBuffer_end_of_file_set(&engine.buffer, insertion_p + CopiedCharN);
@@ -87,7 +87,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                    &insertion_p,                 QuexBuffer_content_back(&engine.buffer) + 1);
 
         if( engine.buffer._byte_order_reversion_active_f ) 
-            __Buffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p);
+            QuexBuffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p);
 
         /*      -- 'convert' has adapted the insertion_p so that is points to the first 
          *         position after the last filled position.                             */
@@ -125,7 +125,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                    &insertion_p,  QuexBuffer_content_back(&engine.buffer) + 1);
 
         if( engine.buffer._byte_order_reversion_active_f ) 
-            __Buffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p);
+            QuexBuffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p);
 
         /*      -- 'convert' has adapted the insertion_p so that is points to the first 
          *         position after the last filled position.                             */
@@ -173,7 +173,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* We assume that the content from '_end_of_file_p' to '_end_of_file_p + CharacterN'
          * has been filled with data.                                                        */
         if( engine.buffer._byte_order_reversion_active_f ) 
-            __Buffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, 
+            QuexBuffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, 
                                         engine.buffer._memory._end_of_file_p + CharacterN);
 
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(engine.buffer._memory._end_of_file_p, 
@@ -234,7 +234,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                    &insertion_p,                 QuexBuffer_content_back(&engine.buffer) + 1);
 
         if( engine.buffer._byte_order_reversion_active_f ) 
-            __Buffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p);
+            QuexBuffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, insertion_p);
 
         /*      -- 'convert' has adapted the insertion_p so that is points to the first 
          *         position after the last filled position.                             */

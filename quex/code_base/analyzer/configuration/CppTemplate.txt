@@ -321,15 +321,29 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TOKEN_NAME(NAME)  NAME
 #endif
 
-#define QUEX_TYPE_ANALYZER_DATA_TAG          QUEX_NAME(AnalyzerData_tag)
-#define QUEX_TYPE_ANALYZER_DATA              QUEX_NAME(AnalyzerData)
+#define QUEX_TYPE_BUFFER_TAG                 QUEX_NAME(Buffer_tag)
+#define QUEX_TYPE_BUFFER                     QUEX_NAME(Buffer)
+#define QUEX_TYPE_BUFFER_FILLER_TAG          QUEX_NAME(BufferFiller_tag)
+#define QUEX_TYPE_BUFFER_FILLER              QUEX_NAME(BufferFiller)
+#define QUEX_TYPE_BUFFER_MEMORY              QUEX_NAME(BufferMemory)
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   define QUEX_TYPE_CHARACTER_POSITION      QUEX_TYPE_BUFFER_MEMORY::Position
+#else
+#   define QUEX_TYPE_CHARACTER_POSITION      QUEX_TYPE_CHARACTER*
+#endif
+
+#define QUEX_TYPE_ANALYZER_DATA_TAG          QUEX_NAME(Data_tag)
+#define QUEX_TYPE_ANALYZER_DATA              QUEX_NAME(Data)
+#define QUEX_TYPE_ANALYZER_ENGINE_TAG        QUEX_NAME(Engine_tag)
+#define QUEX_TYPE_ANALYZER_ENGINE            QUEX_NAME(Engine)
 #define QUEX_TYPE_ANALYZER                   QUEX_NAME($$LEXER_CLASS_NAME$$)
 #define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 
 /* Definition of the quex mode is left configurable, in case that future
  * implementations require it. 09y09m16d                                  */
-#define QUEX_TYPE_MODE_TAG                   QUEX_NAME(QuexMode_tag)
-#define QUEX_TYPE_MODE                       QUEX_NAME(QuexMode)
+#define QUEX_TYPE_MODE_TAG                   QUEX_NAME(Mode_tag)
+#define QUEX_TYPE_MODE                       QUEX_NAME(Mode)
 
 #define QUEX_TYPE_MEMENTO_BASE               QUEX_NAME(MementoBase)
 #define QUEX_TYPE_MEMENTO_TAG                QUEX_NAME(Memento_tag)

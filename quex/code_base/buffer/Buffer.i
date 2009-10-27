@@ -506,7 +506,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return me->_back - me->_front + 1; }
 
     QUEX_INLINE void
-    __Buffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    QuexBuffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     {
         uint8_t              tmp = 0xFF;
         QUEX_TYPE_CHARACTER* iterator = 0x0;
