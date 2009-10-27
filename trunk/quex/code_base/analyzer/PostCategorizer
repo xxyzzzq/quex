@@ -43,31 +43,31 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_TYPE_POST_CATEGORIZER;
 
     QUEX_INLINE int
-    QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me, 
-                                              QUEX_TYPE_CHARACTER               FirstCharacter, 
-                                              const QUEX_TYPE_CHARACTER*        Remainder);
+    QUEX_NAME(PostCategorizer_compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me, 
+                                       QUEX_TYPE_CHARACTER               FirstCharacter, 
+                                       const QUEX_TYPE_CHARACTER*        Remainder);
 
     QUEX_INLINE void
-    QUEX_FIX(POST_CATEGORIZER, _enter)(QUEX_TYPE_POST_CATEGORIZER*  me, 
-                                       const QUEX_TYPE_CHARACTER*   EntryName, 
-                                       QUEX_TYPE_TOKEN_ID           TokenID);
+    QUEX_NAME(PostCategorizer_enter)(QUEX_TYPE_POST_CATEGORIZER*  me, 
+                                     const QUEX_TYPE_CHARACTER*   EntryName, 
+                                     QUEX_TYPE_TOKEN_ID           TokenID);
 
     QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE*
-    QUEX_FIX(POST_CATEGORIZER, _find)(const QUEX_TYPE_POST_CATEGORIZER* me, 
-                                      const QUEX_TYPE_CHARACTER*        EntryName);
+    QUEX_NAME(PostCategorizer_find)(const QUEX_TYPE_POST_CATEGORIZER* me, 
+                                    const QUEX_TYPE_CHARACTER*        EntryName);
 
     QUEX_INLINE void
-    QUEX_FIX(POST_CATEGORIZER, _insert)(QUEX_TYPE_POST_CATEGORIZER* me, 
-                                        const QUEX_TYPE_CHARACTER*  EntryName, 
-                                        QUEX_TYPE_TOKEN_ID          TokenID);
+    QUEX_NAME(PostCategorizer_insert)(QUEX_TYPE_POST_CATEGORIZER* me, 
+                                      const QUEX_TYPE_CHARACTER*  EntryName, 
+                                      QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE void
-    QUEX_FIX(POST_CATEGORIZER, _remove)(QUEX_TYPE_POST_CATEGORIZER* me, 
-                                        const QUEX_TYPE_CHARACTER*  EntryName);
+    QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER* me, 
+                                      const QUEX_TYPE_CHARACTER*  EntryName);
 
     QUEX_INLINE void
-    QUEX_FIX(POST_CATEGORIZER, _clear)(QUEX_TYPE_POST_CATEGORIZER*       me, 
-                                       QUEX_TYPE_POST_CATEGORIZER_NODE*  branch);
+    QUEX_NAME(PostCategorizer_clear)(QUEX_TYPE_POST_CATEGORIZER*       me, 
+                                     QUEX_TYPE_POST_CATEGORIZER_NODE*  branch);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

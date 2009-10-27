@@ -11,14 +11,14 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyzerEngine_construct(QuexAnalyzerEngine* me,
-                                 QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                                 InputHandleT*                input_handle,
-                                 QUEX_TYPE_CHARACTER*         InputMemory,
-                                 const size_t                 BufferMemorySize,
-                                 const char*                  CharacterEncodingName, 
-                                 const size_t                 TranslationBufferMemorySize,
-                                 bool                         ByteOrderReversionF)
+    QUEX_NAME(Engine_construct)(QUEX_TYPE_ANALYZER_ENGINE* me,
+                                QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                                InputHandleT*                input_handle,
+                                QUEX_TYPE_CHARACTER*         InputMemory,
+                                const size_t                 BufferMemorySize,
+                                const char*                  CharacterEncodingName, 
+                                const size_t                 TranslationBufferMemorySize,
+                                bool                         ByteOrderReversionF)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
@@ -33,9 +33,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
 #       endif
 
-        QuexBuffer_construct(&me->buffer, input_handle, InputMemory, BufferMemorySize,
-                             CharacterEncodingName, TranslationBufferMemorySize,
-                             ByteOrderReversionF);
+        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, InputMemory, BufferMemorySize,
+                                    CharacterEncodingName, TranslationBufferMemorySize,
+                                    ByteOrderReversionF);
 
         me->current_analyzer_function = AnalyserFunction;
 
@@ -46,21 +46,21 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void
-    QuexAnalyzerEngine_destruct(QuexAnalyzerEngine* me)
+    QUEX_NAME(Engine_destruct)(QUEX_TYPE_ANALYZER_ENGINE* me)
     {
-        QuexBuffer_destruct(&me->buffer);
+        QUEX_NAME(Buffer_destruct)(&me->buffer);
     }
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyzerEngine_reset(QuexAnalyzerEngine*                me,
-                       QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                       InputHandleT*                input_handle, 
-                       const char*                  CharacterEncodingName, 
-                       const size_t                 TranslationBufferMemorySize)
+    QUEX_NAME(Engine_reset)(QUEX_TYPE_ANALYZER_ENGINE*                me,
+                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                            InputHandleT*                input_handle, 
+                            const char*                  CharacterEncodingName, 
+                            const size_t                 TranslationBufferMemorySize)
     {
         me->current_analyzer_function = AnalyserFunction;
 
-        QuexBuffer_reset(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+        QUEX_NAME(Buffer_reset)(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 
         /* Double check that everything is setup propperly. */
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
@@ -72,11 +72,11 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     QUEX_INLINE bool 
-    QuexAnalyzerEngine_buffer_reload_backward(QuexBuffer* buffer)
+    QUEX_NAME(Engine_buffer_reload_backward)(QuexBuffer* buffer)
     {
         if( buffer->filler == 0x0 ) return false;
 
-        const size_t LoadedCharacterN = QuexBufferFiller_load_backward(buffer);
+        const size_t LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
         if( LoadedCharacterN == 0 ) return false;
         
         /* Backward lexing happens in two cases:
@@ -92,17 +92,17 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool 
-    QuexAnalyzerEngine_buffer_reload_forward(QuexBuffer* buffer, 
-                                       QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
-                                       QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
-                                       const size_t                  PostContextN)
+    QUEX_NAME(Engine_buffer_reload_forward)(QuexBuffer* buffer, 
+                                            QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                            QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
+                                            const size_t                  PostContextN)
     {
         QUEX_TYPE_CHARACTER_POSITION* iterator = 0x0;
         QUEX_TYPE_CHARACTER_POSITION* End = post_context_start_position + PostContextN;
 
         if( buffer->filler == 0x0 ) return false;
         if( buffer->_memory._end_of_file_p != 0x0 ) return false;
-        const size_t LoadedCharacterN = QuexBufferFiller_load_forward(buffer);
+        const size_t LoadedCharacterN = QUEX_NAME(BufferFiller_load_forward)(buffer);
         if( LoadedCharacterN == 0 ) return false;
 
         if( *last_acceptance_input_position != 0x0 ) { 
