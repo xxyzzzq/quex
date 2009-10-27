@@ -49,7 +49,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_TYPE_MODE_TAG;
 
     typedef struct QUEX_TYPE_ANALYZER_DATA_TAG {
-        QuexAnalyzerEngine   engine;
+        QUEX_TYPE_ANALYZER_ENGINE*      engine;
 
         /*_________________________________________________________________________
          *        __   __   ___  __  
@@ -125,7 +125,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {
-        QuexAnalyzerEngine             engine;
+        QUEX_TYPE_ANALYZER_ENGINE      engine;
         QUEX_TYPE_COUNTER              counter;
         struct QUEX_TYPE_MODE_TAG*     current_mode_p;
         struct QUEX_TYPE_MEMENTO_TAG*  parent;

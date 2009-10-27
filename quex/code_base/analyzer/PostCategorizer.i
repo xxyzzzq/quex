@@ -10,11 +10,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
 QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE* 
-QUEX_FIX(POST_CATEGORIZER_NODE, _new)(QUEX_TYPE_CHARACTER         FirstCharacter,
+QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
                                       const QUEX_TYPE_CHARACTER*  Remainder,
                                       QUEX_TYPE_TOKEN_ID          TokenID)
 {
-    QUEX_TYPE_POST_CATEGORIZER_NODE* me = MemoryManager_PostCategorizerNode_allocate(__QUEX_STD_strlen(Remainder));
+    QUEX_TYPE_POST_CATEGORIZER_NODE* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(__QUEX_STD_strlen(Remainder));
     me->name_first_character = FirstCharacter;
     me->name_remainder       = Remainder;
     me->token_id             = TokenID;
@@ -24,7 +24,7 @@ QUEX_FIX(POST_CATEGORIZER_NODE, _new)(QUEX_TYPE_CHARACTER         FirstCharacter
 }
 
 QUEX_INLINE int
-QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me, 
+QUEX_NAME(PostCategorizer_compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me, 
                                           QUEX_TYPE_CHARACTER               FirstCharacter, 
                                           const QUEX_TYPE_CHARACTER*        Remainder)
 {
@@ -34,13 +34,13 @@ QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me,
 }
 
 QUEX_INLINE void
-QUEX_FIX(POST_CATEGORIZER, _construct)(QUEX_TYPE_POST_CATEGORIZER* me)
+QUEX_NAME(PostCategorizer_construct)(QUEX_TYPE_POST_CATEGORIZER* me)
 {
     me->root = 0x0;
 }
 
 QUEX_INLINE void
-QUEX_FIX(POST_CATEGORIZER, _enter)(QUEX_TYPE_POST_CATEGORIZER* me,
+QUEX_NAME(PostCategorizer_enter)(QUEX_TYPE_POST_CATEGORIZER* me,
                                    const QUEX_TYPE_CHARACTER*  EntryName, 
                                    const QUEX_TYPE_TOKEN_ID    TokenID)
 {
@@ -51,12 +51,12 @@ QUEX_FIX(POST_CATEGORIZER, _enter)(QUEX_TYPE_POST_CATEGORIZER* me,
     int                                 result = 0;
 
     if( me->root == 0x0 ) {
-        me->root = QUEX_FIX(POST_CATEGORIZER_NODE, _new)(FirstCharacter, Remainder, TokenID);
+        me->root = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
         return;
     }
     while( node != 0x0 ) {
         prev_node = node;
-        result    = QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(node, FirstCharacter, Remainder);
+        result    = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
         if     ( result == 1 )  node = node->greater;
         else if( result == -1 ) node = node->lesser;
         else                    return; /* Node with that name already exists */
@@ -65,13 +65,13 @@ QUEX_FIX(POST_CATEGORIZER, _enter)(QUEX_TYPE_POST_CATEGORIZER* me,
     __quex_assert( result != 0 );
 
     if( result == 1 ) 
-        prev_node->greater = QUEX_FIX(POST_CATEGORIZER_NODE, _new)(FirstCharacter, Remainder, TokenID);
+        prev_node->greater = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
     else 
-        prev_node->lesser  = QUEX_FIX(POST_CATEGORIZER_NODE, _new)(FirstCharacter, Remainder, TokenID);
+        prev_node->lesser  = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
 }
 
 QUEX_INLINE void
-QUEX_FIX(POST_CATEGORIZER, _remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
+QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
                                     const QUEX_TYPE_CHARACTER*   EntryName)
 {
     int                               result = 0;
@@ -83,7 +83,7 @@ QUEX_FIX(POST_CATEGORIZER, _remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
 
     __quex_assert( found != 0x0 );
     while( 1 + 1 == 2 ) {
-        result = QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(found, FirstCharacter, Remainder);
+        result = QUEX_NAME(PostCategorizer_compare)(found, FirstCharacter, Remainder);
        
         /* result == 0: found's name == EntryName 
          * On 'break': If found == root then parent = 0x0 which triggers a special treatment. */
@@ -147,19 +147,19 @@ QUEX_FIX(POST_CATEGORIZER, _remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
             parent->greater = found->greater;
         }
     }
-    MemoryManager_PostCategorizerNode_free(found);
+    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(found);
 }
 
 QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE*
-QUEX_FIX(POST_CATEGORIZER, _find)(const QUEX_TYPE_POST_CATEGORIZER*  me, 
-                                  const QUEX_TYPE_CHARACTER*         EntryName)
+QUEX_NAME(PostCategorizer_find)(const QUEX_TYPE_POST_CATEGORIZER*  me, 
+                                const QUEX_TYPE_CHARACTER*         EntryName)
 {
     QUEX_TYPE_CHARACTER               FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*        Remainder      = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
     QUEX_TYPE_POST_CATEGORIZER_NODE*  node           = me->root;
 
     while( node != 0x0 ) {
-        int result = QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(node, FirstCharacter, Remainder);
+        int result = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
 
         if     ( result == 1 )  node = node->greater;
         else if( result == -1 ) node = node->lesser;
@@ -169,32 +169,32 @@ QUEX_FIX(POST_CATEGORIZER, _find)(const QUEX_TYPE_POST_CATEGORIZER*  me,
 }
 
 QUEX_INLINE void
-QUEX_FIX(POST_CATEGORIZER, _clear_recursively)(QUEX_TYPE_POST_CATEGORIZER*       me, 
+QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_TYPE_POST_CATEGORIZER*       me, 
                                                QUEX_TYPE_POST_CATEGORIZER_NODE*  branch)
 {
-    if( branch->lesser  != 0x0 ) QUEX_FIX(POST_CATEGORIZER, _clear_recursively)(me, branch->lesser);
-    if( branch->greater != 0x0 ) QUEX_FIX(POST_CATEGORIZER, _clear_recursively)(me, branch->greater);
-    MemoryManager_PostCategorizerNode_free(branch);
+    if( branch->lesser  != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
+    if( branch->greater != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
+    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(branch);
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN_ID 
-QUEX_FIX(POST_CATEGORIZER, _get_token_id)(const QUEX_TYPE_POST_CATEGORIZER*  me,
+QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_TYPE_POST_CATEGORIZER*  me,
                                           const QUEX_TYPE_CHARACTER*   Lexeme)
 {
-    QUEX_TYPE_POST_CATEGORIZER_NODE* found = QUEX_FIX(POST_CATEGORIZER, _find)(me, Lexeme);
+    QUEX_TYPE_POST_CATEGORIZER_NODE* found = QUEX_NAME(PostCategorizer_find)(me, Lexeme);
     if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
     return found->token_id;
 }
 
 QUEX_INLINE void
-QUEX_FIX(POST_CATEGORIZER, _clear)(QUEX_TYPE_POST_CATEGORIZER* me)
+QUEX_NAME(PostCategorizer_clear)(QUEX_TYPE_POST_CATEGORIZER* me)
 {
-    QUEX_FIX(POST_CATEGORIZER, _clear_recursively)(me, me->root);
+    QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
 }
 
 
 QUEX_INLINE void
-QUEX_FIX(POST_CATEGORIZER, _print_tree)(QUEX_TYPE_POST_CATEGORIZER_NODE* node, int Depth)
+QUEX_NAME(PostCategorizer_print_tree)(QUEX_TYPE_POST_CATEGORIZER_NODE* node, int Depth)
 {
     if( node == 0x0 ) {
         for(int i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
@@ -202,7 +202,7 @@ QUEX_FIX(POST_CATEGORIZER, _print_tree)(QUEX_TYPE_POST_CATEGORIZER_NODE* node, i
         return;
     }
 
-    QUEX_FIX(POST_CATEGORIZER, _print_tree)(node->greater, Depth + 1);
+    QUEX_NAME(PostCategorizer_print_tree)(node->greater, Depth + 1);
 
     for(int i=0; i < Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("/\n");
@@ -213,26 +213,26 @@ QUEX_FIX(POST_CATEGORIZER, _print_tree)(QUEX_TYPE_POST_CATEGORIZER_NODE* node, i
     for(int i=0; i<Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("\\\n");
 
-    QUEX_FIX(POST_CATEGORIZER, _print_tree)(node->lesser, Depth + 1);
+    QUEX_NAME(PostCategorizer_print_tree)(node->lesser, Depth + 1);
 }
 
 #ifndef __QUEX_SETTING_PLAIN_C
 QUEX_INLINE void
 QUEX_TYPE_POST_CATEGORIZER::clear()
-{ QUEX_FIX(POST_CATEGORIZER, _clear)(this); }
+{ QUEX_NAME(PostCategorizer_clear)(this); }
 
 QUEX_INLINE QUEX_TYPE_TOKEN_ID 
 QUEX_TYPE_POST_CATEGORIZER::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
-{ return QUEX_FIX(POST_CATEGORIZER, _get_token_id)(this, Lexeme); }
+{ return QUEX_NAME(PostCategorizer_get_token_id)(this, Lexeme); }
 
 QUEX_INLINE void
 QUEX_TYPE_POST_CATEGORIZER::remove(const QUEX_TYPE_CHARACTER* EntryName)
-{ QUEX_FIX(POST_CATEGORIZER, _remove)(this, EntryName); }
+{ QUEX_NAME(PostCategorizer_remove)(this, EntryName); }
 
 QUEX_INLINE void
 QUEX_TYPE_POST_CATEGORIZER::enter(const QUEX_TYPE_CHARACTER*  EntryName, 
                                   const QUEX_TYPE_TOKEN_ID    TokenID)
-{ QUEX_FIX(POST_CATEGORIZER, _enter)(this, EntryName, TokenID); }
+{ QUEX_NAME(PostCategorizer_enter)(this, EntryName, TokenID); }
 #endif 
 
 QUEX_NAMESPACE_MAIN_CLOSE

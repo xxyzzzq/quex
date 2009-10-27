@@ -34,9 +34,9 @@
 QUEX_NAMESPACE_MAIN_OPEN
     
     typedef struct QUEX_TYPE_MODE_TAG {  
-        int                  id;
-        const char*          name;
-        QuexAnalyzerEngine*  the_lexer;
+        int                          id;
+        const char*                  name;
+        QUEX_TYPE_ANALYZER_ENGINE*   the_lexer;
 
         QUEX_TYPE_ANALYZER_FUNCTION  analyzer_function;
 
@@ -54,15 +54,15 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_TYPE_MODE;
     
     QUEX_INLINE void
-    QuexMode_uncallable_analyzer_function(QUEX_TYPE_ANALYZER_DATA*)
+    QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER_DATA*)
     { __quex_assert(0); return; }
 
     QUEX_INLINE void
-    QuexMode_on_indentation_null_function(QUEX_TYPE_ANALYZER_DATA*, const int) 
+    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER_DATA*, const int) 
     { }
 
     QUEX_INLINE void
-    QuexMode_on_entry_exit_null_function(QUEX_TYPE_ANALYZER_DATA*, const QUEX_TYPE_MODE*) 
+    QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER_DATA*, const QUEX_TYPE_MODE*) 
     { }
 
 QUEX_NAMESPACE_MAIN_CLOSE
