@@ -408,33 +408,15 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(buffer_fill_region_finish)(QUEX_TYPE_ANALYZER*  me,
-                                            const size_t         CharacterN)
+    QUEX_MEMFUNC(buffer_fill_region_finish)(const size_t CharacterN)
     {
-        __quex_assert(engine.buffer._memory._end_of_file_p + CharacterN <= engine.buffer._memory._back);
-
-        /* We assume that the content from '_end_of_file_p' to '_end_of_file_p + CharacterN'
-         * has been filled with data.                                                        */
-        if( engine.buffer._byte_order_reversion_active_f ) 
-            QuexBuffer_reverse_byte_order(engine.buffer._memory._end_of_file_p, 
-                                        engine.buffer._memory._end_of_file_p + CharacterN);
-
-        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(engine.buffer._memory._end_of_file_p, 
-                                                engine.buffer._memory._end_of_file_p + CharacterN);
-
-        /* When lexing directly on the buffer, the end of file pointer is always set.        */
-        QuexBuffer_end_of_file_set(&engine.buffer, 
-                                   engine.buffer._memory._end_of_file_p + CharacterN); 
+        QUEX_MEMFUNC(buffer_fill_region_finish)(this, CharacterN);
     }
 
     QUEX_INLINE void
     QUEX_MEMFUNC(buffer_conversion_fill_region_prepare)(QUEX_TYPE_ANALYZER* me) 
     {
-        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)engine.buffer.filler;
-
-        /* It is always assumed that the buffer filler w/ direct buffer accesss
-         * is a converter. Now, move away past content in the raw buffer.       */
-        QuexBufferFiller_Converter_move_away_passed_content(filler);
+        QUEX_MEMFUNC(buffer_fill_region_prepare)(this);
     }
 
     QUEX_INLINE uint8_t*  
