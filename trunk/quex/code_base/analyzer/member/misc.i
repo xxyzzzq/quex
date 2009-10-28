@@ -9,32 +9,32 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void    
-QUEX_MEMFUNC(ANALYZER, move_forward)(const size_t CharacterN)
+QUEX_FUNC(move_forward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
     QuexBuffer_move_forward(&this->engine.buffer, CharacterN);
 }
 
 QUEX_INLINE void    
-QUEX_MEMFUNC(ANALYZER, move_backward)(const size_t CharacterN)
+QUEX_FUNC(move_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
     QuexBuffer_move_backward(&this->engine.buffer, CharacterN);
 }
 
 
 QUEX_INLINE size_t  
-QUEX_MEMFUNC(ANALYZER, tell)()
+QUEX_FUNC(tell)(QUEX_TYPE_ANALYZER* me)
 {
     return QuexBuffer_tell(&this->engine.buffer);
 }
 
 QUEX_INLINE void    
-QUEX_MEMFUNC(ANALYZER, seek)(const size_t CharacterIndex)
+QUEX_FUNC(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
 {
     QuexBuffer_seek(&this->engine.buffer, CharacterIndex);
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*  
-QUEX_MEMFUNC(ANALYZER, token_object)()
+QUEX_FUNC(token_object)(QUEX_TYPE_ANALYZER* me)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
     return __QUEX_CURRENT_TOKEN_P;
@@ -42,7 +42,7 @@ QUEX_MEMFUNC(ANALYZER, token_object)()
 }
 
 QUEX_INLINE const char* 
-QUEX_MEMFUNC(ANALYZER, version)() const
+QUEX_FUNC(version)(QUEX_TYPE_ANALYZER* me) const
 { 
 return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
        ": Version "         QUEX_SETTING_ANALYZER_VERSION \
@@ -51,7 +51,7 @@ return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
 }
 
 QUEX_INLINE void
-QUEX_MEMFUNC(ANALYZER, print_this)()
+QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
 {
     __QUEX_STD_printf("   CurrentMode = %s;\n", engine.__current_mode_p == 0x0 ? "0x0" : 
                                                                                engine.__current_mode_p->name);
@@ -78,12 +78,51 @@ QUEX_MEMFUNC(ANALYZER, print_this)()
 }
 
 QUEX_INLINE bool
-QUEX_MEMFUNC(ANALYZER, byte_order_reversion)()
+QUEX_FUNC(byte_order_reversion)(QUEX_TYPE_ANALYZER* me)
 { return engine.buffer._byte_order_reversion_active_f; }
 
 QUEX_INLINE void     
-QUEX_MEMFUNC(ANALYZER, byte_order_reversion_set)(bool Value)
+QUEX_FUNC(byte_order_reversion_set)(QUEX_TYPE_ANALYZER* me, bool Value)
 { engine.buffer._byte_order_reversion_active_f = Value; }
+
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+QUEX_INLINE void    
+QUEX_MEMBER(move_forward)(const size_t CharacterN)
+{ QUEX_FUNC(move_forward)(this, CharacterN); }
+
+QUEX_INLINE void    
+QUEX_MEMBER(move_backward)(const size_t CharacterN)
+{ QUEX_FUNC(move_backward)(this, CharacterN); }
+
+QUEX_INLINE size_t  
+QUEX_MEMBER(tell)()
+{ QUEX_FUNC(tell)(this); }
+
+QUEX_INLINE void    
+QUEX_MEMBER(seek)(const size_t CharacterIndex)
+{ QUEX_FUNC(seek)(this, CharacterIndex); }
+
+QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*  
+QUEX_MEMBER(token_object)()
+{ QUEX_FUNC(token_object)(this); }
+
+QUEX_INLINE const char* 
+QUEX_MEMBER(version)() const
+{ QUEX_FUNC(version)(this); }
+
+QUEX_INLINE void
+QUEX_MEMBER(print_this)()
+{ QUEX_FUNC(print_this)(this); }
+
+QUEX_INLINE bool
+QUEX_MEMBER(byte_order_reversion)()
+{ QUEX_FUNC(byte_order_reversion)(this); }
+
+QUEX_INLINE void     
+QUEX_MEMBER(byte_order_reversion_set)(bool Value)
+{ QUEX_FUNC(byte_order_reversion_set)(this, Value); }
+#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

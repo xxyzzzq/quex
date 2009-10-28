@@ -314,10 +314,14 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #endif 
 
 #if defined(__QUEX_SETTING_PLAIN_C)
-#   define QUEX_NAME(NAME)        $$NAMESPACE_STR$$       ## NAME
+#   define QUEX_NAME(NAME)        $$NAMESPACE_STR$$ ## NAME
+#   define QUEX_MEMBER(NAME)      void /* Undefined, not required */
+#   define QUEX_FUNC(NAME)        $$NAMESPACE_STR$$ ## _ ## NAME 
 #   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
 #else
 #   define QUEX_NAME(NAME)        NAME
+#   define QUEX_MEMBER(NAME)      $$LEXER_CLASS_NAME$$::NAME                
+#   define QUEX_FUNC(NAME)        $$NAMESPACE_STR$$ ## _ ##NAME 
 #   define QUEX_TOKEN_NAME(NAME)  NAME
 #endif
 

@@ -9,26 +9,27 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE
-QUEX_CONSTRUCTOR(ANALYZER, _memory)(__QUEX_SETTING_THIS_POINTER
-                                    QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                    size_t               BufferMemorySize,
-                                    const char*          CharacterEncodingName /* = 0x0   */,
-                                    bool                 ByteOrderReversionF   /* = false */)
+QUEX_FUNC(construct_memory)(QUEX_TYPE_ANALYZER* me
+                            QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                            size_t               BufferMemorySize,
+                            const char*          CharacterEncodingName /* = 0x0   */,
+                            bool                 ByteOrderReversionF   /* = false */)
 {
     size_t  memory_size = BufferMemoryBegin != 0 ? BufferMemorySize 
                           :                        QUEX_SETTING_BUFFER_SIZE;
 
-   __quex_assert(memory_size > 2);
-   QUEX_FIX(ANALYZER, __constructor_core)(this, (void*)0x0, CharacterEncodingName, ByteOrderReversionF,
-                                          BufferMemoryBegin, memory_size);
+    __quex_assert(memory_size > 2);
 
+    QUEX_FUNC(_constructor_core)(this, (void*)0x0, 
+                                 CharacterEncodingName, ByteOrderReversionF, 
+                                 BufferMemoryBegin, memory_size);
 }
 
 QUEX_INLINE
-QUEX_CONSTRUCTOR(ANALYZER, _file_name)(__QUEX_SETTING_THIS_POINTER
-                                       const std::string&  Filename, 
-                                       const char*         CharacterEncodingName /* = 0x0   */,
-                                       bool                ByteOrderReversionF   /* = false */)
+QUEX_FUNC(construct_file_name)(QUEX_TYPE_ANALYZER* me
+                               const std::string&  Filename, 
+                               const char*         CharacterEncodingName /* = 0x0   */,
+                               bool                ByteOrderReversionF   /* = false */)
 {
     // Buffer: Size = (see macro def.), Fallback = 10 Characters
     // prefer FILE* based buffers, because we can turn low-level buffering off.
@@ -37,70 +38,56 @@ QUEX_CONSTRUCTOR(ANALYZER, _file_name)(__QUEX_SETTING_THIS_POINTER
     if( fh == NULL ) QUEX_ERROR_EXIT("Error on attempt to open specified file.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
-    QUEX_FIX(ANALYZER, __constructor_core)(this, fh, CharacterEncodingName, ByteOrderReversionF, 0x0, 0);
+    QUEX_FUNC(_constructor_core)(this, fh, 
+                                 CharacterEncodingName, ByteOrderReversionF, 
+                                 0x0, 0);
     // Recall, that this thing as to be deleted/closed
     __file_handle_allocated_by_constructor = fh;
 }
 
 QUEX_INLINE
-QUEX_CONSTRUCTOR(ANALYZER, _istream)(__QUEX_SETTING_THIS_POINTER
-                                     std::istream*   p_input_stream, 
-                                     const char*     CharacterEncodingName /* = 0x0   */,
-                                     bool            ByteOrderReversionF   /* = false */)
+QUEX_FUNC(construct_FILE)(QUEX_TYPE_ANALYZER* me
+                          std::FILE*   fh, 
+                          const char*  CharacterEncodingName /* = 0x0   */,
+                          bool         ByteOrderReversionF   /* = false */)
+{
+    if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
+    setbuf(fh, 0);   // turn off system based buffering!
+    //               // this is essential to profit from the quex buffer!
+    QUEX_FUNC(_constructor_core)(this, fh, 
+                                 CharacterEncodingName, ByteOrderReversionF, 
+                                 0x0, 0);
+}
+
+QUEX_INLINE
+QUEX_FUNC(construct_istream)(QUEX_TYPE_ANALYZER* me
+                             std::istream*   p_input_stream, 
+                             const char*     CharacterEncodingName /* = 0x0   */,
+                             bool            ByteOrderReversionF   /* = false */)
 {
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
-                                           CharacterEncodingName, 
-                                           ByteOrderReversionF, 
-                                           0x0, 0);
+    QUEX_FUNC(_constructor_core)(this, p_input_stream, 
+                                 CharacterEncodingName, ByteOrderReversionF, 
+                                 0x0, 0);
 }
 
 
 #if defined(__QUEX_OPTION_WCHAR_T)
 QUEX_INLINE
-QUEX_CONSTRUCTOR(ANALYZER, _wistream)(__QUEX_SETTING_THIS_POINTER
-                                      std::wistream*  p_input_stream, 
-                                      const char*     CharacterEncodingName /* = 0x0   */,
-                                      bool            ByteOrderReversionF   /* = false */)
+QUEX_FUNC(construct_wistream)(QUEX_TYPE_ANALYZER* me
+                              std::wistream*      p_input_stream, 
+                              const char*         CharacterEncodingName /* = 0x0   */,
+                              bool                ByteOrderReversionF   /* = false */)
 {
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
-                                           CharacterEncodingName, ByteOrderReversionF, 
-                                           0x0, 0);
-}
-#endif
-
-#if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_SETTING_PLAIN_C)
-/* StrangeStreams are not for C-language stuff */
-template<class UnderlyingStreamT> QUEX_INLINE
-QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-                                       const char*      CharacterEncodingName /* = 0x0   */,
-                                       bool             ByteOrderReversionF   /* = false */)
-{
-    if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
-                                           CharacterEncodingName, ByteOrderReversionF, 
-                                           0x0, 0);
+    QUEX_FUNC(_constructor_core)(this, p_input_stream, 
+                                 CharacterEncodingName, ByteOrderReversionF, 
+                                 0x0, 0);
 }
 #endif
 
 QUEX_INLINE
-QUEX_CONSTRUCTOR(ANALYZER, _FILE)(__QUEX_SETTING_THIS_POINTER
-                                  std::FILE*   fh, 
-                                  const char*  CharacterEncodingName /* = 0x0   */,
-                                  bool         ByteOrderReversionF   /* = false */)
-{
-    if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
-    setbuf(fh, 0);   // turn off system based buffering!
-    //               // this is essential to profit from the quex buffer!
-    QUEX_FIX(ANALYZER, __constructor_core)(this, fh, 
-                                           CharacterEncodingName, ByteOrderReversionF, 
-                                           0x0, 0);
-}
-
-
-QUEX_INLINE
-QUEX_DESTRUCTOR(ANALYZER)(__QUEX_SETTING_THIS_POINTER) 
+QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me) 
 {
     QuexAnalyzerEngine_destruct(&this->engine);
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
@@ -112,9 +99,9 @@ QUEX_DESTRUCTOR(ANALYZER)(__QUEX_SETTING_THIS_POINTER)
 }
 
 template<class InputHandleT> void
-QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
-                           InputHandleT*        input_handle, 
-                           const char*          CharacterEncodingName /* = 0x0 */) 
+QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
+                 InputHandleT*        input_handle, 
+                 const char*          CharacterEncodingName /* = 0x0 */) 
 {
     me->engine.__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     me->set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
@@ -122,11 +109,11 @@ QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
     me->_mode_stack.end        = me->_mode_stack.begin;
     me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-    QuexAnalyzerEngine_reset(&me->engine, 
-                             me->engine.__current_mode_p->analyzer_function,
-                             input_handle, 
-                             CharacterEncodingName, 
-                             QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+    QUEX_NAME(Engine_reset)(&me->engine, 
+                            me->engine.__current_mode_p->analyzer_function,
+                            input_handle, 
+                            CharacterEncodingName, 
+                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
 #   ifdef __QUEX_OPTION_COUNTER
     QUEX_FIX(COUNTER, _reset)(&me->counter);
@@ -150,5 +137,64 @@ QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
 
     me->byte_order_reversion_set(false);
 }
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+QUEX_INLINE
+QUEX_MEMBER(QUEX_TYPE_ANALYZER)(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                size_t               BufferMemorySize,
+                                const char*          CharacterEncodingName /* = 0x0   */,
+                                bool                 ByteOrderReversionF   /* = false */)
+{ QUEX_FUNC(construct_memory)(BufferMemoryBegin, BufferMemorySize, CharacterEncodingName, ByteOrderReversionF); }
+
+QUEX_INLINE
+QUEX_MEMBER(QUEX_TYPE_ANALYZER)(const std::string&  Filename, 
+                                const char*         CharacterEncodingName /* = 0x0   */,
+                                bool                ByteOrderReversionF   /* = false */)
+{ QUEX_FUNC(construct_file_name)(Filename, CharacterEncodingName, ByteOrderReversionF); }
+
+QUEX_INLINE
+QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::FILE*   fh, 
+                                const char*  CharacterEncodingName /* = 0x0   */,
+                                bool         ByteOrderReversionF   /* = false */)
+{ QUEX_FUNC(construct_FILE)(this, fh, CharacterEncodingName, ByteOrderReversionF); }
+
+QUEX_INLINE
+QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::istream*   p_input_stream, 
+                                const char*     CharacterEncodingName /* = 0x0   */,
+                                bool            ByteOrderReversionF   /* = false */)
+{ QUEX_FUNC(construct_istream)(p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
+
+#if defined(__QUEX_OPTION_WCHAR_T)
+QUEX_INLINE
+QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::wistream*  p_input_stream, 
+                                const char*     CharacterEncodingName /* = 0x0   */,
+                                bool            ByteOrderReversionF   /* = false */)
+{ QUEX_FUNC(construct_wistream)(p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
+#endif
+
+#if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_SETTING_PLAIN_C)
+/* StrangeStreams are not for C-language stuff */
+template<class UnderlyingStreamT> QUEX_INLINE
+QUEX_MEMBER(QUEX_TYPE_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+                                const char*      CharacterEncodingName /* = 0x0   */,
+                                bool             ByteOrderReversionF   /* = false */)
+{
+    if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
+                                           CharacterEncodingName, ByteOrderReversionF, 
+                                           0x0, 0);
+}
+#endif
+
+QUEX_INLINE
+QUEX_MEMBER(~QUEX_TYPE_ANALYZER)() 
+{ QUEX_FUNC(destruct)(this); }
+
+template<class InputHandleT> void
+QUEX_MEMBER(reset)(InputHandleT* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
+{ QUEX_FUNC(reset)(this, input_handle, CharacterEncodingName); }
+#endif
+
+
 
 QUEX_NAMESPACE_MAIN_CLOSE
