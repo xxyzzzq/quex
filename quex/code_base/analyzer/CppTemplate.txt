@@ -323,12 +323,12 @@ $$CLASS_BODY_EXTENSION$$
 };
 
 TEMPLATE_IN(InputHandleT) void
-QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
-                                       InputHandleT*             input_handle, 
-                                       const char*               CharacterEncodingName,
-                                       bool                      ByteOrderReversionF,
-                                       QUEX_TYPE_CHARACTER*      BufferMemory,    
-                                       size_t                    BufferMemorySize)
+QUEX_FUNC(_constructor_core)(QUEX_TYPE_ANALYZER*       me,
+                             InputHandleT*             input_handle, 
+                             const char*               CharacterEncodingName,
+                             bool                      ByteOrderReversionF,
+                             QUEX_TYPE_CHARACTER*      BufferMemory,    
+                             size_t                    BufferMemorySize)
 {
 #   if      defined(QUEX_OPTION_ASSERTS) \
        && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)

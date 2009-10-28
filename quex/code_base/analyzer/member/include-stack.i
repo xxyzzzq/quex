@@ -19,24 +19,10 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
-                                         QUEX_TYPE_CHARACTER*    InputName,
-                                         const QUEX_TYPE_MODE&   mode, 
-                                         const char*             IANA_CodingName /* = 0x0 */)
-    {
-        /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
-#       ifndef __QUEX_SETTING_PLAIN_C
-        include_push<InputHandleT>(InputName, mode.id(), IANA_CodingName);
-#       else
-        QUEX_MEMFUNC(ANALYZER, include_push)(InputName, mode.id(), IANA_CodingName);
-#       endif
-    }
-
-    TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
-                                         QUEX_TYPE_CHARACTER*     InputName,
-                                         const int                MODE_ID /* = -1 */, 
-                                         const char*              IANA_CodingName /* = 0x0 */)
+    QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER* me
+                            QUEX_TYPE_CHARACTER*     InputName,
+                            const int                MODE_ID /* = -1 */, 
+                            const char*              IANA_CodingName /* = 0x0 */)
     {
 #       if defined(__QUEX_SETTING_PLAIN_C)
 #       define InputHandleT  FILE
@@ -49,65 +35,104 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Store the lexical analyzer's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*       input_handle = 0x0;
-        QUEX_TYPE_MEMENTO*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(this, InputName, &input_handle);
+        QUEX_TYPE_MEMENTO*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(me, InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
         }
 
-        if( MODE_ID != -1 ) this->set_mode_brutally(MODE_ID);
+        if( MODE_ID != -1 ) me->set_mode_brutally(MODE_ID);
 
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        QuexAnalyzerEngine_construct(&this->engine,
-                                     engine.__current_mode_p->analyzer_function,
-                                     input_handle,
-                                     0x0, QUEX_SETTING_BUFFER_SIZE,
-                                     IANA_CodingName, 
-                                     QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
-                                     engine.buffer._byte_order_reversion_active_f);
+        QUEX_NAME(Engine_construct)(&me->engine,
+                                    me->engine.__current_mode_p->analyzer_function,
+                                    input_handle,
+                                    0x0, QUEX_SETTING_BUFFER_SIZE,
+                                    IANA_CodingName, 
+                                    QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
+                                    me->engine.buffer._byte_order_reversion_active_f);
 
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_FIX(COUNTER, _reset)(&counter);
 #       endif
 
         /* Keep track of 'who's your daddy?'                              */
-        m->base.parent = this->_parent_memento;
-        this->_parent_memento = m;
+        m->base.parent = me->_parent_memento;
+        me->_parent_memento = m;
 #       if defined(__QUEX_SETTING_PLAIN_C)
 #       undef InputHandleT
 #       endif
     }   
 
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*     me
+                                 QUEX_TYPE_CHARACTER*    InputName,
+                                 const QUEX_TYPE_MODE&   mode, 
+                                 const char*             IANA_CodingName /* = 0x0 */)
+    {
+        /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
+#       ifndef __QUEX_SETTING_PLAIN_C
+        include_push<InputHandleT>(InputName, mode.id(), IANA_CodingName);
+#       else
+        QUEX_FUNC(include_push)(InputName, mode.id(), IANA_CodingName);
+#       endif
+    }
+
+
     QUEX_INLINE bool
-    QUEX_MEMFUNC(ANALYZER, include_pop)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_FUNC(include_pop)(QUEX_TYPE_ANALYZER* me) 
     {
         /* Not included? return 'false' to indicate we're on the top level     */
-        if( this->_parent_memento == 0x0 ) return false; 
+        if( me->_parent_memento == 0x0 ) return false; 
 
         /* Free the related memory that is no longer used                      */
-        QuexAnalyzerEngine_destruct(&this->engine);
+        QUEX_NAME(Engine_destruct)(&me->engine);
 
         /* Restore the lexical analyzer to the state it was before the include */
         /* Here, the 'memento_unpack' section is executed                      */
-        QUEX_FIX(ANALYZER, _memento_unpack)(this, this->_parent_memento);
+        QUEX_FIX(ANALYZER, _memento_unpack)(me, me->_parent_memento);
 
         /* Return to including file succesful */
         return true;
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(ANALYZER, include_stack_delete)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_FUNC(include_stack_delete)(QUEX_TYPE_ANALYZER* me) 
     {
-        while( this->_parent_memento != 0x0 ) {
+        while( me->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */
-            QuexAnalyzerEngine_destruct(&this->engine);
+            QUEX_NAME(Engine_destruct)(&me->engine);
 
             /* Restore the lexical analyzer to the state it was before the include */
             /* Here, the 'memento_unpack' section is executed                      */
-            QUEX_FIX(ANALYZER, _memento_unpack)(this, this->_parent_memento);
+            QUEX_FIX(ANALYZER, _memento_unpack)(me, me->_parent_memento);
         }
     }
+
+#if ! defined( __QUEX_SETTING_PLAIN_C )
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_MEMBER(include_push)(QUEX_TYPE_ANALYZER*    me,
+                              QUEX_TYPE_CHARACTER*   InputName,
+                              const int              ModeID /* = -1 */, 
+                              const char*            IANA_CodingName /* = 0x0 */)
+    { QUEX_FUNC(include_push)(this, InputName, ModeID, IANA_CodingName); }
+
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_MEMBER(include_push)(QUEX_TYPE_ANALYZER*     me,
+                              QUEX_TYPE_CHARACTER*    InputName,
+                              const QUEX_TYPE_MODE&   mode, 
+                              const char*             IANA_CodingName /* = 0x0 */)
+    { QUEX_FUNC(include_push_mode)(this, InputName, mode, IANA_CodingName); }
+
+    QUEX_INLINE bool
+    QUEX_MEMBER(include_pop)() 
+    { QUEX_FUNC(include_pop)(this); }
+
+    QUEX_INLINE void
+    QUEX_MEMBER(include_stack_delete)() 
+    { QUEX_FUNC(include_stack_delete)(this); }
+#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
