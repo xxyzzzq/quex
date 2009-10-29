@@ -44,7 +44,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                    size_t            RawBufferSize)
     { 
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
-        TEMPLATED(QuexBufferFiller_Converter)*  me = TEMPLATED(MemoryManager_BufferFiller_Converter_allocate)();
+        TEMPLATED(QuexBufferFiller_Converter)*  me = \
+              QUEX_NAME(MemoryManager_BufferFiller_Converter_allocate)()(sizeof(TEMPLATED(QuexBufferFiller_Converter)));
         __quex_assert(me != 0x0);
 
         QuexBufferFiller_Converter_construct(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
@@ -89,7 +90,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
-        uint8_t* raw_buffer_p = MemoryManager_BufferFiller_RawBuffer_allocate(RawBufferSize);
+        uint8_t* raw_buffer_p = QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(RawBufferSize);
         __QuexRawBuffer_init(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
                              me->start_position);
 
@@ -113,9 +114,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         me->converter->delete_self(me->converter);
 
-        MemoryManager_BufferFiller_RawBuffer_free(me->raw_buffer.begin); 
+        QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(me->raw_buffer.begin); 
 
-        MemoryManager_BufferFiller_Converter_free(me);
+        QUEX_NAME(MemoryManager_BufferFiller_free)(me);
     }
 
 

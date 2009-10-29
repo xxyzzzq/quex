@@ -91,21 +91,21 @@ InputHandleT	/home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_on	3
 InputPolicy	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^    struct InputPolicy<StdStreamType*> { $/;"	s	namespace:quex	file:
 InputPolicy	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^    struct InputPolicy<std::FILE*> { $/;"	s	namespace:quex	file:
 InputPolicy	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^    struct InputPolicy<void*> { $/;"	s	namespace:quex	file:
-MemoryManager_BufferFiller_Converter_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_BufferFiller_Converter_allocate()$/;"	f	namespace:quex
-MemoryManager_BufferFiller_Plain_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_BufferFiller_Plain_allocate()$/;"	f	namespace:quex
-MemoryManager_BufferFiller_RawBuffer_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_BufferFiller_RawBuffer_allocate(const size_t ByteN)$/;"	f	namespace:quex
-MemoryManager_BufferFiller_RawBuffer_free	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_BufferFiller_RawBuffer_free(uint8_t* memory)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_BufferFiller_Converter_allocate)()	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_BufferFiller_Converter_allocate)()()$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_BufferFiller_Plain_allocate)()	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_BufferFiller_Plain_allocate)()()$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(const size_t ByteN)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory)$/;"	f	namespace:quex
 MemoryManager_BufferMemory_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_BufferMemory_allocate(const size_t CharacterN)$/;"	f	namespace:quex
-MemoryManager_BufferMemory_free	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_BufferMemory_free(QUEX_TYPE_CHARACTER* memory)$/;"	f	namespace:quex
-MemoryManager_Converter_ICU_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_Converter_ICU_allocate()$/;"	f	namespace:quex
-MemoryManager_Converter_ICU_free	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_Converter_ICU_free(QuexConverter_ICU* memory)$/;"	f	namespace:quex
-MemoryManager_Converter_IConv_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_Converter_IConv_allocate()$/;"	f	namespace:quex
-MemoryManager_Converter_IConv_free	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_Converter_IConv_free(QuexConverter_IConv* memory)$/;"	f	namespace:quex
-MemoryManager_PostCategorizerNode_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_PostCategorizerNode_allocate(size_t RemainderL)$/;"	f	namespace:quex
-MemoryManager_PostCategorizerNode_free	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode* node)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_BufferMemory_free)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_BufferMemory_free)(QUEX_TYPE_CHARACTER* memory)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_Converter_ICU_allocate)()	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_Converter_ICU_allocate)()()$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_Converter_ICU_free)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_Converter_ICU_free)(QuexConverter_ICU* memory)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_Converter_IConv_allocate)()	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_Converter_IConv_allocate)()()$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_Converter_IConv_free)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_Converter_IConv_free)(QuexConverter_IConv* memory)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(size_t RemainderL)$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_PostCategorizerNode_free)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QuexPostCategorizerNode* node)$/;"	f	namespace:quex
 MemoryManager_TokenArray_allocate	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_TokenArray_allocate(QUEX_TYPE_TOKEN_WITH_NAMESPACE** memory, size_t RequiredSize)$/;"	f	namespace:quex
 MemoryManager_TokenArray_free	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_TokenArray_free(QUEX_TYPE_TOKEN_WITH_NAMESPACE* memory, size_t Size)$/;"	f	namespace:quex
-MemoryManager_insert	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,$/;"	f	namespace:quex
+QUEX_NAME(MemoryManager_insert)	/home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i	/^    QUEX_NAME(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,$/;"	f	namespace:quex
 MemoryPositionMimiker	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker	/^        MemoryPositionMimiker(character_type* Adr=0x0, character_index Pos=0) $/;"	f	struct:quex::MemoryPositionMimiker
 MemoryPositionMimiker	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker	/^    struct MemoryPositionMimiker {$/;"	s	namespace:quex	file:
 PRIX16	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h	105;"	d

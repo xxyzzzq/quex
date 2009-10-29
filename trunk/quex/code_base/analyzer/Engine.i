@@ -72,7 +72,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     QUEX_INLINE bool 
-    QUEX_NAME(Engine_buffer_reload_backward)(QuexBuffer* buffer)
+    QUEX_NAME(Engine_buffer_reload_backward)(QUEX_TYPE_BUFFER* buffer)
     {
         if( buffer->filler == 0x0 ) return false;
 
@@ -92,7 +92,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool 
-    QUEX_NAME(Engine_buffer_reload_forward)(QuexBuffer* buffer, 
+    QUEX_NAME(Engine_buffer_reload_forward)(QUEX_TYPE_BUFFER* buffer, 
                                             QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
                                             QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                             const size_t                  PostContextN)
