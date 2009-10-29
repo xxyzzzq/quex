@@ -41,20 +41,13 @@ QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory);
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
 QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(MemoryManager_AccumulatorText_allocate)(const size_t Size);
+QUEX_NAME(MemoryManager_AccumulatorText_allocate)(const size_t ByteN);
 QUEX_INLINE void
 QUEX_NAME(MemoryManager_AccumulatorText_free)(QUEX_TYPE_CHARACTER* memory);
 #   endif
 
-#   if defined (QUEX_OPTION_ENABLE_ICONV)
-QUEX_INLINE QuexConverter_IConv*  QUEX_NAME(MemoryManager_Converter_IConv_allocate())();
-QUEX_INLINE void                  QUEX_NAME(MemoryManager_Converter_IConv_free)(QuexConverter_IConv* memory);
-#   endif
-
-#   if defined (QUEX_OPTION_ENABLE_ICU)
-QUEX_INLINE QuexConverter_ICU*  QUEX_NAME(MemoryManager_Converter_ICU_allocate())();
-QUEX_INLINE void                QUEX_NAME(MemoryManager_Converter_ICU_free)(QuexConverter_ICU* memory);
-#   endif
+QUEX_INLINE QuexConverter_IConv*  QUEX_NAME(MemoryManager_Converter_allocate)(const size_t ByteN);
+QUEX_INLINE void                  QUEX_NAME(MemoryManager_Converter_free)(QuexConverter_IConv* memory);
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
 QUEX_INLINE  QUEX_TYPE_POST_CATEGORIZER_NODE*  QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(size_t RemainderSize);
@@ -64,6 +57,22 @@ QUEX_INLINE  void                              QUEX_NAME(MemoryManager_PostCateg
 QUEX_INLINE size_t
 QUEX_NAME(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                                 uint8_t* source_begin_p, uint8_t* source_end_p);
+
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE* 
+QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t N);
+
+QUEX_INLINE void 
+QUEX_NAME(MemoryManager_TokenArray_free)(QUEX_TYPE_TOKEN_WITH_NAMESPACE* memory);
+#endif
+
+#ifdef QUEX_OPTION_INCLUDE_STACK
+QUEX_INLINE  QUEX_TYPE_MEMENTO_TAG*
+QUEX_NAME(MemoryManager_Memento_allocate)();
+
+QUEX_INLINE void
+QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_TYPE_MEMENTO_TAG* memory);
+#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
  
