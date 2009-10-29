@@ -126,13 +126,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     QuexConverter_IConv_delete_self(QuexConverter_IConv* me)
     {
         iconv_close(me->handle); 
-        MemoryManager_Converter_IConv_free(me);
+        QUEX_NAME(MemoryManager_Converter_IConv_free)(me);
     }
 
     QUEX_INLINE QuexConverter*
     QuexConverter_IConv_new()
     {
-        QuexConverter_IConv*  me = MemoryManager_Converter_IConv_allocate();
+        QuexConverter_IConv*  me = QUEX_NAME(MemoryManager_Converter_IConv_allocate)()();
 
         me->base.open        = (QuexConverterFunctionP_open)QuexConverter_IConv_open;
         me->base.convert     = (QuexConverterFunctionP_convert)QuexConverter_IConv_convert;

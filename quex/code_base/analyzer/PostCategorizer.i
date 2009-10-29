@@ -11,10 +11,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE* 
 QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
-                                      const QUEX_TYPE_CHARACTER*  Remainder,
-                                      QUEX_TYPE_TOKEN_ID          TokenID)
+                               const QUEX_TYPE_CHARACTER*  Remainder,
+                               QUEX_TYPE_TOKEN_ID          TokenID)
 {
-    QUEX_TYPE_POST_CATEGORIZER_NODE* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(__QUEX_STD_strlen(Remainder));
+    QUEX_TYPE_POST_CATEGORIZER_NODE* me = QUEX_NAME(QUEX_NAME(MemoryManager_PostCategorizerNode_allocate))(__QUEX_STD_strlen(Remainder));
     me->name_first_character = FirstCharacter;
     me->name_remainder       = Remainder;
     me->token_id             = TokenID;
@@ -72,7 +72,7 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_TYPE_POST_CATEGORIZER* me,
 
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
-                                    const QUEX_TYPE_CHARACTER*   EntryName)
+                                  const QUEX_TYPE_CHARACTER*   EntryName)
 {
     int                               result = 0;
     QUEX_TYPE_CHARACTER               FirstCharacter = EntryName[0];
@@ -147,7 +147,7 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
             parent->greater = found->greater;
         }
     }
-    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(found);
+    QUEX_NAME(QUEX_NAME(MemoryManager_PostCategorizerNode_free))(found);
 }
 
 QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE*
@@ -174,7 +174,7 @@ QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_TYPE_POST_CATEGORIZER*       m
 {
     if( branch->lesser  != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
     if( branch->greater != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
-    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(branch);
+    QUEX_NAME(QUEX_NAME(MemoryManager_PostCategorizerNode_free))(branch);
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN_ID 

@@ -18,7 +18,6 @@
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
 
-
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif

@@ -27,16 +27,16 @@ QUEX_INLINE void  CounterLineColumn_count(CounterLineColumn* me,
                                           QUEX_TYPE_CHARACTER* Lexeme, 
                                           QUEX_TYPE_CHARACTER* LexemeEnd);
 QUEX_INLINE void  CounterLineColumn_count_NoNewline(CounterLineColumn* me, const ptrdiff_t LexemeLength);
-QUEX_INLINE void  CounterLineColumn_count_FixNewlineN(CounterLineColumn*             me,
+QUEX_INLINE void  CounterLineColumn_count_FixNewlineN(CounterLineColumn*   me,
                                                       QUEX_TYPE_CHARACTER* Lexeme,
                                                       QUEX_TYPE_CHARACTER* LexemeEnd,
                                                       const int            LineNIncrement);
 
 QUEX_INLINE QUEX_TYPE_CHARACTER*
 __CounterLineColumn_count_chars_to_newline_backwards(CounterLineColumn* me, QUEX_TYPE_CHARACTER* Begin,
-                                         QUEX_TYPE_CHARACTER* End,
-                                         const ptrdiff_t      LexemeLength,
-                                         const bool           LicenseToIncrementLineCountF /*=false*/);
+                                                     QUEX_TYPE_CHARACTER* End,
+                                                     const ptrdiff_t      LexemeLength,
+                                                     const bool           LicenseToIncrementLineCountF /*=false*/);
 
 QUEX_INLINE void  CounterLineColumn_print_this(CounterLineColumn* me);
 

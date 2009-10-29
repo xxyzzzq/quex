@@ -31,7 +31,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Determine the insertion position. */
         QUEX_TYPE_CHARACTER*  insertion_p = engine.buffer._memory._end_of_file_p;
 
-        const size_t CopiedByteN = MemoryManager_insert((uint8_t*)insertion_p,  
+        const size_t CopiedByteN = QUEX_NAME(MemoryManager_insert)((uint8_t*)insertion_p,  
                                                         (uint8_t*)(QuexBuffer_content_back(&engine.buffer) + 1),
                                                         (uint8_t*)ContentBegin, 
                                                         (uint8_t*)ContentEnd);
@@ -68,7 +68,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*     -- Move away passed buffer content.                                      */
         QuexBufferFiller_Converter_move_away_passed_content(filler);
 
-        const size_t CopiedByteN = MemoryManager_insert(filler->raw_buffer.end, 
+        const size_t CopiedByteN = QUEX_NAME(MemoryManager_insert)(filler->raw_buffer.end, 
                                                         filler->raw_buffer.memory_end,
                                                         (uint8_t*)ContentBegin, 
                                                         (uint8_t*)ContentEnd);
