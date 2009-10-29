@@ -62,7 +62,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                          const char*       ToCoding,
                                          size_t            RawBufferSize)
     {
-        __QuexBufferFiller_setup_functions(&me->base,
+        QUEX_NAME(BufferFiller_setup_functions)(&me->base,
                                            TEMPLATED(QuexBufferFiller_Converter_tell_character_index),
                                            TEMPLATED(QuexBufferFiller_Converter_seek_character_index), 
                                            TEMPLATED(QuexBufferFiller_Converter_read_characters),
@@ -289,7 +289,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                  * currently inside the buffer.                                                   */
                 buffer->iterators_character_index = Hint_Index;
                 buffer->iterator                  = Hint_Pointer;
-                __QuexBufferFiller_step_forward_n_characters((QuexBufferFiller*)me, Index - Hint_Index);
+                QUEX_NAME(BufferFiller_step_forward_n_characters)((QuexBufferFiller*)me, Index - Hint_Index);
                 /* assert on index position, see end of 'step_forward_n_characters(...)'.         */
             }
             else  /* Index < BeginIndex */ {
@@ -303,7 +303,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                 /* iterator == end => trigger reload                                              */
                 buffer->iterator                  = buffer->end;
                 buffer->iterators_character_index = 0;
-                __QuexBufferFiller_step_forward_n_characters((QuexBufferFiller*)me, Index);
+                QUEX_NAME(BufferFiller_step_forward_n_characters)((QuexBufferFiller*)me, Index);
                 /* We can assume, that the index is reachable, since the current index is higher. */
                 __quex_assert(buffer->iterators_character_index == Index);
             } 

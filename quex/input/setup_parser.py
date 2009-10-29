@@ -243,9 +243,7 @@ def validate(setup, command_line, argv):
     # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
     __check_file_name(setup, "token_class_file",            "file containing token class definition")
     __check_file_name(setup, "analyzer_derived_class_file", "file containing user derived lexer class")
-
     __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids")
-
     __check_file_name(setup, "input_mode_files", "quex source file")
 
     # Check that not more than one converter is specified
@@ -287,8 +285,10 @@ def validate(setup, command_line, argv):
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)
                 
 def __check_file_name(setup, Candidate, Name):
-    value = setup.__dict__[Candidate]
+    value             = setup.__dict__[Candidate]
     CommandLineOption = SETUP_INFO[Candidate][0]
+
+    if value == "": return
 
     if type(value) == list:
         for name in value:
