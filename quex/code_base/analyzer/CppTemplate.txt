@@ -61,7 +61,6 @@ $$USER_DEFINED_HEADER$$
 #include    <quex/code_base/buffer/BufferFiller>
 
 #include    <quex/code_base/MemoryManager>
-#include    <quex/code_base/MemoryManager_analyzer_specific>
 #include    <quex/code_base/analyzer/Mode>
 #include    <quex/code_base/analyzer/Engine>
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
@@ -405,7 +404,7 @@ QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me,
                                   InputHandleT**        input_handle)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
-    QUEX_TYPE_MEMENTO* memento = QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();
+    QUEX_TYPE_MEMENTO* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
 
     /* Use placement 'new' for explicit call of constructor */
     new ((void*)memento) QUEX_TYPE_MEMENTO;
@@ -446,7 +445,7 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
     
     /* Counterpart to placement new: Explicit destructor call */
     memento->~QUEX_TYPE_MEMENTO_TAG();
-    QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(memento);
+    QUEX_NAME(MemoryManager_Memento_free)(memento);
 #   undef self
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */
@@ -464,7 +463,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/analyzer/member/constructor.i>
 #include    <quex/code_base/analyzer/counter/Base.i>
 #include    <quex/code_base/MemoryManager.i>
-#include    <quex/code_base/MemoryManager_analyzer_specific.i>
 #include    <quex/code_base/analyzer/Engine.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #ifdef      QUEX_OPTION_INCLUDE_STACK
