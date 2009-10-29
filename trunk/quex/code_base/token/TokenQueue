@@ -19,102 +19,113 @@ QUEX_NAMESPACE_MAIN_OPEN
 #define QUEX_TYPE_TOKEN_QUEUE_construct  QUEX_FIX(TOKEN_QUEUE, _construct)
 #define QUEX_TYPE_TOKEN_QUEUE_destruct   QUEX_FIX(TOKEN_QUEUE, _destruct)
 
-typedef struct {
+    typedef struct {
 
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*   begin;
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*   read_iterator;    // pointer to next token to be read
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*   write_iterator;   // pointer to next token to be written
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*   end_minus_safety_border;
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*   end;
-    /* A token might be 'N' times repeated. This is the only case where a token
-     * queue overflow might occur. When the token queue is full and there are still
-     * 'N' tokens to be repeated, then the remaining 'N' are stored in the following
-     * variable.                                                                      */
-    size_t     remaining_repetitions_of_last_token_n;
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   begin;
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   read_iterator;    // pointer to next token to be read
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   write_iterator;   // pointer to next token to be written
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   end_minus_safety_border;
+        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   end;
+        /* A token might be 'N' times repeated. This is the only case where a token
+         * queue overflow might occur. When the token queue is full and there are still
+         * 'N' tokens to be repeated, then the remaining 'N' are stored in the following
+         * variable.                                                                      */
+        size_t     remaining_repetitions_of_last_token_n;
 
-} QUEX_TYPE_TOKEN_QUEUE;
+    } QUEX_TYPE_TOKEN_QUEUE;
 
-#   define QUEX_TYPE_TOKEN_QUEUE_init(me, Memory, MemoryEnd, SafetyBorder) \
-      do {                                                                \
-         (me).begin                   = Memory;                           \
-         (me).end                     = MemoryEnd;                        \
-         (me).end_minus_safety_border = MemoryEnd - SafetyBorder;         \
-         QUEX_TYPE_TOKEN_QUEUE_reset(me);                                        \
-      } while(0)
-
-#   define QUEX_TYPE_TOKEN_QUEUE_reset(me)                                \
-       do {                                                    \
-           (me).read_iterator  = (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)(me).begin; \
-           (me).write_iterator = (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)(me).begin; \
-           (me).remaining_repetitions_of_last_token_n = 0;     \
-       } while(0)
-
-QUEX_INLINE void
-QUEX_TYPE_TOKEN_QUEUE_construct(QUEX_TYPE_TOKEN_QUEUE* me, const size_t N)
-{
-    if( N == 0 ) {
-        QUEX_TYPE_TOKEN_QUEUE_init(*me, 0x0, 0x0, 0); 
-    } else {
-        __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
-
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*  chunk     = QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(N);
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*  chunk_end = chunk + N;
-
-        /* Call placement new (plain constructor) for all tokens in chunk. */
-        for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = chunk; iterator != chunk_end; ++iterator)
-            new ((void*)iterator) QUEX_TYPE_TOKEN_WITH_NAMESPACE;  
-        QUEX_TYPE_TOKEN_QUEUE_init(*me, chunk, chunk_end, QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
+    QUEX_INLINE void
+    QUEX_NAME(TokenQueue_reset)(QUEX_TYPE_TOKEN_QUEUE* me) 
+    {                                                    
+        (me).read_iterator  = (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)(me).begin; 
+        (me).write_iterator = (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)(me).begin; 
+        (me).remaining_repetitions_of_last_token_n = 0;     
     }
-}
 
-QUEX_INLINE void
-QUEX_TYPE_TOKEN_QUEUE_destruct(QUEX_TYPE_TOKEN_QUEUE* me)
-{
-    /* Call explicit destructors for all tokens in array */
-    for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = me->begin; iterator != me->end; ++iterator)
-         iterator->QUEX_TYPE_TOKEN_WITH_NAMESPACE::~QUEX_TYPE_TOKEN();  
+    QUEX_INLINE void
+    QUEX_NAME(TokenQueue_init)(QUEX_TYPE_TOKEN_QUEUE* me, 
+                               QUEX_TYPE_TOKEN_WITH_NAMESPACE* Memory, 
+                               QUEX_TYPE_TOKEN_WITH_NAMESPACE* MemoryEnd, 
+                               const size_t SafetyBorder)
+    {
+        (me).begin                   = Memory;                           
+        (me).end                     = MemoryEnd;                        
+        (me).end_minus_safety_border = MemoryEnd - SafetyBorder;         
+        QUEX_TYPE_TOKEN_QUEUE_reset(me);                                
+    }
 
-    QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->begin);
-}
+    QUEX_INLINE void
+    QUEX_NAME(TokenQueue_construct)(QUEX_TYPE_TOKEN_QUEUE* me, const size_t N)
+    {
+        if( N == 0 ) {
+            QUEX_TYPE_TOKEN_QUEUE_init(*me, 0x0, 0x0, 0); 
+        } else {
+            __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
+            QUEX_TYPE_TOKEN_WITH_NAMESPACE*  chunk     = QUEX_NAME(MemoryManager_TokenArray_allocate)(N);
+            QUEX_TYPE_TOKEN_WITH_NAMESPACE*  chunk_end = chunk + N;
+
+            /* Call placement new (plain constructor) for all tokens in chunk. */
+            for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = chunk; iterator != chunk_end; ++iterator)
+                new ((void*)iterator) QUEX_TYPE_TOKEN_WITH_NAMESPACE;  
+            QUEX_TYPE_TOKEN_QUEUE_init(*me, chunk, chunk_end, QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
+        }
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(TokenQueue_destruct)(QUEX_TYPE_TOKEN_QUEUE* me)
+    {
+        /* Call explicit destructors for all tokens in array */
+        for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = me->begin; iterator != me->end; ++iterator)
+             iterator->QUEX_TYPE_TOKEN_WITH_NAMESPACE::~QUEX_TYPE_TOKEN();  
+
+        if( me->begin != 0x0 ) {
+            QUEX_NAME(MemoryManager_TokenArray_free)(me->begin);
+            me->begin = 0x0;
+        }
+    }
+
+#ifndef    __QUEX_INDICATOR_TYPE_TOKEN_QUEUE_HELPERS
+#   define __QUEX_INDICATOR_TYPE_TOKEN_QUEUE_HELPERS
 #   define QUEX_TYPE_TOKEN_QUEUE_is_full(me)      ((me).write_iterator >= (me).end_minus_safety_border) 
 #   define QUEX_TYPE_TOKEN_QUEUE_is_empty(me)     ((me).read_iterator == (me).write_iterator)
 #   define QUEX_TYPE_TOKEN_QUEUE_pop(me)          ((me).read_iterator++)
 #   define QUEX_TYPE_TOKEN_QUEUE_begin(me)        ((me).begin)
 #   define QUEX_TYPE_TOKEN_QUEUE_back(me)         ((me).end - 1)
 #   define QUEX_TYPE_TOKEN_QUEUE_available_n(me)  ((me).end - (me).write_iterator)
+#endif
 
-#   ifdef QUEX_OPTION_ASSERTS
-QUEX_INLINE void  
-QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(QUEX_TYPE_TOKEN_QUEUE* me)
-{
-    __quex_assert(me->begin != 0x0);
-    __quex_assert(me->read_iterator  >= me->begin);
-    __quex_assert(me->write_iterator >= me->read_iterator);
-    /* If the following breaks, it means that the given queue size was to small */
-    __quex_assert(me->end_minus_safety_border >= me->begin + 1);
-    if( me->write_iterator > me->end ) { 
-        QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
-                        "       as a reaction to one single pattern match. Use quex's command line\n"
-                        "       option --token-queue-safety-border, or define the macro\n"
-                        "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
+#ifdef QUEX_OPTION_ASSERTS
+    QUEX_INLINE void  
+    QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(QUEX_TYPE_TOKEN_QUEUE* me)
+    {
+        __quex_assert(me->begin != 0x0);
+        __quex_assert(me->read_iterator  >= me->begin);
+        __quex_assert(me->write_iterator >= me->read_iterator);
+        /* If the following breaks, it means that the given queue size was to small */
+        __quex_assert(me->end_minus_safety_border >= me->begin + 1);
+        if( me->write_iterator > me->end ) { 
+            QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
+                            "       as a reaction to one single pattern match. Use quex's command line\n"
+                            "       option --token-queue-safety-border, or define the macro\n"
+                            "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
+        }
     }
-}
-QUEX_INLINE void  
-QUEX_TOKEN_QUEUE_ASSERT(QUEX_TYPE_TOKEN_QUEUE* me)
-{
-    QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me);
-    if( me->write_iterator == me->end ) { 
-        QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
-                        "       as a reaction to one single pattern match. Use quex's command line\n"
-                        "       option --token-queue-safety-border, or define the macro\n"
-                        "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
+    QUEX_INLINE void  
+    QUEX_TOKEN_QUEUE_ASSERT(QUEX_TYPE_TOKEN_QUEUE* me)
+    {
+        QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me);
+        if( me->write_iterator == me->end ) { 
+            QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
+                            "       as a reaction to one single pattern match. Use quex's command line\n"
+                            "       option --token-queue-safety-border, or define the macro\n"
+                            "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
+        }
     }
-}
-#   else
-#      define QUEX_TOKEN_QUEUE_ASSERT(me)             /* empty */
-#      define QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me) /* empty */
-#   endif
+#else
+#   define QUEX_TOKEN_QUEUE_ASSERT(me)             /* empty */
+#   define QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me) /* empty */
+#endif
 
 typedef struct {
     QUEX_TYPE_TOKEN_WITH_NAMESPACE*   token_list;
@@ -187,13 +198,13 @@ QUEX_TYPE_TOKEN_QUEUERemainder_save(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_TYP
     if( me->size != 0 ) {
         
         /* Step 1: allocate plain chunk of memory.                              */
-        me->token_list = QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(me->size);
+        me->token_list = QUEX_NAME(MemoryManager_TokenArray_allocate)(me->size);
         if( me->token_list == 0x0 ) {
             QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
         }
 
         /* Step 2: copy plain chunk of memory                                   */
-        memcpy(me->token_list, token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
+        __QUEX_STD_memcpy(me->token_list, token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
 
         /* Step 3: Call cleaning placement new on objects which are subject to
          *         potential double deletion.                                   */
@@ -234,12 +245,12 @@ QUEX_TYPE_TOKEN_QUEUERemainder_restore(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_
             iterator->~QUEX_TYPE_TOKEN();
         }
         /* Step 2: Plain copy of objects stored in the 'remainder store'             */
-        memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
+        __QUEX_STD_memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
 
         /* Step 3: De-Allocate the remainder objects                                 
          *         NO explicit destructor calls, since the referred objects are now
          *         referred from inside the 'real' token queue.                      */
-        QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->token_list);
+        QUEX_NAME(MemoryManager_TokenArray_free)(me->token_list);
     }
     /* Reset the read and write iterators */
     token_queue->read_iterator  = token_queue->begin;
