@@ -50,39 +50,19 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY(memory); }
 
-#   if defined (QUEX_OPTION_ENABLE_ICONV)
-    QUEX_INLINE QuexConverter_IConv*
-    QUEX_NAME(MemoryManager_Converter_IConv_allocate)()()
-    {
-        const size_t     MemorySize = sizeof(QuexConverter_IConv);
-        return (QuexConverter_IConv*)__QUEX_ALLOCATE_MEMORY(MemorySize);
-    }
+    QUEX_INLINE void*
+    QUEX_NAME(MemoryManager_Converter_allocate)(const size_t ByteN)
+    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
 
     QUEX_INLINE void
-    QUEX_NAME(MemoryManager_Converter_IConv_free)(QuexConverter_IConv* memory)
+    QUEX_NAME(MemoryManager_Converter_free)(void* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
-#   endif
-
-#   if defined (QUEX_OPTION_ENABLE_ICU)
-    QUEX_INLINE QuexConverter_ICU*
-    QUEX_NAME(MemoryManager_Converter_ICU_allocate)()()
-    {
-        const size_t     MemorySize = sizeof(QuexConverter_ICU);
-        return (QuexConverter_ICU*)__QUEX_ALLOCATE_MEMORY(MemorySize);
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(MemoryManager_Converter_ICU_free)(QuexConverter_ICU* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
-#   endif
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     QUEX_INLINE QUEX_TYPE_CHARACTER*
-    QUEX_NAME(MemoryManager_AccumulatorText_allocate)(const size_t Size)
-    {
-        const size_t     MemorySize = Size * sizeof(QUEX_TYPE_CHARACTER);
-        return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY(MemorySize);
-    }
+    QUEX_NAME(MemoryManager_AccumulatorText_allocate)(const size_t ByteN)
+    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
+
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_AccumulatorText_free)(QUEX_TYPE_CHARACTER* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
@@ -115,7 +95,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE size_t
     QUEX_NAME(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
-                         uint8_t* source_begin_p, uint8_t* source_end_p)
+                                    uint8_t* source_begin_p, uint8_t* source_end_p)
         /* Inserts as many bytes as possible into the array from 'drain_begin_p'
          * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
          * ends at 'source_end_p'.

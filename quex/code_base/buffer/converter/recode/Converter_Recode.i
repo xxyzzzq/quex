@@ -147,7 +147,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QuexConverter*
     QuexConverter_ICU_new()
     {
-        QuexConverter_ICU*  me = QUEX_NAME(MemoryManager_Converter_ICU_allocate)()();
+        QuexConverter_ICU*  me = QUEX_NAME(MemoryManager_Converter_allocate)();
 
         me->base.open        = QuexConverter_ICU_open;
         me->base.convert     = QuexConverter_ICU_convert;
