@@ -24,7 +24,7 @@ SETUP_INFO = {
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],                 LIST],
-    "token_class_file":               [["--token-class-file"],                 "quex/code_base/token/Token"],
+    "token_class_file":               [["--token-class-file"],                 ""],
     "token_class_name":               [["--token-class", "--tc"],              "quex::Token"],
     "token_class_stringless_check_f": [["--token-type-no-stringless-check",    "--ttnsc"], NEGATED_FLAG],
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  

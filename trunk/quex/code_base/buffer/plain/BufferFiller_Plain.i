@@ -50,7 +50,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)* me, InputHandleT*    input_handle)
     {
-        __QuexBufferFiller_setup_functions(&me->base,
+        QUEX_NAME(BufferFiller_setup_functions)(&me->base,
                                            TEMPLATED(__BufferFiller_Plain_tell_character_index),
                                            TEMPLATED(__BufferFiller_Plain_seek_character_index), 
                                            TEMPLATED(__BufferFiller_Plain_read_characters),
@@ -127,11 +127,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         if     ( me->_character_index == CharacterIndex ) return;
         else if( me->_character_index < CharacterIndex ) {
-            __QuexBufferFiller_step_forward_n_characters(alter_ego, CharacterIndex - me->_character_index);
+            QUEX_NAME(QuexBufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex - me->_character_index);
         }
         else { /* me->_character_index > CharacterIndex */
             QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->start_position);
-            __QuexBufferFiller_step_forward_n_characters(alter_ego, CharacterIndex);
+            QUEX_NAME(QuexBufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex);
         }
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
