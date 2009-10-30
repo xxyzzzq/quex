@@ -23,8 +23,13 @@
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I                                    
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I                                    
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
-#   undef  __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
+#if 0
+    /* The memory position mimiker is only active in C++ and it is a template.
+     * Thus, it does not have to be redefined when more than one lexical
+     * analyzer is included.                                                  */
+#   ifdef     __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
+#      undef  __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
+#   endif
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
