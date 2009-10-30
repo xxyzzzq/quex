@@ -90,20 +90,15 @@
 #   include <iostream> 
 #   include <cerrno>
 #   include <stdexcept>
+#   include <cstddef>
+#else
+#   include <stddef.h>     /* gets: ptrdiff_t */
 #endif
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/converter/Converter>
-
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-    extern "C" { 
-    }
-#   include <cstddef>
-#else
-#   include <stddef.h>     /* gets: ptrdiff_t */
-#endif
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -119,18 +114,18 @@ QUEX_NAMESPACE_MAIN_OPEN
         
         STREAM_POSITION_TYPE(InputHandleT)   end_stream_position;
 
-        bool      _external_owner_f;
+        bool                                 _external_owner_f;
     } TEMPLATIFIER_END(QuexRawBuffer);
 
     TEMPLATIFIER(QuexBufferFiller_Converter, InputHandleT) {
 
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
-        QuexBufferFiller   base;
+        QUEX_TYPE_BUFFER_FILLER   base;
 
-        InputHandleT*      ih;
+        InputHandleT*             ih;
 
-        QuexConverter*     converter;
+        QUEX_TYPE_CONVERTER*      converter;
 
         TEMPLATED(QuexRawBuffer)  raw_buffer;
 
