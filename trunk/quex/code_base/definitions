@@ -153,7 +153,7 @@ __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
 
 #    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)  \
             __QUEX_STD_fprintf(stdout, Msg);           \
-            BufferFiller_x_show_content(Filler); 
+            QUEX_NAME(BufferFiller_x_show_content)(Filler); 
 
 #  endif /* ! __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
 

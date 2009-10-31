@@ -20,7 +20,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       temporarily to another value for the sake of speed efficiency. Thus, it is 
      *       distinguished between 'light' and normal consistency.                           */
     QUEX_INLINE void
-    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(QUEX_TYPE_BUFFER* B)                                      
+    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(QUEX_NAME(Buffer)* B)                                      
     {                                                                                    
         __quex_assert( (B) != 0x0 );                                                     
         if( (*B)._memory._front != 0x0 || (*B)._memory._back != 0x0 ) {                    
@@ -45,14 +45,14 @@ QUEX_NAMESPACE_MAIN_OPEN
                       && (*B)._content_character_index_begin == (size_t)0 ) ) {             
                 __quex_assert(   (size_t)(  (*B)._content_character_index_end            
                                             - (*B)._content_character_index_begin)         
-                                 == (size_t)(  QuexBuffer_text_end(B)                       
-                                               - QuexBuffer_content_front(B)));               
+                                 == (size_t)(  QUEX_NAME(Buffer_text_end)(B)                       
+                                               - QUEX_NAME(Buffer_content_front)(B)));               
             }                                                                            
         }                                                                                
     }
 
     QUEX_INLINE void
-    QUEX_BUFFER_ASSERT_CONSISTENCY(QUEX_TYPE_BUFFER* B)                                            
+    QUEX_BUFFER_ASSERT_CONSISTENCY(QUEX_NAME(Buffer)* B)                                            
     {                                                                                    
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(B);                                              
         /* NOTE: No assumptions can be made in general on the relation between    */     
@@ -87,7 +87,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QUEX_TYPE_BUFFER* buffer)
+    QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QUEX_NAME(Buffer)* buffer)
     {
         QUEX_TYPE_CHARACTER* End = buffer->_memory._back;
 

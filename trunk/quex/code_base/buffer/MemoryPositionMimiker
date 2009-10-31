@@ -42,7 +42,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     **            OPERATORS +,-,++,--! DO NOT USE THIS TYPE EXCEPT FOR SIMPLE   **
     **            'TELL' AND 'SEEK'.                                            **
     */
-    template <class character_type> 
     struct MemoryPositionMimiker {
 
         typedef size_t character_index; // Assume: The 'start position' is stored in
@@ -50,14 +49,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         //                              // position. This is so, since some coding have
         //                              // a dynamically sized character encoding.
 
-        // for compatibility with 'character_type*'
         // ALLOW: Only Adr, so that variable of type memory_position_mimiker can be
         //        can be initialized via a pointer, as a normal pointer does, e.g.
         //        "QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);"
-        MemoryPositionMimiker(character_type* Adr=0x0, character_index Pos=0) 
+        MemoryPositionMimiker(QUEX_TYPE_CHARACTER* Adr=0x0, character_index Pos=0) 
             : address(Adr), buffer_start_position(Pos) {}
 
-        character_type*  address;
+        QUEX_TYPE_CHARACTER*  address;
         character_index  buffer_start_position;
 
         bool operator==(const MemoryPositionMimiker& That)
@@ -68,8 +66,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         bool operator!=(const MemoryPositionMimiker& That)
         { return ! (this->operator==(That)); }
 
-        bool operator==(const character_type* ThatAdr) { return this->address == ThatAdr; }
-        bool operator!=(const character_type* ThatAdr) { return this->address != ThatAdr; }
+        bool operator==(const QUEX_TYPE_CHARACTER* ThatAdr) { return this->address == ThatAdr; }
+        bool operator!=(const QUEX_TYPE_CHARACTER* ThatAdr) { return this->address != ThatAdr; }
 
         // When loading forward from the stream, the pointers to memory_positions move backwards.
         // Thus, the signs in the operators are mirrored.
@@ -78,8 +76,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         void operator-=(const int Value) { address -= Value; buffer_start_position += Value; }
 
         // conversion operator, so that the object can be used at any place
-        // where a normal provided_character_type pointer is required (integrates seemingless)
-        operator character_type*() { return address; }
+        // where a normal provided_QUEX_TYPE_CHARACTER pointer is required (integrates seemingless)
+        operator QUEX_TYPE_CHARACTER*() { return address; }
     };
 
 QUEX_NAMESPACE_MAIN_CLOSE

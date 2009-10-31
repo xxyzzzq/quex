@@ -104,7 +104,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    TEMPLATIFIER(QuexRawBuffer, InputHandleT) {
+    TEMPLATIFIER(RawBuffer, InputHandleT) {
         uint8_t*                             begin;
         uint8_t*                             end;
         uint8_t*                             memory_end;
@@ -115,9 +115,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         STREAM_POSITION_TYPE(InputHandleT)   end_stream_position;
 
         bool                                 _external_owner_f;
-    } TEMPLATIFIER_END(QuexRawBuffer);
+    } TEMPLATIFIER_END(RawBuffer);
 
-    TEMPLATIFIER(QuexBufferFiller_Converter, InputHandleT) {
+    TEMPLATIFIER(BufferFiller_Converter, InputHandleT) {
 
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
@@ -127,7 +127,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(Converter)*     converter;
 
-        TEMPLATED(QuexRawBuffer)  raw_buffer;
+        TEMPLATED(RawBuffer)      raw_buffer;
 
         /* Store information of the character index at the begin of the raw buffer. This 
          * may facilitate the 'seek' in some cases. See also [Ref 1] in the implementation. */
@@ -136,22 +136,22 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Position where the whole analysis starts. The '0' when we are asked to reset.    */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
 
-    } TEMPLATIFIER_END(QuexBufferFiller_Converter);
+    } TEMPLATIFIER_END(BufferFiller_Converter);
 
 
-    TEMPLATE_IN(InputHandleT)    TEMPLATED(QuexBufferFiller_Converter)*
-    QuexBufferFiller_Converter_new(InputHandleT*     input_handle,
-                                   QuexConverter*    converter,
-                                   const char*       FromCoding,
-                                   const char*       ToCoding,
-                                   size_t            RawBufferSize);
+    TEMPLATE_IN(InputHandleT)    TEMPLATED(BufferFiller_Converter)*
+    QUEX_NAME(BufferFiller_Converter_new)(InputHandleT*          input_handle,
+                                          QUEX_NAME(Converter)*  converter,
+                                          const char*            FromCoding,
+                                          const char*            ToCoding,
+                                          size_t                 RawBufferSize);
 
-    TEMPLATE_IN(InputHandleT) void    QuexBufferFiller_Converter_move_away_passed_content(TEMPLATED(QuexBufferFiller_Converter)*);
-    TEMPLATE_IN(InputHandleT) size_t  __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*);
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(TEMPLATED(BufferFiller_Converter)*);
+    TEMPLATE_IN(InputHandleT) size_t  QUEX_NAME(__QuexBufferFiller_Converter_fill_raw_buffer)(TEMPLATED(BufferFiller_Converter)*);
 
-    TEMPLATE_IN(InputHandleT) void    __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
-                                                           uint8_t* Begin, size_t SizeInBytes,
-                                                           STREAM_POSITION_TYPE(InputHandleT) StartPosition);
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(__QuexRawBuffer_init)(TEMPLATED(RawBuffer)* me, 
+                                                                      uint8_t* Begin, size_t SizeInBytes,
+                                                                      STREAM_POSITION_TYPE(InputHandleT) StartPosition);
 
 #ifdef QUEX_OPTION_ASSERTS
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                         \

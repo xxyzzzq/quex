@@ -25,20 +25,20 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(BufferFiller_Plain_init)(TEMPLATED(BufferFiller_Plain)* me, InputHandleT*    input_handle);
 
-    TEMPLATE_IN(InputHandleT) size_t QUEX_NAME(__BufferFiller_Plain_tell_character_index)(BufferFiller* alter_ego);
-    TEMPLATE_IN(InputHandleT) void   QUEX_NAME(__BufferFiller_Plain_seek_character_index)(BufferFiller* alter_ego, 
+    TEMPLATE_IN(InputHandleT) size_t QUEX_NAME(__BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
                                                                                const size_t      CharacterIndex); 
-    TEMPLATE_IN(InputHandleT) size_t QUEX_NAME(__BufferFiller_Plain_read_characters)(BufferFiller*    alter_ego,
+    TEMPLATE_IN(InputHandleT) size_t QUEX_NAME(__BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*    alter_ego,
                                                                           QUEX_TYPE_CHARACTER* start_of_buffer, 
                                                                           const size_t         N);
-    TEMPLATE_IN(InputHandleT) void   QUEX_NAME(__BufferFiller_Plain_delete_self)(BufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QUEX_NAME(__BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
 
     TEMPLATE_IN(InputHandleT) TEMPLATED(BufferFiller_Plain)*
     QUEX_NAME(BufferFiller_Plain_new)(InputHandleT*    input_handle)
     {
         TEMPLATED(BufferFiller_Plain)*  me = \
-             TEMPLATED(QUEX_NAME(MemoryManager_BufferFiller_allocate)())(sizeof(TEMPLATED(BufferFiller_Plain)));
+             TEMPLATED(MemoryManager_BufferFiller_allocate)(sizeof(TEMPLATED(BufferFiller_Plain)));
         __quex_assert(me != 0x0);
         __quex_assert(input_handle != 0x0);
 
@@ -71,7 +71,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void 
-    QUEX_NAME(__BufferFiller_Plain_delete_self)(BufferFiller* alter_ego) 
+    QUEX_NAME(__BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego) 
     {
         TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
         QUEX_NAME(MemoryManager_BufferFiller_free)(me);
@@ -79,7 +79,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) size_t 
-    QUEX_NAME(__BufferFiller_Plain_tell_character_index)(BufferFiller* alter_ego) 
+    QUEX_NAME(__BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego) 
     { 
        __quex_assert(alter_ego != 0x0); 
        /* The type cast is necessary, since the function signature needs to 
@@ -102,7 +102,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       stream to a particular position given by a character index. QuexBuffer_seek(..)
      *       sets the _input_p to a particular position.                                      */
     TEMPLATE_IN(InputHandleT) void 
-    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(BufferFiller* alter_ego, const size_t CharacterIndex) 
+    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, const size_t CharacterIndex) 
     { 
         __quex_assert(alter_ego != 0x0); 
         /* The type cast is necessary, since the function signature needs to 
@@ -119,7 +119,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      * necessarily proportional to the amount of read-in characters. Note, that the seek function is
      * the only function that is significantly different for this case.                           */
     TEMPLATE_IN(InputHandleT) void 
-    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(BufferFiller* alter_ego, const size_t CharacterIndex) 
+    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, const size_t CharacterIndex) 
     { 
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
@@ -138,7 +138,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 
     TEMPLATE_IN(InputHandleT) size_t   
-    QUEX_NAME(__BufferFiller_Plain_read_characters)(BufferFiller*        alter_ego,
+    QUEX_NAME(__BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*        alter_ego,
                                                     QUEX_TYPE_CHARACTER* buffer_memory, const size_t N)  
     { 
         __quex_assert(alter_ego != 0x0); 
