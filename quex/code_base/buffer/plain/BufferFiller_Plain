@@ -18,8 +18,8 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    TEMPLATIFIER(QuexBufferFiller_Plain, InputHandleT) {
-        /* Derived QuexBufferFiller from implemented as 'first member is base class'.
+    TEMPLATIFIER(BufferFiller_Plain, InputHandleT) {
+        /* Derived BufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
         QUEX_NAME(BufferFiller)   base;
 
@@ -33,9 +33,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Index of the character where the next read will start */
         size_t             _character_index;
 #       endif
-    } TEMPLATIFIER_END(QuexBufferFiller_Plain);
+    } TEMPLATIFIER_END(BufferFiller_Plain);
 
-    TEMPLATE_IN(InputHandleT)  TEMPLATED(QuexBufferFiller_Plain)*
+    TEMPLATE_IN(InputHandleT)  TEMPLATED(BufferFiller_Plain)*
     QUEX_NAME(BufferFiller_Plain_new)(InputHandleT* input_handle);
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read. */

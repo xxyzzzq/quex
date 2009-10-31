@@ -31,11 +31,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY(ByteN); }
 
     QUEX_INLINE void
-    QUEX_NAME(QUEX_NAME(MemoryManager_BufferMemory_free))(QUEX_TYPE_CHARACTER* memory)
+    QUEX_NAME(MemoryManager_BufferMemory_free)(QUEX_TYPE_CHARACTER* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 
     TEMPLATE_IN(InputHandleT) void*
-    QUEX_NAME(MemoryManager_BufferFiller_allocate)()(const size_t ByteN)
+    QUEX_NAME(MemoryManager_BufferFiller_allocate)(const size_t ByteN)
     { return __QUEX_ALLOCATE_MEMORY(ByteN); }
 
     TEMPLATE_IN(InputHandleT) void

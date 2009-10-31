@@ -24,9 +24,6 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct { 
-#       if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_SETTING_PLAIN_C)
-        typedef MemoryPositionMimiker<QUEX_TYPE_CHARACTER>   Position;
-#       endif
         /* (*) Buffer Memory Setup:
          *      memory[0]             = lower buffer limit code character
          *      memory[1]             = first char of content

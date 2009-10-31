@@ -12,15 +12,15 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void QUEX_NAME(BufferFiller_x_show_content)(QUEX_TYPE_BUFFER*); 
-    QUEX_INLINE void QUEX_NAME(BufferFiller_show_brief_content)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void QUEX_NAME(BufferFiller_show_content)(QUEX_TYPE_BUFFER*); 
+    QUEX_INLINE void QUEX_NAME(BufferFiller_x_show_content)(QUEX_NAME(Buffer)*); 
+    QUEX_INLINE void QUEX_NAME(BufferFiller_show_brief_content)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void QUEX_NAME(BufferFiller_show_content)(QUEX_NAME(Buffer)*); 
 
     QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_show_brief_content)(QUEX_TYPE_BUFFER* buffer) 
+    QUEX_NAME(BufferFiller_show_brief_content)(QUEX_NAME(Buffer)* buffer) 
     {
         __quex_assert(buffer != 0x0);
-        QUEX_TYPE_BUFFER_FILLER* me = buffer->filler;
+        QUEX_NAME(BufferFiller)* me = buffer->filler;
         __quex_assert(me != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -37,14 +37,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_x_show_content)(QUEX_TYPE_BUFFER* buffer) 
+    QUEX_NAME(BufferFiller_x_show_content)(QUEX_NAME(Buffer)* buffer) 
     {
         QUEX_NAME(BufferFiller_show_content)(buffer);
         QUEX_NAME(BufferFiller_show_brief_content)(buffer);
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER
-    QUEX_NAME(__BufferFiller_get_border_char)(QUEX_TYPE_BUFFER* buffer, const QUEX_TYPE_CHARACTER* C) 
+    QUEX_NAME(__BufferFiller_get_border_char)(QUEX_NAME(Buffer)* buffer, const QUEX_TYPE_CHARACTER* C) 
     {
         if     ( *C != QUEX_SETTING_BUFFER_LIMIT_CODE )   
             return (QUEX_TYPE_CHARACTER)'?'; 
@@ -57,7 +57,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(Buffer_show_content)(QUEX_TYPE_BUFFER* buffer)
+    QUEX_NAME(Buffer_show_content)(QUEX_NAME(Buffer)* buffer)
     {
         size_t                i = 0;
         QUEX_TYPE_CHARACTER   EmptyChar    = (QUEX_TYPE_CHARACTER)(-1);
@@ -81,7 +81,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    QUEX_NAME(BufferFiller_show_content)(QUEX_TYPE_BUFFER* buffer) 
+    QUEX_NAME(BufferFiller_show_content)(QUEX_NAME(Buffer)* buffer) 
     {
         __quex_assert(buffer != 0x0);
         /* NOTE: If the limiting char needs to be replaced temporarily by
@@ -129,10 +129,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    QUEX_NAME(Buffer_show_byte_content)(QUEX_TYPE_BUFFER* buffer, const int IndentationN) 
+    QUEX_NAME(Buffer_show_byte_content)(QUEX_NAME(Buffer)* buffer, const int IndentationN) 
     {
         __quex_assert(buffer != 0x0);
-        QUEX_TYPE_BUFFER_MEMORY*  memory = &buffer->_memory;
+        QUEX_NAME(BufferMemory)*  memory = &buffer->_memory;
         __quex_assert(memory != 0x0);
 
         int      i = 0, j = 0;

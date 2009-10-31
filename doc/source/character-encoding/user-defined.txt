@@ -234,13 +234,16 @@ needs to be implemented that creates a the converter. This needs to following:
 
         ...
         /* assume that 'me' has been allocated */
-        me->base.open        = (QuexConverterFunctionP_open)CryptoConverter_open;
-        me->base.convert     = (QuexConverterFunctionP_convert)CryptoConverter_convert;
-        me->base.delete_self = (QuexConverterFunctionP_delete_self)CryptoConverter_delete_self;
+        me->base.open        = (QUEX_NAME(QuexConverterFunctionP_open))CryptoConverter_open;
+        me->base.convert     = (QUEX_NAME(QuexConverterFunctionP_convert))CryptoConverter_convert;
+        me->base.delete_self = (QUEX_NAME(QuexConverterFunctionP_delete_self))CryptoConverter_delete_self;
         me->base.on_conversion_discontinuity = \
-           (QuexConverterFunctionP_on_conversion_discontinuity)\
+           (QUEX_NAME(QuexConverterFunctionP_on_conversion_discontinuity))\
            CryptoConverter_on_conversion_discontinuity;
         ...
+
+   The macro ``QUEX_NAME(...)`` is used to identify the namespace, in case that the lexical
+   analyzer is generated for 'C', where there are no namespaces--at the time of this writing.
 
 
 #. Initialize the converter object. This is not the place to setup or
