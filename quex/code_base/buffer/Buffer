@@ -3,12 +3,13 @@
 #define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER
 
 #include<quex/code_base/definitions>
+#include<quex/code_base/analyzer/configuration/default>
 
 #ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
 #   if   defined (QUEX_OPTION_ENABLE_ICONV)
-#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_IConv_new()
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_IConv_new)()
 #   elif defined (QUEX_OPTION_ENABLE_ICU)
-#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_ICU_new()
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_ICU_new)()
 #   else
 #        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  0x0
 #   endif
@@ -21,8 +22,6 @@
 #include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
-
-#   define QuexBufferMemory_size    QUEX_FIX(BUFFER_MEMORY, _size)
 
     typedef struct { 
 #       if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_SETTING_PLAIN_C)
@@ -44,17 +43,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Store whether the memory has an external owner */
         bool                  _external_owner_f;
-    } QUEX_TYPE_BUFFER_MEMORY;
+    } QUEX_NAME(BufferMemory);
 
-   
-    QUEX_INLINE size_t  QUEX_NAME(BufferMemory_size)(QUEX_TYPE_BUFFER_MEMORY*);
+    QUEX_INLINE size_t  QUEX_NAME(BufferMemory_size)(QUEX_NAME(BufferMemory)*);
 
     typedef struct { 
-        QUEX_TYPE_BUFFER_MEMORY  _memory;
+        QUEX_NAME(BufferMemory)  _memory;
 
         /* (*) Iterator positions for lexical analysis */
-        QUEX_TYPE_CHARACTER*  _input_p;
-        QUEX_TYPE_CHARACTER*  _lexeme_start_p;
+        QUEX_TYPE_CHARACTER*     _input_p;
+        QUEX_TYPE_CHARACTER*     _lexeme_start_p;
 
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to
@@ -83,11 +81,11 @@ QUEX_NAMESPACE_MAIN_OPEN
          *        reversion of byte order.                                                    */
         bool      _byte_order_reversion_active_f;
 
-        struct    QUEX_TYPE_BUFFER_FILLER_TAG*  filler;
+        struct    QUEX_NAME(BufferFiller_tag)*  filler;
 
-    } QUEX_TYPE_BUFFER;
+    } QUEX_NAME(Buffer);
 
-    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_construct)(QUEX_TYPE_BUFFER*            me, 
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*            me, 
                                                                   InputHandleT*          input_handle,
                                                                   QUEX_TYPE_CHARACTER*   InputMemory,
                                                                   const size_t           BufferMemorySize,
@@ -95,45 +93,45 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                   const size_t           TranslationBufferMemorySize, 
                                                                   bool                   ByteOrderReversionF);
 
-    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_reset)(QUEX_TYPE_BUFFER*    me, 
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*    me, 
                                                               InputHandleT*  input_handle, 
                                                               const char*    CharacterEncodingName, 
                                                               const size_t   TranslationBufferMemorySize);
 
-    QUEX_INLINE void                  QUEX_NAME(Buffer_destruct)(QUEX_TYPE_BUFFER* me);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me);
 
-    QUEX_INLINE QUEX_TYPE_CHARACTER   QUEX_NAME(Buffer_input_get)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void                  QUEX_NAME(Buffer_input_p_increment)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void                  QUEX_NAME(Buffer_input_p_decrement)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void                  QUEX_NAME(Buffer_mark_lexeme_start)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void                  QUEX_NAME(Buffer_seek_lexeme_start)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void                  QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_front)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_back)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_text_end)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE size_t                QUEX_NAME(Buffer_content_size)(QUEX_TYPE_BUFFER*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER   QUEX_NAME(Buffer_input_get)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_input_p_increment)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_input_p_decrement)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_mark_lexeme_start)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_seek_lexeme_start)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_back)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_text_end)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t                QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)*);
 
-    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION  QUEX_NAME(Buffer_tell_memory_adr)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void                          QUEX_NAME(Buffer_seek_memory_adr)(QUEX_TYPE_BUFFER*, 
+    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION  QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                          QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)*, 
                                                                                 QUEX_TYPE_CHARACTER_POSITION);
     
-    QUEX_INLINE void    QUEX_NAME(Buffer_move_forward)(QUEX_TYPE_BUFFER*, const size_t CharacterN);
-    QUEX_INLINE void    QUEX_NAME(Buffer_move_backward)(QUEX_TYPE_BUFFER*, const size_t CharacterN);
-    QUEX_INLINE size_t  QUEX_NAME(Buffer_tell)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void    QUEX_NAME(Buffer_seek)(QUEX_TYPE_BUFFER*, const size_t CharacterIndex);
-    QUEX_INLINE void    QUEX_NAME(Buffer_move_away_passed_content)(QUEX_TYPE_BUFFER* me);
+    QUEX_INLINE void    QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*, const size_t CharacterN);
+    QUEX_INLINE void    QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)*, const size_t CharacterN);
+    QUEX_INLINE size_t  QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void    QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, const size_t CharacterIndex);
+    QUEX_INLINE void    QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
 
-    QUEX_INLINE void    QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_set)(QUEX_TYPE_BUFFER*, QUEX_TYPE_CHARACTER* Position);
-    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_unset)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE bool    QUEX_NAME(Buffer_is_end_of_file)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE bool    QUEX_NAME(Buffer_is_begin_of_file)(QUEX_TYPE_BUFFER*);
+    QUEX_INLINE void    QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_set)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER* Position);
+    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_unset)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE bool    QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE bool    QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
 
     QUEX_INLINE void    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER* Begin, 
                                                              QUEX_TYPE_CHARACTER* End);
 
-    QUEX_INLINE void    QUEX_NAME(Buffer_print_this)(QUEX_TYPE_BUFFER*);
+    QUEX_INLINE void    QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>

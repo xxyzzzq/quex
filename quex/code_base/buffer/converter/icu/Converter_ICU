@@ -11,7 +11,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct {
-        QuexConverter  base;
+        QUEX_TYPE_CONVERTER  base;
 
         UConverter*  from_handle;
         UConverter*  to_handle;
@@ -21,9 +21,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         UChar*       pivot_iterator_begin;
         UChar*       pivot_iterator_end;
 
-    } QuexConverter_ICU;
+    } QUEX_NAME(Converter_ICU);
 
-    QUEX_INLINE QuexConverter* QuexConverter_ICU_new();
+    QUEX_INLINE QuexConverter* QUEX_NAME(QuexConverter_ICU_new)();
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
