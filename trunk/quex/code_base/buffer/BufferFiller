@@ -9,7 +9,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-     typedef struct QUEX_TYPE_BUFFER_FILLER_TAG {
+     typedef struct QUEX_NAME(BufferFiller_tag) {
         /* PURPOSE: This is the interface that the buffer sees of the buffer filler. Its
          *          task is to coordinate the filling of buffer content from a stream 
          *          in the background. Some fillers may convert characters or filter.
@@ -26,48 +26,48 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* -- 'Tell' returns the character index of the last character read. This corresponds   
          *    to the character index of the last character that is currently in the buffer.  */
-        size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);
+        size_t   (*tell_character_index)(struct QUEX_NAME(BufferFiller_tag)*);
 
         /* -- 'Seek' sets the input position for the next buffer-read-action.
          *    NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
          *          stream to a particular position given by a character index. QuexBuffer_seek(..)
          *          sets the _input_p to a particular position.                                      */
-        void     (*seek_character_index)(struct __QuexBufferFiller_tag*, const size_t Index);
+        void     (*seek_character_index)(struct QUEX_NAME(BufferFiller_tag)*, const size_t Index);
 
         /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)      */
-        size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
+        size_t   (*read_characters)(struct QUEX_NAME(BufferFiller_tag)*,
                                     QUEX_TYPE_CHARACTER* memory, const size_t N);
 
         /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
          *    to lexeme end exceeds the buffer size.                                                 */
-        bool     (*_on_overflow)(QUEX_TYPE_BUFFER*, bool ForwardF);
+        bool     (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
         /* -- 'Destructor' -- There are derived 'classes' from this one. The user only stores a 
          *    pointer to QuexBufferFiller, and requires a way to delete the whole object.            */ 
-        void     (*delete_self)(struct __QuexBufferFiller_tag*);
+        void     (*delete_self)(struct QUEX_NAME(BufferFiller_tag)*);
 
-    } QUEX_TYPE_BUFFER_FILLER;
+    } QUEX_NAME(BufferFiller);
 
     QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_setup_functions)(QUEX_TYPE_BUFFER_FILLER*   me,
-                                            size_t       (*tell_character_index)(QUEX_TYPE_BUFFER_FILLER*),
-                                            void         (*seek_character_index)(QUEX_TYPE_BUFFER_FILLER*, const size_t),
-                                            size_t       (*read_characters)(QUEX_TYPE_BUFFER_FILLER*,
+    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
+                                            size_t       (*tell_character_index)(QUEX_NAME(BufferFiller)*),
+                                            void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, const size_t),
+                                            size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                             QUEX_TYPE_CHARACTER*, const size_t),
-                                            void         (*delete_self)(QUEX_TYPE_BUFFER_FILLER*));
-    TEMPLATE_IN(InputHandleT) QUEX_TYPE_BUFFER_FILLER*
+                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*));
+    TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
-                         const char*    CharacterEncodingName,
-                         const size_t   TranslationBufferMemorySize);
-    QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_TYPE_BUFFER_FILLER*); 
+                                const char*    CharacterEncodingName,
+                                const size_t   TranslationBufferMemorySize);
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
 
-    QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_TYPE_BUFFER*);
-    QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_backward)(QUEX_TYPE_BUFFER*);
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)*);
 
     /* Helper function for buffer fillers trying to deal with strange streams or 
      * dynamic length character encodings.                                             */
-    QUEX_INLINE void    QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_TYPE_BUFFER_FILLER*  me,
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)*  me,
                                                                           const size_t              ForwardN);
 
 QUEX_NAMESPACE_MAIN_CLOSE

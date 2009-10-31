@@ -121,11 +121,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
-        QUEX_TYPE_BUFFER_FILLER   base;
+        QUEX_NAME(BufferFiller)   base;
 
         InputHandleT*             ih;
 
-        QUEX_TYPE_CONVERTER*      converter;
+        QUEX_NAME(Converter)*     converter;
 
         TEMPLATED(QuexRawBuffer)  raw_buffer;
 

@@ -15,8 +15,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
-    QuexConverter_ICU_open(QuexConverter_ICU* me, 
-                           const char* FromCodingName, const char* ToCodingName)
+    QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter_ICU)* me, 
+                                  const char* FromCodingName, const char* ToCodingName)
     {
         __quex_assert(me != 0x0);
 
@@ -68,9 +68,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool
-    QuexConverter_ICU_convert(QuexConverter_ICU*    me, 
-                              uint8_t**             source, const uint8_t*              SourceEnd, 
-                              QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
+    QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter_ICU)*    me, 
+                                     uint8_t**             source, const uint8_t*              SourceEnd, 
+                                     QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
         /* RETURNS: 'true'  if the drain was completely filled.
          *          'false' if the drain could not be filled completely and more source
@@ -135,7 +135,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void 
-    QuexConverter_ICU_on_conversion_discontinuity(QuexConverter_ICU* me)
+    QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter_ICU)* me)
     {
         ucnv_reset(me->from_handle);
         if( me->to_handle != 0x0 ) ucnv_reset(me->to_handle);
@@ -148,7 +148,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QuexConverter_ICU_delete_self(QuexConverter_ICU* me)
+    QUEX_NAME(Converter_ICU_delete_self)(QUEX_NAME(Converter_ICU)* me)
     {
         ucnv_close(me->from_handle);
         ucnv_close(me->to_handle);
@@ -159,23 +159,23 @@ QUEX_NAMESPACE_MAIN_OPEN
          * are freed automatically.                                                       */
     }
 
-    QUEX_INLINE QuexConverter*
-    QuexConverter_ICU_new()
+    QUEX_INLINE QUEX_NAME(Converter)*
+    QUEX_NAME(Converter_ICU_new)()
     {
-        QuexConverter_ICU*  me = \
-             (QuexConverter_ICU*)QUEX_NAME(MemoryManager_Converter_allocate)(sizeof(QuexConverter_ICU));
+        QUEX_NAME(Converter_ICU)*  me = \
+             (QUEX_NAME(Converter_ICU)*)QUEX_NAME(MemoryManager_Converter_allocate)(sizeof(QUEX_NAME(Converter_ICU)));
 
-        me->base.open        = (QuexConverterFunctionP_open)QuexConverter_ICU_open;
-        me->base.convert     = (QuexConverterFunctionP_convert)QuexConverter_ICU_convert;
-        me->base.delete_self = (QuexConverterFunctionP_delete_self)QuexConverter_ICU_delete_self;
+        me->base.open        = (QUEX_NAME(ConverterFunctionP_open))QUEX_NAME(Converter_ICU_open);
+        me->base.convert     = (QUEX_NAME(ConverterFunctionP_convert))QUEX_NAME(Converter_ICU_convert);
+        me->base.delete_self = (QUEX_NAME(ConverterFunctionP_delete_self))QUEX_NAME(Converter_ICU_delete_self);
         me->base.on_conversion_discontinuity  = \
-         (QuexConverterFunctionP_on_conversion_discontinuity)QuexConverter_ICU_on_conversion_discontinuity;
+         (QUEX_NAME(ConverterFunctionP_on_conversion_discontinuity))QUEX_NAME(Converter_ICU_on_conversion_discontinuity);
 
         me->to_handle   = 0x0;
         me->from_handle = 0x0;
         me->status      = U_ZERO_ERROR;
 
-        return (QuexConverter*)me;
+        return (QUEX_NAME(Converter)*)me;
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE

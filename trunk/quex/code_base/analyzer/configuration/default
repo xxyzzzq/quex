@@ -66,6 +66,11 @@
 #define QUEX_NAMESPACE_MAIN_CLOSE      
 #endif
 
+#ifndef QUEX_TYPE_CHARACTER_POSITION  
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
+#endif
+#define QUEX_NAME(X)   QuexDefault ## X
+
 QUEX_NAMESPACE_MAIN_OPEN
     struct  QuexAnalyzerEngine_tag;
     /* Define QUEX_TYPE_ANALYZER_FUNCTION before inclusion 
