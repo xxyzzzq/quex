@@ -29,7 +29,7 @@ need to include it, in the form::
 
 Using the same token prefix is not necessary, to produce consistent results.
 The ``token { ... }`` section does not rely on the token prefix. Further in
-this setup, the ``QUEX_TYPE_TOKEN_ID`` and the ``QUEX_TYPE_CHARACTER``
+this setup, the ``QUEX_TYPE_TOKEN_XXX_ID`` and the ``QUEX_TYPE_CHARACTER``
 must be the same for all included analyzers.
 
 Alternatively, each lexical analyzer might rely on its own token class with

@@ -69,7 +69,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
-    QUEX_INLINE  QUEX_TYPE_POST_CATEGORIZER_NODE*  
+    QUEX_INLINE  QUEX_NAME(DictionaryNode)*  
     QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(size_t RemainderL)
     {
         /* Allocate in one beat: base and remainder: 
@@ -80,16 +80,16 @@ QUEX_NAMESPACE_MAIN_OPEN
          * memory. Note, that this is not very efficient, since one should try to allocate
          * the small node objects and refer to the remainder only when necessary. This
          * would reduce cache misses.                                                      */
-        const size_t   BaseSize      = sizeof(QUEX_TYPE_POST_CATEGORIZER_NODE);
+        const size_t   BaseSize      = sizeof(QUEX_NAME(DictionaryNode));
         /* Length + 1 == memory size (terminating zero) */
         const size_t   RemainderSize = sizeof(QUEX_TYPE_CHARACTER) * (RemainderL + 1);
         uint8_t*       base          = __QUEX_ALLOCATE_MEMORY(BaseSize + RemainderSize);
-        ((QUEX_TYPE_POST_CATEGORIZER_NODE*)base)->name_remainder = (const QUEX_TYPE_CHARACTER*)(base + BaseSize);
-        return (QUEX_TYPE_POST_CATEGORIZER_NODE*)base;
+        ((QUEX_NAME(DictionaryNode)*)base)->name_remainder = (const QUEX_TYPE_CHARACTER*)(base + BaseSize);
+        return (QUEX_NAME(DictionaryNode)*)base;
     }
 
     QUEX_INLINE  void 
-    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QUEX_TYPE_POST_CATEGORIZER_NODE* node)
+    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QUEX_NAME(DictionaryNode)* node)
     { if( node != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)node); }
 #   endif
 
@@ -118,24 +118,24 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE* 
+    QUEX_INLINE QUEX_TYPE_TOKEN* 
     QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t N)
     {
-        const size_t     MemorySize = sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * N;
-        return (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+        const size_t     MemorySize = sizeof(QUEX_TYPE_TOKEN) * N;
+        return (QUEX_TYPE_TOKEN*)__QUEX_ALLOCATE_MEMORY(MemorySize);
     }
 
     QUEX_INLINE void 
-    QUEX_NAME(MemoryManager_TokenArray_free)(QUEX_TYPE_TOKEN_WITH_NAMESPACE* memory)
+    QUEX_NAME(MemoryManager_TokenArray_free)(QUEX_TYPE_TOKEN* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 #endif
 
 #if defined (QUEX_OPTION_INCLUDE_STACK)
     /* NOTE: The macro 'QUEX_MACRO_STRING_CONCATINATE' is used to generate a function
-     *       name. For example, if the macro QUEX_TYPE_MEMENTO is defined as 'LexerMemento',
+     *       name. For example, if the macro QUEX_NAME(Memento) is defined as 'LexerMemento',
      *       then the macro call
      *
-     *           QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)
+     *           QUEX_FIX3(MemoryManager_, QUEX_NAME(Memento), _allocate)
      *
      *       generates the function name:
      *
@@ -143,15 +143,15 @@ QUEX_NAMESPACE_MAIN_OPEN
      *
      *       Results of C-Preprocessing can always be viewed with 'gcc -E'.
      *                                                                                    */
-    QUEX_INLINE QUEX_TYPE_MEMENTO*
+    QUEX_INLINE QUEX_NAME(Memento)*
     QUEX_NAME(MemoryManager_Memento_allocate)()
     {
-        const size_t     MemorySize = sizeof(QUEX_TYPE_MEMENTO);
-        return (QUEX_TYPE_MEMENTO*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+        const size_t     MemorySize = sizeof(QUEX_NAME(Memento));
+        return (QUEX_NAME(Memento)*)__QUEX_ALLOCATE_MEMORY(MemorySize);
     }
 
     QUEX_INLINE void
-    QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_TYPE_MEMENTO_TAG* memory)
+    QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_NAME(Memento_tag)* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 #endif
 

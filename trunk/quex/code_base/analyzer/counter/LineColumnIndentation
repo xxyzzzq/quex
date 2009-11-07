@@ -4,7 +4,7 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION
 #define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION
 
@@ -19,12 +19,12 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    struct QUEX_TYPE_ANALYZER_DATA_TAG;
+    struct QUEX_NAME(AnalyzerData_tag);
 
     typedef struct {
         __CounterBase   base;
 
-        struct QUEX_TYPE_ANALYZER_DATA_TAG*   _the_lexer;
+        struct QUEX_NAME(AnalyzerData_tag)*   _the_lexer;
 
         int     _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
@@ -33,7 +33,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     } CounterLineColumnIndentation;
 
     QUEX_INLINE void
-    CounterLineColumnIndentation_construct(CounterLineColumnIndentation* me, struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
+    CounterLineColumnIndentation_construct(CounterLineColumnIndentation* me, struct QUEX_NAME(AnalyzerData_tag)* lexer);
 
     QUEX_INLINE void
     CounterLineColumnIndentation_reset(CounterLineColumnIndentation* me);

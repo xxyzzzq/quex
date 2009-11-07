@@ -123,68 +123,65 @@
 #ifdef    QUEX_TYPE_DERIVED_ANALYZER
 #   undef QUEX_TYPE_DERIVED_ANALYZER
 #endif
-#ifdef    QUEX_TYPE_ANALYZER_ENGINE_TAG
-#   undef QUEX_TYPE_ANALYZER_ENGINE_TAG
+#ifdef    QUEX_NAME(Engine_tag)
+#   undef QUEX_NAME(Engine_tag)
 #endif
-#ifdef    QUEX_TYPE_ANALYZER_ENGINE   
-#   undef QUEX_TYPE_ANALYZER_ENGINE   
+#ifdef    QUEX_NAME(Engine)   
+#   undef QUEX_NAME(Engine)   
 #endif
 #ifdef    QUEX_TYPE_ANALYZER_FUNCTION   
 #   undef QUEX_TYPE_ANALYZER_FUNCTION   
 #endif
-#ifdef    QUEX_TYPE_ANALYZER_DATA_TAG
-#   undef QUEX_TYPE_ANALYZER_DATA_TAG
+#ifdef    QUEX_NAME(AnalyzerData_tag)
+#   undef QUEX_NAME(AnalyzerData_tag)
 #endif
-#ifdef    QUEX_TYPE_ANALYZER_DATA
-#   undef QUEX_TYPE_ANALYZER_DATA
+#ifdef    QUEX_NAME(AnalyzerData)
+#   undef QUEX_NAME(AnalyzerData)
 #endif
 #ifdef    QUEX_TYPE_ANALYZER
 #   undef QUEX_TYPE_ANALYZER
 #endif
-#ifdef    QUEX_TYPE_MEMENTO_BASE
-#   undef QUEX_TYPE_MEMENTO_BASE
+#ifdef    QUEX_NAME(MementoBase)
+#   undef QUEX_NAME(MementoBase)
 #endif
-#ifdef    QUEX_TYPE_MEMENTO_TAG
-#   undef QUEX_TYPE_MEMENTO_TAG
+#ifdef    QUEX_NAME(Memento_tag)
+#   undef QUEX_NAME(Memento_tag)
 #endif
-#ifdef    QUEX_TYPE_MEMENTO
-#   undef QUEX_TYPE_MEMENTO
+#ifdef    QUEX_NAME(Memento)
+#   undef QUEX_NAME(Memento)
 #endif
-#ifdef    QUEX_TYPE_ACCUMULATOR        
-#   undef QUEX_TYPE_ACCUMULATOR        
+#ifdef    QUEX_NAME(Accumulator)        
+#   undef QUEX_NAME(Accumulator)        
 #endif
-#ifdef    QUEX_TYPE_MODE_TAG    
-#   undef QUEX_TYPE_MODE_TAG    
+#ifdef    QUEX_NAME(Mode_tag)    
+#   undef QUEX_NAME(Mode_tag)    
 #endif
-#ifdef    QUEX_TYPE_MODE
-#   undef QUEX_TYPE_MODE
+#ifdef    QUEX_NAME(Mode)
+#   undef QUEX_NAME(Mode)
 #endif
 #ifdef    QUEX_TYPE_COUNTER
 #   undef QUEX_TYPE_COUNTER
 #endif
-#ifdef    QUEX_TYPE_POST_CATEGORIZER
-#   undef QUEX_TYPE_POST_CATEGORIZER
+#ifdef    QUEX_NAME(Dictionary)
+#   undef QUEX_NAME(Dictionary)
 #endif
-#ifdef    QUEX_TYPE_POST_CATEGORIZER_NODE      
-#   undef QUEX_TYPE_POST_CATEGORIZER_NODE    
+#ifdef    QUEX_NAME(DictionaryNode)      
+#   undef QUEX_NAME(DictionaryNode)    
 #endif
-#ifdef    QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  
-#   undef QUEX_TYPE_POST_CATEGORIZER_NODE_TAG 
+#ifdef    QUEX_NAME(DictionaryNode_tag)  
+#   undef QUEX_NAME(DictionaryNode_tag) 
 #endif
 #ifdef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N
 #   undef QUEX_SETTING_BUFFER_MIN_FALLBACK_N
 #endif
-#ifndef   QUEX_TYPE_TOKEN_ID
-#   undef QUEX_TYPE_TOKEN_ID                 
-#endif
-#ifdef    QUEX_TYPE_TOKEN_WITH_NAMESPACE
-#   undef QUEX_TYPE_TOKEN_WITH_NAMESPACE                    
+#ifndef   QUEX_TYPE_TOKEN_XXX_ID
+#   undef QUEX_TYPE_TOKEN_XXX_ID                 
 #endif
 #ifdef    QUEX_TYPE_TOKEN
-#   undef QUEX_TYPE_TOKEN  
+#   undef QUEX_TYPE_TOKEN                    
 #endif
-#ifdef    QUEX_TYPE_STR_TOKEN_COMPLETE
-#   undef QUEX_TYPE_STR_TOKEN_COMPLETE       
+#ifdef    QUEX_TYPE_TOKEN_XXX
+#   undef QUEX_TYPE_TOKEN_XXX  
 #endif
 #ifdef    QUEX_TYPE_LINE_N
 #   undef QUEX_TYPE_LINE_N                   

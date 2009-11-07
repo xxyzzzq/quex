@@ -94,44 +94,44 @@ public:
     void             set_stream_position(uint32_t& Value)         { content.stream_position = Value; }
 /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
 
-    void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID) { _id = ID; }
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const std::string& Value0)
     { _id = ID; my_name = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const std::vector<int>& Value0)
     { _id = ID; numbers = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0, const std::vector<int>& Value1)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const std::string& Value0, const std::vector<int>& Value1)
     { _id = ID; my_name = Value0; numbers = Value1; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const uint32_t& Value0)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const uint32_t& Value0)
     { _id = ID; content.stream_position = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const int16_t& Value0, const int16_t& Value1)
     { _id = ID; content.data_1.x = Value0; content.data_1.y = Value1; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const float& Value0, const short& Value1)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const float& Value0, const short& Value1)
     { _id = ID; content.data_0.number = Value0; content.data_0.index = Value1; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const uint16_t& Value0)
+    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const uint16_t& Value0)
     { _id = ID; content.who_is_that = Value0; }
 
 
     private:
-        QUEX_TYPE_TOKEN_ID    _id;
+        QUEX_TYPE_TOKEN_XXX_ID    _id;
     public:
-        QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
-        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
+        QUEX_TYPE_TOKEN_XXX_ID    type_id() const      { return _id; }
+        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_XXX_ID);
         const std::string     type_id_name() const { return map_id_to_name(_id); }
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     private:
-        QUEX_TYPE_TOKEN_LINE_N    _line_n;
+        QUEX_TYPE_TOKEN_XXX_LINE_N    _line_n;
     public:
-        QUEX_TYPE_TOKEN_LINE_N    line_number() const                                 { return _line_n; }
-        void                      set_line_number(const QUEX_TYPE_TOKEN_LINE_N Value) { _line_n = Value; }
+        QUEX_TYPE_TOKEN_XXX_LINE_N    line_number() const                                 { return _line_n; }
+        void                      set_line_number(const QUEX_TYPE_TOKEN_XXX_LINE_N Value) { _line_n = Value; }
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
     private:
-        QUEX_TYPE_TOKEN_COLUMN_N  _column_n;
+        QUEX_TYPE_TOKEN_XXX_COLUMN_N  _column_n;
     public:
-        QUEX_TYPE_TOKEN_COLUMN_N  column_number() const                                   { return _column_n; }
-        void                      set_column_number(const QUEX_TYPE_TOKEN_COLUMN_N Value) { _column_n = Value; }
+        QUEX_TYPE_TOKEN_XXX_COLUMN_N  column_number() const                                   { return _column_n; }
+        void                      set_column_number(const QUEX_TYPE_TOKEN_XXX_COLUMN_N Value) { _column_n = Value; }
 #       endif
 #   endif
     public:
@@ -140,10 +140,10 @@ public:
 
 inline
 /* NOTE: If you get an error here, then your configuration
- *       file does not declare QUEX_TYPE_TOKEN as MeinToken. 
+ *       file does not declare QUEX_TYPE_TOKEN_XXX as MeinToken. 
  *       The following weirdly typed constructor shall break in
  *       this particular case.                                        */
-MeinToken::QUEX_TYPE_TOKEN()
+MeinToken::QUEX_TYPE_TOKEN_XXX()
 /*****************************************************/
 {
 

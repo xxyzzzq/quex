@@ -14,60 +14,60 @@ QUEX_NAMESPACE_MAIN_OPEN
      * The implementation of the categorization tree is a little more efficient
      * than the STL map, since we do not iterator over the content.
      *________________________________________________________________________________*/
-    typedef struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG {
+    typedef struct QUEX_NAME(DictionaryNode_tag) {
         /* Store the first character separately from the remainder. This might
          * help to avoid loading 'remotely allocated' strings into the cache if
          * they do not fit anyway (because of their first character).                 */ 
         QUEX_TYPE_CHARACTER          name_first_character;
         const QUEX_TYPE_CHARACTER*   name_remainder;
 
-        QUEX_TYPE_TOKEN_ID           token_id;
+        QUEX_TYPE_TOKEN_XXX_ID           token_id;
 
-        struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG*   lesser;
-        struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG*   greater;
+        struct QUEX_NAME(DictionaryNode_tag)*   lesser;
+        struct QUEX_NAME(DictionaryNode_tag)*   greater;
 
-    } QUEX_TYPE_POST_CATEGORIZER_NODE;
+    } QUEX_NAME(DictionaryNode);
 
     typedef struct {
-        QUEX_TYPE_POST_CATEGORIZER_NODE*  root;
+        QUEX_NAME(DictionaryNode)*  root;
 
 #       ifndef __QUEX_SETTING_PLAIN_C
         void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
-                                  const QUEX_TYPE_TOKEN_ID TokenID);
+                                  const QUEX_TYPE_TOKEN_XXX_ID TokenID);
         void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
-        QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
+        QUEX_TYPE_TOKEN_XXX_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
         void                clear();
         void                print_this();
 #       endif
 
-    } QUEX_TYPE_POST_CATEGORIZER;
+    } QUEX_NAME(Dictionary);
 
     QUEX_INLINE int
-    QUEX_NAME(PostCategorizer_compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me, 
+    QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*  me, 
                                        QUEX_TYPE_CHARACTER               FirstCharacter, 
                                        const QUEX_TYPE_CHARACTER*        Remainder);
 
     QUEX_INLINE void
-    QUEX_NAME(PostCategorizer_enter)(QUEX_TYPE_POST_CATEGORIZER*  me, 
+    QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)*  me, 
                                      const QUEX_TYPE_CHARACTER*   EntryName, 
-                                     QUEX_TYPE_TOKEN_ID           TokenID);
+                                     QUEX_TYPE_TOKEN_XXX_ID           TokenID);
 
-    QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE*
-    QUEX_NAME(PostCategorizer_find)(const QUEX_TYPE_POST_CATEGORIZER* me, 
+    QUEX_INLINE QUEX_NAME(DictionaryNode)*
+    QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)* me, 
                                     const QUEX_TYPE_CHARACTER*        EntryName);
 
     QUEX_INLINE void
-    QUEX_NAME(PostCategorizer_insert)(QUEX_TYPE_POST_CATEGORIZER* me, 
+    QUEX_NAME(PostCategorizer_insert)(QUEX_NAME(Dictionary)* me, 
                                       const QUEX_TYPE_CHARACTER*  EntryName, 
-                                      QUEX_TYPE_TOKEN_ID          TokenID);
+                                      QUEX_TYPE_TOKEN_XXX_ID          TokenID);
 
     QUEX_INLINE void
-    QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER* me, 
+    QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)* me, 
                                       const QUEX_TYPE_CHARACTER*  EntryName);
 
     QUEX_INLINE void
-    QUEX_NAME(PostCategorizer_clear)(QUEX_TYPE_POST_CATEGORIZER*       me, 
-                                     QUEX_TYPE_POST_CATEGORIZER_NODE*  branch);
+    QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)*       me, 
+                                     QUEX_NAME(DictionaryNode)*  branch);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

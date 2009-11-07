@@ -4,20 +4,12 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE
 #define __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE
 
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
-#endif
-
-#ifndef   QUEX_TYPE_MODE
-#   error "Macro QUEX_TYPE_MODE must be defined before inclusion of this file."
-#endif
-
-#ifndef   QUEX_TYPE_MODE_TAG
-#   error "Macro QUEX_TYPE_MODE_TAG must be defined before inclusion of this file."
 #endif
 
 #include<quex/code_base/definitions>
@@ -33,36 +25,36 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
     
-    typedef struct QUEX_TYPE_MODE_TAG {  
+    typedef struct QUEX_NAME(Mode_tag) {  
         int                          id;
         const char*                  name;
-        QUEX_TYPE_ANALYZER_ENGINE*   the_lexer;
+        QUEX_NAME(Engine)*   the_lexer;
 
         QUEX_TYPE_ANALYZER_FUNCTION  analyzer_function;
 
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indentation)(QUEX_TYPE_ANALYZER_DATA*, const int Indentation);
+        void (*on_indentation)(QUEX_NAME(AnalyzerData)*, const int Indentation);
 #       endif
-        void (*on_entry)(QUEX_TYPE_ANALYZER_DATA*, const struct QUEX_TYPE_MODE_TAG* FromMode);
-        void (*on_exit)(QUEX_TYPE_ANALYZER_DATA*, const struct QUEX_TYPE_MODE_TAG* ToMode);
+        void (*on_entry)(QUEX_NAME(AnalyzerData)*, const struct QUEX_NAME(Mode_tag)* FromMode);
+        void (*on_exit)(QUEX_NAME(AnalyzerData)*, const struct QUEX_NAME(Mode_tag)* ToMode);
 #       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
 
-        bool (*has_base)(const struct QUEX_TYPE_MODE_TAG* Mode);
-        bool (*has_entry_from)(const struct QUEX_TYPE_MODE_TAG* Mode);
-        bool (*has_exit_to)(const struct QUEX_TYPE_MODE_TAG* Mode);
+        bool (*has_base)(const struct QUEX_NAME(Mode_tag)* Mode);
+        bool (*has_entry_from)(const struct QUEX_NAME(Mode_tag)* Mode);
+        bool (*has_exit_to)(const struct QUEX_NAME(Mode_tag)* Mode);
 #       endif
-    } QUEX_TYPE_MODE;
+    } QUEX_NAME(Mode);
     
     QUEX_INLINE void
-    QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER_DATA*)
+    QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_NAME(AnalyzerData)*)
     { __quex_assert(0); return; }
 
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER_DATA*, const int) 
+    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_NAME(AnalyzerData)*, const int) 
     { }
 
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER_DATA*, const QUEX_TYPE_MODE*) 
+    QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_NAME(AnalyzerData)*, const QUEX_NAME(Mode)*) 
     { }
 
 QUEX_NAMESPACE_MAIN_CLOSE

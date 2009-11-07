@@ -3,11 +3,6 @@
 #ifndef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE
 #define __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE
 
-#ifndef QUEX_TYPE_TOKEN_QUEUE
-#   error "QUEX_TYPE_TOKEN_QUEUE has not been defined before the inclusion of this file."
-#endif
-
-
 #include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
 #include <quex/code_base/MemoryManager>
@@ -16,68 +11,65 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-#define QUEX_TYPE_TOKEN_QUEUE_construct  QUEX_FIX(TOKEN_QUEUE, _construct)
-#define QUEX_TYPE_TOKEN_QUEUE_destruct   QUEX_FIX(TOKEN_QUEUE, _destruct)
-
     typedef struct {
 
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   begin;
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   read_iterator;    // pointer to next token to be read
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   write_iterator;   // pointer to next token to be written
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   end_minus_safety_border;
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*   end;
+        QUEX_TYPE_TOKEN*   begin;
+        QUEX_TYPE_TOKEN*   read_iterator;    // pointer to next token to be read
+        QUEX_TYPE_TOKEN*   write_iterator;   // pointer to next token to be written
+        QUEX_TYPE_TOKEN*   end_minus_safety_border;
+        QUEX_TYPE_TOKEN*   end;
         /* A token might be 'N' times repeated. This is the only case where a token
          * queue overflow might occur. When the token queue is full and there are still
          * 'N' tokens to be repeated, then the remaining 'N' are stored in the following
          * variable.                                                                      */
         size_t     remaining_repetitions_of_last_token_n;
 
-    } QUEX_TYPE_TOKEN_QUEUE;
+    } QUEX_NAME(TokenQueue);
 
     QUEX_INLINE void
-    QUEX_NAME(TokenQueue_reset)(QUEX_TYPE_TOKEN_QUEUE* me) 
+    QUEX_NAME(TokenQueue_reset)(QUEX_NAME(TokenQueue)* me) 
     {                                                    
-        (me).read_iterator  = (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)(me).begin; 
-        (me).write_iterator = (QUEX_TYPE_TOKEN_WITH_NAMESPACE*)(me).begin; 
-        (me).remaining_repetitions_of_last_token_n = 0;     
+        me->read_iterator  = (QUEX_TYPE_TOKEN*)me->begin; 
+        me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; 
+        me->remaining_repetitions_of_last_token_n = 0;     
     }
 
     QUEX_INLINE void
-    QUEX_NAME(TokenQueue_init)(QUEX_TYPE_TOKEN_QUEUE* me, 
-                               QUEX_TYPE_TOKEN_WITH_NAMESPACE* Memory, 
-                               QUEX_TYPE_TOKEN_WITH_NAMESPACE* MemoryEnd, 
+    QUEX_NAME(TokenQueue_init)(QUEX_NAME(TokenQueue)* me, 
+                               QUEX_TYPE_TOKEN* Memory, 
+                               QUEX_TYPE_TOKEN* MemoryEnd, 
                                const size_t SafetyBorder)
     {
-        (me).begin                   = Memory;                           
-        (me).end                     = MemoryEnd;                        
-        (me).end_minus_safety_border = MemoryEnd - SafetyBorder;         
-        QUEX_TYPE_TOKEN_QUEUE_reset(me);                                
+        me->begin                   = Memory;                           
+        me->end                     = MemoryEnd;                        
+        me->end_minus_safety_border = MemoryEnd - SafetyBorder;         
+        QUEX_NAME(TokenQueue_reset)(me);                                
     }
 
     QUEX_INLINE void
-    QUEX_NAME(TokenQueue_construct)(QUEX_TYPE_TOKEN_QUEUE* me, const size_t N)
+    QUEX_NAME(TokenQueue_construct)(QUEX_NAME(TokenQueue)* me, const size_t N)
     {
         if( N == 0 ) {
-            QUEX_TYPE_TOKEN_QUEUE_init(*me, 0x0, 0x0, 0); 
+            QUEX_NAME(TokenQueue_init)(me, 0x0, 0x0, 0); 
         } else {
             __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
-            QUEX_TYPE_TOKEN_WITH_NAMESPACE*  chunk     = QUEX_NAME(MemoryManager_TokenArray_allocate)(N);
-            QUEX_TYPE_TOKEN_WITH_NAMESPACE*  chunk_end = chunk + N;
+            QUEX_TYPE_TOKEN*  chunk     = QUEX_NAME(MemoryManager_TokenArray_allocate)(N);
+            QUEX_TYPE_TOKEN*  chunk_end = chunk + N;
 
             /* Call placement new (plain constructor) for all tokens in chunk. */
-            for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = chunk; iterator != chunk_end; ++iterator)
-                new ((void*)iterator) QUEX_TYPE_TOKEN_WITH_NAMESPACE;  
-            QUEX_TYPE_TOKEN_QUEUE_init(*me, chunk, chunk_end, QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
+            for(QUEX_TYPE_TOKEN* iterator = chunk; iterator != chunk_end; ++iterator)
+                new ((void*)iterator) QUEX_TYPE_TOKEN;  
+            QUEX_NAME(TokenQueue_init)(me, chunk, chunk_end, QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
         }
     }
 
     QUEX_INLINE void
-    QUEX_NAME(TokenQueue_destruct)(QUEX_TYPE_TOKEN_QUEUE* me)
+    QUEX_NAME(TokenQueue_destruct)(QUEX_NAME(TokenQueue)* me)
     {
         /* Call explicit destructors for all tokens in array */
-        for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = me->begin; iterator != me->end; ++iterator)
-             iterator->QUEX_TYPE_TOKEN_WITH_NAMESPACE::~QUEX_TYPE_TOKEN();  
+        for(QUEX_TYPE_TOKEN* iterator = me->begin; iterator != me->end; ++iterator)
+             iterator->QUEX_TYPE_TOKEN::~QUEX_TYPE_TOKEN_XXX();  
 
         if( me->begin != 0x0 ) {
             QUEX_NAME(MemoryManager_TokenArray_free)(me->begin);
@@ -85,19 +77,27 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
     }
 
-#ifndef    __QUEX_INDICATOR_TYPE_TOKEN_QUEUE_HELPERS
-#   define __QUEX_INDICATOR_TYPE_TOKEN_QUEUE_HELPERS
-#   define QUEX_TYPE_TOKEN_QUEUE_is_full(me)      ((me).write_iterator >= (me).end_minus_safety_border) 
-#   define QUEX_TYPE_TOKEN_QUEUE_is_empty(me)     ((me).read_iterator == (me).write_iterator)
-#   define QUEX_TYPE_TOKEN_QUEUE_pop(me)          ((me).read_iterator++)
-#   define QUEX_TYPE_TOKEN_QUEUE_begin(me)        ((me).begin)
-#   define QUEX_TYPE_TOKEN_QUEUE_back(me)         ((me).end - 1)
-#   define QUEX_TYPE_TOKEN_QUEUE_available_n(me)  ((me).end - (me).write_iterator)
-#endif
+    QUEX_INLINE bool QUEX_NAME(TokenQueue_is_full)(QUEX_NAME(TokenQueue)* me) 
+    { return me->write_iterator >= me->end_minus_safety_border; }
+    
+    QUEX_INLINE bool QUEX_NAME(TokenQueue_is_empty)(QUEX_NAME(TokenQueue)* me)
+    { return me->read_iterator == me->write_iterator; }
+
+    QUEX_INLINE QUEX_NAME(Token)* QUEX_NAME(TokenQueue_pop)(QUEX_NAME(TokenQueue)* me)
+    { return me->read_iterator++; }
+
+    QUEX_INLINE QUEX_NAME(Token)* QUEX_NAME(TokenQueue_begin)(QUEX_NAME(TokenQueue)* me)
+    { return me->begin; }
+
+    QUEX_INLINE QUEX_NAME(Token)* QUEX_NAME(TokenQueue_back)(QUEX_NAME(TokenQueue)* me)
+    { return me->end - 1; }
+
+    QUEX_INLINE size_t QUEX_NAME(TokenQueue_available_n)(QUEX_NAME(TokenQueue)* me) 
+    { return me->end - me->write_iterator; }
 
 #ifdef QUEX_OPTION_ASSERTS
     QUEX_INLINE void  
-    QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(QUEX_TYPE_TOKEN_QUEUE* me)
+    QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(QUEX_NAME(TokenQueue)* me)
     {
         __quex_assert(me->begin != 0x0);
         __quex_assert(me->read_iterator  >= me->begin);
@@ -112,7 +112,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
     }
     QUEX_INLINE void  
-    QUEX_TOKEN_QUEUE_ASSERT(QUEX_TYPE_TOKEN_QUEUE* me)
+    QUEX_TOKEN_QUEUE_ASSERT(QUEX_NAME(TokenQueue)* me)
     {
         QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me);
         if( me->write_iterator == me->end ) { 
@@ -128,13 +128,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 #endif
 
 typedef struct {
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*   token_list;
-    size_t                            size;
-} QUEX_TYPE_TOKEN_QUEUERemainder;
+    QUEX_TYPE_TOKEN*   token_list;
+    size_t             size;
+} QUEX_NAME(TokenQueueRemainder);
 
 #if 1
 QUEX_INLINE void
-QUEX_TYPE_TOKEN_QUEUERemainder_save(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_TYPE_TOKEN_QUEUE* token_queue)
+QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAME(TokenQueue)* token_queue)
 {
     QUEX_TOKEN_QUEUE_ASSERT(token_queue);
     /* State of the token queue at the entry of this function:
@@ -204,23 +204,23 @@ QUEX_TYPE_TOKEN_QUEUERemainder_save(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_TYP
         }
 
         /* Step 2: copy plain chunk of memory                                   */
-        __QUEX_STD_memcpy(me->token_list, token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
+        __QUEX_STD_memcpy(me->token_list, token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN) * me->size);
 
         /* Step 3: Call cleaning placement new on objects which are subject to
          *         potential double deletion.                                   */
-        for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = token_queue->read_iterator; 
+        for(QUEX_TYPE_TOKEN* iterator = token_queue->read_iterator; 
             iterator != token_queue->write_iterator; ++iterator) {
             /* Clean-up by placement new */
-            new ((void*)iterator) QUEX_TYPE_TOKEN_WITH_NAMESPACE;
+            new ((void*)iterator) QUEX_TYPE_TOKEN;
         }
     }
-    QUEX_TYPE_TOKEN_QUEUE_reset(*token_queue);
+    QUEX_NAME(TokenQueue_reset)(token_queue);
 
     QUEX_TOKEN_QUEUE_ASSERT(token_queue);
 }
 
 QUEX_INLINE void
-QUEX_TYPE_TOKEN_QUEUERemainder_restore(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_TYPE_TOKEN_QUEUE* token_queue)
+QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAME(TokenQueue)* token_queue)
 {
     /* NOTE: When a token queue remainder is restored, this happens as a result
      *       of 'return from included file'. The return from an included file
@@ -230,7 +230,7 @@ QUEX_TYPE_TOKEN_QUEUERemainder_restore(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_
      *       token queue is empty. => Thus, the 'refill' can start from the beginning.  
      *       THIS IS TRUE WHEN THE INLCUDE_PUSH, INCLUDE_POP HAPPENS FROM OUTSIDE
      *       THE LEXICAL ANALYZER ENGINE.                                            */
-    if( ! QUEX_TYPE_TOKEN_QUEUE_is_empty(*token_queue) ) {
+    if( ! QUEX_NAME(TokenQueue_is_empty)(token_queue) ) {
         QUEX_ERROR_EXIT("Token queue not empty on return from included file. This can\n"
                         "only happen if include handling was done from inside analyzer\n"
                         "actions. Please, consider directory demo/005 for an example to\n"
@@ -240,12 +240,12 @@ QUEX_TYPE_TOKEN_QUEUERemainder_restore(QUEX_TYPE_TOKEN_QUEUERemainder* me, QUEX_
 
     if( me->size != 0 ) {
         /* Step 1: Call explicit destructors for token objects that are overwritten  */
-        for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = token_queue->begin; 
+        for(QUEX_TYPE_TOKEN* iterator = token_queue->begin; 
             iterator != token_queue->begin + me->size; ++iterator) {
-            iterator->~QUEX_TYPE_TOKEN();
+            iterator->~QUEX_TYPE_TOKEN_XXX();
         }
         /* Step 2: Plain copy of objects stored in the 'remainder store'             */
-        __QUEX_STD_memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
+        __QUEX_STD_memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN) * me->size);
 
         /* Step 3: De-Allocate the remainder objects                                 
          *         NO explicit destructor calls, since the referred objects are now

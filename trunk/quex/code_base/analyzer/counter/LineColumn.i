@@ -23,7 +23,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
-    CounterLineColumn_construct(CounterLineColumn* me, QUEX_TYPE_ANALYZER_DATA* lexer)
+    CounterLineColumn_construct(CounterLineColumn* me, QUEX_NAME(AnalyzerData)* lexer)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */

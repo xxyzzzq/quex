@@ -4,15 +4,12 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
 #define __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
 
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
-#endif
-#ifndef   QUEX_TYPE_ACCUMULATOR
-#   error "Macro QUEX_TYPE_ACCUMULATOR must be defined before inclusion of this file."
 #endif
 
 #include <quex/code_base/definitions>
@@ -37,7 +34,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifndef __QUEX_SETTING_PLAIN_C
     public:
-        void  flush(const QUEX_TYPE_TOKEN_ID TokenID);
+        void  flush(const QUEX_TYPE_TOKEN_XXX_ID TokenID);
         void  clear();
         void  add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
         void  add_chararacter(const QUEX_TYPE_CHARACTER);
@@ -45,10 +42,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     private:
         friend class QUEX_TYPE_ANALYZER;
 #   endif
-    } QUEX_TYPE_ACCUMULATOR;
+    } QUEX_NAME(Accumulator);
 
     void
-    QUEX_NAME(Accumulator_construct)(QUEX_TYPE_ACCUMULATOR*, QUEX_TYPE_ANALYZER*);
+    QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*, QUEX_TYPE_ANALYZER*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

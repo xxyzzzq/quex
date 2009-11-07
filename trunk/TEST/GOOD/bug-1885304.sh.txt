@@ -86,16 +86,16 @@ class Token;
 
 QUEX_NAMESPACE_MAIN_OPEN
     
-typedef struct QUEX_TYPE_MEMENTO_TAG {
-    QUEX_TYPE_MEMENTO_BASE  base;
+typedef struct QUEX_NAME(Memento_tag) {
+    QUEX_NAME(MementoBase)  base;
 
-    QUEX_TYPE_MEMENTO_TAG()  {}
-    ~QUEX_TYPE_MEMENTO_TAG() {}
+    QUEX_NAME(Memento_tag)()  {}
+    ~QUEX_NAME(Memento_tag)() {}
 
 /* START: User's memento extentions ___________________________________________*/
 
 /* END: _______________________________________________________________________*/
-} QUEX_TYPE_MEMENTO;
+} QUEX_NAME(Memento);
 
 TEMPLATE_IN(InputHandleT) void  
 QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*   me,
@@ -105,33 +105,33 @@ QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*   me,
                                        QUEX_TYPE_CHARACTER*  BufferMemory,
                                        size_t                BufferMemorySize);
 
-TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
+TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
 QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me, 
                                   QUEX_TYPE_CHARACTER*  InputName, 
                                   InputHandleT**        input_handle);
 
 QUEX_INLINE void
 QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
-                                    QUEX_TYPE_MEMENTO*   memento);
+                                    QUEX_NAME(Memento)*   memento);
 
 TEMPLATE_IN(InputHandleT) void
 QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
                           InputHandleT*         input_handle, 
                           const char*           CharacterEncodingName /* = 0x0 */);
 
-    extern     void Simple_ONE_AND_ONLY_analyzer_function(QUEX_TYPE_ANALYZER_DATA*);
+    extern     void Simple_ONE_AND_ONLY_analyzer_function(QUEX_NAME(AnalyzerData)*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-    extern     bool Simple_ONE_AND_ONLY_has_base(const QUEX_TYPE_MODE*);
-    extern     bool Simple_ONE_AND_ONLY_has_entry_from(const QUEX_TYPE_MODE*);
-    extern     bool Simple_ONE_AND_ONLY_has_exit_to(const QUEX_TYPE_MODE*);
+    extern     bool Simple_ONE_AND_ONLY_has_base(const QUEX_NAME(Mode)*);
+    extern     bool Simple_ONE_AND_ONLY_has_entry_from(const QUEX_NAME(Mode)*);
+    extern     bool Simple_ONE_AND_ONLY_has_exit_to(const QUEX_NAME(Mode)*);
 #endif
 
 
 
-class QUEX_TYPE_ANALYZER : public QUEX_TYPE_ANALYZER_DATA {
+class QUEX_TYPE_ANALYZER : public QUEX_NAME(AnalyzerData) {
 
 public:
-        static QUEX_TYPE_MODE  ONE_AND_ONLY;
+        static QUEX_NAME(Mode)  ONE_AND_ONLY;
 
     /* DISABLED */ QUEX_TYPE_ANALYZER(const QUEX_TYPE_ANALYZER&);
 public:
@@ -188,63 +188,63 @@ public:
     // -- token stream: read next token
     void                  get_token() 
     { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-    void  get_token(QUEX_TYPE_TOKEN_WITH_NAMESPACE*   result_p)
+    void  get_token(QUEX_TYPE_TOKEN*   result_p)
     { QUEX_ERROR_EXIT("get_token(Token*) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-    void  get_token(QUEX_TYPE_TOKEN_WITH_NAMESPACE**   result_p)
+    void  get_token(QUEX_TYPE_TOKEN**   result_p)
     { QUEX_ERROR_EXIT("get_token(Token**) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
 
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    void                 receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE*   result_p);
-    void                 receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE**  result_pp);
+    void                 receive(QUEX_TYPE_TOKEN*   result_p);
+    void                 receive(QUEX_TYPE_TOKEN**  result_pp);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     void                 receive();
-    void                 receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE*   result_p);
+    void                 receive(QUEX_TYPE_TOKEN*   result_p);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*     receive(QUEX_TYPE_TOKEN_WITH_NAMESPACE*  begin, QUEX_TYPE_TOKEN_WITH_NAMESPACE* end);
+    QUEX_TYPE_TOKEN*     receive(QUEX_TYPE_TOKEN*  begin, QUEX_TYPE_TOKEN* end);
 #   endif
     // NOTE: A pointer to an object of the token queue/object is used in order to make
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
-    QUEX_TYPE_TOKEN_WITH_NAMESPACE*     token_object();
+    QUEX_TYPE_TOKEN*     token_object();
 
     //
     // (*) Mode handling
     //
     //     -- modes: read access
-    QUEX_TYPE_MODE&   mode();
+    QUEX_NAME(Mode)&   mode();
     int               mode_id() const;
     const char*       mode_name() const;
     //
     //     -- modes: changing lexical analysis mode
     void        set_mode_brutally(const int       LexerMode);
-    void        set_mode_brutally(const QUEX_TYPE_MODE& Mode);
+    void        set_mode_brutally(const QUEX_NAME(Mode)& Mode);
     //
     void        operator<<(const int MODE_ID);               // not to be used in concatination
-    void        operator<<(/* NOT const*/ QUEX_TYPE_MODE& Mode);  // not to be used in concatination
+    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  // not to be used in concatination
     //
     void        pop_mode();
     void        pop_drop_mode();
-    void        push_mode(QUEX_TYPE_MODE& new_mode);
+    void        push_mode(QUEX_NAME(Mode)& new_mode);
     //
-    void        enter_mode(/* NOT const*/ QUEX_TYPE_MODE& TargetMode);
+    void        enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
     //
     //     -- map: mode id to mode and vice versa
-    QUEX_TYPE_MODE&   map_mode_id_to_mode(const int        ModeID);       
-    int         map_mode_to_mode_id(const QUEX_TYPE_MODE& Mode) const;
+    QUEX_NAME(Mode)&   map_mode_id_to_mode(const int        ModeID);       
+    int         map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
 
     // (*) Token sending
-    void        send(const QUEX_TYPE_TOKEN_WITH_NAMESPACE& That);
-    void        send(const QUEX_TYPE_TOKEN_ID TokenID);
-    void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
+    void        send(const QUEX_TYPE_TOKEN& That);
+    void        send(const QUEX_TYPE_TOKEN_XXX_ID TokenID);
+    void        send_n(const int N, const QUEX_TYPE_TOKEN_XXX_ID TokenID);
     template    <typename ContentT> 
-    void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
+    void        send(const QUEX_TYPE_TOKEN_XXX_ID TokenID, ContentT Content);
     template    <typename X0_T, typename X1_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1);
+    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1);
     template    <typename X0_T, typename X1_T, typename X2_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2);
+    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2);
     template    <typename X0_T, typename X1_T, typename X2_T, typename X3_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
+    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -280,7 +280,7 @@ public:
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 public:
     template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
-                                                    const QUEX_TYPE_MODE&    mode, 
+                                                    const QUEX_NAME(Mode)&    mode, 
                                                     const char*              IANA_CodingName = 0x0);
     template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                     const int                MODE_ID         = -1, 
@@ -292,8 +292,8 @@ protected:
 
 private:
     //      -- include events (a file is included)
-    template<class InputHandleT> QUEX_TYPE_MEMENTO*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-    void                                             memento_unpack(QUEX_TYPE_MEMENTO*);
+    template<class InputHandleT> QUEX_NAME(Memento)*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
+    void                                             memento_unpack(QUEX_NAME(Memento)*);
 #   endif
 
 public:
@@ -309,21 +309,21 @@ private:
                                            QUEX_TYPE_CHARACTER*      BufferMemory,    
                                            size_t                    BufferMemorySize);
 
-    template<class InputHandleT> friend QUEX_TYPE_MEMENTO*
+    template<class InputHandleT> friend QUEX_NAME(Memento)*
     QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
                                       InputHandleT**);
     friend void
-    QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_MEMENTO*);
+    QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_NAME(Memento)*);
 
     template<class InputHandleT> friend void
     QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
 
     // (*) All Modes are Friends _____________________________________________________
-        friend     void Simple_ONE_AND_ONLY_analyzer_function(QUEX_TYPE_ANALYZER_DATA*);
+        friend     void Simple_ONE_AND_ONLY_analyzer_function(QUEX_NAME(AnalyzerData)*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-        friend     bool Simple_ONE_AND_ONLY_has_base(const QUEX_TYPE_MODE*);
-        friend     bool Simple_ONE_AND_ONLY_has_entry_from(const QUEX_TYPE_MODE*);
-        friend     bool Simple_ONE_AND_ONLY_has_exit_to(const QUEX_TYPE_MODE*);
+        friend     bool Simple_ONE_AND_ONLY_has_base(const QUEX_NAME(Mode)*);
+        friend     bool Simple_ONE_AND_ONLY_has_entry_from(const QUEX_NAME(Mode)*);
+        friend     bool Simple_ONE_AND_ONLY_has_exit_to(const QUEX_NAME(Mode)*);
 #endif
 
   
@@ -351,9 +351,9 @@ QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* explict call of placement new for all tokens in the chunk */
-    QUEX_TYPE_TOKEN_QUEUE_construct(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
+    QUEX_NAME(TokenQueue)_construct(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_TYPE_TOKEN_QUEUE_construct(&me->_token_queue, 0);
+    QUEX_NAME(TokenQueue)_construct(&me->_token_queue, 0);
 #   else
     me->token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #   endif
@@ -428,16 +428,16 @@ QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
-TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
+TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
 QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me, 
                                   QUEX_TYPE_CHARACTER*  InputName, 
                                   InputHandleT**        input_handle)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
-    QUEX_TYPE_MEMENTO* memento = QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();
+    QUEX_NAME(Memento)* memento = QUEX_FIX3(MemoryManager_, QUEX_NAME(Memento), _allocate)();
 
     /* Use placement 'new' for explicit call of constructor */
-    new ((void*)memento) QUEX_TYPE_MEMENTO;
+    new ((void*)memento) QUEX_NAME(Memento);
 
     memento->base.parent         = self._parent_memento;
     memento->base.engine         = me->engine;                /* plain copy, references remain intact. */
@@ -457,7 +457,7 @@ QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me,
 
 QUEX_INLINE void
 QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*   me, 
-                                    QUEX_TYPE_MEMENTO*    memento)
+                                    QUEX_NAME(Memento)*    memento)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
     self._parent_memento         = memento->base.parent;
@@ -474,8 +474,8 @@ QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*   me,
 /* END: _______________________________________________________________________*/
     
     /* Counterpart to placement new: Explicit destructor call */
-    memento->~QUEX_TYPE_MEMENTO_TAG();
-    QUEX_FIX3(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(memento);
+    memento->~QUEX_NAME(Memento_tag)();
+    QUEX_FIX3(MemoryManager_, QUEX_NAME(Memento), _free)(memento);
 #   undef self
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */
@@ -549,7 +549,7 @@ namespace quex {
 #include <quex/code_base/temporary_macros_on>
 
 void  
-Simple_ONE_AND_ONLY_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me) 
+Simple_ONE_AND_ONLY_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)* me) 
 {
     /* NOTE: Different modes correspond to different analyzer functions. The analyzer*/
     /*       functions are all located inside the main class as static functions. That*/
@@ -570,7 +570,7 @@ Simple_ONE_AND_ONLY_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me)
 #   endif
 
     /* me = pointer to state of the lexical analyzer */
-    quex::QUEX_TYPE_MODE&        ONE_AND_ONLY = QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
+    quex::QUEX_NAME(Mode)&        ONE_AND_ONLY = QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
     QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
     QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
@@ -2971,7 +2971,7 @@ __REENTRY_PREPARATION:
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    if( QUEX_TYPE_TOKEN_QUEUE_is_full(self._token_queue) ) return;
+    if( QUEX_NAME(TokenQueue)_is_full(self._token_queue) ) return;
 #   else
     if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
 #   endif
@@ -3030,10 +3030,10 @@ __REENTRY_PREPARATION:
 #endif
 #include"Simple"
 namespace quex {
-        QUEX_TYPE_MODE  Simple::ONE_AND_ONLY;
+        QUEX_NAME(Mode)  Simple::ONE_AND_ONLY;
 
     void
-    Simple_ONE_AND_ONLY_on_entry(QUEX_TYPE_ANALYZER_DATA* me, const QUEX_TYPE_MODE* FromMode) {
+    Simple_ONE_AND_ONLY_on_entry(QUEX_NAME(AnalyzerData)* me, const QUEX_NAME(Mode)* FromMode) {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
 #endif
@@ -3041,7 +3041,7 @@ __quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
     }
 
     void
-    Simple_ONE_AND_ONLY_on_exit(QUEX_TYPE_ANALYZER_DATA* me, const QUEX_TYPE_MODE* ToMode)  {
+    Simple_ONE_AND_ONLY_on_exit(QUEX_NAME(AnalyzerData)* me, const QUEX_NAME(Mode)* ToMode)  {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #endif
@@ -3050,22 +3050,22 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    Simple_ONE_AND_ONLY_on_indentation(QUEX_TYPE_ANALYZER_DATA* me, const int Indentation) {
+    Simple_ONE_AND_ONLY_on_indentation(QUEX_NAME(AnalyzerData)* me, const int Indentation) {
 __quex_assert(Indentation >= 0);
     }
 #endif
 
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
-    Simple_ONE_AND_ONLY_has_base(const QUEX_TYPE_MODE* Mode) {
+    Simple_ONE_AND_ONLY_has_base(const QUEX_NAME(Mode)* Mode) {
     return false;
     }
     bool
-    Simple_ONE_AND_ONLY_has_entry_from(const QUEX_TYPE_MODE* Mode) {
+    Simple_ONE_AND_ONLY_has_entry_from(const QUEX_NAME(Mode)* Mode) {
     return true; // default
     }
     bool
-    Simple_ONE_AND_ONLY_has_exit_to(const QUEX_TYPE_MODE* Mode) {
+    Simple_ONE_AND_ONLY_has_exit_to(const QUEX_NAME(Mode)* Mode) {
     return true; // default
     }
 #endif    
@@ -3097,7 +3097,7 @@ __quex_assert(Indentation >= 0);
 QUEX_NAMESPACE_TOKEN_OPEN
 
 inline const char*
-QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
+QUEX_TYPE_TOKEN_XXX::map_id_to_name(const QUEX_TYPE_TOKEN_XXX_ID TokenID)
 {
    static char  error_string[64];
    static const char  uninitialized_string[] = "<UNINITIALIZED>";

@@ -4,37 +4,27 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA
 #define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA
 
 #include <quex/code_base/analyzer/Engine>
-#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+
+#if ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   include <quex/code_base/analyzer/counter/LineColumn>
 #   else
 #   include <quex/code_base/analyzer/counter/LineColumnIndentation>
 #endif
-#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
+
+#ifdef  QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
 
-#ifndef   QUEX_TYPE_ANALYZER
+#ifndef QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
 
-#ifndef   QUEX_TYPE_ANALYZER_DATA_TAG
-#   error "Macro QUEX_TYPE_ANALYZER_DATA_TAG must be defined before inclusion of this file."
-#endif
-
-#ifndef   QUEX_TYPE_MODE
-#   error "Macro QUEX_TYPE_MODE must be defined before inclusion of this file."
-#endif
-
-#ifndef   QUEX_TYPE_MODE_TAG
-#   error "Macro QUEX_TYPE_MODE_TAG must be defined before inclusion of this file."
-#endif
-
-#ifdef      __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
@@ -42,13 +32,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     /* Forward declaration of the derived memento, which is used by the analyzer. */
-    struct  QUEX_TYPE_MEMENTO_TAG;
+    struct  QUEX_NAME(Memento_tag);
 #   endif
 
-    struct QUEX_TYPE_MODE_TAG;
+    struct QUEX_NAME(Mode_tag);
 
-    typedef struct QUEX_TYPE_ANALYZER_DATA_TAG {
-        QUEX_TYPE_ANALYZER_ENGINE*      engine;
+    typedef struct QUEX_NAME(AnalyzerData_tag) {
+        QUEX_NAME(Engine)       engine;
 
         /*_________________________________________________________________________
          *        __   __   ___  __  
@@ -56,12 +46,12 @@ QUEX_NAMESPACE_MAIN_OPEN
          *  |  | \__/ |__/ |___ .__/ 
          *                                                                         */
         /* Map: mode-id --> mode object                                            */
-        struct QUEX_TYPE_MODE_TAG*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+        struct QUEX_NAME(Mode_tag)*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
 
         struct {
-            struct QUEX_TYPE_MODE_TAG*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
-            struct QUEX_TYPE_MODE_TAG** end;
-            struct QUEX_TYPE_MODE_TAG** memory_end;
+            struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            struct QUEX_NAME(Mode_tag)** end;
+            struct QUEX_NAME(Mode_tag)** memory_end;
         }                               _mode_stack;
 
         /*_________________________________________________________________________
@@ -71,9 +61,9 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                                                                        
          *  Allow public access, for user's special tricks.                        */
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-        QUEX_TYPE_TOKEN_QUEUE                 _token_queue;  
+        QUEX_NAME(TokenQueue)                 _token_queue;  
 #       else
-        QUEX_TYPE_TOKEN_WITH_NAMESPACE*       token;         
+        QUEX_TYPE_TOKEN*       token;         
 #       endif
 
         /*_________________________________________________________________________
@@ -93,7 +83,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                                                                         
          *  Accumulate lexemes from multiple patterns.                             */
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_TYPE_ACCUMULATOR          accumulator;
+        QUEX_NAME(Accumulator)          accumulator;
 #       endif
 
 
@@ -104,11 +94,11 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                                                                         
          *  Fast and simple dictionary to post-classify lexemes.                   */
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
-        QUEX_TYPE_POST_CATEGORIZER     post_categorizer;
+        QUEX_NAME(Dictionary)           post_categorizer;
 #       endif
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
-        struct QUEX_TYPE_MEMENTO_TAG*  _parent_memento;
+        struct QUEX_NAME(Memento_tag)*  _parent_memento;
 #       endif
 
         /*_________________________________________________________________________
@@ -117,18 +107,18 @@ QUEX_NAMESPACE_MAIN_OPEN
          *   |  | | .__/ \__,                                                      */
 
         /*  Temporary Filename ____________________________________________________
-         *  Sometimes we just want to tell the filename, handle owned by analyzer. */
+         *  Sometimes we just want to tell the filename; handle owned by analyzer. */
         FILE*    __file_handle_allocated_by_constructor;
 
-    } QUEX_TYPE_ANALYZER_DATA;
+    } QUEX_NAME(AnalyzerData);
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {
-        QUEX_TYPE_ANALYZER_ENGINE      engine;
-        QUEX_TYPE_COUNTER              counter;
-        struct QUEX_TYPE_MODE_TAG*     current_mode_p;
-        struct QUEX_TYPE_MEMENTO_TAG*  parent;
-    } QUEX_TYPE_MEMENTO_BASE;
+        QUEX_NAME(Engine)               engine;
+        QUEX_TYPE_COUNTER               counter;
+        struct QUEX_NAME(Mode_tag)*     current_mode_p;
+        struct QUEX_NAME(Memento_tag)*  parent;
+    } QUEX_NAME(MementoBase);
 #   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

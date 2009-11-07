@@ -25,7 +25,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define self (*this)
 
     QUEX_INLINE void   
-    QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_WITH_NAMESPACE& That) 
+    QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN& That) 
     {
         __QUEX_ASSERT_SEND_ENTRY();
         QUEX_TOKEN_POLICY_SET(That);
@@ -33,7 +33,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void   
-    QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_ID ID) 
+    QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_XXX_ID ID) 
     {
         __QUEX_ASSERT_SEND_ENTRY();
         QUEX_TOKEN_POLICY_SET_1(ID);
@@ -41,10 +41,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void   
-    QUEX_MEMFUNC(ANALYZER, send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
+    QUEX_MEMFUNC(ANALYZER, send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_XXX_ID ID) 
     {
 #       ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-        const int AvailableN = QUEX_TYPE_TOKEN_QUEUE_available_n(_token_queue);
+        const int AvailableN = QUEX_NAME(TokenQueue_available_n)(&_token_queue);
         const int N = RepetitionN > AvailableN ? AvailableN : RepetitionN;
         __quex_assert(N > 0);
 
@@ -94,25 +94,25 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifndef __QUEX_SETTING_PLAIN_C
     template <typename X0_T> QUEX_INLINE void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0) 
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0) 
     {
         self_send1(ID, X0);
     }
 
     template <typename X0_T, typename X1_T> QUEX_INLINE void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1) 
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1) 
     {
         self_send2(ID, X0, X1);
     }
 
     template <typename X0_T, typename X1_T, typename X2_T> QUEX_INLINE void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2) 
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2) 
     {
         self_send3(ID, X0, X1, X2);
     }
 
     template <typename X0_T, typename X1_T, typename X2_T, typename X3_T> QUEX_INLINE void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T X3) 
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T X3) 
     {
         self_send4(ID, X0, X1, X2, X3);
     }
