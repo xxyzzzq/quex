@@ -13,8 +13,8 @@ typedef struct {
     size_t               size;
 } MemoryChunk;
 
-void swap(QUEX_TYPE_TOKEN_WITH_NAMESPACE* A, QUEX_TYPE_TOKEN_WITH_NAMESPACE* B)
-{ QUEX_TYPE_TOKEN_WITH_NAMESPACE* tmp = A; B = A; A = tmp; }
+void swap(QUEX_TYPE_TOKEN* A, QUEX_TYPE_TOKEN* B)
+{ QUEX_TYPE_TOKEN* tmp = A; B = A; A = tmp; }
 
 int 
 main(int argc, char** argv) 

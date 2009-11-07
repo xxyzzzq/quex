@@ -449,8 +449,8 @@ shown below.
         QUEX_TYPE_CHARACTER* end;
     } MemoryChunk;
 
-    void swap(QUEX_TYPE_TOKEN_WITH_NAMESPACE** A, QUEX_TYPE_TOKEN_WITH_NAMESPACE** B)
-    { QUEX_TYPE_TOKEN_WITH_NAMESPACE* tmp = *A; *A = *B; *B = tmp; }
+    void swap(QUEX_TYPE_TOKEN** A, QUEX_TYPE_TOKEN** B)
+    { QUEX_TYPE_TOKEN* tmp = *A; *A = *B; *B = tmp; }
 
     int 
     main(int argc, char** argv) 

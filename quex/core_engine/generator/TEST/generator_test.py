@@ -205,11 +205,11 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
-    txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
-    txt += "typedef void QUEX_TYPE_MODE;\n"
+    txt += "#define QUEX_TYPE_TOKEN_XXX_ID  bool\n"  
+    txt += "typedef void QUEX_NAME(Mode);\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
-    txt += "#define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerEngine\n"
-    txt += "#define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerEngine_tag\n"
+    txt += "#define QUEX_NAME(AnalyzerData)     QuexAnalyzerEngine\n"
+    txt += "#define QUEX_NAME(AnalyzerData_tag) QuexAnalyzerEngine_tag\n"
     txt += "#define QUEX_TYPE_ANALYZER          QuexAnalyzerEngine\n"
     txt += "#define QUEX_TYPE_ANALYZER_TAG      QuexAnalyzerEngine_tag\n"
     txt += "#include <quex/code_base/analyzer/configuration/default>\n"
@@ -245,7 +245,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    return true;\n"
     txt += "}\n"
     txt += "\n"
-    txt += "void Mr_UnitTest_analyzer_function(QUEX_TYPE_ANALYZER_DATA* me)\n"
+    txt += "void Mr_UnitTest_analyzer_function(QUEX_NAME(AnalyzerData)* me)\n"
     txt += "{\n"
     txt += "#   define  engine (me)\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
@@ -335,15 +335,15 @@ def action(PatternName):
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
-typedef int QUEX_TYPE_TOKEN_ID;              
-typedef void QUEX_TYPE_MODE;              
+typedef int QUEX_TYPE_TOKEN_XXX_ID;              
+typedef void QUEX_NAME(Mode);              
 /* #define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN */
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 $$TEST_CASE$$
-#define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerEngine
-#define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerEngine_tag
+#define QUEX_NAME(AnalyzerData)     QuexAnalyzerEngine
+#define QUEX_NAME(AnalyzerData_tag) QuexAnalyzerEngine_tag
 #define QUEX_TYPE_ANALYZER          QuexAnalyzerEngine
 #define QUEX_TYPE_ANALYZER_TAG      QuexAnalyzerEngine_tag
 #include <quex/code_base/analyzer/configuration/default>
@@ -359,10 +359,10 @@ $$TEST_CASE$$
 
 bool analyzis_terminated_f = false;
 
-static void  Mr_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+static void  Mr_UnitTest_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
-void  Mrs_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+void  Mrs_UnitTest_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)*);
 """
 
 test_program_db = { 

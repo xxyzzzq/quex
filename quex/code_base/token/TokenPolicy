@@ -44,7 +44,7 @@
             self._token_queue.remaining_repetitions_of_last_token_n = N;
 
 #    define QUEX_TOKEN_POLICY_NO_TOKEN() \
-            (QUEX_TYPE_TOKEN_QUEUE_is_empty(self._token_queue))
+            (QUEX_NAME(TokenQueue_is_empty)(&self._token_queue))
 
 #else
 

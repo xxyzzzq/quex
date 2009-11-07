@@ -25,9 +25,9 @@
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
 #define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID  ($$INITIAL_LEXER_MODE_ID$$)
-/* NOTE: QUEX_TYPE_TOKEN_ID is later on defined inside the token class header. */
-#define    __QUEX_SETTING_TOKEN_ID_TERMINATION   ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
-#define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
+/* NOTE: QUEX_TYPE_TOKEN_XXX_ID is later on defined inside the token class header. */
+#define    __QUEX_SETTING_TOKEN_ID_TERMINATION   ((QUEX_TYPE_TOKEN_XXX_ID)$$TOKEN_PREFIX$$TERMINATION)
+#define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED ((QUEX_TYPE_TOKEN_XXX_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
 
 #ifndef    __QUEX_OPTION_LITTLE_ENDIAN
 $$SWITCH$$ __QUEX_OPTION_LITTLE_ENDIAN
@@ -208,6 +208,16 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
 #endif
 
+#ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+#   if   defined (QUEX_OPTION_ENABLE_ICONV)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_IConv_new)()
+#   elif defined (QUEX_OPTION_ENABLE_ICU)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_ICU_new)()
+#   else
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  0x0
+#   endif
+#endif
+
 /* Begin of line pre-condition requires an extra flag in the buffer
  * structure. Only out-comment this in case of tough memory restrictions,
  * if no begin of line pre-condition is required.                            */
@@ -315,57 +325,32 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
 #if defined(__QUEX_SETTING_PLAIN_C)
 #   define QUEX_NAME(NAME)        $$NAMESPACE_STR$$ ## NAME
-#   define QUEX_MEMBER(NAME)      void /* Undefined, not required */
-#   define QUEX_FUNC(NAME)        $$NAMESPACE_STR$$ ## _ ## NAME 
 #   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
+#   define QUEX_MEMBER(NAME)      void /* Undefined, not required */
 #else
 #   define QUEX_NAME(NAME)        NAME
-#   define QUEX_MEMBER(NAME)      $$LEXER_CLASS_NAME$$::NAME                
-#   define QUEX_FUNC(NAME)        $$NAMESPACE_STR$$ ## _ ##NAME 
 #   define QUEX_TOKEN_NAME(NAME)  NAME
+#   define QUEX_MEMBER(NAME)      $$LEXER_CLASS_NAME$$::NAME                
 #endif
 
-#define QUEX_TYPE_BUFFER_TAG                 QUEX_NAME(Buffer_tag)
-#define QUEX_TYPE_BUFFER                     QUEX_NAME(Buffer)
-#define QUEX_TYPE_BUFFER_FILLER_TAG          QUEX_NAME(BufferFiller_tag)
-#define QUEX_TYPE_BUFFER_FILLER              QUEX_NAME(BufferFiller)
-#define QUEX_TYPE_BUFFER_MEMORY              QUEX_NAME(BufferMemory)
+#define QUEX_FUNC(NAME)        $$LEXER_CLASS_NAME$$ ## _ ## NAME                
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-#   define QUEX_TYPE_CHARACTER_POSITION      QUEX_TYPE_BUFFER_MEMORY::Position
-#else
-#   define QUEX_TYPE_CHARACTER_POSITION      QUEX_TYPE_CHARACTER*
+#ifndef        QUEX_TYPE_CHARACTER_POSITION  
+#    if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
+#       define QUEX_TYPE_CHARACTER_POSITION   MemoryPositionMimiker
+#    else
+#       define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
+#   endif
 #endif
 
-#define QUEX_TYPE_ANALYZER_DATA_TAG          QUEX_NAME(Data_tag)
-#define QUEX_TYPE_ANALYZER_DATA              QUEX_NAME(Data)
-#define QUEX_TYPE_ANALYZER_ENGINE_TAG        QUEX_NAME(Engine_tag)
-#define QUEX_TYPE_ANALYZER_ENGINE            QUEX_NAME(Engine)
 #define QUEX_TYPE_ANALYZER                   QUEX_NAME($$LEXER_CLASS_NAME$$)
 #define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 
-/* Definition of the quex mode is left configurable, in case that future
- * implementations require it. 09y09m16d                                  */
-#define QUEX_TYPE_MODE_TAG                   QUEX_NAME(Mode_tag)
-#define QUEX_TYPE_MODE                       QUEX_NAME(Mode)
-
-#define QUEX_TYPE_MEMENTO_BASE               QUEX_NAME(MementoBase)
-#define QUEX_TYPE_MEMENTO_TAG                QUEX_NAME(Memento_tag)
-#define QUEX_TYPE_MEMENTO                    QUEX_NAME(Memento)
-
-#define QUEX_TYPE_POST_CATEGORIZER           QUEX_NAME(Dictionary)
-#define QUEX_TYPE_POST_CATEGORIZER_NODE      QUEX_NAME(DictionaryNode)
-#define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  QUEX_NAME(DictionaryNode_tag)
-
-#define QUEX_TYPE_ACCUMULATOR                QUEX_NAME(Accumulator)
-
-#define QUEX_TYPE_TOKEN                      QUEX_TOKEN_NAME($$TOKEN_CLASS$$)
-#define QUEX_TYPE_TOKEN_QUEUE                QUEX_TOKEN_NAME(TokenQueue)
-#define QUEX_TYPE_TOKEN_WITH_NAMESPACE       $$NAMESPACE_TOKEN$$$$TOKEN_CLASS$$
-#define QUEX_TYPE_TOKEN_ID                   $$TOKEN_ID_TYPE$$
-#define QUEX_TYPE_STR_TOKEN_COMPLETE         $$TOKEN_TYPE_STR$$
-#define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
-#define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
+#define QUEX_TYPE_TOKEN_XXX                      QUEX_TOKEN_NAME($$TOKEN_CLASS$$)
+#define QUEX_TYPE_TOKEN       $$NAMESPACE_TOKEN$$$$TOKEN_CLASS$$
+#define QUEX_TYPE_TOKEN_XXX_ID                   $$TOKEN_ID_TYPE$$
+#define QUEX_TYPE_TOKEN_XXX_LINE_N               $$TOKEN_LINE_N_TYPE$$
+#define QUEX_TYPE_TOKEN_XXX_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   define     QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumnIndentation)
@@ -386,8 +371,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QuexAnalyzerEngine_tag;
     class  QUEX_TYPE_ANALYZER;
     class  QUEX_TYPE_DERIVED_ANALYZER;
-    struct QUEX_TYPE_MEMENTO_TAG;
-    typedef void (*$$LEXER_CLASS_NAME$$_AnalyzerFunctionType)(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+    struct QUEX_NAME(Memento_tag);
+    typedef void (*$$LEXER_CLASS_NAME$$_AnalyzerFunctionType)(struct QUEX_NAME(AnalyzerData_tag)*);
 #   define QUEX_TYPE_ANALYZER_FUNCTION   $$LEXER_CLASS_NAME$$_AnalyzerFunctionType
 QUEX_NAMESPACE_MAIN_CLOSE
 

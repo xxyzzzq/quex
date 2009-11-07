@@ -188,7 +188,7 @@ The following options support the definition of a independently customized token
 .. cmpoption:: `--token-id-type` type-name
 
         ``type-name`` defines the type of the token id. This defines internally the 
-        macro ``QUEX_TYPE_TOKEN_ID``. This macro is to be used when a customized
+        macro ``QUEX_TYPE_TOKEN_XXX_ID``. This macro is to be used when a customized
         token class is defined. The types of Standard C99 'inttypes.h' are encouraged.
 
         DEFAULT = ``uint32_t``

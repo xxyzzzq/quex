@@ -93,7 +93,6 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
-             ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_descr.class_name],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$NAMESPACE_MAIN$$",             LanguageDB["$namespace-ref"](Setup.analyzer_name_space)[:-2]],
              ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
@@ -223,7 +222,7 @@ def write_mode_class_implementation(Modes):
 
     mode_objects_txt = ""    
     for mode_name in Modes:
-        mode_objects_txt += "        QUEX_TYPE_MODE  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
+        mode_objects_txt += "        QUEX_NAME(Mode)  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
 
     txt += "namespace quex {\n"
     txt += mode_objects_txt
@@ -264,16 +263,16 @@ def __get_mode_init_call(mode, LexerClassName):
     has_exit_to       = header_str + "has_exit_to"       
 
     if mode.options["inheritable"] == "only": 
-        analyzer_function = "QuexMode_uncallable_analyzer_function"
+        analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
 
     if mode.get_code_fragment_list("on_entry") == []:
-        on_entry = "QuexMode_on_entry_exit_null_function"
+        on_entry = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
     if mode.get_code_fragment_list("on_exit") == []:
-        on_exit = "QuexMode_on_entry_exit_null_function"
+        on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
     if mode.get_code_fragment_list("on_indentation") == []:
-        on_indentation = "QuexMode_on_indentation_null_function"
+        on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
 
     txt = blue_print(quex_mode_init_call_str,
                 [["$$MN$$",             mode.name],
@@ -306,22 +305,22 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.options["inheritable"] != "only":
             txt += __mode_functions(prolog, "void", ["analyzer_function"],
-                                    "QUEX_TYPE_ANALYZER_DATA*")
+                                    "QUEX_NAME(AnalyzerData)*")
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
-                                    "QUEX_TYPE_ANALYZER_DATA*, const int")
+                                    "QUEX_NAME(AnalyzerData)*, const int")
 
     for mode in Modes:
         for event_name in ["on_exit", "on_entry"]:
             if not mode.has_code_fragment_list(event_name): continue
             txt += __mode_functions(prolog, "void", [event_name], 
-                                    "QUEX_TYPE_ANALYZER_DATA*, const QuexMode*")
+                                    "QUEX_NAME(AnalyzerData)*, const QuexMode*")
 
     txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     for mode in Modes:
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
-                                "const QUEX_TYPE_MODE*")
+                                "const QUEX_NAME(Mode)*")
         
     txt += "#endif\n"
     txt += "\n"
@@ -342,7 +341,7 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
 
     members_txt = ""    
     for mode in Modes:
-        members_txt += "        static QUEX_TYPE_MODE  %s;\n" % mode.name
+        members_txt += "        static QUEX_NAME(Mode)  %s;\n" % mode.name
 
     # constructor code
     txt = ""

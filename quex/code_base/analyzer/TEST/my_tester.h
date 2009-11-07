@@ -8,8 +8,8 @@
 
 struct my_tester;
 #define  QUEX_TYPE_ANALYZER my_tester
-#define  QUEX_TYPE_MODE_TAG QuexMode_tag  // divert 'attention' to outside definition
-#define  QUEX_TYPE_MODE     QuexMode
+#define  QUEX_NAME(Mode_tag) QuexMode_tag  // divert 'attention' to outside definition
+#define  QUEX_NAME(Mode)     QuexMode
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/counter/LineColumn>
 #include <quex/code_base/analyzer/Mode>

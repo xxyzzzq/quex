@@ -63,7 +63,7 @@ def __local_variable_definitions(VariableInfoList):
          
 __function_signature = """
 void  
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me) 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)* me) 
 {
     /* NOTE: Different modes correspond to different analyzer functions. The analyzer*/
     /*       functions are all located inside the main class as static functions. That*/
@@ -133,7 +133,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            local_variable_list.append(["quex::QUEX_TYPE_MODE&", name + " " * (L- len(name)), 
+            local_variable_list.append(["quex::QUEX_NAME(Mode)&", name + " " * (L- len(name)), 
                                         "QUEX_TYPE_ANALYZER::" + name]) 
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
@@ -246,7 +246,7 @@ $$REENTRY_PREPARATION$$
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    if( QUEX_TYPE_TOKEN_QUEUE_is_full(self._token_queue) ) return;
+    if( QUEX_NAME(TokenQueue)_is_full(self._token_queue) ) return;
 #   else
     if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
 #   endif

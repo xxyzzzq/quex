@@ -4,7 +4,7 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I
 
@@ -15,7 +15,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator_construct)(QUEX_TYPE_ACCUMULATOR* me, QUEX_TYPE_ANALYZER*    lexer)
+QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)* me, QUEX_TYPE_ANALYZER*    lexer)
 {
     me->the_lexer       = lexer;
     me->text.begin      = \
@@ -29,7 +29,7 @@ QUEX_NAME(Accumulator_construct)(QUEX_TYPE_ACCUMULATOR* me, QUEX_TYPE_ANALYZER* 
 }
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator_destruct)(QUEX_TYPE_ACCUMULATOR* me)
+QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
 {
     QUEX_NAME(QUEX_NAME(MemoryManager_AccumulatorText_free))(me->text.begin);
     me->the_lexer       = 0x0;
@@ -39,7 +39,7 @@ QUEX_NAME(Accumulator_destruct)(QUEX_TYPE_ACCUMULATOR* me)
 }
 
 QUEX_INLINE bool
-QUEX_NAME(Accumulator_extend)(QUEX_TYPE_ACCUMULATOR* me, size_t MinAddSize)
+QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
 {
     const size_t  OldContentSize = me->text.end - me->text.begin;
     const size_t  Size    = me->text.memory_end - me->text.begin;
@@ -61,7 +61,7 @@ QUEX_NAME(Accumulator_extend)(QUEX_TYPE_ACCUMULATOR* me, size_t MinAddSize)
 }
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator_clear)(QUEX_TYPE_ACCUMULATOR* me)
+QUEX_NAME(Accumulator_clear)(QUEX_NAME(Accumulator)* me)
 {
     /* If no text is to be flushed, return undone */
     if( me->text.begin == me->text.end ) return;
@@ -69,7 +69,7 @@ QUEX_NAME(Accumulator_clear)(QUEX_TYPE_ACCUMULATOR* me)
 }
 
 QUEX_INLINE void 
-QUEX_NAME(Accumulator_add)(QUEX_TYPE_ACCUMULATOR* me,
+QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)* me,
                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
 { 
     const size_t L = End - Begin;
@@ -102,7 +102,7 @@ QUEX_NAME(Accumulator_add)(QUEX_TYPE_ACCUMULATOR* me,
 
 
 QUEX_INLINE void 
-QUEX_NAME(Accumulator_add_character)(QUEX_TYPE_ACCUMULATOR*     me,
+QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
                                      const QUEX_TYPE_CHARACTER  Character)
 { 
     /* If it is the first string to be appended, the store the location */
@@ -131,8 +131,8 @@ QUEX_NAME(Accumulator_add_character)(QUEX_TYPE_ACCUMULATOR*     me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator_flush)(QUEX_TYPE_ACCUMULATOR*    me,
-                             const QUEX_TYPE_TOKEN_ID  TokenID)
+QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
+                             const QUEX_TYPE_TOKEN_XXX_ID  TokenID)
 {
     /* All functions must ensure that there is one cell left to store the terminating zero. */
     __quex_assert(me->text.end < me->text.memory_end);
@@ -149,7 +149,7 @@ QUEX_NAME(Accumulator_flush)(QUEX_TYPE_ACCUMULATOR*    me,
 }
 
 QUEX_INLINE void  
-QUEX_NAME(Accumulator_print_this)(QUEX_TYPE_ACCUMULATOR* me)
+QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me)
 {
     /* All functions must ensure that there is one cell left to store the terminating zero. */
     __quex_assert(me->text.end < me->text.memory_end);
@@ -161,19 +161,19 @@ QUEX_NAME(Accumulator_print_this)(QUEX_TYPE_ACCUMULATOR* me)
 
 #ifndef __QUEX_SETTING_PLAIN_C
 QUEX_INLINE void  
-QUEX_TYPE_ACCUMULATOR::print_this()
+QUEX_NAME(Accumulator)::print_this()
 { QUEX_NAME(Accumulator_print_this)(this); }
 
 QUEX_INLINE void
-QUEX_TYPE_ACCUMULATOR::flush(const QUEX_TYPE_TOKEN_ID  TokenID)
+QUEX_NAME(Accumulator)::flush(const QUEX_TYPE_TOKEN_XXX_ID  TokenID)
 { QUEX_NAME(Accumulator_flush)(this, TokenID); }
 
 QUEX_INLINE void 
-QUEX_TYPE_ACCUMULATOR::add_chararacter(const QUEX_TYPE_CHARACTER  Character)
+QUEX_NAME(Accumulator)::add_chararacter(const QUEX_TYPE_CHARACTER  Character)
 { QUEX_NAME(Accumulator_add_character)(this, Character); }
 
 QUEX_INLINE void 
-QUEX_TYPE_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+QUEX_NAME(Accumulator)::add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
 { QUEX_NAME(Accumulator_add)(this, Begin, End); }
 
 QUEX_INLINE void

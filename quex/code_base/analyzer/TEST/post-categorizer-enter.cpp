@@ -2,14 +2,14 @@
 #include <cstdlib>
 #include <cstring>
 #define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_ID  int
+#define QUEX_TYPE_TOKEN_XXX_ID  int
 #define QUEX_OPTION_POST_CATEGORIZER
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/PostCategorizer.i>
 
 /* See: post-categorizer-common.c */
 using namespace quex;
-void post_categorizer_setup(QUEX_TYPE_POST_CATEGORIZER* me, int Seed);
+void post_categorizer_setup(QUEX_NAME(Dictionary)* me, int Seed);
 
 int
 main(int argc, char** argv)
@@ -23,7 +23,7 @@ main(int argc, char** argv)
         return 0;
     }
     const int Start = atoi(argv[1]);
-    QUEX_TYPE_POST_CATEGORIZER  pc;
+    QUEX_NAME(Dictionary)  pc;
 
     post_categorizer_setup(&pc, Start);
 

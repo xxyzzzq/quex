@@ -33,7 +33,7 @@ QUEX_FUNC(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
     QuexBuffer_seek(&this->engine.buffer, CharacterIndex);
 }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*  
+QUEX_INLINE QUEX_TYPE_TOKEN*  
 QUEX_FUNC(token_object)(QUEX_TYPE_ANALYZER* me)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
@@ -70,7 +70,7 @@ QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
     __QUEX_STD_printf("   Mode Stack (%i/%i) = [", 
                       (int)(_mode_stack.end        - _mode_stack.begin),
                       (int)(_mode_stack.memory_end - _mode_stack.begin));
-    for(QUEX_TYPE_MODE** iterator=_mode_stack.end-1; iterator >= _mode_stack.begin; --iterator)
+    for(QUEX_NAME(Mode)** iterator=_mode_stack.end-1; iterator >= _mode_stack.begin; --iterator)
         __QUEX_STD_printf("%s, ", (*iterator)->name);
 
     __QUEX_STD_printf("]\n");
@@ -103,7 +103,7 @@ QUEX_INLINE void
 QUEX_MEMBER(seek)(const size_t CharacterIndex)
 { QUEX_FUNC(seek)(this, CharacterIndex); }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*  
+QUEX_INLINE QUEX_TYPE_TOKEN*  
 QUEX_MEMBER(token_object)()
 { QUEX_FUNC(token_object)(this); }
 

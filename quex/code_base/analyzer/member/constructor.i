@@ -91,7 +91,7 @@ QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me)
 {
     QuexAnalyzerEngine_destruct(&this->engine);
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
-    QUEX_TYPE_TOKEN_QUEUE_destruct(&_token_queue);
+    QUEX_NAME(TokenQueue)_destruct(&_token_queue);
 #   endif
     if( __file_handle_allocated_by_constructor != 0x0 ) {
         std::fclose(__file_handle_allocated_by_constructor); 
@@ -120,7 +120,7 @@ QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
 #   endif
 
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    QUEX_TYPE_TOKEN_QUEUE_reset(me->_token_queue);
+    QUEX_NAME(TokenQueue)_reset(me->_token_queue);
 #   endif
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR

@@ -79,7 +79,7 @@ void get_token_from_users_queue(quex::ISLexer& qlex, quex::Token& Token)
     static quex::Token   Begin[3];
     static quex::Token*  End  = Begin + 3;
     
-    if( QUEX_TYPE_TOKEN_QUEUE_is_empty(qlex._token_queue) ) {
+    if( QUEX_NAME(TokenQueue)_is_empty(qlex._token_queue) ) {
         qlex.receive(Begin, End);
     }
     Token = *qlex._token_queue.read_iterator++;

@@ -85,7 +85,7 @@ get_file_size(const char* Filename, bool SilentF /*=false*/)
 }
 
 
-QUEX_TYPE_TOKEN_ID 
+QUEX_TYPE_TOKEN_XXX_ID 
 func_get_token_id()
 {
 #ifdef  ANALYZER_GENERATOR_FLEX
@@ -100,10 +100,10 @@ func_get_token_id()
 #endif
 }
 
-QUEX_TYPE_TOKEN_ID 
+QUEX_TYPE_TOKEN_XXX_ID 
 func_empty()
 {
-    return (QUEX_TYPE_TOKEN_ID)1;
+    return (QUEX_TYPE_TOKEN_XXX_ID)1;
 }
 
 void

@@ -9,12 +9,12 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 
-QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE* 
+QUEX_INLINE QUEX_NAME(DictionaryNode)* 
 QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
                                const QUEX_TYPE_CHARACTER*  Remainder,
-                               QUEX_TYPE_TOKEN_ID          TokenID)
+                               QUEX_TYPE_TOKEN_XXX_ID          TokenID)
 {
-    QUEX_TYPE_POST_CATEGORIZER_NODE* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(__QUEX_STD_strlen(Remainder));
+    QUEX_NAME(DictionaryNode)* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(__QUEX_STD_strlen(Remainder));
     me->name_first_character = FirstCharacter;
     me->name_remainder       = Remainder;
     me->token_id             = TokenID;
@@ -24,7 +24,7 @@ QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
 }
 
 QUEX_INLINE int
-QUEX_NAME(PostCategorizer_compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me, 
+QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*  me, 
                                           QUEX_TYPE_CHARACTER               FirstCharacter, 
                                           const QUEX_TYPE_CHARACTER*        Remainder)
 {
@@ -34,20 +34,20 @@ QUEX_NAME(PostCategorizer_compare)(QUEX_TYPE_POST_CATEGORIZER_NODE*  me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_construct)(QUEX_TYPE_POST_CATEGORIZER* me)
+QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me)
 {
     me->root = 0x0;
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_enter)(QUEX_TYPE_POST_CATEGORIZER* me,
+QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
                                    const QUEX_TYPE_CHARACTER*  EntryName, 
-                                   const QUEX_TYPE_TOKEN_ID    TokenID)
+                                   const QUEX_TYPE_TOKEN_XXX_ID    TokenID)
 {
     QUEX_TYPE_CHARACTER                 FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*          Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
-    QUEX_TYPE_POST_CATEGORIZER_NODE*    node      = me->root;
-    QUEX_TYPE_POST_CATEGORIZER_NODE*    prev_node = 0x0;
+    QUEX_NAME(DictionaryNode)*    node      = me->root;
+    QUEX_NAME(DictionaryNode)*    prev_node = 0x0;
     int                                 result = 0;
 
     if( me->root == 0x0 ) {
@@ -71,15 +71,15 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_TYPE_POST_CATEGORIZER* me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
+QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
                                   const QUEX_TYPE_CHARACTER*   EntryName)
 {
     int                               result = 0;
     QUEX_TYPE_CHARACTER               FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*        Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
-    QUEX_TYPE_POST_CATEGORIZER_NODE*  node   = 0x0;
-    QUEX_TYPE_POST_CATEGORIZER_NODE*  parent = 0x0;
-    QUEX_TYPE_POST_CATEGORIZER_NODE*  found  = me->root;
+    QUEX_NAME(DictionaryNode)*  node   = 0x0;
+    QUEX_NAME(DictionaryNode)*  parent = 0x0;
+    QUEX_NAME(DictionaryNode)*  found  = me->root;
 
     __quex_assert( found != 0x0 );
     while( 1 + 1 == 2 ) {
@@ -150,13 +150,13 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_TYPE_POST_CATEGORIZER*  me,
     QUEX_NAME(MemoryManager_PostCategorizerNode_free)(found);
 }
 
-QUEX_INLINE QUEX_TYPE_POST_CATEGORIZER_NODE*
-QUEX_NAME(PostCategorizer_find)(const QUEX_TYPE_POST_CATEGORIZER*  me, 
+QUEX_INLINE QUEX_NAME(DictionaryNode)*
+QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)*  me, 
                                 const QUEX_TYPE_CHARACTER*         EntryName)
 {
     QUEX_TYPE_CHARACTER               FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*        Remainder      = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
-    QUEX_TYPE_POST_CATEGORIZER_NODE*  node           = me->root;
+    QUEX_NAME(DictionaryNode)*  node           = me->root;
 
     while( node != 0x0 ) {
         int result = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
@@ -169,32 +169,32 @@ QUEX_NAME(PostCategorizer_find)(const QUEX_TYPE_POST_CATEGORIZER*  me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_TYPE_POST_CATEGORIZER*       me, 
-                                               QUEX_TYPE_POST_CATEGORIZER_NODE*  branch)
+QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*       me, 
+                                               QUEX_NAME(DictionaryNode)*  branch)
 {
     if( branch->lesser  != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
     if( branch->greater != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
     QUEX_NAME(MemoryManager_PostCategorizerNode_free)(branch);
 }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_ID 
-QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_TYPE_POST_CATEGORIZER*  me,
+QUEX_INLINE QUEX_TYPE_TOKEN_XXX_ID 
+QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_NAME(Dictionary)*  me,
                                           const QUEX_TYPE_CHARACTER*   Lexeme)
 {
-    QUEX_TYPE_POST_CATEGORIZER_NODE* found = QUEX_NAME(PostCategorizer_find)(me, Lexeme);
+    QUEX_NAME(DictionaryNode)* found = QUEX_NAME(PostCategorizer_find)(me, Lexeme);
     if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
     return found->token_id;
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_clear)(QUEX_TYPE_POST_CATEGORIZER* me)
+QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me)
 {
     QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
 }
 
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_print_tree)(QUEX_TYPE_POST_CATEGORIZER_NODE* node, int Depth)
+QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth)
 {
     if( node == 0x0 ) {
         for(int i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
@@ -218,20 +218,20 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_TYPE_POST_CATEGORIZER_NODE* node, int
 
 #ifndef __QUEX_SETTING_PLAIN_C
 QUEX_INLINE void
-QUEX_TYPE_POST_CATEGORIZER::clear()
+QUEX_NAME(Dictionary)::clear()
 { QUEX_NAME(PostCategorizer_clear)(this); }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_ID 
-QUEX_TYPE_POST_CATEGORIZER::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
+QUEX_INLINE QUEX_TYPE_TOKEN_XXX_ID 
+QUEX_NAME(Dictionary)::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
 { return QUEX_NAME(PostCategorizer_get_token_id)(this, Lexeme); }
 
 QUEX_INLINE void
-QUEX_TYPE_POST_CATEGORIZER::remove(const QUEX_TYPE_CHARACTER* EntryName)
+QUEX_NAME(Dictionary)::remove(const QUEX_TYPE_CHARACTER* EntryName)
 { QUEX_NAME(PostCategorizer_remove)(this, EntryName); }
 
 QUEX_INLINE void
-QUEX_TYPE_POST_CATEGORIZER::enter(const QUEX_TYPE_CHARACTER*  EntryName, 
-                                  const QUEX_TYPE_TOKEN_ID    TokenID)
+QUEX_NAME(Dictionary)::enter(const QUEX_TYPE_CHARACTER*  EntryName, 
+                                  const QUEX_TYPE_TOKEN_XXX_ID    TokenID)
 { QUEX_NAME(PostCategorizer_enter)(this, EntryName, TokenID); }
 #endif 
 

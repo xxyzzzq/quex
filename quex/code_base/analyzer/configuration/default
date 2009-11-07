@@ -1,6 +1,9 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT
 #define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT
 
+#ifdef  __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
+#   error "More then one configuration header interfer. Please, report a bug at quex.sourceforge.net."
+#endif
 
 #if   ! defined(__QUEX_OPTION_LITTLE_ENDIAN) \
    && ! defined(__QUEX_OPTION_BIG_ENDIAN)    
@@ -17,6 +20,16 @@
 #   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
 #endif
 
+#ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+#   if   defined (QUEX_OPTION_ENABLE_ICONV)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_IConv_new)()
+#   elif defined (QUEX_OPTION_ENABLE_ICU)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_ICU_new)()
+#   else
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  0x0
+#   endif
+#endif
+
 #ifndef    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
 #   define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (1)
 #endif
@@ -28,17 +41,17 @@
 #   define QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (1)
 #endif
 
-#ifndef    QUEX_TYPE_MODE
-#   define QUEX_TYPE_MODE     QuexMode
+#ifndef    QUEX_NAME(Mode)
+#   define QUEX_NAME(Mode)     QuexMode
 #endif
-#ifndef    QUEX_TYPE_MODE_TAG
-#   define QUEX_TYPE_MODE_TAG QuexMode_tag
+#ifndef    QUEX_NAME(Mode_tag)
+#   define QUEX_NAME(Mode_tag) QuexMode_tag
 #endif
-#ifndef    QUEX_TYPE_POST_CATEGORIZER_NODE
-#   define QUEX_TYPE_POST_CATEGORIZER_NODE   QuexPostCategorizerNode
+#ifndef    QUEX_NAME(DictionaryNode)
+#   define QUEX_NAME(DictionaryNode)   QuexPostCategorizerNode
 #endif
-#ifndef    QUEX_TYPE_POST_CATEGORIZER
-#   define QUEX_TYPE_POST_CATEGORIZER        QuexPostCategorizer
+#ifndef    QUEX_NAME(Dictionary)
+#   define QUEX_NAME(Dictionary)        QuexPostCategorizer
 #endif
 #ifndef    __QUEX_SETTING_MAX_MODE_CLASS_N
 #   define __QUEX_SETTING_MAX_MODE_CLASS_N  (256)
@@ -46,8 +59,8 @@
 #ifndef    QUEX_SETTING_MODE_STACK_SIZE
 #   define QUEX_SETTING_MODE_STACK_SIZE     (256)
 #endif
-#ifndef    QUEX_TYPE_TOKEN_WITH_NAMESPACE  
-#   define QUEX_TYPE_TOKEN_WITH_NAMESPACE  int
+#ifndef    QUEX_TYPE_TOKEN  
+#   define QUEX_TYPE_TOKEN  int
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -73,7 +86,7 @@
 #       define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
 #   endif
 #endif
-#
+
 #define QUEX_NAME(X)   QuexDefault ## X
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -83,9 +96,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct QuexAnalyzerEngine_tag*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#ifndef    QUEX_TYPE_ANALYZER_DATA
-#   define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerData
-#   define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerData_tag
+#ifndef    QUEX_NAME(AnalyzerData)
+#   define QUEX_NAME(AnalyzerData)     QuexAnalyzerData
+#   define QUEX_NAME(AnalyzerData_tag) QuexAnalyzerData_tag
 #endif
 #ifndef    QUEX_TYPE_ANALYZER
 #   define QUEX_TYPE_ANALYZER     QuexAnalyzerData

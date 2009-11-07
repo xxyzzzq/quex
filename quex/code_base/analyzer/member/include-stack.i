@@ -4,7 +4,7 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I
 
@@ -35,7 +35,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Store the lexical analyzer's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*       input_handle = 0x0;
-        QUEX_TYPE_MEMENTO*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(me, InputName, &input_handle);
+        QUEX_NAME(Memento)*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(me, InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
@@ -68,7 +68,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void    
     QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*     me
                                  QUEX_TYPE_CHARACTER*    InputName,
-                                 const QUEX_TYPE_MODE&   mode, 
+                                 const QUEX_NAME(Mode)&   mode, 
                                  const char*             IANA_CodingName /* = 0x0 */)
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
@@ -121,7 +121,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void    
     QUEX_MEMBER(include_push)(QUEX_TYPE_ANALYZER*     me,
                               QUEX_TYPE_CHARACTER*    InputName,
-                              const QUEX_TYPE_MODE&   mode, 
+                              const QUEX_NAME(Mode)&   mode, 
                               const char*             IANA_CodingName /* = 0x0 */)
     { QUEX_FUNC(include_push_mode)(this, InputName, mode, IANA_CodingName); }
 

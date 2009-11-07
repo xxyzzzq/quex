@@ -18,7 +18,7 @@ typedef struct {
 } CounterLineColumn;
 
 QUEX_INLINE void  CounterLineColumn_construct(CounterLineColumn*                  me, 
-                                              struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
+                                              struct QUEX_NAME(AnalyzerData_tag)* lexer);
 QUEX_INLINE void  CounterLineColumn_copy_construct(CounterLineColumn*       me, 
                                                    const CounterLineColumn* That);
 QUEX_INLINE void  CounterLineColumn_reset(CounterLineColumn* me);

@@ -4,7 +4,7 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+ *    QUEX_NAME(Accumulator) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I
 
@@ -32,7 +32,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       last end, such as _line_number_at_begin = _line_number_at_end.
      *       This has to happen outside these functions.                        */
     QUEX_INLINE void
-    CounterLineColumnIndentation_construct(CounterLineColumnIndentation* me, QUEX_TYPE_ANALYZER_DATA* lexer)
+    CounterLineColumnIndentation_construct(CounterLineColumnIndentation* me, QUEX_NAME(AnalyzerData)* lexer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */

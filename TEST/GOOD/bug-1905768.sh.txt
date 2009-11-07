@@ -1,6 +1,6 @@
-Simple_MODULE_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me) 
+Simple_MODULE_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)* me) 
     engine->DEBUG_analyzer_function_at_entry = engine->current_analyzer_function;
     if( engine->DEBUG_analyzer_function_at_entry != engine->current_analyzer_function ) 
-Simple_U1_STRING_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me) 
+Simple_U1_STRING_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)* me) 
     engine->DEBUG_analyzer_function_at_entry = engine->current_analyzer_function;
     if( engine->DEBUG_analyzer_function_at_entry != engine->current_analyzer_function ) 

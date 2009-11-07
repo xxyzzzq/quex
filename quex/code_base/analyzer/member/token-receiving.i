@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                    QUEX_TYPE_TOKEN_WITH_NAMESPACE** result_pp) 
+                                    QUEX_TYPE_TOKEN** result_pp) 
     /* NOTE: As long as the 'receive()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
      *       does a couple af calls to 'receive()' before a rule triggers 
@@ -42,57 +42,57 @@ QUEX_NAMESPACE_MAIN_OPEN
      *               case that no  token could be read.                                      */
     {
         /* Tokens are in queue --> take next token from queue                                */
-        if( QUEX_TYPE_TOKEN_QUEUE_is_empty(_token_queue) == false ) {        
-            *result_pp = QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue);
+        if( QUEX_NAME(TokenQueue_is_empty)(&_token_queue) == false ) {        
+            *result_pp = QUEX_NAME(TokenQueue_pop)(&_token_queue);
             return;  
         } 
         else if( _token_queue.remaining_repetitions_of_last_token_n ) {
             --(_token_queue.remaining_repetitions_of_last_token_n);
-            *result_pp = QUEX_TYPE_TOKEN_QUEUE_back(_token_queue);
+            *result_pp = QUEX_NAME(TokenQueue_back)(&_token_queue);
             return;
         }
 
         /* Restart filling the queue from begin */
-        QUEX_TYPE_TOKEN_QUEUE_reset(_token_queue);
+        QUEX_NAME(TokenQueue_reset)(&_token_queue);
 
         /* In case a mode change happend inside the pattern actions, the function is forced
          * to return (see end of analyzer function at REENTRY label). If the tokenstack is
          * non-empty, we return to the caller (spare one check). If its empty the analyzer
          * function (which has recently been setup) is called again.                        */
         do {
-            engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
+            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
-        *result_pp = QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue);
+        *result_pp = QUEX_NAME(TokenQueue_pop)(&_token_queue);
         return;
     }
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                    QUEX_TYPE_TOKEN_WITH_NAMESPACE* result_p) 
+                                    QUEX_TYPE_TOKEN* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
-        if( QUEX_TYPE_TOKEN_QUEUE_is_empty(_token_queue) == false ) {        
-            result_p->__copy(*(QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue)));
+        if( QUEX_NAME(TokenQueue_is_empty)(&_token_queue) == false ) {        
+            result_p->__copy(*(QUEX_NAME(TokenQueue_pop)(&_token_queue)));
             return;  
         } 
         else if( _token_queue.remaining_repetitions_of_last_token_n ) {
             --(_token_queue.remaining_repetitions_of_last_token_n);
-            result_p->__copy(*(QUEX_TYPE_TOKEN_QUEUE_back(_token_queue)));
+            result_p->__copy(*(QUEX_NAME(TokenQueue_back)(&_token_queue)));
             return;
         }
 
         /* Restart filling the queue from begin */
-        QUEX_TYPE_TOKEN_QUEUE_reset(_token_queue);
+        QUEX_NAME(TokenQueue_reset)(&_token_queue);
 
         /* Analyze until there is some content in the queue */
         do {
-            engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
+            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
-        result_p->__copy(*QUEX_TYPE_TOKEN_QUEUE_pop(_token_queue));
+        result_p->__copy(*QUEX_NAME(TokenQueue_pop)(&_token_queue));
 
         return;
     }
@@ -100,12 +100,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                              QUEX_TYPE_TOKEN_WITH_NAMESPACE* result_p) 
+                                    QUEX_TYPE_TOKEN* result_p) 
     {
         this->token = result_p;
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
-            engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
+            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
@@ -118,7 +118,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
-            engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
+            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
@@ -126,18 +126,18 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_INLINE QUEX_TYPE_TOKEN_WITH_NAMESPACE*
+    QUEX_INLINE QUEX_TYPE_TOKEN*
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                              QUEX_TYPE_TOKEN_WITH_NAMESPACE* QueueMemoryBegin, QUEX_TYPE_TOKEN_WITH_NAMESPACE* QueueMemoryEnd) 
+                                              QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
         /* RETURNS: Pointer to first token after the last filled in token. */
     {
         __quex_assert(QueueMemoryBegin != 0x0);
         __quex_assert(QueueMemoryEnd > QueueMemoryBegin);
-        QUEX_TYPE_TOKEN_QUEUE_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd,
+        QUEX_NAME(TokenQueue_init)(&_token_queue, QueueMemoryBegin, QueueMemoryEnd,
                                    QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
         do {
-            engine.current_analyzer_function((QUEX_TYPE_ANALYZER_DATA*)this);
+            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 

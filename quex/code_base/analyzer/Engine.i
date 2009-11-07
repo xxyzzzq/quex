@@ -11,7 +11,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Engine_construct)(QUEX_TYPE_ANALYZER_ENGINE* me,
+    QUEX_NAME(Engine_construct)(QUEX_NAME(Engine)* me,
                                 QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                                 InputHandleT*                input_handle,
                                 QUEX_TYPE_CHARACTER*         InputMemory,
@@ -46,13 +46,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void
-    QUEX_NAME(Engine_destruct)(QUEX_TYPE_ANALYZER_ENGINE* me)
+    QUEX_NAME(Engine_destruct)(QUEX_NAME(Engine)* me)
     {
         QUEX_NAME(Buffer_destruct)(&me->buffer);
     }
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Engine_reset)(QUEX_TYPE_ANALYZER_ENGINE*                me,
+    QUEX_NAME(Engine_reset)(QUEX_NAME(Engine)*                me,
                             QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                             InputHandleT*                input_handle, 
                             const char*                  CharacterEncodingName, 
@@ -72,7 +72,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     QUEX_INLINE bool 
-    QUEX_NAME(Engine_buffer_reload_backward)(QUEX_TYPE_BUFFER* buffer)
+    QUEX_NAME(Engine_buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
         if( buffer->filler == 0x0 ) return false;
 
@@ -92,7 +92,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool 
-    QUEX_NAME(Engine_buffer_reload_forward)(QUEX_TYPE_BUFFER* buffer, 
+    QUEX_NAME(Engine_buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
                                             QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
                                             QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                             const size_t                  PostContextN)
