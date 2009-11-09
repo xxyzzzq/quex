@@ -14,11 +14,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return me->engine.__current_mode_p; }
 
     QUEX_INLINE int
-    QUEX_NAME(Analyzer_get_mode_id)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(Analyzer_get_mode_id)(const QUEX_TYPE_ANALYZER* me)
     { return me->engine.__current_mode_p->id; }
 
     QUEX_INLINE const char*
-    QUEX_NAME(Analyzer_get_mode_name)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(Analyzer_get_mode_name)(const QUEX_TYPE_ANALYZER* me)
     { return me->engine.__current_mode_p->name; }
 
     QUEX_INLINE void 
@@ -68,7 +68,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE int  
-    QUEX_NAME(Analyzer_map_mode_to_mode_id)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* Mode)
+    QUEX_NAME(Analyzer_map_mode_to_mode_id)(const QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* Mode)
     { return Mode->id; }
 
     QUEX_INLINE void 
@@ -108,11 +108,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return *QUEX_NAME(Analyzer_get_mode)(this); }
     
     QUEX_INLINE int
-    QUEX_TYPE_ANALYZER::mode_id()
+    QUEX_TYPE_ANALYZER::mode_id() const
     { return QUEX_NAME(Analyzer_get_mode_id)(this); }
     
     QUEX_INLINE const char*
-    QUEX_TYPE_ANALYZER::get_mode_name() const
+    QUEX_TYPE_ANALYZER::mode_name() const
     { return QUEX_NAME(Analyzer_get_mode_name)(this); }
 
     QUEX_INLINE void
@@ -120,8 +120,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     { QUEX_NAME(Analyzer_set_mode_brutally_by_id)(this, ModeID); }
 
     QUEX_INLINE void 
-    QUEX_TYPE_ANALYZER::set_mode_brutally(const QUEX_NAME(Mode)& Mode) 
-    { QUEX_NAME(Analyzer_set_mode_brutally)(this, (QUEX_NAME(Mode)*)&Mode); }
+    QUEX_TYPE_ANALYZER::set_mode_brutally(const QUEX_NAME(Mode)& TheMode) 
+    { QUEX_NAME(Analyzer_set_mode_brutally)(this, ((QUEX_NAME(Mode)*)&TheMode)); }
 
     QUEX_INLINE void    
     QUEX_TYPE_ANALYZER::enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode) 
@@ -132,16 +132,16 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return *(QUEX_NAME(Analyzer_map_mode_id_to_mode)(this, ModeID)); }
 
     QUEX_INLINE int  
-    QUEX_TYPE_ANALYZER::map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const
-    { return QUEX_NAME(Analyzer_map_mode_to_mode_id)(this, &Mode); }
+    QUEX_TYPE_ANALYZER::map_mode_to_mode_id(const QUEX_NAME(Mode)& TheMode) const
+    { return QUEX_NAME(Analyzer_map_mode_to_mode_id)(this, &TheMode); }
 
     QUEX_INLINE void 
     QUEX_TYPE_ANALYZER::operator<<(const int ModeID) 
-    { QUEX_NAME(Analyzer_enter_mode)(this, &(QUEX_NAME(Analyzer_map_mode_id_to_mode)(ModeID))); }
+    { enter_mode(*(QUEX_NAME(Analyzer_map_mode_id_to_mode)(this, ModeID))); }
 
     QUEX_INLINE void 
-    QUEX_TYPE_ANALYZER::operator<<(/* NOT const*/ QUEX_NAME(Mode)* Mode) 
-    { QUEX_NAME(Analyzer_enter_mode)(this, &Mode); }
+    QUEX_TYPE_ANALYZER::operator<<(/* NOT const*/ QUEX_NAME(Mode)& TheMode) 
+    { enter_mode(TheMode); }
 
     QUEX_INLINE void 
     QUEX_TYPE_ANALYZER::pop_mode() 
@@ -153,7 +153,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void       
     QUEX_TYPE_ANALYZER::push_mode(QUEX_NAME(Mode)& new_mode) 
-    { QUEX_NAME(Analyzer_push_mode)(this, QUEX_NAME(Mode)& new_mode); }
+    { QUEX_NAME(Analyzer_push_mode)(this, &new_mode); }
 
 #   endif
 
