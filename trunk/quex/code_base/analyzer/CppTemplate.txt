@@ -263,8 +263,7 @@ public:
 
 public:
     template <class InputHandleT> void reset(InputHandleT*   input_handle, 
-                                             const char*     CharacterEncodingName = 0x0)
-    { QUEX_FIX(ANALYZER, _reset)(this, input_handle, CharacterEncodingName); }
+                                             const char*     CharacterEncodingName = 0x0);
     void                               reset(const char* CharacterEncodingName = 0x0) 
     { reset<void>((void*)0x0, CharacterEncodingName); }
 
@@ -336,9 +335,9 @@ QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*       me,
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* explict call of placement new for all tokens in the chunk */
-    QUEX_NAME(TokenQueue)_construct(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
+    QUEX_NAME(TokenQueue_construct)(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_NAME(TokenQueue)_construct(&me->_token_queue, 0);
+    QUEX_NAME(TokenQueue_construct)(&me->_token_queue, 0);
 #   else
     me->token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #   endif

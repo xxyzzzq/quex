@@ -47,7 +47,7 @@ def do(state, StateIdx, SMD, InitStateF):
 
 def get_forward_load_procedure(StateIndex):
     txt  = '    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");\n'
-    txt += "    if( QuexAnalyzerEngine_buffer_reload_forward(&engine->buffer, &last_acceptance_input_position,\n"
+    txt += "    if( QUEX_NAME(Engine_buffer_reload_forward)(&engine->buffer, &last_acceptance_input_position,\n"
     txt += "                                           post_context_start_position, PostContextStartPositionN) ) {\n"
     txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += "    " + LanguageDB["$endif"]                         + "\n"
@@ -61,7 +61,7 @@ def __reload_forward(StateIndex):
 
 def __reload_backward(StateIndex): 
     txt  = '    QUEX_DEBUG_PRINT(&engine->buffer, "BACKWARD_BUFFER_RELOAD");\n'
-    txt += "    if( QuexAnalyzerEngine_buffer_reload_backward(&engine->buffer) ) {\n"
+    txt += "    if( QUEX_NAME(Engine_buffer_reload_backward)(&engine->buffer) ) {\n"
     txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += "    " + LanguageDB["$endif"]                              + "\n"
     txt += '    QUEX_DEBUG_PRINT(&engine->buffer, "BUFFER_RELOAD_FAILED");\n'

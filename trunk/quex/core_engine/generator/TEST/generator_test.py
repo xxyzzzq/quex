@@ -227,16 +227,16 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "show_next_character(QuexBuffer* buffer) {\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
-    txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) == 0 ) {\n"
-    txt += "        QuexBuffer_mark_lexeme_start(buffer);\n"
-    txt += "        if( QuexAnalyzerEngine_buffer_reload_forward(buffer, &last_acceptance_input_position,\n"
-    txt += "                                               post_context_start_position, 0) == 0 ) {\n"
+    txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {\n"
+    txt += "        QUEX_NAME(Buffer_mark_lexeme_start)(buffer);\n"
+    txt += "        if( QUEX_NAME(Engine_buffer_reload_forward)(buffer, &last_acceptance_input_position,\n"
+    txt += "                                                    post_context_start_position, 0) == 0 ) {\n"
     txt += "            return false;\n"
     txt += "        } else {\n"
-    txt += "            QuexBuffer_input_p_increment(buffer);\n"
+    txt += "            QUEX_NAME(Buffer_input_p_increment)(buffer);\n"
     txt += "        }\n"
     txt += "    }\n"
-    txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) != 0 )\n"
+    txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 )\n"
     if ShowPositionF:
         txt += '    printf("next letter: <%c> position: %04X\\n", (char)(*(buffer->_input_p)),\n'
         txt += '           (int)(buffer->_input_p - buffer->_memory._front));\n'
@@ -255,20 +255,20 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "ENTRY:\n"
     txt += "    /* Skip irrelevant characters */\n"
     txt += "    while(1 + 1 == 2) {\n" 
-    txt += "        input = QuexBuffer_input_get(&me->buffer);\n"
+    txt += "        input = QUEX_NAME(Buffer_input_get)(&me->buffer);\n"
     if MarkerCharList != []:
         for character in MarkerCharList:
             txt += "        if( input == %i ) break;\n" % character
     else:
         txt += "    break;\n"
-    txt += "        if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0 ) {\n"
-    txt += "            QuexBuffer_mark_lexeme_start(&me->buffer);\n"
-    txt += "            if( QuexAnalyzerEngine_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {\n"
+    txt += "            QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);\n"
+    txt += "            if( QUEX_NAME(Engine_buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n"
     txt += "                                                   post_context_start_position, 0) == 0 )\n"
     txt += "                goto TERMINAL_END_OF_STREAM;\n"
-    txt += "            QuexBuffer_input_p_increment(&me->buffer);\n"
+    txt += "            QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
     txt += "        } else {\n"
-    txt += "            QuexBuffer_input_p_increment(&me->buffer);\n"
+    txt += "            QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
     txt += "        }\n"
     txt += "    }\n"
     txt += "\n"
@@ -376,9 +376,9 @@ test_program_db = {
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, (void*)0x0,
+        QUEX_NAME(Engine_construct)(&lexer_state, Mr_UnitTest_analyzer_function, (void*)0x0,
                                TestString, MemorySize, 0x0, 0, false);
-        QuexBuffer_end_of_file_set(&lexer_state.buffer, TestString + MemorySize - 1);
+        QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
         printf("(*) result:\\n");
@@ -432,8 +432,8 @@ test_program_db = {
         /**/
         istringstream  istr("$$TEST_STRING$$");
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, &istr, 0x0,
-                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
+        QUEX_NAME(Engine_construct)(&lexer_state, Mr_UnitTest_analyzer_function, &istr, 0x0,
+                                    $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
@@ -459,8 +459,8 @@ test_program_db = {
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, &strange_stream, 0x0,
-                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
+        QUEX_NAME(Engine_construct)(&lexer_state, Mr_UnitTest_analyzer_function, &strange_stream, 0x0,
+                                    $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");

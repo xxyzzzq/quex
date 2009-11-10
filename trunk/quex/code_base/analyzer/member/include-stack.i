@@ -19,10 +19,10 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER* me
-                            QUEX_TYPE_CHARACTER*     InputName,
-                            const int                MODE_ID /* = -1 */, 
-                            const char*              IANA_CodingName /* = 0x0 */)
+    QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER*   me,
+                            QUEX_TYPE_CHARACTER*  InputName,
+                            const int             MODE_ID /* = -1 */, 
+                            const char*           IANA_CodingName /* = 0x0 */)
     {
 #       if defined(__QUEX_SETTING_PLAIN_C)
 #       define InputHandleT  FILE
@@ -54,7 +54,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                     me->engine.buffer._byte_order_reversion_active_f);
 
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_FIX(COUNTER, _reset)(&counter);
+        QUEX_FIX(COUNTER, _reset)(&me->counter);
 #       endif
 
         /* Keep track of 'who's your daddy?'                              */
@@ -66,14 +66,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     }   
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*     me
+    QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*     me,
                                  QUEX_TYPE_CHARACTER*    InputName,
-                                 const QUEX_NAME(Mode)&   mode, 
+                                 const QUEX_NAME(Mode)&  mode, 
                                  const char*             IANA_CodingName /* = 0x0 */)
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_SETTING_PLAIN_C
-        include_push<InputHandleT>(InputName, mode.id(), IANA_CodingName);
+        QUEX_FUNC(include_push)<InputHandleT>(InputName, mode.id(), IANA_CodingName);
 #       else
         QUEX_FUNC(include_push)(InputName, mode.id(), IANA_CodingName);
 #       endif
@@ -112,22 +112,20 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #if ! defined( __QUEX_SETTING_PLAIN_C )
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMBER(include_push)(QUEX_TYPE_ANALYZER*    me,
-                              QUEX_TYPE_CHARACTER*   InputName,
+    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*   InputName,
                               const int              ModeID /* = -1 */, 
                               const char*            IANA_CodingName /* = 0x0 */)
-    { QUEX_FUNC(include_push)(this, InputName, ModeID, IANA_CodingName); }
+    { QUEX_FUNC(include_push)<InputHandleT>(this, InputName, ModeID, IANA_CodingName); }
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMBER(include_push)(QUEX_TYPE_ANALYZER*     me,
-                              QUEX_TYPE_CHARACTER*    InputName,
+    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*    InputName,
                               const QUEX_NAME(Mode)&   mode, 
                               const char*             IANA_CodingName /* = 0x0 */)
-    { QUEX_FUNC(include_push_mode)(this, InputName, mode, IANA_CodingName); }
+    { QUEX_FUNC(include_push_mode)<InputHandleT>(this, InputName, mode, IANA_CodingName); }
 
     QUEX_INLINE bool
     QUEX_MEMBER(include_pop)() 
-    { QUEX_FUNC(include_pop)(this); }
+    { return QUEX_FUNC(include_pop)(this); }
 
     QUEX_INLINE void
     QUEX_MEMBER(include_stack_delete)() 

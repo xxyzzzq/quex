@@ -5,6 +5,17 @@
 #   error "More then one configuration header interfer. Please, report a bug at quex.sourceforge.net."
 #endif
 
+/* By default ASSERTS are enabled ! */
+#if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
+#   ifdef     QUEX_OPTION_ASSERTS
+#      undef  QUEX_OPTION_ASSERTS
+#   endif
+#else
+#   ifndef    QUEX_OPTION_ASSERTS
+#      define QUEX_OPTION_ASSERTS
+#   endif
+#endif
+
 #if   ! defined(__QUEX_OPTION_LITTLE_ENDIAN) \
    && ! defined(__QUEX_OPTION_BIG_ENDIAN)    
 #   define __QUEX_OPTION_LITTLE_ENDIAN
@@ -79,12 +90,10 @@
 #define QUEX_NAMESPACE_MAIN_CLOSE      
 #endif
 
-#ifndef        QUEX_TYPE_CHARACTER_POSITION  
-#    if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
-#       define QUEX_TYPE_CHARACTER_POSITION   MemoryPositionMimiker
-#    else
-#       define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
-#   endif
+#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
+#    define QUEX_TYPE_CHARACTER_POSITION   MemoryPositionMimiker
+#else
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
 #endif
 
 #define QUEX_NAME(X)   QuexDefault ## X
