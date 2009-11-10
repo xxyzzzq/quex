@@ -167,7 +167,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
-    txt += "    QuexBuffer_undo_terminating_zero_for_lexeme(&engine->buffer);\n";
+    txt += "    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&engine->buffer);\n";
     
     txt += function_body
 
@@ -246,7 +246,7 @@ $$REENTRY_PREPARATION$$
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    if( QUEX_NAME(TokenQueue)_is_full(self._token_queue) ) return;
+    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) return;
 #   else
     if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
 #   endif
@@ -292,10 +292,10 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&engine->buffer);\n"
+        txt += indentation + "QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(&engine->buffer);\n"
 
     if action_info.action().require_terminating_zero_f():
-        txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&engine->buffer);\n"
+        txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&engine->buffer);\n"
 
     txt += indentation + "{\n"
     txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  

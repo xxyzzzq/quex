@@ -177,7 +177,7 @@ QUEX_NAME(Accumulator)::add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CH
 { QUEX_NAME(Accumulator_add)(this, Begin, End); }
 
 QUEX_INLINE void
-QUEX_MEMFUNC(ACCUMULATOR, clear)()
+QUEX_NAME(Accumulator)::clear()
 { QUEX_NAME(Accumulator_clear)(this); }
 #endif
 

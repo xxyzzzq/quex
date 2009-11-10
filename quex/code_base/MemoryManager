@@ -11,18 +11,16 @@
  
 QUEX_NAMESPACE_MAIN_OPEN
 
-struct QUEX_NAME(BufferFiller_tag);
-
 QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_NAME(MemoryManager_BufferMemory_allocate)(const size_t ByteN);
 
 QUEX_INLINE void
 QUEX_NAME(MemoryManager_BufferMemory_free)(QUEX_TYPE_CHARACTER* memory);
 
-TEMPLATE_IN(InputHandleT) void*
+QUEX_INLINE void*
 QUEX_NAME(MemoryManager_BufferFiller_allocate)(const size_t ByteN);
 
-TEMPLATE_IN(InputHandleT) void
+QUEX_INLINE void
 QUEX_NAME(MemoryManager_BufferFiller_free)(void* memory);
 
 QUEX_INLINE uint8_t*  
@@ -43,7 +41,7 @@ QUEX_INLINE void   QUEX_NAME(MemoryManager_Converter_free)(void* memory);
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
 QUEX_INLINE  QUEX_NAME(DictionaryNode)*  QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(size_t RemainderSize);
-QUEX_INLINE  void                              QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QUEX_NAME(DictionaryNode)*);
+QUEX_INLINE  void                        QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QUEX_NAME(DictionaryNode)*);
 #   endif
 
 QUEX_INLINE size_t

@@ -49,7 +49,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     { 
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
         TEMPLATED(BufferFiller_Converter)*  me = \
-              TEMPLATED(MemoryManager_BufferFiller_Converter_allocate)(sizeof(TEMPLATED(BufferFiller_Converter)));
+              (TEMPLATED(BufferFiller_Converter)*) \
+               QUEX_NAME(MemoryManager_BufferFiller_allocate)(sizeof(TEMPLATED(BufferFiller_Converter)));
         __quex_assert(me != 0x0);
 
         QUEX_NAME(BufferFiller_Converter_construct)(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
@@ -120,7 +121,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(me->raw_buffer.begin); 
 
-        QUEX_NAME(MemoryManager_BufferFiller_free)(me);
+        QUEX_NAME(MemoryManager_BufferFiller_free)((void*)me);
     }
 
 
@@ -225,7 +226,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *       sets the _input_p to a particular position.                                      */
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(BufferFiller_Converter)*  me     = (TEMPLATED(BufferFiller_Converter)*)alter_ego;
-        TEMPLATED(QuexRawBuffer)*               buffer = &me->raw_buffer;
+        TEMPLATED(RawBuffer)*               buffer = &me->raw_buffer;
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
         const size_t     Hint_Index   = me->hint_begin_character_index;
         uint8_t*         Hint_Pointer = buffer->begin;
@@ -321,8 +322,8 @@ QUEX_NAMESPACE_MAIN_OPEN
        /* Try to fill the raw buffer to its limits with data from the file.
         * The filling starts from its current position, thus the remaining bytes
         * to be translated are exactly the number of bytes in the buffer.              */
-       TEMPLATED(QuexRawBuffer)*  buffer          = &me->raw_buffer;
-        const size_t               RemainingBytesN = buffer->end - buffer->iterator;
+       TEMPLATED(RawBuffer)*  buffer          = &me->raw_buffer;
+        const size_t          RemainingBytesN = buffer->end - buffer->iterator;
         QUEX_ASSERT_BUFFER_INFO(buffer);
         __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
         __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
@@ -379,8 +380,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(TEMPLATED(BufferFiller_Converter)*  me)
     /* Service function for 'direct buffer' access to the lexical analyzer. */
     {
-        TEMPLATED(QuexRawBuffer)*  buffer          = &me->raw_buffer;
-        const size_t               RemainingBytesN = buffer->end - buffer->iterator;
+        TEMPLATED(RawBuffer)*  buffer          = &me->raw_buffer;
+        const size_t           RemainingBytesN = buffer->end - buffer->iterator;
         QUEX_ASSERT_BUFFER_INFO(buffer);
         __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
 
@@ -406,7 +407,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void   
-    __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
+    __QuexRawBuffer_init(TEMPLATED(RawBuffer)* me, 
                          uint8_t* Begin, size_t SizeInBytes,
                          STREAM_POSITION_TYPE(InputHandleT) StartPosition)
     {
