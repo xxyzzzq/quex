@@ -52,7 +52,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
             struct QUEX_NAME(Mode_tag)** end;
             struct QUEX_NAME(Mode_tag)** memory_end;
-        }                               _mode_stack;
+        }                                _mode_stack;
 
         /*_________________________________________________________________________
          *  ___  __        ___       __  

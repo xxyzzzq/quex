@@ -1,4 +1,4 @@
-<test-database execution-time-sec="188.33" date="Tue Nov 10 07:37:23 2009">
+<test-database execution-time-sec="188.29" date="Tue Nov 10 08:03:49 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="16.79"> 
@@ -34,10 +34,10 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="1.70"> 
+        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="1.66"> 
             <application file-name="001.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.85" crc="-2092421156"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="0.81" crc="-2092421156"/>
                <choice name="DEBUG" result="FAIL" time_sec="0.85" crc="-2092421156"/>
             </choice-list>
         </test>

@@ -51,11 +51,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* NOT const */ QUEX_NAME(Mode)* SourceMode = me->engine.__current_mode_p;
 #       endif
 #       ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-        SourceMode.on_exit(this, SourceMode);
+        SourceMode->on_exit(me, SourceMode);
 #       endif
         QUEX_FUNC(set_mode_brutally)(me, TargetMode);
 #       ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-        TargetMode.on_entry(this, TargetMode);         
+        TargetMode->on_entry(me, TargetMode);         
 #       endif
     }
 
