@@ -30,7 +30,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * to the currently active mode's function is stored redundantly in 
          * 'current_analyzer_function' to accelerate the access to it.                    */
         struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
-        QUEX_TYPE_ANALYZER_FUNCTION   current_analyzer_function;
+        QUEX_NAME(AnalyzerFunctionP)   current_analyzer_function;
 
 #if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
      || defined(QUEX_OPTION_ASSERTS)
@@ -38,14 +38,14 @@ QUEX_NAMESPACE_MAIN_OPEN
          * an error must be logged, since the following characters are still swallowed
          * by the current function and not the new one. For this one needs to return and
          * then continue further.                                                         */
-        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyzer_function_at_entry;
+        QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
 #       endif
 
     } QUEX_NAME(Engine);
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(Engine_construct)(QUEX_NAME(Engine)*   me,
-                                QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                                QUEX_NAME(AnalyzerFunctionP)  AnalyserFunction,
                                 InputHandleT*                input_handle,
                                 QUEX_TYPE_CHARACTER*         InputMemory,
                                 const size_t                 BufferMemorySize,
@@ -58,7 +58,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(Engine_reset)(QUEX_NAME(Engine)*   me,
-                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                            QUEX_NAME(AnalyzerFunctionP)  AnalyserFunction,
                             InputHandleT*                input_handle, 
                             const char*                  CharacterEncodingName, 
                             const size_t                 TranslationBufferMemorySize);

@@ -19,11 +19,12 @@
 #define QUEX_SETTING_BUILD_DATE        "$$LEXER_BUILD_DATE$$"
 #define QUEX_SETTING_ANALYZER_VERSION  "$$USER_LEXER_VERSION$$"
 
+#include "$$LEXER_CONFIG_FILE$$"
+
 #include <istream>  /* gets: istream and wistream */
 #include <cstdio>   /* gets: FILE                 */
 #include <quex/code_base/compatibility/inttypes.h>
 
-#include "$$LEXER_CONFIG_FILE$$"
 
 #include <quex/code_base/asserts>
 
