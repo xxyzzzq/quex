@@ -12,7 +12,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(Engine_construct)(QUEX_NAME(Engine)* me,
-                                QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                                QUEX_NAME(AnalyzerFunctionP)  AnalyserFunction,
                                 InputHandleT*                input_handle,
                                 QUEX_TYPE_CHARACTER*         InputMemory,
                                 const size_t                 BufferMemorySize,
@@ -52,8 +52,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Engine_reset)(QUEX_NAME(Engine)*                me,
-                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+    QUEX_NAME(Engine_reset)(QUEX_NAME(Engine)*           me,
+                            QUEX_NAME(AnalyzerFunctionP) AnalyserFunction,
                             InputHandleT*                input_handle, 
                             const char*                  CharacterEncodingName, 
                             const size_t                 TranslationBufferMemorySize)

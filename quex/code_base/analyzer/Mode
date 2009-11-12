@@ -30,7 +30,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         const char*          name;
         QUEX_NAME(Engine)*   the_lexer;
 
-        QUEX_TYPE_ANALYZER_FUNCTION  analyzer_function;
+        QUEX_NAME(AnalyzerFunctionP)  analyzer_function;
 
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         void (*on_indentation)(QUEX_NAME(AnalyzerData)*, const int Indentation);

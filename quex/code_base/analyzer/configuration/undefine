@@ -129,9 +129,6 @@
 #ifdef    QUEX_NAME(Engine)   
 #   undef QUEX_NAME(Engine)   
 #endif
-#ifdef    QUEX_TYPE_ANALYZER_FUNCTION   
-#   undef QUEX_TYPE_ANALYZER_FUNCTION   
-#endif
 #ifdef    QUEX_NAME(AnalyzerData_tag)
 #   undef QUEX_NAME(AnalyzerData_tag)
 #endif
