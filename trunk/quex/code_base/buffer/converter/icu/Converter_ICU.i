@@ -153,7 +153,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         ucnv_close(me->from_handle);
         ucnv_close(me->to_handle);
 
-        QUEX_NAME(MemoryManager_Converter_ICU_free)(me);
+        QUEX_NAME(MemoryManager_Converter_free)(me);
 
         /* There should be a way to call 'ucnv_flushCache()' as soon as all converters
          * are freed automatically.                                                       */
