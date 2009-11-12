@@ -49,6 +49,9 @@ all: $(FILES)
 %.o: %.cpp $(QUEX_CORE)
 	$(CC) -c $< -o $@  
           
+%.E: %.cpp $(QUEX_CORE)
+	$(CC) -E $< -o $@  
+          
 $(SOURCES): simple.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_ENABLE_ICONV'
 	# does all what is required.
@@ -63,5 +66,6 @@ clean:
 	rm -f $(FILES)
 	rm -f *.exe
 	rm -f *.o
+	rm -f *.E
 	rm -f copy fill point
 	rm -f *.bak

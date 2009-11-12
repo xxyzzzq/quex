@@ -25,6 +25,8 @@
 
 #include "$$LEXER_CONFIG_FILE$$"
 
+#include <quex/code_base/asserts>
+
 #ifdef     __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
     /* In case that multiple lexical analyzers are used the same header
      * files are compiled with a different setting of the macros. The
