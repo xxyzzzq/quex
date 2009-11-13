@@ -63,12 +63,13 @@ def __local_variable_definitions(VariableInfoList):
          
 __function_signature = """
 void  
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QUEX_NAME(AnalyzerData_tag)* me) 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(QUEX_TYPE_ANALYZER* me) 
 {
-    /* NOTE: Different modes correspond to different analyzer functions. The analyzer*/
-    /*       functions are all located inside the main class as static functions. That*/
-    /*       means, they are something like 'globals'. They receive a pointer to the */
-    /*       lexical analyzer, since static member do not have access to the 'this' pointer.*/
+    /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
+             functions are all located inside the main class as static functions. That  
+             means, they are something like 'globals'. They receive a pointer to the   
+             lexical analyzer, since static member do not have access to the 'this' pointer.
+     */
 #   ifdef     self
 #       undef self
 #   endif
@@ -82,7 +83,6 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QU
 #   else
 #      define engine  (&me->engine)
 #   endif
-
 """
 
 comment_on_post_context_position_init_str = """
@@ -441,7 +441,6 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                       ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
                       ["$$TERMINAL_FAILURE-DEF$$",         LanguageDB["$label-def"]("$terminal-FAILURE")],
-                      ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
                       ["$$TERMINAL_FAILURE-GOTO$$",        LanguageDB["$goto"]("$terminal-FAILURE")],
                       ["$$STATE_MACHINE_NAME$$",           SMD.name()],
                       ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],

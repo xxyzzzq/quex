@@ -61,7 +61,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                                                                        
          *  Allow public access, for user's special tricks.                        */
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-        QUEX_NAME(TokenQueue)                 _token_queue;  
+        QUEX_NAME(TokenQueue)  _token_queue;  
 #       else
         QUEX_TYPE_TOKEN*       token;         
 #       endif

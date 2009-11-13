@@ -28,7 +28,7 @@
 #    define TEMPLATED(X)                        QUEX_NAME(X)<InputHandleT>
 
 #else
-#    define TEMPLATIFIER(X, SOME_CLASS)         typedef struct QUEX_FIX(QUEX_NAME(X), _TAG)
+#    define TEMPLATIFIER(X, SOME_CLASS)         typedef struct QUEX_NAME(X ## _tag)
 #    define TEMPLATIFIER_END(X)                 QUEX_NAME(X)
 #    define TEMPLATE_IN(SOME_CLASS)             QUEX_INLINE
 #    define STREAM_POSITION_TYPE(IH_TYPE)       long

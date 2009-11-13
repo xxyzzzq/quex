@@ -26,7 +26,7 @@ __label_db = \
 {
     "$terminal":              lambda TerminalIdx: "TERMINAL_%s"        % __nice(TerminalIdx),
     "$terminal-direct":       lambda TerminalIdx: "TERMINAL_%s_DIRECT" % __nice(TerminalIdx),
-    "$terminal-general":      lambda NoThing:     "TERMINAL_GENERAL_BACKWARD",
+    "$terminal-general-bw":   lambda NoThing:     "TERMINAL_GENERAL_BACKWARD",
     "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
     "$terminal-FAILURE":      lambda NoThing:     "TERMINAL_FAILURE",
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
