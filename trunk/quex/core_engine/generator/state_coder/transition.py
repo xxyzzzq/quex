@@ -82,7 +82,7 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
             txt  = LanguageDB["$input/decrement"] + "\n"
             txt += acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state)
 
-            txt += LanguageDB["$goto"]("$terminal-general", True)   # general terminal
+            txt += LanguageDB["$goto"]("$terminal-general-bw", True)   # general terminal
             return txt
         else:
             assert False, "Impossible lexing mode: '%s'" % DSM.mode()

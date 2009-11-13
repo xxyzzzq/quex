@@ -17,7 +17,7 @@
 #endif
 
 #if   ! defined(__QUEX_OPTION_LITTLE_ENDIAN) \
-   && ! defined(__QUEX_OPTION_BIG_ENDIAN)    
+   && ! defined(__QUEX_OPTION_BIG_ENDIAN) 
 #   define __QUEX_OPTION_LITTLE_ENDIAN
 #endif
 
@@ -52,18 +52,6 @@
 #   define QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (1)
 #endif
 
-#ifndef    QUEX_NAME(Mode)
-#   define QUEX_NAME(Mode)     QuexMode
-#endif
-#ifndef    QUEX_NAME(Mode_tag)
-#   define QUEX_NAME(Mode_tag) QuexMode_tag
-#endif
-#ifndef    QUEX_NAME(DictionaryNode)
-#   define QUEX_NAME(DictionaryNode)   QuexPostCategorizerNode
-#endif
-#ifndef    QUEX_NAME(Dictionary)
-#   define QUEX_NAME(Dictionary)        QuexPostCategorizer
-#endif
 #ifndef    __QUEX_SETTING_MAX_MODE_CLASS_N
 #   define __QUEX_SETTING_MAX_MODE_CLASS_N  (256)
 #endif
@@ -76,18 +64,12 @@
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #define QUEX_NAMESPACE_MAIN_REF              quex::
-#define QUEX_NAMESPACE_MAIN_OPEN             namespace quex {
-#define QUEX_NAMESPACE_MAIN_CLOSE            }
-#define QUEX_NAMESPACE_MAIN_REF        quex:: 
 #define QUEX_NAMESPACE_MAIN_OPEN       namespace quex { // namespace components {
 #define QUEX_NAMESPACE_MAIN_CLOSE      } // }
 #else
 #define QUEX_NAMESPACE_MAIN_REF              
 #define QUEX_NAMESPACE_MAIN_OPEN             
 #define QUEX_NAMESPACE_MAIN_CLOSE            
-#define QUEX_NAMESPACE_MAIN_REF        
-#define QUEX_NAMESPACE_MAIN_OPEN       
-#define QUEX_NAMESPACE_MAIN_CLOSE      
 #endif
 
 #if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)

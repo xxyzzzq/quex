@@ -39,7 +39,7 @@ def do(sm, LanguageDB, PrintStateMachineF):
         sm_str += LanguageDB["$ml-comment"](sm.get_string(NormalizeF=False)) + "\n"
 
     # -- input position detectors simply the next 'catch' and return
-    function_body += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
+    function_body += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"
     function_body += LanguageDB["$input/seek_position"]("end_of_core_pattern_position") + "\n"
     function_body += LanguageDB["$input/increment"] + "\n"
 

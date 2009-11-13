@@ -105,9 +105,12 @@ def _call_dot(Code, OutputFormat, OutputFile, GetStdErrF=False):
         try:    result = open(error_file).read()
         except: error_msg("Output of graphviz is unaccessible.")
 
-    os.remove(input_file_name)  # Note: that is the temp-file that was 'charged' with the input
-    os.remove(error_file)
-    os.remove(out_file)
+    try:    os.remove(input_file_name)  # Note: that is the temp-file that was 'charged' with the input
+    except: pass
+    try:    os.remove(error_file)
+    except: pass
+    try:    os.remove(out_file)
+    except: pass
 
     return result
 

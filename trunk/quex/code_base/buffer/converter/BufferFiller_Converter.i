@@ -32,20 +32,28 @@ QUEX_NAMESPACE_MAIN_OPEN
     
     TEMPLATE_IN(InputHandleT) void   
     QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                           const size_t      CharacterIndex); 
+                                                           const size_t             CharacterIndex); 
     TEMPLATE_IN(InputHandleT) size_t 
-    QUEX_NAME(BufferFiller_Converter_read_characters)(QUEX_NAME(BufferFiller)*    alter_ego,
-                                                      QUEX_TYPE_CHARACTER* start_of_buffer, 
-                                                                                       const size_t         N);
+    QUEX_NAME(BufferFiller_Converter_read_characters)(QUEX_NAME(BufferFiller)* alter_ego,
+                                                      QUEX_TYPE_CHARACTER*     start_of_buffer, 
+                                                      const size_t             N);
     TEMPLATE_IN(InputHandleT) void   
     QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
+    TEMPLATE_IN(InputHandleT) size_t 
+    QUEX_NAME(__BufferFiller_Converter_fill_raw_buffer)(TEMPLATED(BufferFiller_Converter)*  me);
+
+    TEMPLATE_IN(InputHandleT) void   
+    QUEX_NAME(RawBuffer_init)(TEMPLATED(RawBuffer)* me, 
+                              uint8_t* Begin, size_t SizeInBytes,
+                              STREAM_POSITION_TYPE(InputHandleT) StartPosition);
+
     TEMPLATE_IN(InputHandleT)    TEMPLATED(BufferFiller_Converter)*
-    QUEX_NAME(BufferFiller_Converter_new)(InputHandleT*     input_handle,
-                                          QUEX_NAME(Converter)*    converter,
-                                          const char*       FromCoding,
-                                          const char*       ToCoding,
-                                          size_t            RawBufferSize)
+    QUEX_NAME(BufferFiller_Converter_new)(InputHandleT*          input_handle,
+                                          QUEX_NAME(Converter)*  converter,
+                                          const char*            FromCoding,
+                                          const char*            ToCoding,
+                                          size_t                 RawBufferSize)
     { 
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
         TEMPLATED(BufferFiller_Converter)*  me = \
@@ -68,10 +76,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                 size_t                 RawBufferSize)
     {
         QUEX_NAME(BufferFiller_setup_functions)(&me->base,
-                                           TEMPLATED(QUEX_NAME(BufferFiller_Converter_tell_character_index)),
-                                           TEMPLATED(QUEX_NAME(BufferFiller_Converter_seek_character_index)), 
-                                           TEMPLATED(QUEX_NAME(BufferFiller_Converter_read_characters)),
-                                           TEMPLATED(QUEX_NAME(BufferFiller_Converter_delete_self)));
+                                           TEMPLATED(BufferFiller_Converter_tell_character_index),
+                                           TEMPLATED(BufferFiller_Converter_seek_character_index), 
+                                           TEMPLATED(BufferFiller_Converter_read_characters),
+                                           TEMPLATED(BufferFiller_Converter_delete_self));
 
         QUEX_NAME(BufferFiller_Converter_init)(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
     }
@@ -96,8 +104,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
         uint8_t* raw_buffer_p = QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(RawBufferSize);
-        __QuexRawBuffer_init(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
-                             me->start_position);
+        QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
+                                  me->start_position);
 
         /* Hint for relation between character index, raw buffer offset and stream position */
         me->hint_begin_character_index = (size_t)-1;
@@ -407,9 +415,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void   
-    __QuexRawBuffer_init(TEMPLATED(RawBuffer)* me, 
-                         uint8_t* Begin, size_t SizeInBytes,
-                         STREAM_POSITION_TYPE(InputHandleT) StartPosition)
+    QUEX_NAME(RawBuffer_init)(TEMPLATED(RawBuffer)* me, 
+                              uint8_t* Begin, size_t SizeInBytes,
+                              STREAM_POSITION_TYPE(InputHandleT) StartPosition)
     {
         me->begin               = Begin;
 

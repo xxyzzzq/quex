@@ -62,10 +62,10 @@ def __reload_forward(StateIndex):
 def __reload_backward(StateIndex): 
     txt  = '    QUEX_DEBUG_PRINT(&engine->buffer, "BACKWARD_BUFFER_RELOAD");\n'
     txt += "    if( QUEX_NAME(Engine_buffer_reload_backward)(&engine->buffer) ) {\n"
-    txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
-    txt += "    " + LanguageDB["$endif"]                              + "\n"
+    txt += "       " + LanguageDB["$goto"]("$input", StateIndex)              + "\n"
+    txt += "    " + LanguageDB["$endif"]                                      + "\n"
     txt += '    QUEX_DEBUG_PRINT(&engine->buffer, "BUFFER_RELOAD_FAILED");\n'
-    txt += "    " + LanguageDB["$goto"]("$terminal-general")          + "\n"
+    txt += "    " + LanguageDB["$goto"]("$terminal-general-bw")               + "\n"
     return txt
 
 def __goto_distinct_terminal(Origin):
@@ -100,5 +100,5 @@ def get_drop_out_goto_string(state, StateIdx, SM, BackwardLexingF):
         #     During backward lexing, there are no dedicated terminal states. Only the flags
         #     'pre-condition' fullfilled are set at the acceptance states. On drop out we
         #     transit to the general terminal state (== start of forward lexing).
-        return LanguageDB["$goto"]("$terminal-general", True) 
+        return LanguageDB["$goto"]("$terminal-general-bw", True) 
 
