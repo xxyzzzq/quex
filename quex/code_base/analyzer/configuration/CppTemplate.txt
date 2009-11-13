@@ -381,7 +381,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Memento_tag);
     class  QUEX_TYPE_ANALYZER;
     class  QUEX_TYPE_DERIVED_ANALYZER;
-    typedef void (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(AnalyzerData_tag)*);
+    typedef void (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 

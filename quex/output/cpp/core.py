@@ -305,7 +305,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.options["inheritable"] != "only":
             txt += __mode_functions(prolog, "void", ["analyzer_function"],
-                                    "QUEX_NAME(AnalyzerData)*")
+                                    "QUEX_TYPE_ANALYZER*")
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
