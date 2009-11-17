@@ -11,26 +11,26 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void    
 QUEX_FUNC(move_forward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
-    QUEX_NAME(Buffer_move_forward)(&me->engine.buffer, CharacterN);
+    QUEX_NAME(Buffer_move_forward)(&me->buffer, CharacterN);
 }
 
 QUEX_INLINE void    
 QUEX_FUNC(move_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
-    QUEX_NAME(Buffer_move_backward)(&me->engine.buffer, CharacterN);
+    QUEX_NAME(Buffer_move_backward)(&me->buffer, CharacterN);
 }
 
 
 QUEX_INLINE size_t  
 QUEX_FUNC(tell)(QUEX_TYPE_ANALYZER* me)
 {
-    return QUEX_NAME(Buffer_tell)(&me->engine.buffer);
+    return QUEX_NAME(Buffer_tell)(&me->buffer);
 }
 
 QUEX_INLINE void    
 QUEX_FUNC(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
 {
-    QUEX_NAME(Buffer_seek)(&me->engine.buffer, CharacterIndex);
+    QUEX_NAME(Buffer_seek)(&me->buffer, CharacterIndex);
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
@@ -52,23 +52,23 @@ return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
 
 QUEX_INLINE bool
 QUEX_FUNC(byte_order_reversion)(QUEX_TYPE_ANALYZER* me)
-{ return me->engine.buffer._byte_order_reversion_active_f; }
+{ return me->buffer._byte_order_reversion_active_f; }
 
 QUEX_INLINE void     
 QUEX_FUNC(byte_order_reversion_set)(QUEX_TYPE_ANALYZER* me, bool Value)
-{ me->engine.buffer._byte_order_reversion_active_f = Value; }
+{ me->buffer._byte_order_reversion_active_f = Value; }
 
 
 QUEX_INLINE void
 QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
 {
     __QUEX_STD_printf("   CurrentMode = %s;\n", 
-                      me->engine.__current_mode_p == 0x0 ? 
+                      me->__current_mode_p == 0x0 ? 
                          "0x0" 
                       : 
-                         me->engine.__current_mode_p->name);
+                         me->__current_mode_p->name);
 
-    QUEX_NAME(Buffer_print_this)(&me->engine.buffer);
+    QUEX_NAME(Buffer_print_this)(&me->buffer);
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     me->accumulator.print_this();

@@ -8,13 +8,13 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
 #define __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
 
-#ifndef   QUEX_TYPE_ANALYZER
-#   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
-#endif
 
 #include <quex/code_base/definitions>
 
+
 QUEX_NAMESPACE_MAIN_OPEN
+
+    struct QUEX_NAME(AnalyzerData_tag);
 
     /* (*) pure text accumulation and flushing */
     typedef struct {
@@ -30,7 +30,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_TYPE_CHARACTER* end;
             QUEX_TYPE_CHARACTER* memory_end;
         }                   text;
-        QUEX_TYPE_ANALYZER* the_lexer;     
+        struct QUEX_NAME(AnalyzerData_tag)* the_lexer;     
 
 #   ifndef __QUEX_SETTING_PLAIN_C
     public:
@@ -45,7 +45,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_NAME(Accumulator);
 
     void
-    QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*, QUEX_TYPE_ANALYZER*);
+    QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*, struct QUEX_NAME(AnalyzerData_tag)*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

@@ -23,13 +23,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*           me, 
-                         InputHandleT*         input_handle,
-                         QUEX_TYPE_CHARACTER*  InputMemory,
-                         const size_t          MemorySize,
-                         const char*           CharacterEncodingName, 
-                         const size_t          TranslationBufferMemorySize,
-                         bool                  ByteOrderReversionF)
+    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*    me, 
+                                InputHandleT*         input_handle,
+                                QUEX_TYPE_CHARACTER*  InputMemory,
+                                const size_t          MemorySize,
+                                const char*           CharacterEncodingName, 
+                                const size_t          TranslationBufferMemorySize,
+                                bool                  ByteOrderReversionF)
         /* The input can either come from MEMORY or from a STREAM. 
          *
          * input_handle == 0x0 => input via memory
@@ -58,6 +58,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+        __quex_assert(me->_input_p == me->_memory._front + 1);
+
     }
 
     QUEX_INLINE void
@@ -144,6 +146,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+        __quex_assert(me->_input_p == me->_memory._front + 1);
+
     }
 
     QUEX_INLINE void
