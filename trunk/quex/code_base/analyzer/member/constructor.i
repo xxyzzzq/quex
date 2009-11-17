@@ -89,13 +89,7 @@ QUEX_FUNC(construct_wistream)(QUEX_TYPE_ANALYZER* me,
 QUEX_INLINE void
 QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me) 
 {
-    QUEX_NAME(Engine_destruct)(&me->engine);
-#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
-    QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
-#   endif
-    if( me->__file_handle_allocated_by_constructor != 0x0 ) {
-        __QUEX_STD_fclose(me->__file_handle_allocated_by_constructor); 
-    }
+    QUEX_NAME(AnalyzerData_destruct)(me);
 }
 
 template<class InputHandleT> void
@@ -103,39 +97,9 @@ QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
                  InputHandleT*        input_handle, 
                  const char*          CharacterEncodingName /* = 0x0 */) 
 {
-    me->engine.__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    me->set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
-
-    me->_mode_stack.end        = me->_mode_stack.begin;
-    me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
-
-    QUEX_NAME(Engine_reset)(&me->engine, 
-                            me->engine.__current_mode_p->analyzer_function,
-                            input_handle, 
-                            CharacterEncodingName, 
-                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
-
-#   ifdef __QUEX_OPTION_COUNTER
-    QUEX_FIX(COUNTER, _reset)(&me->counter);
-#   endif
-
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
-#   endif
-
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    me->accumulator.clear();
-#   endif
-
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    me->include_stack_delete();
-#   endif
-
-#   ifdef QUEX_OPTION_POST_CATEGORIZER
-    me->post_categorizer.clear();
-#   endif
-
-    me->byte_order_reversion_set(false);
+    QUEX_NAME(AnalyzerData_reset)((QUEX_NAME(AnalyzerData)*)&me, input_handle, 
+                                  CharacterEncodingName, 
+                                  QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

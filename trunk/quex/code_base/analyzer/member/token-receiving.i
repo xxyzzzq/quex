@@ -60,7 +60,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * non-empty, we return to the caller (spare one check). If its empty the analyzer
          * function (which has recently been setup) is called again.                        */
         do {
-            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
+            this->current_analyzer_function(this);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
@@ -88,7 +88,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Analyze until there is some content in the queue */
         do {
-            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
+            this->current_analyzer_function(this);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
@@ -105,7 +105,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         this->token = result_p;
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
-            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
+            this->current_analyzer_function(this);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
@@ -118,7 +118,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
-            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
+            this->current_analyzer_function(this);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
@@ -137,7 +137,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                    QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
         do {
-            engine.current_analyzer_function((QUEX_NAME(AnalyzerData)*)this);
+            this->current_analyzer_function(this);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 

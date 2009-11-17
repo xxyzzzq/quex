@@ -28,6 +28,8 @@
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
+#include <quex/code_base/temporary_macros_on>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
@@ -38,7 +40,22 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
     typedef struct QUEX_NAME(AnalyzerData_tag) {
-        QUEX_NAME(Engine)       engine;
+        QUEX_NAME(Buffer)             buffer;
+
+        /* Each mode has a dedicated analyzer function.  The function pointer
+         * to the currently active mode's function is stored redundantly in 
+         * 'current_analyzer_function' to accelerate the access to it.                    */
+        struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
+        QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
+
+#if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+     || defined(QUEX_OPTION_ASSERTS)
+        /* When a mode change happens and the user does not 'return' but 'CONTINUE'
+         * an error must be logged, since the following characters are still swallowed
+         * by the current function and not the new one. For this one needs to return and
+         * then continue further.                                                         */
+        QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
+#       endif
 
         /*_________________________________________________________________________
          *        __   __   ___  __  
@@ -112,9 +129,60 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     } QUEX_NAME(AnalyzerData);
 
+    TEMPLATE_IN(InputHandleT) void
+    QUEX_NAME(AnalyzerData_construct)(QUEX_NAME(AnalyzerData)*     me,
+                                      InputHandleT*                input_handle,
+                                      QUEX_TYPE_CHARACTER*         InputMemory,
+                                      const size_t                 BufferMemorySize,
+                                      const char*                  CharacterEncodingName, 
+                                      const size_t                 TranslationBufferMemorySize,
+                                      bool                         ByteOrderReversionF);
+
+    QUEX_INLINE void 
+    QUEX_NAME(AnalyzerData_destruct)(QUEX_NAME(AnalyzerData)* me);
+
+    TEMPLATE_IN(InputHandleT) void
+    QUEX_NAME(AnalyzerData_reset)(QUEX_NAME(AnalyzerData)*   me,
+                                  InputHandleT*                input_handle, 
+                                  const char*                  CharacterEncodingName, 
+                                  const size_t                 TranslationBufferMemorySize);
+
+    QUEX_INLINE bool 
+    QUEX_NAME(AnalyzerData_buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
+
+    QUEX_INLINE bool 
+    QUEX_NAME(AnalyzerData_buffer_reload_forward)(QUEX_NAME(Buffer)*            buffer, 
+                                                  QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                                  QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
+                                                  const size_t                  PostContextN);
+
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_FUNC(include_push)(QUEX_NAME(AnalyzerData)*  me,
+                            QUEX_TYPE_CHARACTER*      InputName,
+                            const int                 MODE_ID /* = -1 */, 
+                            const char*               IANA_CodingName /* = 0x0 */);
+
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_FUNC(include_push_mode)(QUEX_NAME(AnalyzerData)*           me,
+                                 QUEX_TYPE_CHARACTER*               InputName,
+                                 const struct QUEX_NAME(Mode_tag)&  mode, 
+                                 const char*                        IANA_CodingName /* = 0x0 */);
+
+    QUEX_INLINE bool
+    QUEX_FUNC(include_pop)(QUEX_NAME(AnalyzerData)* me);
+
+    QUEX_INLINE void
+    QUEX_FUNC(include_stack_delete)(QUEX_NAME(AnalyzerData)* me); 
+
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {
-        QUEX_NAME(Engine)               engine;
+        QUEX_NAME(Buffer)               buffer;
+        struct QUEX_NAME(Mode_tag)*     __current_mode_p; 
+        QUEX_NAME(AnalyzerFunctionP)    current_analyzer_function;
+#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+       || defined(QUEX_OPTION_ASSERTS)
+        QUEX_NAME(AnalyzerFunctionP)    DEBUG_analyzer_function_at_entry;
+#   endif
         QUEX_TYPE_COUNTER               counter;
         struct QUEX_NAME(Mode_tag)*     current_mode_p;
         struct QUEX_NAME(Memento_tag)*  parent;
@@ -122,5 +190,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA */

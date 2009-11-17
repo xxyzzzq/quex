@@ -34,24 +34,22 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Store the lexical analyzer's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
-        InputHandleT*       input_handle = 0x0;
+        InputHandleT*        input_handle = 0x0;
         QUEX_NAME(Memento)*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(me, InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
         }
 
-        if( MODE_ID != -1 ) me->set_mode_brutally(MODE_ID);
-
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        QUEX_NAME(Engine_construct)(&me->engine,
-                                    me->engine.__current_mode_p->analyzer_function,
-                                    input_handle,
-                                    0x0, QUEX_SETTING_BUFFER_SIZE,
-                                    IANA_CodingName, 
-                                    QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
-                                    me->engine.buffer._byte_order_reversion_active_f);
+        QUEX_NAME(AnalyzerData_construct)(&me, input_handle,
+                                          0x0, QUEX_SETTING_BUFFER_SIZE,
+                                          IANA_CodingName, 
+                                          QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
+                                          me->buffer._byte_order_reversion_active_f);
+
+        if( MODE_ID != -1 ) QUEX_FUNC(set_mode_brutally)(me, MODE_ID);
 
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_FIX(COUNTER, _reset)(&me->counter);
@@ -66,10 +64,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }   
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*     me,
-                                 QUEX_TYPE_CHARACTER*    InputName,
-                                 const QUEX_NAME(Mode)&  mode, 
-                                 const char*             IANA_CodingName /* = 0x0 */)
+    QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*      me,
+                                 QUEX_TYPE_CHARACTER*     InputName,
+                                 const QUEX_NAME(Mode)&   mode, 
+                                 const char*              IANA_CodingName /* = 0x0 */)
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_SETTING_PLAIN_C
@@ -87,11 +85,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( me->_parent_memento == 0x0 ) return false; 
 
         /* Free the related memory that is no longer used                      */
-        QUEX_NAME(Engine_destruct)(&me->engine);
+        QUEX_NAME(AnalyzerData_destruct)(me);
 
         /* Restore the lexical analyzer to the state it was before the include */
         /* Here, the 'memento_unpack' section is executed                      */
-        QUEX_FIX(ANALYZER, _memento_unpack)(me, me->_parent_memento);
+        QUEX_FUNC(memento_unpack)(me, me->_parent_memento);
 
         /* Return to including file succesful */
         return true;
@@ -102,11 +100,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         while( me->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */
-            QUEX_NAME(Engine_destruct)(&me->engine);
+            QUEX_NAME(AnalyzerData_destruct)(me);
 
             /* Restore the lexical analyzer to the state it was before the include */
             /* Here, the 'memento_unpack' section is executed                      */
-            QUEX_FIX(ANALYZER, _memento_unpack)(me, me->_parent_memento);
+            QUEX_FUNC(memento_unpack)(me, me->_parent_memento);
         }
     }
 
@@ -118,9 +116,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     { QUEX_FUNC(include_push)<InputHandleT>(this, InputName, ModeID, IANA_CodingName); }
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*    InputName,
+    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*     InputName,
                               const QUEX_NAME(Mode)&   mode, 
-                              const char*             IANA_CodingName /* = 0x0 */)
+                              const char*              IANA_CodingName /* = 0x0 */)
     { QUEX_FUNC(include_push_mode)<InputHandleT>(this, InputName, mode, IANA_CodingName); }
 
     QUEX_INLINE bool

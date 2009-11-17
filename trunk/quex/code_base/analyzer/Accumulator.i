@@ -11,11 +11,13 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/MemoryManager>
+#include <quex/code_base/analyzer/member/token-sending.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)* me, QUEX_TYPE_ANALYZER*    lexer)
+QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me, 
+                                 QUEX_NAME(AnalyzerData)*  lexer)
 {
     me->the_lexer       = lexer;
     me->text.begin      = \
