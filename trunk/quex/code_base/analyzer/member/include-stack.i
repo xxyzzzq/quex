@@ -66,14 +66,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void    
     QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*      me,
                                  QUEX_TYPE_CHARACTER*     InputName,
-                                 const QUEX_NAME(Mode)&   mode, 
+                                 const QUEX_NAME(Mode)*   mode, 
                                  const char*              IANA_CodingName /* = 0x0 */)
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_SETTING_PLAIN_C
-        QUEX_FUNC(include_push)<InputHandleT>(InputName, mode.id(), IANA_CodingName);
+        QUEX_FUNC(include_push)<InputHandleT>(InputName, mode->id(), IANA_CodingName);
 #       else
-        QUEX_FUNC(include_push)(InputName, mode.id(), IANA_CodingName);
+        QUEX_FUNC(include_push)(InputName, mode->id(), IANA_CodingName);
 #       endif
     }
 

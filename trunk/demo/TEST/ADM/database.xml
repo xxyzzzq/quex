@@ -1,4 +1,4 @@
-<test-database execution-time-sec="195.76" date="Fri Nov 13 06:55:01 2009">
+<test-database execution-time-sec="195.74" date="Tue Nov 17 08:53:43 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="17.00"> 
@@ -25,11 +25,11 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" make-required="True" time-sum-sec="4.98"> 
+        <test title="Single Mode Example" make-required="True" time-sum-sec="4.97"> 
             <application file-name="000.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.33" crc="-424163482"/>
-               <choice name="DEBUG" result="OK" time_sec="2.65" crc="-424163482"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.36" crc="-424163482"/>
+               <choice name="DEBUG" result="OK" time_sec="2.61" crc="-424163482"/>
             </choice-list>
         </test>
     </group>
@@ -129,7 +129,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="16.16"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="16.15"> 
             <application file-name="010b.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="FAIL" time_sec="12.90" crc="665696517"/>

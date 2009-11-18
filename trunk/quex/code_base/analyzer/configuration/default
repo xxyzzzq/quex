@@ -26,6 +26,19 @@
    && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 #   define QUEX_OPTION_TOKEN_POLICY_QUEUE
 #endif
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#   define  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   ifndef    QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
+#      define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER (0)
+#   endif
+#   ifndef    QUEX_SETTING_TOKEN_QUEUE_SIZE
+#      define QUEX_SETTING_TOKEN_QUEUE_SIZE (256)
+#   endif
+#endif
+
+#ifndef    __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID  (0)
+#endif
 
 #ifndef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N
 #   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
@@ -59,8 +72,11 @@
 #   define QUEX_SETTING_MODE_STACK_SIZE     (256)
 #endif
 #ifndef    QUEX_TYPE_TOKEN  
-#   define QUEX_TYPE_TOKEN  int
+#   define QUEX_TYPE_TOKEN  Token
 #endif
+
+#define QUEX_FUNC(NAME)        QuexDefault ## _ ## NAME                
+#define QUEX_MEMBER(NAME)      QuexDefaultClass:: ## NAME                
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #define QUEX_NAMESPACE_MAIN_REF              quex::

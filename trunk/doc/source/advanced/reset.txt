@@ -51,5 +51,8 @@ analyzer as they are:
 
 #. All entries of the post categorizer dictionary are deleted.
 
-#. The byte order reversion flag is set to ``false``.
+.. note:: 
+
+    The byte order reversion flag is *not* set to ``false``. It
+    remains as it was before the reset.
 

@@ -2,14 +2,14 @@
 #include <cstdlib>
 #include <cstring>
 #define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_XXX_ID  int
+#define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_STRING_ACCUMULATOR
 #define QUEX_NAME(Accumulator)    TestAccumulator
 #define QUEX_TYPE_ANALYZER       TestAnalyzer
 #include <quex/code_base/analyzer/configuration/default>
 
 struct QUEX_TYPE_ANALYZER {
-    void  send(QUEX_TYPE_TOKEN_XXX_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
+    void  send(QUEX_TYPE_TOKEN_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
         printf("Lexical Analyzer Receives:\n");
         printf("   '%s'\n", Msg);
     }

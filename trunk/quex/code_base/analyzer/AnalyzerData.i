@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I
-#define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
@@ -9,6 +9,7 @@
 #include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
+    struct QUEX_NAME(Mode_tag);
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(AnalyzerData_construct)(QUEX_NAME(AnalyzerData)*  me,
@@ -41,7 +42,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
        
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_construct)(&me->accumulator, me);
+        QUEX_NAME(Accumulator_construct)(&me->accumulator, (QUEX_TYPE_ANALYZER*)me);
 #       endif
        
 #       ifdef __QUEX_OPTION_COUNTER
@@ -57,9 +58,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         me->_parent_memento = 0x0;
 #       endif
-
-        me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-        QUEX_FUNC(set_mode_brutally)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
         me->_mode_stack.end        = me->_mode_stack.begin;
         me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
@@ -100,7 +98,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(AnalyzerData_reset)(QUEX_NAME(AnalyzerData)*     me,
-                                  QUEX_NAME(AnalyzerFunctionP) AnalyserFunction,
                                   InputHandleT*                input_handle, 
                                   const char*                  CharacterEncodingName, 
                                   const size_t                 TranslationBufferMemorySize)
@@ -118,22 +115,17 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       ifdef QUEX_OPTION_INCLUDE_STACK
-        QUEX_FUNC(include_stack_delete)(me);
+        QUEX_FUNC(include_stack_delete)((QUEX_TYPE_ANALYZER*)me);
 #       endif
 
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         me->post_categorizer.clear();
 #       endif
 
-        me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-        QUEX_FUNC(set_mode_brutally)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
-
         me->_mode_stack.end        = me->_mode_stack.begin;
         me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
         QUEX_NAME(Buffer_reset)(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
-
-        QUEX_FUNC(byte_order_reversion_set)(me, false);
     }
 
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
@@ -194,4 +186,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I */

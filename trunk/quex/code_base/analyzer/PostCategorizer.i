@@ -12,7 +12,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE QUEX_NAME(DictionaryNode)* 
 QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
                                const QUEX_TYPE_CHARACTER*  Remainder,
-                               QUEX_TYPE_TOKEN_XXX_ID          TokenID)
+                               QUEX_TYPE_TOKEN_ID          TokenID)
 {
     QUEX_NAME(DictionaryNode)* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(__QUEX_STD_strlen(Remainder));
     me->name_first_character = FirstCharacter;
@@ -42,7 +42,7 @@ QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me)
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
                                    const QUEX_TYPE_CHARACTER*  EntryName, 
-                                   const QUEX_TYPE_TOKEN_XXX_ID    TokenID)
+                                   const QUEX_TYPE_TOKEN_ID    TokenID)
 {
     QUEX_TYPE_CHARACTER                 FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*          Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
@@ -177,7 +177,7 @@ QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*       me,
     QUEX_NAME(MemoryManager_PostCategorizerNode_free)(branch);
 }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_XXX_ID 
+QUEX_INLINE QUEX_TYPE_TOKEN_ID 
 QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_NAME(Dictionary)*  me,
                                           const QUEX_TYPE_CHARACTER*   Lexeme)
 {
@@ -221,7 +221,7 @@ QUEX_INLINE void
 QUEX_NAME(Dictionary)::clear()
 { QUEX_NAME(PostCategorizer_clear)(this); }
 
-QUEX_INLINE QUEX_TYPE_TOKEN_XXX_ID 
+QUEX_INLINE QUEX_TYPE_TOKEN_ID 
 QUEX_NAME(Dictionary)::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
 { return QUEX_NAME(PostCategorizer_get_token_id)(this, Lexeme); }
 
@@ -231,7 +231,7 @@ QUEX_NAME(Dictionary)::remove(const QUEX_TYPE_CHARACTER* EntryName)
 
 QUEX_INLINE void
 QUEX_NAME(Dictionary)::enter(const QUEX_TYPE_CHARACTER*  EntryName, 
-                                  const QUEX_TYPE_TOKEN_XXX_ID    TokenID)
+                                  const QUEX_TYPE_TOKEN_ID    TokenID)
 { QUEX_NAME(PostCategorizer_enter)(this, EntryName, TokenID); }
 #endif 
 
