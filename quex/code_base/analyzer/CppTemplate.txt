@@ -228,16 +228,16 @@ public:
 
     // (*) Token sending
     void        send(const QUEX_TYPE_TOKEN& That);
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID TokenID);
-    void        send_n(const int N, const QUEX_TYPE_TOKEN_XXX_ID TokenID);
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID);
+    void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
     template    <typename ContentT> 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID TokenID, ContentT Content);
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
     template    <typename X0_T, typename X1_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1);
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1);
     template    <typename X0_T, typename X1_T, typename X2_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2);
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2);
     template    <typename X0_T, typename X1_T, typename X2_T, typename X3_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -333,12 +333,15 @@ QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*       me,
 {
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-    QUEX_NAME(AnalyzerData_construct)(&me,
+    QUEX_NAME(AnalyzerData_construct)((QUEX_NAME(AnalyzerData)*)me,
                                       input_handle,
                                       BufferMemory, QUEX_SETTING_BUFFER_SIZE,
                                       CharacterEncodingName, 
                                       QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                       ByteOrderReversionF);
+
+    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    QUEX_FUNC(set_mode_brutally)(me, me->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
 
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's constructor extensions _______________________________________*/
@@ -424,8 +427,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/analyzer/member/misc.i>
 #include    <quex/code_base/analyzer/member/constructor.i>
 #include    <quex/code_base/analyzer/counter/Base.i>
-#include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/analyzer/AnalyzerData.i>
+#include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/member/include-stack.i>

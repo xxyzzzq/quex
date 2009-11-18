@@ -74,15 +74,6 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(QUEX_TYPE
 #       undef self
 #   endif
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
-
-#   ifdef     engine
-#       undef engine
-#   endif
-#   if defined(__QUEX_OPTION_PLAIN_ANALYZER_OBJECT)
-#      define engine  (me)
-#   else
-#      define engine  (&me->engine)
-#   endif
 """
 
 comment_on_post_context_position_init_str = """
@@ -160,14 +151,14 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += comment_on_post_context_position_init_str
     txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
     txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
-    txt += "    engine->DEBUG_analyzer_function_at_entry = engine->current_analyzer_function;\n"
+    txt += "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n"
     txt += "#endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
 
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
-    txt += "    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&engine->buffer);\n";
+    txt += "    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);\n";
     
     txt += function_body
 
@@ -204,11 +195,11 @@ __terminal_state_str  = """
 
 /* Lexeme descriptions: There is a temporary zero stored at the end of each
  * lexeme. A pointer to the zero provides the Null-lexeme.                     */
-#define Lexeme       (engine->buffer._lexeme_start_p)
-#define LexemeBegin  (engine->buffer._lexeme_start_p)
-#define LexemeEnd    (engine->buffer._input_p)
+#define Lexeme       (me->buffer._lexeme_start_p)
+#define LexemeBegin  (me->buffer._lexeme_start_p)
+#define LexemeEnd    (me->buffer._input_p)
 #define LexemeNull   (&__QuexLexemeNullObject)
-#define LexemeL      (size_t)(engine->buffer._input_p - engine->buffer._lexeme_start_p)
+#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -267,7 +258,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
      *  occured. If not it can call this function again.                               */
 #if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
     || defined(QUEX_OPTION_ASSERTS)
-    if( engine->DEBUG_analyzer_function_at_entry != engine->current_analyzer_function ) 
+    if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
@@ -292,10 +283,10 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(&engine->buffer);\n"
+        txt += indentation + "QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(&me->buffer);\n"
 
     if action_info.action().require_terminating_zero_f():
-        txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&engine->buffer);\n"
+        txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);\n"
 
     txt += indentation + "{\n"
     txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  
@@ -334,7 +325,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         #    where the 'normal' pattern ended, then we can do a backward detection.
         txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
         txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
-        txt += "    PAPC_input_postion_backward_detector_%s(engine);\n" % \
+        txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
                __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
     elif state_machine.core().post_context_id() != -1L: 
@@ -404,7 +395,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
-    on_failure_str  = "engine->buffer._input_p = engine->buffer._lexeme_start_p;\n"
+    on_failure_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
     on_failure_str += LanguageDB["$if EOF"] + "\n"
     on_failure_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
     on_failure_str += LanguageDB["$endif"] + "\n"

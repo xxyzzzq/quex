@@ -147,7 +147,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
         __quex_assert(me->_input_p == me->_memory._front + 1);
-
     }
 
     QUEX_INLINE void

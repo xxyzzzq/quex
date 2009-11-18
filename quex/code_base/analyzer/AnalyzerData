@@ -40,6 +40,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
     typedef struct QUEX_NAME(AnalyzerData_tag) {
+#       ifndef __QUEX_SETTING_PLAIN_C
+        /* Most compilers put the virtual function table in front of the object.
+         * So, if the derived class has a virtual function, and therefore a v-table,
+         * the cast towards the base class and back might not work. Thus let us
+         * ensure that all related objects contain a v-table by having one virtual
+         * function.                                                                      */
+        virtual ~QUEX_NAME(AnalyzerData_tag)() {}
+#       endif
         QUEX_NAME(Buffer)             buffer;
 
         /* Each mode has a dedicated analyzer function.  The function pointer
@@ -130,22 +138,22 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_NAME(AnalyzerData);
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(AnalyzerData_construct)(QUEX_NAME(AnalyzerData)*     me,
-                                      InputHandleT*                input_handle,
-                                      QUEX_TYPE_CHARACTER*         InputMemory,
-                                      const size_t                 BufferMemorySize,
-                                      const char*                  CharacterEncodingName, 
-                                      const size_t                 TranslationBufferMemorySize,
-                                      bool                         ByteOrderReversionF);
+    QUEX_NAME(AnalyzerData_construct)(QUEX_NAME(AnalyzerData)*  me,
+                                      InputHandleT*             input_handle,
+                                      QUEX_TYPE_CHARACTER*      BufferMemory,
+                                      const size_t              BufferMemorySize,
+                                      const char*               CharacterEncodingName, 
+                                      const size_t              TranslationBufferMemorySize,
+                                      bool                      ByteOrderReversionF);
 
     QUEX_INLINE void 
     QUEX_NAME(AnalyzerData_destruct)(QUEX_NAME(AnalyzerData)* me);
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(AnalyzerData_reset)(QUEX_NAME(AnalyzerData)*   me,
-                                  InputHandleT*                input_handle, 
-                                  const char*                  CharacterEncodingName, 
-                                  const size_t                 TranslationBufferMemorySize);
+                                  InputHandleT*              input_handle, 
+                                  const char*                CharacterEncodingName, 
+                                  const size_t               TranslationBufferMemorySize);
 
     QUEX_INLINE bool 
     QUEX_NAME(AnalyzerData_buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
@@ -165,14 +173,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void    
     QUEX_FUNC(include_push_mode)(QUEX_NAME(AnalyzerData)*           me,
                                  QUEX_TYPE_CHARACTER*               InputName,
-                                 const struct QUEX_NAME(Mode_tag)&  mode, 
+                                 const struct QUEX_NAME(Mode_tag)*  mode, 
                                  const char*                        IANA_CodingName /* = 0x0 */);
 
     QUEX_INLINE bool
     QUEX_FUNC(include_pop)(QUEX_NAME(AnalyzerData)* me);
 
     QUEX_INLINE void
-    QUEX_FUNC(include_stack_delete)(QUEX_NAME(AnalyzerData)* me); 
+    QUEX_FUNC(include_stack_delete)(QUEX_TYPE_ANALYZER* me); 
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {

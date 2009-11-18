@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_XXX_ID  int
+#define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_POST_CATEGORIZER
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/PostCategorizer.i>

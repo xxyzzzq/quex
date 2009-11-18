@@ -118,15 +118,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    QUEX_INLINE QUEX_TYPE_TOKEN* 
-    QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t N)
-    {
-        const size_t     MemorySize = sizeof(QUEX_TYPE_TOKEN) * N;
-        return (QUEX_TYPE_TOKEN*)__QUEX_ALLOCATE_MEMORY(MemorySize);
-    }
+    QUEX_INLINE void* 
+    QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t ByteN)
+    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
 
     QUEX_INLINE void 
-    QUEX_NAME(MemoryManager_TokenArray_free)(QUEX_TYPE_TOKEN* memory)
+    QUEX_NAME(MemoryManager_TokenArray_free)(void* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 #endif
 

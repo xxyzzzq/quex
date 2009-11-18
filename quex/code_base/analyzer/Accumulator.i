@@ -17,7 +17,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
 QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me, 
-                                 QUEX_NAME(AnalyzerData)*  lexer)
+                                 QUEX_TYPE_ANALYZER*       lexer)
 {
     me->the_lexer       = lexer;
     me->text.begin      = \
@@ -134,7 +134,7 @@ QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
 
 QUEX_INLINE void
 QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
-                             const QUEX_TYPE_TOKEN_XXX_ID  TokenID)
+                             const QUEX_TYPE_TOKEN_ID  TokenID)
 {
     /* All functions must ensure that there is one cell left to store the terminating zero. */
     __quex_assert(me->text.end < me->text.memory_end);
@@ -167,7 +167,7 @@ QUEX_NAME(Accumulator)::print_this()
 { QUEX_NAME(Accumulator_print_this)(this); }
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator)::flush(const QUEX_TYPE_TOKEN_XXX_ID  TokenID)
+QUEX_NAME(Accumulator)::flush(const QUEX_TYPE_TOKEN_ID  TokenID)
 { QUEX_NAME(Accumulator_flush)(this, TokenID); }
 
 QUEX_INLINE void 
