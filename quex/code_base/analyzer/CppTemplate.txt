@@ -25,7 +25,6 @@
 #include <cstdio>   /* gets: FILE                 */
 #include <quex/code_base/compatibility/inttypes.h>
 
-
 #include <quex/code_base/asserts>
 
 #ifdef     __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
@@ -65,7 +64,6 @@ $$USER_DEFINED_HEADER$$
 
 #include    <quex/code_base/MemoryManager>
 #include    <quex/code_base/analyzer/Mode>
-#include    <quex/code_base/analyzer/Engine>
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
@@ -323,13 +321,16 @@ $$CLASS_BODY_EXTENSION$$
 
 };
 
+QUEX_INLINE void 
+QUEX_FUNC(set_mode_brutally_by_id)(QUEX_TYPE_ANALYZER*  me, int ModeID);
+
 TEMPLATE_IN(InputHandleT) void
-QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*       me,
-                            InputHandleT*             input_handle, 
-                            const char*               CharacterEncodingName,
-                            bool                      ByteOrderReversionF,
-                            QUEX_TYPE_CHARACTER*      BufferMemory,    
-                            size_t                    BufferMemorySize)
+QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
+                            InputHandleT*          input_handle, 
+                            const char*            CharacterEncodingName,
+                            bool                   ByteOrderReversionF,
+                            QUEX_TYPE_CHARACTER*   BufferMemory,    
+                            size_t                 BufferMemorySize)
 {
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
@@ -341,7 +342,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
                                       ByteOrderReversionF);
 
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    QUEX_FUNC(set_mode_brutally)(me, me->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
+    QUEX_FUNC(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's constructor extensions _______________________________________*/
@@ -418,7 +419,6 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
-
 
 #include    <quex/code_base/analyzer/member/token-sending.i>
 #include    <quex/code_base/analyzer/member/token-receiving.i>

@@ -309,13 +309,13 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
-                                    "QUEX_NAME(AnalyzerData)*, const int")
+                                    "QUEX_TYPE_ANALYZER* const int")
 
     for mode in Modes:
         for event_name in ["on_exit", "on_entry"]:
             if not mode.has_code_fragment_list(event_name): continue
             txt += __mode_functions(prolog, "void", [event_name], 
-                                    "QUEX_NAME(AnalyzerData)*, const QUEX_NAME(Mode)*")
+                                    "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
 
     txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     for mode in Modes:

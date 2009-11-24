@@ -16,18 +16,18 @@ def do(Modes):
 mode_function_implementation_str = \
 """
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry(QUEX_NAME(AnalyzerData)* me, const QUEX_NAME(Mode)* FromMode) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
 $$ENTER-PROCEDURE$$
     }
 
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit(QUEX_NAME(AnalyzerData)* me, const QUEX_NAME(Mode)* ToMode)  {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
 $$EXIT-PROCEDURE$$
     }
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_indentation(QUEX_NAME(AnalyzerData)* me, const int Indentation) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_indentation(QUEX_TYPE_ANALYZER* me, const int Indentation) {
 $$INDENTATION-PROCEDURE$$
     }
 #endif

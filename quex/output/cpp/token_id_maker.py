@@ -61,7 +61,7 @@ func_str = \
 QUEX_NAMESPACE_TOKEN_OPEN
 
 inline const char*
-QUEX_TYPE_TOKEN_XXX::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
+QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
    static const char  uninitialized_string[] = "<UNINITIALIZED>";

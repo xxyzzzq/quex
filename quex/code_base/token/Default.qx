@@ -58,9 +58,9 @@ token_type {
         const std::string 
         utf8_text() const
         {
-            uint8_t          utf8_buffer[QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE];
-            std::string      tmp;
-            QUEX_TYPE_TOKEN_XXX::__string  tmp2 = text;
+            uint8_t                    utf8_buffer[QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE];
+            std::string                tmp;
+            QUEX_TYPE_TOKEN::__string  tmp2 = text;
 
             uint8_t* end = QUEX_NAMESPACE_MAIN::Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), 
                                                        tmp2.length(), utf8_buffer, 
@@ -73,7 +73,7 @@ token_type {
 
    footer {
         inline std::ostream&
-        operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN_XXX& Tok)
+        operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)
         { ostr << std::string(Tok); return ostr; }
    }
 }
