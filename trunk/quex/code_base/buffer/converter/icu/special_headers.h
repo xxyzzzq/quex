@@ -32,14 +32,14 @@
 #   include <stdio.h>
 #   include <assert.h>
 #   include <string.h>
-#   include "unicode/utypes.h"   /* Basic ICU data types */
-#   include "unicode/ucnv.h"     /* C   Converter API    */
-#   include "unicode/ustring.h"  /* some more string fcns*/
-#   include "unicode/uchar.h"    /* char names           */
-#   include "unicode/uloc.h"
-#   include "unicode/unistr.h"
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     } // extern "C" { 
 #endif
+#include "unicode/utypes.h"   /* Basic ICU data types */
+#include "unicode/ucnv.h"     /* C   Converter API    */
+#include "unicode/ustring.h"  /* some more string fcns*/
+#include "unicode/uchar.h"    /* char names           */
+#include "unicode/uloc.h"
+#include "unicode/unistr.h"
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H */

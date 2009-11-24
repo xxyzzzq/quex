@@ -8,8 +8,7 @@ BUFFER_SIZE  = 65536
 OPTIMIZATION = -O3 # -ggdb # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 GENERATOR    = Quex#  Quex, Flex
 PROFILER     = # -pg # '-pg' for gprof profiling information
-# CPU_MHZ      = `cat /proc/cpuinfo  | awk \'/cpu MHz/ { print \$4; exit; }\'` # `source get_cpu_mhz.sh` 
-CPU_MHZ      = -DCPU_FREQ_MHZ=`source get_cpu_mhz.sh` 
+CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./get_cpu_mhz.sh` 
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \

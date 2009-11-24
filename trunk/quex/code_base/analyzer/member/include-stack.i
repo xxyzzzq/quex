@@ -12,7 +12,6 @@
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
 
-#include <quex/code_base/analyzer/Engine>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -35,7 +34,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Store the lexical analyzer's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*        input_handle = 0x0;
-        QUEX_NAME(Memento)*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(me, InputName, &input_handle);
+        QUEX_NAME(Memento)*  m            = QUEX_FUNC(memento_pack)<InputHandleT>(me, InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
@@ -43,20 +42,19 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        QUEX_NAME(AnalyzerData_construct)(&me, input_handle,
+        QUEX_NAME(AnalyzerData_construct)((QUEX_NAME(AnalyzerData)*)me, input_handle,
                                           0x0, QUEX_SETTING_BUFFER_SIZE,
                                           IANA_CodingName, 
                                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                           me->buffer._byte_order_reversion_active_f);
 
-        if( MODE_ID != -1 ) QUEX_FUNC(set_mode_brutally)(me, MODE_ID);
+        if( MODE_ID != -1 ) QUEX_FUNC(set_mode_brutally_by_id)(me, MODE_ID);
 
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_FIX(COUNTER, _reset)(&me->counter);
 #       endif
 
         /* Keep track of 'who's your daddy?'                              */
-        m->base.parent = me->_parent_memento;
         me->_parent_memento = m;
 #       if defined(__QUEX_SETTING_PLAIN_C)
 #       undef InputHandleT
@@ -71,9 +69,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_SETTING_PLAIN_C
-        QUEX_FUNC(include_push)<InputHandleT>(InputName, mode->id(), IANA_CodingName);
+        QUEX_FUNC(include_push)<InputHandleT>((QUEX_NAME(AnalyzerData)*)me, InputName, mode->id(), IANA_CodingName);
 #       else
-        QUEX_FUNC(include_push)(InputName, mode->id(), IANA_CodingName);
+        QUEX_FUNC(include_push)((QUEX_NAME(AnalyzerData)*)me, InputName, mode->id(), IANA_CodingName);
 #       endif
     }
 

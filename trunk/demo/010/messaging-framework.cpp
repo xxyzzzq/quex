@@ -1,8 +1,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <assert.h>
-#include <quex/code_base/compatibility/inttypes.h>
-#include <quex/code_base/asserts>
 #include "messaging-framework.h"
 
 #ifndef __QUEX_OPTION_MESSAGE_UTF8

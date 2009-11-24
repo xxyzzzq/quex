@@ -44,7 +44,8 @@ main(int argc, char** argv)
                 break;
             }
             print(qlex, ">> including: ", (const char*)my_token.get_text().c_str());
-            qlex.include_push<FILE>((QUEX_TYPE_CHARACTER*)my_token.get_text().c_str());
+            QUEX_TYPE_CHARACTER* tmp = (QUEX_TYPE_CHARACTER*)my_token.get_text().c_str();
+            qlex.include_push<FILE>(tmp);
         }
         else if( my_token.type_id() == QUEX_TKN_TERMINATION ) {
             if( qlex.include_pop() == false ) 

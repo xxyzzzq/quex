@@ -101,7 +101,7 @@ QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
                                   CharacterEncodingName, 
                                   QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    QUEX_FUNC(set_mode_brutally)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+    QUEX_FUNC(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

@@ -79,7 +79,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           ifdef __QUEX_SETTING_PLAIN_C
             /* QuexToken_destruct() */
 #           else
-            iterator->QUEX_TYPE_TOKEN::~QUEX_TYPE_TOKEN();  
+            iterator->QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
 #           endif
 
         if( me->begin != 0x0 ) {
@@ -260,7 +260,7 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
             iterator != token_queue->begin + me->size; ++iterator) {
 #           ifdef __QUEX_SETTING_PLAIN_C
 #           else
-            iterator->~QUEX_TYPE_TOKEN();
+            iterator->~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();
 #           endif
         }
         /* Step 2: Plain copy of objects stored in the 'remainder store'             */

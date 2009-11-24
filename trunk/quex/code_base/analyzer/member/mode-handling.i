@@ -10,19 +10,19 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE QUEX_NAME(Mode)*
-    QUEX_FUNC(get_mode)(QUEX_NAME(AnalyzerData)* me) 
+    QUEX_FUNC(get_mode)(QUEX_TYPE_ANALYZER* me) 
     { return me->__current_mode_p; }
 
     QUEX_INLINE int
-    QUEX_FUNC(get_mode_id)(const QUEX_NAME(AnalyzerData)* me)
+    QUEX_FUNC(get_mode_id)(const QUEX_TYPE_ANALYZER* me)
     { return me->__current_mode_p->id; }
 
     QUEX_INLINE const char*
-    QUEX_FUNC(get_mode_name)(const QUEX_NAME(AnalyzerData)* me)
+    QUEX_FUNC(get_mode_name)(const QUEX_TYPE_ANALYZER* me)
     { return me->__current_mode_p->name; }
 
     QUEX_INLINE void 
-    QUEX_FUNC(set_mode_brutally)(QUEX_NAME(AnalyzerData)* me, QUEX_NAME(Mode)* ModeP) 
+    QUEX_FUNC(set_mode_brutally)(QUEX_TYPE_ANALYZER* me, QUEX_NAME(Mode)* ModeP) 
     { 
 #   ifdef     QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -41,11 +41,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(set_mode_brutally_by_id)(QUEX_NAME(AnalyzerData)* me, const int ModeID)
+    QUEX_FUNC(set_mode_brutally_by_id)(QUEX_TYPE_ANALYZER* me, const int ModeID)
     { QUEX_FUNC(set_mode_brutally)(me, me->mode_db[ModeID]); }
 
     QUEX_INLINE void    
-    QUEX_FUNC(enter_mode)(QUEX_NAME(AnalyzerData)* me, /* NOT const*/ QUEX_NAME(Mode)* TargetMode) 
+    QUEX_FUNC(enter_mode)(QUEX_TYPE_ANALYZER* me, /* NOT const*/ QUEX_NAME(Mode)* TargetMode) 
     {
 #       ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
         /* NOT const */ QUEX_NAME(Mode)* SourceMode = me->__current_mode_p;
@@ -60,7 +60,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE QUEX_NAME(Mode)*
-    QUEX_FUNC(map_mode_id_to_mode)(QUEX_NAME(AnalyzerData)* me, const int ModeID)
+    QUEX_FUNC(map_mode_id_to_mode)(QUEX_TYPE_ANALYZER* me, const int ModeID)
     { 
         __quex_assert(ModeID >= 0);
         __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1); // first mode is unused by quex
@@ -68,11 +68,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE int  
-    QUEX_FUNC(map_mode_to_mode_id)(const QUEX_NAME(AnalyzerData)* me, const QUEX_NAME(Mode)* Mode)
+    QUEX_FUNC(map_mode_to_mode_id)(const QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* Mode)
     { return Mode->id; }
 
     QUEX_INLINE void 
-    QUEX_FUNC(pop_mode)(QUEX_NAME(AnalyzerData)* me) 
+    QUEX_FUNC(pop_mode)(QUEX_TYPE_ANALYZER* me) 
     { 
         __quex_assert(me->_mode_stack.end != me->_mode_stack.begin);
         --(me->_mode_stack.end);
@@ -80,7 +80,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(pop_drop_mode)(QUEX_NAME(AnalyzerData)* me) 
+    QUEX_FUNC(pop_drop_mode)(QUEX_TYPE_ANALYZER* me) 
     { 
         __quex_assert(me->_mode_stack.end != me->_mode_stack.begin);
         --(me->_mode_stack.end);
@@ -88,7 +88,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
         
     QUEX_INLINE void       
-    QUEX_FUNC(push_mode)(QUEX_NAME(AnalyzerData)* me, QUEX_NAME(Mode)* new_mode) 
+    QUEX_FUNC(push_mode)(QUEX_TYPE_ANALYZER* me, QUEX_NAME(Mode)* new_mode) 
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         if( me->_mode_stack.end == me->_mode_stack.memory_end ) 

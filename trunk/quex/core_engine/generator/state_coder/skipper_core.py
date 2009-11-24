@@ -43,12 +43,12 @@ range_skipper_template = """
     $$DELIMITER_COMMENT$$
     const QUEX_TYPE_CHARACTER   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
     const size_t                Skipper$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
-    QUEX_TYPE_CHARACTER*        text_end = QUEX_NAME(Buffer_text_end)(&engine->buffer);
+    QUEX_TYPE_CHARACTER*        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$
-    QUEX_BUFFER_ASSERT_CONSISTENCY(&engine->buffer);
-    __quex_assert(QUEX_NAME(Buffer_content_size)(&engine->buffer) >= Skipper$$SKIPPER_INDEX$$L );
+    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= Skipper$$SKIPPER_INDEX$$L );
 
     /* NOTE: If _input_p == end of buffer, then it will drop out immediately out of the
      *       loop below and drop into the buffer reload procedure.                      */
@@ -98,11 +98,11 @@ $$LC_COUNT_IN_LOOP$$
      *         (2.2) Start detection of tail of delimiter
      *
      */
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&engine->buffer) == 0 ) {
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
         /* (1) */
         $$GOTO_DROP_OUT$$            
     } 
-    else if( Skipper$$SKIPPER_INDEX$$L && QUEX_NAME(Buffer_distance_input_to_text_end)(&engine->buffer) < Skipper$$SKIPPER_INDEX$$L ) {
+    else if( Skipper$$SKIPPER_INDEX$$L && QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < Skipper$$SKIPPER_INDEX$$L ) {
         /* (2.1) */
         $$GOTO_DROP_OUT$$            
     }
@@ -127,7 +127,7 @@ $$LC_COUNT_END_PROCEDURE$$
     }
 
 $$DROP_OUT$$
-    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&engine->buffer);
+    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -136,22 +136,22 @@ $$DROP_OUT$$
      *    of the buffer, thus we record the current position in the lexeme start pointer and
      *    recover it after the loading. */
     $$MARK_LEXEME_START$$
-    engine->buffer._input_p = text_end;
+    me->buffer._input_p = text_end;
 $$LC_COUNT_BEFORE_RELOAD$$
-    if(    QUEX_NAME(Engine_buffer_reload_forward)(&engine->buffer, &last_acceptance_input_position,
+    if(    QUEX_NAME(AnalyzerData_buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                               post_context_start_position, PostContextStartPositionN) ) {
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
-        engine->buffer._input_p = engine->buffer._lexeme_start_p;
+        me->buffer._input_p = me->buffer._lexeme_start_p;
         /* After reload, we need to increment _input_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
-        text_end = QUEX_NAME(Buffer_text_end)(&engine->buffer);
+        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&engine->buffer);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
-    engine->buffer._input_p = engine->buffer._lexeme_start_p;
+    me->buffer._input_p = me->buffer._lexeme_start_p;
     $$MISSING_CLOSING_DELIMITER$$
 }
 """
@@ -227,9 +227,9 @@ trigger_set_skipper_template = """
     $$DELIMITER_COMMENT$$
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
-    QUEX_BUFFER_ASSERT_CONSISTENCY(&engine->buffer);
-    __quex_assert(QUEX_NAME(Buffer_content_size)(&engine->buffer) >= 1);
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&engine->buffer) == 0 ) 
+    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) 
         $$GOTO_DROP_OUT$$
 
     /* NOTE: For simple skippers the end of content does not have to be overwriten 
@@ -251,15 +251,15 @@ $$DROP_OUT$$
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                   
      * -- The input_p will at this point in time always point to the buffer border.        */
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&engine->buffer) == 0 ) {
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&engine->buffer);
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
-        if( QUEX_NAME(Engine_buffer_reload_forward)(&engine->buffer, &last_acceptance_input_position,
+        if( QUEX_NAME(AnalyzerData_buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, PostContextStartPositionN) ) {
 
-            QUEX_BUFFER_ASSERT_CONSISTENCY(&engine->buffer);
-            QUEX_NAME(Buffer_input_p_increment)(&engine->buffer);
+            QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+            QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
             $$GOTO_LOOP_START$$
         } else {
@@ -363,7 +363,7 @@ lc_counter_in_loop = """
         if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
             ++(self.counter.base._line_number_at_end);
 #           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-            column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer);
+            column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
             self.counter.base._column_number_at_end = 0;
 #           endif
         }
@@ -389,7 +389,7 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
     variable_definition = \
       "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer);\n"+\
+      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n"+\
       "#   endif\n" + \
       "#   endif\n"
     in_loop       = ""
@@ -426,15 +426,15 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
                              "#       endif\n"
     else:
         end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                        "        self.counter.base._column_number_at_end +=   QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer)\n" + \
+                        "        self.counter.base._column_number_at_end +=   QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                         "                                              - column_count_p_$$SKIPPER_INDEX$$;\n" + \
                         "#   endif\n"
     before_reload  = "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "    self.counter.base._column_number_at_end +=  QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer)\n" + \
+                     "    self.counter.base._column_number_at_end +=  QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                      "                                         - column_count_p_$$SKIPPER_INDEX$$;\n" + \
                      "#   endif\n"
     after_reload   = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "        column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer);\n" + \
+                     "        column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                      "#       endif\n"
 
     if new_line_detection_in_loop_enabled_f:
@@ -470,7 +470,7 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
     variable_definition = \
       "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer);\n"+\
+      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n"+\
       "#   endif\n" + \
       "#   endif\n"
     in_loop       = ""
@@ -482,15 +482,15 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
         in_loop = lc_counter_in_loop
 
     end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                    "        self.counter.base._column_number_at_end +=   QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer)\n" + \
+                    "        self.counter.base._column_number_at_end +=   QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                     "                                              - column_count_p_$$SKIPPER_INDEX$$;\n" + \
                     "#       endif\n"
     before_reload  = "#      ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "       self.counter.base._column_number_at_end +=  QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer)\n" + \
+                     "       self.counter.base._column_number_at_end +=  QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                      "                                            - column_count_p_$$SKIPPER_INDEX$$;\n" + \
                      "#      endif\n"
     after_reload   = "#          ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "           column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&engine->buffer);\n" + \
+                     "           column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                      "#          endif\n"
 
     return blue_print(code_str,
