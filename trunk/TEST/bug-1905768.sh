@@ -11,5 +11,5 @@ quex -i error.qx -o Simple
 cat Simple-core-engine.cpp | awk ' /analyzer_function/ { print; } '
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism Simple-configuration
+rm -f Simple Simple.cpp Simple-*
 cd $tmp
