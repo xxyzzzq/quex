@@ -16,6 +16,7 @@ ENGINE_SOURCES = $(ENGINE_NAME)                     \
                  $(ENGINE_NAME).cpp                 \
                  $(ENGINE_NAME)-token_ids           \
                  $(ENGINE_NAME)-configuration       \
+                 $(ENGINE_NAME)-token               \
 		         $(ENGINE_NAME)-core-engine.cpp
 
 # (*) COMPILER SETTINGS ________________________________________________________
