@@ -23,11 +23,11 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
-    CounterLineColumn_construct(CounterLineColumn* me, QUEX_NAME(AnalyzerData)* lexer)
+    QUEX_NAME(CounterLineColumn_construct)(QUEX_NAME(CounterLineColumn)* me, QUEX_NAME(AnalyzerData)* lexer)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
-        memset((void*)me, 0xFF, sizeof(CounterLineColumn));
+        memset((void*)me, 0xFF, sizeof(QUEX_NAME(CounterLineColumn)));
 #       endif
         CounterBase_init((__CounterBase*)me); 
 
@@ -35,13 +35,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    CounterLineColumn_reset(CounterLineColumn* me)
+    QUEX_NAME(CounterLineColumn_reset)(QUEX_NAME(CounterLineColumn)* me)
     {
         CounterBase_init((__CounterBase*)me);
     }
 
     QUEX_INLINE void  
-    CounterLineColumn_count_FixNewlineN(CounterLineColumn*             me,
+    QUEX_NAME(CounterLineColumn_count_FixNewlineN)(QUEX_NAME(CounterLineColumn)*             me,
                               QUEX_TYPE_CHARACTER* Lexeme,
                               QUEX_TYPE_CHARACTER* LexemeEnd,
                               const int            LineNIncrement) 
@@ -52,7 +52,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __CounterLineColumn_count_chars_to_newline_backwards(me, (QUEX_TYPE_CHARACTER*)Lexeme, 
+        QUEX_NAME(__CounterLineColumn_count_chars_to_newline_backwards)(me, (QUEX_TYPE_CHARACTER*)Lexeme, 
                                                    (QUEX_TYPE_CHARACTER*)(LexemeEnd), 
                                                    LexemeEnd - Lexeme,
                                                    /* LicenseToIncrementLineCountF = */ false);
@@ -62,7 +62,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
-    __CounterLineColumn_count_chars_to_newline_backwards(CounterLineColumn* me, 
+    QUEX_NAME(__CounterLineColumn_count_chars_to_newline_backwards)(QUEX_NAME(CounterLineColumn)* me, 
                                              QUEX_TYPE_CHARACTER* Begin,
                                              QUEX_TYPE_CHARACTER* End,
                                              const ptrdiff_t      LexemeLength,
@@ -117,7 +117,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void    
-    CounterLineColumn_count(CounterLineColumn* me, 
+    QUEX_NAME(CounterLineColumn_count)(QUEX_NAME(CounterLineColumn)* me, 
                             QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     /* PURPOSE:
      *   Adapts the column number and the line number according to the newlines
@@ -126,7 +126,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
      *       there is no newline in the lexeme (see below).                        */
     {
-        QUEX_TYPE_CHARACTER* it = __CounterLineColumn_count_chars_to_newline_backwards(me, Begin, End, End - Begin,
+        QUEX_TYPE_CHARACTER* it = QUEX_NAME(__CounterLineColumn_count_chars_to_newline_backwards)(me, Begin, End, End - Begin,
                                                                      /* LicenseToIncrementLineCountF = */ true);
 
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -138,7 +138,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    CounterLineColumn_count_NoNewline(CounterLineColumn* me, const ptrdiff_t LexemeLength) 
+    QUEX_NAME(CounterLineColumn_count_NoNewline)(QUEX_NAME(CounterLineColumn)* me, const ptrdiff_t LexemeLength) 
     {
         __quex_assert( LexemeLength > 0 );
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -148,7 +148,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void 
-    CounterLineColumn_print_this(CounterLineColumn* me)
+    QUEX_NAME(CounterLineColumn_print_this)(QUEX_NAME(CounterLineColumn)* me)
     {
         CounterBase_print_this((__CounterBase*)me);
     }
