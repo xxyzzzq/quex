@@ -33,7 +33,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
         if( me->__current_mode_p != 0x0 ) 
             __QUEX_STD_printf("FromMode: %s ", me->__current_mode_p->name);
-        __QUEX_STD_printf("ToMode: %s\n", Mode.name);
+        __QUEX_STD_printf("ToMode: %s\n", ModeP->name);
 #    endif
 
         me->__current_mode_p          = ModeP;
