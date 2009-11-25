@@ -30,6 +30,7 @@ clean:
 	rm -rf $(ENGINE:.cpp=.o)
 	rm -rf $(ENGINE:.cpp=)
 	rm -rf $(ENGINE:.cpp=-token_ids)
+	rm -rf $(ENGINE:.cpp=-token)
 	rm -rf $(ENGINE:.cpp=-configuration)
 	rm -rf story
 	rm -rf *.E
