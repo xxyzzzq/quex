@@ -10,5 +10,5 @@ cd $bug/
 quex -i simple.qx -o Simple --token-prefix TKN_ --foreign-token-id-file Calc_token-ids.h
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simple-configuration
+rm -f Simple Simple.cpp Simple-* *.o tmp.txt
 cd $tmp

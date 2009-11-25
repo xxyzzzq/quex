@@ -13,5 +13,5 @@ make INPUT=$1.qx
 cat tmp.txt
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids lexer *.o tmp.txt Simple-configuration
+rm -f Simple Simple.cpp Simple-* *.o tmp.txt
 cd $tmp
