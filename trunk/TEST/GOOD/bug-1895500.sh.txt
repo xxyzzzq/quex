@@ -31,9 +31,7 @@ ID
 <TERMINATION>
 | [END] number of token = 2
 `------------------------------------------------------------------------------------
-rm -rf IndigoLexer-core-engine.cpp
-rm -rf IndigoLexer-token_ids
-rm -rf IndigoLexer-configuration
+rm -rf IndigoLexer-*
 rm -rf IndigoLexer.cpp
 rm -rf IndigoLexer
 rm -rf a.out

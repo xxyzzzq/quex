@@ -17,30 +17,32 @@ struct QUEX_NAME(AnalyzerData_tag);
 
 typedef struct {
     __CounterBase  base;
-} CounterLineColumn;
+} QUEX_NAME(CounterLineColumn);
 
-QUEX_INLINE void  CounterLineColumn_construct(CounterLineColumn*                  me, 
-                                              struct QUEX_NAME(AnalyzerData_tag)* lexer);
-QUEX_INLINE void  CounterLineColumn_copy_construct(CounterLineColumn*       me, 
-                                                   const CounterLineColumn* That);
-QUEX_INLINE void  CounterLineColumn_reset(CounterLineColumn* me);
+QUEX_INLINE void  CounterLineColumn_construct(QUEX_NAME(CounterLineColumn)*        me, 
+                                              struct QUEX_NAME(AnalyzerData_tag)*  lexer);
+QUEX_INLINE void  QUEX_NAME(CounterLineColumn_copy_construct)(QUEX_NAME(CounterLineColumn)*  me, 
+                                                   const QUEX_NAME(CounterLineColumn)*       That);
+QUEX_INLINE void  QUEX_NAME(CounterLineColumn_reset)(QUEX_NAME(CounterLineColumn)* me);
 
-QUEX_INLINE void  CounterLineColumn_count(CounterLineColumn* me, 
-                                          QUEX_TYPE_CHARACTER* Lexeme, 
-                                          QUEX_TYPE_CHARACTER* LexemeEnd);
-QUEX_INLINE void  CounterLineColumn_count_NoNewline(CounterLineColumn* me, const ptrdiff_t LexemeLength);
-QUEX_INLINE void  CounterLineColumn_count_FixNewlineN(CounterLineColumn*   me,
+QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count)(QUEX_NAME(CounterLineColumn)* me, 
+                                                     QUEX_TYPE_CHARACTER*          Lexeme, 
+                                                     QUEX_TYPE_CHARACTER*          LexemeEnd);
+QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count_NoNewline)(QUEX_NAME(CounterLineColumn)* me, 
+                                                               const ptrdiff_t               LexemeLength);
+QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count_FixNewlineN)(QUEX_NAME(CounterLineColumn)*   me,
                                                       QUEX_TYPE_CHARACTER* Lexeme,
                                                       QUEX_TYPE_CHARACTER* LexemeEnd,
                                                       const int            LineNIncrement);
 
 QUEX_INLINE QUEX_TYPE_CHARACTER*
-__CounterLineColumn_count_chars_to_newline_backwards(CounterLineColumn* me, QUEX_TYPE_CHARACTER* Begin,
-                                                     QUEX_TYPE_CHARACTER* End,
-                                                     const ptrdiff_t      LexemeLength,
-                                                     const bool           LicenseToIncrementLineCountF /*=false*/);
+QUEX_NAME(__CounterLineColumn_count_chars_to_newline_backwards)(QUEX_NAME(CounterLineColumn)* me, 
+                                                    QUEX_TYPE_CHARACTER* Begin,
+                                                    QUEX_TYPE_CHARACTER* End,
+                                                    const ptrdiff_t      LexemeLength,
+                                                    const bool           LicenseToIncrementLineCountF /*=false*/);
 
-QUEX_INLINE void  CounterLineColumn_print_this(CounterLineColumn* me);
+QUEX_INLINE void  QUEX_NAME(CounterLineColumn_print_this)(QUEX_NAME(CounterLineColumn)* me);
 
 
 QUEX_NAMESPACE_MAIN_CLOSE

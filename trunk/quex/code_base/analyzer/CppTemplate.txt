@@ -359,7 +359,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
                         QUEX_TYPE_CHARACTER*  InputName, 
                         InputHandleT**        input_handle)
 {
-#   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
+#   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
 
     /* Use placement 'new' for explicit call of constructor */
@@ -390,7 +390,7 @@ QUEX_INLINE void
 QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
                           QUEX_NAME(Memento)*  memento)
 {
-#   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
+#   define self  (*me)
     self._parent_memento                  = memento->base.parent;
     self.buffer                           = memento->base.buffer;
     self.__current_mode_p                 = memento->base.__current_mode_p; 

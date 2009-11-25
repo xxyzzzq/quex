@@ -339,12 +339,12 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
 #   define QUEX_MEMBER(NAME)      void /* Undefined, not required */
 #else
-#   define QUEX_NAME(NAME)        NAME
-#   define QUEX_TOKEN_NAME(NAME)  NAME
+#   define QUEX_NAME(NAME)        $$LEXER_CLASS_NAME$$_ ## NAME
+#   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
 #   define QUEX_MEMBER(NAME)      $$LEXER_CLASS_NAME$$::NAME                
 #endif
 
-#define QUEX_FUNC(NAME)        $$LEXER_CLASS_NAME$$ ## _ ## NAME                
+#define QUEX_FUNC(NAME)           $$LEXER_CLASS_NAME$$_ ## NAME                
 
 #if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
 #    define QUEX_TYPE_CHARACTER_POSITION   MemoryPositionMimiker
