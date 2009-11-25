@@ -235,16 +235,16 @@ public:
 
     // (*) Token sending
     void        send(const QUEX_TYPE_TOKEN& That);
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID TokenID);
-    void        send_n(const int N, const QUEX_TYPE_TOKEN_XXX_ID TokenID);
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID);
+    void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
     template    <typename ContentT> 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID TokenID, ContentT Content);
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
     template    <typename X0_T, typename X1_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1);
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1);
     template    <typename X0_T, typename X1_T, typename X2_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2);
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2);
     template    <typename X0_T, typename X1_T, typename X2_T, typename X3_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_XXX_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
+    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -3097,7 +3097,7 @@ __quex_assert(Indentation >= 0);
 QUEX_NAMESPACE_TOKEN_OPEN
 
 inline const char*
-QUEX_TYPE_TOKEN_XXX::map_id_to_name(const QUEX_TYPE_TOKEN_XXX_ID TokenID)
+QUEX_TYPE_TOKEN_XXX::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
    static const char  uninitialized_string[] = "<UNINITIALIZED>";
