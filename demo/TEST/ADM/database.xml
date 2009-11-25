@@ -1,4 +1,4 @@
-<test-database execution-time-sec="184.26" date="Tue Nov 24 13:57:32 2009">
+<test-database execution-time-sec="188.16" date="Tue Nov 24 21:24:51 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="17.00"> 
@@ -74,10 +74,10 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="Benchmarking a C-Lexical Analyser" make-required="True" time-sum-sec="2.34"> 
+        <test title="Benchmarking a C-Lexical Analyser" make-required="True" time-sum-sec="4.78"> 
             <application file-name="004.sh" info-request-time="1256771044L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="2.34" crc="1644232074"/>
+               <choice name="" result="FAIL" time_sec="4.78" crc="1644232074"/>
             </choice-list>
         </test>
     </group>
@@ -93,10 +93,10 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="3.59"> 
+        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="5.05"> 
             <application file-name="006.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.04" crc="1767280044"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.50" crc="1767280044"/>
                <choice name="DEBUG" result="OK" time_sec="2.55" crc="1767280044"/>
             </choice-list>
         </test>

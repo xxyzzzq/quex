@@ -80,7 +80,7 @@ class Generator(GeneratorBase):
         txt += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
-        txt += "    QUEX_NAME(Buffer_seek_lexeme_start)(&engine->buffer);\n"
+        txt += "    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n"
 
         return txt
 
