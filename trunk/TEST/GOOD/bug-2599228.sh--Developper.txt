@@ -12,7 +12,7 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h
 /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h
 /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h
-/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token
+/home/fschaef/prj/quex/trunk/quex/code_base/./token/Default.qx
 /home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt
 /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue
 /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenPolicy
@@ -49,8 +49,8 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Mode
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Engine
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Engine.i
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/AnalyzerData
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/AnalyzerData.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/asserts
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/include-stack.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/mode-handling.i
