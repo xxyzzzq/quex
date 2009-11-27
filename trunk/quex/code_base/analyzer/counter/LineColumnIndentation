@@ -14,7 +14,6 @@
 #include <stddef.h>
 #endif
 #include <quex/code_base/definitions>
-#include <quex/code_base/analyzer/Engine>
 #include <quex/code_base/analyzer/counter/Base>
 
 QUEX_NAMESPACE_MAIN_OPEN

@@ -33,7 +33,7 @@ QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me,
 QUEX_INLINE void
 QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
 {
-    QUEX_NAME(QUEX_NAME(MemoryManager_AccumulatorText_free))(me->text.begin);
+    QUEX_NAME(MemoryManager_AccumulatorText_free)(me->text.begin);
     me->the_lexer       = 0x0;
     me->text.begin      = 0x0;
     me->text.end        = 0x0;
@@ -54,7 +54,7 @@ QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
 
     __QUEX_STD_memcpy(chunk, me->text.begin, sizeof(QUEX_TYPE_CHARACTER) * Size);
 
-    QUEX_NAME(QUEX_NAME(MemoryManager_AccumulatorText_free))(me->text.begin);
+    QUEX_NAME(MemoryManager_AccumulatorText_free)(me->text.begin);
 
     me->text.begin      = chunk;
     me->text.end        = chunk + OldContentSize;

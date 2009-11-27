@@ -48,6 +48,8 @@ def write_configuration_header(Modes, IndentationSupportF):
         converter_new_str = "/* " + converter_new_str + " */"
         user_defined_converter_f = False
 
+    namespace_main_str = make_safe_identifier(LanguageDB["$namespace-ref"](Setup.analyzer_name_space)[:-2])
+
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
@@ -78,7 +80,7 @@ def write_configuration_header(Modes, IndentationSupportF):
 
     # -- token class related definitions
     token_descr = lexer_mode.token_type_definition
-    token_namespace_plain_str = make_safe_identifier(LanguageDB["$namespace-ref"](token_descr.name_space))
+    namespace_token_str = make_safe_identifier(LanguageDB["$namespace-ref"](token_descr.name_space))
 
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
@@ -95,9 +97,11 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$NAMESPACE_MAIN$$",             LanguageDB["$namespace-ref"](Setup.analyzer_name_space)[:-2]],
+             ["$$NAMESPACE_MAIN_STR$$",         namespace_main_str],
              ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN$$",            LanguageDB["$namespace-ref"](token_descr.name_space)],
+             ["$$NAMESPACE_TOKEN_STR$$",        namespace_token_str],
              ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
@@ -309,7 +313,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
-                                    "QUEX_TYPE_ANALYZER* const int")
+                                    "QUEX_TYPE_ANALYZER*, const int")
 
     for mode in Modes:
         for event_name in ["on_exit", "on_entry"]:
