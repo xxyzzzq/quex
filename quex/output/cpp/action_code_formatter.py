@@ -74,11 +74,11 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
     txt = "CounterBase_shift_end_values_to_start_values(&self.counter.base);\n"
 
     if EOF_ActionF:
-        txt += "    CounterLineColumnIndentation_on_end_of_file(&self.counter);\n"
+        txt += "    QUEX_NAME(CounterLineColumnIndentation_on_end_of_file)(&self.counter);\n"
         return txt
 
     if PatternStateMachine == None:
-        return txt + "CounterLineColumnIndentation_icount(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(CounterLineColumnIndentation_icount)(&self.counter, Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -94,18 +94,18 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
         # IDEA: (case newline_n > 0) 
         #       Try to determine number of characters backwards to newline directly
         #       from the pattern state machine.
-        func = "CounterLineColumnIndentation_icount(&self.counter, Lexeme, LexemeEnd);"       
+        func = "QUEX_NAME(CounterLineColumnIndentation_icount)(&self.counter, Lexeme, LexemeEnd);"       
 
     else:
         if character_n == -1: column_increment = "LexemeL"          # based on matched lexeme
         else:                 column_increment = "%i" % character_n # fixed length
             
         if starts_never_on_whitespace_f:
-            func = "CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace(&self.counter, %s);" % column_increment
+            func = "QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace)(&self.counter, %s);" % column_increment
         elif contains_only_spaces_f:
-            func = "CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpaces(&self.counter, %s);" % column_increment
+            func = "QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpaces)(&self.counter, %s);" % column_increment
         else:
-            func = "CounterLineColumnIndentation_icount_NoNewline(&self.counter, Lexeme, LexemeL);"
+            func = "QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline)(&self.counter, Lexeme, LexemeL);"
 
     return txt + func + "\n"
 
@@ -118,7 +118,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         return txt
 
     if PatternStateMachine == None:
-        return txt + "CounterLineColumn_count(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -126,17 +126,17 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     if   newline_n == -1:
         # run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
-        return txt + "CounterLineColumn_count(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);\n"
 
     elif newline_n != 0:
         # TODO: Try to determine number of characters backwards to newline directly
         #       from the pattern state machine. (Those seldom cases won't bring much
         #       speed-up)
-        return txt + "CounterLineColumn_count_FixNewlineN(&self.counter, Lexeme, LexemeEnd, %i);\n" % newline_n
+        return txt + "QUEX_NAME(CounterLineColumn_count_FixNewlineN)(&self.counter, Lexeme, LexemeEnd, %i);\n" % newline_n
 
     else:
         if character_n == -1: incr_str = "LexemeL"
         else:                 incr_str = repr(character_n) 
 
-        return txt + "CounterLineColumn_count_NoNewline(&self.counter, %s);\n" % incr_str
+        return txt + "QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, %s);\n" % incr_str
 

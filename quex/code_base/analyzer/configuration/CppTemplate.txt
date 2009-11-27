@@ -334,13 +334,12 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
 #endif 
 
+#define QUEX_NAME(NAME)        $$NAMESPACE_MAIN_STR$$_$$LEXER_CLASS_NAME$$_ ## NAME
+#define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
+
 #if defined(__QUEX_SETTING_PLAIN_C)
-#   define QUEX_NAME(NAME)        $$NAMESPACE_STR$$ ## NAME
-#   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
 #   define QUEX_MEMBER(NAME)      void /* Undefined, not required */
 #else
-#   define QUEX_NAME(NAME)        $$LEXER_CLASS_NAME$$_ ## NAME
-#   define QUEX_TOKEN_NAME(NAME)  $$NAMESPACE_TOKEN_STR$$ ## NAME
 #   define QUEX_MEMBER(NAME)      $$LEXER_CLASS_NAME$$::NAME                
 #endif
 
@@ -352,7 +351,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
 #endif
 
-#define QUEX_TYPE_ANALYZER                   QUEX_NAME($$LEXER_CLASS_NAME$$)
+#define QUEX_TYPE_ANALYZER                   $$LEXER_CLASS_NAME$$
 #define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 
 #define QUEX_TYPE_TOKEN                      $$NAMESPACE_TOKEN$$$$TOKEN_CLASS$$

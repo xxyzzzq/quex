@@ -65,7 +65,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* 'flush' remaining indentations                                      */
         if( me->_indentation_event_enabled_f ) 
-            me->_the_lexer->engine.__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
+            me->_the_lexer->__current_mode_p->on_indentation((QUEX_TYPE_ANALYZER*)me->_the_lexer, me->_indentation);
     }
 
     QUEX_INLINE void    
@@ -240,7 +240,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
         if( me->_indentation_count_enabled_f ) {
             me->_indentation_count_enabled_f = false; 
-            me->_the_lexer->engine.__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
+            me->_the_lexer->__current_mode_p->on_indentation((QUEX_TYPE_ANALYZER*)me->_the_lexer, me->_indentation);
         }
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
@@ -285,7 +285,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                  *   no  -> enable event for the next time.
                  *          indentation events can only be disabled for one coming event. */
                 if( me->_indentation_event_enabled_f ) 
-                    me->_the_lexer->engine.__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
+                    me->_the_lexer->__current_mode_p->on_indentation((QUEX_TYPE_ANALYZER*)me->_the_lexer, me->_indentation);
                 else
                     /* event was disabled this time, enable it for the next time. */
                     me->_indentation_event_enabled_f = true;
