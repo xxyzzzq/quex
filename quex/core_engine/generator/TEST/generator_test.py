@@ -205,15 +205,20 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
-    txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
-    txt += "#define QUEX_TYPE_ANALYZER          QUEX_NAME(Engine)\n"
-    txt += "#define QUEX_TYPE_ANALYZER_TAG      QUEX_NAME(Engine_tag)\n"
+    txt += "#if ! defined (__QUEX_SETTING_PLAIN_C)\n"
+    txt += "    namespace quex {\n"
+    txt += "#endif\n"
+    txt += "typedef struct {} Token;\n"
+    txt += "#if ! defined (__QUEX_SETTING_PLAIN_C)\n"
+    txt += "    }\n"
+    txt += "#endif\n"
+    txt += "#define QUEX_TYPE_ANALYZER          QUEX_NAME(AnalyzerData)\n"
+    txt += "#define QUEX_TYPE_ANALYZER_TAG      QUEX_NAME(AnalyzerData_tag)\n"
     txt += "#include <quex/code_base/analyzer/configuration/default>\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
     txt += "#endif\n"
-    txt += "typedef struct {} Token;\n"
     txt += "#include <quex/code_base/analyzer/AnalyzerData>\n"
     txt += "#include <quex/code_base/analyzer/AnalyzerData.i>\n"
     txt += "\n"
@@ -332,21 +337,26 @@ def action(PatternName):
     
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+    namespace quex {
+#endif
+typedef struct {} Token;
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+    }
+#endif
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
-typedef int QUEX_TYPE_TOKEN_ID;              
 /* #define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN */
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 $$TEST_CASE$$
-#define QUEX_TYPE_ANALYZER          QUEX_NAME(Engine)
-#define QUEX_TYPE_ANALYZER_TAG      QUEX_NAME(Engine_tag)
+#define QUEX_TYPE_ANALYZER          QUEX_NAME(AnalyzerData)
+#define QUEX_TYPE_ANALYZER_TAG      QUEX_NAME(AnalyzerData_tag)
 #include <quex/code_base/analyzer/configuration/default>
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif
 #include <quex/code_base/buffer/Buffer>
-typedef struct {} Token;
 #include <quex/code_base/analyzer/AnalyzerData>
 #include <quex/code_base/analyzer/AnalyzerData.i>
 #if ! defined (__QUEX_SETTING_PLAIN_C)

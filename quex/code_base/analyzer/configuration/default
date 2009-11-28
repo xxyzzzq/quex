@@ -72,7 +72,13 @@
 #   define QUEX_SETTING_MODE_STACK_SIZE     (256)
 #endif
 #ifndef    QUEX_TYPE_TOKEN  
-#   define QUEX_TYPE_TOKEN  Token
+#   define QUEX_TYPE_TOKEN  quex::Token
+#endif
+#ifndef    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+#   define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE Token
+#endif
+#ifndef    QUEX_TYPE_TOKEN_ID
+#   define QUEX_TYPE_TOKEN_ID uint8_t
 #endif
 
 #define QUEX_FUNC(NAME)        QuexDefault ## _ ## NAME                
