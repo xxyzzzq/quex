@@ -8,6 +8,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA
 #define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA
 
+#include <quex/code_base/buffer/Buffer>
+
 #if ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   include <quex/code_base/analyzer/counter/LineColumn>
 #   else
