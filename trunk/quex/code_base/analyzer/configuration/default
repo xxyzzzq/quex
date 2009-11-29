@@ -72,10 +72,18 @@
 #   define QUEX_SETTING_MODE_STACK_SIZE     (256)
 #endif
 #ifndef    QUEX_TYPE_TOKEN  
-#   define QUEX_TYPE_TOKEN  quex::Token
+#   ifndef __QUEX_SETTING_PLAIN_C
+#       define QUEX_TYPE_TOKEN  quex::Token
+#   else
+#       define QUEX_TYPE_TOKEN  quex_Token
+#   endif
 #endif
 #ifndef    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
-#   define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE Token
+#   ifndef __QUEX_SETTING_PLAIN_C
+#      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE Token
+#   else
+#      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE quex_Token
+#   endif
 #endif
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID uint8_t
@@ -103,13 +111,13 @@
 #define QUEX_NAME(X)   QuexDefault ## X
 
 QUEX_NAMESPACE_MAIN_OPEN
-    struct  QUEX_NAME(Engine_tag);
-    typedef void (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(Engine_tag)*);
+    struct  QUEX_NAME(AnalyzerData_tag);
+    typedef void (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(AnalyzerData_tag)*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #ifndef    QUEX_TYPE_ANALYZER
-#   define QUEX_TYPE_ANALYZER     QuexAnalyzerData
-#   define QUEX_TYPE_ANALYZER_TAG QuexAnalyzerData_tag
+#   define QUEX_TYPE_ANALYZER     QUEX_NAME(AnalyzerData)
+#   define QUEX_TYPE_ANALYZER_TAG QUEX_NAME(AnalyzerData_tag)
 #endif
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
