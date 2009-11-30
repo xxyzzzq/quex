@@ -16,21 +16,21 @@ main(int argc, char** argv)
         return 0;
     }
     FILE*                         fh = prepare_input();
-    QuexBuffer                    buffer;
+    QUEX_NAME(Buffer)                    buffer;
 
-    QuexBuffer_construct(&buffer, fh, 0x0, /* BufferMemorySize */ 8, 0x0, 0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, /* BufferMemorySize */ 8, 0x0, 0, false);
 
     do {
         printf("------------------------------------------------------------\n");
-        QuexBuffer_show_byte_content(&buffer, 5);
+        QUEX_NAME(Buffer_show_byte_content)(&buffer, 5);
         printf("     ");
-        QuexBuffer_show_content(&buffer);
+        QUEX_NAME(Buffer_show_content)(&buffer);
         printf("\n");
         if( buffer._memory._end_of_file_p != 0x0 ) break;
         buffer._input_p        = buffer._memory._back;
         buffer._lexeme_start_p = buffer._memory._back;
         /**/
-        QuexBufferFiller_load_forward(&buffer);
+        QUEX_NAME(BufferFiller_load_forward)(&buffer);
         printf("\n");
     } while( 1 + 1 == 2 );
 

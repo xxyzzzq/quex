@@ -21,7 +21,7 @@ main(int argc, char** argv)
 
     using namespace quex;
 
-    QuexBuffer           buffer;
+    QUEX_NAME(Buffer)    buffer;
     QUEX_TYPE_CHARACTER  content[]    = { '0', '9', '8', '7', '6', '5', '4', '3', '2', '1' }; 
     int                  memory_size  = 12;
 
@@ -30,8 +30,8 @@ main(int argc, char** argv)
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
     buffer.filler = 0x0;
-    QuexBuffer_construct(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0, false);
-    QuexBuffer_end_of_file_unset(&buffer);
+    QUEX_NAME(Buffer_construct)(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0, false);
+    QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
     printf("## NOTE: FallbackN = %i!\n", QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
@@ -52,16 +52,16 @@ main(int argc, char** argv)
                (int)(buffer._lexeme_start_p - buffer._memory._front),
                (char)*buffer._lexeme_start_p);
         /**/
-        QuexBuffer_show_content(&buffer);
+        QUEX_NAME(Buffer_show_content)(&buffer);
         printf("\n");
 
         const size_t  DistanceIL = buffer._input_p - buffer._lexeme_start_p;
         if( buffer._input_p - buffer._lexeme_start_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
 
-        const size_t  FallBackN = __QuexBufferFiller_forward_compute_fallback_region(&buffer, DistanceIL);
-        __QuexBufferFiller_forward_copy_fallback_region(&buffer, FallBackN);
-        QuexBuffer_show_content(&buffer);
+        const size_t  FallBackN = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(&buffer, DistanceIL);
+        QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(&buffer, FallBackN);
+        QUEX_NAME(Buffer_show_content)(&buffer);
         printf("\n");
     }
 }

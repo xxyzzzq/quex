@@ -13,20 +13,20 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QuexBuffer           buffer;
+    QUEX_NAME(Buffer)           buffer;
     size_t               SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7, 999 };
     int                  memory_size   = 12;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
-    QuexBuffer_construct(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0, false);
-    QuexBuffer_end_of_file_unset(&buffer);
+    QUEX_NAME(Buffer_construct)(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0, false);
+    QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     for(int i = 1; i < memory_size - 2 ; ++i) *(buffer._memory._front + i) = '0' + i;
     *(buffer._memory._back - 1) = '0';
 
     buffer._input_p = buffer._memory._front + 1;
-    QuexBuffer_end_of_file_set(&buffer, buffer._memory._back);
+    QUEX_NAME(Buffer_end_of_file_set)(&buffer, buffer._memory._back);
 
     test_seek_and_tell(&buffer, SeekIndices);
 }

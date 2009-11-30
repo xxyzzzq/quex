@@ -12,18 +12,18 @@ main(int argc, char** argv)
     }
 
 
-    QuexBuffer    buffer;
-    const size_t  StepSize = atoi(argv[1]);
-    FILE*         fh       = prepare_input(); /* Festgemauert ... */
+    QUEX_NAME(Buffer)  buffer;
+    const size_t       StepSize = atoi(argv[1]);
+    FILE*              fh       = prepare_input(); /* Festgemauert ... */
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 5, 0x0, 0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, 0x0, 0, false);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
     while( 1 + 1 == 2 ) {
-        buffer._input_p        = QuexBuffer_text_end(&buffer);
+        buffer._input_p        = QUEX_NAME(Buffer_text_end)(&buffer);
         buffer._lexeme_start_p = buffer._input_p;
         if( buffer._input_p == buffer._memory._end_of_file_p ) break;
-        QuexBufferFiller_load_forward(&buffer);
+        QUEX_NAME(BufferFiller_load_forward)(&buffer);
     }
     test_move_backward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

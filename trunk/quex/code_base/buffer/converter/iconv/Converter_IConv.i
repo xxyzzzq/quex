@@ -3,7 +3,18 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I
 
+#ifndef __QUEX_SETTING_PLAIN_C
+extern "C" { 
+#endif
+#include <errno.h>
+#ifndef __QUEX_SETTING_PLAIN_C
+}
+#endif
 #include <quex/code_base/definitions>
+#include <quex/code_base/compatibility/iconv-argument-types.h>
+#include <quex/code_base/MemoryManager>
+#include <quex/code_base/buffer/converter/iconv/Converter_IConv>
+
 #if ! defined(QUEX_OPTION_ENABLE_ICONV)
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
 #endif
