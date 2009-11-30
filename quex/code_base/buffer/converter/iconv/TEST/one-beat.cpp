@@ -36,7 +36,10 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 
     QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_IConv_new)(), "UTF8", target_charset, raw_memory_size);
+        QUEX_NAME(BufferFiller_Converter_new)(fh, 
+                                              QUEX_NAME(Converter_IConv_new)(), 
+                                              "UTF8", 
+                                              target_charset, raw_memory_size);
 
     size_t loaded_n = 0;
     loaded_n = filler->base.read_characters(&filler->base, 
@@ -48,4 +51,5 @@ main(int argc, char** argv)
         uint8_t*  raw = (uint8_t*)(memory + i);
         printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
     }
+
 }
