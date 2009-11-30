@@ -7,7 +7,7 @@
 
 
 void 
-seek_and_print(quex::QuexBufferFiller_Converter<FILE>& , size_t, QUEX_TYPE_CHARACTER* );
+seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)<FILE>& , size_t, QUEX_TYPE_CHARACTER* );
 
 int
 main(int argc, char** argv)
@@ -46,8 +46,8 @@ main(int argc, char** argv)
         exit(-1);
     }
 
-    QuexBufferFiller_Converter<FILE>* filler = \
-         QuexBufferFiller_Converter_new(fh, QuexConverter_IConv_new(), source_charset, target_charset, RawMemorySize);
+    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
+         QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_IConv_new)(), source_charset, target_charset, RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler->base.read_characters(&filler->base, reference, ReferenceSize);
 
@@ -80,7 +80,7 @@ main(int argc, char** argv)
     }
 }
 
-void seek_and_print(quex::QuexBufferFiller_Converter<FILE>& filler, size_t Position, QUEX_TYPE_CHARACTER* reference)
+void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)<FILE>& filler, size_t Position, QUEX_TYPE_CHARACTER* reference)
 {
     using namespace std;
 

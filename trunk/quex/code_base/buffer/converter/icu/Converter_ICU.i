@@ -5,6 +5,7 @@
 
 #include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/MemoryManager>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU>
 
 #if ! defined(QUEX_OPTION_ENABLE_ICU)
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICU. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.60" date="Sat Nov 28 18:17:35 2009">
+<test-database execution-time-sec="1.60" date="Sun Nov 29 10:43:36 2009">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.59"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1258445961L"/>

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="219.65" date="Sat Nov 28 18:14:03 2009">
+<test-database execution-time-sec="219.68" date="Sun Nov 29 10:47:03 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="3.12"> 
@@ -53,7 +53,7 @@
         </test>
     </group>
     <group name="fschaef">
-        <test title="2349109 0.33.5 Line and Column number counts with Set skippers" make-required="True" time-sum-sec="7.62"> 
+        <test title="2349109 0.33.5 Line and Column number counts with Set skippers" make-required="True" time-sum-sec="7.61"> 
             <application file-name="bug-2349109.sh" info-request-time="1256771050L"/>
             <choice-list number="3" same_result="False">
                <choice name="newline-skipper" result="OK" time_sec="2.49" crc="694127258"/>
@@ -100,7 +100,7 @@
                <choice name="" result="OK" time_sec="3.78" crc="-306258998"/>
             </choice-list>
         </test>
-        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" make-required="True" time-sum-sec="10.14"> 
+        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" make-required="True" time-sum-sec="10.15"> 
             <application file-name="feature-2078087.sh" info-request-time="1259097923L"/>
             <choice-list number="4" same_result="False">
                <choice name="GOTO" result="OK" time_sec="2.45" crc="1035729243"/>
@@ -367,7 +367,7 @@
                <choice name="" result="FAIL" time_sec="0.40" crc="-1950470803"/>
             </choice-list>
         </test>
-        <test title="2796383 0.39.3 does not handle token_type without distinct section" make-required="True" time-sum-sec="0.83"> 
+        <test title="2796383 0.39.3 does not handle token_type without distinct section" make-required="True" time-sum-sec="0.84"> 
             <application file-name="bug-2796383.sh" info-request-time="1256771051L"/>
             <choice-list number="5" same_result="False">
                <choice name="case-1" result="OK" time_sec="0.20" crc="-1829622869"/>
@@ -378,8 +378,8 @@
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="bug-1935701.exe" info-request-time="1256771050L"/>
-            <make-procedure success="True" time_sec="0.413508"/>
+            <application file-name="bug-1935701.exe" info-request-time="1259488014L"/>
+            <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="2" same_result="False">
                <choice name="FILE" result="OK" time_sec="0.00" crc="-953317363"/>
                <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
@@ -439,7 +439,7 @@
         </test>
     </group>
     <group name="wryun">
-        <test title="2819022 0.41.2 Pre-condition match causes issues" make-required="True" time-sum-sec="9.96"> 
+        <test title="2819022 0.41.2 Pre-condition match causes issues" make-required="True" time-sum-sec="9.97"> 
             <application file-name="bug-2819022.sh" info-request-time="1256771051L"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="2.83" crc="924833233"/>

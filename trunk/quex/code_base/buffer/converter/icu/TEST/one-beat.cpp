@@ -34,8 +34,8 @@ main(int argc, char** argv)
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 
-    QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_new(fh, QuexConverter_ICU_new(), "UTF-8", 0x0, raw_memory_size);
+    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_ICU_new)(), "UTF-8", 0x0, raw_memory_size);
 
     size_t loaded_n = 0;
     loaded_n = filler->base.read_characters(&filler->base, 

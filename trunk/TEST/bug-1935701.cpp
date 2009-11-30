@@ -37,10 +37,11 @@ main(int argc, char** argv)
             return 0;
         }
 
-        QuexBufferFiller_Plain<FILE>*   is = QuexBufferFiller_Plain_new<FILE>(fh);
+        QUEX_NAME(BufferFiller_Plain)<FILE>*   is = QUEX_NAME(BufferFiller_Plain_new)<FILE>(fh);
 
-        loaded_character_n = __BufferFiller_Plain_read_characters<FILE>((QuexBufferFiller*)is, 
-                                                                        buffer, BufferSize);
+        loaded_character_n = QUEX_NAME(__BufferFiller_Plain_read_characters)<FILE>(
+                                             (QUEX_NAME(BufferFiller)*)is, 
+                                             buffer, BufferSize);
         fclose(fh);
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
 
@@ -53,8 +54,8 @@ main(int argc, char** argv)
             return 0;
         }
         
-        QuexBufferFiller_Plain<istream>*   is = QuexBufferFiller_Plain_new<istream>(&fh);
-        loaded_character_n = __BufferFiller_Plain_read_characters<istream>((QuexBufferFiller*)is, 
+        QUEX_NAME(BufferFiller_Plain)<istream>*   is = QUEX_NAME(BufferFiller_Plain_new)<istream>(&fh);
+        loaded_character_n = QUEX_NAME(__BufferFiller_Plain_read_characters)<istream>((QUEX_NAME(BufferFiller)*)is, 
                                                                            buffer, BufferSize);
         
         fh.close();

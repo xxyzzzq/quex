@@ -62,7 +62,7 @@ main(int argc, char** argv)
 
         ++number_of_tokens;
         if( number_of_tokens > 100 ) {
-            quex::QUEX_ERROR_EXIT("Loop beyond border.\n");
+            QUEX_ERROR_EXIT("Loop beyond border.\n");
         }
 
     } while( token.type_id() != QUEX_TKN_TERMINATION );

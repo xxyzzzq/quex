@@ -14,15 +14,15 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QuexBuffer      buffer;
+    QUEX_NAME(Buffer)      buffer;
     const int       RawMemorySize = 6;
     const size_t    StepSize      = atoi(argv[1]);
     std::FILE*      fh            = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize, false);
-    assert((void*)((QuexBufferFiller_Converter<FILE>*)buffer.filler)->converter->convert 
-           == (void*)QuexConverter_IConv_convert);
+    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize, false);
+    assert((void*)((QUEX_NAME(BufferFiller_Converter)<FILE>*)buffer.filler)->converter->convert 
+           == (void*)QUEX_NAME(Converter_IConv_convert));
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

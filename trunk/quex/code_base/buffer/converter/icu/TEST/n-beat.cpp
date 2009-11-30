@@ -32,8 +32,8 @@ main(int argc, char** argv)
     assert(memory_size <= 9);
     QUEX_TYPE_CHARACTER  memory[memory_size];
 
-    QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_new(fh, QuexConverter_ICU_new(), "UTF8", 0x0, RawMemorySize);
+    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_ICU_new)(), "UTF8", 0x0, RawMemorySize);
 
     size_t loaded_n = 0;
     do {
