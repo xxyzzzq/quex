@@ -1,7 +1,7 @@
-<test-database execution-time-sec="129.25" date="Sat Nov 28 18:21:24 2009">
+<test-database execution-time-sec="129.25" date="Sun Nov 29 10:43:37 2009">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
-        <test title="Backwards" make-required="True" time-sum-sec="3.99"> 
+        <test title="Backwards" make-required="True" time-sum-sec="4.00"> 
             <application file-name="test-backward_loading.py" info-request-time="1258445961L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.62" crc="-1584767564"/>
@@ -32,7 +32,7 @@
         </test>
     </group>
     <group name="CONTINUE">
-        <test title="Reentry analysis without return from function" make-required="True" time-sum-sec="2.91"> 
+        <test title="Reentry analysis without return from function" make-required="True" time-sum-sec="2.90"> 
             <application file-name="test-continue-without-return.py" info-request-time="1258445961L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.61" crc="-1324080938"/>
@@ -70,7 +70,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="0.84" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" make-required="True" time-sum-sec="3.25"> 
+        <test title="Part 2" make-required="True" time-sum-sec="3.24"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1258445961L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.57" crc="-1069020887"/>
@@ -119,7 +119,7 @@
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" make-required="True" time-sum-sec="3.25"> 
+        <test title="Simple" make-required="True" time-sum-sec="3.26"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1258445961L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.73" crc="-347610264"/>
@@ -159,7 +159,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="0.87" crc="-680455951"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" make-required="True" time-sum-sec="4.44"> 
+        <test title="Tiny Expressions" make-required="True" time-sum-sec="4.45"> 
             <application file-name="test-simple.py" info-request-time="1258445961L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.14" crc="-771053764"/>
@@ -266,7 +266,7 @@
                <choice name="5" result="OK" time_sec="2.45" crc="890859637"/>
             </choice-list>
         </test>
-        <test title="Varrying DelimiterLength, BufferSize = DelimiterLength + 2" make-required="True" time-sum-sec="8.22"> 
+        <test title="Varrying DelimiterLength, BufferSize = DelimiterLength + 2" make-required="True" time-sum-sec="8.21"> 
             <application file-name="test-skip-simple-3.py" info-request-time="1258445961L"/>
             <choice-list number="4" same_result="True">
                <choice name="1" result="OK" time_sec="2.05" crc="1625391776"/>

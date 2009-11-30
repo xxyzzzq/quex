@@ -28,7 +28,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QuexConverter*  converter = QuexConverter_IConv_new();
+    QUEX_NAME(Converter)*  converter = QUEX_NAME(Converter_IConv_new)();
     /* (1) opening the converter
      *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
     switch( sizeof(QUEX_TYPE_CHARACTER) ) {

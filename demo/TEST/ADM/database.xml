@@ -1,7 +1,7 @@
-<test-database execution-time-sec="208.29" date="Sat Nov 28 18:17:32 2009">
+<test-database execution-time-sec="208.28" date="Sun Nov 29 10:43:36 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="8.82"> 
+        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="8.81"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1256771044L"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="FAIL" time_sec="1.42" crc="-10986171"/>
@@ -34,7 +34,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="6.75"> 
+        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="6.74"> 
             <application file-name="001.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.91" crc="-2092421156"/>
@@ -129,7 +129,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="15.78"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="15.77"> 
             <application file-name="010b.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="11.93" crc="665696517"/>
@@ -153,7 +153,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" make-required="True" time-sum-sec="6.03"> 
+        <test title="Engine Encoding (Example ISO8859-7)" make-required="True" time-sum-sec="6.04"> 
             <application file-name="011.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="2.90" crc="-643272444"/>

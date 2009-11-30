@@ -26,7 +26,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QuexConverter*  converter = QuexConverter_ICU_new();
+    QUEX_NAME(Converter)*  converter = QUEX_NAME(Converter_ICU_new)();
     /* (1) opening the converter with default internal character format */
     converter->open(converter, argv[1], 0x0);
 
