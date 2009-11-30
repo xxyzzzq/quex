@@ -21,7 +21,7 @@ main(int argc, char** argv)
 
     using namespace quex;
 
-    QuexBuffer           buffer;
+    QUEX_NAME(Buffer)           buffer;
     QUEX_TYPE_CHARACTER  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
     int                  memory_size = sizeof(content) / sizeof(QUEX_TYPE_CHARACTER) + 2;
 
@@ -30,8 +30,8 @@ main(int argc, char** argv)
     stderr = stdout;
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QuexBuffer_construct(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0, false);
-    QuexBuffer_end_of_file_unset(&buffer);
+    QUEX_NAME(Buffer_construct)(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0, false);
+    QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
     printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");
@@ -51,23 +51,23 @@ main(int argc, char** argv)
         ++(buffer._lexeme_start_p) ) { 
 
         memcpy((char*)(buffer._memory._front+1), (char*)content, (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
-        QuexBuffer_end_of_file_set(&buffer, buffer._memory._back);
+        QUEX_NAME(Buffer_end_of_file_set)(&buffer, buffer._memory._back);
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 
                (int)(buffer._lexeme_start_p - buffer._memory._front),
                (char)*buffer._lexeme_start_p);
         /**/
-        QuexBuffer_show_content(&buffer);
+        QUEX_NAME(Buffer_show_content)(&buffer);
         printf("\n");
 
         if( buffer._lexeme_start_p - buffer._input_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
         if( buffer._content_character_index_begin != 0 ) {
-            const size_t  BackwardDistance = __QuexBufferFiller_backward_compute_backward_distance(&buffer);
-            __QuexBufferFiller_backward_copy_backup_region(&buffer, BackwardDistance);
+            const size_t  BackwardDistance = QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(&buffer);
+            QUEX_NAME(__BufferFiller_backward_copy_backup_region)(&buffer, BackwardDistance);
         }
-        QuexBuffer_show_content(&buffer);
+        QUEX_NAME(Buffer_show_content)(&buffer);
         printf("\n");
     }
 }

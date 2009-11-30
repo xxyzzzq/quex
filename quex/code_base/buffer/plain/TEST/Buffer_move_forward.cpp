@@ -11,11 +11,11 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QuexBuffer     buffer;
-    const size_t   StepSize = atoi(argv[1]);
-    FILE*          fh       = prepare_input(); /* Festgemauert ... */
+    QUEX_NAME(Buffer)  buffer;
+    const size_t       StepSize = atoi(argv[1]);
+    FILE*              fh       = prepare_input(); /* Festgemauert ... */
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 5, 0x0, 0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, 0x0, 0, false);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

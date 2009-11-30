@@ -14,24 +14,24 @@
 #endif
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE size_t  QUEX_NAME(__QuexBufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
-                                                                                      const size_t Distance_LexemeStart_to_InputP);
-    QUEX_INLINE void    QUEX_NAME(__QuexBufferFiller_forward_copy_fallback_region)(QUEX_NAME(Buffer)*,
-                                                                                   const size_t FallBackN);
-    QUEX_INLINE void    QUEX_NAME(__QuexBufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*, 
-                                                                             const size_t DesiredLoadN,
-                                                                             const size_t LoadedN,
-                                                                             const size_t FallBackN, 
-                                                                             const size_t Distance_LexemeStart_to_InputP);
-    QUEX_INLINE size_t  QUEX_NAME(__QuexBufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer);
-    QUEX_INLINE void    QUEX_NAME(__QuexBufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)*, 
-                                                                                  const size_t BackwardDistance);
-    QUEX_INLINE void    QUEX_NAME(__QuexBufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)*, 
+    QUEX_INLINE size_t  QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
+                                                                                  const size_t Distance_LexemeStart_to_InputP);
+    QUEX_INLINE void    QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(QUEX_NAME(Buffer)*,
+                                                                               const size_t FallBackN);
+    QUEX_INLINE void    QUEX_NAME(__BufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*, 
+                                                                         const size_t DesiredLoadN,
+                                                                         const size_t LoadedN,
+                                                                         const size_t FallBackN, 
+                                                                         const size_t Distance_LexemeStart_to_InputP);
+    QUEX_INLINE size_t  QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer);
+    QUEX_INLINE void    QUEX_NAME(__BufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)*, 
                                                                               const size_t BackwardDistance);
-    QUEX_INLINE void    QUEX_NAME(__QuexBufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
+    QUEX_INLINE void    QUEX_NAME(__BufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)*, 
+                                                                          const size_t BackwardDistance);
+    QUEX_INLINE void    QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
     QUEX_INLINE size_t       
-    __BufferFiller_read_characters(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER*, const size_t);
+    QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER*, const size_t);
 
     TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
@@ -124,7 +124,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *} else {*/
         me->seek_character_index(me, 0);
         /*} */
-        const size_t  LoadedN = __BufferFiller_read_characters(buffer, ContentFront, ContentSize);
+        const size_t  LoadedN = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);
 
         buffer->_content_character_index_begin = 0; 
         buffer->_content_character_index_end   = (size_t)(me->tell_character_index(buffer->filler));
@@ -184,7 +184,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * spans the whole buffer content, then nothing can be loaded into it.                      */
         const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
         if( Distance_LexemeStart_to_InputP >= ContentSize ) { 
-            QUEX_NAME(__QuexBufferFiller_on_overflow)(buffer, /* Forward */ true);
+            QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ true);
             return 0;
         }
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
@@ -205,11 +205,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region */
-        const size_t  FallBackN = QUEX_NAME(__QuexBufferFiller_forward_compute_fallback_region)(buffer, 
+        const size_t  FallBackN = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(buffer, 
                                                                                      Distance_LexemeStart_to_InputP);
         const size_t  DesiredLoadN = ContentSize - FallBackN;
         __quex_assert(FallBackN < ContentSize);
-        QUEX_NAME(__QuexBufferFiller_forward_copy_fallback_region)(buffer, FallBackN);
+        QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(buffer, FallBackN);
 
         /*___________________________________________________________________________________*/
         /* (2) Load new content*/
@@ -219,11 +219,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
         QUEX_TYPE_CHARACTER* new_content_begin = ContentFront + FallBackN;
-        const size_t         LoadedN           =  __BufferFiller_read_characters(buffer, new_content_begin, DesiredLoadN);
+        const size_t         LoadedN           =  QUEX_NAME(__BufferFiller_read_characters)(buffer, new_content_begin, DesiredLoadN);
         
         /*___________________________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
-        QUEX_NAME(__QuexBufferFiller_forward_adapt_pointers)(buffer, 
+        QUEX_NAME(__BufferFiller_forward_adapt_pointers)(buffer, 
                                                   DesiredLoadN, LoadedN, FallBackN, 
                                                   Distance_LexemeStart_to_InputP);
 
@@ -245,7 +245,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE size_t
-    QUEX_NAME(__QuexBufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
+    QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
                                                        const size_t Distance_LexemeStart_to_InputP)
     {
         /* (1) Fallback: A certain region of the current buffer is copied in front such that
@@ -279,7 +279,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__QuexBufferFiller_forward_copy_fallback_region)(QUEX_NAME(Buffer)* buffer, const size_t FallBackN)
+    QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(QUEX_NAME(Buffer)* buffer, const size_t FallBackN)
     {
         /* (*) Copy fallback region*/
         /*     If there is no 'overlap' from source and drain than the faster memcpy() can */
@@ -303,7 +303,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__QuexBufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*  buffer, 
+    QUEX_NAME(__BufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*  buffer, 
                                               const size_t DesiredLoadN,
                                               const size_t LoadedN,
                                               const size_t FallBackN, 
@@ -402,13 +402,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
          * spans the whole buffer content, then nothing can be loaded into it.           */
         if( buffer->_lexeme_start_p == ContentBack ) { 
-            QUEX_NAME(__QuexBufferFiller_on_overflow)(buffer, /* ForwardF */ false);
+            QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* ForwardF */ false);
             return 0;
         }
 
         /*_______________________________________________________________________________
          * (1) Compute distance to go backwards */
-        const size_t  BackwardDistance = QUEX_NAME(__QuexBufferFiller_backward_compute_backward_distance)(buffer);
+        const size_t  BackwardDistance = QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(buffer);
         /*_______________________________________________________________________________
          * (2) Compute the stream position of the 'start to read'   
          *  
@@ -422,18 +422,18 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*_______________________________________________________________________________
          * (3) Load content*/
         buffer->_content_character_index_begin = NewContentCharacterIndexBegin;
-        QUEX_NAME(__QuexBufferFiller_backward_copy_backup_region)(buffer, BackwardDistance);
+        QUEX_NAME(__BufferFiller_backward_copy_backup_region)(buffer, BackwardDistance);
         
         /* -- If file content < buffer size, then the start position of the stream to which  
          *    the buffer refers is always 0 and no backward loading will ever happen.  
          * -- If the file content >= buffer size, then backward loading must always fill  
          *    the buffer. */
-        const size_t LoadedN = __BufferFiller_read_characters(buffer, ContentFront, BackwardDistance);
+        const size_t LoadedN = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, BackwardDistance);
         __quex_assert(LoadedN == (size_t)BackwardDistance);
 
         /*________________________________________________________________________________
          * (4) Adapt pointers */
-        QUEX_NAME(__QuexBufferFiller_backward_adapt_pointers)(buffer, BackwardDistance);
+        QUEX_NAME(__BufferFiller_backward_adapt_pointers)(buffer, BackwardDistance);
 
         buffer->_content_character_index_end =   buffer->_content_character_index_begin
                                                + (QUEX_NAME(Buffer_text_end)(buffer) - ContentFront);
@@ -452,7 +452,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE size_t
-    QUEX_NAME(__QuexBufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer)
+    QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer)
     {
         const size_t         ContentSize  = QUEX_NAME(Buffer_content_size)(buffer);
 
@@ -510,7 +510,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__QuexBufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)* buffer, const size_t BackwardDistance)
+    QUEX_NAME(__BufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)* buffer, const size_t BackwardDistance)
     {
         const size_t         ContentSize      = QUEX_NAME(Buffer_content_size)(buffer);
         QUEX_TYPE_CHARACTER* ContentFront     = QUEX_NAME(Buffer_content_front)(buffer);
@@ -527,7 +527,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__QuexBufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)* buffer, const size_t BackwardDistance)
+    QUEX_NAME(__BufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)* buffer, const size_t BackwardDistance)
     {
         /* -- end of file / end of buffer:*/
         if( buffer->_memory._end_of_file_p ) {
@@ -543,7 +543,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__QuexBufferFiller_on_overflow)(QUEX_NAME(Buffer)* buffer, bool ForwardF)
+    QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)* buffer, bool ForwardF)
     {
         QUEX_NAME(BufferFiller)* me = buffer->filler;
 
@@ -631,8 +631,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE size_t       
-    __BufferFiller_read_characters(QUEX_NAME(Buffer)*    buffer, 
-                                   QUEX_TYPE_CHARACTER*  memory, const size_t MemorySize)
+    QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*    buffer, 
+                                              QUEX_TYPE_CHARACTER*  memory, const size_t MemorySize)
     {
         const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, memory, MemorySize);
 

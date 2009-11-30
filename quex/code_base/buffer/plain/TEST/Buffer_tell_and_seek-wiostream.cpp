@@ -12,7 +12,7 @@ main(int argc, char** argv)
         return 0;
     }
     std::wstringstream    sh;
-    QuexBuffer            buffer;
+    QUEX_NAME(Buffer)     buffer;
     size_t                SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 
                                             19, 4, 6, 20, 11, 0, 
                                             23, 18, 12, 21, 17, 27, 16, 26, 
@@ -21,7 +21,7 @@ main(int argc, char** argv)
     __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
     sh << L"Fest gemauert in der Erden";
-    QuexBuffer_construct(&buffer, &sh, 0x0, 5, 0x0, 0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, &sh, 0x0, 5, 0x0, 0, false);
 
     test_seek_and_tell(&buffer, SeekIndices);
 }

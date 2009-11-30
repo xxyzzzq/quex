@@ -1,8 +1,9 @@
 #include<iostream>
 #include<cstdio>
-#include<quex/code_base/analyzer/configuration/default>
-#include<quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include<quex/code_base/buffer/converter/icu/Converter_ICU.i>
+
+#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 
 
 int
@@ -33,12 +34,14 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER  memory[memory_size];
 
     QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_ICU_new)(), "UTF8", 0x0, RawMemorySize);
+        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_ICU_new)(), 
+                                              "UTF8", 
+                                              0x0, RawMemorySize);
 
     size_t loaded_n = 0;
     do {
         loaded_n = filler->base.read_characters(&filler->base, 
-                                               (QUEX_TYPE_CHARACTER*)memory, memory_size);
+                                                (QUEX_TYPE_CHARACTER*)memory, memory_size);
 
         cout << "## loaded character n = " << loaded_n << endl;
      

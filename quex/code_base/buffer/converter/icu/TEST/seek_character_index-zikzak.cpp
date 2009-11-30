@@ -2,8 +2,8 @@
 #include<fstream>
 
 #include <quex/code_base/analyzer/configuration/default>
-#include<quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include<quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 
 
 void 
@@ -46,10 +46,10 @@ main(int argc, char** argv)
     }
 
     QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-              QUEX_NAME(BufferFiller_Converter_new)(fh, 
-                                                    QUEX_NAME(Converter_ICU_new)(), 
-                                                    source_charset, target_charset, 
-                                                    RawMemorySize);
+         QUEX_NAME(BufferFiller_Converter_new)(fh, 
+                                               QUEX_NAME(Converter_ICU_new)(), 
+                                               source_charset, target_charset, 
+                                               RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler->base.read_characters(&filler->base, reference, ReferenceSize);
 
