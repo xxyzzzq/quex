@@ -55,7 +55,7 @@
 #     define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
              /* empty */
 #     define QUEX_TOKEN_POLICY_NO_TOKEN() \
-             (token->type_id() == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
+             (self.token->type_id() == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
 #endif
 
 /* Option: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN

@@ -12,7 +12,7 @@ AFTER Reset:
    _character_before_lexeme_start = A;
    _content_character_index_begin = 0;
    _content_character_index_end   = 12;
-   _byte_order_reversion_active_f = false;
+   _byte_order_reversion_active_f = true;
    Accumulator = ''
    Counter:
    _line_number_at_begin = 0;
@@ -20,4 +20,4 @@ AFTER Reset:
    _column_number_at_begin = 0;
    _column_number_at_end   = 1;
    Mode Stack (0/8) = []
-   ByteOrderInversion = false;
+   ByteOrderInversion = true;
