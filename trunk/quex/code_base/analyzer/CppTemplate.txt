@@ -365,6 +365,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
     /* Use placement 'new' for explicit call of constructor */
     new ((void*)memento) QUEX_NAME(Memento);
 
+
     memento->base.parent                           = self._parent_memento;
     memento->base.buffer                           = self.buffer;
     memento->base.__current_mode_p                 = self.__current_mode_p; 
@@ -374,6 +375,16 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
     memento->base.DEBUG_analyzer_function_at_entry = self.DEBUG_analyzer_function_at_entry;
 #   endif
     memento->base.counter                          = self.counter;
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    memento->base.accumulator                      = self.accumulator;
+#   endif
+    memento->base.__file_handle_allocated_by_constructor = self.__file_handle_allocated_by_constructor;
+
+    /* Deriberately not subject to include handling:
+     *    -- Mode stack.
+     *    -- Token and token queues.
+     *    -- Post categorizer.                                                 */
+
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
 #   endif
@@ -400,7 +411,11 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
     self.DEBUG_analyzer_function_at_entry = memento->base.DEBUG_analyzer_function_at_entry;
 #   endif
     self.counter                          = memento->base.counter;
-    
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    self.accumulator                      = memento->base.accumulator;
+#   endif
+    self.__file_handle_allocated_by_constructor = memento->base.__file_handle_allocated_by_constructor;
+
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
 #   endif
