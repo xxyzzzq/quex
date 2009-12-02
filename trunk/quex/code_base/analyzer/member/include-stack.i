@@ -35,7 +35,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*        input_handle = 0x0;
         QUEX_NAME(Memento)*  m            = QUEX_FUNC(memento_pack)<InputHandleT>(me, InputName, &input_handle);
-        if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
         }
@@ -49,10 +48,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                           me->buffer._byte_order_reversion_active_f);
 
         if( MODE_ID != -1 ) QUEX_FUNC(set_mode_brutally_by_id)(me, MODE_ID);
-
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_FIX(COUNTER, _reset)(&me->counter);
-#       endif
 
         /* Keep track of 'who's your daddy?'                              */
         me->_parent_memento = m;

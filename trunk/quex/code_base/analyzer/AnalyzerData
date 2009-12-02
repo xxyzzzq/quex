@@ -184,16 +184,29 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {
-        QUEX_NAME(Buffer)               buffer;
-        struct QUEX_NAME(Mode_tag)*     __current_mode_p; 
-        QUEX_NAME(AnalyzerFunctionP)    current_analyzer_function;
-#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
-       || defined(QUEX_OPTION_ASSERTS)
-        QUEX_NAME(AnalyzerFunctionP)    DEBUG_analyzer_function_at_entry;
-#   endif
+        struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
+        QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
+#if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+     || defined(QUEX_OPTION_ASSERTS)
+        QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
+#       endif
+        /* Token/token queues are not subject to include handling. */
+#       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+        QUEX_NAME(TokenQueue)  _token_queue;  
+#       else
+        QUEX_TYPE_TOKEN*       token;         
+#       endif
         QUEX_TYPE_COUNTER               counter;
-        struct QUEX_NAME(Mode_tag)*     current_mode_p;
-        struct QUEX_NAME(Memento_tag)*  parent;
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator)          accumulator;
+#       endif
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        QUEX_NAME(Dictionary)           post_categorizer;
+#       endif
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        struct QUEX_NAME(Memento_tag)*  _parent_memento;
+#       endif
+        FILE*                           __file_handle_allocated_by_constructor;
     } QUEX_NAME(MementoBase);
 #   endif
 

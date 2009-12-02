@@ -97,7 +97,7 @@ QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
                  InputHandleT*        input_handle, 
                  const char*          CharacterEncodingName /* = 0x0 */) 
 {
-    QUEX_NAME(AnalyzerData_reset)((QUEX_NAME(AnalyzerData)*)&me, input_handle, 
+    QUEX_NAME(AnalyzerData_reset)((QUEX_NAME(AnalyzerData)*)me, input_handle, 
                                   CharacterEncodingName, 
                                   QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
