@@ -96,27 +96,6 @@ $$MEMENTO_EXTENSIONS$$
 /* END: _______________________________________________________________________*/
 } QUEX_NAME(Memento);
 
-TEMPLATE_IN(InputHandleT) void  
-QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*   me,
-                            InputHandleT*         ih, 
-                            const char*           CharacterEncodingName,
-                            bool                  ByteOrderReversionF,
-                            QUEX_TYPE_CHARACTER*  BufferMemory,
-                            size_t                BufferMemorySize);
-
-TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
-QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
-                        QUEX_TYPE_CHARACTER*  InputName, 
-                        InputHandleT**        input_handle);
-
-QUEX_INLINE void
-QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
-                          QUEX_NAME(Memento)*  memento);
-
-TEMPLATE_IN(InputHandleT) void
-QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
-                 InputHandleT*        input_handle, 
-                 const char*          CharacterEncodingName /* = 0x0 */);
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
@@ -284,7 +263,7 @@ protected:
 private:
     //      -- include events (a file is included)
     template<class InputHandleT> QUEX_NAME(Memento)*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-    void                                             memento_unpack(QUEX_NAME(Memento)*);
+    void                                              memento_unpack(QUEX_NAME(Memento)*);
 #   endif
 
 public:
@@ -366,7 +345,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
     new ((void*)memento) QUEX_NAME(Memento);
 
 
-    memento->base.parent                           = self._parent_memento;
+    memento->base._parent_memento                  = self._parent_memento;
     memento->base.buffer                           = self.buffer;
     memento->base.__current_mode_p                 = self.__current_mode_p; 
     memento->base.current_analyzer_function        = self.current_analyzer_function;
@@ -402,7 +381,7 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
                           QUEX_NAME(Memento)*  memento)
 {
 #   define self  (*me)
-    self._parent_memento                  = memento->base.parent;
+    self._parent_memento                  = memento->base._parent_memento;
     self.buffer                           = memento->base.buffer;
     self.__current_mode_p                 = memento->base.__current_mode_p; 
     self.current_analyzer_function        = memento->base.current_analyzer_function;
