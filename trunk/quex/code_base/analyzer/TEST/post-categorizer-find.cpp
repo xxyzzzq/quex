@@ -8,8 +8,8 @@
 #include <quex/code_base/analyzer/PostCategorizer.i>
 
 using namespace quex;
-void post_categorizer_setup(QuexPostCategorizer* me, int Seed);
-void test(quex::QuexPostCategorizer* pc, const char* Name);
+void post_categorizer_setup(QUEX_NAME(Dictionary)* me, int Seed);
+void test(quex::QUEX_NAME(Dictionary)* pc, const char* Name);
 
 int
 main(int argc, char** argv)
@@ -25,11 +25,11 @@ main(int argc, char** argv)
         return 0;
     }
     const int Start = atoi(argv[1]);
-    QuexPostCategorizer  pc;
+    QUEX_NAME(Dictionary)  pc;
 
     post_categorizer_setup(&pc, Start);
     
-    // QuexPostCategorizer_print_tree(pc.root, 0);
+    // QUEX_NAME(Dictionary_print_tree(pc.root, 0);
     test(&pc, "Aa");
     test(&pc, "Ab");
     test(&pc, "Ac");
@@ -48,10 +48,10 @@ main(int argc, char** argv)
     test(&pc, "Bg"); 
 }
 
-void test(QuexPostCategorizer* pc, const char* Name)
+void test(QUEX_NAME(Dictionary)* pc, const char* Name)
 {
     using namespace quex;
-    QuexPostCategorizerNode* found = QuexPostCategorizer_find(pc, Name);
+    QUEX_NAME(DictionaryNode)* found = QUEX_NAME(PostCategorizer_find)(pc, Name);
     printf("%s: ", Name);
     if( found != 0x0 ) {
         printf("[%c]%s, %i\n", found->name_first_character, found->name_remainder, found->token_id); 

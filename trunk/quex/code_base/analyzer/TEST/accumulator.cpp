@@ -4,11 +4,14 @@
 #define QUEX_TYPE_CHARACTER char
 #define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_STRING_ACCUMULATOR
-#define QUEX_NAME(Accumulator)    TestAccumulator
 #define QUEX_TYPE_ANALYZER       TestAnalyzer
 #include <quex/code_base/analyzer/configuration/default>
 
-struct QUEX_TYPE_ANALYZER {
+QUEX_NAMESPACE_MAIN_OPEN
+
+typedef struct { } Token;
+
+struct TestAnalyzer {
     void  send(QUEX_TYPE_TOKEN_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
         printf("Lexical Analyzer Receives:\n");
         printf("   '%s'\n", Msg);
@@ -21,6 +24,11 @@ struct QUEX_TYPE_ANALYZER {
     } counter;
 };
 
+QUEX_NAMESPACE_MAIN_CLOSE
+
+// Prevent the inclusion of 'token-sending.i' since we do it on our own.
+#define  __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_SENDING           
+#include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/analyzer/Accumulator.i>
 
 int
@@ -42,10 +50,10 @@ main(int argc, char** argv)
         printf("CHOICES: String, Character, N-Character, N-String, Mix;\n");
         return 0;
     }
-    TestAnalyzer    analyzer;
-    TestAccumulator accumulator;
+    TestAnalyzer           analyzer;
+    QUEX_NAME(Accumulator) accumulator;
 
-    TestAccumulator_construct(&accumulator, &analyzer);
+    QUEX_NAME(Accumulator_construct)(&accumulator, &analyzer);
 
     if     ( strcmp(argv[1], "String") == 0 ) {
         accumulator.add(TestString0, TestString0 + strlen(TestString0));
@@ -85,7 +93,7 @@ main(int argc, char** argv)
         accumulator.flush(0);
     }
 
-    TestAccumulator_destruct(&accumulator);
+    QUEX_NAME(Accumulator_destruct)(&accumulator);
 
     return 0;
 }

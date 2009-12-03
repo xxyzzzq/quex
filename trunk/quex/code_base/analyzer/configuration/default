@@ -90,7 +90,7 @@
 #endif
 
 #define QUEX_FUNC(NAME)        QuexDefault ## _ ## NAME                
-#define QUEX_MEMBER(NAME)      QuexDefaultClass:: ## NAME                
+#define QUEX_MEMBER(NAME)      QUEX_TYPE_ANALYZER :: NAME                
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #define QUEX_NAMESPACE_MAIN_REF              quex::

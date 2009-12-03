@@ -7,6 +7,10 @@
 #include <cstdio>
 
 struct my_tester;
+namespace quex {
+typedef struct {} Token;
+typedef int       CounterLineColumnIndentation;
+}
 #define  QUEX_TYPE_ANALYZER my_tester
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/counter/LineColumn>
@@ -16,15 +20,15 @@ struct my_tester;
 
 extern int  indentation[64];
 
-class my_tester : public QUEX_NAME(AnalyzerData) {
+class my_tester : public quex::QUEX_NAME(AnalyzerData) {
 public:
     my_tester();
-    quex::CounterLineColumn*   counter;
-    quex::QuexMode             tester_mini_mode;
+    quex::QUEX_NAME(CounterLineColumn)*   counter;
+    quex::QUEX_NAME(Mode)                 tester_mini_mode;
 };
 
 inline void 
-mini_mode_on_indentation(quex::QuexAnalyzerData* x, int Indentation) 
+mini_mode_on_indentation(my_tester* x, int Indentation) 
 {
     indentation[((my_tester*)x)->counter->base._line_number_at_end-1] = Indentation;
     printf("indentation = %i\n", Indentation);
@@ -33,10 +37,11 @@ mini_mode_on_indentation(quex::QuexAnalyzerData* x, int Indentation)
 my_tester::my_tester() 
 { 
     tester_mini_mode.on_indentation = mini_mode_on_indentation;
-    engine.__current_mode_p = &tester_mini_mode; 
+    __current_mode_p = &tester_mini_mode; 
 }
 
 #include <../counter/LineColumnIndentation.i>
 #include <../counter/LineColumn.i>
+#include <../../MemoryManager.i>
 
 #endif // __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
