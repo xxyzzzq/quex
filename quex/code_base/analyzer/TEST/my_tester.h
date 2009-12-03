@@ -8,17 +8,15 @@
 
 struct my_tester;
 #define  QUEX_TYPE_ANALYZER my_tester
-#define  QUEX_NAME(Mode_tag) QuexMode_tag  // divert 'attention' to outside definition
-#define  QUEX_NAME(Mode)     QuexMode
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/counter/LineColumn>
 #include <quex/code_base/analyzer/Mode>
-#include <quex/code_base/analyzer/Engine>
+#include <quex/code_base/analyzer/AnalyzerData>
 
 
 extern int  indentation[64];
 
-class my_tester : public quex::QuexAnalyzerData {
+class my_tester : public QUEX_NAME(AnalyzerData) {
 public:
     my_tester();
     quex::CounterLineColumn*   counter;

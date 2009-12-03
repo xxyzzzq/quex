@@ -1,22 +1,24 @@
-<test-database execution-time-sec="0.31" date="Sun Nov 29 10:43:36 2009">
+<test-database execution-time-sec="0.31" date="Thu Dec  3 09:32:38 2009">
     <last-used-diff-display-program name=""/>
     <group name="StrangeStream">
-        <test title="char stream based." make-required="True" time-sum-sec="0.31"> 
-            <application file-name="strange_stream.exe" info-request-time="1258445960L"/>
-            <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.22" crc="2006234070"/>
-               <choice name="3" result="OK" time_sec="0.04" crc="725477678"/>
-               <choice name="4" result="OK" time_sec="0.04" crc="-924245705"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="252659001"/>
-            </choice-list>
-        </test>
         <test title="wchar_t stream based." make-required="True" time-sum-sec="0.00"> 
             <application file-name="strange_wstream.exe" info-request-time="1258445960L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.00" crc="2006234070"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="725477678"/>
-               <choice name="4" result="OK" time_sec="0.00" crc="-924245705"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="252659001"/>
+               <choice name="2" result="MAKE FAILED" time_sec="0.00" crc="2006234070"/>
+               <choice name="3" result="MAKE FAILED" time_sec="0.00" crc="725477678"/>
+               <choice name="4" result="MAKE FAILED" time_sec="0.00" crc="-924245705"/>
+               <choice name="5" result="MAKE FAILED" time_sec="0.00" crc="252659001"/>
+            </choice-list>
+        </test>
+        <test title="char stream based." make-required="True" time-sum-sec="0.31"> 
+            <application file-name="strange_stream.exe" info-request-time="1258445960L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
+            <choice-list number="4" same_result="False">
+               <choice name="2" result="MAKE FAILED" time_sec="0.22" crc="2006234070"/>
+               <choice name="3" result="MAKE FAILED" time_sec="0.04" crc="725477678"/>
+               <choice name="4" result="MAKE FAILED" time_sec="0.04" crc="-924245705"/>
+               <choice name="5" result="MAKE FAILED" time_sec="0.01" crc="252659001"/>
             </choice-list>
         </test>
     </group>

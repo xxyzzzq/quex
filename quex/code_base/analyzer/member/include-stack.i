@@ -68,7 +68,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*    (*) Post categorizer is not subject to include handling.                    */
         /*    (5) File handle allocated by **initial constructor** == 0x0 to prevent 
          *        deletion by pre-mature destructor call.                                 */
-        __file_handle_allocated_by_constructor = 0x0;
+        me->__file_handle_allocated_by_constructor = 0x0;
 
         /*    (6) Keep track of 'who's your daddy?'                                       */
         me->_parent_memento = m;
@@ -115,7 +115,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*    (4) Allocated accumulator content needs to be freed, previous content is      
          *        restored by unfreeze/copy back.                                         */
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_destruct)(&me->accumulator, me);
+        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
 #       endif
         /*    (*) Post categorizer is not subject to include handling.                    */
         /*    (5) File handle allocated by **initial constructor** reset by unfreeze.     */
