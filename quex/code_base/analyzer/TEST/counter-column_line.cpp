@@ -9,11 +9,11 @@ char total_string[65536];
 
 int    indentation[64];
 
-void test(const char* TestString, CounterLineColumn& x)
+void test(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {
     x.base._line_number_at_begin   = x.base._line_number_at_end;
     x.base._column_number_at_begin = x.base._column_number_at_end;
-    CounterLineColumn_count(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    QUEX_NAME(CounterLineColumn_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
 
     printf("__________________________\n");
     printf("  lexeme: '");
@@ -30,8 +30,8 @@ void test(const char* TestString, CounterLineColumn& x)
 int
 main(int  argc, char** argv)
 {
-    CounterLineColumn   x;
-    CounterLineColumn_construct(&x, 0x0 /* second arg only for conformity with other counter */);
+    QUEX_NAME(CounterLineColumn) x;
+    QUEX_NAME(CounterLineColumn_construct)(&x, 0x0 /* second arg only for conformity with other counter */);
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Count Line and Column: Without Indentation Count\n");

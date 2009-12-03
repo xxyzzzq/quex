@@ -2,13 +2,15 @@
 #define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_POST_CATEGORIZER
 #include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/definitions>
+#include <quex/code_base/analyzer/PostCategorizer>
 #include <quex/code_base/analyzer/PostCategorizer.i>
 
 using namespace quex;
 
-void post_categorizer_setup(QuexPostCategorizer* me, int Seed)
+void post_categorizer_setup(QUEX_NAME(Dictionary)* me, int Seed)
 {
-    QuexPostCategorizer_construct(me);
+    QUEX_NAME(PostCategorizer_construct)(me);
     /* The 'Seed' value tells where the enterion starts. */
     for(int i=0; i<7; ++i) {
         if     ( (i + Seed) % 7 == 0 ) me->enter("Ab", 1);

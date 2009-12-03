@@ -27,5 +27,5 @@ main(int argc, char** argv)
 
     post_categorizer_setup(&pc, Start);
 
-    QuexPostCategorizer_print_tree(pc.root, 0);
+    QUEX_NAME(PostCategorizer_print_tree)(pc.root, 0);
 }

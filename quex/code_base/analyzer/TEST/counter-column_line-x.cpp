@@ -12,7 +12,7 @@ int    indentation[64];
 
 
 void
-print(CounterLineColumn& x, const char* TestString)
+print(QUEX_NAME(CounterLineColumn)& x, const char* TestString)
 {
     cout << "__________________________" << endl;
     // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
@@ -27,29 +27,29 @@ print(CounterLineColumn& x, const char* TestString)
 }
 
 void 
-test(const char* TestString, CounterLineColumn& x)
+test(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {
     CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterLineColumn_count(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    QUEX_NAME(CounterLineColumn_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
 void 
-test_NoNewline(const char* TestString, CounterLineColumn& x)
+test_NoNewline(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {
     CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterLineColumn_count_NoNewline(&x, strlen(TestString));
+    QUEX_NAME(CounterLineColumn_count_NoNewline)(&x, strlen(TestString));
     print(x, TestString);
 }
 
 void 
-test_FixedNewlineN(const char* TestString, CounterLineColumn& x)
+test_FixedNewlineN(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
     CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
-    CounterLineColumn_count_FixNewlineN(&x, (QUEX_TYPE_CHARACTER*)TestString, 
+    QUEX_NAME(CounterLineColumn_count_FixNewlineN)(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                               (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString), line_n);
     print(x, TestString);
 }
@@ -58,8 +58,9 @@ test_FixedNewlineN(const char* TestString, CounterLineColumn& x)
 int
 main(int  argc, char** argv)
 {
-    CounterLineColumn   x;
-    CounterLineColumn_construct(&x, 0x0 /* uniformity with other constructor */);
+    QUEX_NAME(CounterLineColumn)x;
+    QUEX_NAME(CounterLineColumn_construct)(&x, 
+                                           0x0 /* uniformity with other constructor */);
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "Count Line and Column: Without Indentation Count II\n";

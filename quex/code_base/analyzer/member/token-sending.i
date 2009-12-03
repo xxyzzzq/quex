@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define self (*this)
 
     QUEX_INLINE void   
-    QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN& That) 
+    QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN& That) 
     {
         __QUEX_ASSERT_SEND_ENTRY();
         QUEX_TOKEN_POLICY_SET(That);
@@ -31,7 +31,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void   
-    QUEX_MEMFUNC(ANALYZER, send)(const QUEX_TYPE_TOKEN_ID ID) 
+    QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID) 
     {
         __QUEX_ASSERT_SEND_ENTRY();
         QUEX_TOKEN_POLICY_SET_1(ID);
@@ -39,7 +39,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void   
-    QUEX_MEMFUNC(ANALYZER, send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
+    QUEX_MEMBER(send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
     {
 #       ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
         const int AvailableN = QUEX_NAME(TokenQueue_available_n)(&_token_queue);

@@ -8,10 +8,10 @@ using namespace quex;
 
 string    total_string;
 int       indentation[64];
-QuexMode  tester_mini_mode;
+QUEX_NAME(Mode)  tester_mini_mode;
 
 void
-print(CounterLineColumnIndentation& x, const char* TestString)
+print(QUEX_NAME(CounterLineColumnIndentation)& x, const char* TestString)
 {
     cout << "__________________________" << endl;
     // cout << "  before: " << x.base._line_number_at_begin << ", " << x.base._column_number_at_begin << endl;
@@ -26,10 +26,10 @@ print(CounterLineColumnIndentation& x, const char* TestString)
 }
 
 void 
-test(const char* TestString, CounterLineColumnIndentation& x)
+test(const char* TestString, QUEX_NAME(CounterLineColumnIndentation)& x)
 {
     CounterBase_shift_end_values_to_start_values(&x.base);
-    CounterLineColumnIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, 
+    QUEX_NAME(CounterLineColumnIndentation_icount)(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                                   (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -37,11 +37,11 @@ test(const char* TestString, CounterLineColumnIndentation& x)
 int
 main(int  argc, char** argv)
 {
-    my_tester                y;
-    CounterLineColumnIndentation   x;
+    my_tester                                y;
+    QUEX_NAME(CounterLineColumnIndentation)  x;
 
-    CounterLineColumnIndentation_construct(&x, &y);
-    y.counter = (CounterLineColumn*)&x;
+    QUEX_NAME(CounterLineColumnIndentation_construct)(&x, &y);
+    y.counter = (QUEX_NAME(CounterLineColumn)*)&x;
     x.base._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {
