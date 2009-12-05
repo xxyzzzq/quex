@@ -5,4 +5,4 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 source /opt/intel/cc/10.1.018/bin/iccvars.sh
-source core.sh $1 DEBUG COMPILER=icpc
+source core.sh $1 DEBUG COMPILER='icpc -mcpu=i686 -fomit-frame-pointer'
