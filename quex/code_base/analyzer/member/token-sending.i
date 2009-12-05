@@ -1,7 +1,7 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  * (C) 2005-2009 Frank-Rene Schaefer                                */
-#ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_SENDING
-#define __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_SENDING           
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 
 #ifndef QUEX_TYPE_ANALYZER
 #   error "This file requires the macro 'QUEX_TYPE_ANALYZER' to be defined."

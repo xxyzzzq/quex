@@ -1,10 +1,7 @@
-/* -*- C++ -*-   vim: set syntax=cpp:
- *
- * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
- *                      LEXICAL ANALYZERS
- *
- * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_RECEIVE
- * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_RECEIVE            */
+/* -*- C++ -*-   vim: set syntax=cpp: */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING_I
+
 #ifndef QUEX_TYPE_ANALYZER
 #   error "This file requires the macro 'QUEX_TYPE_ANALYZER' to be defined."
 #endif
@@ -170,4 +167,4 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   undef self
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
+#endif
