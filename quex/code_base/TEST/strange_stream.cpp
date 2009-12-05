@@ -1,3 +1,4 @@
+#include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/test_environment/StrangeStream>
 #include <sstream>
 #include <iostream>

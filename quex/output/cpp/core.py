@@ -225,12 +225,12 @@ def write_mode_class_implementation(Modes):
 
     mode_objects_txt = ""    
     for mode_name in Modes:
-        mode_objects_txt += "        QUEX_NAME(Mode)  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
+        mode_objects_txt += "        QUEX_NAME(Mode)  QUEX_TYPE_ANALYZER::%s;\n" % mode_name
 
-    txt += "namespace quex {\n"
+    txt += LanguageDB["$namespace-open"](Setup.analyzer_name_space)
     txt += mode_objects_txt
     txt += mode_class_member_functions_txt
-    txt += "} // END: namespace quex\n"
+    txt += LanguageDB["$namespace-close"](Setup.analyzer_name_space)
 
     txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
                            ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])

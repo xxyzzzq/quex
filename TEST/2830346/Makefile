@@ -11,8 +11,8 @@ story: boeck_Lexer.cpp max_Lexer.cpp moritz_Lexer.cpp
 		-I$(QUEX_PATH) \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
-lexer.E:
-	g++ -E lexer.cpp -o  $@ \
+%.E: %.cpp
+	g++ -E $< -o  $@ \
 		-I$(QUEX_PATH) \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 

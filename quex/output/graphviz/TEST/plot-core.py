@@ -23,7 +23,7 @@ pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
 
 my_plotter.do()
-print open("test-plot.fig").read().replace("#", "##")
+print open("test-plot.fig").read() # .replace("#", "##")
 os.remove("test-plot.fig")
 
 
