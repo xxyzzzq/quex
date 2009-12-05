@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__
+#ifndef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
+#define __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -156,5 +156,5 @@ QUEX_NAMESPACE_MAIN_CLOSE
  
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__ */
+#endif /*  __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I */
 

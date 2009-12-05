@@ -6,6 +6,7 @@ cmapx
 cmapx_np
 dia
 dot
+eps
 fig
 gd
 gd2
@@ -33,6 +34,7 @@ svg
 svgz
 tif
 tiff
+tk
 vml
 vmlz
 vrml
@@ -49,13 +51,14 @@ bmp
  cmapx_np
  dia
  dot
+ eps
  fig
  gd
  gd2
  gif
- gtk
  
-hpgl
+gtk
+ hpgl
  ico
  imap
  imap_np
@@ -66,9 +69,9 @@ hpgl
  mif
  mp
  pcl
- pdf
  
-pic
+pdf
+ pic
  plain
  plain-ext
  png
@@ -78,10 +81,11 @@ pic
  svgz
  tif
  tiff
- vml
- vmlz
+ tk
  
-vrml
+vml
+ vmlz
+ vrml
  vtx
  wbmp
  xdot

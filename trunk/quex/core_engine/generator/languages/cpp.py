@@ -124,7 +124,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            local_variable_list.append(["quex::QUEX_NAME(Mode)&", name + " " * (L- len(name)), 
+            local_variable_list.append(["QUEX_NAMESPACE_MAIN::QUEX_NAME(Mode)&", name + " " * (L- len(name)), 
                                         "QUEX_TYPE_ANALYZER::" + name]) 
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"

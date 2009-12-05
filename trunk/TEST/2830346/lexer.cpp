@@ -1,7 +1,7 @@
 #include<cstdio> 
 
-#include "max_Lexer"
 #include "moritz_Lexer"
+#include "max_Lexer"
 #include "boeck_Lexer"
 
 using namespace std;

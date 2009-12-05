@@ -1,4 +1,4 @@
-<test-database execution-time-sec="195.23" date="Thu Dec  3 09:29:12 2009">
+<test-database execution-time-sec="189.33" date="Sat Dec  5 05:33:00 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="2.34"> 
@@ -7,7 +7,7 @@
                <choice name="" result="OK" time_sec="2.34" crc="-1043122407"/>
             </choice-list>
         </test>
-        <test title="2001602 RE matching UTF8 l quote uno" make-required="True" time-sum-sec="28.54"> 
+        <test title="2001602 RE matching UTF8 l quote uno" make-required="True" time-sum-sec="28.55"> 
             <application file-name="bug-2001602.sh" info-request-time="1256771051L"/>
             <choice-list number="3" same_result="True">
                <choice name="iconv" result="OK" time_sec="5.57" crc="60983025"/>
@@ -73,14 +73,14 @@
                <choice name="" result="OK" time_sec="0.18" crc="-247605812"/>
             </choice-list>
         </test>
-        <test title="2209142 0.33.1-pre-release" make-required="True" time-sum-sec="4.86"> 
+        <test title="2209142 0.33.1-pre-release" make-required="True" time-sum-sec="4.85"> 
             <application file-name="bug-2209142.sh" info-request-time="1256771049L"/>
             <choice-list number="2" same_result="False">
                <choice name="error" result="OK" time_sec="2.63" crc="1446065790"/>
                <choice name="good" result="OK" time_sec="2.22" crc="-1309674102"/>
             </choice-list>
         </test>
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" make-required="True" time-sum-sec="36.24"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" make-required="True" time-sum-sec="36.22"> 
             <application file-name="bug-1952133.sh" info-request-time="1256771050L"/>
             <choice-list number="9" same_result="False">
                <choice name="29" result="OK" time_sec="4.15" crc="1505512407"/>
@@ -100,7 +100,7 @@
                <choice name="" result="OK" time_sec="3.44" crc="-306258998"/>
             </choice-list>
         </test>
-        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" make-required="True" time-sum-sec="9.54"> 
+        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" make-required="True" time-sum-sec="9.53"> 
             <application file-name="feature-2078087.sh" info-request-time="1259097923L"/>
             <choice-list number="4" same_result="False">
                <choice name="GOTO" result="OK" time_sec="2.36" crc="1035729243"/>
@@ -109,7 +109,7 @@
                <choice name="GOSUB-2" result="OK" time_sec="2.48" crc="-1916716939"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Range Skipper Line Number Counter" make-required="True" time-sum-sec="6.81"> 
+        <test title="2161098 0.32.1 Range Skipper Line Number Counter" make-required="True" time-sum-sec="6.82"> 
             <application file-name="bug-2161098.sh" info-request-time="1259097627L"/>
             <choice-list number="3" same_result="False">
                <choice name="c_comments" result="OK" time_sec="2.38" crc="297957937"/>
@@ -172,10 +172,10 @@
         </test>
     </group>
     <group name="prombergerm">
-        <test title="2830346 0.41.2 Multiple Lexers" make-required="True" time-sum-sec="5.18"> 
+        <test title="2830346 0.41.2 Multiple Lexers" make-required="True" time-sum-sec="0.06"> 
             <application file-name="bug-2830346.sh" info-request-time="1256771050L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="5.18" crc="-451751394"/>
+               <choice name="" result="OK" time_sec="0.06" crc="-451751394"/>
             </choice-list>
         </test>
     </group>
@@ -250,10 +250,10 @@
                <choice name="" result="OK" time_sec="0.16" crc="1086595520"/>
             </choice-list>
         </test>
-        <test title="1895066 0.20.8 #line directive after header contents missing" make-required="True" time-sum-sec="0.14"> 
+        <test title="1895066 0.20.8 #line directive after header contents missing" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1895066.sh" info-request-time="1259097728L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.14" crc="-1769231169"/>
+               <choice name="" result="OK" time_sec="0.00" crc="1910298297"/>
             </choice-list>
         </test>
         <test title="1902175 invalid escape in character set expression crashes 0.21.12" make-required="True" time-sum-sec="0.08"> 
@@ -316,7 +316,7 @@
                <choice name="" result="OK" time_sec="0.09" crc="107363452"/>
             </choice-list>
         </test>
-        <test title="2796383 0.39.3 does not handle token_type without distinct section" make-required="True" time-sum-sec="0.55"> 
+        <test title="2796383 0.39.3 does not handle token_type without distinct section" make-required="True" time-sum-sec="0.54"> 
             <application file-name="bug-2796383.sh" info-request-time="1256771051L"/>
             <choice-list number="5" same_result="False">
                <choice name="case-1" result="OK" time_sec="0.12" crc="-1829622869"/>
@@ -365,10 +365,10 @@
                <choice name="" result="OK" time_sec="0.15" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.60"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1259097807L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.60" crc="-1950470803"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-1640890592"/>
             </choice-list>
         </test>
         <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" make-required="True" time-sum-sec="0.16"> 
@@ -379,7 +379,6 @@
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.01"> 
             <application file-name="bug-1935701.exe" info-request-time="1259792204L"/>
-            <make-procedure success="True" time_sec="0.583970"/>
             <choice-list number="2" same_result="False">
                <choice name="FILE" result="OK" time_sec="0.01" crc="-953317363"/>
                <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
