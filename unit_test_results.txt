@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Thu Dec  3 09:29:12 2009
+Sat Dec  5 07:07:47 2009
 TEST
 -------------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ TEST
  -- prombergerm:
 
     2830346 0.41.2 Multiple Lexers
-        bug-2830346.sh .......................................[FAIL]
+        bug-2830346.sh .........................................[OK]
 
  -- sphericalcow:
 
@@ -145,7 +145,7 @@ TEST
     1894578 header block not added to -core-engine.cpp file in 0.20.6
         bug-1894578.sh .........................................[OK]
     1895066 0.20.8 #line directive after header contents missing
-        bug-1895066.sh .......................................[FAIL]
+        bug-1895066.sh .........................................[OK]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
         bug-1895500.sh .........................................[OK]
     1898125 invalid argument for --token-offset can crash 0.21.4
@@ -227,31 +227,12 @@ TEST
    |  _| (_| | | | |_| | | |  __/ |_|
    |_|  \__,_|_|_|\__,_|_|  \___| (_) 
 Error: bug-2395200.sh error-lexer
-Error: bug-2830346.sh 
 Error: bug-1885304.sh 
-Error: bug-1895066.sh 
 ===============================================================================
 Demo-Applications
-Thu Dec  3 09:32:12 2009
+Sat Dec  5 07:10:51 2009
 demo/TEST
 -------------------------------------------------------------------------------
-
- -- Other Compilers than g++:
-
-    Intel's icpc
-        other-compilers-intel.sh 000 .........................[FAIL]
-                                 001 .........................[FAIL]
-                                 002 .........................[FAIL]
-                                 003 .........................[FAIL]
-                                 005 .........................[FAIL]
-                                 006 .........................[FAIL]
-    Sun Microsystem's sunCC
-        other-compilers-sun.sh 000 ...........................[FAIL]
-                               001 ...........................[FAIL]
-                               002 ...........................[FAIL]
-                               003 ...........................[FAIL]
-                               005 ...........................[FAIL]
-                               006 ...........................[FAIL]
 
  -- demo/000:
 
@@ -348,37 +329,26 @@ demo/TEST
         011b.sh LE .............................................[OK]
                 BE .............................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: other-compilers-intel.sh 000
-Error: other-compilers-intel.sh 001
-Error: other-compilers-intel.sh 002
-Error: other-compilers-intel.sh 003
-Error: other-compilers-intel.sh 005
-Error: other-compilers-intel.sh 006
-Error: other-compilers-sun.sh 000
-Error: other-compilers-sun.sh 001
-Error: other-compilers-sun.sh 002
-Error: other-compilers-sun.sh 003
-Error: other-compilers-sun.sh 005
-Error: other-compilers-sun.sh 006
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Miscellaneous Basic Tests
-Thu Dec  3 09:32:14 2009
+Sat Dec  5 07:10:52 2009
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
         test-exceptions-in-place.sh ..........................[FAIL]
  -- Include Guards for C/C++
-        include_guard.py convention ..........................[FAIL]
+        include_guard.py convention ............................[OK]
                          undefinition ........................[FAIL]
  -- Prepare Pattern Information for Code Generation
-        test-coder-get_generator_input.py ....................[FAIL]
+        test-coder-get_generator_input.py ......................[OK]
  -- Propper undefinition of configuration parameters.
-        macro-check.py .......................................[FAIL]
+        macro-check.py .........................................[OK]
 
  -- User defined token id file:
 
@@ -391,13 +361,10 @@ quex/TEST
    |  _| (_| | | | |_| | | |  __/ |_|
    |_|  \__,_|_|_|\__,_|_|  \___| (_) 
 Error: test-exceptions-in-place.sh 
-Error: include_guard.py convention
 Error: include_guard.py undefinition
-Error: test-coder-get_generator_input.py 
-Error: macro-check.py 
 ===============================================================================
 Check Applications of 'Did you mean'.
-Thu Dec  3 09:32:17 2009
+Sat Dec  5 07:10:56 2009
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -413,7 +380,7 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Thu Dec  3 09:32:18 2009
+Sat Dec  5 07:11:02 2009
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -438,7 +405,7 @@ quex/TEST/event-handling/TEST
 
 ===============================================================================
 Include Stack Handling
-Thu Dec  3 09:32:18 2009
+Sat Dec  5 07:11:15 2009
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -477,7 +444,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Thu Dec  3 09:32:24 2009
+Sat Dec  5 07:11:23 2009
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -501,7 +468,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 The 'Reset' Button
-Thu Dec  3 09:32:25 2009
+Sat Dec  5 07:11:23 2009
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -576,7 +543,7 @@ quex/TEST/reset/TEST
 
 ===============================================================================
 Customized Token Class
-Thu Dec  3 09:32:25 2009
+Sat Dec  5 07:11:30 2009
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -597,7 +564,7 @@ quex/TEST/token-class/TEST
 
 ===============================================================================
 Tests related to token queues
-Thu Dec  3 11:34:05 2009
+Sat Dec  5 07:11:45 2009
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -634,39 +601,32 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Thu Dec  3 09:32:38 2009
+Sat Dec  5 07:11:46 2009
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
  -- StrangeStream:
 
     char stream based.
-        strange_stream.exe 2 ..........................[MAKE FAILED]
-                           3 ..........................[MAKE FAILED]
-                           4 ..........................[MAKE FAILED]
-                           5 ..........................[MAKE FAILED]
+        strange_stream.exe 2 ...................................[OK]
+                           3 ...................................[OK]
+                           4 ...................................[OK]
+                           5 ...................................[OK]
     wchar_t stream based.
-        strange_wstream.exe 2 .........................[MAKE FAILED]
-                            3 .........................[MAKE FAILED]
-                            4 .........................[MAKE FAILED]
-                            5 .........................[MAKE FAILED]
+        strange_wstream.exe 2 ..................................[OK]
+                            3 ..................................[OK]
+                            4 ..................................[OK]
+                            5 ..................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: strange_stream.exe 2
-Error: strange_stream.exe 3
-Error: strange_stream.exe 4
-Error: strange_stream.exe 5
-Error: strange_wstream.exe 2
-Error: strange_wstream.exe 3
-Error: strange_wstream.exe 4
-Error: strange_wstream.exe 5
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Lexical Analyzer Class Template
-Thu Dec  3 15:04:53 2009
+Sat Dec  5 07:11:54 2009
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
  -- Accumulator
@@ -739,7 +699,7 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Thu Dec  3 09:32:49 2009
+Sat Dec  5 07:12:00 2009
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -801,7 +761,7 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Thu Dec  3 09:32:56 2009
+Sat Dec  5 07:12:06 2009
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -875,7 +835,7 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Thu Dec  3 09:33:04 2009
+Sat Dec  5 07:12:13 2009
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -949,7 +909,7 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Thu Dec  3 09:33:19 2009
+Sat Dec  5 07:12:25 2009
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -1043,7 +1003,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Thu Dec  3 09:33:27 2009
+Sat Dec  5 07:12:34 2009
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1087,7 +1047,7 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Thu Dec  3 09:35:24 2009
+Sat Dec  5 09:03:25 2009
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1269,7 +1229,7 @@ quex/core_engine/generator/TEST
 
 ===============================================================================
 Regular Expression Parsing
-Thu Dec  3 09:35:26 2009
+Sat Dec  5 07:14:02 2009
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1335,7 +1295,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Thu Dec  3 09:35:46 2009
+Sat Dec  5 07:14:22 2009
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1492,7 +1452,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Thu Dec  3 09:35:47 2009
+Sat Dec  5 07:14:22 2009
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1518,7 +1478,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Thu Dec  3 09:35:59 2009
+Sat Dec  5 07:14:36 2009
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1585,7 +1545,7 @@ quex/input/TEST
 
 ===============================================================================
 Basic Code Writing Functionality
-Thu Dec  3 09:36:02 2009
+Sat Dec  5 07:14:38 2009
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1615,38 +1575,35 @@ quex/output/cpp/TEST
 
 ===============================================================================
 Testing Statemachine Plots
-Thu Dec  3 09:36:04 2009
+Sat Dec  5 07:14:39 2009
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
-        get_supported_formats.py .............................[FAIL]
+        get_supported_formats.py ...............................[OK]
 
  -- Plot:
 
     Backward Detector (for pseudo-ambiguous post context).
-        plot-papc.py .........................................[FAIL]
+        plot-papc.py ...........................................[OK]
     Core state machine.
-        plot-core.py .........................................[FAIL]
+        plot-core.py ...........................................[OK]
     Pre-Context.
-        plot-pre-context.py ..................................[FAIL]
+        plot-pre-context.py ....................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: get_supported_formats.py 
-Error: plot-papc.py 
-Error: plot-core.py 
-Error: plot-pre-context.py 
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 SUMMARY:
 
  Verdict: Fails: Directory:
 
-  [FAIL]      4  TEST
-  [FAIL]     12  demo/TEST
-  [FAIL]      5  quex/TEST
+  [FAIL]      2  TEST
+  [OK]           demo/TEST
+  [FAIL]      2  quex/TEST
   [OK]           quex/TEST/did-you-mean/TEST
   [OK]           quex/TEST/event-handling/TEST
   [OK]           quex/TEST/include-stack/TEST
@@ -1654,7 +1611,7 @@ SUMMARY:
   [OK]           quex/TEST/reset/TEST
   [OK]           quex/TEST/token-class/TEST
   [OK]           quex/TEST/token-policies/TEST
-  [FAIL]      8  quex/code_base/TEST
+  [OK]           quex/code_base/TEST
   [OK]           quex/code_base/analyzer/TEST
   [OK]           quex/code_base/buffer/TEST
   [OK]           quex/code_base/buffer/converter/iconv/TEST
@@ -1667,12 +1624,12 @@ SUMMARY:
   [OK]           quex/frs_py/TEST
   [OK]           quex/input/TEST
   [OK]           quex/output/cpp/TEST
-  [FAIL]      4  quex/output/graphviz/TEST
+  [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-     _____     _ _          _____  _____           
-    |  ___|_ _(_) |___     |___ / |___ /     __  __
-    | |_ / _` | | / __|      |_ \   |_ \     \ \/ /
-    |  _| (_| | | \__ \     ___) | ___) |     >  < 
-    |_|  \__,_|_|_|___/    |____/ |____/     /_/\_\
-                          
+     _____     _ _          _  _            
+    |  ___|_ _(_) |___     | || |     __  __
+    | |_ / _` | | / __|    | || |_    \ \/ /
+    |  _| (_| | | \__ \    |__   _     >  < 
+    |_|  \__,_|_|_|___/       |_|     /_/\_\
+                   
 ===============================================================================
