@@ -3,14 +3,10 @@
 #   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN is not defined, tells that this is not the case."
 #endif
 
-#ifdef     __QUEX_INCLUDE_GUARD__TOKEN__TOKEN                                        
-#   undef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN                                        
-#endif
 #ifdef     __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
 #   undef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
 #endif
 
-#if 0
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER                               
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER                               
 #endif
@@ -23,13 +19,8 @@
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I                                    
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I                                    
 #endif
-#if 0
-    /* The memory position mimiker is only active in C++ and it is a template.
-     * Thus, it does not have to be redefined when more than one lexical
-     * analyzer is included.                                                  */
-#   ifdef     __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
-#      undef  __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
-#   endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
@@ -88,20 +79,12 @@
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H                  
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H                  
 #endif
-#endif
 
-
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE                                 
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE                                 
-#endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER                       
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER                        
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER_I                        
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER_I                        
-#endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I                                
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I                                
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR                             
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR                          
@@ -109,14 +92,14 @@
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I                             
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I                             
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER                                  
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER                                  
-#endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA                             
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA                             
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I                             
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE                             
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE                             
@@ -147,4 +130,13 @@
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
 #   undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
+#endif
+#ifndef   __QUEX_INCLUDE_GUARD__ANALYZER__MODE
+#   undef __QUEX_INCLUDE_GUARD__ANALYZER__MODE
+#endif
+#ifndef   __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING_I
+#   undef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING_I
+#endif
+#ifndef   __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
+#   undef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 #endif

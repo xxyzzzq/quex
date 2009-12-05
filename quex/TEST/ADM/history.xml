@@ -1,4 +1,4 @@
-<history date="Thu Dec  3 09:32:14 2009" element-n="267">
+<history date="Fri Dec  4 16:29:06 2009" element-n="269">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
@@ -793,5 +793,9 @@
     </day>
     <day year="2009" month="12" day="03">
         <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:32:14"/>
+    </day>
+    <day year="2009" month="12" day="04">
+        <crc-error time="15:20:57" application="include_guard.py" choice="convention" database-crc="68066632" real-crc="171125511"/>
+        <crc-error time="15:24:14" application="include_guard.py" choice="undefinition" database-crc="2127929980" real-crc="1721854534"/>
     </day>
 </history>
