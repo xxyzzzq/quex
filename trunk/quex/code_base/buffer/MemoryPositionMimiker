@@ -42,7 +42,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     **            OPERATORS +,-,++,--! DO NOT USE THIS TYPE EXCEPT FOR SIMPLE   **
     **            'TELL' AND 'SEEK'.                                            **
     */
-    struct MemoryPositionMimiker {
+    struct QUEX_NAME(MemoryPositionMimiker) {
 
         typedef size_t character_index; // Assume: The 'start position' is stored in
         //                              // terms of 'character index' rather the stream
@@ -52,18 +52,18 @@ QUEX_NAMESPACE_MAIN_OPEN
         // ALLOW: Only Adr, so that variable of type memory_position_mimiker can be
         //        can be initialized via a pointer, as a normal pointer does, e.g.
         //        "QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);"
-        MemoryPositionMimiker(QUEX_TYPE_CHARACTER* Adr=0x0, character_index Pos=0) 
+        QUEX_NAME(MemoryPositionMimiker)(QUEX_TYPE_CHARACTER* Adr=0x0, character_index Pos=0) 
             : address(Adr), buffer_start_position(Pos) {}
 
         QUEX_TYPE_CHARACTER*  address;
         character_index  buffer_start_position;
 
-        bool operator==(const MemoryPositionMimiker& That)
+        bool operator==(const QUEX_NAME(MemoryPositionMimiker)& That)
         { 
           __quex_assert(this->buffer_start_position == That.buffer_start_position); 
           return this->address == That.address; 
         }
-        bool operator!=(const MemoryPositionMimiker& That)
+        bool operator!=(const QUEX_NAME(MemoryPositionMimiker)& That)
         { return ! (this->operator==(That)); }
 
         bool operator==(const QUEX_TYPE_CHARACTER* ThatAdr) { return this->address == ThatAdr; }

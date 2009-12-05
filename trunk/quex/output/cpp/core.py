@@ -87,8 +87,11 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
                                                          LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
+             ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
+             ["$$LEXER_BUILD_DATE$$",           time.asctime()],
+             ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
              ["$$INITIAL_LEXER_MODE_ID$$",      LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
@@ -124,8 +127,6 @@ def write_engine_header(Modes):
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerFileStem               = Setup.output_file_stem
     LexerClassName              = Setup.analyzer_class_name
-    VersionID                   = Setup.user_application_version_id
-    QuexVersionID               = Setup.QUEX_VERSION
 
     #    are bytes of integers Setup 'little endian' or 'big endian' ?
     if Setup.byte_order == "little":
@@ -173,8 +174,6 @@ def write_engine_header(Modes):
                 ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(
                                                          LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
-                ["$$LEXER_BUILD_DATE$$",             time.asctime()],
-                ["$$USER_LEXER_VERSION$$",               VersionID],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
                 ["$$LEXER_CONFIG_FILE$$",                Setup.output_configuration_file],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
@@ -188,7 +187,7 @@ def write_engine_header(Modes):
                 ["$$MEMENTO_EXTENSIONS_UNPACK$$",        lexer_mode.memento_unpack_extension.get_code()],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
-                ["$$QUEX_VERSION$$",                     QuexVersionID],
+                ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
                 ["$$TOKEN_CLASS_DECLARATION$$",          write_token_class_declaration()],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],

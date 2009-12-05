@@ -23,6 +23,10 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
+#define QUEX_SETTING_VERSION           "$$QUEX_VERSION$$"
+#define QUEX_SETTING_BUILD_DATE        "$$LEXER_BUILD_DATE$$"
+#define QUEX_SETTING_ANALYZER_VERSION  "$$USER_LEXER_VERSION$$"
+
 /* By default ASSERTS are enabled ! */
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
 #   ifdef     QUEX_OPTION_ASSERTS
@@ -346,7 +350,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_FUNC(NAME)           $$LEXER_CLASS_NAME$$_ ## NAME                
 
 #if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
-#    define QUEX_TYPE_CHARACTER_POSITION   MemoryPositionMimiker
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_NAME(MemoryPositionMimiker)
 #else
 #    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
 #endif
