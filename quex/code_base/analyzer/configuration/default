@@ -103,7 +103,7 @@
 #endif
 
 #if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
-#    define QUEX_TYPE_CHARACTER_POSITION   MemoryPositionMimiker
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_NAME(MemoryPositionMimiker)
 #else
 #    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
 #endif
