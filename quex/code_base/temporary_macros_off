@@ -2,14 +2,14 @@
  *
  * PURPOSE: Deactivate a set of handy macros that have been defined in
  *          'code_base/template_macros_on'. */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__OFF__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__OFF__
+#ifndef __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF
+#define __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF
 
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+#ifndef __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS
 #error "File " __FILE__ " was included without previous inclusion of the correspondent\n" + \
        "'template_macros_on' file."
 #endif
-#undef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+#undef __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS
 
 #undef TEMPLATIFIER
 #undef TEMPLATIFIER_END
@@ -19,4 +19,4 @@
 #undef InputHandleT
 #undef TEMPLATED
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__OFF__ */
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__OFF */

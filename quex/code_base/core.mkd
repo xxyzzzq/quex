@@ -41,7 +41,6 @@ __QUEX_CORE = \
     ./unicode \
     ./asserts \
     ./definitions \
-    ./circular_queue \
     ./temporary_macros_on \
     ./analyzer/dumpster.i \
     ./analyzer/Accumulator \

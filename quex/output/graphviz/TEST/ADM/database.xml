@@ -1,28 +1,28 @@
-<test-database execution-time-sec="1.10" date="Sat Dec  5 07:14:39 2009">
+<test-database execution-time-sec="0.82" date="Sat Dec  5 15:22:52 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." make-required="True" time-sum-sec="0.09"> 
+    <test title="Check supported formats." make-required="True" time-sum-sec="0.07"> 
         <application file-name="get_supported_formats.py" info-request-time="1258445961L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.09" crc="278616463"/>
+           <choice name="" result="OK" time_sec="0.07" crc="278616463"/>
         </choice-list>
     </test>
     <group name="Plot">
-        <test title="Core state machine." make-required="True" time-sum-sec="0.20"> 
+        <test title="Core state machine." make-required="True" time-sum-sec="0.19"> 
             <application file-name="plot-core.py" info-request-time="1259975725L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.20" crc="-1733536328"/>
+               <choice name="" result="OK" time_sec="0.19" crc="-1733536328"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.54"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.31"> 
             <application file-name="plot-papc.py" info-request-time="1259975735L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.54" crc="-441684348"/>
+               <choice name="" result="OK" time_sec="0.31" crc="-441684348"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." make-required="True" time-sum-sec="0.27"> 
+        <test title="Pre-Context." make-required="True" time-sum-sec="0.25"> 
             <application file-name="plot-pre-context.py" info-request-time="1259975759L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.27" crc="595755417"/>
+               <choice name="" result="OK" time_sec="0.25" crc="595755417"/>
             </choice-list>
         </test>
     </group>

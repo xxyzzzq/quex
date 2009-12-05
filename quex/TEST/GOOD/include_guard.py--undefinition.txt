@@ -1,4 +1,9 @@
 Following include guards are not undefined in /home/fschaef/prj/quex/trunk/quex/code_base/include-guard-undef:
+__QUEX_INCLUDE_GUARD__UNICODE                                             
+__QUEX_INCLUDE_GUARD__ASSERTS                                             
+__QUEX_INCLUDE_GUARD__DEFINITIONS                                         
+__QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF                    
+__QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS                         
 __QUEX_INCLUDE_GUARD__COMPATIBILITY__INTTYPES_H                           
 __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H                     
 __QUEX_INCLUDE_GUARD__COMPATIBILITY__ICONV_ARGUMENT_TYPES_H               

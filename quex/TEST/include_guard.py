@@ -13,15 +13,16 @@ class info:
 include_guard_list = []
 max_length         = 0 
 for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
-    if   root.find(".svn")        != -1: continue
-    elif root.find("/TEST/OUT/")  != -1: continue
-    elif root.find("/TEST/GOOD/") != -1: continue
-    elif root.find("/TEST/ADM/")  != -1: continue
-    elif root.find("/code_base/") == -1: continue
+    if   root.find(".svn")       != -1: continue
+    elif root.find("/TEST/OUT")  != -1: continue
+    elif root.find("/TEST/GOOD") != -1: continue
+    elif root.find("/TEST/ADM")  != -1: continue
+    elif root.find("/code_base") == -1: continue
 
     # print root
     for file in file_list:
         file_name = root + "/" + file
+        # print "##", file_name
 
         fh = open(file_name, "rb")
         try:    skip_whitespace(fh)
