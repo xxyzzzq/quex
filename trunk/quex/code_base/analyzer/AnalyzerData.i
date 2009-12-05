@@ -89,6 +89,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_NAME(Buffer_destruct)(&me->buffer);
 
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
+#       endif
+       
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
         QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
 #       endif

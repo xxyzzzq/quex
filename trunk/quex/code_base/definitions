@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__
+#ifndef __QUEX_INCLUDE_GUARD__DEFINITIONS
+#define __QUEX_INCLUDE_GUARD__DEFINITIONS
 
 #include<quex/code_base/asserts>
 #include<quex/code_base/compatibility/inttypes.h>
@@ -226,4 +226,4 @@ __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
 
 
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__ */
+#endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */
