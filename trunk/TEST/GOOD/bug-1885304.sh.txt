@@ -515,12 +515,12 @@ Simple_ONE_AND_ONLY_analyzer_function(QUEX_TYPE_ANALYZER* me)
 #   endif
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
     /* me = pointer to state of the lexical analyzer */
-    quex::QUEX_NAME(Mode)&       ONE_AND_ONLY = QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
-    QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
-    QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
-    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
-    const size_t                 PostContextStartPositionN = (size_t)0;
-    QUEX_TYPE_CHARACTER          input = (QUEX_TYPE_CHARACTER)(0x00);
+    QUEX_NAMESPACE_MAIN::QUEX_NAME(Mode)& ONE_AND_ONLY = QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
+    QUEX_TYPE_GOTO_LABEL                  last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    QUEX_TYPE_CHARACTER_POSITION          last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
+    QUEX_TYPE_CHARACTER_POSITION*         post_context_start_position = 0x0;
+    const size_t                          PostContextStartPositionN = (size_t)0;
+    QUEX_TYPE_CHARACTER                   input = (QUEX_TYPE_CHARACTER)(0x00);
 
     /* Post context positions do not have to be reset or initialized. If a state
      * is reached which is associated with 'end of post context' it is clear what
@@ -2975,7 +2975,7 @@ __REENTRY_PREPARATION:
 #endif
 #include"Simple"
 namespace quex {
-        QUEX_NAME(Mode)  Simple::ONE_AND_ONLY;
+        QUEX_NAME(Mode)  QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
 
     void
     Simple_ONE_AND_ONLY_on_entry(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
@@ -3015,7 +3015,7 @@ __quex_assert(Indentation >= 0);
     }
 #endif    
 #undef self
-} // END: namespace quex
+} /* Closing Namespace 'quex' */
 // -*- C++ -*- vim: set syntax=cpp:
 // PURPOSE: File containing definition of token-identifier and
 //          a function that maps token identifiers to a string

@@ -31,4 +31,3 @@ standard input/output library (e.g. not Microsoft).
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-ToMode: ONE_AND_ONLY
