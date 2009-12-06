@@ -43,7 +43,6 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./unicode exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./asserts exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./definitions exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_on exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/dumpster.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator exists
