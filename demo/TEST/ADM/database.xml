@@ -1,4 +1,4 @@
-<test-database execution-time-sec="162.72" date="Sun Dec  6 05:55:55 2009">
+<test-database execution-time-sec="162.71" date="Sun Dec  6 14:05:08 2009">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" make-required="True" time-sum-sec="5.64"> 
@@ -10,7 +10,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="5.45"> 
+        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="5.44"> 
             <application file-name="001.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.67" crc="-2092421156"/>
@@ -112,7 +112,7 @@
                <choice name="fill" result="OK" time_sec="3.60" crc="665696517"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="14.62"> 
+        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="14.61"> 
             <application file-name="010.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="11.06" crc="715182431"/>
