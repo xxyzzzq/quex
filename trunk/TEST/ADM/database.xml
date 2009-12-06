@@ -1,4 +1,4 @@
-<test-database execution-time-sec="204.96" date="Sun Dec  6 06:13:37 2009">
+<test-database execution-time-sec="204.96" date="Sun Dec  6 14:17:23 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="2.35"> 
@@ -153,6 +153,14 @@
             <application file-name="bug-2257908.sh" info-request-time="1259097789L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="1.11" crc="-644952685"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="nazim-can-bedir">
+        <test title="2896732 0.46.2 - Memory leak" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-2896732.sh" info-request-time="1260105188L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="-1446213275"/>
             </choice-list>
         </test>
     </group>

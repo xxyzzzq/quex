@@ -51,7 +51,7 @@ QUEX_NAMESPACE_MAIN_OPEN
              * In the latter case the input_handle = 0x0 is passed to the 'new' allocator
              * without the slightest harm.                                                 */
             return (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(input_handle, 
-                                  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
+                                  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW(),
                                   CharacterEncodingName, /* Internal Coding: Default */0x0,
                                   TranslationBufferMemorySize);
        
