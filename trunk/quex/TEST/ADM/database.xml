@@ -1,28 +1,28 @@
-<test-database execution-time-sec="0.95" date="Sat Dec  5 15:19:56 2009">
+<test-database execution-time-sec="1.15" date="Sun Dec  6 05:55:56 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.39"> 
+    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1258445961L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.39" crc="-1647352136"/>
+           <choice name="" result="OK" time_sec="0.40" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.08"> 
+    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.09"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1258445962L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.08" crc="443378679"/>
+           <choice name="" result="OK" time_sec="0.09" crc="443378679"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.03"> 
+    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.02"> 
         <application file-name="macro-check.py" info-request-time="1258445961L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
+           <choice name="" result="OK" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" make-required="True" time-sum-sec="0.41"> 
+    <test title="Include Guards for C/C++" make-required="True" time-sum-sec="0.59"> 
         <application file-name="include_guard.py" info-request-time="1260021992L"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="FAIL" time_sec="0.20" crc="171125511"/>
-           <choice name="undefinition" result="OK" time_sec="0.21" crc="1712913254"/>
+           <choice name="convention" result="OK" time_sec="0.21" crc="-1448671841"/>
+           <choice name="undefinition" result="OK" time_sec="0.38" crc="1712913254"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

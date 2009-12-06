@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.12" date="Sat Dec  5 15:22:37 2009">
+<test-database execution-time-sec="0.13" date="Sun Dec  6 06:00:02 2009">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.03"> 
@@ -7,10 +7,10 @@
                <choice name="" result="OK" time_sec="0.03" crc="-957083127"/>
             </choice-list>
         </test>
-        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.03"> 
+        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1258445961L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.03" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.04" crc="1489533151"/>
             </choice-list>
         </test>
         <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.03"> 
@@ -21,10 +21,10 @@
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.02"> 
+        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.03"> 
             <application file-name="test-trim.py" info-request-time="1258445961L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.02" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.03" crc="-964243626"/>
             </choice-list>
         </test>
     </group>
