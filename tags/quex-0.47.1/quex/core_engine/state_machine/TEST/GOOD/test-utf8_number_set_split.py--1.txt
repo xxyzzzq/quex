@@ -1,0 +1,72 @@
+-------------------------
+Interval:     [0000]
+   .front --> 00.
+   .back  --> 00.
+
+Result:
+      [0000] 
+         .front --> 00.
+         .back  --> 00.
+-------------------------
+Interval:     [0000, 0001]
+   .front --> 00.
+   .back  --> 01.
+
+Result:
+      [0000, 0001] 
+         .front --> 00.
+         .back  --> 01.
+-------------------------
+Interval:     [0001]
+   .front --> 01.
+   .back  --> 01.
+
+Result:
+      [0001] 
+         .front --> 01.
+         .back  --> 01.
+-------------------------
+Interval:     [007F]
+   .front --> 7F.
+   .back  --> 7F.
+
+Result:
+      [007F] 
+         .front --> 7F.
+         .back  --> 7F.
+-------------------------
+Interval:     [007E, 007F]
+   .front --> 7E.
+   .back  --> 7F.
+
+Result:
+      [007E, 007F] 
+         .front --> 7E.
+         .back  --> 7F.
+-------------------------
+Interval:     [007E]
+   .front --> 7E.
+   .back  --> 7E.
+
+Result:
+      [007E] 
+         .front --> 7E.
+         .back  --> 7E.
+-------------------------
+Interval:     [0000, 007F]
+   .front --> 00.
+   .back  --> 7F.
+
+Result:
+      [0000, 007F] 
+         .front --> 00.
+         .back  --> 7F.
+-------------------------
+Interval:     [0001, 007E]
+   .front --> 01.
+   .back  --> 7E.
+
+Result:
+      [0001, 007E] 
+         .front --> 01.
+         .back  --> 7E.

@@ -1,0 +1,116 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2005-2009 Frank-Rene Schaefer
+ *
+ * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
+ *                      LEXICAL ANALYZERS
+ *
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_TOKEN_POLICY__
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_TOKEN_POLICY__              
+ *
+ * Instead of an include guard, there is an include indicator 
+ *
+ *         __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+ *
+ * If the indicator is defined at the entry of this file, all internally 
+ * defined macros are undefined right at the beginning, so they can be 
+ * safely redefined.                                                     */
+#ifdef __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#    undef __QUEX_CURRENT_TOKEN_P
+#    undef QUEX_TOKEN_POLICY_PREPARE_NEXT
+#    undef QUEX_TOKEN_POLICY_NO_TOKEN
+#    undef QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET
+#    undef __QUEX_STAMP_LINE_NUMBER
+#    undef __QUEX_STAMP_COLUMN_NUMBER
+#    undef QUEX_TOKEN_POLICY_SET
+#    undef QUEX_TOKEN_POLICY_SET_1
+#    undef QUEX_TOKEN_POLICY_SET_2
+#    undef QUEX_TOKEN_POLICY_SET_3
+#    undef QUEX_TOKEN_POLICY_SET_4
+#    undef QUEX_TOKEN_POLICY_SET_5
+#    undef QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION
+#else
+#    define __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#endif
+/*_______________________________________________________________________*/
+
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+
+#    define __QUEX_CURRENT_TOKEN_P  (self._token_queue.write_iterator)
+
+#    define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
+            ++(self._token_queue.write_iterator); 
+
+#    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
+            self._token_queue.remaining_repetitions_of_last_token_n = N;
+
+#    define QUEX_TOKEN_POLICY_NO_TOKEN() \
+            (QUEX_NAME(TokenQueue_is_empty)(&self._token_queue))
+
+#else
+
+#     define __QUEX_CURRENT_TOKEN_P  (self.token)
+
+#     define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
+             /* empty */
+#     define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
+             /* empty */
+#     define QUEX_TOKEN_POLICY_NO_TOKEN() \
+             (self.token->type_id() == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
+#endif
+
+/* Option: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+ *
+ * This option enables the stamping of tokens at the time that they are sent
+ * with the current position of the lexeme in terms of line and column
+ * numbers. Note, that if line or column numbering is disabled than also
+ * the stamping of the corresponding value is disabled. 
+ *
+ * In the default token class the members '_line_n' and '_column_n' only 
+ * exist if the corresponding stamping is active.                            */
+#if    defined(QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN) \
+    && defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
+#       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    TOKEN->set_line_number(self.line_number());
+#else
+#       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    /* empty */
+#endif
+
+#if    defined(QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN) \
+    && defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+#       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)    TOKEN->set_column_number(self.column_number());
+#else
+#       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)  /* empty */
+#endif
+
+/* Setting a token value. 
+ *  
+ *  This may include the stamping of line and/or column numbers. The macros to
+ *  do that are empty in case that the stamping is disabled (see the above
+ *  definitions). The last element of the subsequent macro provides access to
+ *  the current token. This access depends on whether the token policy 'users
+ *  token' or a queue policy is used.                                           */
+#define __QUEX_CURRENT_TOKEN_ACCESS                        \
+        __QUEX_STAMP_LINE_NUMBER(__QUEX_CURRENT_TOKEN_P)   \
+        __QUEX_STAMP_COLUMN_NUMBER(__QUEX_CURRENT_TOKEN_P) \
+        (*__QUEX_CURRENT_TOKEN_P)
+                                    
+/* Setting Token Content */
+#define QUEX_TOKEN_POLICY_SET(X)                    __QUEX_CURRENT_TOKEN_ACCESS = (X);
+#define QUEX_TOKEN_POLICY_SET_1(X0)                 __QUEX_CURRENT_TOKEN_ACCESS.set(X0);
+#define QUEX_TOKEN_POLICY_SET_2(X0, X1)             __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1);
+#define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)         __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2);
+#define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)     __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3);
+#define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3, X4);
+
+
+/* Ensure that no token is sent after the token 'TERMINATION'. If files are included
+ * the token queue is reset.                                                          */
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(TOKEN_ID_TERMINATION) \
+           __quex_assert(    self._token_queue.write_iterator == self._token_queue.begin \
+                         || (self._token_queue.write_iterator-1)->type_id() != TOKEN_ID_TERMINATION)
+#else
+#   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(CLASS_NAME) 
+           /* empty */
+#endif
+
+

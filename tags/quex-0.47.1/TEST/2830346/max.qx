@@ -1,0 +1,19 @@
+start = NORMAL;
+
+mode NORMAL 
+: <skip: [ \n\t]>
+{ 
+    on_end_of_stream         => MAX_TKN_TERMINATION(LexemeNull);
+    Max                      { printf("ME________\t%s\n", (const char*)(Lexeme)); self.send(MAX_TKN_OK); }
+    Moritz                   { printf("MY_BROTHER\t%s\n", (const char*)(Lexeme)); self.send(MAX_TKN_OK); }
+    Säge|Tücke|Brücke|Lücke  { printf("SUBJECT___\t%s\n", (const char*)(Lexeme)); self.send(MAX_TKN_OK); }
+    Sägen                    => GOTO(HAPPY, MAX_TKN_VERB______, Lexeme);
+    [a-zäöüA-Z]+             { printf("UKNOWN____\t%s\n", (const char*)(Lexeme)); self.send(MAX_TKN_OK); }
+    [,.!]                    { printf("MARK______\t%s\n", (const char*)(Lexeme)); self.send(MAX_TKN_OK); }
+}
+
+mode HAPPY : NORMAL {
+    on_entry {
+        printf("Max: now happy!\n");
+    }
+}

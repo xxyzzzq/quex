@@ -1,0 +1,4 @@
+*.sh
+--not core.sh
+--not other-compilers-intel.sh  
+--not other-compilers-sun.sh
