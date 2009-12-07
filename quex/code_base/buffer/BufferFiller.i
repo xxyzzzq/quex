@@ -33,6 +33,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t       
     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER*, const size_t);
 
+    QUEX_INLINE QUEX_NAME(Converter)*
+    QUEX_NAME(__Converter_EMPTY_new)() { return 0x0; }
+
     TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
                          const char*    CharacterEncodingName,
@@ -40,7 +43,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         if( CharacterEncodingName != 0x0 ) {
 
-            if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
+            if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == QUEX_NAME(__Converter_EMPTY_new) ) {
                 QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
                                 "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
                                 "been defined (use --iconv, --icu, --converter-new to specify converter).\n");

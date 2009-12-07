@@ -27,7 +27,7 @@ struct TestAnalyzer {
 QUEX_NAMESPACE_MAIN_CLOSE
 
 // Prevent the inclusion of 'token-sending.i' since we do it on our own.
-#define  __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_SENDING           
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/analyzer/Accumulator.i>
 
