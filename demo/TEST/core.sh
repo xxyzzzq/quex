@@ -24,7 +24,8 @@ cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) &&
 rm tmp.txt
 echo "executing ..."
 if [[ -z $application ]]; then
-    ./lexer $args_to_lexer
+    valgrind ./lexer $args_to_lexer >& tmp.txt
+    python ../TEST/show-valgrind.py
 else
     $application $args_to_lexer
 fi

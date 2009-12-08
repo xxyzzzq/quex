@@ -41,5 +41,6 @@ main(int argc, char** argv)
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";
 
+    delete qlex;
     return 0;
 }
