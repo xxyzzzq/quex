@@ -57,3 +57,4 @@ WORD	D834.DE40.D834.DE41.D834.DE42.D834.DE43.D834.DE44.
 UNKNOWN	0020.
 WHITE	000A.
 <TERMINATION>	
+VALGRIND:   All heap blocks were freed -- no leaks are possible

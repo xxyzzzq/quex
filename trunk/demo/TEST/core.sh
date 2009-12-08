@@ -24,11 +24,21 @@ cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) &&
 rm tmp.txt
 echo "executing ..."
 if [[ -z $application ]]; then
-    valgrind ./lexer $args_to_lexer >& tmp.txt
-    python ../TEST/show-valgrind.py
+    if [[ $no_valgrind != "YES" ]]; then
+        valgrind ./lexer $args_to_lexer >& tmp.txt
+        python ../TEST/show-valgrind.py
+    else
+        ./lexer $args_to_lexer
+    fi
 else
-    $application $args_to_lexer
+    if [[ $no_valgrind != "YES" ]]; then
+        valgrind $application $args_to_lexer >& tmp.txt
+        python ../TEST/show-valgrind.py
+    else
+       $application $args_to_lexer
+    fi
 fi
+rm -f tmp.txt
 echo "cleaning ..."
 make clean   >& /dev/null
 

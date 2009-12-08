@@ -12,3 +12,4 @@ Consider: IDENTIFIER '한국어'
 Consider: DOT '•' 
 Consider: IDENTIFIER 'हिन्दी' 
 Consider: <TERMINATION> '' 
+VALGRIND:   All heap blocks were freed -- no leaks are possible

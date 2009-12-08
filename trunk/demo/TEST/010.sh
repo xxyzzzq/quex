@@ -11,4 +11,7 @@ if [[ $1 == "copy" ]]; then
 fi
 make  $1.exe >& tmp.txt
 cat tmp.txt | awk ' ! /g\+\+/ ' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
-./$1.exe 
+valgrind --leak-check=full ./$1.exe >& tmp.txt
+python ../TEST/show-valgrind.py
+rm -f tmp.txt
+make clean >& /dev/null
