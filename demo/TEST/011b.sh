@@ -10,4 +10,6 @@ make clean >& /dev/null
 make utf16-lexer >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 rm tmp.txt
-./utf16-lexer $1
+valgrind --leak-check=full ./utf16-lexer $1 >& tmp.txt
+python ../TEST/show-valgrind.py
+rm -f tmp.txt

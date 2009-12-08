@@ -11,5 +11,8 @@ if [[ $1 == "copy-conversion" ]]; then
 fi
 make  $1.exe >& tmp.txt
 cat tmp.txt | awk ' ! /g++/ { print; }' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/ '
-./$1.exe 
+valgrind --leak-check=full ./$1.exe >& tmp.txt
+python ../TEST/show-valgrind.py
+rm -f tmp.txt
 cd $QUEX_PATH/demo/TEST
+make clean >& /dev/null

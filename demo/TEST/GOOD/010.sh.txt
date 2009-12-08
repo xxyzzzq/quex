@@ -23,3 +23,4 @@ Consider: NUMBER '1234567890'
 Consider: HELLO 'hallo' 
 Consider: NUMBER '1212' 
 Consider: HELLO 'hello' 
+VALGRIND:   All heap blocks were freed -- no leaks are possible

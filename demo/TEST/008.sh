@@ -5,4 +5,5 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "SAME;"
     exit
 fi
+export no_valgrind=YES
 source core.sh 008 $1
