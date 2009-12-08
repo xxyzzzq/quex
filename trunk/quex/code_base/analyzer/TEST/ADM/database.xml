@@ -1,8 +1,7 @@
-<test-database execution-time-sec="0.20" date="Sun Dec  6 22:45:35 2009">
+<test-database execution-time-sec="0.18" date="Mon Dec  7 23:19:07 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Accumulator" make-required="True" time-sum-sec="0.02"> 
+    <test title="Accumulator" make-required="True" time-sum-sec="0.00"> 
         <application file-name="accumulator.exe" info-request-time="1260135934L"/>
-        <make-procedure success="True" time_sec="0.463974"/>
         <choice-list number="5" same_result="False">
            <choice name="String" result="OK" time_sec="0.00" crc="1490722418"/>
            <choice name="Character" result="OK" time_sec="0.00" crc="-276754526"/>
