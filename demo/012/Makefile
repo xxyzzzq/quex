@@ -20,10 +20,10 @@ boeck_Lexer.cpp boeck_Lexer-core-engine.cpp: boeck.qx
 	quex -i token.qx $< -o boeck::Lexer --codec utf8 --token-prefix TKN_ --token-policy users_token
 
 max_Lexer.cpp max_Lexer-core-engine.cpp: max.qx
-	quex -i token.qx $< -o max::Lexer --codec utf8 --token-prefix MAX_TKN_ --token-policy users_token
+	quex -i token.qx $< -o max::Lexer --icu -b 4 --token-prefix MAX_TKN_ --token-policy users_token
 
 moritz_Lexer.cpp moritz_Lexer-core-engine.cpp: moritz.qx
-	quex -i token.qx $< -o moritz::Lexer --codec utf8 --token-prefix MORITZ_TKN_ --token-policy users_token
+	quex -i token.qx $< -o moritz::Lexer --iconv -b 2 --token-prefix MORITZ_TKN_ --token-policy users_token
 
 clean:
 	rm -rf $(ENGINE)
