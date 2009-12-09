@@ -6,8 +6,16 @@ ENGINE = \
 		moritz_Lexer.cpp             \
 		moritz_Lexer-core-engine.cpp \
 
-story: boeck_Lexer.cpp max_Lexer.cpp moritz_Lexer.cpp
-	g++ -ggdb lexer.cpp $(ENGINE) -o  $@ \
+OBJS = $(ENGINE:.cpp=.o) lexer.o
+
+
+story: $(OBJS)
+	g++ $(OBJS) -o  $@ \
+		-I$(QUEX_PATH) \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+
+%.o: %.cpp $(ENGINE_SOURCES)
+	g++ -c $< -o  $@ \
 		-I$(QUEX_PATH) \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
