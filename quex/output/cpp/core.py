@@ -209,6 +209,7 @@ def write_token_class_declaration():
     txt += LanguageDB["$namespace-close"](namespace)
     return txt
 
+
 def write_mode_class_implementation(Modes):
     LexerClassName              = Setup.analyzer_class_name
     TokenClassName              = Setup.token_class_name
@@ -219,7 +220,7 @@ def write_mode_class_implementation(Modes):
 
     if DerivedClassHeaderFileName != "": txt = "#include<" + DerivedClassHeaderFileName +">\n"
     else:                                txt = "#include\"" + OutputFilestem +"\"\n"
-    
+
     # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
     mode_class_member_functions_txt = mode_classes.do(Modes.values()).replace("$$CLASS$$", LexerClassName)
 

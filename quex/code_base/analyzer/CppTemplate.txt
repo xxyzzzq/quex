@@ -410,7 +410,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#include    <quex/code_base/analyzer/member/token-sending.i>
+/* File     <quex/code_base/analyzer/member/token-receiving.i> is only included 
+ * by the analyzer's engine implementation.                                     */
 #include    <quex/code_base/analyzer/member/token-receiving.i>
 #include    <quex/code_base/analyzer/member/mode-handling.i>
 #include    <quex/code_base/analyzer/member/buffer-access.i>

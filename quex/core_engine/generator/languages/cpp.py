@@ -446,6 +446,10 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     return txt
     
+implementation_headers_txt = """
+#include    <quex/code_base/analyzer/member/token-sending.i>
+"""
+
 def __frame_of_all(Code, Setup):
     LanguageDB = Setup.language_db
     namespace_open  = LanguageDB["$namespace-open"](Setup.analyzer_name_space)
@@ -456,13 +460,14 @@ def __frame_of_all(Code, Setup):
     # "using namespace " + namespace_ref + ";\n"       + \
 
     return "#include \"%s\"\n" % Setup.output_file_stem     + \
+           implementation_headers_txt                       + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            namespace_open + "\n"                            + \
            "#endif\n"                                       + \
            Code                                             + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            namespace_close + "\n"                           + \
-           "#endif\n" 
+           "#endif\n"                                       
 
 def __get_if_in_character_set(ValueList):
     assert type(ValueList) == list
