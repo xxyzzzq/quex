@@ -1,4 +1,5 @@
 from   quex.frs_py.file_in                    import error_msg, \
+                                                     get_include_guard_extension, \
                                                      write_safely_and_close, open_file_or_die, \
                                                      make_safe_identifier
 from   quex.frs_py.string_handling            import blue_print
@@ -48,6 +49,9 @@ def _do(Descr):
                       ["$$FOOTER$$",           Descr.footer.get_code()],
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
+                      ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
+                                                           LanguageDB["$namespace-ref"](Descr.name_space) 
+                                                           + "__" + Descr.class_name)],
                       ["$$TOKEN_CLASS$$",      Descr.class_name],
                       ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
                       ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
