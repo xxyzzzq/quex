@@ -28,6 +28,7 @@
      * files are compiled with a different setting of the macros. The
      * undef of the include guards happens in the following file.           */
 #   include <quex/code_base/include-guard-undef>
+#   include <quex/code_base/analyzer/member/token-sending-undef.i>
 #   undef   __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
 #else
 #   define  __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
@@ -410,8 +411,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-/* File     <quex/code_base/analyzer/member/token-receiving.i> is only included 
- * by the analyzer's engine implementation.                                     */
+#include    <quex/code_base/analyzer/member/token-sending.i>
 #include    <quex/code_base/analyzer/member/token-receiving.i>
 #include    <quex/code_base/analyzer/member/mode-handling.i>
 #include    <quex/code_base/analyzer/member/buffer-access.i>
