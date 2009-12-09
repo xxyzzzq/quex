@@ -7,6 +7,9 @@
 #   undef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
 #endif
 
+#ifdef     __QUEX_INCLUDE_GUARD__UNICODE
+#   undef  __QUEX_INCLUDE_GUARD__UNICODE
+#endif 
 #ifdef     __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 #   undef  __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 #endif 

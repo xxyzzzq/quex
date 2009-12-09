@@ -1,5 +1,5 @@
 from   quex.DEFINITIONS import *
-from   copy import copy
+from   copy import copy, deepcopy
 import sys
 import os
 
@@ -77,12 +77,14 @@ def do(argv):
     if setup.analyzer_name_space == []:
         setup.analyzer_name_space = ["quex"]
 
-            
     # Token classes and derived classes have the freedom not to open a namespace,
     # thus no check 'if namespace == []'.
     setup.token_class_name, setup.token_class_name_space = \
          read_namespaced_name(setup.token_class_name, 
                               "token class (options --token-class, --tc)")
+
+    if setup.token_class_name_space == []:
+        setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
 
     setup.analyzer_derived_class_name, setup.analyzer_derived_class_name_space = \
          read_namespaced_name(setup.analyzer_derived_class_name, 

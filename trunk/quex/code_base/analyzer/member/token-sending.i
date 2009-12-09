@@ -94,7 +94,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     template <typename X0_T> QUEX_INLINE void   
     QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0) 
     {
-        self_send1(ID, X0);
+        //        self_send1(ID, X0);
+        __QUEX_ASSERT_SEND_ENTRY();                  
+        __QUEX_STAMP_LINE_NUMBER(__QUEX_CURRENT_TOKEN_P)   
+        __QUEX_STAMP_COLUMN_NUMBER(__QUEX_CURRENT_TOKEN_P) 
+        (*__QUEX_CURRENT_TOKEN_P).set(ID, X0);
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            
     }
 
     template <typename X0_T, typename X1_T> QUEX_INLINE void   

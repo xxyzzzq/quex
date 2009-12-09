@@ -12,7 +12,8 @@ OBJS = $(ENGINE:.cpp=.o) lexer.o
 story: $(OBJS)
 	g++ $(OBJS) -o  $@ \
 		-I$(QUEX_PATH) \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		`icu-config --ldflags`
 
 %.o: %.cpp $(ENGINE_SOURCES)
 	g++ -c $< -o  $@ \
