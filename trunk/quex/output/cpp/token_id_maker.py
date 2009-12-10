@@ -37,8 +37,8 @@ file_str = \
 // DATE: $$DATE$$
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-#ifndef __INCLUDE_GUARD__QUEX__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
-#define __INCLUDE_GUARD__QUEX__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
+#ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
+#define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 
 #include<cstdio> // for: 'std::sprintf'
 
@@ -55,9 +55,6 @@ $$CONTENT$$
 
 func_str = \
 """
-#ifndef    __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
-#   define __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
-
 QUEX_NAMESPACE_TOKEN_OPEN
 
 inline const char*
@@ -83,7 +80,6 @@ $$TOKEN_ID_CASES$$
 }
 
 QUEX_NAMESPACE_TOKEN_CLOSE
-#endif
 """
 
 def do(setup):
@@ -154,11 +150,14 @@ def do(setup):
                         (token_name, space(token_name), token_name)
 
     file_str = file_str.replace("$$CONTENT$$", func_str)
+    tc_descr = lexer_mode.token_type_definition
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.token_type_definition.get_file_name()],
-                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(setup.output_file_stem)],
+                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(
+                                                                  LanguageDB["$namespace-ref"](tc_descr.name_space) 
+                                                                  + "__" + tc_descr.class_name)],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],
                           ["$$TOKEN_NAMES$$",                 token_names],
                           ["$$TOKEN_PREFIX$$",                setup.token_id_prefix]])
