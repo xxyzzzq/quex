@@ -1,4 +1,4 @@
-<test-database execution-time-sec="203.49" date="Fri Dec 11 15:27:37 2009">
+<test-database execution-time-sec="203.50" date="Fri Dec 11 15:40:55 2009">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" make-required="True" time-sum-sec="7.70"> 
@@ -87,7 +87,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="5.86"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="5.85"> 
             <application file-name="008.sh" info-request-time="1260257312L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.70" crc="1304621319"/>
@@ -119,7 +119,7 @@
                <choice name="fill" result="OK" time_sec="12.16" crc="-1542605786"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="28.91"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="28.92"> 
             <application file-name="010c.sh" info-request-time="1260257796L"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="14.76" crc="-470382527"/>
