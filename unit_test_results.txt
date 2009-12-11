@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Sun Dec  6 22:30:18 2009
+Fri Dec 11 15:24:13 2009
 TEST
 -------------------------------------------------------------------------------
 
@@ -48,8 +48,8 @@ TEST
     2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP
         feature-2078087.sh GOTO ................................[OK]
                            GOTO-2 ..............................[OK]
-                           GOSUB ...............................[OK]
-                           GOSUB-2 .............................[OK]
+                           GOSUB .............................[FAIL]
+                           GOSUB-2 ...........................[FAIL]
     2161098 0.32.1 Range Skipper Line Number Counter
         bug-2161098.sh c_comments ..............................[OK]
                        shell_comments ..........................[OK]
@@ -101,12 +101,12 @@ TEST
  -- prombergerm:
 
     2830346 0.41.2 Multiple Lexers
-        bug-2830346.sh .........................................[OK]
+        bug-2830346.sh .......................................[FAIL]
 
  -- sphericalcow:
 
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh .........................................[OK]
+        bug-1885304.sh .......................................[FAIL]
     1885846 Empty RE in define section
         bug-1885846.sh .........................................[OK]
     1885855 P{ ...} syntax does not work outside of [
@@ -152,7 +152,7 @@ TEST
     1894578 header block not added to -core-engine.cpp file in 0.20.6
         bug-1894578.sh .........................................[OK]
     1895066 0.20.8 #line directive after header contents missing
-        bug-1895066.sh .........................................[OK]
+        bug-1895066.sh .......................................[FAIL]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
         bug-1895500.sh .........................................[OK]
     1898125 invalid argument for --token-offset can crash 0.21.4
@@ -168,8 +168,8 @@ TEST
     1908436 0.23.6 rule precedence reversed for identical patterns
         bug-1908436.sh .........................................[OK]
     1935701 - 0.24.7 buffer handling size mismatch
-        bug-1935701.exe FILE ...................................[OK]
-                        fstream ................................[OK]
+        bug-1935701.exe FILE ..........................[MAKE FAILED]
+                        fstream .......................[MAKE FAILED]
     1936707 0.24.10 --plot flag doesnt seem to work
         bug-1936707.sh .........................................[OK]
     1969629 0.25.4 token list with just TERMINATION treated empty
@@ -228,15 +228,21 @@ TEST
     2163753 0.32.1 Incorrect on_failure behavior
         bug-2163753.sh .........................................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: feature-2078087.sh GOSUB
+Error: feature-2078087.sh GOSUB-2
+Error: bug-2830346.sh 
+Error: bug-1885304.sh 
+Error: bug-1895066.sh 
+Error: bug-1935701.exe FILE
+Error: bug-1935701.exe fstream
 ===============================================================================
 Demo-Applications
-Sun Dec  6 22:32:55 2009
+Fri Dec 11 15:27:37 2009
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -343,14 +349,14 @@ demo/TEST
 
 ===============================================================================
 Miscellaneous Basic Tests
-Sun Dec  6 22:46:03 2009
+Fri Dec 11 15:27:39 2009
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
-        test-exceptions-in-place.sh ............................[OK]
+        test-exceptions-in-place.sh ..........................[FAIL]
  -- Include Guards for C/C++
-        include_guard.py convention ............................[OK]
-                         undefinition ..........................[OK]
+        include_guard.py convention ..........................[FAIL]
+                         undefinition ........................[FAIL]
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ......................[OK]
  -- Propper undefinition of configuration parameters.
@@ -361,15 +367,17 @@ quex/TEST
     __parse_token_id_file
         test-token_id_file-find_ids.py .........................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: test-exceptions-in-place.sh 
+Error: include_guard.py convention
+Error: include_guard.py undefinition
 ===============================================================================
 Check Applications of 'Did you mean'.
-Sun Dec  6 22:33:00 2009
+Fri Dec 11 15:27:42 2009
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -385,7 +393,7 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Sun Dec  6 22:33:06 2009
+Fri Dec 11 15:27:48 2009
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -395,22 +403,23 @@ quex/TEST/event-handling/TEST
         transition-x.exe 1 .....................................[OK]
                          2 .....................................[OK]
                          3 .....................................[OK]
-                         error .................................[OK]
+                         error ...............................[FAIL]
     transition.qx
         transition.exe 1 .......................................[OK]
                        2 .......................................[OK]
                        3 .......................................[OK]
-                       error ...................................[OK]
+                       error .................................[FAIL]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: transition-x.exe error
+Error: transition.exe error
 ===============================================================================
 Include Stack Handling
-Sun Dec  6 22:33:15 2009
+Fri Dec 11 15:27:56 2009
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -449,7 +458,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Sun Dec  6 22:33:22 2009
+Fri Dec 11 15:28:03 2009
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -473,7 +482,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 The 'Reset' Button
-Sun Dec  6 22:33:36 2009
+Fri Dec 11 15:28:16 2009
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -548,12 +557,12 @@ quex/TEST/reset/TEST
 
 ===============================================================================
 Customized Token Class
-Sun Dec  6 22:33:41 2009
+Fri Dec 11 15:28:21 2009
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
         misc.sh empty ..........................................[OK]
-                no-namespace ...................................[OK]
+                no-namespace .................................[FAIL]
                 double-colon ...................................[OK]
                 token ..........................................[OK]
  -- With token policy 'queue'.
@@ -561,15 +570,15 @@ quex/TEST/token-class/TEST
  -- With token policy 'users_token'.
         simple-queue.exe .......................................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: misc.sh no-namespace
 ===============================================================================
 Tests related to token queues
-Sun Dec  6 22:33:54 2009
+Fri Dec 11 15:28:34 2009
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -606,7 +615,7 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Sun Dec  6 22:33:55 2009
+Fri Dec 11 15:28:35 2009
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -631,7 +640,7 @@ quex/code_base/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Sun Dec  6 22:45:35 2009
+Fri Dec 11 15:28:44 2009
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
  -- Accumulator
@@ -704,7 +713,7 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Sun Dec  6 22:34:10 2009
+Fri Dec 11 15:28:51 2009
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -766,7 +775,7 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Sun Dec  6 22:34:17 2009
+Fri Dec 11 15:28:59 2009
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -840,7 +849,7 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Sun Dec  6 22:34:25 2009
+Fri Dec 11 15:29:07 2009
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -914,7 +923,7 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Sun Dec  6 22:34:43 2009
+Fri Dec 11 15:29:22 2009
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -1008,7 +1017,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Sun Dec  6 22:34:51 2009
+Fri Dec 11 15:29:31 2009
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1052,7 +1061,7 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Sun Dec  6 22:36:47 2009
+Fri Dec 11 15:31:27 2009
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1234,7 +1243,7 @@ quex/core_engine/generator/TEST
 
 ===============================================================================
 Regular Expression Parsing
-Sun Dec  6 22:36:50 2009
+Fri Dec 11 15:31:30 2009
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1300,7 +1309,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Sun Dec  6 22:37:07 2009
+Fri Dec 11 15:31:48 2009
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1457,7 +1466,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Sun Dec  6 22:37:07 2009
+Fri Dec 11 15:31:49 2009
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1483,7 +1492,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Sun Dec  6 22:37:19 2009
+Fri Dec 11 15:32:00 2009
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1503,8 +1512,8 @@ quex/input/TEST
 
     Buildt-In Members
         token_type-1.py None ...................................[OK]
-                        One ....................................[OK]
-                        All ....................................[OK]
+                        One ..................................[FAIL]
+                        All ..................................[FAIL]
                         Forbidden ..............................[OK]
                         Twice ..................................[OK]
                         Error ..................................[OK]
@@ -1519,42 +1528,53 @@ quex/input/TEST
                         5 ......................................[OK]
                         6 ......................................[OK]
     Constructor, Copy, Destructor
-        token_type-4.py Constructor ............................[OK]
+        token_type-4.py Constructor ..........................[FAIL]
                         Constructor-1 ..........................[OK]
-                        Constructor-2 ..........................[OK]
-                        Destructor .............................[OK]
-                        Copy ...................................[OK]
+                        Constructor-2 ........................[FAIL]
+                        Destructor ...........................[FAIL]
+                        Copy .................................[FAIL]
     Distinct Members
         token_type-2.py None ...................................[OK]
-                        One ....................................[OK]
-                        Some ...................................[OK]
+                        One ..................................[FAIL]
+                        Some .................................[FAIL]
                         Forbidden ..............................[OK]
                         Error ..................................[OK]
                         Twice ..................................[OK]
     Union Members
         token_type-3.py None ...................................[OK]
-                        One ....................................[OK]
-                        One-2 ..................................[OK]
-                        Some ...................................[OK]
-                        Some-2 .................................[OK]
+                        One ..................................[FAIL]
+                        One-2 ................................[FAIL]
+                        Some .................................[FAIL]
+                        Some-2 ...............................[FAIL]
                         Forbidden ..............................[OK]
                         Error ..................................[OK]
                         Twice ..................................[OK]
                         Twice-2 ................................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: token_type-1.py One
+Error: token_type-1.py All
+Error: token_type-4.py Constructor
+Error: token_type-4.py Constructor-2
+Error: token_type-4.py Destructor
+Error: token_type-4.py Copy
+Error: token_type-2.py One
+Error: token_type-2.py Some
+Error: token_type-3.py One
+Error: token_type-3.py One-2
+Error: token_type-3.py Some
+Error: token_type-3.py Some-2
 ===============================================================================
 Basic Code Writing Functionality
-Sun Dec  6 22:37:21 2009
+Fri Dec 11 15:32:02 2009
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
-        test-token_class.py ....................................[OK]
+        test-token_class.py ..................................[FAIL]
 
  -- Converter:
 
@@ -1572,15 +1592,15 @@ quex/output/cpp/TEST
                           3 ....................................[OK]
                           4 ....................................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: test-token_class.py 
 ===============================================================================
 Testing Statemachine Plots
-Sun Dec  6 22:37:22 2009
+Fri Dec 11 15:32:03 2009
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1606,15 +1626,15 @@ SUMMARY:
 
  Verdict: Fails: Directory:
 
-  [OK]           TEST
+  [FAIL]      7  TEST
   [OK]           demo/TEST
-  [OK]           quex/TEST
+  [FAIL]      3  quex/TEST
   [OK]           quex/TEST/did-you-mean/TEST
-  [OK]           quex/TEST/event-handling/TEST
+  [FAIL]      2  quex/TEST/event-handling/TEST
   [OK]           quex/TEST/include-stack/TEST
   [OK]           quex/TEST/match-precedence/TEST
   [OK]           quex/TEST/reset/TEST
-  [OK]           quex/TEST/token-class/TEST
+  [FAIL]      1  quex/TEST/token-class/TEST
   [OK]           quex/TEST/token-policies/TEST
   [OK]           quex/code_base/TEST
   [OK]           quex/code_base/analyzer/TEST
@@ -1627,13 +1647,14 @@ SUMMARY:
   [OK]           quex/core_engine/regular_expression/TEST
   [OK]           quex/core_engine/state_machine/TEST
   [OK]           quex/frs_py/TEST
-  [OK]           quex/input/TEST
-  [OK]           quex/output/cpp/TEST
+  [FAIL]     12  quex/input/TEST
+  [FAIL]      1  quex/output/cpp/TEST
   [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+     _____     _ _          ____    __             
+    |  ___|_ _(_) |___     |___ \  / /_      __  __
+    | |_ / _` | | / __|      __) || '_ \     \ \/ /
+    |  _| (_| | | \__ \     / __/ | (_) |     >  < 
+    |_|  \__,_|_|_|___/    |_____| \___/     /_/\_\
+                          
 ===============================================================================

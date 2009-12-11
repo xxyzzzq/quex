@@ -44,5 +44,6 @@ main(int argc, char** argv)
 
     cout << "buffer size = " << QUEX_SETTING_BUFFER_SIZE << endl;
 
+    delete qlex;
     return 0;
 }
