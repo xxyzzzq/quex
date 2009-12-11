@@ -498,4 +498,5 @@ Buffer Size = 30
 | [END] number of token = 473
 `------------------------------------------------------------------------------------
 buffer size = 30
+VALGRIND:   All heap blocks were freed -- no leaks are possible
 clean

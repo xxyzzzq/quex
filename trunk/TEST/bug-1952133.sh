@@ -13,7 +13,9 @@ make clean
 make BUFFER_SIZE=$1 >& tmp.txt
 cat tmp.txt | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
 rm tmp.txt
-./lexer error-example.txt 
+valgrind --leak-check=full ./lexer error-example.txt >& tmp.txt
+python ../show-valgrind.py
+rm tmp.txt
 make clean
 
 cd $tmp

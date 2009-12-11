@@ -47,10 +47,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void    
     QUEX_FUNC(enter_mode)(QUEX_TYPE_ANALYZER* me, /* NOT const*/ QUEX_NAME(Mode)* TargetMode) 
     {
-#       ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-        /* NOT const */ QUEX_NAME(Mode)* SourceMode = me->__current_mode_p;
-#       endif
 #       ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+        /* NOT const */ QUEX_NAME(Mode)* SourceMode = me->__current_mode_p;
         SourceMode->on_exit(me, SourceMode);
 #       endif
         QUEX_FUNC(set_mode_brutally)(me, TargetMode);

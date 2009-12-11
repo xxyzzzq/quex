@@ -28,6 +28,14 @@ main(int argc, char** argv)
         //     -- line number and column number
         // cout << "(" << qlex.line_number() << ", " << qlex.column_number() << ")  \t";
         //     -- name of the token
+
+        /* Caveat: Do not use 'Token.text().c_str()'. The content of 'text()' is an 
+         *         array of type QUEX_TYPE_TOKEN which is a multibyte type (if -b 2 or
+         *         -b 3 was passed as command line argument to quex.). Requesting
+         *         '.c_str()' only returns a pointer to the multi-byte sequence but
+         *         not to a UTF8 converted text.                                          
+         *
+         *         If only the text is requested, please use '.utf8_text()'.            */   
         cout << string(Token);
         cout << endl;
 

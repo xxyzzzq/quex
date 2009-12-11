@@ -261,7 +261,13 @@ options:
         Use this, if option ``--iconv`` or ``--icu`` is used and you are in 
         doubt. 
         
-        DEFAULT = ``2``
+        DEFAULT = ``1``
+
+        .. warning:: If a character size different from one byte is used, the 
+                     ``.get_text()`` member of the token class does contain an array
+                     that particular type. This means, that ``.text().c_str()``
+                     does not result in a nicely printable UTF8 string. Use
+                     the member ``.utf8_text()`` instead.
 
 .. cmdoption:: --endian  [little, big, <system>]
         

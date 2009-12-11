@@ -6,34 +6,40 @@
 
 using namespace std;
 
-template <class LexerT, class TokenT>
-void test(const char* Name, LexerT& lexer, QUEX_TYPE_TOKEN_ID TokenID_Termination, TokenT& token)
-{
-    printf("---------------------------------\n");
-    printf(" %s:\n", Name);
-    do {
-        lexer.receive(&token);
-        if( token.type_id() == TKN_OK ) continue;
-        printf("%s\t", (char*)token.type_id_name().c_str());
-        printf("%s\n", (char*)(token.get_text()).c_str());
-    } while( token.type_id() != TokenID_Termination );
-}
 
 int 
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    max::Lexer     max_lex("example.txt");
+    max::Lexer     max_lex("example.txt", "UTF8");
     max::Token     max_token;
-    moritz::Lexer  moritz_lex("example.txt");
+    moritz::Lexer  moritz_lex("example.txt", "UTF8");
     moritz::Token  moritz_token;
     boeck::Lexer   boeck_lex("example.txt");
     boeck::Token   boeck_token;
 
 
-    test("Max",    max_lex,    MAX_TKN_TERMINATION,    max_token);
-    test("Moritz", moritz_lex, MORITZ_TKN_TERMINATION, moritz_token);
-    test("Boeck",  boeck_lex,  TKN_TERMINATION,        boeck_token);
+    /* Each lexer reads one token, since the grammars are similar the lexeme 
+     * is always the same.                                                    */
+    printf("                Max:        Moritz:      Boeck:\n");
+    do {
+        max_lex.receive(&max_token);
+        moritz_lex.receive(&moritz_token);
+        boeck_lex.receive(&boeck_token);
+
+        /* Lexeme is same for all three. */
+#if 0
+        char* lexeme = (char*)max_token.utf8_text().c_str();
+        int   L      = (int)std::strlen(lexeme);
+        printf(lexeme);
+            for(int i=0; i < 10 - L ; ++i) printf(" ");
+            printf("\t");
+        printf("%s   %s   %s\n", 
+               max_token.type_id_name().c_str(), 
+               moritz_token.type_id_name().c_str(), 
+               boeck_token.type_id_name().c_str());
+#endif
+    } while( max_token.type_id() != MAX_TKN_TERMINATION );
 
     return 0;
 }
