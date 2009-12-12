@@ -5,7 +5,7 @@ IN:
 OUT:
 
 class:     'Token'
-namespace: ''quex''
+namespace: ''
 type(token_id)      = size_t
 type(column_number) = size_t
 type(line_number)   = size_t

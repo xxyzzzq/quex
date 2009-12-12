@@ -1,5 +1,3 @@
-#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QToken
-#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QToken
 class QToken {
     QToken();
     QToken(const QToken& That);
@@ -11,4 +9,3 @@ QToken::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
 QToken::QToken(const QToken& That)
 QToken::~QToken()
 QToken::__copy(const QToken& That)
-#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QToken */

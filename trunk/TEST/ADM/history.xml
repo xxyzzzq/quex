@@ -1,4 +1,4 @@
-<history date="Fri Dec 11 15:40:55 2009" element-n="543">
+<history date="Fri Dec 11 23:57:27 2009" element-n="546">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1124,6 +1124,9 @@
         <crc-error time="13:52:15" application="bug-1952133.sh" choice="2502" database-crc="385448601" real-crc="1939206162"/>
     </day>
     <day year="2009" month="12" day="11">
-        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="14:24:13"/>
+        <crc-error time="22:45:21" application="feature-2078087.sh" choice="GOSUB" database-crc="-1351758578" real-crc="389993657"/>
+        <crc-error time="22:46:13" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-1916716939" real-crc="2077073256"/>
+        <crc-error time="22:47:09" application="bug-1895066.sh" choice="" database-crc="1910298297" real-crc="-300999480"/>
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="22:57:27"/>
     </day>
 </history>
