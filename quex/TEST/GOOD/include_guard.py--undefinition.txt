@@ -1,5 +1,4 @@
 Following include guards are not undefined in /home/fschaef/prj/quex/trunk/quex/code_base/include-guard-undef:
-__QUEX_INCLUDE_GUARD__UNICODE                                             
 __QUEX_INCLUDE_GUARD__ASSERTS                                             
 __QUEX_INCLUDE_GUARD__DEFINITIONS                                         
 __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF                    
@@ -11,7 +10,7 @@ __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_H
 __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__BORLAND_INTTYPES_H              
 __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_INTTYPES_H                  
 __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H                    
-__QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_CLASS$$                   
+__QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$       
 __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$    
 __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
 Following are undefined but nowhere defined:

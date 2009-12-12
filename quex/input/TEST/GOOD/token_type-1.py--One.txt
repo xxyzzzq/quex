@@ -5,7 +5,7 @@ IN:
 OUT:
 
 class:     'Token'
-namespace: ''quex''
+namespace: ''
 type(token_id)      = uint8_t
 type(column_number) = size_t
 type(line_number)   = size_t
@@ -21,7 +21,7 @@ IN:
 OUT:
 
 class:     'Token'
-namespace: ''quex''
+namespace: ''
 type(token_id)      = size_t
 type(column_number) = uint8_t
 type(line_number)   = size_t
@@ -37,7 +37,7 @@ IN:
 OUT:
 
 class:     'Token'
-namespace: ''quex''
+namespace: ''
 type(token_id)      = size_t
 type(column_number) = size_t
 type(line_number)   = uint8_t
