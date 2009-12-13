@@ -16,6 +16,13 @@ esac
 
 cd ../003  
 make clean >& /dev/null
-make CONVERTER=icu lexer $args >& /dev/null
+make CONVERTER=icu lexer $args >& tmp.txt
+cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ && ! /deprecated since quex/'
+rm tmp.txt
+
+# valgrind ./lexer >& tmp.txt
+# python ../TEST/show-valgrind.py
 ./lexer
+# echo "ICU Version 4.2 causes memory leaks."
+
 make clean >& /dev/null

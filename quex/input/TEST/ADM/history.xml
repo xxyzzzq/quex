@@ -1,4 +1,4 @@
-<history date="Sat Dec 12 00:05:23 2009" element-n="275">
+<history date="Sun Dec 13 08:47:16 2009" element-n="277">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -793,5 +793,11 @@
         <crc-error time="22:27:17" application="token_type-3.py" choice="Some" database-crc="-233722338" real-crc="-538470930"/>
         <crc-error time="22:27:17" application="token_type-3.py" choice="Some-2" database-crc="-878798520" real-crc="912288895"/>
         <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:05:23"/>
+    </day>
+    <day year="2009" month="12" day="12">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:30:34"/>
+    </day>
+    <day year="2009" month="12" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:47:16"/>
     </day>
 </history>
