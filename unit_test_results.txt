@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Fri Dec 11 15:24:13 2009
+Sun Dec 13 21:40:57 2009
 TEST
 -------------------------------------------------------------------------------
 
@@ -48,8 +48,8 @@ TEST
     2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP
         feature-2078087.sh GOTO ................................[OK]
                            GOTO-2 ..............................[OK]
-                           GOSUB .............................[FAIL]
-                           GOSUB-2 ...........................[FAIL]
+                           GOSUB ...............................[OK]
+                           GOSUB-2 .............................[OK]
     2161098 0.32.1 Range Skipper Line Number Counter
         bug-2161098.sh c_comments ..............................[OK]
                        shell_comments ..........................[OK]
@@ -98,15 +98,10 @@ TEST
     2894648 0.46.2 Backslashed . is unknown to quex
         bug-2894648.sh .........................................[OK]
 
- -- prombergerm:
-
-    2830346 0.41.2 Multiple Lexers
-        bug-2830346.sh .......................................[FAIL]
-
  -- sphericalcow:
 
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh .......................................[FAIL]
+        bug-1885304.sh .........................................[OK]
     1885846 Empty RE in define section
         bug-1885846.sh .........................................[OK]
     1885855 P{ ...} syntax does not work outside of [
@@ -152,7 +147,7 @@ TEST
     1894578 header block not added to -core-engine.cpp file in 0.20.6
         bug-1894578.sh .........................................[OK]
     1895066 0.20.8 #line directive after header contents missing
-        bug-1895066.sh .......................................[FAIL]
+        bug-1895066.sh .........................................[OK]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
         bug-1895500.sh .........................................[OK]
     1898125 invalid argument for --token-offset can crash 0.21.4
@@ -168,8 +163,8 @@ TEST
     1908436 0.23.6 rule precedence reversed for identical patterns
         bug-1908436.sh .........................................[OK]
     1935701 - 0.24.7 buffer handling size mismatch
-        bug-1935701.exe FILE ..........................[MAKE FAILED]
-                        fstream .......................[MAKE FAILED]
+        bug-1935701.exe FILE ...................................[OK]
+                        fstream ................................[OK]
     1936707 0.24.10 --plot flag doesnt seem to work
         bug-1936707.sh .........................................[OK]
     1969629 0.25.4 token list with just TERMINATION treated empty
@@ -228,50 +223,44 @@ TEST
     2163753 0.32.1 Incorrect on_failure behavior
         bug-2163753.sh .........................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: feature-2078087.sh GOSUB
-Error: feature-2078087.sh GOSUB-2
-Error: bug-2830346.sh 
-Error: bug-1885304.sh 
-Error: bug-1895066.sh 
-Error: bug-1935701.exe FILE
-Error: bug-1935701.exe fstream
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Demo-Applications
-Fri Dec 11 15:27:37 2009
+Sun Dec 13 21:57:18 2009
 demo/TEST
 -------------------------------------------------------------------------------
 
  -- demo/000:
 
     Single Mode Example
-        000.sh NDEBUG ..........................................[OK]
-               DEBUG ...........................................[OK]
+        000.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
 
  -- demo/001:
 
     Multiple Modes, Mode Transitions
-        001.sh NDEBUG ..........................................[OK]
-               DEBUG ...........................................[OK]
+        001.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
 
  -- demo/002:
 
     Indentation Based Scopes
-        002.sh NDEBUG ..........................................[OK]
-               DEBUG ...........................................[OK]
+        002.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
 
  -- demo/003:
 
     Unicode Based Lexical Analyzis (Using GNU's Lib IConv)
-        003.sh BPC=2 ...........................................[OK]
-               BPC=2_NDEBUG ....................................[OK]
-               BPC=4 ...........................................[OK]
-               BPC=4_NDEBUG ....................................[OK]
-               BPC=wchar_t .....................................[OK]
+        003.sh BPC=2 .........................................[FAIL]
+               BPC=2_NDEBUG ..................................[FAIL]
+               BPC=4 .........................................[FAIL]
+               BPC=4_NDEBUG ..................................[FAIL]
+               BPC=wchar_t ...................................[FAIL]
     Unicode Based Lexical Analyzis (Using IBM's ICU Library)
         003-icu.sh BPC=2 .......................................[OK]
                    BPC=2_NDEBUG ................................[OK]
@@ -287,22 +276,22 @@ demo/TEST
  -- demo/005:
 
     Including Files
-        005.sh 1 ...............................................[OK]
-               1_NDEBUG ........................................[OK]
-               2 ...............................................[OK]
-               2_NDEBUG ........................................[OK]
+        005.sh 1 .............................................[FAIL]
+               1_NDEBUG ......................................[FAIL]
+               2 .............................................[FAIL]
+               2_NDEBUG ......................................[FAIL]
 
  -- demo/006:
 
     Pseudo Ambiguous Post Conditions
-        006.sh NDEBUG ..........................................[OK]
-               DEBUG ...........................................[OK]
+        006.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
 
  -- demo/007:
 
     Miscellaneous Features
-        007.sh NDEBUG ..........................................[OK]
-               DEBUG ...........................................[OK]
+        007.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
 
  -- demo/008:
 
@@ -319,44 +308,81 @@ demo/TEST
  -- demo/010:
 
     Direct Buffer Access & Character Set Conversion
-        010c.sh copy-conversion ................................[OK]
-                copy-conversion-direct .........................[OK]
-                fill-conversion-direct .........................[OK]
+        010c.sh copy-conversion ..............................[FAIL]
+                copy-conversion-direct .......................[FAIL]
+                fill-conversion-direct .......................[FAIL]
     Direct Buffer Access (Arbitrary Chunked)
-        010.sh copy ............................................[OK]
-               fill ............................................[OK]
+        010.sh copy ..........................................[FAIL]
+               fill ..........................................[FAIL]
     Direct Buffer Access (Syntactically Chunked)
-        010b.sh copy ...........................................[OK]
-                fill ...........................................[OK]
+        010b.sh copy .........................................[FAIL]
+                fill .........................................[FAIL]
 
  -- demo/011:
 
     Engine Encoding (Example ISO8859-7)
-        011.sh iso8859-7 .......................................[OK]
-               utf8 ............................................[OK]
+        011.sh iso8859-7 .....................................[FAIL]
+               utf8 ..........................................[FAIL]
 
  -- demo/011b:
 
     Engine Encoding UTF16
-        011b.sh LE .............................................[OK]
-                BE .............................................[OK]
+        011b.sh LE ...........................................[FAIL]
+                BE ...........................................[FAIL]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ -- demo/012:
 
+    Single Application/Multiple Lexical Analyzers
+        012.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
+
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: 000.sh NDEBUG
+Error: 000.sh DEBUG
+Error: 001.sh NDEBUG
+Error: 001.sh DEBUG
+Error: 002.sh NDEBUG
+Error: 002.sh DEBUG
+Error: 003.sh BPC=2
+Error: 003.sh BPC=2_NDEBUG
+Error: 003.sh BPC=4
+Error: 003.sh BPC=4_NDEBUG
+Error: 003.sh BPC=wchar_t
+Error: 005.sh 1
+Error: 005.sh 1_NDEBUG
+Error: 005.sh 2
+Error: 005.sh 2_NDEBUG
+Error: 006.sh NDEBUG
+Error: 006.sh DEBUG
+Error: 007.sh NDEBUG
+Error: 007.sh DEBUG
+Error: 010c.sh copy-conversion
+Error: 010c.sh copy-conversion-direct
+Error: 010c.sh fill-conversion-direct
+Error: 010.sh copy
+Error: 010.sh fill
+Error: 010b.sh copy
+Error: 010b.sh fill
+Error: 011.sh iso8859-7
+Error: 011.sh utf8
+Error: 011b.sh LE
+Error: 011b.sh BE
+Error: 012.sh NDEBUG
+Error: 012.sh DEBUG
 ===============================================================================
 Miscellaneous Basic Tests
-Fri Dec 11 15:27:39 2009
+Sun Dec 13 21:45:03 2009
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
-        test-exceptions-in-place.sh ..........................[FAIL]
+        test-exceptions-in-place.sh ............................[OK]
  -- Include Guards for C/C++
-        include_guard.py convention ..........................[FAIL]
-                         undefinition ........................[FAIL]
+        include_guard.py convention ............................[OK]
+                         undefinition ..........................[OK]
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ......................[OK]
  -- Propper undefinition of configuration parameters.
@@ -367,17 +393,15 @@ quex/TEST
     __parse_token_id_file
         test-token_id_file-find_ids.py .........................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: test-exceptions-in-place.sh 
-Error: include_guard.py convention
-Error: include_guard.py undefinition
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Check Applications of 'Did you mean'.
-Fri Dec 11 15:27:42 2009
+Sun Dec 13 21:45:07 2009
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -393,7 +417,7 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Fri Dec 11 15:27:48 2009
+Sun Dec 13 21:45:07 2009
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -403,23 +427,22 @@ quex/TEST/event-handling/TEST
         transition-x.exe 1 .....................................[OK]
                          2 .....................................[OK]
                          3 .....................................[OK]
-                         error ...............................[FAIL]
+                         error .................................[OK]
     transition.qx
         transition.exe 1 .......................................[OK]
                        2 .......................................[OK]
                        3 .......................................[OK]
-                       error .................................[FAIL]
+                       error ...................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: transition-x.exe error
-Error: transition.exe error
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Include Stack Handling
-Fri Dec 11 15:27:56 2009
+Sun Dec 13 21:45:07 2009
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -458,7 +481,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Fri Dec 11 15:28:03 2009
+Sun Dec 13 21:45:14 2009
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -482,7 +505,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 The 'Reset' Button
-Fri Dec 11 15:28:16 2009
+Sun Dec 13 21:45:14 2009
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -557,12 +580,12 @@ quex/TEST/reset/TEST
 
 ===============================================================================
 Customized Token Class
-Fri Dec 11 15:28:21 2009
+Sun Dec 13 21:45:15 2009
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
         misc.sh empty ..........................................[OK]
-                no-namespace .................................[FAIL]
+                no-namespace ...................................[OK]
                 double-colon ...................................[OK]
                 token ..........................................[OK]
  -- With token policy 'queue'.
@@ -570,15 +593,15 @@ quex/TEST/token-class/TEST
  -- With token policy 'users_token'.
         simple-queue.exe .......................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: misc.sh no-namespace
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Tests related to token queues
-Fri Dec 11 15:28:34 2009
+Sun Dec 13 21:45:15 2009
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -615,7 +638,7 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Fri Dec 11 15:28:35 2009
+Sun Dec 13 21:45:15 2009
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -640,7 +663,7 @@ quex/code_base/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Fri Dec 11 15:28:44 2009
+Sun Dec 13 21:45:16 2009
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
  -- Accumulator
@@ -713,7 +736,7 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Fri Dec 11 15:28:51 2009
+Sun Dec 13 21:45:18 2009
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -775,7 +798,7 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Fri Dec 11 15:28:59 2009
+Sun Dec 13 21:45:19 2009
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -849,7 +872,7 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Fri Dec 11 15:29:07 2009
+Sun Dec 13 21:45:20 2009
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -923,7 +946,7 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Fri Dec 11 15:29:22 2009
+Sun Dec 13 21:45:26 2009
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -1017,7 +1040,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Fri Dec 11 15:29:31 2009
+Sun Dec 13 21:45:35 2009
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1061,7 +1084,7 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Fri Dec 11 15:31:27 2009
+Sun Dec 13 21:47:46 2009
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1243,7 +1266,7 @@ quex/core_engine/generator/TEST
 
 ===============================================================================
 Regular Expression Parsing
-Fri Dec 11 15:31:30 2009
+Sun Dec 13 21:47:50 2009
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1309,7 +1332,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Fri Dec 11 15:31:48 2009
+Sun Dec 13 21:48:09 2009
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1466,7 +1489,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Fri Dec 11 15:31:49 2009
+Sun Dec 13 21:48:09 2009
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1492,7 +1515,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Fri Dec 11 15:32:00 2009
+Sun Dec 13 21:48:23 2009
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1512,8 +1535,8 @@ quex/input/TEST
 
     Buildt-In Members
         token_type-1.py None ...................................[OK]
-                        One ..................................[FAIL]
-                        All ..................................[FAIL]
+                        One ....................................[OK]
+                        All ....................................[OK]
                         Forbidden ..............................[OK]
                         Twice ..................................[OK]
                         Error ..................................[OK]
@@ -1528,53 +1551,42 @@ quex/input/TEST
                         5 ......................................[OK]
                         6 ......................................[OK]
     Constructor, Copy, Destructor
-        token_type-4.py Constructor ..........................[FAIL]
+        token_type-4.py Constructor ............................[OK]
                         Constructor-1 ..........................[OK]
-                        Constructor-2 ........................[FAIL]
-                        Destructor ...........................[FAIL]
-                        Copy .................................[FAIL]
+                        Constructor-2 ..........................[OK]
+                        Destructor .............................[OK]
+                        Copy ...................................[OK]
     Distinct Members
         token_type-2.py None ...................................[OK]
-                        One ..................................[FAIL]
-                        Some .................................[FAIL]
+                        One ....................................[OK]
+                        Some ...................................[OK]
                         Forbidden ..............................[OK]
                         Error ..................................[OK]
                         Twice ..................................[OK]
     Union Members
         token_type-3.py None ...................................[OK]
-                        One ..................................[FAIL]
-                        One-2 ................................[FAIL]
-                        Some .................................[FAIL]
-                        Some-2 ...............................[FAIL]
+                        One ....................................[OK]
+                        One-2 ..................................[OK]
+                        Some ...................................[OK]
+                        Some-2 .................................[OK]
                         Forbidden ..............................[OK]
                         Error ..................................[OK]
                         Twice ..................................[OK]
                         Twice-2 ................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: token_type-1.py One
-Error: token_type-1.py All
-Error: token_type-4.py Constructor
-Error: token_type-4.py Constructor-2
-Error: token_type-4.py Destructor
-Error: token_type-4.py Copy
-Error: token_type-2.py One
-Error: token_type-2.py Some
-Error: token_type-3.py One
-Error: token_type-3.py One-2
-Error: token_type-3.py Some
-Error: token_type-3.py Some-2
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Basic Code Writing Functionality
-Fri Dec 11 15:32:02 2009
+Sun Dec 13 21:48:26 2009
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
-        test-token_class.py ..................................[FAIL]
+        test-token_class.py ....................................[OK]
 
  -- Converter:
 
@@ -1592,15 +1604,15 @@ quex/output/cpp/TEST
                           3 ....................................[OK]
                           4 ....................................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: test-token_class.py 
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Testing Statemachine Plots
-Fri Dec 11 15:32:03 2009
+Sun Dec 13 21:48:27 2009
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1626,15 +1638,15 @@ SUMMARY:
 
  Verdict: Fails: Directory:
 
-  [FAIL]      7  TEST
-  [OK]           demo/TEST
-  [FAIL]      3  quex/TEST
+  [OK]           TEST
+  [FAIL]     32  demo/TEST
+  [OK]           quex/TEST
   [OK]           quex/TEST/did-you-mean/TEST
-  [FAIL]      2  quex/TEST/event-handling/TEST
+  [OK]           quex/TEST/event-handling/TEST
   [OK]           quex/TEST/include-stack/TEST
   [OK]           quex/TEST/match-precedence/TEST
   [OK]           quex/TEST/reset/TEST
-  [FAIL]      1  quex/TEST/token-class/TEST
+  [OK]           quex/TEST/token-class/TEST
   [OK]           quex/TEST/token-policies/TEST
   [OK]           quex/code_base/TEST
   [OK]           quex/code_base/analyzer/TEST
@@ -1647,14 +1659,14 @@ SUMMARY:
   [OK]           quex/core_engine/regular_expression/TEST
   [OK]           quex/core_engine/state_machine/TEST
   [OK]           quex/frs_py/TEST
-  [FAIL]     12  quex/input/TEST
-  [FAIL]      1  quex/output/cpp/TEST
+  [OK]           quex/input/TEST
+  [OK]           quex/output/cpp/TEST
   [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-     _____     _ _          ____    __             
-    |  ___|_ _(_) |___     |___ \  / /_      __  __
-    | |_ / _` | | / __|      __) || '_ \     \ \/ /
-    |  _| (_| | | \__ \     / __/ | (_) |     >  < 
-    |_|  \__,_|_|_|___/    |_____| \___/     /_/\_\
+     _____     _ _          _____  ____            
+    |  ___|_ _(_) |___     |___ / |___ \     __  __
+    | |_ / _` | | / __|      |_ \   __) |    \ \/ /
+    |  _| (_| | | \__ \     ___) | / __/      >  < 
+    |_|  \__,_|_|_|___/    |____/ |_____|    /_/\_\
                           
 ===============================================================================
