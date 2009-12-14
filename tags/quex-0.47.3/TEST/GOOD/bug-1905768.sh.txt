@@ -1,0 +1,6 @@
+Simple_MODULE_analyzer_function(QUEX_TYPE_ANALYZER* me) 
+    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;
+    if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
+Simple_U1_STRING_analyzer_function(QUEX_TYPE_ANALYZER* me) 
+    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;
+    if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
