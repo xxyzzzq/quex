@@ -1,13 +1,17 @@
 @ECHO OFF
-REM PURPOSE: Calle quex-exe.py like a normal application.
+REM PURPOSE: Call quex-exe.py like a normal application.
 REM
 REM Pass up to 30 arguments to quex. Since the very sophisticated .bat files of 
 REM Microsoft (TM) do no support more than ten direct accesses to command line arguments,
 REM it is necessary to shift. See below.
 REM
-REM (C) 2008 Frank-Rene Schaefer
-REM     Contribution of NT-Autodetection made by tjbramer@users.sourceforge.net.
+REM (C) 2008, 2009 Frank-Rene Schaefer
 REM
+REM     Contributions:
+REM
+REM         NT-Autodetection:   tjbramer@users.sourceforge.net.
+REM         On Error Return 1:  Anonymous (bug-id: 2913712)
+REM      
 
 REM -- Note: modifications added to allow automatic setting of the QUEX_PATH 
 REM    environment variable under NT variants.
@@ -76,6 +80,7 @@ SET P30=%1
 SHIFT
 
 python "%QUEX_PATH%\quex-exe.py" %P1% %P2% %P3% %P4% %P5% %P6% %P7% %P8% %P9% %P10% %P11% %P12% %P13% %P14% %P15% %P16% %P17% %P18% %P19% %P20% %P21% %P22% %P23% %P24% %P25% %P26% %P27% %P28% %P29% %P30%
+IF NOT ERRORLEVEL 0 EXIT 1
 
 goto end_proc
 :os_winnt
@@ -107,6 +112,7 @@ echo of QUEX_PATH for base directory instead (%QUEX_PATH%).
 
 REM -- The NT cmd.exe supports the %* var, which expands to all arguments except %0
 python "%QUEX_PATH%\quex-exe.py" %*
+IF NOT ERRORLEVEL 0 EXIT 1
 goto end_proc
 
 REM -- Reexecute this batch file with an instance of cmd.exe that has command extensions enabled.
