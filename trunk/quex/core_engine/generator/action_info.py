@@ -1,3 +1,4 @@
+import os
 from quex.frs_py.file_in import is_identifier_start, \
                                 is_identifier_continue, \
                                 open_file_or_die, \
@@ -74,7 +75,7 @@ class UserCodeFragment(CodeFragment):
     def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
         if Code.strip() == "": return Code
 
-        txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
+        txt  = '\n#line %i "%s"\n' % (self.line_n, os.path.normpath(self.filename))
         txt += Code
         if ReturnToSourceF:
             if txt[-1] != "\n": txt = txt + "\n"
@@ -101,7 +102,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
                 if line.find(info[0]) == -1: continue
                 line = info[1]
                 line = line.replace("NUMBER", repr(int(line_n + 1)))
-                line = line.replace("FILENAME", filename)
+                line = line.replace("FILENAME", os.path.normpath(filename))
                 line = line + "\n"
         new_content += line
 
