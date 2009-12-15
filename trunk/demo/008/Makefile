@@ -66,6 +66,7 @@ $(PARSER_NAME).tab.cpp: $(PARSER_FILE)
 clean:	
 	touch $(LEXER_FILE)
 	rm -f $(LEXER_SOURCES)
+	rm -f $(LEXER_NAME)-token
 	rm -f $(PARSER_SOURCES)
 	rm -f *.o
 	rm -f $(APPLICATION)
