@@ -58,4 +58,5 @@ clean:
 	rm -f $(WSOURCES)
 	rm -f *.o
 	rm -f lexer stdinlexer wlexer
+	rm -f lexer-token stdinlexer-token wlexer-token
 	rm -f *.bak

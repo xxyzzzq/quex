@@ -55,6 +55,7 @@ clean:
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o
+	rm -f $(ENGINE_NAME)-token
 	rm -f $(ENGINE_NAME)-core-engine.o
 	rm -f lexer.o
 	rm -f lexer
