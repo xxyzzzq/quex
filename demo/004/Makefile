@@ -128,6 +128,7 @@ lex.yy.c: c.lex
 clean:	
 	rm -f lexer lexer-lc lexer-flex
 	rm -f lexer-token lexer-lc-token lexer-flex-token
+	rm -f c_lexer-token
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
 	rm -f lexer

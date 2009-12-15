@@ -54,6 +54,7 @@ utf16-lexer: utf16-lexer.cpp
 
 clean:
 	rm -f ISO8859_7_Lex*
+	rm -f ISO8859_7_Lex-converter-iso8859_7
 	rm -f iso8859-7-lexer
 	rm -f UTF8Lex*
 	rm -f utf8-lexer

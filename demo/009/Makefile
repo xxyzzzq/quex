@@ -59,4 +59,5 @@ clean:
 	rm -f *.o
 	rm -f lexer stdinlexer wlexer
 	rm -f lexer-token stdinlexer-token wlexer-token
+	rm -f tiny_lexer-token tiny_wlexer-token
 	rm -f *.bak
