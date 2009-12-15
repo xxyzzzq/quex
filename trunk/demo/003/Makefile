@@ -25,17 +25,30 @@ ifndef BYTES_PER_CHARACTER
     BYTES_PER_CHARACTER = 2
 endif
 
+# (*) COMPILER SETTINGS ________________________________________________________
+#     (change COMPILER to whatever you use as compiler on the command line,
+#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = g++
+
+CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
+	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+	 -D___QUEX_UNIT_TESTING___ -ggdb \
+	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+
+LD = $(COMPILER) $(LIB_CONV) 
+
 # (*) Determining the Converter Lib (IConv or ICU) ____________________________
 #
 # Some compiler distributions have iconv in a separate lib:
-#    -- Intel's icpc
-#    -- MS's cl
-#    -- Digital Mars dmc
-ifneq (,$(findstring $(COMPILER),icpc cl dmc))
-    # (Send me an email, if your compiler is not in the list.)
+#    -- Intel's icpc (tm)
+#    -- MS's cl (tm)
+#    -- Digital Mars dmc (tm)
+#    -- g++ on apple (tm)
+ifneq (,$(or $(findstring apple, $(shell $(COMPILER) --version)), \
+             $(findstring $(COMPILER),icpc cl dmc)))
 	LIBICONV=-liconv
 else
-	LIBICONV=#
+    LIBICONV=#
 endif
 
 CONVERTER=undefined # (overidden by command line specification)
@@ -63,18 +76,6 @@ OBJS        = $(APPLICATION).o \
 			  $(ENGINE_NAME).o \
 			  $(ENGINE_NAME)-core-engine.o 
 APPLICATION = lexer
-
-# (*) COMPILER SETTINGS ________________________________________________________
-#     (change COMPILER to whatever you use as compiler on the command line,
-#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
-
-CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-	 -D___QUEX_UNIT_TESTING___ -ggdb \
-	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
-
-LD = $(COMPILER) $(LIB_CONV) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
