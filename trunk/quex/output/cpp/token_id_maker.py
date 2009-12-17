@@ -6,7 +6,7 @@ import re
 
 from quex.GetPot import GetPot
 
-from quex.frs_py.file_in  import open_file_or_die, \
+from quex.frs_py.file_in  import get_file_content_or_die, \
                                  write_safely_and_close, \
                                  delete_comment, \
                                  extract_identifiers_with_specific_prefix, \
@@ -182,9 +182,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
     done_list    = []
     unfound_list = []
     while work_list != []:
-        fh = open_file_or_die(work_list.pop(), Mode="rb")
-        content = fh.read()
-        fh.close()
+        content = get_file_content_or_die(work_list.pop(), Mode="rb")
 
         # delete any comment inside the file
         for opener, closer in CommentDelimiterList:
