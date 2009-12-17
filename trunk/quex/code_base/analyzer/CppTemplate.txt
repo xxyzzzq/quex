@@ -155,10 +155,8 @@ public:
     // -- token stream: read next token
     void                  get_token() 
     { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-    void  get_token(QUEX_TYPE_TOKEN*   result_p)
-    { QUEX_ERROR_EXIT("get_token(Token*) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-    void  get_token(QUEX_TYPE_TOKEN**   result_p)
-    { QUEX_ERROR_EXIT("get_token(Token**) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+    void                  get_token(QUEX_TYPE_TOKEN*   result_p)  { get_token(); }
+    void                  get_token(QUEX_TYPE_TOKEN**   result_p) { get_token(); }
 
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     void                 receive(QUEX_TYPE_TOKEN*   result_p);
@@ -215,28 +213,28 @@ public:
 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    int  line_number() const          { return line_number_at_begin(); }
-    int  line_number_at_begin() const { return counter.base._line_number_at_begin; }
-    int  line_number_at_end() const   { return counter.base._line_number_at_end; }
+    int         line_number() const          { return line_number_at_begin(); }
+    int         line_number_at_begin() const { return counter.base._line_number_at_begin; }
+    int         line_number_at_end() const   { return counter.base._line_number_at_end; }
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    int  column_number() const          { return column_number_at_begin(); }
-    int  column_number_at_begin() const { return counter.base._column_number_at_begin; }
-    int  column_number_at_end() const   { return counter.base._column_number_at_end; }
+    int         column_number() const          { return column_number_at_begin(); }
+    int         column_number_at_begin() const { return counter.base._column_number_at_begin; }
+    int         column_number_at_end() const   { return counter.base._column_number_at_end; }
 #   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    int  indentation()                    { return counter._indentation; }
-    void disable_next_indentation_event() { counter._indentation_event_enabled_f = false; }
+#   ifdef       __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+    int         indentation()                    { return counter._indentation; }
+    void        disable_next_indentation_event() { counter._indentation_event_enabled_f = false; }
 #   endif
 
     // (*) Version information
     const char* version() const; // created by quex for version/date information
 
     // (*) Tell/Seek/Move on basis of character index
-    void    move_forward(const size_t);
-    void    move_backward(const size_t);
-    size_t  tell();
-    void    seek(const size_t);
+    void        move_forward(const size_t);
+    void        move_backward(const size_t);
+    size_t      tell();
+    void        seek(const size_t);
 
 public:
     template <class InputHandleT> void reset(InputHandleT*   input_handle, 
@@ -297,117 +295,9 @@ $$CLASS_BODY_EXTENSION$$
 
 };
 
-QUEX_INLINE void 
-QUEX_FUNC(set_mode_brutally_by_id)(QUEX_TYPE_ANALYZER*  me, int ModeID);
-
-TEMPLATE_IN(InputHandleT) void
-QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
-                            InputHandleT*          input_handle, 
-                            const char*            CharacterEncodingName,
-                            bool                   ByteOrderReversionF,
-                            QUEX_TYPE_CHARACTER*   BufferMemory,    
-                            size_t                 BufferMemorySize)
-{
-$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
-
-    QUEX_NAME(AnalyzerData_construct)((QUEX_NAME(AnalyzerData)*)me,
-                                      input_handle,
-                                      BufferMemory, QUEX_SETTING_BUFFER_SIZE,
-                                      CharacterEncodingName, 
-                                      QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
-                                      ByteOrderReversionF);
-
-    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    QUEX_FUNC(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
-
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
-/* START: User's constructor extensions _______________________________________*/
-$$CONSTRUCTOR_EXTENSTION$$
-/* END: _______________________________________________________________________*/
-#undef self
-}
-
-
-#ifdef QUEX_OPTION_INCLUDE_STACK
-
-TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
-QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
-                        QUEX_TYPE_CHARACTER*  InputName, 
-                        InputHandleT**        input_handle)
-{
-#   define self  (*me)
-    QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
-
-    /* Use placement 'new' for explicit call of constructor */
-    new ((void*)memento) QUEX_NAME(Memento);
-
-
-    memento->base._parent_memento                  = self._parent_memento;
-    memento->base.buffer                           = self.buffer;
-    memento->base.__current_mode_p                 = self.__current_mode_p; 
-    memento->base.current_analyzer_function        = self.current_analyzer_function;
-#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
-       || defined(QUEX_OPTION_ASSERTS)
-    memento->base.DEBUG_analyzer_function_at_entry = self.DEBUG_analyzer_function_at_entry;
-#   endif
-    memento->base.counter                          = self.counter;
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    memento->base.accumulator                      = self.accumulator;
-#   endif
-    memento->base.__file_handle_allocated_by_constructor = self.__file_handle_allocated_by_constructor;
-
-    /* Deriberately not subject to include handling:
-     *    -- Mode stack.
-     *    -- Token and token queues.
-     *    -- Post categorizer.                                                 */
-
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
-#   endif
-
-/* START: User's memento 'pack' _______________________________________________*/
-$$MEMENTO_EXTENSIONS_PACK$$
-/* END: _______________________________________________________________________*/
-
-    return memento;
-#   undef self
-}
-
-QUEX_INLINE void
-QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
-                          QUEX_NAME(Memento)*  memento)
-{
-#   define self  (*me)
-    self._parent_memento                  = memento->base._parent_memento;
-    self.buffer                           = memento->base.buffer;
-    self.__current_mode_p                 = memento->base.__current_mode_p; 
-    self.current_analyzer_function        = memento->base.current_analyzer_function;
-#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
-       || defined(QUEX_OPTION_ASSERTS)
-    self.DEBUG_analyzer_function_at_entry = memento->base.DEBUG_analyzer_function_at_entry;
-#   endif
-    self.counter                          = memento->base.counter;
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    self.accumulator                      = memento->base.accumulator;
-#   endif
-    self.__file_handle_allocated_by_constructor = memento->base.__file_handle_allocated_by_constructor;
-
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
-#   endif
-
-/* START: User's memento 'unpack' _____________________________________________*/
-$$MEMENTO_EXTENSIONS_UNPACK$$
-/* END: _______________________________________________________________________*/
-    
-    /* Counterpart to placement new: Explicit destructor call */
-    memento->~QUEX_NAME(Memento_tag)();
-    QUEX_NAME(MemoryManager_Memento_free)(memento);
-#   undef self
-}
-#endif /* QUEX_OPTION_INCLUDE_STACK */
-
 QUEX_NAMESPACE_MAIN_CLOSE
+
+$$CLASS_FUNCTIONS$$
 
 #include <quex/code_base/temporary_macros_off>
 
