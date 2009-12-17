@@ -376,10 +376,10 @@ def read_until_line_contains(in_fh, LineContent):
 
     return collector
 
-def get_plain_file_content(FileName):
-    fh = open_file_or_die(FileName)
-    txt = ""
-    for line in fh.readlines(): txt += line
+def get_file_content_or_die(FileName, Mode="rb"):
+    fh = open_file_or_die(FileName, Mode)
+    txt = fh.read()
+    fh.close()
     return txt
 
 def get_current_line_info_number(fh):

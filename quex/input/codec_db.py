@@ -44,6 +44,7 @@ def get_codec_list_db():
             print "Error in line:\n%s\n" % line
         __codec_list_db.append([codec, aliases_list, language_list])
 
+    fh.close()
     return __codec_list_db
 
 def get_supported_codec_list(IncludeAliasesF=False):
@@ -55,9 +56,9 @@ def get_supported_codec_list(IncludeAliasesF=False):
         else:               return __supported_codec_list
 
     file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/00-SUPPORTED.txt"
-    fh        = open_file_or_die(file_name, "rb")
+    content   = get_file_content_or_die(file_name)
 
-    __supported_codec_list = fh.read().split()
+    __supported_codec_list = content.split()
     __supported_codec_list.sort()
     codec_db_list = get_codec_list_db()
     for codec_name, aliases_list, dummy in codec_db_list:

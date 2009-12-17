@@ -4,7 +4,7 @@ import sys
 import os
 
 from   quex.GetPot                 import GetPot
-from   quex.frs_py.file_in         import open_file_or_die, error_msg, error_msg_file_not_found, is_identifier, \
+from   quex.frs_py.file_in         import error_msg, error_msg_file_not_found, is_identifier, \
                                           extract_identifiers_with_specific_prefix, \
                                           delete_comment, verify_word_in_list, read_namespaced_name
 import quex.lexer_mode  as lexer_mode

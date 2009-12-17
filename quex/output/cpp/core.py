@@ -4,7 +4,7 @@ from copy import copy
 import time
 
 from quex.frs_py.string_handling import blue_print
-from quex.frs_py.file_in  import open_file_or_die, \
+from quex.frs_py.file_in  import get_file_content_or_die, \
                                  write_safely_and_close, \
                                  get_include_guard_extension, \
                                  make_safe_identifier
@@ -26,11 +26,10 @@ def do(Modes, IndentationSupportF):
 def write_configuration_header(Modes, IndentationSupportF):
     OutputConfigurationFile   = Setup.output_configuration_file
     LexerClassName            = Setup.analyzer_class_name
-    ConfigurationTemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
+    ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
 
-    fh  = open_file_or_die(ConfigurationTemplateFile)
-    txt = fh.read()
+    txt = get_file_content_or_die(ConfigurationTemplateFile)
 
     # -- check if exit/entry handlers have to be active
     entry_handler_active_f = False
@@ -119,11 +118,24 @@ def __switch(txt, Name, SwitchF):
     else:       txt = txt.replace("$$SWITCH$$ %s" % Name, "/* #define %s */" % Name)
     return txt
     
+def write_constructor_and_memento_functions(Modes, LexerClassName):
+    FileTemplate = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
+                                    + "/analyzer/CppTemplate_functions.txt")
+    txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
+
+    txt = blue_print(txt,
+            [
+                ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
+                ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(Modes, LexerClassName)],
+                ["$$MEMENTO_EXTENSIONS_PACK$$",                 lexer_mode.memento_pack_extension.get_code()],
+                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               lexer_mode.memento_unpack_extension.get_code()],
+                ])
+
 def write_engine_header(Modes):
 
-    QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
-                                   + "/analyzer/CppTemplate.txt").replace("//","/")
-    CoreEngineDefinitionsHeader = (Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
+    QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
+                                                   + "/analyzer/CppTemplate.txt")
+    CoreEngineDefinitionsHeader = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerFileStem               = Setup.output_file_stem
     LexerClassName              = Setup.analyzer_class_name
@@ -145,7 +157,6 @@ def write_engine_header(Modes):
 
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
-    constructor_txt,             \
     mode_specific_functions_txt, \
     friend_txt =                 \
          get_mode_class_related_code_fragments(Modes.values(), LexerClassName)
@@ -157,21 +168,18 @@ def write_engine_header(Modes):
     else:
         derived_class_type_declaration = "class %s;" % Setup.analyzer_derived_class_name
 
-    fh = open_file_or_die(QuexClassHeaderFileTemplate)
-    template_code_txt = fh.read()
-    fh.close()
-
-
     token_class_file_name = lexer_mode.token_type_definition.get_file_name()
 
-    txt = template_code_txt
+    function_code_txt = write_constructor_and_memento_functions()
+
+    template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
+
     txt = blue_print(txt,
             [
-                ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
-                ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
-                ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
-                ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
-                ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(
+                ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",   CoreEngineDefinitionsHeader],
+                ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
+                ["$$CLASS_FUNCTIONS$$",                  function_code_txt],
+                ["$$INCLUDE_GUARD_EXTENSION$$",          get_include_guard_extension(
                                                          LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
@@ -179,12 +187,10 @@ def write_engine_header(Modes):
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",         Setup.analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",         mode_id_definition_str],
+                ["$$MEMENTO_EXTENSIONS$$",               lexer_mode.memento_class_extension.get_code()],
                 ["$$MODE_CLASS_FRIENDS$$",               friend_txt],
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
-                ["$$MEMENTO_EXTENSIONS$$",               lexer_mode.memento_class_extension.get_code()],
-                ["$$MEMENTO_EXTENSIONS_PACK$$",          lexer_mode.memento_pack_extension.get_code()],
-                ["$$MEMENTO_EXTENSIONS_UNPACK$$",        lexer_mode.memento_unpack_extension.get_code()],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
                 ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
@@ -331,6 +337,21 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
 
     return txt
 
+
+def get_constructor_code(Modes, LexerClassName):
+    txt = ""
+    for mode in Modes:
+        txt += "        __quex_assert(%s_QuexModeID_%s %s< %i);\n" % \
+               (LexerClassName, mode.name, " " * (L-len(mode.name)), len(Modes))
+
+    for mode in Modes:
+        txt += __get_mode_init_call(mode, LexerClassName)
+
+    for mode in Modes:
+        txt += "        me->mode_db[%s_QuexModeID_%s]%s = &me->%s;\n" % \
+               (LexerClassName, mode.name, " " * (L-len(mode.name)), mode.name)
+    return txt
+
 def get_mode_class_related_code_fragments(Modes, LexerClassName):
     """
        RETURNS:  -- members of the lexical analyzer class for the mode classes
@@ -347,26 +368,10 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
     for mode in Modes:
         members_txt += "        static QUEX_NAME(Mode)  %s;\n" % mode.name
 
-    # constructor code
-    txt = ""
-    for mode in Modes:
-        txt += "        __quex_assert(%s_QuexModeID_%s %s< %i);\n" % \
-               (LexerClassName, mode.name, " " * (L-len(mode.name)), len(Modes))
-
-    for mode in Modes:
-        txt += __get_mode_init_call(mode, LexerClassName)
-
-    for mode in Modes:
-        txt += "        me->mode_db[%s_QuexModeID_%s]%s = &me->%s;\n" % \
-               (LexerClassName, mode.name, " " * (L-len(mode.name)), mode.name)
-
-    constructor_txt = txt
-
     mode_functions_txt = __get_mode_function_declaration(Modes, LexerClassName, FriendF=False)
     friends_txt        = __get_mode_function_declaration(Modes, LexerClassName, FriendF=True)
 
     return members_txt,        \
-           constructor_txt,    \
            mode_functions_txt, \
            friends_txt
 
