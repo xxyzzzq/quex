@@ -118,15 +118,15 @@ def __switch(txt, Name, SwitchF):
     else:       txt = txt.replace("$$SWITCH$$ %s" % Name, "/* #define %s */" % Name)
     return txt
     
-def write_constructor_and_memento_functions(Modes, LexerClassName):
+def write_constructor_and_memento_functions(ModeDB, LexerClassName):
     FileTemplate = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
                                     + "/analyzer/CppTemplate_functions.txt")
-    txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
+    txt = get_file_content_or_die(FileTemplate)
 
     txt = blue_print(txt,
             [
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
-                ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(Modes, LexerClassName)],
+                ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values(), LexerClassName)],
                 ["$$MEMENTO_EXTENSIONS_PACK$$",                 lexer_mode.memento_pack_extension.get_code()],
                 ["$$MEMENTO_EXTENSIONS_UNPACK$$",               lexer_mode.memento_unpack_extension.get_code()],
                 ])
@@ -170,11 +170,11 @@ def write_engine_header(Modes):
 
     token_class_file_name = lexer_mode.token_type_definition.get_file_name()
 
-    function_code_txt = write_constructor_and_memento_functions()
+    function_code_txt = write_constructor_and_memento_functions(Modes, LexerClassName)
 
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
-    txt = blue_print(txt,
+    txt = blue_print(template_code_txt,
             [
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",   CoreEngineDefinitionsHeader],
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
@@ -339,6 +339,8 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
 
 
 def get_constructor_code(Modes, LexerClassName):
+    L = max(map(lambda m: len(m.name), Modes))
+
     txt = ""
     for mode in Modes:
         txt += "        __quex_assert(%s_QuexModeID_%s %s< %i);\n" % \
@@ -361,7 +363,6 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
                  -- friend declarations for the mode classes/functions
 
     """
-
     L = max(map(lambda m: len(m.name), Modes))
 
     members_txt = ""    
