@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import os
-from copy import copy
+from   copy import copy
 import time
 
 from quex.frs_py.string_handling import blue_print
@@ -121,15 +121,16 @@ def __switch(txt, Name, SwitchF):
 def write_constructor_and_memento_functions(ModeDB, LexerClassName):
     FileTemplate = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
                                     + "/analyzer/CppTemplate_functions.txt")
-    txt = get_file_content_or_die(FileTemplate)
+    func_txt = get_file_content_or_die(FileTemplate)
 
-    txt = blue_print(txt,
+    func_txt = blue_print(func_txt,
             [
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values(), LexerClassName)],
                 ["$$MEMENTO_EXTENSIONS_PACK$$",                 lexer_mode.memento_pack_extension.get_code()],
                 ["$$MEMENTO_EXTENSIONS_UNPACK$$",               lexer_mode.memento_unpack_extension.get_code()],
                 ])
+    return func_txt
 
 def write_engine_header(Modes):
 
