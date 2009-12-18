@@ -8,7 +8,10 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import codecs
 
-from quex.frs_py.file_in                                            import open_file_or_die, error_msg, verify_word_in_list
+from quex.frs_py.file_in                                            import get_file_content_or_die, \
+                                                                           open_file_or_die, \
+                                                                           error_msg, \
+                                                                           verify_word_in_list
 from quex.core_engine.interval_handling                             import Interval, NumberSet
 from quex.core_engine.regular_expression.snap_backslashed_character import __parse_hex_number
 
