@@ -1,0 +1,21 @@
+start = X;
+
+mode X :
+<skip: [ \n\t]> 
+{
+    ۱ => COL_1(Lexeme);
+    ۲ => COL_2(Lexeme);
+    ۳ => COL_3(Lexeme);
+    ۴ => COL_4(Lexeme);
+    ۵ => COL_5(Lexeme);
+    ۶ => COL_6(Lexeme);
+    ۷ => COL_7(Lexeme);
+    ۸ => COL_8(Lexeme);
+    ۹ => COL_9(Lexeme);
+    ۱۰ => COL_10(Lexeme);
+    ۱۱ => COL_11(Lexeme);
+    ۱۲ => COL_12(Lexeme);
+    ۱۳ => COL_13(Lexeme);
+    ۱۴ => COL_14(Lexeme);
+    ۱۵ => COL_15(Lexeme);
+}

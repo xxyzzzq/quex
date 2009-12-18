@@ -1,0 +1,65 @@
+.. _sec-formal-patterns-context-dependent-pitfalls:
+
+Pitfalls with Pre- and Post-Conditions
+======================================
+
+A somehow subtle pitfall is related to the begin-of-line pre-condition.
+When using the '^' sign at the beginning of a line it is tempting to
+sing "don't worry, be happy ... this matches at _any_ begin of line"--well, it
+does not! The important thing to understand is that it matches when the lexical analysis
+step _starts_ at the beginning of a line. The alarm signal should ring
+if begin-of-line is triggered and a whitespace pattern is defined that includes newline.
+Consider the following patterns being defined:
+
+.. code-block:: cpp
+
+    define {
+       WHITESPACE    [ \t\n]+
+           ....
+       GREETING       ^[ \t]*hello
+    }
+
+    mode x_y_z : {
+        {WHITESPACE}  => TKN_WHITESPACE;
+        {GREETING}    => TKN_GREETING(Lexeme);
+    }
+
+Where the ``hello`` greeting is to be matched after newline and some possible whitespace.
+Now, given the character stream:
+
+.. code-block:: cpp
+
+   ...
+   something
+   ...
+   hello
+
+will _not_ send a GREETING token. This is because the whitespace pattern eats
+the newline before the 'hello-line' and even the whitespace before hello. Now, the
+next analysis step starts right before ``hello`` and this is not the beginning
+of a line. Splitting the whitespace eater into newline and non-newline helps:
+
+.. code-block:: cpp
+
+    define {
+       WHITESPACE_1  [ \t]+
+       WHITESPACE_2  [\n]+
+       GREETING      ^[ \t]*hello
+    }
+
+    mode x_y_z : {
+        {WHITESPACE_1}  => TKN_WHITESPACE;
+        {WHITESPACE_2}  => TKN_WHITESPACE;
+        {GREETING}      => TKN_GREETING(Lexeme);
+    }
+
+Now, the first whitespace eating ends right before newline, then the second
+whitespace eating ends after newline, and the hello-greeting at the beginning
+of the line can be matched.
+
+Another pitfall is, again, related to precedence. Make sure that if there
+are two patterns with the same core pattern ``R``, then the pre- or post-conditioned patterns
+must be defined _before_ the un-conditioned pattern. Otherwise, the
+pre- or post-conditioned patterns may never match. Recall section
+\ref{formal/patterns/context-free-pitfalls} for a detailed discussion on precedence pitfalls.
+
