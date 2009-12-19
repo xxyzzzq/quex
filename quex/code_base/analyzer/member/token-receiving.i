@@ -140,6 +140,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 #   endif
 
+#ifndef __QUEX_SETTING_PLAIN_C
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN**   result_pp) 
@@ -163,6 +164,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
     { return QUEX_FUNC(receive_to_array)(this, QueueMemoryBegin, QueueMemoryEnd); } 
 #   endif
+#endif
 
 #   undef self
 
