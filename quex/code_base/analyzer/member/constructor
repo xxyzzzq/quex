@@ -1,0 +1,57 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+
+QUEX_NAMESPACE_MAIN_OPEN 
+
+QUEX_INLINE void
+QUEX_FUNC(construct_memory)(QUEX_TYPE_ANALYZER*  me,
+                            QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                            size_t               BufferMemorySize,
+                            const char*          CharacterEncodingName /* = 0x0   */,
+                            bool                 ByteOrderReversionF   /* = false */);
+
+QUEX_INLINE void
+QUEX_FUNC(construct_file_name)(QUEX_TYPE_ANALYZER* me,
+                               const std::string&  Filename, 
+                               const char*         CharacterEncodingName /* = 0x0   */,
+                               bool                ByteOrderReversionF   /* = false */);
+
+QUEX_INLINE void
+QUEX_FUNC(construct_FILE)(QUEX_TYPE_ANALYZER* me,
+                          std::FILE*          fh, 
+                          const char*         CharacterEncodingName /* = 0x0   */,
+                          bool                ByteOrderReversionF   /* = false */);
+
+QUEX_INLINE void
+QUEX_FUNC(construct_istream)(QUEX_TYPE_ANALYZER* me,
+                             std::istream*       p_input_stream, 
+                             const char*         CharacterEncodingName /* = 0x0   */,
+                             bool                ByteOrderReversionF   /* = false */);
+
+#if defined(__QUEX_OPTION_WCHAR_T)
+QUEX_INLINE void
+QUEX_FUNC(construct_wistream)(QUEX_TYPE_ANALYZER* me,
+                              std::wistream*      p_input_stream, 
+                              const char*         CharacterEncodingName /* = 0x0   */,
+                              bool                ByteOrderReversionF   /* = false */);
+#endif
+
+QUEX_INLINE void
+QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me); 
+
+TEMPLATE_IN void
+QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
+                 InputHandleT*        input_handle, 
+                 const char*          CharacterEncodingName /* = 0x0 */);
+
+QUEX_INLINE void 
+QUEX_FUNC(reset_plain)(QUEX_TYPE_ANALYZER*  me,
+                       const char*          CharacterEncodingName /* = 0x0 */);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR */
+

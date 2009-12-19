@@ -48,6 +48,26 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me);
 
+    QUEX_INLINE bool
+    QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize);
+
+    QUEX_INLINE void
+    QUEX_NAME(Accumulator_clear)(QUEX_NAME(Accumulator)* me);
+
+    QUEX_INLINE void 
+    QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)*    me,
+                               const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+
+    QUEX_INLINE void 
+    QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
+                                         const QUEX_TYPE_CHARACTER  Character);
+    QUEX_INLINE void
+    QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*   me,
+                                 const QUEX_TYPE_TOKEN_ID  TokenID);
+
+    QUEX_INLINE void  
+    QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me);
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR */

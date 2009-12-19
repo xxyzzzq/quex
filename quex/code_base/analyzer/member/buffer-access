@@ -1,3 +1,8 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BUFFER_ACCESS
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BUFFER_ACCESS
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -28,3 +33,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                               QUEX_TYPE_CHARACTER*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BUFFER_ACCESS */
+
