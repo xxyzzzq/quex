@@ -44,8 +44,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE int
     QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*  me, 
-                                       QUEX_TYPE_CHARACTER               FirstCharacter, 
-                                       const QUEX_TYPE_CHARACTER*        Remainder);
+                                       QUEX_TYPE_CHARACTER         FirstCharacter, 
+                                       const QUEX_TYPE_CHARACTER*  Remainder);
 
     QUEX_INLINE void
     QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)*  me, 
@@ -54,7 +54,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE QUEX_NAME(DictionaryNode)*
     QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)* me, 
-                                    const QUEX_TYPE_CHARACTER*        EntryName);
+                                    const QUEX_TYPE_CHARACTER*   EntryName);
 
     QUEX_INLINE void
     QUEX_NAME(PostCategorizer_insert)(QUEX_NAME(Dictionary)* me, 
