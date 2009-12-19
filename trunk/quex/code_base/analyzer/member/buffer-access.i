@@ -11,8 +11,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
-                                            QUEX_TYPE_CHARACTER*   ContentBegin, 
-                                            QUEX_TYPE_CHARACTER*   ContentEnd)
+                                         QUEX_TYPE_CHARACTER*   ContentBegin, 
+                                         QUEX_TYPE_CHARACTER*   ContentEnd)
     /* RETURNS: The position of the first character that could not be copied
      *          into the fill region, because it did not have enough space.
      *          If the whole content was copied, then the return value

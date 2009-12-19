@@ -92,7 +92,7 @@ QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me)
     QUEX_NAME(AnalyzerData_destruct)(me);
 }
 
-template<class InputHandleT> void
+TEMPLATE_IN void
 QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
                  InputHandleT*        input_handle, 
                  const char*          CharacterEncodingName /* = 0x0 */) 
@@ -103,6 +103,11 @@ QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     QUEX_FUNC(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 }
+
+QUEX_INLINE void 
+QUEX_FUNC(reset_plain)(QUEX_TYPE_ANALYZER*  me,
+                       const char*          CharacterEncodingName /* = 0x0 */)
+{ QUEX_FUNC(reset)(0x0, CharacterEncodingName); }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 QUEX_INLINE
