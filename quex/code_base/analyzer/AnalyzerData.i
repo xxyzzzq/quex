@@ -6,6 +6,7 @@
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/asserts>
+#include <quex/code_base/analyzer/member/include-stack>
 
 #include <quex/code_base/temporary_macros_on>
 

@@ -1,10 +1,12 @@
 /* -*- C++ -*- vim:set syntax=cpp:
- * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
- *                      LEXICAL ANALYZERS
- *
- * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_CONSTRUCTOR_I__
- * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_CONSTRUCTOR_I__       */
+ * (C) 2005-2009 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                   */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+
 #include <quex/code_base/buffer/Buffer.i>
+
+#include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -92,7 +94,7 @@ QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me)
     QUEX_NAME(AnalyzerData_destruct)(me);
 }
 
-TEMPLATE_IN void
+TEMPLATE_IN(InputHandleT) void
 QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
                  InputHandleT*        input_handle, 
                  const char*          CharacterEncodingName /* = 0x0 */) 
@@ -107,7 +109,7 @@ QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
 QUEX_INLINE void 
 QUEX_FUNC(reset_plain)(QUEX_TYPE_ANALYZER*  me,
                        const char*          CharacterEncodingName /* = 0x0 */)
-{ QUEX_FUNC(reset)(0x0, CharacterEncodingName); }
+{ QUEX_FUNC(reset)(me, (FILE*)0x0, CharacterEncodingName); }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 QUEX_INLINE
@@ -166,6 +168,8 @@ QUEX_MEMBER(reset)(InputHandleT* input_handle, const char* CharacterEncodingName
 { QUEX_FUNC(reset)(this, input_handle, CharacterEncodingName); }
 #endif
 
-
-
 QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR */
