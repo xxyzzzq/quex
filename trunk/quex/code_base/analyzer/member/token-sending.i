@@ -3,11 +3,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 
-#ifndef QUEX_TYPE_ANALYZER
-#   error "This file requires the macro 'QUEX_TYPE_ANALYZER' to be defined."
-#endif
-
 #include <quex/code_base/token/TokenPolicy>
+#include <quex/code_base/analyzer/member/token-sending>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
