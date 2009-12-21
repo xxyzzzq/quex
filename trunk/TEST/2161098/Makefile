@@ -20,3 +20,7 @@ c_comments:
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
 		-DQUEX_SETTING_BUFFER_SIZE=4
+
+clean:
+	rm -rf lexer
+	rm -rf Simple*
