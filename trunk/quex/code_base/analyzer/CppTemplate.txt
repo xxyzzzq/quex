@@ -34,10 +34,6 @@
 #   define  __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
 #endif
 
-QUEX_NAMESPACE_MAIN_OPEN 
-$$QUEX_MODE_ID_DEFINITIONS$$
-QUEX_NAMESPACE_MAIN_CLOSE
-
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
 $$TOKEN_CLASS_DECLARATION$$
@@ -77,6 +73,9 @@ $$USER_DEFINED_HEADER$$
 $$LEXER_DERIVED_CLASS_DECL$$
 /* END: _______________________________________________________________________*/
 
+QUEX_NAMESPACE_MAIN_OPEN 
+$$QUEX_MODE_ID_DEFINITIONS$$
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_on>
 

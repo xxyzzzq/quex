@@ -1,23 +1,23 @@
-<test-database execution-time-sec="0.04" date="Mon Dec 14 12:08:50 2009">
+<test-database execution-time-sec="0.03" date="Sun Dec 20 22:04:19 2009">
     <last-used-diff-display-program name=""/>
     <group name="StrangeStream">
-        <test title="char stream based." make-required="True" time-sum-sec="0.02"> 
-            <application file-name="strange_stream.exe" info-request-time="1260572510L"/>
-            <make-procedure success="True" time_sec="0.486249"/>
+        <test title="wchar_t stream based." make-required="True" time-sum-sec="0.01"> 
+            <application file-name="strange_wstream.exe" info-request-time="1261343059L"/>
+            <make-procedure success="True" time_sec="0.446926"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.00" crc="2006234070"/>
                <choice name="3" result="OK" time_sec="0.00" crc="725477678"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="-924245705"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="-924245705"/>
                <choice name="5" result="OK" time_sec="0.00" crc="252659001"/>
             </choice-list>
         </test>
-        <test title="wchar_t stream based." make-required="True" time-sum-sec="0.02"> 
-            <application file-name="strange_wstream.exe" info-request-time="1260572510L"/>
-            <make-procedure success="True" time_sec="0.483904"/>
+        <test title="char stream based." make-required="True" time-sum-sec="0.01"> 
+            <application file-name="strange_stream.exe" info-request-time="1261343058L"/>
+            <make-procedure success="True" time_sec="0.449089"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.00" crc="2006234070"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="-924245705"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="725477678"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="-924245705"/>
                <choice name="5" result="OK" time_sec="0.00" crc="252659001"/>
             </choice-list>
         </test>
