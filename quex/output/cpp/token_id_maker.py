@@ -6,7 +6,7 @@ import re
 
 from quex.GetPot import GetPot
 
-from quex.frs_py.file_in  import get_file_content_or_die, \
+from quex.frs_py.file_in  import open_file_or_die, \
                                  write_safely_and_close, \
                                  delete_comment, \
                                  extract_identifiers_with_specific_prefix, \
@@ -40,7 +40,11 @@ file_str = \
 #ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 #define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 
-#include<cstdio> // for: 'std::sprintf'
+#ifndef __QUEX_SETTING_PLAIN_C
+#   include<cstdio> 
+#else
+#   include<stdio.h> 
+#endif
 
 /* The token class definition file can only be included after the two token identifiers have
  * been defined. Otherwise, it would rely on default values. */
@@ -57,7 +61,7 @@ func_str = \
 """
 QUEX_NAMESPACE_TOKEN_OPEN
 
-inline const char*
+QUEX_INLINE const char*
 QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
@@ -182,7 +186,8 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
     done_list    = []
     unfound_list = []
     while work_list != []:
-        content = get_file_content_or_die(work_list.pop(), Mode="rb")
+        fh = open_file_or_die(work_list.pop(), Mode="rb")
+        content = fh.read()
 
         # delete any comment inside the file
         for opener, closer in CommentDelimiterList:
@@ -201,6 +206,8 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         include_file_list = filter(lambda file: file not in done_list,    include_file_list)
         include_file_list = filter(lambda file: os.access(file, os.F_OK), include_file_list)
         work_list.extend(include_file_list)
+
+        fh.close()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

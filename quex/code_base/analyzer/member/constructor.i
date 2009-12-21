@@ -1,8 +1,8 @@
 /* -*- C++ -*- vim:set syntax=cpp:
  * (C) 2005-2009 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                   */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
-#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I
 
 #include <quex/code_base/buffer/Buffer.i>
 
@@ -172,4 +172,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I */

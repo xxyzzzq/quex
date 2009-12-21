@@ -42,7 +42,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TOKEN_POLICY_SET_1(ID);                                              \
     } while ( 0 )
 #else
-#   define self_send_n(RepetitionN, ID)  self_send1(ID)
+#   define self_send_n(RepetitionN, ID)  self_send(ID)
 #endif
 
 #   define self_send1(ID, X0)                        \
