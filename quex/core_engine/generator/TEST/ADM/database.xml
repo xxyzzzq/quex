@@ -1,4 +1,4 @@
-<test-database execution-time-sec="115.32" date="Sun Dec 20 22:59:09 2009">
+<test-database execution-time-sec="115.32" date="Tue Dec 22 06:09:06 2009">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
         <test title="Backwards" make-required="True" time-sum-sec="3.02"> 

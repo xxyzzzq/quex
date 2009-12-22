@@ -41,10 +41,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 #   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
 
-    /* Use placement 'new' for explicit call of constructor */
-    new ((void*)memento) QUEX_NAME(Memento);
-
-
+    /* No constructor call. Caller 'include_push()' does the job. */
     memento->base._parent_memento                  = self._parent_memento;
     memento->base.buffer                           = self.buffer;
     memento->base.__current_mode_p                 = self.__current_mode_p; 
@@ -103,8 +100,7 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 $$MEMENTO_EXTENSIONS_UNPACK$$
 /* END: _______________________________________________________________________*/
     
-    /* Counterpart to placement new: Explicit destructor call */
-    memento->~QUEX_NAME(Memento_tag)();
+    /* No destructor call necessary, The caller 'include_pop()' does it.       */
     QUEX_NAME(MemoryManager_Memento_free)(memento);
 #   undef self
 }
