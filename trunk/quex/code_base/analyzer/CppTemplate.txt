@@ -59,9 +59,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 typedef struct QUEX_NAME(Memento_tag) {
     QUEX_NAME(MementoBase)  base;
 
-    QUEX_NAME(Memento_tag)()  {}
-    ~QUEX_NAME(Memento_tag)() {}
-
 /* START: User's memento extentions ___________________________________________*/
 $$MEMENTO_EXTENSIONS$$
 /* END: _______________________________________________________________________*/

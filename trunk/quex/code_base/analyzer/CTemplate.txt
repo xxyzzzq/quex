@@ -89,7 +89,7 @@ typedef struct QUEX_NAME(Memento_tag) {
     QUEX_NAME(MementoBase)  base;
 
     QUEX_NAME(Memento_tag)()  {}
-    ~QUEX_NAME(Memento_tag)() {}
+    void (*destruct)(QUEX_NAME(Memento_tag)* self)
 
 /* START: User's memento extentions ___________________________________________*/
 $$MEMENTO_EXTENSIONS$$
