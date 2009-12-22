@@ -246,7 +246,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    return true;\n"
     txt += "}\n"
     txt += "\n"
-    txt += "void Mr_UnitTest_analyzer_function(QUEX_TYPE_ANALYZER* me)\n"
+    txt += "void QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)\n"
     txt += "{\n"
     txt += "#   define  engine (me)\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
@@ -324,8 +324,8 @@ def action(PatternName):
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
-    if   "->1" in PatternName: txt += "me->current_analyzer_function = Mr_UnitTest_analyzer_function;\n"
-    elif "->2" in PatternName: txt += "me->current_analyzer_function = Mrs_UnitTest_analyzer_function;\n"
+    if   "->1" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);\n"
+    elif "->2" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mrs_UnitTest_analyzer_function);\n"
 
     if "CONTINUE" in PatternName: txt += ""
     elif "STOP" in PatternName:   txt += "analyzis_terminated_f = true; return;"
@@ -361,7 +361,7 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 
 bool analyzis_terminated_f = false;
 
-static void  Mr_UnitTest_analyzer_function(QUEX_TYPE_ANALYZER*);
+static void  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
 void  Mrs_UnitTest_analyzer_function(QUEX_TYPE_ANALYZER*);
@@ -380,7 +380,7 @@ test_program_db = {
 
         QUEX_NAME(AnalyzerData_construct)(&lexer_state, (void*)0x0,
                                     TestString, MemorySize, 0x0, 0, false);
-        lexer_state.current_analyzer_function = Mr_UnitTest_analyzer_function;
+        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
@@ -410,7 +410,7 @@ test_program_db = {
         QUEX_NAME(AnalyzerData_construct)(&lexer_state, fh, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 
                                     /* No translation, no translation buffer */0x0, false);
-        lexer_state.current_analyzer_function = Mr_UnitTest_analyzer_function;
+        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
@@ -440,7 +440,7 @@ test_program_db = {
         QUEX_NAME(AnalyzerData_construct)(&lexer_state, &istr, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
 
-        lexer_state.current_analyzer_function = Mr_UnitTest_analyzer_function;
+        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");

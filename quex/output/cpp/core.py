@@ -91,7 +91,7 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
-             ["$$INITIAL_LEXER_MODE_ID$$",      LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
+             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(QuexModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
@@ -154,7 +154,7 @@ def write_engine_header(Modes):
     i = -1
     for name in Modes.keys():
         i += 1
-        mode_id_definition_str += "const int %s_QuexModeID_%s = %i;\n" % (LexerClassName, name, i)
+        mode_id_definition_str += "const int QUEX_NAME(QuexModeID_%s) = %i;\n" % (name, i)
 
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
@@ -246,7 +246,7 @@ def write_mode_class_implementation(Modes):
     write_safely_and_close(ModeClassImplementationFile, txt)
 
 quex_mode_init_call_str = """
-     me->$$MN$$.id   = $$CLASS$$_QuexModeID_$$MN$$;
+     me->$$MN$$.id   = QUEX_NAME(QuexModeID_$$MN$$);
      me->$$MN$$.name = "$$MN$$";
      me->$$MN$$.analyzer_function = $analyzer_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
@@ -263,15 +263,13 @@ quex_mode_init_call_str = """
 
 def __get_mode_init_call(mode, LexerClassName):
     
-    header_str = "%s_%s_" % (LexerClassName, mode.name)
-
-    analyzer_function = header_str + "analyzer_function" 
-    on_indentation    = header_str + "on_indentation"    
-    on_entry          = header_str + "on_entry"          
-    on_exit           = header_str + "on_exit"           
-    has_base          = header_str + "has_base"          
-    has_entry_from    = header_str + "has_entry_from"    
-    has_exit_to       = header_str + "has_exit_to"       
+    analyzer_function = "QUEX_NAME(%s_analyzer_function)" % mode.name
+    on_indentation    = "QUEX_NAME(%s_on_indentation)"    % mode.name
+    on_entry          = "QUEX_NAME(%s_on_entry)"          % mode.name
+    on_exit           = "QUEX_NAME(%s_on_exit)"           % mode.name
+    has_base          = "QUEX_NAME(%s_has_base)"          % mode.name
+    has_entry_from    = "QUEX_NAME(%s_has_entry_from)"    % mode.name
+    has_exit_to       = "QUEX_NAME(%s_has_exit_to)"       % mode.name
 
     if mode.options["inheritable"] == "only": 
         analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
@@ -300,14 +298,14 @@ def __get_mode_init_call(mode, LexerClassName):
 
 def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
 
-    if FriendF: prolog = "        friend "
-    else:       prolog = "    extern "
+    if FriendF: prolog = "    friend "
+    else:       prolog = "extern "
 
     def __mode_functions(Prolog, ReturnType, NameList, ArgList):
         txt = ""
         for name in NameList:
-            function_signature = "%s %s_%s_%s(%s);" % \
-                     (ReturnType, LexerClassName, mode.name, name, ArgList)
+            function_signature = "%s QUEX_NAME(%s_%s)(%s);" % \
+                     (ReturnType, mode.name, name, ArgList)
             txt += "%s" % Prolog + "    " + function_signature + "\n"
 
         return txt
@@ -344,15 +342,15 @@ def get_constructor_code(Modes, LexerClassName):
 
     txt = ""
     for mode in Modes:
-        txt += "        __quex_assert(%s_QuexModeID_%s %s< %i);\n" % \
-               (LexerClassName, mode.name, " " * (L-len(mode.name)), len(Modes))
+        txt += "        __quex_assert(QUEX_NAME(QuexModeID_%s) %s< %i);\n" % \
+               (mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:
         txt += __get_mode_init_call(mode, LexerClassName)
 
     for mode in Modes:
-        txt += "        me->mode_db[%s_QuexModeID_%s]%s = &me->%s;\n" % \
-               (LexerClassName, mode.name, " " * (L-len(mode.name)), mode.name)
+        txt += "        me->mode_db[QUEX_NAME(QuexModeID_%s)]%s = &me->%s;\n" % \
+               (mode.name, " " * (L-len(mode.name)), mode.name)
     return txt
 
 def get_mode_class_related_code_fragments(Modes, LexerClassName):
