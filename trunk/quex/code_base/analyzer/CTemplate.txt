@@ -21,8 +21,9 @@
 #   include <istream>  /* gets: istream and wistream */
 #   include <cstdio>   /* gets: FILE                 */
 #else
-#   include <quex/code_base/compatibility/inttypes.h>
+#   include <stdio.h>  /* gets: FILE                 */
 #endif
+#include <quex/code_base/compatibility/inttypes.h>
 
 #include <quex/code_base/asserts>
 
