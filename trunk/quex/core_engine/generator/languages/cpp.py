@@ -63,7 +63,7 @@ def __local_variable_definitions(VariableInfoList):
          
 __function_signature = """
 void  
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(QUEX_TYPE_ANALYZER* me) 
+QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
     /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
              functions are all located inside the main class as static functions. That  
