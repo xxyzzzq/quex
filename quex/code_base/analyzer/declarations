@@ -1,0 +1,29 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ *
+ * NOTE: No include guard needed here, the headers take care of double 
+ *       inclusion by itself.    
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                                      */
+
+#ifdef      __QUEX_OPTION_UNIT_TEST
+#   include <quex/code_base/test_environment/StrangeStream>
+#endif
+
+#include    <quex/code_base/buffer/Buffer>
+#include    <quex/code_base/buffer/BufferFiller>
+
+#include    <quex/code_base/MemoryManager>
+#include    <quex/code_base/analyzer/Mode>
+#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator>
+#endif
+#ifdef      __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   include <quex/code_base/token/TokenQueue>
+#endif
+#ifdef      QUEX_OPTION_POST_CATEGORIZER
+#   include <quex/code_base/analyzer/PostCategorizer>
+#endif
+#include    <quex/code_base/analyzer/counter/Base>
+#include    <quex/code_base/analyzer/AnalyzerData>
+
