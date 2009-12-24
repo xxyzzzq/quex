@@ -20,10 +20,6 @@
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
 
-#ifndef QUEX_TYPE_ANALYZER
-#   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
-#endif
-
 #ifdef  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   include <quex/code_base/token/TokenQueue>
 #endif
