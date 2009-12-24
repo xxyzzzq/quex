@@ -141,8 +141,8 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
     test_str = test_str.replace("\n", "\\n\"\n\"")
     
     txt = test_program_db[Language]
-    txt = txt.replace("$$BUFFER_SIZE$$",       repr(QuexBufferSize))
-    txt = txt.replace("$$TEST_STRING$$",       test_str)
+    txt = txt.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
+    txt = txt.replace("$$TEST_STRING$$", test_str)
     if CommentTestStrF: txt = txt.replace("$$COMMENT$$", "##")
     else:               txt = txt.replace("$$COMMENT$$", "")
 
@@ -192,7 +192,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     else:                sm_name = "Mrs"
 
     txt += generator.do(PatternActionPairList, 
-                        StateMachineName       = "UnitTest",
+                        StateMachineName       = sm_name + "_UnitTest",
                         OnFailureAction        = PatternActionInfo(None, on_failure_action), 
                         EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
                         PrintStateMachineF     = True,
@@ -364,7 +364,7 @@ bool analyzis_terminated_f = false;
 static void  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
-void  Mrs_UnitTest_analyzer_function(QUEX_TYPE_ANALYZER*);
+static void  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 """
 
 test_program_db = { 
@@ -468,7 +468,7 @@ test_program_db = {
 
         QUEX_NAME(AnalyzerData_construct)(&lexer_state, &strange_stream, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
-        lexer_state.current_analyzer_function = Mr_UnitTest_analyzer_function;
+        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
