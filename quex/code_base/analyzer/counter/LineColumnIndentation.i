@@ -32,7 +32,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       last end, such as _line_number_at_begin = _line_number_at_end.
      *       This has to happen outside these functions.                        */
     QUEX_INLINE void
-    QUEX_NAME(CounterLineColumnIndentation_construct)(QUEX_NAME(CounterLineColumnIndentation)* me, QUEX_NAME(AnalyzerData)* lexer)
+    QUEX_NAME(CounterLineColumnIndentation_construct)(QUEX_NAME(CounterLineColumnIndentation)* me, QUEX_NAME(TestAnalyzer)* lexer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */

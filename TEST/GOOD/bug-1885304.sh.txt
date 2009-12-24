@@ -84,7 +84,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 QUEX_NAMESPACE_MAIN_OPEN 
 
 class QUEX_TYPE_ANALYZER 
-   : public QUEX_NAME(AnalyzerData) {
+   : public QUEX_NAME(TestAnalyzer) {
 
 public:
         static QUEX_NAME(Mode)  ONE_AND_ONLY;
@@ -323,7 +323,7 @@ QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
         me->mode_db[QUEX_NAME(QuexModeID_ONE_AND_ONLY)] = &me->ONE_AND_ONLY;
 
 
-    QUEX_NAME(AnalyzerData_construct)((QUEX_NAME(AnalyzerData)*)me,
+    QUEX_NAME(AnalyzerData_construct)((QUEX_NAME(TestAnalyzer)*)me,
                                       input_handle,
                                       BufferMemory, QUEX_SETTING_BUFFER_SIZE,
                                       CharacterEncodingName, 

@@ -256,6 +256,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_FUNC(buffer_input_pointer_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Adr)
     { me->buffer._input_p = Adr; }
 
+
 #   ifndef __QUEX_SETTING_PLAIN_C
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_MEMBER(buffer_fill_region_append)(QUEX_TYPE_CHARACTER*  ContentBegin, QUEX_TYPE_CHARACTER*  ContentEnd)

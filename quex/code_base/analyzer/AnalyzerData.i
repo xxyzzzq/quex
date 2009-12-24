@@ -14,13 +14,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(AnalyzerData_construct)(QUEX_NAME(AnalyzerData)*  me,
-                                      InputHandleT*             input_handle,
-                                      QUEX_TYPE_CHARACTER*      BufferMemory,
-                                      const size_t              BufferMemorySize,
-                                      const char*               CharacterEncodingName, 
-                                      const size_t              TranslationBufferMemorySize,
-                                      bool                      ByteOrderReversionF)
+    QUEX_FUNC(construct_basic)(QUEX_TYPE_ANALYZER*     me,
+                               InputHandleT*           input_handle,
+                               QUEX_TYPE_CHARACTER*    BufferMemory,
+                               const size_t            BufferMemorySize,
+                               const char*             CharacterEncodingName, 
+                               const size_t            TranslationBufferMemorySize,
+                               bool                    ByteOrderReversionF)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
@@ -86,7 +86,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void
-    QUEX_NAME(AnalyzerData_destruct)(QUEX_NAME(AnalyzerData)* me)
+    QUEX_FUNC(destruct_basic)(QUEX_TYPE_ANALYZER* me)
     {
         QUEX_NAME(Buffer_destruct)(&me->buffer);
 
@@ -103,10 +103,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(AnalyzerData_reset)(QUEX_NAME(AnalyzerData)*     me,
-                                  InputHandleT*                input_handle, 
-                                  const char*                  CharacterEncodingName, 
-                                  const size_t                 TranslationBufferMemorySize)
+    QUEX_FUNC(reset_basic)(QUEX_TYPE_ANALYZER*  me,
+                           InputHandleT*        input_handle, 
+                           const char*          CharacterEncodingName, 
+                           const size_t         TranslationBufferMemorySize)
     {
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_FIX(COUNTER, _reset)(&me->counter);
@@ -139,7 +139,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     QUEX_INLINE bool 
-    QUEX_NAME(AnalyzerData_buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
+    QUEX_FUNC(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
         if( buffer->filler == 0x0 ) return false;
 
@@ -159,10 +159,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool 
-    QUEX_NAME(AnalyzerData_buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
-                                                  QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
-                                                  QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
-                                                  const size_t                  PostContextN)
+    QUEX_FUNC(buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
+                                     QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
+                                     const size_t                  PostContextN)
     {
         QUEX_TYPE_CHARACTER_POSITION* iterator = 0x0;
         QUEX_TYPE_CHARACTER_POSITION* End = post_context_start_position + PostContextN;
@@ -184,12 +184,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         return true;
     }
 
-
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/BufferFiller.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I */
