@@ -1,0 +1,192 @@
+/* -*- C++ -*-  vim:set syntax=cpp: 
+ *
+ * (C) 2004-2009 Frank-Rene Schaefer
+ *
+ * __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA may be undefined in case
+ *    that multiple lexical analyzers are used. Then, the name of the
+ *    QUEX_NAME(Accumulator) must be different.                             */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA
+#define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA
+
+#include <quex/code_base/buffer/Buffer>
+
+#if ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   include <quex/code_base/analyzer/counter/LineColumn>
+#   else
+#   include <quex/code_base/analyzer/counter/LineColumnIndentation>
+#endif
+
+#ifdef  QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator>
+#endif
+
+#ifdef  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   include <quex/code_base/token/TokenQueue>
+#endif
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    /* Forward declaration of the derived memento, which is used by the analyzer. */
+    struct  QUEX_NAME(Memento_tag);
+#   endif
+
+    struct QUEX_NAME(Mode_tag);
+
+    typedef struct QUEX_NAME(AnalyzerData_tag) {
+#       ifndef __QUEX_SETTING_PLAIN_C
+        /* Most compilers put the virtual function table in front of the object.
+         * So, if the derived class has a virtual function, and therefore a v-table,
+         * the cast towards the base class and back might not work. Thus let us
+         * ensure that all related objects contain a v-table by having one virtual
+         * function.                                                                      */
+        virtual ~QUEX_NAME(AnalyzerData_tag)() {}
+#       endif
+        QUEX_NAME(Buffer)             buffer;
+
+        /* Each mode has a dedicated analyzer function.  The function pointer
+         * to the currently active mode's function is stored redundantly in 
+         * 'current_analyzer_function' to accelerate the access to it.                    */
+        struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
+        QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
+
+#if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+     || defined(QUEX_OPTION_ASSERTS)
+        /* When a mode change happens and the user does not 'return' but 'CONTINUE'
+         * an error must be logged, since the following characters are still swallowed
+         * by the current function and not the new one. For this one needs to return and
+         * then continue further.                                                         */
+        QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
+#       endif
+
+        /*_________________________________________________________________________
+         *        __   __   ___  __  
+         *  |\/| /  \ |  \ |__  /__` 
+         *  |  | \__/ |__/ |___ .__/ 
+         *                                                                         */
+        /* Map: mode-id --> mode object                                            */
+        struct QUEX_NAME(Mode_tag)*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+
+        struct {
+            struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            struct QUEX_NAME(Mode_tag)** end;
+            struct QUEX_NAME(Mode_tag)** memory_end;
+        }                                _mode_stack;
+
+        /*_________________________________________________________________________
+         *  ___  __        ___       __  
+         *   |  /  \ |__/ |__  |\ | /__` 
+         *   |  \__/ |  \ |___ | \| .__/ 
+         *                                                                        
+         *  Allow public access, for user's special tricks.                        */
+#       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+        QUEX_NAME(TokenQueue)  _token_queue;  
+#       else
+        QUEX_TYPE_TOKEN*       token;         
+#       endif
+
+        /*_________________________________________________________________________
+         *   __   __            ___  ___  __  
+         *  /  ` /  \ |  | |\ |  |  |__  |__) 
+         *  \__, \__/ \__/ | \|  |  |___ |  \ 
+         *                                                                         
+         * Dependent on setup all counting might be set to 'null operations'.    
+         * In case of no counting, we spend sizeof(void*) bytes for nothing, just
+         * to keep the code uniform.                                               */
+        QUEX_TYPE_COUNTER              counter;
+
+        /*_________________________________________________________________________
+         *       __   __                            ___  __   __  
+         *  /\  /  ` /  ` |  |  |\/| |  | |     /\   |  /  \ |__) 
+         * /~~\ \__, \__, \__/  |  | \__/ |___ /~~\  |  \__/ |  \ 
+         *                                                                         
+         *  Accumulate lexemes from multiple patterns.                             */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator)          accumulator;
+#       endif
+
+
+        /*_________________________________________________________________________
+         *   __   __   __  ___     __       ___  ___  __   __   __    __  ___  __  
+         *  |__) /  \ /__`  |     /  `  /\   |  |__  / _` /  \ |__) |  / |__  |__) 
+         *  |    \__/ .__/  |     \__, /~~\  |  |___ \__> \__/ |  \ | /_ |___ |  \ 
+         *                                                                         
+         *  Fast and simple dictionary to post-classify lexemes.                   */
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        QUEX_NAME(Dictionary)           post_categorizer;
+#       endif
+
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        struct QUEX_NAME(Memento_tag)*  _parent_memento;
+#       endif
+
+        /*_________________________________________________________________________
+         *           __   __  
+         *   |\/| | /__` /  ` 
+         *   |  | | .__/ \__,                                                      */
+
+        /*  Temporary Filename ____________________________________________________
+         *  Sometimes we just want to tell the filename; handle owned by analyzer. */
+        FILE*    __file_handle_allocated_by_constructor;
+
+    } QUEX_NAME(AnalyzerData);
+
+    TEMPLATE_IN(InputHandleT) void
+    QUEX_NAME(AnalyzerData_construct)(QUEX_NAME(AnalyzerData)*  me,
+                                      InputHandleT*             input_handle,
+                                      QUEX_TYPE_CHARACTER*      BufferMemory,
+                                      const size_t              BufferMemorySize,
+                                      const char*               CharacterEncodingName, 
+                                      const size_t              TranslationBufferMemorySize,
+                                      bool                      ByteOrderReversionF);
+
+    QUEX_INLINE void 
+    QUEX_NAME(AnalyzerData_destruct)(QUEX_NAME(AnalyzerData)* me);
+
+    TEMPLATE_IN(InputHandleT) void
+    QUEX_NAME(AnalyzerData_reset)(QUEX_NAME(AnalyzerData)*   me,
+                                  InputHandleT*              input_handle, 
+                                  const char*                CharacterEncodingName, 
+                                  const size_t               TranslationBufferMemorySize);
+
+    QUEX_INLINE bool 
+    QUEX_NAME(AnalyzerData_buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
+
+    QUEX_INLINE bool 
+    QUEX_NAME(AnalyzerData_buffer_reload_forward)(QUEX_NAME(Buffer)*            buffer, 
+                                                  QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                                  QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
+                                                  const size_t                  PostContextN);
+
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    typedef struct {
+        QUEX_NAME(Buffer)               buffer;
+        struct QUEX_NAME(Mode_tag)*     __current_mode_p; 
+        QUEX_NAME(AnalyzerFunctionP)    current_analyzer_function;
+#if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+     || defined(QUEX_OPTION_ASSERTS)
+        QUEX_NAME(AnalyzerFunctionP)    DEBUG_analyzer_function_at_entry;
+#       endif
+        QUEX_TYPE_COUNTER               counter;
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator)          accumulator;
+#       endif
+        /* Deriberately not subject to include handling:
+         *    -- Mode stack.
+         *    -- Token and token queues.
+         *    -- Post categorizer.                          */
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        struct QUEX_NAME(Memento_tag)*  _parent_memento;
+#       endif
+        FILE*                           __file_handle_allocated_by_constructor;
+    } QUEX_NAME(MementoBase);
+#   endif
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA */

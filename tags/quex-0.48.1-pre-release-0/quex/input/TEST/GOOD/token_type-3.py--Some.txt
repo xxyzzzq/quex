@@ -1,0 +1,18 @@
+-----------------------------
+IN:
+    [{ name : std::string; number_list : std::vector<int>; }]
+
+OUT:
+
+class:     'Token'
+namespace: ''
+type(token_id)      = size_t
+type(column_number) = size_t
+type(line_number)   = size_t
+distinct members {
+}
+union members {
+    std::vector<int> number_list
+    std::string      name
+}
+

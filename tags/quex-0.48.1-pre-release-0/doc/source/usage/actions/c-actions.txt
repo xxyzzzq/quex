@@ -1,0 +1,194 @@
+.. _sec:c-code-fragments:
+
+C/C++ Code Segments
+===================
+
+Alternatively to the convenient definition of actions in terms of token sending
+and mode transition, more sophisticated behavior can be specified by inserting
+directly code fragments as pattern-actions or event handlers. The syntax for 
+such definitions is simply to enclose them in curly brackets as in the following
+example 
+
+.. code-block:: cpp
+
+    mode SOMETHING {
+        ...
+
+        {P_STRING_DELIMITER} {
+            self << STRING_READER; 
+            self.send(QUEX_TKN_EVENT_MODE_CHANGE);
+            return;
+        }
+
+        ...
+
+        [a-z]+ {
+            self.send(QUEX_TKN_IDENTIFIER, Lexeme);
+            self.allow_opening_indentation_f = true;
+            return;
+        }
+    }
+
+The patterns ``P_IF_KEYWORD`` and ``P_STRING_DELIMITER`` are supposed to be
+defined in a ``define`` section. The functions used in this example are
+subsequently explained. The lexical analyzer object can be accessed via
+
+.. data:: self
+
+   which is a reference to the analyzer inside pattern actions and event handlers.
+
+The are member functions starting with ``send``. They work similar to the brackets
+in the previous token senders. The first argument is the token-id and the
+remaining arguments are arguments as they are passed to the constructor of the
+token class. In particular they are the following:
+
+.. cfunction:: .send(QUEX_TYPE_TOKEN_XXX_ID)
+
+    Which sends one token to the caller of the lexical analyzer with the given 
+    token-id.
+
+.. cfunction:: .send_n(size_t N, QUEX_TYPE_TOKEN_XXX_ID)
+
+    Sends a token with the given token-id ``N`` times.
+
+.. cfunction:: .send(QUEX_TYPE_TOKEN_XXX_ID, ContentT)
+
+    This is a templated function. It calls the ``.set`` function of the token
+    class that corresponds the type ``ContentT``. For example::
+
+        [a-z]+ {
+             ...
+             self.send(TKN_IDENTIFIER, Lexeme);
+        }
+
+    sends a token with the id ``TKN_IDENTIFIER`` and the content of the current
+    lexeme to the caller of the lexical analyzer.
+
+.. note::
+
+   When a token is send via the a ``send()`` function, what actually happens is that
+   the lexical analyzer accesses a token object via a pointer and fills it. If only
+   a token-id is sent then the data part of the present token object
+   remains as it was. If the same token object was used earlier, then the
+   data of this earlier use in the data part remains. For the sake of 
+   computational speed, the token object is not re-initialized before it is used.
+
+.. warning::
+
+   Relevant for token passing policy *users_token*.
+
+   As long as the default token passing policy (See section :ref:`sec-token-policies`)
+   is used all token sending functions are available and can be used without a
+   lot of caution. The same is true for token policies that are queue based.
+   The token policy ``users_token``, though, allows only *one single* token to
+   be sent for a pattern match. With this token policy no tokens can be sent
+   inside event handlers and the ``send_n()`` is not implemented.
+
+The token object which is currently ready to be sent can be accessed via the
+member function
+
+.. cfunction:: QUEX_TYPE_TOKEN*  token_object()
+
+The pointer to this object may be used to prepare the token object *before* sending
+it out. Modes can be switched with the ``<<``-operator, as shown in the example, or
+``enter_mode``. For example
+
+.. code-block:: cpp
+
+        {P_STRING_DELIMITER} {
+            self.enter_mode(STRING_READER); 
+            return;
+        }
+
+causes a mode transition to the ``STRING_READER`` mode as soon as a string
+delimiter arrives. A mode's id can be mapped to a mode object, and vice
+versa, via the two functions
+
+.. cfunction:: QuexMode&  map_mode_id_to_mode(const int ModeID);
+
+.. cfunction:: QuexMode&  map_mode_to_mode_id(const int ModeID);
+
+The current mode of the lexical analyzer can be queried using the functions
+
+.. cfunction:: QuexMode&           mode();
+
+.. cfunction:: const std::string&  mode_name() const;
+
+.. cfunction:: const int           mode_id() const;
+
+If one wants to avoid the call of exit and enter event handlers, then modes can
+also set brutally using the member functions:
+
+.. cfunction:: void set_mode_brutally(const int ModeID);
+
+.. cfunction:: void set_mode_brutally(const QuexMode& Mode);
+
+Using these functions only the current mode is adapted, but no event handlers
+are called. This also means that mode transition control is turned off.
+Inadmissible transitions triggered with these functions cannot be detected
+during run-time.
+
+Additionally to direct mode transitions modes can be pushed and popped similar to subroutine calls (without arguments). This is provided by the functions:
+
+.. cfunction:: void push_mode(queχ_mode& new_mode);
+
+.. cfunction:: void pop_mode();
+
+.. cfunction:: void pop_drop_mode();
+
+The member function push_mode(new_mode) pushed the current mode on a
+last-in-first-out stack and set the new_mode as the current mode. A call to
+pop_mode() pops the last mode from the stack and sets it as the current mode.
+Note, that the mode transitions with push and pop follow the same mode
+transition procedure as for entering a mode directly. This means, that the
+on_exit and on_entry handler of the source and target mode are called.
+
+Mode Objects
+------------
+
+Modes themselves are implemented as objects of classes which are derived from
+the base class queχ_mode. Those mode objects have member functions that provide
+information about the modes and possible transitions:
+
+.. code-block:: cpp
+
+    bool  has_base(const quex_mode& Mode,       bool PrintErrorMsgF = false) const;
+    bool  has_entry_from(const quex_mode& Mode, bool PrintErrorMsgF = false) const;
+    bool  has_exit_to(const quex_mode& Mode,    bool PrintErrorMsgF = false) const;
+    const int     ID; \\
+    const string  Name; \\
+
+The first three member functions allow to get information about the relation to
+other modes. If the flag ``PringErrorMsgF`` is set than the function will print an
+error message to the standard error output in case that the condition is not
+matched. This comes very handy when using these functions in ``assert``s or during
+debugging. The functions can be applied on a given mode object or inside the
+``on_entry`` and ``on_exit`` functions with the this pointer. In a pattern action
+pair, for example, one might write
+
+.. code-block:: cpp
+
+     if( PROGRAM.has_base(self.mode()) )
+         cerr << "mode not a base of PROGRAM: " << self.mode_name() << endl;
+
+For the end-user these functions are not really relevant, since queχ itself
+introduces ``assert`` calls on mode transitions and provides convienient member
+functions in the lexical analyser class to access information about the current
+mode.
+
+
+.. cfunction:: 
+
+.. warning::
+
+   Relevant for token passing policies *users_token*, *users_queue*, and
+   *users_mini_queue* when a customized token type is used.
+
+   If you use a customized token type that contains pointers, make sure that
+   you read the section about token passing policies :ref:`sec-token-policies`.
+   The point is that the ``send()`` functions may override these pointers
+   without being referred elsewhere. It must be ensured that the pointers in 
+   received tokens are stored elsewhere, before the analyzer overwrites it.
+
+   
+

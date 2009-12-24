@@ -1,0 +1,131 @@
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT
+#define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT
+
+#ifdef  __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
+#   error "More then one configuration header interfer. Please, report a bug at quex.sourceforge.net."
+#endif
+
+/* By default ASSERTS are enabled ! */
+#if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
+#   ifdef     QUEX_OPTION_ASSERTS
+#      undef  QUEX_OPTION_ASSERTS
+#   endif
+#else
+#   ifndef    QUEX_OPTION_ASSERTS
+#      define QUEX_OPTION_ASSERTS
+#   endif
+#endif
+
+#if   ! defined(__QUEX_OPTION_LITTLE_ENDIAN) \
+   && ! defined(__QUEX_OPTION_BIG_ENDIAN) 
+#   define __QUEX_OPTION_LITTLE_ENDIAN
+#endif
+
+#if   ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)       \
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) \
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   define QUEX_OPTION_TOKEN_POLICY_QUEUE
+#endif
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#   define  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   ifndef    QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
+#      define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER (0)
+#   endif
+#   ifndef    QUEX_SETTING_TOKEN_QUEUE_SIZE
+#      define QUEX_SETTING_TOKEN_QUEUE_SIZE (256)
+#   endif
+#endif
+
+#ifndef    __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID  (0)
+#endif
+
+#ifndef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N
+#   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
+#endif
+
+#ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+#   if   defined (QUEX_OPTION_ENABLE_ICONV)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_IConv_new)
+#   elif defined (QUEX_OPTION_ENABLE_ICU)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_ICU_new)
+#   else
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(__Converter_EMPTY_new)
+#   endif
+#endif
+
+#ifndef    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
+#   define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (1)
+#endif
+
+#ifndef    QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE 
+#   define QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE (0)
+#endif
+#ifndef    QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  
+#   define QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (1)
+#endif
+
+#ifndef    __QUEX_SETTING_MAX_MODE_CLASS_N
+#   define __QUEX_SETTING_MAX_MODE_CLASS_N  (256)
+#endif
+#ifndef    QUEX_SETTING_MODE_STACK_SIZE
+#   define QUEX_SETTING_MODE_STACK_SIZE     (256)
+#endif
+#ifndef    QUEX_TYPE_TOKEN  
+#   ifndef __QUEX_SETTING_PLAIN_C
+#       define QUEX_TYPE_TOKEN  quex::Token
+#   else
+#       define QUEX_TYPE_TOKEN  quex_Token
+#   endif
+#endif
+#ifndef    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+#   ifndef __QUEX_SETTING_PLAIN_C
+#      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE Token
+#   else
+#      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE quex_Token
+#   endif
+#endif
+#ifndef    QUEX_TYPE_TOKEN_ID
+#   define QUEX_TYPE_TOKEN_ID uint8_t
+#endif
+
+#define QUEX_FUNC(NAME)        QuexDefault ## _ ## NAME                
+#define QUEX_MEMBER(NAME)      QUEX_TYPE_ANALYZER :: NAME                
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#define QUEX_NAMESPACE_MAIN_REF              quex::
+#define QUEX_NAMESPACE_MAIN_OPEN       namespace quex { // namespace components {
+#define QUEX_NAMESPACE_MAIN_CLOSE      } // }
+#else
+#define QUEX_NAMESPACE_MAIN_REF              
+#define QUEX_NAMESPACE_MAIN_OPEN             
+#define QUEX_NAMESPACE_MAIN_CLOSE            
+#endif
+
+#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_NAME(MemoryPositionMimiker)
+#else
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
+#endif
+
+#define QUEX_NAME(X)   QuexDefault ## X
+
+QUEX_NAMESPACE_MAIN_OPEN
+    struct  QUEX_NAME(AnalyzerData_tag);
+    typedef void (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(AnalyzerData_tag)*);
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#ifndef    QUEX_TYPE_ANALYZER
+#   define QUEX_TYPE_ANALYZER     QUEX_NAME(AnalyzerData)
+#   define QUEX_TYPE_ANALYZER_TAG QUEX_NAME(AnalyzerData_tag)
+#endif
+
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define     QUEX_TYPE_COUNTER             CounterLineColumnIndentation
+#elif  defined(__QUEX_OPTION_COUNTER)
+#   define     QUEX_TYPE_COUNTER             CounterLineColumn
+#else
+#   define     QUEX_TYPE_COUNTER             void*
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT */
