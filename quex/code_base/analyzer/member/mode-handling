@@ -6,32 +6,30 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    // (*) Mode handling
-    //
-    //     -- modes: read access
-    QUEX_FUNC(Mode)*   QUEX_FUNC(mode)(QUEX_TYPE_ANALYZER* me);
-    int                QUEX_FUNC(mode_id)(QUEX_TYPE_ANALYZER* me) const;
-    const char*        QUEX_FUNC(mode_name)(QUEX_TYPE_ANALYZER* me) const;
-    //
-    //     -- modes: changing lexical analysis mode
-    void        QUEX_FUNC(set_mode_brutally)(QUEX_TYPE_ANALYZER* me,
-                                             const int       LexerMode);
-    void        QUEX_FUNC(set_mode_brutally)(QUEX_TYPE_ANALYZER* me,
-                                             const QUEX_NAME(Mode)& Mode);
-    //
-    void        QUEX_FUNC(pop_mode)(QUEX_TYPE_ANALYZER* me);
-    void        QUEX_FUNC(pop_drop_mode)(QUEX_TYPE_ANALYZER* me);
-    void        QUEX_FUNC(push_mode)(QUEX_TYPE_ANALYZER* me, QUEX_NAME(Mode)& new_mode);
-    //
-    void        QUEX_FUNC(enter_mode)(QUEX_TYPE_ANALYZER* me,
-                                      /* NOT const*/ QUEX_NAME(Mode)& TargetMode);
-    //
-    //     -- map: mode id to mode and vice versa
-    QUEX_NAME(Mode)&   QUEX_FUNC(map_mode_id_to_mode)(QUEX_TYPE_ANALYZER* me,
-                                                      const int        ModeID);       
-    int         QUEX_FUNC(map_mode_to_mode_id)(QUEX_TYPE_ANALYZER* me,
-                                               const QUEX_NAME(Mode)& Mode) const;
+/* Read Access */
+QUEX_NAME(Mode)*   QUEX_FUNC(mode)(QUEX_TYPE_ANALYZER* me);
+int                QUEX_FUNC(mode_id)(QUEX_TYPE_ANALYZER* me);
+const char*        QUEX_FUNC(mode_name)(QUEX_TYPE_ANALYZER* me);
 
+/* Map: mode id to mode and vice versa */
+QUEX_NAME(Mode)*   QUEX_FUNC(map_mode_id_to_mode)(QUEX_TYPE_ANALYZER*  me,
+                                                  const int            ModeID);       
+int                QUEX_FUNC(map_mode_to_mode_id)(QUEX_TYPE_ANALYZER*     me,
+                                                  const QUEX_NAME(Mode)&  Mode);
+
+/* Changing Modes */
+void        QUEX_FUNC(set_mode_brutally_by_id)(QUEX_TYPE_ANALYZER*    me,
+                                               const int              LexerMode);
+void        QUEX_FUNC(set_mode_brutally)(QUEX_TYPE_ANALYZER*    me,
+                                         const QUEX_NAME(Mode)* Mode);
+void        QUEX_FUNC(enter_mode)(QUEX_TYPE_ANALYZER* me,
+                                  /* NOT const*/ QUEX_NAME(Mode)& TargetMode);
+
+/* Changing Modes with stack */ 
+void        QUEX_FUNC(pop_mode)(QUEX_TYPE_ANALYZER* me);
+void        QUEX_FUNC(pop_drop_mode)(QUEX_TYPE_ANALYZER* me);
+void        QUEX_FUNC(push_mode)(QUEX_TYPE_ANALYZER* me, QUEX_NAME(Mode)& new_mode);
+  
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MODE_HANDLING */

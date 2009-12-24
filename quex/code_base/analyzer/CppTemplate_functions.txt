@@ -1,7 +1,6 @@
-QUEX_NAMESPACE_MAIN_OPEN
+#include <quex/code_base/temporary_macros_on>
 
-QUEX_INLINE void 
-QUEX_FUNC(set_mode_brutally_by_id)(QUEX_TYPE_ANALYZER*  me, int ModeID);
+QUEX_NAMESPACE_MAIN_OPEN
 
 TEMPLATE_IN(InputHandleT) void
 QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
@@ -41,7 +40,12 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 #   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
 
-    /* No constructor call. Caller 'include_push()' does the job. */
+#   ifndef __QUEX_SETTING_PLAIN_C
+    /* Use placement 'new' for explicit call of constructor. 
+     * Necessary in C++: Trigger call to constructor for user defined members.   */
+    new ((void*)memento) QUEX_NAME(Memento);
+#   endif
+
     memento->base._parent_memento                  = self._parent_memento;
     memento->base.buffer                           = self.buffer;
     memento->base.__current_mode_p                 = self.__current_mode_p; 
@@ -100,7 +104,12 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 $$MEMENTO_EXTENSIONS_UNPACK$$
 /* END: _______________________________________________________________________*/
     
-    /* No destructor call necessary, The caller 'include_pop()' does it.       */
+#   ifndef __QUEX_SETTING_PLAIN_C
+    /* Counterpart to placement new: Explicit destructor call.
+     * Necessary in C++: Trigger call to destructor for user defined members.  */
+    memento->~QUEX_NAME(Memento_tag)();
+#   endif
+
     QUEX_NAME(MemoryManager_Memento_free)(memento);
 #   undef self
 }
@@ -108,3 +117,4 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
+#include <quex/code_base/temporary_macros_off>

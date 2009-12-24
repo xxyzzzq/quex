@@ -114,13 +114,6 @@ $$CLASS_BODY_EXTENSION$$
 
 };
 
-#include <quex/code_base/analyzer/member/buffer-access>
-#include <quex/code_base/analyzer/member/misc>
-#include <quex/code_base/analyzer/member/include-stack>
-#include <quex/code_base/analyzer/member/mode-handling>
-#include <quex/code_base/analyzer/member/token-receiving>
-#include <quex/code_base/analyzer/member/token-sending>
-
 QUEX_NAMESPACE_MAIN_CLOSE
 
 $$CLASS_FUNCTIONS$$

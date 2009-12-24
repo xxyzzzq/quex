@@ -15,7 +15,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
 #define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
 
-#ifdef     __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+#ifdef      __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
     /* In case that multiple lexical analyzers are used the same header
      * files are compiled with a different setting of the macros. The
      * undef of the include guards happens in the following file.              */
@@ -39,10 +39,10 @@ $$TOKEN_CLASS_DECLARATION$$
  *        might rely on contents of the header.                                */
 $$USER_DEFINED_HEADER$$
 /* END: _______________________________________________________________________*/
-#include    "$$TOKEN_ID_DEFINITION_FILE$$"
-#include    "$$TOKEN_CLASS_DEFINITION_FILE$$"
+#include "$$TOKEN_ID_DEFINITION_FILE$$"
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
-#include    <quex/code_base/analyzer/declarations>
+#include <quex/code_base/analyzer/declarations>
 
 /* START: User's derived class declaration (if there is one) __________________*/
 $$LEXER_DERIVED_CLASS_DECL$$
@@ -52,9 +52,6 @@ $$LEXER_DERIVED_CLASS_DECL$$
 
 QUEX_NAMESPACE_MAIN_OPEN 
 $$QUEX_MODE_ID_DEFINITIONS$$
-QUEX_NAMESPACE_MAIN_CLOSE
-
-QUEX_NAMESPACE_MAIN_OPEN
     
 typedef struct QUEX_NAME(Memento_tag) {
     QUEX_NAME(MementoBase)  base;
@@ -67,10 +64,17 @@ $$MEMENTO_EXTENSIONS$$
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
-class QUEX_TYPE_ANALYZER : public QUEX_NAME(AnalyzerData) {
+class QUEX_TYPE_ANALYZER 
+#ifndef __QUEX_SETTING_PLAIN_C
+   : public QUEX_NAME(AnalyzerData) {
+#else
+    QUEX_NAME(AnalyzerData)   base;
+#endif
 
 public:
 $$MODE_OBJECTS$$
+
+#ifndef __QUEX_SETTING_PLAIN_C
     /* DISABLED */ QUEX_TYPE_ANALYZER(const QUEX_TYPE_ANALYZER&);
 public:
     QUEX_TYPE_ANALYZER(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
@@ -127,7 +131,7 @@ public:
     void                  get_token() 
     { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
     void                  get_token(QUEX_TYPE_TOKEN*   result_p)  { get_token(); }
-    void                  get_token(QUEX_TYPE_TOKEN**   result_p) { get_token(); }
+    void                  get_token(QUEX_TYPE_TOKEN**  result_p) { get_token(); }
 
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     void                  receive(QUEX_TYPE_TOKEN*   result_p);
@@ -254,23 +258,29 @@ private:
     template<class InputHandleT> friend void
     QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
 
-    // (*) All Modes are Friends _____________________________________________________
+    /* (*) All Modes are Friends ___________________________________________________*/
 $$MODE_CLASS_FRIENDS$$  
 
 public:
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
-/* START: User's class body extensions ________________________________________*/
+/* START: User's class body extensions _____________________________________________*/
 $$CLASS_BODY_EXTENSION$$
-/* END: _______________________________________________________________________*/
+/* END: ____________________________________________________________________________*/
 #undef  self
 
 };
 
 QUEX_NAMESPACE_MAIN_CLOSE
+#include <quex/code_base/temporary_macros_off>
+
+#include <quex/code_base/analyzer/member/buffer-access>
+#include <quex/code_base/analyzer/member/misc>
+#include <quex/code_base/analyzer/member/include-stack>
+#include <quex/code_base/analyzer/member/mode-handling>
+#include <quex/code_base/analyzer/member/token-receiving>
+#include <quex/code_base/analyzer/member/token-sending>
 
 $$CLASS_FUNCTIONS$$
-
-#include <quex/code_base/temporary_macros_off>
 
 #include    <quex/code_base/analyzer/member/token-sending.i>
 #include    <quex/code_base/analyzer/member/token-receiving.i>
@@ -278,6 +288,7 @@ $$CLASS_FUNCTIONS$$
 #include    <quex/code_base/analyzer/member/buffer-access.i>
 #include    <quex/code_base/analyzer/member/misc.i>
 #include    <quex/code_base/analyzer/member/constructor.i>
+
 #include    <quex/code_base/analyzer/counter/Base.i>
 #include    <quex/code_base/analyzer/AnalyzerData.i>
 #include    <quex/code_base/MemoryManager.i>
