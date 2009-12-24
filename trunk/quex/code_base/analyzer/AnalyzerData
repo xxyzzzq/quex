@@ -36,6 +36,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
     typedef struct QUEX_NAME(TestAnalyzer_tag) {
+#     ifndef __QUEX_SETTING_PLAIN_C
+        /* Most compilers put the virtual function table in front of the object.
+         * So, if the derived class has a virtual function, and therefore a v-table,
+         * the cast towards the base class and back might not work. Thus let us
+         * ensure that all related objects contain a v-table by having one virtual
+         * function.                                                                      */
+      virtual ~QUEX_NAME(TestAnalyzer_tag)() {}
+#     endif
 #     include <quex/code_base/analyzer/Engine_body>
     } QUEX_NAME(TestAnalyzer);
 

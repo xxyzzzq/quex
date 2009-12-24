@@ -73,6 +73,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 QUEX_NAMESPACE_MAIN_OPEN 
 
 class QUEX_TYPE_ANALYZER {
+public:
 #   include <quex/code_base/analyzer/Engine_body>
 
 public:
