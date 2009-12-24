@@ -27,3 +27,10 @@
 #include    <quex/code_base/analyzer/counter/Base>
 #include    <quex/code_base/analyzer/AnalyzerData>
 
+#include    <quex/code_base/analyzer/member/buffer-access>
+#include    <quex/code_base/analyzer/member/misc>
+#include    <quex/code_base/analyzer/member/mode-handling>
+#include    <quex/code_base/analyzer/member/token-receiving>
+#include    <quex/code_base/analyzer/member/token-sending>
+#include    <quex/code_base/analyzer/member/include-stack>
+

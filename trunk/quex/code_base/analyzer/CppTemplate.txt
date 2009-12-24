@@ -42,39 +42,42 @@ $$USER_DEFINED_HEADER$$
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
-#include <quex/code_base/analyzer/declarations>
+#include <quex/code_base/analyzer/headers>
 
 /* START: User's derived class declaration (if there is one) __________________*/
 $$LEXER_DERIVED_CLASS_DECL$$
 /* END: _______________________________________________________________________*/
 
-#include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN 
+
 $$QUEX_MODE_ID_DEFINITIONS$$
     
+$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
+
 typedef struct QUEX_NAME(Memento_tag) {
     QUEX_NAME(MementoBase)  base;
+
+    QUEX_NAME(Memento_tag)()  {}  /* Con- and Destruction necessary to trigger */
+    ~QUEX_NAME(Memento_tag)() {}  /* con- and destruction of user members.     */
 
 /* START: User's memento extentions ___________________________________________*/
 $$MEMENTO_EXTENSIONS$$
 /* END: _______________________________________________________________________*/
 } QUEX_NAME(Memento);
 
+QUEX_NAMESPACE_MAIN_CLOSE 
 
-$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN 
 
 class QUEX_TYPE_ANALYZER 
-#ifndef __QUEX_SETTING_PLAIN_C
    : public QUEX_NAME(AnalyzerData) {
-#else
-    QUEX_NAME(AnalyzerData)   base;
-#endif
 
 public:
 $$MODE_OBJECTS$$
 
-#ifndef __QUEX_SETTING_PLAIN_C
     /* DISABLED */ QUEX_TYPE_ANALYZER(const QUEX_TYPE_ANALYZER&);
 public:
     QUEX_TYPE_ANALYZER(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
@@ -273,31 +276,8 @@ $$CLASS_BODY_EXTENSION$$
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
-#include <quex/code_base/analyzer/member/buffer-access>
-#include <quex/code_base/analyzer/member/misc>
-#include <quex/code_base/analyzer/member/include-stack>
-#include <quex/code_base/analyzer/member/mode-handling>
-#include <quex/code_base/analyzer/member/token-receiving>
-#include <quex/code_base/analyzer/member/token-sending>
-
 $$CLASS_FUNCTIONS$$
 
-#include    <quex/code_base/analyzer/member/token-sending.i>
-#include    <quex/code_base/analyzer/member/token-receiving.i>
-#include    <quex/code_base/analyzer/member/mode-handling.i>
-#include    <quex/code_base/analyzer/member/buffer-access.i>
-#include    <quex/code_base/analyzer/member/misc.i>
-#include    <quex/code_base/analyzer/member/constructor.i>
-
-#include    <quex/code_base/analyzer/counter/Base.i>
-#include    <quex/code_base/analyzer/AnalyzerData.i>
-#include    <quex/code_base/MemoryManager.i>
-#include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#ifdef      QUEX_OPTION_INCLUDE_STACK
-#   include <quex/code_base/analyzer/member/include-stack.i>
-#endif
-#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
-#   include <quex/code_base/analyzer/Accumulator.i>
-#endif
+#include <quex/code_base/analyzer/headers.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */
