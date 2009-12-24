@@ -157,7 +157,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
     # Parameterize the common declarations
     txt = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
-    txt = "typedef unsigned char QUEX_TYPE_CHARACTER;\n" + txt
+    txt = "#define QUEX_TYPE_CHARACTER unsigned char\n" + txt
     txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
 
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
@@ -217,6 +217,9 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
     txt += "#endif\n"
+    txt += "#include <quex/code_base/buffer/Buffer>\n"
+    txt += "#include <quex/code_base/buffer/Buffer.i>\n"
+    txt += "#include <quex/code_base/buffer/BufferFiller.i>\n"
     txt += "#include <quex/code_base/analyzer/AnalyzerData>\n"
     txt += "#include <quex/code_base/analyzer/AnalyzerData.i>\n"
     txt += "\n"
@@ -230,8 +233,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
     txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {\n"
     txt += "        QUEX_NAME(Buffer_mark_lexeme_start)(buffer);\n"
-    txt += "        if( QUEX_NAME(AnalyzerData_buffer_reload_forward)(buffer, &last_acceptance_input_position,\n"
-    txt += "                                                    post_context_start_position, 0) == 0 ) {\n"
+    txt += "        if( QUEX_FUNC(buffer_reload_forward)(buffer, &last_acceptance_input_position,\n"
+    txt += "                                             post_context_start_position, 0) == 0 ) {\n"
     txt += "            return false;\n"
     txt += "        } else {\n"
     txt += "            QUEX_NAME(Buffer_input_p_increment)(buffer);\n"
@@ -264,7 +267,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
         txt += "    break;\n"
     txt += "        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {\n"
     txt += "            QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);\n"
-    txt += "            if( QUEX_NAME(AnalyzerData_buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "            if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n"
     txt += "                                                   post_context_start_position, 0) == 0 )\n"
     txt += "                goto TERMINAL_END_OF_STREAM;\n"
     txt += "            QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
@@ -353,6 +356,10 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif
 #include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/MemoryManager>
+#include <quex/code_base/MemoryManager.i>
 #include <quex/code_base/analyzer/AnalyzerData>
 #include <quex/code_base/analyzer/AnalyzerData.i>
 #if ! defined (__QUEX_SETTING_PLAIN_C)
@@ -374,12 +381,12 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QUEX_NAME(AnalyzerData)   lexer_state;
+        QUEX_NAME(TestAnalyzer)   lexer_state;
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
-        QUEX_NAME(AnalyzerData_construct)(&lexer_state, (void*)0x0,
-                                    TestString, MemorySize, 0x0, 0, false);
+        QUEX_FUNC(construct_basic)(&lexer_state, (void*)0x0,
+                                   TestString, MemorySize, 0x0, 0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
@@ -398,7 +405,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QUEX_NAME(AnalyzerData) lexer_state;
+        QUEX_NAME(TestAnalyzer) lexer_state;
         /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
@@ -407,7 +414,7 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QUEX_NAME(AnalyzerData_construct)(&lexer_state, fh, 0x0,
+        QUEX_FUNC(construct_basic)(&lexer_state, fh, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 
                                     /* No translation, no translation buffer */0x0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
@@ -433,12 +440,12 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        QUEX_NAME(AnalyzerData)  lexer_state;
+        QUEX_NAME(TestAnalyzer)  lexer_state;
         /**/
         istringstream      istr("$$TEST_STRING$$");
 
-        QUEX_NAME(AnalyzerData_construct)(&lexer_state, &istr, 0x0,
-                                    $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
+        QUEX_FUNC(construct_basic)(&lexer_state, &istr, 0x0,
+                                   $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
 
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
@@ -461,12 +468,12 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        QUEX_NAME(AnalyzerData) lexer_state;
+        QUEX_NAME(TestAnalyzer) lexer_state;
         /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
 
-        QUEX_NAME(AnalyzerData_construct)(&lexer_state, &strange_stream, 0x0,
+        QUEX_FUNC(construct_basic)(&lexer_state, &strange_stream, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/

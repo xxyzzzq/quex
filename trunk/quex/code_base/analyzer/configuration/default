@@ -111,13 +111,13 @@
 #define QUEX_NAME(X)   QuexDefault ## X
 
 QUEX_NAMESPACE_MAIN_OPEN
-    struct  QUEX_NAME(AnalyzerData_tag);
-    typedef void (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(AnalyzerData_tag)*);
+    struct  QUEX_NAME(TestAnalyzer_tag);
+    typedef void (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(TestAnalyzer_tag)*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #ifndef    QUEX_TYPE_ANALYZER
-#   define QUEX_TYPE_ANALYZER     QUEX_NAME(AnalyzerData)
-#   define QUEX_TYPE_ANALYZER_TAG QUEX_NAME(AnalyzerData_tag)
+#   define QUEX_TYPE_ANALYZER     QUEX_NAME(TestAnalyzer)
+#   define QUEX_TYPE_ANALYZER_TAG QUEX_NAME(TestAnalyzer_tag)
 #endif
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)

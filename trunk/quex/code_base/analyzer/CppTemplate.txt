@@ -56,7 +56,7 @@ $$QUEX_MODE_ID_DEFINITIONS$$
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
 typedef struct QUEX_NAME(Memento_tag) {
-    QUEX_NAME(MementoBase)  base;
+#   include <quex/code_base/analyzer/EngineMemento_body>
 
     QUEX_NAME(Memento_tag)()  {}  /* Con- and Destruction necessary to trigger */
     ~QUEX_NAME(Memento_tag)() {}  /* con- and destruction of user members.     */
@@ -72,8 +72,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
-class QUEX_TYPE_ANALYZER 
-   : public QUEX_NAME(AnalyzerData) {
+class QUEX_TYPE_ANALYZER {
+#   include <quex/code_base/analyzer/Engine_body>
 
 public:
 $$MODE_OBJECTS$$

@@ -20,7 +20,7 @@ typedef int       CounterLineColumnIndentation;
 
 extern int  indentation[64];
 
-class my_tester : public quex::QUEX_NAME(AnalyzerData) {
+class my_tester : public quex::QUEX_NAME(TestAnalyzer) {
 public:
     my_tester();
     quex::QUEX_NAME(CounterLineColumn)*   counter;

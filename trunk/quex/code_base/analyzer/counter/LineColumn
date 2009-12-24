@@ -13,14 +13,14 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-struct QUEX_NAME(AnalyzerData_tag);
+struct QUEX_NAME(TestAnalyzer_tag);
 
 typedef struct {
     __CounterBase  base;
 } QUEX_NAME(CounterLineColumn);
 
 QUEX_INLINE void  CounterLineColumn_construct(QUEX_NAME(CounterLineColumn)*        me, 
-                                              struct QUEX_NAME(AnalyzerData_tag)*  lexer);
+                                              struct QUEX_NAME(TestAnalyzer_tag)*  lexer);
 QUEX_INLINE void  QUEX_NAME(CounterLineColumn_copy_construct)(QUEX_NAME(CounterLineColumn)*  me, 
                                                    const QUEX_NAME(CounterLineColumn)*       That);
 QUEX_INLINE void  QUEX_NAME(CounterLineColumn_reset)(QUEX_NAME(CounterLineColumn)* me);
