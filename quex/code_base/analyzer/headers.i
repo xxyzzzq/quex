@@ -9,7 +9,7 @@
 #include    <quex/code_base/analyzer/member/constructor.i>
 
 #include    <quex/code_base/analyzer/counter/Base.i>
-#include    <quex/code_base/analyzer/AnalyzerData.i>
+#include    <quex/code_base/analyzer/basic.i>
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #ifdef      QUEX_OPTION_INCLUDE_STACK

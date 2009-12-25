@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.34" date="Thu Dec 24 10:12:51 2009">
+<test-database execution-time-sec="0.35" date="Fri Dec 25 14:54:43 2009">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.00"> 
-        <application file-name="simple-queue.exe" info-request-time="1261645966L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
+        <application file-name="simple-queue.exe" info-request-time="1261748159L"/>
+        <make-procedure success="True" time_sec="2.692248"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.33"> 
+    <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.34"> 
         <application file-name="misc.sh" info-request-time="1258445961L"/>
         <choice-list number="4" same_result="False">
            <choice name="empty" result="OK" time_sec="0.08" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.09" crc="-1030780323"/>
+           <choice name="no-namespace" result="OK" time_sec="0.10" crc="-1030780323"/>
            <choice name="double-colon" result="OK" time_sec="0.08" crc="-223322448"/>
            <choice name="token" result="OK" time_sec="0.08" crc="-1215460710"/>
         </choice-list>
     </test>
     <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1261645968L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
+        <application file-name="simple.exe" info-request-time="1261748163L"/>
+        <make-procedure success="True" time_sec="3.983674"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
         </choice-list>

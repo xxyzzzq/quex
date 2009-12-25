@@ -9,7 +9,6 @@
 #endif
 
 #include<quex/code_base/definitions>
-#include<quex/code_base/analyzer/AnalyzerData>
 
 #include<quex/code_base/temporary_macros_on>
 
@@ -22,11 +21,11 @@
 QUEX_NAMESPACE_MAIN_OPEN
     
     typedef struct QUEX_NAME(Mode_tag) {  
-        int                      id;
-        const char*              name;
-        QUEX_TYPE_ANALYZER*      the_lexer;
+        int                  id;
+        const char*          name;
+        QUEX_TYPE_ANALYZER*  the_lexer;
 
-        QUEX_NAME(AnalyzerFunctionP)  analyzer_function;
+        QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
 
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         void (*on_indentation)(QUEX_TYPE_ANALYZER*, const int Indentation);
