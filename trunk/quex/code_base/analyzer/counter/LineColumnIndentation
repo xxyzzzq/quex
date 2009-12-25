@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef struct {
         __CounterBase   base;
 
-        struct QUEX_TYPE_ANALYZER*   _the_lexer;
+        struct QUEX_TYPE_ANALYZER_TAG*   _the_lexer;
 
         int     _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
@@ -33,13 +33,14 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(CounterLineColumnIndentation_construct)(QUEX_NAME(CounterLineColumnIndentation)* me, 
-                                                      struct QUEX_TYPE_ANALYZER*               lexer);
+                                                      struct QUEX_TYPE_ANALYZER_TAG*           lexer);
 
     QUEX_INLINE void
     QUEX_NAME(CounterLineColumnIndentation_reset)(QUEX_NAME(CounterLineColumnIndentation)* me);
 
     QUEX_INLINE void
-    QUEX_NAME(CounterLineColumnIndentation_copy_construct)(QUEX_NAME(CounterLineColumnIndentation)* me, const QUEX_NAME(CounterLineColumnIndentation)* That);
+    QUEX_NAME(CounterLineColumnIndentation_copy_construct)(QUEX_NAME(CounterLineColumnIndentation)*       me, 
+                                                           const QUEX_NAME(CounterLineColumnIndentation)* That);
 
     QUEX_INLINE void
     QUEX_NAME(CounterLineColumnIndentation_init)(QUEX_NAME(CounterLineColumnIndentation)* me);
@@ -49,8 +50,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void    
     QUEX_NAME(CounterLineColumnIndentation_icount)(QUEX_NAME(CounterLineColumnIndentation)*  me,
-                                  QUEX_TYPE_CHARACTER*     Lexeme,
-                                  QUEX_TYPE_CHARACTER*     LexemeEnd);
+                                                   QUEX_TYPE_CHARACTER*     Lexeme,
+                                                   QUEX_TYPE_CHARACTER*     LexemeEnd);
 
     QUEX_INLINE void
     QUEX_NAME(__CounterLineColumnIndentation_count_whitespace_to_first_non_whitespace)(
