@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I
-#define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
@@ -26,7 +26,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      *                     memory. In this case, the user needs to call the following function
      *                     by hand in order to setup the memory:
      *
-     *                     QuexBufferMemory_construct(analyse->buffer._memory, (uint8_t*)MyMemoryP, MyMemorySize); 
+     *                     QuexBufferMemory_construct(analyse->buffer._memory, 
+     *                                                (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
 #       if      defined(QUEX_OPTION_ASSERTS) \
@@ -189,4 +190,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I */
