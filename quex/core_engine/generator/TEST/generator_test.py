@@ -220,8 +220,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#include <quex/code_base/buffer/Buffer>\n"
     txt += "#include <quex/code_base/buffer/Buffer.i>\n"
     txt += "#include <quex/code_base/buffer/BufferFiller.i>\n"
-    txt += "#include <quex/code_base/analyzer/AnalyzerData>\n"
-    txt += "#include <quex/code_base/analyzer/AnalyzerData.i>\n"
+    txt += "#include <quex/code_base/test_environment/TestAnalyzer>\n"
+    txt += "#include <quex/code_base/analyzer/basic.i>\n"
     txt += "\n"
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
     txt += "\n"
@@ -360,24 +360,23 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/MemoryManager.i>
-#include <quex/code_base/analyzer/AnalyzerData>
-#include <quex/code_base/analyzer/AnalyzerData.i>
+#include <quex/code_base/test_environment/TestAnalyzer>
+#include <quex/code_base/analyzer/basic.i>
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     using namespace quex;
 #endif
 
 bool analyzis_terminated_f = false;
 
-static void  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
+static           void  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
+/* NOT static */ void  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
-static void  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 """
 
 test_program_db = { 
     "ANSI-C-PlainMemory": """
     #include <stdlib.h>
-    #include <quex/code_base/analyzer/AnalyzerData.i>
 
     int main(int argc, char** argv)
     {
@@ -400,7 +399,6 @@ test_program_db = {
 
     "ANSI-C": """
     #include <stdio.h>
-    #include <quex/code_base/analyzer/AnalyzerData.i>
     /* #include <quex/code_base/buffer/plain/BufferFiller_Plain> */
 
     int main(int argc, char** argv)
@@ -432,7 +430,6 @@ test_program_db = {
     "Cpp": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/analyzer/AnalyzerData.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)
@@ -460,7 +457,6 @@ test_program_db = {
     "Cpp_StrangeStream": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/analyzer/AnalyzerData.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)

@@ -1,0 +1,54 @@
+/* -*- C++ -*-  vim:set syntax=cpp: 
+ *
+ * (C) 2004-2009 Frank-Rene Schaefer
+ *
+ * __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA may be undefined in case
+ *    that multiple lexical analyzers are used. Then, the name of the
+ *    QUEX_NAME(Accumulator) must be different.                             */
+#ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER
+#undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER
+
+#include <quex/code_base/buffer/Buffer>
+
+#if ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   include <quex/code_base/analyzer/counter/LineColumn>
+#   else
+#   include <quex/code_base/analyzer/counter/LineColumnIndentation>
+#endif
+
+#ifdef  QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator>
+#endif
+
+#ifdef  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   include <quex/code_base/token/TokenQueue>
+#endif
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    /* Forward declaration of the derived memento, which is used by the analyzer. */
+    struct  QUEX_NAME(Memento_tag);
+#   endif
+
+    struct QUEX_NAME(Mode_tag);
+
+    typedef struct QUEX_NAME(TestAnalyzer_tag) {
+#     ifndef __QUEX_SETTING_PLAIN_C
+        /* Most compilers put the virtual function table in front of the object.
+         * So, if the derived class has a virtual function, and therefore a v-table,
+         * the cast towards the base class and back might not work. Thus let us
+         * ensure that all related objects contain a v-table by having one virtual
+         * function.                                                                      */
+      virtual ~QUEX_NAME(TestAnalyzer_tag)() {}
+#     endif
+#     include <quex/code_base/analyzer/Engine_body>
+    } QUEX_NAME(TestAnalyzer);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER */

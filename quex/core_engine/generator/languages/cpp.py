@@ -13,7 +13,7 @@ def __nice(SM_ID):
 #
 
 __header_definitions_txt = """
-#include <quex/code_base/analyzer/AnalyzerData>
+#include <quex/code_base/analyzer/basic>
 #include <quex/code_base/buffer/Buffer>
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   include <quex/code_base/token/TokenQueue>
