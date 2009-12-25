@@ -104,11 +104,11 @@
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA                             
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA                             
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__BASIC                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__BASIC                             
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA_I                             
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I                             
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MODE
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MODE
@@ -172,4 +172,7 @@
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
 #   undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER                    
+#   undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER                    
 #endif

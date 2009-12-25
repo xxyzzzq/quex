@@ -85,7 +85,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_SETTING_PLAIN_C
-        QUEX_FUNC(include_push)<InputHandleT>((QUEX_NAME(TestAnalyzer)*)me, InputName, mode->id(), CharacterCodecName);
+        QUEX_FUNC(include_push)<InputHandleT>(me, InputName, mode->id(), CharacterCodecName);
 #       else
         QUEX_FUNC(include_push)((QUEX_NAME(TestAnalyzer)*)me, InputName, mode->id(), CharacterCodecName);
 #       endif

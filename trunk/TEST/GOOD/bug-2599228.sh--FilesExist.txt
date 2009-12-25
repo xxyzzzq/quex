@@ -51,8 +51,8 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Mode exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/AnalyzerData exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/AnalyzerData.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/basic exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/basic.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/asserts exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/include-stack.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/mode-handling.i exists

@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef struct {
         __CounterBase   base;
 
-        struct QUEX_TYPE_ANALYZER_TAG*   _the_lexer;
+        QUEX_TYPE_ANALYZER*   _the_lexer;
 
         int     _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
