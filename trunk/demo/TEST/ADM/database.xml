@@ -1,4 +1,4 @@
-<test-database execution-time-sec="233.06" date="Sat Dec 26 00:23:52 2009">
+<test-database execution-time-sec="233.08" date="Sat Dec 26 02:16:53 2009">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" make-required="True" time-sum-sec="7.65"> 
@@ -10,7 +10,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="7.30"> 
+        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="7.29"> 
             <application file-name="001.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.63" crc="-201583554"/>
@@ -38,7 +38,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="4.93" crc="1432168134"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="20.06"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="20.07"> 
             <application file-name="003-icu.sh" info-request-time="1260684265L"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="4.26" crc="-77570413"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" make-required="True" time-sum-sec="14.45"> 
+        <test title="Including Files" make-required="True" time-sum-sec="14.44"> 
             <application file-name="005.sh" info-request-time="1256771044L"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="4.05" crc="-65032981"/>
@@ -87,7 +87,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="6.16"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="6.17"> 
             <application file-name="008.sh" info-request-time="1260257312L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.01" crc="1304621319"/>
@@ -96,7 +96,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="6.28"> 
+        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="6.29"> 
             <application file-name="009.sh" info-request-time="1256771044L"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="3.33" crc="13704092"/>
@@ -138,7 +138,7 @@
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" make-required="True" time-sum-sec="6.94"> 
+        <test title="Engine Encoding UTF16" make-required="True" time-sum-sec="6.95"> 
             <application file-name="011b.sh" info-request-time="1260276781L"/>
             <choice-list number="2" same_result="True">
                <choice name="LE" result="OK" time_sec="3.49" crc="2001714839"/>
