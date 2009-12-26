@@ -1,4 +1,4 @@
-<history date="Sat Dec 26 02:26:36 2009" element-n="558">
+<history date="Sat Dec 26 14:17:05 2009" element-n="575">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1157,6 +1157,23 @@
         <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:19:58"/>
     </day>
     <day year="2009" month="12" day="26">
-        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:26:03"/>
+        <crc-error time="13:11:13" application="bug-2277660.sh" choice="" database-crc="-316369004" real-crc="-389983954"/>
+        <crc-error time="13:16:24" application="bug-2209142.sh" choice="error" database-crc="1446065790" real-crc="-345837213"/>
+        <crc-error time="13:16:26" application="bug-2209142.sh" choice="good" database-crc="-1309674102" real-crc="-16339222"/>
+        <crc-error time="13:16:37" application="bug-2257908.sh" choice="" database-crc="-644952685" real-crc="1789738560"/>
+        <crc-error time="13:16:45" application="bug-1895500.sh" choice="" database-crc="-1827347253" real-crc="104669226"/>
+        <crc-error time="13:16:47" application="bug-2095970-ntq.sh" choice="Normal" database-crc="-1893520865" real-crc="704590843"/>
+        <crc-error time="13:16:48" application="bug-2095970-ntq.sh" choice="NormalNoAsserts" database-crc="-1082393461" real-crc="941900985"/>
+        <crc-error time="13:16:50" application="bug-2095970-ntq.sh" choice="NoModeDetection" database-crc="214531898" real-crc="743503348"/>
+        <crc-error time="13:16:52" application="bug-2095970-ntq.sh" choice="NoModeDetectionNoAsserts" database-crc="1353294940" real-crc="-1217687261"/>
+        <crc-error time="13:16:53" application="bug-2095970-ntq.sh" choice="NoModeDetection_ErrorCase" database-crc="1711466454" real-crc="-412537409"/>
+        <crc-error time="13:16:55" application="bug-2095970.sh" choice="Normal" database-crc="-1893520865" real-crc="704590843"/>
+        <crc-error time="13:16:58" application="bug-2095970.sh" choice="NormalNoAsserts" database-crc="-1082393461" real-crc="941900985"/>
+        <crc-error time="13:17:00" application="bug-2095970.sh" choice="NoModeDetection" database-crc="1814876242" real-crc="102998945"/>
+        <crc-error time="13:17:02" application="bug-2095970.sh" choice="NoModeDetectionNoAsserts" database-crc="849823661" real-crc="-1569213271"/>
+        <crc-error time="13:17:04" application="bug-2095970.sh" choice="NoModeDetection_ErrorCase" database-crc="1711466454" real-crc="-412537409"/>
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="13:17:05"/>
+        <crc-error time="13:17:05" application="bug-2798423.sh" choice="" database-crc="-179153926" real-crc="1215339133"/>
+        <crc-error time="13:17:05" application="feature-2146712.sh" choice="Normal" database-crc="391818426" real-crc="-1629670224"/>
     </day>
 </history>

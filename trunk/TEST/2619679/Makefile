@@ -18,8 +18,7 @@ ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-token               \
-		           $(ENGINE_NAME)-core-engine.cpp
+                   $(ENGINE_NAME)-token               
 # -- OUTPUT
 APPLICATION      = lexer
 
@@ -33,12 +32,12 @@ CC = $(COMPILER) \
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(APPLICATION).cpp $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
+$(APPLICATION): $(APPLICATION).cpp $(ENGINE_NAME).cpp 
 	@echo "##"
 	@echo "## The issue here was that there were warnings about double defined macros."
 	@echo "##"
 	$(CC) -o $(APPLICATION) \
-		  ./$(APPLICATION).cpp $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp 
+		  ./$(APPLICATION).cpp $(ENGINE_NAME).cpp 
           
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
@@ -49,7 +48,6 @@ clean:
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o
 	rm -f $(ENGINE_NAME)-configuration
-	rm -f $(ENGINE_NAME)-core-engine.o
 	rm -f lexer.o
 	rm -f lexer
 	rm -f token_ids

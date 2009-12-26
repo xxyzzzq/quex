@@ -17,8 +17,7 @@ LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
 LEXER_SOURCES	= $(LEXER_NAME)                     \
                   $(LEXER_NAME).cpp                 \
                   $(LEXER_NAME)-token_ids           \
-                  $(LEXER_NAME)-configuration       \
-		          $(LEXER_NAME)-core-engine.cpp
+                  $(LEXER_NAME)-configuration       
 
 TOKEN_FILE		= Calc_token-ids
 
@@ -48,8 +47,8 @@ LD = $(COMPILER) $(LIBICONV)
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): main.o $(LEXER_NAME).o $(LEXER_NAME)-core-engine.o $(PARSER_NAME).tab.o
-	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(LEXER_NAME)-core-engine.o $(PARSER_NAME).tab.o
+$(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
+	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 
 # -- engine and object files
 %.o: %.cpp $(LEXER_SOURCES) $(PARSER_NAME).tab.cpp

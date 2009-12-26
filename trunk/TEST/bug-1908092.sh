@@ -18,5 +18,5 @@ quex -i error.qx -o Simple --token-class-file
 
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism
+rm -f Simple  Simple.cpp Simple-token_ids Simplism
 cd $tmp

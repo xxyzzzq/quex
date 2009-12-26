@@ -41,11 +41,9 @@ ENGINE_NAME      = c_lexer# NOTE: a whitespace after this name creates chaos!
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       \
-		           $(ENGINE_NAME)-core-engine.cpp
+                   $(ENGINE_NAME)-configuration       
 APPLICATION  = lexer
-SOURCE_FILES = lexer.cpp report.cpp main.cpp \
-			   $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
+SOURCE_FILES = lexer.cpp report.cpp main.cpp $(ENGINE_NAME).cpp 
 
 OBJECT_FILES    = $(SOURCE_FILES:.cpp=.o)  # object file w/o line and column counting
 OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column counting

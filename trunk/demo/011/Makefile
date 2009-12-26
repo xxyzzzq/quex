@@ -12,7 +12,6 @@ iso8859-7-lexer: iso8859-7-lexer.cpp
 		-I$(QUEX_PATH) -I. \
 		$<                 \
 		ISO8859_7_Lex.cpp  \
-		ISO8859_7_Lex-core-engine.cpp \
 		-o $@
 
 utf8-lexer: utf8-lexer.cpp 
@@ -26,7 +25,6 @@ utf8-lexer: utf8-lexer.cpp
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		UTF8Lex.cpp             \
-		UTF8Lex-core-engine.cpp \
 		-o $@
 
 utf16-lexer: utf16-lexer.cpp 
@@ -41,7 +39,6 @@ utf16-lexer: utf16-lexer.cpp
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		UTF16Lex.cpp             \
-		UTF16Lex-core-engine.cpp \
 		-o $@
 
 			

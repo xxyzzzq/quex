@@ -1,6 +1,5 @@
 quex -i indigo.qx -o IndigoLexer -b 4 --iconv 
 g++ -I./ -I/home/fschaef/prj/quex/trunk \
-		IndigoLexer-core-engine.cpp          \
 		IndigoLexer.cpp                      \
 		lexer.cpp                     \
 		-ggdb \

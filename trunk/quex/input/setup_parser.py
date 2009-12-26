@@ -97,9 +97,8 @@ def do(argv):
     setup.output_file_stem          = __prepare_file_name("")
     setup.output_configuration_file = __prepare_file_name("-configuration")
     setup.output_token_id_file      = __prepare_file_name("-token_ids")
-    setup.output_code_file          = __prepare_file_name(".cpp")
-    setup.output_core_engine_file   = __prepare_file_name("-core-engine.cpp")
     setup.output_token_class_file   = __prepare_file_name("-token")
+    setup.output_code_file          = __prepare_file_name(".cpp")
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 

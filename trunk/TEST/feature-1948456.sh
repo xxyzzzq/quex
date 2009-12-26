@@ -8,7 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i simple.qx -o Simple
-awk ' /*\// { exit; } // { print; } ' Simple-core-engine.cpp
+awk ' /*\// { exit; } // { print; } ' Simple.cpp
 
 # cleansening
 rm -f Simple Simple.cpp Simple-* *.o tmp.txt

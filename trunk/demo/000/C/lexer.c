@@ -19,7 +19,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        tiny_lexer_receive(&qlex, &Token);
+        QUEX_FUNC(receive)(&qlex, &Token);
 
         // (*) print out token information
         // cout << Token.type_id_name() << endl;

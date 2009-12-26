@@ -17,7 +17,6 @@ ENGINE_SOURCES = $(ENGINE_NAME)                     \
                  $(ENGINE_NAME)-token_ids           \
                  $(ENGINE_NAME)-configuration       \
                  $(ENGINE_NAME)-token               \
-		         $(ENGINE_NAME)-core-engine.cpp
 
 # (*) COMPILER SETTINGS ________________________________________________________
 CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb \
@@ -28,7 +27,7 @@ all: lexer
 
 # -- application
 lexer: lexer.cpp $(ENGINE_SOURCES)
-	$(CC) $< $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp -o $@ 
+	$(CC) $< $(ENGINE_NAME).cpp -o $@ 
 
 $(ENGINE_SOURCES): $(EXT_MODE_FILE)
 	@quex -i $(EXT_MODE_FILE) --engine $(ENGINE_NAME) $(EXT_TOKEN_QUEUE_FLAG) >& tmp.txt
@@ -38,7 +37,6 @@ $(ENGINE_SOURCES): $(EXT_MODE_FILE)
 clean:	
 	@rm -f $(ENGINE_SOURCES)
 	@rm -f $(ENGINE_NAME).o
-	@rm -f $(ENGINE_NAME)-core-engine.o
 	@rm -f lexer.o
 	@rm -f lexer
 	@rm -f token_ids

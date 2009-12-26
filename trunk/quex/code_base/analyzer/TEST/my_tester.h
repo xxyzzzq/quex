@@ -15,7 +15,8 @@ typedef int       CounterLineColumnIndentation;
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/counter/LineColumn>
 #include <quex/code_base/analyzer/Mode>
-#include <quex/code_base/analyzer/AnalyzerData>
+#include <quex/code_base/test_environment/TestAnalyzer>
+#include <quex/code_base/analyzer/basic>
 
 
 extern int  indentation[64];
