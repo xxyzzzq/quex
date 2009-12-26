@@ -1,0 +1,9 @@
+g++ -I./ -I/home/fschaef/prj/quex/trunk -DQUEX_OPTION_ASSERTS_DISABLED -ggdb -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED lexer.cpp Simple.cpp Simple-core-engine.cpp -o lexer 
+,------------------------------------------------------------------------------------
+| [START]
+STRING_LITERAL
+<TERMINATION>
+| [END] number of token = 2
+`------------------------------------------------------------------------------------
+buffer size = 65536
+clean

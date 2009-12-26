@@ -1,0 +1,88 @@
+
+        QUEX_NAME(Buffer)             buffer;
+
+        /* Each mode has a dedicated analyzer function.  The function pointer
+         * to the currently active mode's function is stored redundantly in 
+         * 'current_analyzer_function' to accelerate the access to it.                    */
+        struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
+        QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
+
+#if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+     || defined(QUEX_OPTION_ASSERTS)
+        /* When a mode change happens and the user does not 'return' but 'CONTINUE'
+         * an error must be logged, since the following characters are still swallowed
+         * by the current function and not the new one. For this one needs to return and
+         * then continue further.                                                         */
+        QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
+#       endif
+
+        /*_________________________________________________________________________
+         *        __   __   ___  __  
+         *  |\/| /  \ |  \ |__  /__` 
+         *  |  | \__/ |__/ |___ .__/ 
+         *                                                                         */
+        /* Map: mode-id --> mode object                                            */
+        struct QUEX_NAME(Mode_tag)*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+
+        struct {
+            struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            struct QUEX_NAME(Mode_tag)** end;
+            struct QUEX_NAME(Mode_tag)** memory_end;
+        }                                _mode_stack;
+
+        /*_________________________________________________________________________
+         *  ___  __        ___       __  
+         *   |  /  \ |__/ |__  |\ | /__` 
+         *   |  \__/ |  \ |___ | \| .__/ 
+         *                                                                        
+         *  Allow public access, for user's special tricks.                        */
+#       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+        QUEX_NAME(TokenQueue)  _token_queue;  
+#       else
+        QUEX_TYPE_TOKEN*       token;         
+#       endif
+
+        /*_________________________________________________________________________
+         *   __   __            ___  ___  __  
+         *  /  ` /  \ |  | |\ |  |  |__  |__) 
+         *  \__, \__/ \__/ | \|  |  |___ |  \ 
+         *                                                                         
+         * Dependent on setup all counting might be set to 'null operations'.    
+         * In case of no counting, we spend sizeof(void*) bytes for nothing, just
+         * to keep the code uniform.                                               */
+        QUEX_TYPE_COUNTER              counter;
+
+        /*_________________________________________________________________________
+         *       __   __                            ___  __   __  
+         *  /\  /  ` /  ` |  |  |\/| |  | |     /\   |  /  \ |__) 
+         * /~~\ \__, \__, \__/  |  | \__/ |___ /~~\  |  \__/ |  \ 
+         *                                                                         
+         *  Accumulate lexemes from multiple patterns.                             */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator)          accumulator;
+#       endif
+
+
+        /*_________________________________________________________________________
+         *   __   __   __  ___     __       ___  ___  __   __   __    __  ___  __  
+         *  |__) /  \ /__`  |     /  `  /\   |  |__  / _` /  \ |__) |  / |__  |__) 
+         *  |    \__/ .__/  |     \__, /~~\  |  |___ \__> \__/ |  \ | /_ |___ |  \ 
+         *                                                                         
+         *  Fast and simple dictionary to post-classify lexemes.                   */
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        QUEX_NAME(Dictionary)           post_categorizer;
+#       endif
+
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        struct QUEX_NAME(Memento_tag)*  _parent_memento;
+#       endif
+
+        /*_________________________________________________________________________
+         *           __   __  
+         *   |\/| | /__` /  ` 
+         *   |  | | .__/ \__,                                                      */
+
+        /*  Temporary Filename ____________________________________________________
+         *  Sometimes we just want to tell the filename; handle owned by analyzer. */
+        FILE*    __file_handle_allocated_by_constructor;
+
