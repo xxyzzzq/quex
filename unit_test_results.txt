@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Fri Dec 25 14:50:49 2009
+Sat Dec 26 00:19:58 2009
 TEST
 -------------------------------------------------------------------------------
 
@@ -231,7 +231,7 @@ TEST
 
 ===============================================================================
 Demo-Applications
-Fri Dec 25 14:54:31 2009
+Sat Dec 26 00:23:52 2009
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -344,34 +344,33 @@ demo/TEST
 
 ===============================================================================
 Miscellaneous Basic Tests
-Fri Dec 25 14:54:32 2009
+Sat Dec 26 00:23:53 2009
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
-        test-exceptions-in-place.sh ..........................[FAIL]
+        test-exceptions-in-place.sh ............................[OK]
  -- Include Guards for C/C++
         include_guard.py convention ............................[OK]
                          undefinition ..........................[OK]
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ......................[OK]
  -- Propper undefinition of configuration parameters.
-        macro-check.py .......................................[FAIL]
+        macro-check.py .........................................[OK]
 
  -- User defined token id file:
 
     __parse_token_id_file
         test-token_id_file-find_ids.py .........................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: test-exceptions-in-place.sh 
-Error: macro-check.py 
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Check Applications of 'Did you mean'.
-Fri Dec 25 14:54:36 2009
+Sat Dec 26 00:23:57 2009
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -387,7 +386,7 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Fri Dec 25 14:54:36 2009
+Sat Dec 26 00:24:02 2009
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -412,7 +411,7 @@ quex/TEST/event-handling/TEST
 
 ===============================================================================
 Include Stack Handling
-Fri Dec 25 14:54:36 2009
+Sat Dec 26 00:24:10 2009
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -451,7 +450,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Fri Dec 25 14:54:42 2009
+Sat Dec 26 00:24:16 2009
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -475,7 +474,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 The 'Reset' Button
-Fri Dec 25 14:54:42 2009
+Sat Dec 26 00:24:17 2009
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -550,7 +549,7 @@ quex/TEST/reset/TEST
 
 ===============================================================================
 Customized Token Class
-Fri Dec 25 14:54:43 2009
+Sat Dec 26 00:24:22 2009
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -571,7 +570,7 @@ quex/TEST/token-class/TEST
 
 ===============================================================================
 Tests related to token queues
-Fri Dec 25 14:54:43 2009
+Sat Dec 26 00:24:37 2009
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -608,7 +607,7 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Fri Dec 25 14:54:43 2009
+Sat Dec 26 00:24:38 2009
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -633,7 +632,7 @@ quex/code_base/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Fri Dec 25 14:54:46 2009
+Sat Dec 26 00:24:45 2009
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
  -- Accumulator
@@ -706,7 +705,7 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Fri Dec 25 14:54:46 2009
+Sat Dec 26 00:24:52 2009
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -768,7 +767,7 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Fri Dec 25 14:54:47 2009
+Sat Dec 26 00:25:00 2009
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -842,7 +841,7 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Fri Dec 25 14:54:48 2009
+Sat Dec 26 00:25:09 2009
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -916,7 +915,7 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Fri Dec 25 14:54:51 2009
+Sat Dec 26 00:25:26 2009
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -1010,7 +1009,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Fri Dec 25 14:55:00 2009
+Sat Dec 26 00:25:34 2009
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1054,7 +1053,7 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Fri Dec 25 14:56:51 2009
+Sat Dec 26 00:27:32 2009
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1236,7 +1235,7 @@ quex/core_engine/generator/TEST
 
 ===============================================================================
 Regular Expression Parsing
-Fri Dec 25 14:56:54 2009
+Sat Dec 26 00:27:35 2009
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1302,7 +1301,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Fri Dec 25 14:57:11 2009
+Sat Dec 26 00:27:53 2009
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1459,7 +1458,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Fri Dec 25 14:57:11 2009
+Sat Dec 26 00:27:53 2009
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1485,7 +1484,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Fri Dec 25 14:57:23 2009
+Sat Dec 26 00:28:06 2009
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1552,7 +1551,7 @@ quex/input/TEST
 
 ===============================================================================
 Basic Code Writing Functionality
-Fri Dec 25 14:57:25 2009
+Sat Dec 26 00:28:08 2009
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1582,7 +1581,7 @@ quex/output/cpp/TEST
 
 ===============================================================================
 Testing Statemachine Plots
-Fri Dec 25 14:57:26 2009
+Sat Dec 26 00:28:10 2009
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1610,7 +1609,7 @@ SUMMARY:
 
   [OK]           TEST
   [OK]           demo/TEST
-  [FAIL]      2  quex/TEST
+  [OK]           quex/TEST
   [OK]           quex/TEST/did-you-mean/TEST
   [OK]           quex/TEST/event-handling/TEST
   [OK]           quex/TEST/include-stack/TEST
@@ -1633,10 +1632,9 @@ SUMMARY:
   [OK]           quex/output/cpp/TEST
   [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-     _____     _ _       _____          _          
-    |  ___|_ _(_) |___  |_   _|_      _(_) ___ ___ 
-    | |_ / _` | | / __|   | | \ \ /\ / / |/ __/ _ \
-    |  _| (_| | | \__ \   | |  \ V  V /| | (_|  __/
-    |_|  \__,_|_|_|___/   |_|   \_/\_/ |_|\___\___|
-    
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 ===============================================================================
