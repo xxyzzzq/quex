@@ -12,5 +12,5 @@ make INPUT=$1
 ./lexer $1.txt
 
 # cleansening
-rm -f Simple Simple-* Simple.cpp 
+rm -f Simple Simple-* Simple.cpp lexer
 cd $tmp

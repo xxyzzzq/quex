@@ -13,5 +13,5 @@ make INPUT=$1.qx
 cat tmp.txt
 
 # cleansening
-rm -f Simple Simple.cpp Simple-* *.o tmp.txt
+rm -f Simple Simple.cpp Simple-* *.o tmp.txt lexer
 cd $tmp
