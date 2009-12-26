@@ -37,6 +37,7 @@ SETUP_INFO = {
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
     "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
+    "language":                       [["--language", "-l"],                 "C++"],
     "output_debug_f":                 [["--debug"],                          FLAG],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
@@ -140,5 +141,6 @@ for key, entry in SETUP_INFO.items():
     else:                          default_value = entry[1]
     setup.__dict__[key] = default_value
 
+# Default values, maybe overiden later on.
 setup.language_db = quex_core_engine_generator_languages_db["C++"]
 setup.engine_character_encoding_transformation_info = None

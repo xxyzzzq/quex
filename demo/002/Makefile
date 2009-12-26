@@ -18,16 +18,10 @@ APPLICATION_NAME = lexer
 LIBRARY_NAME     = libLexer
 ENGINE_NAME      = indy_lex# NOTE: a whitespace after this name creates chaos!
 #
-GENERATED_MODE_FILES = \
-		       $(ENGINE_NAME)-core-engine.cpp   \
-
-GENERATED_MODE_OBJS  = $(GENERATED_MODE_FILES:.cpp=.o)
-#
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       \
-		   $(GENERATED_MODE_FILES)
+                   $(ENGINE_NAME)-configuration       
 #
 LIBRARY_OBJS     = $(ENGINE_NAME).o
 
@@ -52,9 +46,8 @@ DYNAMIC_LD = $(COMPILER) -shared
 # (*) RULES ____________________________________________________________________
 #
 # -- application
-$(APPLICATION_NAME): ./$(APPLICATION_NAME).o $(ENGINE_NAME).o $(GENERATED_MODE_OBJS)
+$(APPLICATION_NAME): ./$(APPLICATION_NAME).o $(ENGINE_NAME).o 
 	$(LD) ./$(APPLICATION_NAME).o $(ENGINE_NAME).o   \
-	      $(GENERATED_MODE_OBJS)                     \
           -o $(APPLICATION_NAME) 
 
 # -- libraries
@@ -89,8 +82,6 @@ clean:
 		  $(ENGINE_NAME)-token \
 		  $(ENGINE_NAME)-token_ids \
 		  $(ENGINE_NAME)-configuration
-	rm -f $(GENERATED_MODE_FILES)
-	rm -f $(GENERATED_MODE_OBJS)
 	rm -f $(ENGINE_NAME).o
 	rm -f $(LIBRARY_NAME).a $(LIBRARY_NAME).so
 	rm -f lexer.o

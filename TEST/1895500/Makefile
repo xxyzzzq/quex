@@ -2,7 +2,6 @@ X = IndigoLexer
 
 all: $(X).cpp 
 	g++ -I./ -I$(QUEX_PATH) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		lexer.cpp                     \
 		-ggdb \

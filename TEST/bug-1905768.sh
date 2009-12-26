@@ -8,7 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i error.qx -o Simple
-cat Simple-core-engine.cpp | awk ' /analyzer_function/ { print; } '
+cat Simple.cpp | awk ' /analyzer_function/ { print; } '
 
 # cleansening
 rm -f Simple Simple.cpp Simple-*

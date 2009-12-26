@@ -3,7 +3,6 @@ Oll Korrekt
 error.qx
 lexer
 lexer-configuration
-lexer-core-engine.cpp
 lexer.cpp
 lexer-token
 lexer-token_ids

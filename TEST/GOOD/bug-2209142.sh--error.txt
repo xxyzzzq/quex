@@ -1,4 +1,4 @@
-g++ -I./ -I/home/fschaef/prj/quex/trunk  -ggdb lexer.cpp Simple.cpp Simple-core-engine.cpp -o error 
+g++ -I./ -I/home/fschaef/prj/quex/trunk  -ggdb lexer.cpp Simple.cpp -o error 
 #####################################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, define
 ## 'QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED' which only disables this

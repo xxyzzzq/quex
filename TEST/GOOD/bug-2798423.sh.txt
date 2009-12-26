@@ -1,5 +1,4 @@
 simple.qx:9:warning: Token id 'QUEX_TKN_X' defined implicitly.
 simple.qx:10:warning: Token id 'QUEX_TKN_Y' defined implicitly.
 No error -- is just fine
-Simple-core-engine.o
 Simple.o

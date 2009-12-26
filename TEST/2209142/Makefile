@@ -20,13 +20,13 @@ all: error good
 
 # -- application
 error: lexer.cpp ERROR
-	$(CC) $< Simple.cpp Simple-core-engine.cpp -o $@ 
+	$(CC) $< Simple.cpp -o $@ 
 
 ERROR:
 	@quex -i error.qx --engine Simple --token-policy users_token >& tmp.txt
 
 good: lexer.cpp GOOD
-	$(CC) $< Simple.cpp Simple-core-engine.cpp -o $@ 
+	$(CC) $< Simple.cpp -o $@ 
 
 GOOD:
 	@quex -i good.qx --engine Simple --token-policy users_token >& tmp.txt

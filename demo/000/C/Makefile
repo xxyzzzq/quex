@@ -18,8 +18,7 @@ ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       \
-		           $(ENGINE_NAME)-core-engine.cpp
+                   $(ENGINE_NAME)-configuration       
 # -- OUTPUT
 APPLICATION      = lexer
 
@@ -35,10 +34,8 @@ LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(APPLICATION).o \
-	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
-	$(LD) -o $(APPLICATION) \
-		  ./$(APPLICATION).o $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o 
+$(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o 
+	$(LD) -o $(APPLICATION) ./$(APPLICATION).o $(ENGINE_NAME).o 
           
 
 # -- engine and object files
@@ -58,7 +55,6 @@ clean:
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o
 	rm -f $(ENGINE_NAME)-token
-	rm -f $(ENGINE_NAME)-core-engine.o
 	rm -f lexer.o
 	rm -f lexer
 	rm -f token_ids

@@ -6,7 +6,6 @@ lex_iconv:
 	@quex -i simple.qx -o $(X) -b wchar_t --iconv  --token-prefix TKN_
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		-Wall                         \
 		lexer.cpp                     \
@@ -22,7 +21,6 @@ lex_icu:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(LIB_CONV) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		-Wall                         \
 		lexer.cpp                     \
@@ -37,7 +35,6 @@ lex_codec:
 	@quex -i simple.qx -o $(X) --codec utf8  --token-prefix TKN_
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		lexer.cpp                     \
 		-ggdb \

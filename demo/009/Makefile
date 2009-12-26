@@ -11,9 +11,9 @@ endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
-SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  tiny_lexer-core-engine.cpp \
+SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  \
 		   tiny_lexer-configuration
-WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids tiny_wlexer-core-engine.cpp \
+WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
 		   tiny_wlexer-configuration
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -27,21 +27,21 @@ LD = $(COMPILER)
 all: lexer wlexer
 
 # -- char application
-lexer: lexer.o tiny_lexer.o tiny_lexer-core-engine.o
-	$(LD) -o $@  lexer.o tiny_lexer.o tiny_lexer-core-engine.o 
+lexer: lexer.o tiny_lexer.o 
+	$(LD) -o $@  lexer.o tiny_lexer.o 
           
-stdinlexer: stdinlexer.o tiny_lexer.o tiny_lexer-core-engine.o
-	$(LD) -o $@  stdinlexer.o tiny_lexer.o tiny_lexer-core-engine.o 
+stdinlexer: stdinlexer.o tiny_lexer.o 
+	$(LD) -o $@  stdinlexer.o tiny_lexer.o 
           
-chunked_input: chunked_input.o tiny_lexer.o tiny_lexer-core-engine.o
-	$(LD) -o $@  chunked_input.o tiny_lexer.o tiny_lexer-core-engine.o 
+chunked_input: chunked_input.o tiny_lexer.o 
+	$(LD) -o $@  chunked_input.o tiny_lexer.o 
           
 $(SOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "-b wchar_t" 
 
 # -- wchar_t application
-wlexer: wlexer.o tiny_wlexer.o tiny_wlexer-core-engine.o
-	$(LD) -o $@  wlexer.o tiny_wlexer.o tiny_wlexer-core-engine.o 
+wlexer: wlexer.o tiny_wlexer.o 
+	$(LD) -o $@  wlexer.o tiny_wlexer.o 
           
 $(WSOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_wlexer -b wchar_t 

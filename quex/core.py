@@ -19,6 +19,7 @@ import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.cpp.token_class_maker        as token_class_maker
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
+import quex.output.cpp.mode_classes             as mode_classes
 import quex.output.graphviz.interface           as plot_generator
 
 def do():
@@ -52,6 +53,8 @@ def do():
     IndentationSupportF = __requires_indentation_count(mode_db)
     quex_class_out.do(mode_db, IndentationSupportF)
 
+    mode_implementation_txt = mode_classes.do(mode_db)
+
     # (*) Generate the token ids
     token_id_maker.do(Setup) 
 
@@ -79,10 +82,10 @@ def do():
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file
-    write_safely_and_close(Setup.output_core_engine_file, analyzer_code)
+    write_safely_and_close(Setup.output_code_file, 
+                           mode_implementation_txt + "\n" + analyzer_code)
 
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
-    UserCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
     assert lexer_mode.token_type_definition != None

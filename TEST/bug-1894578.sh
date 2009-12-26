@@ -10,7 +10,7 @@ cd $bug/
 echo "If no errors occur in compilation, then everything is fine"
 quex -i error.qx -o Simple
 rm -f Simlicism
-g++ -I./ -I$QUEX_PATH Simple.cpp Simple-core-engine.cpp lexer.cpp -o Simlicism -Wall
+g++ -I./ -I$QUEX_PATH Simple.cpp  lexer.cpp -o Simlicism -Wall
 ls Simlicism
 
 rm -f Simple Simple.cpp Simple-* Simlicism

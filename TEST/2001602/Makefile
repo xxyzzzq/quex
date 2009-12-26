@@ -7,7 +7,6 @@ lex_iconv:
 	@quex -i simple.qx -o $(X) -b 2 --iconv 
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		-Wall                         \
 		lexer.cpp                     \
@@ -28,7 +27,6 @@ lex_icu:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(LIB_CONV) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		-Wall                         \
 		lexer.cpp                     \
@@ -43,7 +41,6 @@ lex_codec:
 	@quex -i simple.qx -o $(X) --codec utf8 
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		-Wall                         \
 		lexer.cpp                     \

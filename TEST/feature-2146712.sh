@@ -24,5 +24,5 @@ if [[ $1 == "NoWrite" ]]; then
 fi
 
 # cleansening
-rm -f lexer-core-engine.cpp lexer.cpp lexer-token_ids 
+rm -f lexer.cpp lexer-token_ids 
 cd $tmp

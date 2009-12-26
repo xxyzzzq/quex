@@ -3,7 +3,6 @@ X = Simple
 all: $(X).cpp text.345
 	@echo "Compiling"
 	@g++ -I./ -I$(QUEX_PATH) \
-		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		lexer.cpp                     \
 		-ggdb \

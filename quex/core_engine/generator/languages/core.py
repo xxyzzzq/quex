@@ -172,11 +172,6 @@ db["C++"] = {
 # C
 #    
 db["C"]  = copy(db["C++"])
-db["C"]["$/*"] = "/*"
-db["C"]["$*/"] = "*/\n"
-db["C"]["$function_def"] = "const int\n$$function_name$$(const int input)\n{\n"
-db["C"]["$return_true"]  = "return 1;"
-db["C"]["$return_false"] = "return 0;"
 
 #________________________________________________________________________________
 # Perl
