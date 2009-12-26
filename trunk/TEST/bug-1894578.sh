@@ -13,5 +13,5 @@ rm -f Simlicism
 g++ -I./ -I$QUEX_PATH Simple.cpp Simple-core-engine.cpp lexer.cpp -o Simlicism -Wall
 ls Simlicism
 
-rm -f Simple Simple.cpp Simple-*
+rm -f Simple Simple.cpp Simple-* Simlicism
 cd $tmp

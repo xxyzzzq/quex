@@ -14,5 +14,5 @@ echo "(1)"
 echo "(2)"
 ./Simplicism example-2.txt
 #
-rm -f Simple Simple.cpp Simple-*
+rm -f Simple Simple.cpp Simple-* Simplicism
 cd $tmp
