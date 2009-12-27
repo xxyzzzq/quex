@@ -37,9 +37,10 @@ def do():
     mode_db = __get_mode_db(Setup)
 
     if lexer_mode.token_type_definition == None:
-        DefaultTokenDefinitionFile = (Setup.QUEX_TEMPLATE_DB_DIR 
-                                       + "/token/Default.qx").replace("//","/")
-        fh = open_file_or_die(DefaultTokenDefinitionFile)
+        if Setup.language == "C": file_name = "CDefault.qx"
+        else:                     file_name = "CppDefault.qx"
+        TokenDefinitionFile = (Setup.QUEX_TEMPLATE_DB_DIR + "/token/" + file_name)
+        fh = open_file_or_die(TokenDefinitionFile)
         quex_file_parser.parse_section(fh)
         fh.close()
 

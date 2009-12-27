@@ -26,17 +26,18 @@ class TokenInfo:
         self.id           = None
 
 file_str = \
-"""// -*- C++ -*- vim: set syntax=cpp:
-// PURPOSE: File containing definition of token-identifier and
-//          a function that maps token identifiers to a string
-//          name.
-//
-// NOTE: This file has been created automatically by a
-//       quex program.
-//
-// DATE: $$DATE$$
-//
-/////////////////////////////////////////////////////////////////////////////////////////
+"""/* -*- C++ -*- vim: set syntax=cpp:
+ * PURPOSE: File containing definition of token-identifier and
+ *          a function that maps token identifiers to a string
+ *          name.
+ *
+ * NOTE: This file has been created automatically by Quex.
+ *       Visit quex.org for further info.
+ *
+ * DATE: $$DATE$$
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                           */
 #ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 #define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 
@@ -54,7 +55,7 @@ $$TOKEN_ID_DEFINITIONS$$
 
 $$CONTENT$$
 
-#endif // __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_GENERATED__
+#endif /* __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__ */
 """
 
 func_str = \

@@ -74,6 +74,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION",  True)
     txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
+    txt = __switch(txt, "__QUEX_SETTING_PLAIN_C",                    Setup.language.upper() == "C")
 
     # -- token class related definitions
     token_descr = lexer_mode.token_type_definition
@@ -194,25 +195,13 @@ def write_engine_header(Modes):
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
                 ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
-                ["$$TOKEN_CLASS_DECLARATION$$",          write_token_class_declaration()],
+                ["$$TOKEN_CLASS$$",                      lexer_mode.token_type_definition.class_name],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
 
     write_safely_and_close(QuexClassHeaderFileOutput, txt)
-
-def write_token_class_declaration():
-    
-    # A valid token_type_definition must have been parsed at this point
-    assert lexer_mode.token_type_definition != None
-    namespace  = lexer_mode.token_type_definition.name_space
-    class_name = lexer_mode.token_type_definition.class_name
-
-    txt  = LanguageDB["$namespace-open"](namespace)
-    txt += "class %s;\n" % class_name
-    txt += LanguageDB["$namespace-close"](namespace)
-    return txt
 
 
 quex_mode_init_call_str = """

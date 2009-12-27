@@ -9,6 +9,7 @@
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+#   include <cstddef>  // gets: size_t, ptrdiff_t
 #   include <cstring>  // gets: memmove, memcpy
 #   include <cstdio>   // gets: fprintf
 #   include <cstdlib>
@@ -27,6 +28,7 @@
 #   define QUEX_INLINE     inline
     /* Input handle type is determined automagically via templates */
 #else
+#   include <stddef.h>
 #   include <string.h>  /* gets: memmove, memcpy     */
 #   include <stdio.h>   /* gets: fprintf             */
 #   include <stdlib.h>
@@ -49,7 +51,7 @@ QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
 {
     const QUEX_TYPE_CHARACTER* iterator = Str;
     while( *iterator != 0 ) ++iterator; 
-    return iterator - Str;
+    return (size_t)(iterator - Str);
 }
 
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE

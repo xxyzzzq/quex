@@ -94,11 +94,18 @@ def do(argv):
 
             
     # (*) Output files
+    extension_db = {
+            "C":   ".c",
+            "C++": ".cpp",
+    }
+    verify_word_in_list(setup.language.upper(),
+                        extension_db.keys(),
+                        "Programming language '%s' is not supported." % setup.language)
+    setup.output_code_file          = __prepare_file_name(extension_db[setup.language.upper()])
     setup.output_file_stem          = __prepare_file_name("")
     setup.output_configuration_file = __prepare_file_name("-configuration")
     setup.output_token_id_file      = __prepare_file_name("-token_ids")
     setup.output_token_class_file   = __prepare_file_name("-token")
-    setup.output_code_file          = __prepare_file_name(".cpp")
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 

@@ -1,4 +1,3 @@
-    /* 
      * MODE: FOUR
      * 
      *     BASE MODE SEQUENCE:
