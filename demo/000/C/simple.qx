@@ -1,6 +1,6 @@
 // -*- C++ -*-
 header {
-#include <cstdlib>  // for: atoi()
+#include <stdlib.h>  /* for: atoi() */
 }
 
 token {

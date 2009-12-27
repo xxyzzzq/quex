@@ -15,10 +15,11 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 MODE_FILES       = simple.qx
 # -- FILES PRODUCED BY QUEX
 ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-ENGINE_SOURCES   = $(ENGINE_NAME)                     \
-                   $(ENGINE_NAME).cpp                 \
-                   $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       
+ENGINE_SOURCES   = $(ENGINE_NAME)                  \
+                   $(ENGINE_NAME).c                \
+                   $(ENGINE_NAME)-token_ids        \
+                   $(ENGINE_NAME)-configuration     
+
 # -- OUTPUT
 APPLICATION      = lexer
 
@@ -35,19 +36,22 @@ LD = $(COMPILER)
 # (*) RULES ____________________________________________________________________
 # -- application
 $(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o 
-	$(LD) -o $(APPLICATION) ./$(APPLICATION).o $(ENGINE_NAME).o 
+	$(LD) -o $(APPLICATION) \
+		  ./$(APPLICATION).o $(ENGINE_NAME).o 
           
 
 # -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
+%.o: %.c $(ENGINE_SOURCES)
 	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
-%.E: %.cpp $(ENGINE_SOURCES)
+%.E: %.c $(ENGINE_SOURCES)
 	$(CC) -E $< -o $@ 
+
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 0x1000 \
-		 --post-categorizer
+		 --post-categorizer \
+		 --language C
 
 # (*) HELPERS __________________________________________________________________
 clean:	

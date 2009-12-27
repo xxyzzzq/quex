@@ -399,6 +399,7 @@ def clean_up():
 
 def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
     file_name = FileName.replace("//","/")
+    file_name = os.path.normpath(file_name)
     try:
         fh = open(file_name, Mode)
         # if Codec != "": 

@@ -431,6 +431,50 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/analyzer/headers.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED____QUEX____SIMPLE */
+#include"Simple"
+namespace quex {
+        QUEX_NAME(Mode)  QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
+
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+__quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
+#endif
+
+    }
+
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+__quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
+#endif
+
+    }
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER* me, const int Indentation) {
+__quex_assert(Indentation >= 0);
+    }
+#endif
+
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+    bool
+    QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)* Mode) {
+    return false;
+    }
+    bool
+    QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
+    return true; // default
+    }
+    bool
+    QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
+    return true; // default
+    }
+#endif    
+#undef self
+} /* Closing Namespace 'quex' */
+
     /* 
      * MODE: ONE_AND_ONLY
      * 
@@ -2534,7 +2578,7 @@ TERMINAL_35:
         self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
-#line 2113 "Simple-core-engine.cpp"
+#line 2158 "Simple.cpp"
         
         }
     }
@@ -2582,7 +2626,7 @@ TERMINAL_7:
         self.send(QUEX_TKN_STRUCT);
         CONTINUE;
         
-#line 2161 "Simple-core-engine.cpp"
+#line 2206 "Simple.cpp"
         
         }
     }
@@ -2609,7 +2653,7 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2188 "Simple-core-engine.cpp"
+#line 2233 "Simple.cpp"
         
         }
     }
@@ -2636,7 +2680,7 @@ TERMINAL_10:
         self.send(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
-#line 2215 "Simple-core-engine.cpp"
+#line 2260 "Simple.cpp"
         
         }
     }
@@ -2663,7 +2707,7 @@ TERMINAL_13:
         self.send(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
-#line 2242 "Simple-core-engine.cpp"
+#line 2287 "Simple.cpp"
         
         }
     }
@@ -2690,7 +2734,7 @@ TERMINAL_16:
         self.send(QUEX_TKN_SEND);
         CONTINUE;
         
-#line 2269 "Simple-core-engine.cpp"
+#line 2314 "Simple.cpp"
         
         }
     }
@@ -2717,7 +2761,7 @@ TERMINAL_19:
         self.send(QUEX_TKN_EXPECT);
         CONTINUE;
         
-#line 2296 "Simple-core-engine.cpp"
+#line 2341 "Simple.cpp"
         
         }
     }
@@ -2743,7 +2787,7 @@ TERMINAL_22_DIRECT:
         self.send(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
-#line 2322 "Simple-core-engine.cpp"
+#line 2367 "Simple.cpp"
         
         }
     }
@@ -2769,7 +2813,7 @@ TERMINAL_25_DIRECT:
         self.send(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
-#line 2348 "Simple-core-engine.cpp"
+#line 2393 "Simple.cpp"
         
         }
     }
@@ -2795,7 +2839,7 @@ TERMINAL_28_DIRECT:
         self.send(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
-#line 2374 "Simple-core-engine.cpp"
+#line 2419 "Simple.cpp"
         
         }
     }
@@ -2816,7 +2860,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self.send(QUEX_TKN_TERMINATION);
         
-#line 2395 "Simple-core-engine.cpp"
+#line 2440 "Simple.cpp"
         
         }
                 }
@@ -2946,49 +2990,6 @@ __REENTRY_PREPARATION:
 } /* Closing Namespace 'quex' */
 
 #endif
-#include"Simple"
-namespace quex {
-        QUEX_NAME(Mode)  QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
-
-    void
-    QUEX_NAME(ONE_AND_ONLY_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
-#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-__quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
-#endif
-
-    }
-
-    void
-    QUEX_NAME(ONE_AND_ONLY_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
-#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-__quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
-#endif
-
-    }
-
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-    void
-    QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER* me, const int Indentation) {
-__quex_assert(Indentation >= 0);
-    }
-#endif
-
-#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-    bool
-    QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)* Mode) {
-    return false;
-    }
-    bool
-    QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
-    return true; // default
-    }
-    bool
-    QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
-    return true; // default
-    }
-#endif    
-#undef self
-} /* Closing Namespace 'quex' */
 // -*- C++ -*- vim: set syntax=cpp:
 // PURPOSE: File containing definition of token-identifier and
 //          a function that maps token identifiers to a string

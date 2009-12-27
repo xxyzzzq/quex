@@ -1,4 +1,4 @@
-fh = open("Simple-core-engine.cpp")
+fh = open("Simple.cpp")
 print_f = False
 for line in fh.readlines():
     if line.find("/* state machine */") != -1:    print_f = True
