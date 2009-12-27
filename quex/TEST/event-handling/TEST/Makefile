@@ -31,7 +31,7 @@ hwut-info:
 
 transit%.exe: transit%.qx lexer.cpp $(QUEX_CORE)
 	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-prefix TK_ --token-policy users_token
-	$(LD) ./lexer.cpp EHLexer.cpp EHLexer-core-engine.cpp -o $@ \
+	$(LD) ./lexer.cpp EHLexer.cpp -o $@ \
 		-D__TEST_DESCRIPTION='"Mode Transitions: $<"' \
 		-D__TEST_CHOICES='"1, 2, 3, error"'
 

@@ -5,7 +5,7 @@ TESTS = \
 		users_token.exe \
 		users_queue.exe 
 
-ENGINE = ISLexer-core-engine.cpp ISLexer.cpp
+ENGINE = ISLexer.cpp
 
 all: $(TESTS)
 

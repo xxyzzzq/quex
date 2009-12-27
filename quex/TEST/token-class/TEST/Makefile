@@ -4,7 +4,7 @@ TESTS = \
 		simple-queue.exe \
 		simple.exe
 
-ENGINE = Simple-core-engine.cpp Simple.cpp
+ENGINE = Simple.cpp
 
 all: $(TESTS)
 
