@@ -8,7 +8,7 @@ TESTS = \
 		users_token-real.exe \
 		users_queue-real.exe
 
-ENGINE = TPLex-core-engine.cpp TPLex.cpp
+ENGINE = TPLex.cpp
 
 all: $(TESTS)
 
