@@ -13,7 +13,8 @@ __QUEX_CORE = \
     ./compatibility/win/msc_inttypes.h \
     ./compatibility/win/msc_stdint.h \
     ./compatibility/stdbool.h \
-    ./token/Default.qx \
+    ./token/CppDefault.qx \
+    ./token/CDefault.qx \
     ./token/CppTemplate.txt \
     ./token/TokenQueue \
     ./token/TokenPolicy \
