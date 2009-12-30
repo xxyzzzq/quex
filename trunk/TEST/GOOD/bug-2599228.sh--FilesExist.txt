@@ -15,7 +15,8 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/Default.qx exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CppDefault.qx exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CDefault.qx exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenPolicy exists

@@ -13,11 +13,10 @@ from   quex.core_engine.generator.action_info   import PatternActionInfo, \
                                                        UserCodeFragment_straighten_open_line_pragmas, \
                                                        CodeFragment
 import quex.input.quex_file_parser              as quex_file_parser
-from   quex.output.cpp.token_id_maker           import TokenInfo
-import quex.output.cpp.core                     as quex_class_out
 import quex.output.cpp.token_id_maker           as token_id_maker
-import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.cpp.token_class_maker        as token_class_maker
+import quex.output.cpp.core                     as quex_class_out
+import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 import quex.output.cpp.mode_classes             as mode_classes
 import quex.output.graphviz.interface           as plot_generator
@@ -31,16 +30,14 @@ def do():
     #       the file "code_base/code_base/definitions-quex-buffer.h". But the analyser
     #       functions also need 'connection' to the lexer class, so we include the header
     #       of the generated lexical analyser at this place.
-    lexer_mode.token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
-    lexer_mode.token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
+    lexer_mode.token_id_db["TERMINATION"]   = token_id_maker.TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
+    lexer_mode.token_id_db["UNINITIALIZED"] = token_id_maker.TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
 
     mode_db = __get_mode_db(Setup)
 
     if lexer_mode.token_type_definition == None:
-        if Setup.language == "C": file_name = "CDefault.qx"
-        else:                     file_name = "CppDefault.qx"
-        TokenDefinitionFile = (Setup.QUEX_TEMPLATE_DB_DIR + "/token/" + file_name)
-        fh = open_file_or_die(TokenDefinitionFile)
+        file_name = Setup.language_db["$token-default-file"]
+        fh        = open_file_or_die(Setup.QUEX_INSTALLATION_DIR + file_name)
         quex_file_parser.parse_section(fh)
         fh.close()
 

@@ -3,10 +3,10 @@
 C/C++ Code Segments
 ===================
 
-Alternatively to the convenient definition of actions in terms of token sending
+Alternatively to the convenient definition of actions in terms of sending tokens
 and mode transition, more sophisticated behavior can be specified by inserting
-directly code fragments as pattern-actions or event handlers. The syntax for 
-such definitions is simply to enclose them in curly brackets as in the following
+code fragments directly as pattern-actions or event handlers. The syntax for 
+such definitions is simply to enclose the code in curly brackets as in the following
 example 
 
 .. code-block:: cpp
@@ -29,22 +29,22 @@ example
         }
     }
 
-The patterns ``P_IF_KEYWORD`` and ``P_STRING_DELIMITER`` are supposed to be
+The patterns ``P_IF_KEYWORD`` and ``P_STRING_DELIMITER`` would be
 defined in a ``define`` section. The functions used in this example are
-subsequently explained. The lexical analyzer object can be accessed via
+as follows. The lexical analyzer object can be accessed via
 
 .. data:: self
 
-   which is a reference to the analyzer inside pattern actions and event handlers.
+   self is a reference to the analyzer inside pattern actions and event handlers.
 
-The are member functions starting with ``send``. They work similar to the brackets
+The are multiple member functions starting with ``send``. They work similar to the brackets
 in the previous token senders. The first argument is the token-id and the
 remaining arguments are arguments as they are passed to the constructor of the
 token class. In particular they are the following:
 
 .. cfunction:: .send(QUEX_TYPE_TOKEN_XXX_ID)
 
-    Which sends one token to the caller of the lexical analyzer with the given 
+    Sends one token to the caller of the lexical analyzer with the given 
     token-id.
 
 .. cfunction:: .send_n(size_t N, QUEX_TYPE_TOKEN_XXX_ID)
@@ -66,7 +66,7 @@ token class. In particular they are the following:
 
 .. note::
 
-   When a token is send via the a ``send()`` function, what actually happens is that
+   When a token is sent via the a ``send()`` function, what actually happens is that
    the lexical analyzer accesses a token object via a pointer and fills it. If only
    a token-id is sent then the data part of the present token object
    remains as it was. If the same token object was used earlier, then the
@@ -80,7 +80,7 @@ token class. In particular they are the following:
    As long as the default token passing policy (See section :ref:`sec-token-policies`)
    is used all token sending functions are available and can be used without a
    lot of caution. The same is true for token policies that are queue based.
-   The token policy ``users_token``, though, allows only *one single* token to
+   The exception is the token policy ``users_token``, which allows only *one single* token to
    be sent for a pattern match. With this token policy no tokens can be sent
    inside event handlers and the ``send_n()`` is not implemented.
 
@@ -128,7 +128,7 @@ are called. This also means that mode transition control is turned off.
 Inadmissible transitions triggered with these functions cannot be detected
 during run-time.
 
-Additionally to direct mode transitions modes can be pushed and popped similar to subroutine calls (without arguments). This is provided by the functions:
+In addition to direct mode transitions, modes can be pushed and popped similar to subroutine calls (without arguments). This is provided by the functions:
 
 .. cfunction:: void push_mode(queχ_mode& new_mode);
 
@@ -136,8 +136,8 @@ Additionally to direct mode transitions modes can be pushed and popped similar t
 
 .. cfunction:: void pop_drop_mode();
 
-The member function push_mode(new_mode) pushed the current mode on a
-last-in-first-out stack and set the new_mode as the current mode. A call to
+The member function push_mode(new_mode) pushes the current mode on a
+last-in-first-out stack and sets the new_mode as the current mode. A call to
 pop_mode() pops the last mode from the stack and sets it as the current mode.
 Note, that the mode transitions with push and pop follow the same mode
 transition procedure as for entering a mode directly. This means, that the
@@ -158,7 +158,7 @@ information about the modes and possible transitions:
     const int     ID; \\
     const string  Name; \\
 
-The first three member functions allow to get information about the relation to
+The first three member functions return information about the relation to
 other modes. If the flag ``PringErrorMsgF`` is set than the function will print an
 error message to the standard error output in case that the condition is not
 matched. This comes very handy when using these functions in ``assert``s or during
@@ -187,7 +187,7 @@ mode.
    If you use a customized token type that contains pointers, make sure that
    you read the section about token passing policies :ref:`sec-token-policies`.
    The point is that the ``send()`` functions may override these pointers
-   without being referred elsewhere. It must be ensured that the pointers in 
+   without being referred to elsewhere. It must be ensured that the pointers in 
    received tokens are stored elsewhere, before the analyzer overwrites it.
 
    

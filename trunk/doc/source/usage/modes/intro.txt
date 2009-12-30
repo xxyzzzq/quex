@@ -3,7 +3,7 @@ Modes
 
 A lexical analyzer mode referes to a behavior of the analyzer engine.  More
 precisely, it defines a set of pattern-action pairs and event handlers that are
-exclusively active when the analyzer is in the particular mode. The reason for that
+exclusively active when the analyzer is in a particular mode. The reason for that
 might be syntactical. Imagine a nested mini-language in a 'mother' language that
 has interferences of its patterns with the pattern of the 'mother' language. For example,
 the mother language may contain floating pointer numbers defined as::
@@ -17,7 +17,7 @@ a period of a sentence, such as in::
    "."      => TKN_PERIOD;
 
 If both patterns were describe in a single mode, than interferences would occur.
-If a number occurs at the end of a sentence, such as in::
+If a number occured at the end of a sentence, such as in::
 
    The number of monkeys did not exceed 21. However, there was reason to ...
 

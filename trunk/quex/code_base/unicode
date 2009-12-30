@@ -35,6 +35,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         /**/
         uint8_t* p = utf8_result;
         size_t   n = 0;
+        /**/
+        /* Split explicitly  be safe in different byte endian evironments. */
+        uint8_t byte3 = (uint8_t)((UCS_CharacterCode & 0xFF));
+        uint8_t byte2 = (uint8_t)((UCS_CharacterCode & 0xFF00) >> 8);
+        uint8_t byte1 = (uint8_t)((UCS_CharacterCode & 0xFF0000) >> 16);
+        uint8_t byte0 = (uint8_t)((UCS_CharacterCode & 0xFF000000) >> 24);
 
         __quex_assert(UCS_CharacterCode >= (QUEX_TYPE_CHARACTER)0);
 
@@ -48,12 +54,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         else if (UCS_CharacterCode <= 0x001fffff)       n = 4;
         else if (UCS_CharacterCode <= 0x03ffffff)       n = 5;
         else /* if (UCS_CharacterCode <= 0x7fffffff) */ n = 6;
-
-        /* make it work under different endians */
-        uint8_t byte3 = (uint8_t)((UCS_CharacterCode & 0xFF));
-        uint8_t byte2 = (uint8_t)((UCS_CharacterCode & 0xFF00) >> 8);
-        uint8_t byte1 = (uint8_t)((UCS_CharacterCode & 0xFF0000) >> 16);
-        uint8_t byte0 = (uint8_t)((UCS_CharacterCode & 0xFF000000) >> 24);
 
         switch (n) {
         case 1:
@@ -127,4 +127,4 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__UNICODE
+#endif /* __QUEX_INCLUDE_GUARD__UNICODE */

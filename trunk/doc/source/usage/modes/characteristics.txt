@@ -8,7 +8,7 @@ the following constructs:
 
   Options
    
-     The have the form::
+     Options have the form::
 
          mode MINE :
              <key-word: argument_0 argument_1 ...> {
@@ -16,9 +16,9 @@ the following constructs:
          }
 
      That is they are bracketed in '<' '>' brackets, start with a key-word for
-     the option and some optional arguments. Options follow the mode definition
-     immediately. Options allow to restrict mode transitions and inheritance
-     relationships. Also, there are options that allow the implementing
+     the option and possibly some optional arguments. Options follow the mode definition
+     immediately. Options allow one to restrict mode transitions and inheritance
+     relationships. Also, there are options that allow the implementation of
      optimized micro-engines to skip ranges.
 
   Pattern-Action Pairs
@@ -27,7 +27,7 @@ the following constructs:
 
   Event Handlers
 
-     Event handlers allow to express reactions to events immediately. Examples
+     Event handlers allow one to express reactions to events immediately. Examples
      for events are *mode entrance*, *mode exit*, and *on indentation*. Event 
      handlers appear together with pattern-action pairs in the body of the mode
      definition. They have the form::
@@ -78,9 +78,9 @@ The possible options for modes to be specified are the following.
    list extends to all modes which are derived from them. This behavior can 
    be influenced by the ``restrict`` option.
 
-.. data::  <enter: arg0 arg1 ... argN>      
+.. data::  <entry: arg0 arg1 ... argN>      
 
-   As soon as this option is set, the mode cannot be entered except towards the 
+   As soon as this option is set, the mode cannot be entered except from the 
    modes mentioned as arguments ``arg0`` to ``arg1``. If no mode name is specified
    the mode cannot be entered. The allowance for inherited modes follows the scheme
    for option ``exit``.
