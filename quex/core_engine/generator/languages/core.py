@@ -12,7 +12,7 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-from copy import copy
+from copy import deepcopy
 import quex.core_engine.generator.languages.cpp    as cpp
 import quex.core_engine.generator.languages.python as python
 from quex.frs_py.string_handling import blue_print
@@ -153,12 +153,12 @@ db["C++"] = {
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \
                                 "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
-    "$analyzer-func":     cpp.__analyzer_function,
-    "$terminal-code":     cpp.__terminal_states,      
-    "$compile-option":    lambda option: "#define %s\n" % option,
-    "$assignment":        lambda variable, value:
-                          "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
-                          "%s = %s;\n" % (variable, value),
+    "$analyzer-func":        cpp.__analyzer_function,
+    "$terminal-code":        cpp.__terminal_states,      
+    "$compile-option":       lambda option: "#define %s\n" % option,
+    "$assignment":           lambda variable, value:
+                             "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
+                             "%s = %s;\n" % (variable, value),
     "$set-last_acceptance":  lambda value:
                              "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
                              "QUEX_SET_last_acceptance(%s);\n" % value,
@@ -166,12 +166,19 @@ db["C++"] = {
     #
     "$header-definitions":   cpp.__header_definitions,
     "$frame":                cpp.__frame_of_all,
+    "$token-default-file":   "/quex/code_base/token/CppDefault.qx",
+    "$token-template-file":  "/quex/code_base/token/CppTemplate.txt",
+    "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, " + Mode + ");",
+    "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, " + Mode + ");",
+    "$goup-mode":            "QUEX_FUNC(pop_mode)(&self);",
     }
 
 #________________________________________________________________________________
 # C
 #    
-db["C"]  = copy(db["C++"])
+db["C"] = deepcopy(db["C++"])
+db["C"]["$token-default-file"]  = "/quex/code_base/token/CDefault.qx"
+db["C"]["$token-template-file"] = "/quex/code_base/token/CTemplate.txt"
 
 #________________________________________________________________________________
 # Perl

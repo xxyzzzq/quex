@@ -31,10 +31,13 @@
 
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
-namespace quex {
-class Token;
-} /* Closing Namespace 'quex' */
-
+QUEX_NAMESPACE_TOKEN_OPEN
+#ifndef __QUEX_SETTING_PLAIN_C
+    class  Token;
+#else
+    struct Token;
+#endif
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 /* START: User defined header content _________________________________________
  *        Must come before token class definition, since the token class 
@@ -2990,16 +2993,17 @@ __REENTRY_PREPARATION:
 } /* Closing Namespace 'quex' */
 
 #endif
-// -*- C++ -*- vim: set syntax=cpp:
-// PURPOSE: File containing definition of token-identifier and
-//          a function that maps token identifiers to a string
-//          name.
-//
-// NOTE: This file has been created automatically by a
-//       quex program.
-//
-//
-/////////////////////////////////////////////////////////////////////////////////////////
+/* -*- C++ -*- vim: set syntax=cpp:
+ * PURPOSE: File containing definition of token-identifier and
+ *          a function that maps token identifiers to a string
+ *          name.
+ *
+ * NOTE: This file has been created automatically by Quex.
+ *       Visit quex.org for further info.
+ *
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                           */
 
 #ifndef __QUEX_SETTING_PLAIN_C
 #   include<cstdio> 

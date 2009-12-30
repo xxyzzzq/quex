@@ -37,10 +37,10 @@ may be extended as follows
         .   => QUEX_TKN_LETTER(Lexeme);
     }
 
-Now, when transitions from and to the ``TAG`` mode are triggered, also tokens
-are produced with the token-ids ``QUEX_TKN_OPEN_TAG`` and ``QUEX_TKN_CLOSE_TAG``.
-Additional arguments, such as the ``Lexeme`` can be passed analogously to the 
-normal token sendings.
+When transitions to and from the ``TAG`` mode are triggered, tokens
+with the token-ids ``QUEX_TKN_OPEN_TAG`` and ``QUEX_TKN_CLOSE_TAG`` are also produced.
+Additional arguments, such as the ``Lexeme`` can be passed in the same manner as 
+when sending normal tokens.
 
 In case that one enters a mode from different other modes, the use of the mode
 stack comes handy. Imagine a mode ``FORMAT_STRING`` for parsing ANSI-C-like

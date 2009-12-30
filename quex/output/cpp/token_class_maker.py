@@ -1,3 +1,5 @@
+# (C) 2005-2010 Frank-Rene Schaefer
+# ABSOLUTELY NO WARANTY
 from   quex.frs_py.file_in                    import error_msg, \
                                                      get_include_guard_extension, \
                                                      write_safely_and_close, open_file_or_die, \
@@ -24,8 +26,7 @@ def _do(Descr):
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
     ## ALLOW: Descr.get_member_db().keys() == []
 
-    TemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
-                    + "/token/CppTemplate.txt").replace("//","/")
+    TemplateFile = Setup.QUEX_INSTALLATION_DIR + Setup.language_db["$token-template-file"]
     template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     
     virtual_destructor_str = ""

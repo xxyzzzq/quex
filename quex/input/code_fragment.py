@@ -184,7 +184,7 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
     token_id_str = Setup.token_id_prefix + prefix_less_token_name
     lexer_mode.token_id_db[prefix_less_token_name] = \
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
-    return "self.send(%s);\n" % token_id_str
+    return "self_send(%s);\n" % token_id_str
 
 def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
     assert type(ArgListStr) == str
@@ -213,6 +213,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
     # create the token sender
     tail = ArgListStr
     tail_field_list = tail.split(",")
+    tail_size       = len(tail_field_list)
     explicit_member_names_f = False
     for arg in tail_field_list:
         if arg.find("=") != -1: explicit_member_names_f = True
@@ -234,15 +235,15 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                                     "No member:   '%s' in token type description." % member_name, 
                                     fh)
                 access = lexer_mode.token_type_definition.get_member_access(member_name)
-                txt += "self.token_object()->%s = %s;\n" % (access, value.strip())
+                txt += "self_token_object()->%s = %s;\n" % (access, value.strip())
 
 
         # Box the token, stamp it with an id and 'send' it
-        txt += "self.send(%s);\n" % TokenName
+        txt += "self_send(%s);\n" % TokenName
         return txt
     else:
         if tail != "": tail = ", " + tail
-        return "self.send(%s%s);\n" % (TokenName, tail)
+        return "self_send%i(%s%s);\n" % (TokenName, tail_size, tail)
 
 def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
@@ -259,24 +260,29 @@ def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
             error_msg("The %s mode short cut requires at least one argument: The target mode." % Command, fh)
         target_mode = arg_list[0]
         if L > 1: token_name = arg_list[1]
-        if L > 2: tail = arg_list[2:]
+        if L > 2: tail       = arg_list[2:]
     else: # Command == "GOUP"
         if L > 0: token_name = arg_list[0]
-        if L > 1: tail = arg_list[1:]
+        if L > 1: tail       = arg_list[1:]
 
-    mode_change_str = { "GOTO":  lambda Mode: "self << " + Mode + ";\n",
-                        "GOSUB": lambda Mode: "self.push_mode(" + Mode + ");\n",
-                        "GOUP":  lambda Mode: "self.pop_mode();\n"
+    mode_change_str = { 
+                        "GOTO":  LanguageDB["$goto-mode"](Mode),
+                        "GOSUB": LanguageDB["$gosub-mode"](Mode),
+                        "GOUP":  LanguageDB["$goup-mode"],
                       }[Command](target_mode)
 
     tail_str = ""
     for element in tail:
         tail_str += ", " + element
 
-    if token_name != None: send_str = "self.send(%s%s); "% (token_name, tail_str)
-    else:                  send_str = "" 
+    send_str = "" 
+    if token_name != None: 
+        if tail == []:
+            send_str = "self_send(%s); " % token_name
+        else:
+            send_str = "self_send%i(%s%s);\n" % (TokenName, tail_size, tail)
 
-    txt  = mode_change_str
+    txt  = mode_change_str + "\n"
     txt += send_str 
     return txt
 
