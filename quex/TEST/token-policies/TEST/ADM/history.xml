@@ -1,4 +1,4 @@
-<history date="Sun Dec 27 01:42:18 2009" element-n="117">
+<history date="Thu Dec 31 01:57:20 2009" element-n="118">
     <day year="2009" month="03" day="19">
         <history-init time="06:35:09"/>
         <crc-error time="21:35:24" application="queue.exe" choice="receive-2" database-crc="-1963775000" real-crc="860844415"/>
@@ -335,5 +335,8 @@
     </day>
     <day year="2009" month="12" day="27">
         <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:42:18"/>
+    </day>
+    <day year="2009" month="12" day="31">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:57:20"/>
     </day>
 </history>

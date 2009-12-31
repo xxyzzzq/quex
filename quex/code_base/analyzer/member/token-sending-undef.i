@@ -6,6 +6,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #undef  self_token_object
 #undef  self_send
+#undef  self_send0
 #undef  self_send1
 #undef  self_send2
 #undef  self_send3

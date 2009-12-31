@@ -12,7 +12,7 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-from copy import deepcopy
+from copy import deepcopy, copy
 import quex.core_engine.generator.languages.cpp    as cpp
 import quex.core_engine.generator.languages.python as python
 from quex.frs_py.string_handling import blue_print
@@ -170,13 +170,13 @@ db["C++"] = {
     "$token-template-file":  "/quex/code_base/token/CppTemplate.txt",
     "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, " + Mode + ");",
     "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, " + Mode + ");",
-    "$goup-mode":            "QUEX_FUNC(pop_mode)(&self);",
+    "$goup-mode":            lambda Mode: "QUEX_FUNC(pop_mode)(&self);",                  # Must be function, w/o arg
     }
 
 #________________________________________________________________________________
 # C
 #    
-db["C"] = deepcopy(db["C++"])
+db["C"] = copy(db["C++"])
 db["C"]["$token-default-file"]  = "/quex/code_base/token/CDefault.qx"
 db["C"]["$token-template-file"] = "/quex/code_base/token/CTemplate.txt"
 
