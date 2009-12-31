@@ -55,11 +55,11 @@ def __parse_brief_token_sender(fh, ContinueF):
         if code != -1: 
             code = __create_token_sender_by_character_code(fh, code)
         else:
-            identifier, arg_list_str = __parse_function_call(fh)
+            identifier, arg_list = __parse_function_call(fh)
             if identifier in ["GOTO", "GOSUB", "GOUP"]:
-                code = __create_mode_transition_and_token_sender(fh, identifier, arg_list_str)
+                code = __create_mode_transition_and_token_sender(fh, identifier, arg_list)
             else:
-                code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
+                code = __create_token_sender_by_token_name(fh, identifier, arg_list)
 
         if code != "": 
             if ContinueF: code += "CONTINUE;\n"
@@ -152,22 +152,29 @@ def read_character_code(fh):
         fh.seek(pos); return -1               
 
 def __parse_function_call(fh):
+    identifier = ""
+    argument_list = []
     position = fh.tell()
     try:
+        # Read 'function' name
         skip_whitespace(fh)
         identifier = read_identifier(fh)
         skip_whitespace(fh)
 
+        # Read argument list
         tmp = fh.read(1)
         if tmp not in ["(", ";"]:
             error_msg("Missing '(' or ';' after '%s'." % identifier, fh)
         if tmp == ";":
-            return identifier, ""  # No argument list, ";" arrived immediately
+            return identifier, argument_list  # No argument list, ";" arrived immediately
 
         arg_list_str = read_until_closing_bracket(fh, "(", ")")
         verify_next_word(fh, ";")
-            
-        return identifier, arg_list_str
+
+        argument_list = arg_list_str.split(",")    
+        argument_list = map(lambda arg:    arg.strip(), argument_list)
+        argument_list = filter(lambda arg: arg != "",   argument_list)
+        return identifier, argument_list
 
     except EndOfStreamException:
         fh.seek(position)
@@ -186,8 +193,8 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 
-def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
-    assert type(ArgListStr) == str
+def __create_token_sender_by_token_name(fh, TokenName, ArgList):
+    assert type(ArgList) == list
 
     # after 'send' the token queue is filled and one can safely return
     if TokenName.find(Setup.token_id_prefix) != 0:
@@ -211,18 +218,15 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                 TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
 
     # create the token sender
-    tail = ArgListStr
-    tail_field_list = tail.split(",")
-    tail_size       = len(tail_field_list)
     explicit_member_names_f = False
-    for arg in tail_field_list:
+    for arg in ArgList:
         if arg.find("=") != -1: explicit_member_names_f = True
 
     if explicit_member_names_f:
         assert lexer_mode.token_type_definition != None, \
                "A valid token_type_definition must have been parsed at this point."
 
-        member_value_pairs = map(lambda x: x.split("="), tail_field_list)
+        member_value_pairs = map(lambda x: x.split("="), ArgList)
         txt = ""
         for member, value in member_value_pairs:
             if value == "":
@@ -242,47 +246,41 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
         txt += "self_send(%s);\n" % TokenName
         return txt
     else:
-        if tail != "": tail = ", " + tail
-        return "self_send%i(%s%s);\n" % (TokenName, tail_size, tail)
+        length = 0
+        tail   = ""
+        for arg in ArgList:
+            if arg != "": tail += arg + ","
+            length += 1
+        if tail != "": tail = ", " + tail[:-1]
+        return "self_send%i(%s%s);\n" % (length, TokenName, tail)
 
-def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
+def __create_mode_transition_and_token_sender(fh, Command, ArgList):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
-    assert type(ArgListStr) == str
+    assert type(ArgList) == list
 
-    arg_list = ArgListStr.split(",")
-    arg_list = filter(lambda arg: arg != "", arg_list)
-    L = len(arg_list)
+    L           = len(ArgList)
     target_mode = None
     token_name  = None
     tail        = []
     if Command in ["GOTO", "GOSUB"]:
         if L < 1: 
             error_msg("The %s mode short cut requires at least one argument: The target mode." % Command, fh)
-        target_mode = arg_list[0]
-        if L > 1: token_name = arg_list[1]
-        if L > 2: tail       = arg_list[2:]
+        target_mode = ArgList[0]
+        if L > 1: token_name = ArgList[1]
+        if L > 2: tail       = ArgList[2:]
     else: # Command == "GOUP"
-        if L > 0: token_name = arg_list[0]
-        if L > 1: tail       = arg_list[1:]
+        if L > 0: token_name = ArgList[0]
+        if L > 1: tail       = ArgList[1:]
 
-    mode_change_str = { 
-                        "GOTO":  LanguageDB["$goto-mode"](Mode),
-                        "GOSUB": LanguageDB["$gosub-mode"](Mode),
-                        "GOUP":  LanguageDB["$goup-mode"],
-                      }[Command](target_mode)
+    # Code for mode change
+    txt = { 
+        "GOTO":  LanguageDB["$goto-mode"],
+        "GOSUB": LanguageDB["$gosub-mode"],
+        "GOUP":  LanguageDB["$goup-mode"],
+    }[Command](target_mode)
 
-    tail_str = ""
-    for element in tail:
-        tail_str += ", " + element
+    # Code for token sending
+    txt += __create_token_sender_by_token_name(fh, token_name, tail)
 
-    send_str = "" 
-    if token_name != None: 
-        if tail == []:
-            send_str = "self_send(%s); " % token_name
-        else:
-            send_str = "self_send%i(%s%s);\n" % (TokenName, tail_size, tail)
-
-    txt  = mode_change_str + "\n"
-    txt += send_str 
     return txt
 
