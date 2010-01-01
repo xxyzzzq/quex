@@ -1,4 +1,4 @@
-<history date="Thu Dec 31 01:52:54 2009" element-n="580">
+<history date="Thu Dec 31 14:49:10 2009" element-n="584">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1183,6 +1183,10 @@
     <day year="2009" month="12" day="31">
         <crc-error time="00:50:22" application="bug-2599228.sh" choice="Developper" database-crc="-1782361947" real-crc="-1537861067"/>
         <crc-error time="00:50:22" application="bug-2599228.sh" choice="FilesExist" database-crc="-612696572" real-crc="-1107591456"/>
-        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="00:52:54"/>
+        <crc-error time="12:09:54" application="feature-2251359.sh" choice="good" database-crc="1011991432" real-crc="-557387011"/>
+        <crc-error time="12:34:57" application="feature-2251359.sh" choice="good" database-crc="-557387011" real-crc="1014359874"/>
+        <crc-error time="13:13:31" application="bug-1887163.sh" choice="" database-crc="-1023013568" real-crc="-2029114095"/>
+        <crc-error time="13:37:19" application="bug-1889692.sh" choice="" database-crc="1602687125" real-crc="1009222158"/>
+        <test-runs-today n="10" ok-n="2" fail-n="8" else-n="0" last-run="oll korrekt" last-time="13:49:10"/>
     </day>
 </history>

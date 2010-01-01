@@ -7,7 +7,7 @@ import quex.output.cpp.token_class_maker as token_class
 import quex.input.token_type             as parser
 import quex.input.setup         
 
-quex.input.setup.setup.QUEX_TEMPLATE_DB_DIR = os.environ["QUEX_PATH"] + "/quex/code_base/"
+quex.input.setup.setup.QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
 quex.input.setup.setup.bytes_per_ucs_code_point = 1
 quex.input.setup.setup.output_token_class_file = ""
 quex.input.setup.setup.token_class_name_space = ""

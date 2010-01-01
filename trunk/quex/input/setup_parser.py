@@ -68,7 +68,6 @@ def do(argv):
 
     setup.QUEX_VERSION          = QUEX_VERSION
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
-    setup.QUEX_TEMPLATE_DB_DIR  = QUEX_TEMPLATE_DB_DIR
 
     # (*) Classes and their namespace
     setup.analyzer_class_name, setup.analyzer_name_space = \

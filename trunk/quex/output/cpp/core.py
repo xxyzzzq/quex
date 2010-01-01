@@ -24,7 +24,8 @@ def do(Modes, IndentationSupportF):
 def write_configuration_header(Modes, IndentationSupportF):
     OutputConfigurationFile   = Setup.output_configuration_file
     LexerClassName            = Setup.analyzer_class_name
-    ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
+    ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
+                                   + LanguageDB["$code_base"] 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
 
     txt = get_file_content_or_die(ConfigurationTemplateFile)
@@ -118,7 +119,8 @@ def __switch(txt, Name, SwitchF):
     return txt
     
 def write_constructor_and_memento_functions(ModeDB, LexerClassName):
-    FileTemplate = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
+    FileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+                                    + LanguageDB["$code_base"] 
                                     + "/analyzer/CppTemplate_functions.txt")
     func_txt = get_file_content_or_die(FileTemplate)
 
@@ -133,9 +135,9 @@ def write_constructor_and_memento_functions(ModeDB, LexerClassName):
 
 def write_engine_header(Modes):
 
-    QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR 
+    QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+                                                   + LanguageDB["$code_base"] 
                                                    + "/analyzer/CppTemplate.txt")
-    CoreEngineDefinitionsHeader = os.path.normpath(Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerFileStem               = Setup.output_file_stem
     LexerClassName              = Setup.analyzer_class_name
@@ -176,7 +178,6 @@ def write_engine_header(Modes):
 
     txt = blue_print(template_code_txt,
             [
-                ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",   CoreEngineDefinitionsHeader],
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
                 ["$$CLASS_FUNCTIONS$$",                  function_code_txt],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          get_include_guard_extension(
@@ -192,7 +193,7 @@ def write_engine_header(Modes):
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
-                ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
+                ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_INSTALLATION_DIR + LanguageDB["$code_base"]],
                 ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
                 ["$$TOKEN_CLASS$$",                      lexer_mode.token_type_definition.class_name],

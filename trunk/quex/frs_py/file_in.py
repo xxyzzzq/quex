@@ -305,9 +305,9 @@ def read_until_closing_bracket(fh, Opener, Closer,
                     txt += read_until_closing_bracket(fh, "", delimiter[1], IgnoreRegions=[]) 
                 except:
                     fh.seek(position)
+                           
                     error_msg("Unbalanced '%s', reached end of file before closing '%s' was found." % \
-                              (delimiter[0].replace("\n", "\\n"),
-                               delimiter[1].replace("\n", "\\n")),
+                              (delimiter[0].replace("\n", "\\n"), delimiter[1].replace("\n", "\\n")), 
                               fh)
 
                 txt += delimiter[1]

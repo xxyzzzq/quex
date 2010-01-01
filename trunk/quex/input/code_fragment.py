@@ -163,15 +163,35 @@ def __parse_function_call(fh):
 
         # Read argument list
         tmp = fh.read(1)
-        if tmp not in ["(", ";"]:
+        if   tmp == ";":
+            return identifier, argument_list
+        elif tmp != "(":
             error_msg("Missing '(' or ';' after '%s'." % identifier, fh)
-        if tmp == ";":
-            return identifier, argument_list  # No argument list, ";" arrived immediately
 
-        arg_list_str = read_until_closing_bracket(fh, "(", ")")
-        verify_next_word(fh, ";")
+        text = ""
+        while 1 + 1 == 2:
+            tmp = fh.read(1)
+            if   tmp == ")": 
+                verify_next_word(fh, ";")
+                break
+            elif tmp in ["(", "[", "{"]:
+                closing_bracket = {"(": ")", "[": "]", "{": "}"}[tmp]
+                text += tmp + read_until_closing_bracket(fh, tmp, closing_bracket) + closing_bracket
+            elif tmp == "\"":
+                text += tmp + read_until_closing_bracket(fh, "", "\"", IgnoreRegions = []) + "\"" 
+            elif tmp == "'":
+                text += tmp + read_until_closing_bracket(fh, "", "'", IgnoreRegions = []) + "'" 
+            elif tmp == ",":
+                argument_list.append(text)
+                text = ""
+            elif tmp == "":
+                fh.seek(position)
+                error_msg("End of file reached while parsing argument list for %s." % identifier, fh)
+            else:
+                text += tmp
 
-        argument_list = arg_list_str.split(",")    
+        if text != "": argument_list.append(text)
+
         argument_list = map(lambda arg:    arg.strip(), argument_list)
         argument_list = filter(lambda arg: arg != "",   argument_list)
         return identifier, argument_list
@@ -194,6 +214,7 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
     return "self_send(%s);\n" % token_id_str
 
 def __create_token_sender_by_token_name(fh, TokenName, ArgList):
+    assert type(TokenName) in [str, unicode]
     assert type(ArgList) == list
 
     # after 'send' the token queue is filled and one can safely return
@@ -249,7 +270,8 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
         length = 0
         tail   = ""
         for arg in ArgList:
-            if arg != "": tail += arg + ","
+            if arg == "": continue
+            tail   += arg + ","
             length += 1
         if tail != "": tail = ", " + tail[:-1]
         return "self_send%i(%s%s);\n" % (length, TokenName, tail)
@@ -280,7 +302,8 @@ def __create_mode_transition_and_token_sender(fh, Command, ArgList):
     }[Command](target_mode)
 
     # Code for token sending
-    txt += __create_token_sender_by_token_name(fh, token_name, tail)
+    if token_name != None:
+        txt += __create_token_sender_by_token_name(fh, token_name, tail)
 
     return txt
 
