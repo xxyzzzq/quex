@@ -2578,7 +2578,7 @@ TERMINAL_35:
         #   endif
         
         #line 27 "dos_lf_2.qx"
-        self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
+        self_send1(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
 #line 2158 "Simple.cpp"
@@ -2626,7 +2626,7 @@ TERMINAL_7:
         #   endif
         
         #line 19 "dos_lf_2.qx"
-        self.send(QUEX_TKN_STRUCT);
+        self_send0(QUEX_TKN_STRUCT);
         CONTINUE;
         
 #line 2206 "Simple.cpp"
@@ -2680,7 +2680,7 @@ TERMINAL_10:
         #   endif
         
         #line 20 "dos_lf_2.qx"
-        self.send(QUEX_TKN_TYPE_INT);
+        self_send0(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
 #line 2260 "Simple.cpp"
@@ -2707,7 +2707,7 @@ TERMINAL_13:
         #   endif
         
         #line 21 "dos_lf_2.qx"
-        self.send(QUEX_TKN_TYPE_DOUBLE);
+        self_send0(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
 #line 2287 "Simple.cpp"
@@ -2734,7 +2734,7 @@ TERMINAL_16:
         #   endif
         
         #line 22 "dos_lf_2.qx"
-        self.send(QUEX_TKN_SEND);
+        self_send0(QUEX_TKN_SEND);
         CONTINUE;
         
 #line 2314 "Simple.cpp"
@@ -2761,7 +2761,7 @@ TERMINAL_19:
         #   endif
         
         #line 23 "dos_lf_2.qx"
-        self.send(QUEX_TKN_EXPECT);
+        self_send0(QUEX_TKN_EXPECT);
         CONTINUE;
         
 #line 2341 "Simple.cpp"
@@ -2787,7 +2787,7 @@ TERMINAL_22_DIRECT:
         #   endif
         
         #line 24 "dos_lf_2.qx"
-        self.send(QUEX_TKN_SEMICOLON);
+        self_send0(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
 #line 2367 "Simple.cpp"
@@ -2813,7 +2813,7 @@ TERMINAL_25_DIRECT:
         #   endif
         
         #line 25 "dos_lf_2.qx"
-        self.send(QUEX_TKN_BRACKET_OPEN);
+        self_send0(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
 #line 2393 "Simple.cpp"
@@ -2839,7 +2839,7 @@ TERMINAL_28_DIRECT:
         #   endif
         
         #line 26 "dos_lf_2.qx"
-        self.send(QUEX_TKN_BRACKET_CLOSE);
+        self_send0(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
 #line 2419 "Simple.cpp"
@@ -2861,7 +2861,7 @@ TERMINAL_END_OF_STREAM:
         #   endif
         
         #line 16 "dos_lf_2.qx"
-        self.send(QUEX_TKN_TERMINATION);
+        self_send0(QUEX_TKN_TERMINATION);
         
 #line 2440 "Simple.cpp"
         
@@ -2892,7 +2892,7 @@ else {
         CounterBase_shift_end_values_to_start_values(&self.counter.base);
         QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);
         #   endif
-        self.send(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+        self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);
         return;
         
         }

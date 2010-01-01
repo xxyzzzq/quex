@@ -168,8 +168,8 @@ db["C++"] = {
     "$frame":                cpp.__frame_of_all,
     "$token-default-file":   "/quex/code_base/token/CppDefault.qx",
     "$token-template-file":  "/quex/code_base/token/CppTemplate.txt",
-    "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, " + Mode + ");",
-    "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, " + Mode + ");",
+    "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, &" + Mode + ");",
+    "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, &" + Mode + ");",
     "$goup-mode":            lambda Mode: "QUEX_FUNC(pop_mode)(&self);",                  # Must be function, w/o arg
     }
 

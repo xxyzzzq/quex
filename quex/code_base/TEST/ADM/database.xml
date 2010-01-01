@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.04" date="Thu Dec 31 01:57:21 2009">
+<test-database execution-time-sec="0.03" date="Thu Dec 31 14:52:39 2009">
     <last-used-diff-display-program name=""/>
     <group name="StrangeStream">
         <test title="wchar_t stream based." make-required="True" time-sum-sec="0.02"> 

@@ -47,7 +47,6 @@ except:
     sys.exit(-1)
 
 sys.path.insert(0, QUEX_INSTALLATION_DIR)
-QUEX_TEMPLATE_DB_DIR = QUEX_INSTALLATION_DIR + "/quex/code_base"
 
 def check():
     global QUEX_INSTALLATION_DIR

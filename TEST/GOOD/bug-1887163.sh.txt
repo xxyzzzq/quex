@@ -2,7 +2,7 @@ Original Error:
 error.qx:6:error: Missing '(' or ';' after 'QUEX_TKN_A'.
 
 Second Use Case:
-error-2.qx:5:error: End of file reached while parsing token shortcut.
+error-2.qx:5:error: End of file reached while parsing argument list for QUEX_TKN_A.
 
 Third Use Case:
 error-3.qx:6:error: End of file reached while parsing Pattern or event handler name.
