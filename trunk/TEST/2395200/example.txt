@@ -16,7 +16,7 @@
      * 
      */
 #include "tiny_lexer"
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
 #endif
 #define QUEX_LEXER_CLASS tiny_lexer
@@ -37,7 +37,7 @@ tiny_lexer_PROGRAM_analyser_function(QuexAnalyzerEngine* me)
     /*       functions are all located inside the main class as static functions. That*/
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
-#   if defined (__QUEX_SETTING_PLAIN_C)
+#   if defined (__QUEX_OPTION_PLAIN_C)
 #      define self (*me)
 #   else
        using namespace quex;

@@ -2,7 +2,7 @@
 #define __QUEX_INCLUDE_GUARD__COMPATIBILITY__ICONV_ARGUMENT_TYPES_H
 
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     /* NOTE: At the time of this writing 'iconv' is delivered on different 
      *       systems with different definitions for the second argument. The 
      *       following 'hack' by Howard Jeng does the adaption automatically. */

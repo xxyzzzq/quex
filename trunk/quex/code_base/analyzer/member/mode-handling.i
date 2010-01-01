@@ -100,7 +100,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_FUNC(enter_mode)(me, new_mode); 
     }
 
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     QUEX_INLINE QUEX_NAME(Mode)&
     QUEX_MEMBER(mode)()
     { return *QUEX_FUNC(get_mode)(this); }

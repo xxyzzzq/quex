@@ -3,7 +3,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY
 #define __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
 #include<cstdio>
 #include<iostream>
 #include<stdexcept> /* Standard C++ Exceptions*/

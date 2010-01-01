@@ -72,14 +72,14 @@
 #   define QUEX_SETTING_MODE_STACK_SIZE     (256)
 #endif
 #ifndef    QUEX_TYPE_TOKEN  
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
 #       define QUEX_TYPE_TOKEN  quex::Token
 #   else
 #       define QUEX_TYPE_TOKEN  quex_Token
 #   endif
 #endif
 #ifndef    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
 #      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE Token
 #   else
 #      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE quex_Token
@@ -92,7 +92,7 @@
 #define QUEX_FUNC(NAME)        QuexDefault ## _ ## NAME                
 #define QUEX_MEMBER(NAME)      QUEX_TYPE_ANALYZER :: NAME                
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #define QUEX_NAMESPACE_MAIN_REF              quex::
 #define QUEX_NAMESPACE_MAIN_OPEN       namespace quex { // namespace components {
 #define QUEX_NAMESPACE_MAIN_CLOSE      } // }
@@ -102,7 +102,7 @@
 #define QUEX_NAMESPACE_MAIN_CLOSE            
 #endif
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
+#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
 #    define QUEX_TYPE_CHARACTER_POSITION   QUEX_NAME(MemoryPositionMimiker)
 #else
 #    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*

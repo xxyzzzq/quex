@@ -110,7 +110,7 @@ QUEX_FUNC(reset_plain)(QUEX_TYPE_ANALYZER*  me,
                        const char*          CharacterEncodingName /* = 0x0 */)
 { QUEX_FUNC(reset)(me, (FILE*)0x0, CharacterEncodingName); }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE
 QUEX_MEMBER(QUEX_TYPE_ANALYZER)(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                                 size_t               BufferMemorySize,
@@ -144,7 +144,7 @@ QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::wistream*  p_input_stream,
 { QUEX_FUNC(construct_wistream)(this, p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
 #endif
 
-#if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_SETTING_PLAIN_C)
+#if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_OPTION_PLAIN_C)
 /* StrangeStreams are not for C-language stuff */
 template<class UnderlyingStreamT> QUEX_INLINE
 QUEX_MEMBER(QUEX_TYPE_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 

@@ -4,7 +4,7 @@
 
 #include<quex/code_base/definitions>
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_SETTING_PLAIN_C)
+#if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_OPTION_PLAIN_C)
 #   include<quex/code_base/buffer/MemoryPositionMimiker>
 #endif
 

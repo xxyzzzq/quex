@@ -19,7 +19,7 @@
 #   undef __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF
 #endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #    define TEMPLATIFIER(X, SOME_CLASS)         template <class SOME_CLASS> struct QUEX_NAME(X)
 #    define TEMPLATIFIER_END(X)                 /* empty */
 #    define TEMPLATE_IN(SOME_CLASS)             template <class SOME_CLASS> inline

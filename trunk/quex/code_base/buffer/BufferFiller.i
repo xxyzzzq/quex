@@ -9,7 +9,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #   include <stdexcept>
 #endif
 QUEX_NAMESPACE_MAIN_OPEN

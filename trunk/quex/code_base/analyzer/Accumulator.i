@@ -161,7 +161,7 @@ QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me)
     __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)me->text.begin);
 }
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 QUEX_INLINE void  
 QUEX_NAME(Accumulator)::print_this()
 { QUEX_NAME(Accumulator_print_this)(this); }

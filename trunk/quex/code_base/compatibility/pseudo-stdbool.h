@@ -9,7 +9,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H
 #define __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H
 
-#if defined(__QUEX_SETTING_PLAIN_C)
+#if defined(__QUEX_OPTION_PLAIN_C)
 
 /* According to the C99 Standard 'bool' would have to be defined
  * as equal to '_Bool' which is also defined in some standard. The author
@@ -27,5 +27,5 @@
 
 #define __bool_true_false_are_defined ((int)(1))
 
-#endif /* __QUEX_SETTING_PLAIN_C */
+#endif /* __QUEX_OPTION_PLAIN_C */
 #endif /* __QUEX_INCLUDE_GUARD__COMPATIBILITY__PSEUDO_STDBOOL_H */

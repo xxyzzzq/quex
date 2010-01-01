@@ -90,7 +90,7 @@ QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
                       QUEX_FUNC(byte_order_reversion)(me) ? "true" : "false");
 }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void    
 QUEX_MEMBER(move_forward)(const size_t CharacterN)
 { QUEX_FUNC(move_forward)(this, CharacterN); }

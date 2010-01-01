@@ -12,14 +12,14 @@
 
 #include <quex/code_base/compatibility/pseudo-stdbool.h>
  
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     extern "C" { 
 #endif
 #   include <stdio.h>
 #   include <assert.h>
 #   include <string.h>
 #   include <recode.h>   /* Pinard's recode.h */
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     } // extern "C" { 
 #endif
 

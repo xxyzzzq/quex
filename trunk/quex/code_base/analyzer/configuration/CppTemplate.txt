@@ -38,8 +38,8 @@
 #   endif
 #endif
 
-#ifndef    __QUEX_SETTING_PLAIN_C
-$$SWITCH$$ __QUEX_SETTING_PLAIN_C
+#ifndef    __QUEX_OPTION_PLAIN_C
+$$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
 #define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID  ($$INITIAL_LEXER_MODE_ID$$)
@@ -344,7 +344,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_NAME(NAME)                      $$NAMESPACE_MAIN_STR$$_$$LEXER_CLASS_NAME$$_ ## NAME
 #define QUEX_TOKEN_NAME(NAME)                $$NAMESPACE_TOKEN_STR$$ ## NAME
 
-#if defined(__QUEX_SETTING_PLAIN_C)
+#if defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_MEMBER(NAME)                 void /* Undefined, not required */
 #else
 #   define QUEX_MEMBER(NAME)                 $$LEXER_CLASS_NAME$$::NAME                
@@ -352,13 +352,13 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
 #define QUEX_FUNC(NAME)                      $$LEXER_CLASS_NAME$$_ ## NAME                
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
+#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
 #    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
 #else
 #    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
 #endif
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 #define QUEX_TYPE_ANALYZER                   $$LEXER_CLASS_NAME$$
 #define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 #else
@@ -380,7 +380,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define     QUEX_TYPE_COUNTER             void*
 #endif
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 #   define QUEX_NAMESPACE_MAIN                  $$NAMESPACE_MAIN$$
 #   define QUEX_NAMESPACE_MAIN_OPEN             $$NAMESPACE_MAIN_OPEN$$
 #   define QUEX_NAMESPACE_MAIN_CLOSE            $$NAMESPACE_MAIN_CLOSE$$
@@ -397,7 +397,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 QUEX_NAMESPACE_MAIN_OPEN 
     struct QUEX_NAME(Engine_tag);
     struct QUEX_NAME(Memento_tag);
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     class  QUEX_TYPE_ANALYZER;
     class  QUEX_TYPE_DERIVED_ANALYZER;
 #   else

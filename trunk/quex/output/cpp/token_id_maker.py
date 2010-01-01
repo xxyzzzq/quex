@@ -41,7 +41,7 @@ file_str = \
 #ifndef __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 #define __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 #   include<cstdio> 
 #else
 #   include<stdio.h> 

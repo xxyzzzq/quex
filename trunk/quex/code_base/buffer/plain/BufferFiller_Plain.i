@@ -4,7 +4,7 @@
 #define __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I
 /**/
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
 #   include <iostream> 
 #   include <cerrno>
 #   include <stdexcept>

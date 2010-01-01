@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
 
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
 #   define BUFFER_FILLER_CONVERTER QuexBufferFiller_IConv<InputHandleT>
 #   else
 #   define BUFFER_FILLER_CONVERTER QuexBufferFiller_IConv
