@@ -456,11 +456,11 @@ def __frame_of_all(Code, Setup):
     # "using namespace " + namespace_ref + ";\n"       + \
 
     return "#include \"%s\"\n" % Setup.output_file_stem     + \
-           "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
+           "#if ! defined(__QUEX_OPTION_PLAIN_C)\n"        + \
            namespace_open + "\n"                            + \
            "#endif\n"                                       + \
            Code                                             + \
-           "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
+           "#if ! defined(__QUEX_OPTION_PLAIN_C)\n"        + \
            namespace_close + "\n"                           + \
            "#endif\n"                                       
 

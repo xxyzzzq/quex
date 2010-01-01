@@ -32,7 +32,7 @@
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
 QUEX_NAMESPACE_TOKEN_OPEN
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
     class  Token;
 #else
     struct Token;
@@ -353,7 +353,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 #   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
 
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     /* Use placement 'new' for explicit call of constructor. 
      * Necessary in C++: Trigger call to constructor for user defined members.   */
     new ((void*)memento) QUEX_NAME(Memento);
@@ -415,7 +415,7 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 
 /* END: _______________________________________________________________________*/
     
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     /* Counterpart to placement new: Explicit destructor call.
      * Necessary in C++: Trigger call to destructor for user defined members.  */
     memento->~QUEX_NAME(Memento_tag)();
@@ -497,7 +497,7 @@ __quex_assert(Indentation >= 0);
      * 
      */
 #include "Simple"
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 namespace quex {
 
 #endif
@@ -2989,7 +2989,7 @@ __REENTRY_PREPARATION:
     }
 }
 #include <quex/code_base/temporary_macros_off>
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 } /* Closing Namespace 'quex' */
 
 #endif
@@ -3005,7 +3005,7 @@ __REENTRY_PREPARATION:
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                           */
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 #   include<cstdio> 
 #else
 #   include<stdio.h> 

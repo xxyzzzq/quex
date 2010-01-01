@@ -86,7 +86,7 @@
  *  NOTE: The 'raw_buffer.iterator' remains between calls to "read_characters()".
  *        This is equivalent to having some bytes in the pipeline.
  **********************************************************************************/
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
 #   include <iostream> 
 #   include <cerrno>
 #   include <stdexcept>

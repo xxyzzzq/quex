@@ -39,7 +39,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 #   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
 
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     /* Use placement 'new' for explicit call of constructor. 
      * Necessary in C++: Trigger call to constructor for user defined members.   */
     new ((void*)memento) QUEX_NAME(Memento);
@@ -103,7 +103,7 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 $$MEMENTO_EXTENSIONS_UNPACK$$
 /* END: _______________________________________________________________________*/
     
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     /* Counterpart to placement new: Explicit destructor call.
      * Necessary in C++: Trigger call to destructor for user defined members.  */
     memento->~QUEX_NAME(Memento_tag)();

@@ -10,7 +10,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   define self (*this)
 
-#   ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_OPTION_PLAIN_C
     QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN& That) 
     { 

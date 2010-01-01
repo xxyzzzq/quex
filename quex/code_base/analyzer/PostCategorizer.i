@@ -216,7 +216,7 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
     QUEX_NAME(PostCategorizer_print_tree)(node->lesser, Depth + 1);
 }
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 QUEX_INLINE void
 QUEX_NAME(Dictionary)::clear()
 { QUEX_NAME(PostCategorizer_clear)(this); }

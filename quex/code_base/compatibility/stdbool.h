@@ -9,7 +9,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_H
 #define __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_H
 
-#if defined(__QUEX_SETTING_PLAIN_C)
+#if defined(__QUEX_OPTION_PLAIN_C)
 
 #define bool _Bool
 
@@ -25,5 +25,5 @@ typedef int _Bool;
 
 #define __bool_true_false_are_defined ((int)(1))
 
-#endif /* __QUEX_SETTING_PLAIN_C */
+#endif /* __QUEX_OPTION_PLAIN_C */
 #endif /* __QUEX_INCLUDE_GUARD__COMPATIBILITY__STDBOOL_H */

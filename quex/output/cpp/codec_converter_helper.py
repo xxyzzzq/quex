@@ -73,7 +73,7 @@ template_txt = \
 #include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/asserts>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #   include <stdexcept>
 namespace quex { 
 #endif
@@ -228,7 +228,7 @@ Quex_$$CODEC$$_to_ucs4_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, ui
 }
 
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::string
 Quex_$$CODEC$$_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 {

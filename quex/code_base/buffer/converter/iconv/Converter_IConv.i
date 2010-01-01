@@ -3,11 +3,11 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I
 
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 extern "C" { 
 #endif
 #include <errno.h>
-#ifndef __QUEX_SETTING_PLAIN_C
+#ifndef __QUEX_OPTION_PLAIN_C
 }
 #endif
 #include <quex/code_base/definitions>

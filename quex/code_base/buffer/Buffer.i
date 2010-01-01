@@ -189,7 +189,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *       the end of file pointer, that is different from the buffer limit code.
          * NOT: QUEX_BUFFER_ASSERT_CONSISTENCY(buffer); */
         QUEX_DEBUG_PRINT2(buffer, "TELL: %i", (int)buffer->_input_p);
-#       if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_SETTING_PLAIN_C)
+#       if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
         return QUEX_TYPE_CHARACTER_POSITION(buffer->_input_p, buffer->_content_character_index_begin);
 #       else
         return (QUEX_TYPE_CHARACTER_POSITION)(buffer->_input_p);
@@ -200,7 +200,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER_POSITION Position)
     {
 #       if      defined (QUEX_OPTION_ASSERTS) \
-           && ! defined(__QUEX_SETTING_PLAIN_C)
+           && ! defined(__QUEX_OPTION_PLAIN_C)
         /* Check wether the memory_position is relative to the current start position   
          * of the stream. That means, that the tell_adr() command was called on the  
          * same buffer setting or the positions have been adapted using the += operator.*/

@@ -26,13 +26,13 @@
 
 #include <quex/code_base/buffer/converter/Converter>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     extern "C" { 
 #endif
 #   include <stdio.h>
 #   include <assert.h>
 #   include <string.h>
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     } // extern "C" { 
 #endif
 #include "unicode/utypes.h"   /* Basic ICU data types */

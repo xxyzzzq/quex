@@ -171,6 +171,7 @@ db["C++"] = {
     "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, &" + Mode + ");",
     "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, &" + Mode + ");",
     "$goup-mode":            lambda Mode: "QUEX_FUNC(pop_mode)(&self);",                  # Must be function, w/o arg
+    "$code_base":            "/quex/code_base/",
     }
 
 #________________________________________________________________________________

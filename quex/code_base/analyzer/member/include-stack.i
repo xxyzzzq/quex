@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                             const int             MODE_ID /* = -1 */, 
                             const char*           CharacterCodecName /* = 0x0 */)
     {
-#       if defined(__QUEX_SETTING_PLAIN_C)
+#       if defined(__QUEX_OPTION_PLAIN_C)
 #       define InputHandleT  FILE
 #       endif
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]             */
@@ -72,7 +72,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /*    (6) Keep track of 'who's your daddy?'                                       */
         me->_parent_memento = m;
-#       if defined(__QUEX_SETTING_PLAIN_C)
+#       if defined(__QUEX_OPTION_PLAIN_C)
 #       undef InputHandleT
 #       endif
     }   
@@ -84,7 +84,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                  const char*              CharacterCodecName /* = 0x0 */)
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
-#       ifndef __QUEX_SETTING_PLAIN_C
+#       ifndef __QUEX_OPTION_PLAIN_C
         QUEX_FUNC(include_push)<InputHandleT>(me, InputName, mode->id(), CharacterCodecName);
 #       else
         QUEX_FUNC(include_push)((QUEX_NAME(TestAnalyzer)*)me, InputName, mode->id(), CharacterCodecName);
@@ -139,7 +139,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
     }
 
-#if ! defined( __QUEX_SETTING_PLAIN_C )
+#if ! defined( __QUEX_OPTION_PLAIN_C )
     TEMPLATE_IN(InputHandleT) void    
     QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*   InputName,
                               const int              ModeID /* = -1 */, 

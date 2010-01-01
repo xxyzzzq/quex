@@ -75,7 +75,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION",  True)
     txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
-    txt = __switch(txt, "__QUEX_SETTING_PLAIN_C",                    Setup.language.upper() == "C")
+    txt = __switch(txt, "__QUEX_OPTION_PLAIN_C",                    Setup.language.upper() == "C")
 
     # -- token class related definitions
     token_descr = lexer_mode.token_type_definition

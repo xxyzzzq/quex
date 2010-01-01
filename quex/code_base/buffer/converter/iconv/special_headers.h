@@ -24,7 +24,7 @@
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
 #endif
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     extern "C" { 
 #   include <iconv.h>
     }

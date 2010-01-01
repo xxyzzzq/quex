@@ -31,7 +31,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef struct {
         QUEX_NAME(DictionaryNode)*  root;
 
-#       ifndef __QUEX_SETTING_PLAIN_C
+#       ifndef __QUEX_OPTION_PLAIN_C
         void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
                                   const QUEX_TYPE_TOKEN_ID TokenID);
         void                remove(const QUEX_TYPE_CHARACTER* Lexeme);

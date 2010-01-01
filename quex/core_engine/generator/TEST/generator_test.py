@@ -161,9 +161,9 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
     txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
 
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
-        txt = txt.replace("$$__QUEX_SETTING_PLAIN_C$$", "#define __QUEX_SETTING_PLAIN_C\n")
+        txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", "#define __QUEX_OPTION_PLAIN_C\n")
     else:
-        txt = txt.replace("$$__QUEX_SETTING_PLAIN_C$$", "//#define __QUEX_SETTING_PLAIN_C\n")
+        txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", "//#define __QUEX_OPTION_PLAIN_C\n")
 
     return txt
 
@@ -205,13 +205,13 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
-    if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
+    if Language.find("Cpp") == -1: txt += "#define __QUEX_OPTION_PLAIN_C\n"
     txt += "#include <quex/code_base/analyzer/configuration/default>\n"
-    txt += "#if ! defined (__QUEX_SETTING_PLAIN_C)\n"
+    txt += "#if ! defined (__QUEX_OPTION_PLAIN_C)\n"
     txt += "    namespace quex {\n"
     txt += "#endif\n"
     txt += "typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;\n"
-    txt += "#if ! defined (__QUEX_SETTING_PLAIN_C)\n"
+    txt += "#if ! defined (__QUEX_OPTION_PLAIN_C)\n"
     txt += "    }\n"
     txt += "#endif\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
@@ -339,15 +339,15 @@ def action(PatternName):
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
-$$__QUEX_SETTING_PLAIN_C$$
+$$__QUEX_OPTION_PLAIN_C$$
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #include <quex/code_base/analyzer/configuration/default>
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     namespace quex {
 #endif
 typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     }
 #endif
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
@@ -362,7 +362,7 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 #include <quex/code_base/MemoryManager.i>
 #include <quex/code_base/test_environment/TestAnalyzer>
 #include <quex/code_base/analyzer/basic.i>
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;
 #endif
 
