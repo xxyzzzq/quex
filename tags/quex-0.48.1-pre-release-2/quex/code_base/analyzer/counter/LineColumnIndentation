@@ -1,0 +1,89 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ *
+ * (C) 2004-2009 Frank-Rene Schaefer
+ *
+ * __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION may be undefined in case
+ *    that multiple lexical analyzers are used. Then, the name of the
+ *    QUEX_NAME(Accumulator) must be different.                             */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#include <cstddef> 
+#else
+#include <stddef.h>
+#endif
+#include <quex/code_base/definitions>
+#include <quex/code_base/analyzer/counter/Base>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    struct QUEX_NAME(TestAnalyzer_tag);
+
+    typedef struct {
+        __CounterBase   base;
+
+        QUEX_TYPE_ANALYZER*   _the_lexer;
+
+        int     _indentation;                 /* number of columns to first non-whitespace  */
+        /*                                     * in the current line.                       */
+        bool    _indentation_count_enabled_f; /* count whitespace for indentation?          */
+        bool    _indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
+    } QUEX_NAME(CounterLineColumnIndentation);
+
+    QUEX_INLINE void
+    QUEX_NAME(CounterLineColumnIndentation_construct)(QUEX_NAME(CounterLineColumnIndentation)* me, 
+                                                      struct QUEX_TYPE_ANALYZER_TAG*           lexer);
+
+    QUEX_INLINE void
+    QUEX_NAME(CounterLineColumnIndentation_reset)(QUEX_NAME(CounterLineColumnIndentation)* me);
+
+    QUEX_INLINE void
+    QUEX_NAME(CounterLineColumnIndentation_copy_construct)(QUEX_NAME(CounterLineColumnIndentation)*       me, 
+                                                           const QUEX_NAME(CounterLineColumnIndentation)* That);
+
+    QUEX_INLINE void
+    QUEX_NAME(CounterLineColumnIndentation_init)(QUEX_NAME(CounterLineColumnIndentation)* me);
+
+    QUEX_INLINE void
+    QUEX_NAME(CounterLineColumnIndentation_on_end_of_file)(QUEX_NAME(CounterLineColumnIndentation)* me);
+
+    QUEX_INLINE void    
+    QUEX_NAME(CounterLineColumnIndentation_icount)(QUEX_NAME(CounterLineColumnIndentation)*  me,
+                                                   QUEX_TYPE_CHARACTER*     Lexeme,
+                                                   QUEX_TYPE_CHARACTER*     LexemeEnd);
+
+    QUEX_INLINE void
+    QUEX_NAME(__CounterLineColumnIndentation_count_whitespace_to_first_non_whitespace)(
+                                                   QUEX_NAME(CounterLineColumnIndentation)* me,
+                                                   QUEX_TYPE_CHARACTER* start_consideration_it, 
+                                                   QUEX_TYPE_CHARACTER* Begin,
+                                                   QUEX_TYPE_CHARACTER* End,
+                                                   const bool           LicenseToIncrementLineCountF);
+    QUEX_INLINE void    
+    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
+                                            QUEX_TYPE_CHARACTER*     Lexeme,
+                                            const int                LexemeL);
+    QUEX_INLINE void  
+    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace)(
+                                                 QUEX_NAME(CounterLineColumnIndentation)*  me, 
+                                                 const int                                 ColumnNIncrement); 
+
+    QUEX_INLINE void  
+    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpace)(
+                                                     QUEX_NAME(CounterLineColumnIndentation)*  me, 
+                                                     const int                                 ColumnNIncrement);
+
+    QUEX_INLINE void
+    QUEX_NAME(CounterLineColumnIndentation_count_indentation_aux)(
+                                                 QUEX_NAME(CounterLineColumnIndentation)*  me,
+                                                 QUEX_TYPE_CHARACTER*     start_consideration_it,
+                                                 QUEX_TYPE_CHARACTER*     Begin,
+                                                 QUEX_TYPE_CHARACTER*     End, 
+                                                 const bool               LicenseToIncrementLineCountF);
+    QUEX_INLINE void 
+    QUEX_NAME(CounterLineColumnIndentation_print_this)(QUEX_NAME(CounterLineColumnIndentation)* me);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION */

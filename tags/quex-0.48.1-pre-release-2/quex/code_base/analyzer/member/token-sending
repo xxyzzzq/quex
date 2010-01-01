@@ -1,0 +1,86 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+
+#include <quex/code_base/token/TokenPolicy>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#   define self (*this)
+
+#   define self_token_object()   __QUEX_CURRENT_TOKEN_P
+
+#   define self_send_token(That)            \
+    {                                       \
+        __QUEX_ASSERT_SEND_ENTRY();         \
+        QUEX_TOKEN_POLICY_SET(That);        \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();   \
+    }
+
+#   define self_send(ID)                    \
+    do {                                    \
+        __QUEX_ASSERT_SEND_ENTRY();         \
+        QUEX_TOKEN_POLICY_SET_1(ID);        \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();   \
+    } while ( 0 )
+
+#ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   define self_send_n(RepetitionN, ID)     \
+    do {                                                                          \
+        const int AvailableN = QUEX_NAME(TokenQueue_available_n)(&_token_queue);  \
+        const int N = RepetitionN > AvailableN ? AvailableN : RepetitionN;        \
+        __quex_assert(N > 0);                                                     \
+                                                                                  \
+        for(int n=0; n < N; n++) {                                                \
+            __QUEX_ASSERT_SEND_ENTRY();                                           \
+            QUEX_TOKEN_POLICY_SET_1(ID);                                          \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();                                     \
+        }                                                                         \
+        if( N - AvailableN ) {                                                    \
+            self._token_queue.remaining_repetitions_of_last_token_n = N - AvailableN; \
+        }                                                                         \
+        QUEX_TOKEN_POLICY_SET_1(ID);                                              \
+    } while ( 0 )
+#else
+#   define self_send_n(RepetitionN, ID)  self_send(ID)
+#endif
+
+#   define self_send0(ID)                            \
+           self_send(ID)
+
+#   define self_send1(ID, X0)                        \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_2(ID, X0);             \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
+    } while ( 0 )
+
+#   define self_send2(ID, X0, X1)                    \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_3(ID, X0, X1);         \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
+    } while ( 0 )
+
+#   define self_send3(ID, X0, X1, X2)                \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_4(ID, X0, X1, X2);     \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
+    } while ( 0 )
+
+#   define self_send4(ID, X0, X1, X2, X3)            \
+    do {                                             \
+        __QUEX_ASSERT_SEND_ENTRY();                  \
+        QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3); \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
+    } while ( 0 )
+
+#   undef self
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING */
+
