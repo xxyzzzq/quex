@@ -17,7 +17,7 @@ def do(Modes):
 
     mode_objects_txt = ""    
     for mode_name in Modes:
-        mode_objects_txt += "        QUEX_NAME(Mode)  QUEX_TYPE_ANALYZER::%s;\n" % mode_name
+        mode_objects_txt += "/* Global */QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode_name
 
     txt += Setup.language_db["$namespace-open"](Setup.analyzer_name_space)
     txt += mode_objects_txt

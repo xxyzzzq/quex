@@ -59,6 +59,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 $$QUEX_MODE_ID_DEFINITIONS$$
     
+$$MODE_OBJECTS$$
+
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
 typedef struct QUEX_NAME(Memento_tag) {
@@ -81,9 +83,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 class QUEX_TYPE_ANALYZER {
 public:
 #   include <quex/code_base/analyzer/Engine_body>
-
-public:
-$$MODE_OBJECTS$$
 
     /* DISABLED */ QUEX_TYPE_ANALYZER(const QUEX_TYPE_ANALYZER&);
 public:
@@ -180,8 +179,8 @@ public:
     void        enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
     //
     //     -- map: mode id to mode and vice versa
-    QUEX_NAME(Mode)&   map_mode_id_to_mode(const int        ModeID);       
-    int         map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
+    QUEX_NAME(Mode)&   map_mode_id_to_mode(const int              ModeID);       
+    int                map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
 
     // (*) Token sending
     void        send(const QUEX_TYPE_TOKEN& That);
