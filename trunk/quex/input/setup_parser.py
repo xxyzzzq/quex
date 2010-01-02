@@ -13,6 +13,7 @@ import quex.input.codec_db as codec_db
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED
+from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
 def do(argv):
     global setup
@@ -91,16 +92,15 @@ def do(argv):
                               AllowEmptyF=True)
         
 
-            
-    # (*) Output files
-    extension_db = {
-            "C":   ".c",
-            "C++": ".cpp",
-    }
-    verify_word_in_list(setup.language.upper(),
-                        extension_db.keys(),
+    # (*) Output programming language        
+    setup.language = setup.language.upper()
+    verify_word_in_list(setup.language,
+                        quex_core_engine_generator_languages_db.keys(),
                         "Programming language '%s' is not supported." % setup.language)
-    setup.output_code_file          = __prepare_file_name(extension_db[setup.language.upper()])
+    setup.language_db = quex_core_engine_generator_languages_db[setup.language]
+
+    # (*) Output files
+    setup.output_code_file          = __prepare_file_name(setup.language_db["$file_extension"])
     setup.output_file_stem          = __prepare_file_name("")
     setup.output_configuration_file = __prepare_file_name("-configuration")
     setup.output_token_id_file      = __prepare_file_name("-token_ids")

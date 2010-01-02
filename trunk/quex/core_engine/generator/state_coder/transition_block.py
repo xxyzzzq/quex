@@ -1,7 +1,6 @@
 import sys
 import quex.core_engine.generator.state_coder.transition as transition
 from   quex.input.setup                                  import setup as Setup
-LanguageDB = Setup.language_db
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
@@ -99,6 +98,8 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     """Creates the transition code to a given target based on the information in
        the trigger map entry.
     """
+    LanguageDB = Setup.language_db
+
     interval           = TriggerMapEntry[0]
     target_state_index = TriggerMapEntry[1]       
     #  target state != None, then the machine is still eating
@@ -141,7 +142,8 @@ def __try_very_simplest_case(TriggerMap, info):
        RETURNS:  'None' if the very simple implementation does not make sense.
                  A string if it could be implemented that way
     """
-    # return None
+    LanguageDB = Setup.language_db
+
     character_list            = []
     common_target_state_index = -1
     for trigger in TriggerMap:
@@ -181,6 +183,7 @@ def __try_very_simplest_case(TriggerMap, info):
         
 def __bracket_two_intervals(TriggerMap, info):
     assert len(TriggerMap) == 2
+    LanguageDB = Setup.language_db
 
     first  = TriggerMap[0]
     second = TriggerMap[1]
@@ -209,6 +212,7 @@ def __bracket_two_intervals(TriggerMap, info):
 
 def __bracket_three_intervals(TriggerMap, info):
     assert len(TriggerMap) == 3
+    LanguageDB = Setup.language_db
 
     # does one interval have the size '1'?
     size_one_map = [False, False, False]   # size_on_map[i] == True if interval 'i' has size '1'
@@ -244,6 +248,7 @@ def __bracket_three_intervals(TriggerMap, info):
     return __bracket_normally(1, TriggerMap, info)
 
 def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
+    LanguageDB = Setup.language_db
 
     middle = TriggerMap[MiddleTrigger_Idx]
     assert middle[0].begin >= 0, \

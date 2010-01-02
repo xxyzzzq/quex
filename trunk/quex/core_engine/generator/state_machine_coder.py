@@ -5,7 +5,6 @@ from   quex.core_engine.generator.languages.core   import __nice
 import quex.core_engine.generator.state_coder.core as state_coder
 from   quex.input.setup import setup as Setup
 
-LanguageDB = Setup.language_db
 
 def do(SMD):
     """Returns the program code implementing the StateMachine's behavior.
@@ -20,6 +19,7 @@ def do(SMD):
                 and last success stream position).                  
     """
     assert SMD.__class__.__name__ == "StateMachineDecorator"
+    LanguageDB = Setup.language_db
 
     state_machine = SMD.sm()
 

@@ -1,6 +1,5 @@
 from quex.core_engine.generator.languages.core import __nice
 from quex.input.setup import setup as Setup
-LanguageDB = Setup.language_db
 
 def do(State, StateIdx, SMD):
     assert State.__class__.__name__ == "State"
@@ -26,6 +25,7 @@ def forward_lexing(State, StateIdx, SMD, ForceF=False):
               blocks that determine acceptance. 
     """
     assert SMD.__class__.__name__ == "StateMachineDecorator"
+    LanguageDB = Setup.language_db
     SM = SMD.sm()
 
     OriginList = State.origins().get_list()
@@ -92,6 +92,7 @@ def backward_lexing(State):
           acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
     """
     assert State.__class__.__name__ == "State"
+    LanguageDB = Setup.language_db
     OriginList = State.origins().get_list()
 
     # There should be nothing, but unconditional acceptances or no-acceptance 
@@ -125,6 +126,7 @@ def backward_lexing_find_core_pattern(State):
     """
     assert State.__class__.__name__ == "State", \
            "Received %s as argument." % repr(State)
+    LanguageDB = Setup.language_db
 
     OriginList = State.origins().get_list()
 

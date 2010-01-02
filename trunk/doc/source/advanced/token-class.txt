@@ -163,19 +163,19 @@ class
 
   .. code-block:: cpp
 
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID);
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID);
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const std::basic_string<QUEX_TYPE_CHARACTER>& Value0);
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const std::vector<int>& Value0);
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, 
              const std::vector<int>& Value1);
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const int16_t& Value0, const int16_t& Value1);
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const int8_t& Value0, const int8_t& Value1);
-    void set(const QUEX_TYPE_TOKEN_XXX_ID ID, 
+    void set(const QUEX_TYPE_TOKEN_ID ID, 
              const uint16_t& Value0);
 
 Those are then implicitly used in the token senders. Note, that it is
@@ -319,6 +319,13 @@ objects can be specified via three code sections.
            new(&name)        std::basic_string<QUEX_TYPE_CHARACTER>(That.name);
            new(&number_list) std::vector<int>(That.number_list);
        }
+
+
+.. note:: When generating C code, the token itself can be accessed via 'self'.
+          Thus, in the above code fragments ``self._line_n`` accesses the member 
+          ``_line_n`` of the current token. In any case using explicit reference to ``self``
+          is more 'migration safe' since when generating C++ code ``self`` refers to
+          ``(*this)``.
 
 Additionally, content may be added to the class' body using the following
 code section:
@@ -524,27 +531,27 @@ which results in a generated token class in C++:
         { content.data_1.big_y = Value; }
 
 
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID) 
+        void set(const QUEX_TYPE_TOKEN_ID ID) 
         { _id = ID; }
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
         { _id = ID; name = Value0; }
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const std::vector<int>& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
         { _id = ID; number_list = Value0; }
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, const std::vector<int>& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, const std::vector<int>& Value1)
         { _id = ID; name = Value0; number_list = Value1; }
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const int16_t& Value0, const int16_t& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
         { _id = ID; content.data_1.big_x = Value0; content.data_1.big_y = Value1; }
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const int8_t& Value0, const int8_t& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const int8_t& Value0, const int8_t& Value1)
         { _id = ID; content.data_0.mini_x = Value0; content.data_0.mini_y = Value1; }
-        void set(const QUEX_TYPE_TOKEN_XXX_ID ID, const uint16_t& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const uint16_t& Value0)
         { _id = ID; content.who_is_that = Value0; }
 
 
         private:
-            QUEX_TYPE_TOKEN_XXX_ID    _id;
+            QUEX_TYPE_TOKEN_ID    _id;
         public:
-            QUEX_TYPE_TOKEN_XXX_ID    type_id() const      { return _id; }
-            static const char*    map_id_to_name(QUEX_TYPE_TOKEN_XXX_ID);
+            QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
+            static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
             const std::string     type_id_name() const { return map_id_to_name(_id); }
 
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
@@ -609,7 +616,7 @@ A hand written token class must comply to the following constraints:
 
     * The following macro needs to be defined outside the class:
        
-      .. describe:: QUEX_TYPE_TOKEN_XXX_ID
+      .. describe:: QUEX_TYPE_TOKEN_ID
 
          Defines the C-type to be used to store token-ids. It should at least
          be large enough to carry the largest token id number.
@@ -621,21 +628,24 @@ A hand written token class must comply to the following constraints:
  
       .. code-block:: cpp
 
-         #ifndef    QUEX_TYPE_TOKEN_XXX_ID 
-         #   define QUEX_TYPE_TOKEN_XXX_ID              uint32_t
+         #ifndef    QUEX_TYPE_TOKEN_ID 
+         #   define QUEX_TYPE_TOKEN_ID              uint32_t
          #endif
 
       Note, that the header file might be tolerant with respect to external definitions
       of the token id type. However, since it defines the token class, it must assume
       that it has not been defined yet.
 
-    * A member function that maps token-ids to token-names 
+    * A member function that maps token-ids to token-names inside the token's namespace
     
-      .. cfunction:: const char* map_id_to_name(token::id_type)
+      .. cfunction:: const char* QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID Id)
    
-      that maps any token-id to a human readable string. Note, that queχ does generate 
-      this function automatically, as long as it is not told not to do 
-      so by specifying command line option ``--user-token-id-file``.
+      that maps any token-id to a human readable string. Note, that queχ does
+      generate this function automatically, as long as it is not told not to do
+      so by specifying command line option ``--user-token-id-file``. The macro
+      ``QUEX_NAME_TOKEN`` adapts the mapping function to the appropriate
+      naming. Relying on the above function signature allows to define the
+      appropriate function.
 
     * Member functions that set token content, e.g. 
     
@@ -667,7 +677,7 @@ A hand written token class must comply to the following constraints:
     * It must provide a member function that tells about the token's via a 
       function with the following signature 
       
-      .. cfunction:: QUEX_TYPE_TOKEN_XXX_ID   type_id()
+      .. cfunction:: QUEX_TYPE_TOKEN_ID   type_id()
 
     * There must be a ``__copy(...)`` member function that copies the content
       of the token.

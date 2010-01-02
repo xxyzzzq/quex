@@ -6,7 +6,6 @@ from   quex.input.ucs_db_parser               import ucs_property_db
 from   quex.core_engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.core_engine.generator.action_info import *
 
-LanguageDB = Setup.language_db
 
 
 def parse(fh, CodeFragmentName, 
@@ -38,12 +37,15 @@ def parse(fh, CodeFragmentName,
         error_msg("Missing code fragment after %s definition." % CodeFragmentName, fh)
 
 def __parse_normal(fh, code_fragment_name):
+    LanguageDB = Setup.language_db
+
     line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
     return UserCodeFragment(code, fh.name, line_n, LanguageDB)
 
 def __parse_brief_token_sender(fh, ContinueF):
     # shorthand for { self.send(TKN_SOMETHING); CONTINUE; }
+    LanguageDB = Setup.language_db
     
     position = fh.tell()
     line_n   = get_current_line_info_number(fh) + 1
@@ -279,6 +281,8 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
 def __create_mode_transition_and_token_sender(fh, Command, ArgList):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
     assert type(ArgList) == list
+
+    LanguageDB = Setup.language_db
 
     L           = len(ArgList)
     target_mode = None

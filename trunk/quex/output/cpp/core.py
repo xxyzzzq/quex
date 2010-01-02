@@ -12,9 +12,6 @@ from quex.frs_py.file_in  import get_file_content_or_die, \
 import quex.lexer_mode              as lexer_mode
 from   quex.input.setup             import setup as Setup
 
-LanguageDB = Setup.language_db
-
-
 def do(Modes, IndentationSupportF):
     assert lexer_mode.token_type_definition != None
 
@@ -25,7 +22,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     OutputConfigurationFile   = Setup.output_configuration_file
     LexerClassName            = Setup.analyzer_class_name
     ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
-                                   + LanguageDB["$code_base"] 
+                                   + Setup.language_db["$code_base"] 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
 
     txt = get_file_content_or_die(ConfigurationTemplateFile)
@@ -46,7 +43,7 @@ def write_configuration_header(Modes, IndentationSupportF):
         converter_new_str = "/* " + converter_new_str + " */"
         user_defined_converter_f = False
 
-    namespace_main_str = make_safe_identifier(LanguageDB["$namespace-ref"](Setup.analyzer_name_space)[:-2])
+    namespace_main_str = make_safe_identifier(Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)[:-2])
 
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
@@ -79,12 +76,12 @@ def write_configuration_header(Modes, IndentationSupportF):
 
     # -- token class related definitions
     token_descr = lexer_mode.token_type_definition
-    namespace_token_str = make_safe_identifier(LanguageDB["$namespace-ref"](token_descr.name_space))
+    namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
-                                                         LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
+                                                         Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
              ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
@@ -98,14 +95,14 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
-             ["$$NAMESPACE_MAIN$$",             LanguageDB["$namespace-ref"](Setup.analyzer_name_space)[:-2]],
+             ["$$NAMESPACE_MAIN$$",             Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)[:-2]],
              ["$$NAMESPACE_MAIN_STR$$",         namespace_main_str],
-             ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN$$",            LanguageDB["$namespace-ref"](token_descr.name_space)],
+             ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN$$",            Setup.language_db["$namespace-ref"](token_descr.name_space)],
              ["$$NAMESPACE_TOKEN_STR$$",        namespace_token_str],
-             ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_CLOSE$$",      Setup.language_db["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
              ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
              ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
@@ -120,7 +117,7 @@ def __switch(txt, Name, SwitchF):
     
 def write_constructor_and_memento_functions(ModeDB, LexerClassName):
     FileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
-                                    + LanguageDB["$code_base"] 
+                                    + Setup.language_db["$code_base"] 
                                     + "/analyzer/CppTemplate_functions.txt")
     func_txt = get_file_content_or_die(FileTemplate)
 
@@ -136,7 +133,7 @@ def write_constructor_and_memento_functions(ModeDB, LexerClassName):
 def write_engine_header(Modes):
 
     QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
-                                                   + LanguageDB["$code_base"] 
+                                                   + Setup.language_db["$code_base"] 
                                                    + "/analyzer/CppTemplate.txt")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerFileStem               = Setup.output_file_stem
@@ -181,7 +178,7 @@ def write_engine_header(Modes):
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
                 ["$$CLASS_FUNCTIONS$$",                  function_code_txt],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          get_include_guard_extension(
-                                                         LanguageDB["$namespace-ref"](Setup.analyzer_name_space) 
+                                                         Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
                 ["$$LEXER_CONFIG_FILE$$",                Setup.output_configuration_file],
@@ -193,7 +190,7 @@ def write_engine_header(Modes):
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
-                ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_INSTALLATION_DIR + LanguageDB["$code_base"]],
+                ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_INSTALLATION_DIR + Setup.language_db["$code_base"]],
                 ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
                 ["$$TOKEN_CLASS$$",                      lexer_mode.token_type_definition.class_name],

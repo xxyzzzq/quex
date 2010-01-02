@@ -11,6 +11,11 @@ $$HEADER$$
  
 $$NAMESPACE_OPEN$$
 
+/* NOTE: The following function might have to be defined by the user if one
+ *       does not rely on quex's function generation.                        */
+const char*    
+QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID);
+
 class $$TOKEN_CLASS$$ {
 public:
     $$TOKEN_CLASS$$();
@@ -33,8 +38,8 @@ $$QUICK_SETTERS$$
         QUEX_TYPE_TOKEN_ID    _id;
     public:
         QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
-        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
-        const std::string     type_id_name() const { return map_id_to_name(_id); }
+        const char*           map_id_to_name(QUEX_TYPE_TOKEN_ID ID) const { return QUEX_NAME_TOKEN(_map_id_to_name)(ID); }
+        const std::string     type_id_name() const                        { return map_id_to_name(_id); }
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -64,26 +69,34 @@ inline
 $$TOKEN_CLASS$$::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
 /*****************************************************/
 {
+#   define self (*this)
 $$CONSTRUCTOR$$
+#   undef  self
 }
 
 inline
 $$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
 {
     __copy(That);
+#   define self (*this)
 $$CONSTRUCTOR$$
+#   undef  self
 }
 
 inline
 $$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
 {
+#   define self (*this)
 $$DESTRUCTOR$$
+#   undef  self
 }
 
 inline void
 $$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
 {
+#   define self (*me)
 $$COPY$$
+#   undef self
     /* If the user even misses to copy the token id, then there's
      * something seriously wrong.                                 */
     __quex_assert(this->_id == That._id);

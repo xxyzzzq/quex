@@ -7,7 +7,6 @@ import quex.core_engine.generator.state_coder.drop_out         as drop_out
 from   quex.input.setup                                        import setup as Setup
 from copy import deepcopy
 
-LanguageDB = Setup.language_db
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
@@ -16,6 +15,8 @@ def do(state, StateIdx, SMD, InitStateF=False):
        by 'Language'.
     """    
     assert SMD.__class__.__name__ == "StateMachineDecorator"
+
+    LanguageDB = Setup.language_db
 
     # (*) check that no epsilon transition triggers to a real state                   
     if __DEBUG_CHECK_ACTIVE_F:
@@ -61,6 +62,7 @@ def input_block(StateIdx, InitStateF, BackwardLexingF):
     # Any other state starts with an increment (forward) or decrement (backward).
     # This is so, since the beginning of the state is considered to be the 
     # transition action (setting the pointer to the next position to be read).
+    LanguageDB = Setup.language_db
     txt = ""
     if not BackwardLexingF:
         if not InitStateF:

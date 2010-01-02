@@ -166,20 +166,22 @@ db["C++"] = {
     #
     "$header-definitions":   cpp.__header_definitions,
     "$frame":                cpp.__frame_of_all,
-    "$token-default-file":   "/quex/code_base/token/CppDefault.qx",
-    "$token-template-file":  "/quex/code_base/token/CppTemplate.txt",
+    "$token-default-file":   "/token/CppDefault.qx",
+    "$token_template_file":  "/token/CppTemplate.txt",
     "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, &" + Mode + ");",
     "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, &" + Mode + ");",
     "$goup-mode":            lambda Mode: "QUEX_FUNC(pop_mode)(&self);",                  # Must be function, w/o arg
     "$code_base":            "/quex/code_base/",
+    "$file_extension":       ".cpp",
     }
 
 #________________________________________________________________________________
 # C
 #    
 db["C"] = copy(db["C++"])
-db["C"]["$token-default-file"]  = "/quex/code_base/token/CDefault.qx"
-db["C"]["$token-template-file"] = "/quex/code_base/token/CTemplate.txt"
+db["C"]["$token-default-file"]  = "/token/CDefault.qx"
+db["C"]["$token_template_file"] = "/token/CTemplate.txt"
+db["C"]["$file_extension"]      = ".c"
 
 #________________________________________________________________________________
 # Perl

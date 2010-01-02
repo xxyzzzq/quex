@@ -8,8 +8,6 @@ from quex.frs_py.file_in                import write_safely_and_close, make_safe
 from quex.input.setup                   import setup as Setup
 from quex.input.setup_parser            import __prepare_file_name
 
-LanguageDB = Setup.language_db
-
 def do():
     if Setup.engine_character_encoding == "": return
     if Setup.engine_character_encoding_transformation_info in ["utf8-state-split", "utf16-state-split"]: return
@@ -302,6 +300,8 @@ class ConverterWriter:
     def do(self, UnicodeTrafoInfo, ProvidedConversionInfoF=False):
         """Creates code for a conversion to utf8 according to the conversion_table.
         """
+        LanguageDB = Setup.language_db
+
         # The flag 'ProvidedConversionTableF' is only to be used for Unit Tests
         if ProvidedConversionInfoF: conversion_table = UnicodeTrafoInfo
         else:                       conversion_table = self.get_conversion_table(UnicodeTrafoInfo)

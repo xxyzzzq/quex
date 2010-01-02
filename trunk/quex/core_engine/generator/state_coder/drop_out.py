@@ -1,6 +1,5 @@
 from   quex.input.setup import setup as Setup
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
-LanguageDB = Setup.language_db
 
 def do(state, StateIdx, SMD, InitStateF):
     """There are two reasons for drop out:
@@ -14,6 +13,7 @@ def do(state, StateIdx, SMD, InitStateF):
        the character drops over the edge, then a terminal state needs to be targeted.
     """
     assert SMD.__class__.__name__ == "StateMachineDecorator"
+    LanguageDB = Setup.language_db
 
     TriggerMap = state.transitions().get_trigger_map()
 
@@ -46,6 +46,7 @@ def do(state, StateIdx, SMD, InitStateF):
     return txt + "\n"
 
 def get_forward_load_procedure(StateIndex):
+    LanguageDB = Setup.language_db
     txt  = '    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");\n'
     txt += "    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n"
     txt += "                                                      post_context_start_position, PostContextStartPositionN) ) {\n"
@@ -54,12 +55,14 @@ def get_forward_load_procedure(StateIndex):
     return txt
 
 def __reload_forward(StateIndex): 
+    LanguageDB = Setup.language_db
     txt  = get_forward_load_procedure(StateIndex)
     txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
     txt += "    " + LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt
 
 def __reload_backward(StateIndex): 
+    LanguageDB = Setup.language_db
     txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "BACKWARD_BUFFER_RELOAD");\n'
     txt += "    if( QUEX_FUNC(buffer_reload_backward)(&me->buffer) ) {\n"
     txt += "       " + LanguageDB["$goto"]("$input", StateIndex)              + "\n"

@@ -57,7 +57,7 @@ QUEX_NAME(MemoryManager_TokenArray_free)(void* memory);
 #endif
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
-QUEX_INLINE  QUEX_NAME(Memento_tag)*
+QUEX_INLINE  struct QUEX_NAME(Memento_tag)*
 QUEX_NAME(MemoryManager_Memento_allocate)();
 
 QUEX_INLINE void

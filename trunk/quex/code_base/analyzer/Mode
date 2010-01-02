@@ -41,15 +41,15 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_NAME(Mode);
     
     QUEX_INLINE void
-    QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER*)
+    QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER* me)
     { __quex_assert(0); return; }
 
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER*, const int) 
+    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER* me, const int Indentation) 
     { }
 
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*) 
+    QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* TheMode) 
     { }
 
 QUEX_NAMESPACE_MAIN_CLOSE

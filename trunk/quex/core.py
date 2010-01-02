@@ -36,8 +36,9 @@ def do():
     mode_db = __get_mode_db(Setup)
 
     if lexer_mode.token_type_definition == None:
-        file_name = Setup.language_db["$token-default-file"]
-        fh        = open_file_or_die(Setup.QUEX_INSTALLATION_DIR + file_name)
+        fh = open_file_or_die(Setup.QUEX_INSTALLATION_DIR 
+                              + Setup.language_db["$code_base"] 
+                              + Setup.language_db["$token-default-file"])
         quex_file_parser.parse_section(fh)
         fh.close()
 

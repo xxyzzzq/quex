@@ -10,7 +10,6 @@ import quex.core_engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup_parser                import __prepare_file_name
 
-LanguageDB = Setup.language_db
 
 def do():
     assert lexer_mode.token_type_definition != None
@@ -26,7 +25,9 @@ def _do(Descr):
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
     ## ALLOW: Descr.get_member_db().keys() == []
 
-    TemplateFile = Setup.QUEX_INSTALLATION_DIR + Setup.language_db["$token-template-file"]
+    TemplateFile = Setup.QUEX_INSTALLATION_DIR \
+                   + Setup.language_db["$code_base"] \
+                   + Setup.language_db["$token_template_file"]
     template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     
     virtual_destructor_str = ""
@@ -51,11 +52,11 @@ def _do(Descr):
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
                       ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
-                                                           LanguageDB["$namespace-ref"](Descr.name_space) 
+                                                           Setup.language_db["$namespace-ref"](Descr.name_space) 
                                                            + "__" + Descr.class_name)],
                       ["$$TOKEN_CLASS$$",      Descr.class_name],
-                      ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
-                      ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
+                      ["$$NAMESPACE_OPEN$$",   Setup.language_db["$namespace-open"](Descr.name_space)],
+                      ["$$NAMESPACE_CLOSE$$",  Setup.language_db["$namespace-close"](Descr.name_space)],
                      ])
 
     return txt
@@ -91,7 +92,7 @@ def get_union_members(Descr):
 
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
     my_def  = IndentationOffset
-    my_def += LanguageDB["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
+    my_def += Setup.language_db["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
                                               VariableName, MaxVariableNameL)
     return TypeCode.adorn_with_source_reference(my_def, ReturnToSourceF=False)
 

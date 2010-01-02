@@ -1,7 +1,6 @@
 from   quex.frs_py.string_handling import blue_print
 from   quex.frs_py.file_in         import write_safely_and_close
 from   quex.input.setup            import setup as Setup
-LanguageDB = Setup.language_db
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
@@ -20,10 +19,10 @@ def do(Modes):
     for mode_name in Modes:
         mode_objects_txt += "        QUEX_NAME(Mode)  QUEX_TYPE_ANALYZER::%s;\n" % mode_name
 
-    txt += LanguageDB["$namespace-open"](Setup.analyzer_name_space)
+    txt += Setup.language_db["$namespace-open"](Setup.analyzer_name_space)
     txt += mode_objects_txt
     txt += mode_class_member_functions_txt
-    txt += LanguageDB["$namespace-close"](Setup.analyzer_name_space)
+    txt += Setup.language_db["$namespace-close"](Setup.analyzer_name_space)
 
     txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
                            ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])

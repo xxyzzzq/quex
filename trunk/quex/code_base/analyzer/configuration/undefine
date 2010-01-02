@@ -186,8 +186,8 @@
 #ifdef    QUEX_NAME 
 #   undef QUEX_NAME 
 #endif
-#ifdef    QUEX_TOKEN_NAME 
-#   undef QUEX_TOKEN_NAME 
+#ifdef    QUEX_NAME_TOKEN 
+#   undef QUEX_NAME_TOKEN 
 #endif
 #ifdef    QUEX_MEMBER 
 #   undef QUEX_MEMBER 
