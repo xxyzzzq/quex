@@ -14,16 +14,17 @@
 #   include <cstdio>   // gets: fprintf
 #   include <cstdlib>
 #   include <stdexcept>
-#   define __QUEX_STD_memmove  std::memmove
-#   define __QUEX_STD_memcpy   std::memcpy
-#   define __QUEX_STD_memset   std::memset
-#   define __QUEX_STD_strncat  std::strncat
+#   define __QUEX_STD_fclose   std::fclose
 #   define __QUEX_STD_fprintf  std::fprintf
-#   define __QUEX_STD_printf   std::printf
+#   define __QUEX_STD_fread    std::fread 
 #   define __QUEX_STD_fseek    std::fseek 
 #   define __QUEX_STD_ftell    std::ftell 
-#   define __QUEX_STD_fread    std::fread 
-#   define __QUEX_STD_fclose   std::fclose
+#   define __QUEX_STD_memcpy   std::memcpy
+#   define __QUEX_STD_memmove  std::memmove
+#   define __QUEX_STD_memset   std::memset
+#   define __QUEX_STD_printf   std::printf
+#   define __QUEX_STD_sprintf  std::sprintf
+#   define __QUEX_STD_strncat  std::strncat
 
 #   define QUEX_INLINE     inline
     /* Input handle type is determined automagically via templates */
@@ -32,16 +33,17 @@
 #   include <string.h>  /* gets: memmove, memcpy     */
 #   include <stdio.h>   /* gets: fprintf             */
 #   include <stdlib.h>
-#   define __QUEX_STD_memmove  memmove
-#   define __QUEX_STD_memcpy   memcpy
-#   define __QUEX_STD_memset   memset
-#   define __QUEX_STD_strncat  strncat
+#   define __QUEX_STD_fclose   fclose
 #   define __QUEX_STD_fprintf  fprintf
-#   define __QUEX_STD_printf   printf
+#   define __QUEX_STD_fread    fread 
 #   define __QUEX_STD_fseek    fseek 
 #   define __QUEX_STD_ftell    ftell 
-#   define __QUEX_STD_fread    fread 
-#   define __QUEX_STD_fclose   fclose
+#   define __QUEX_STD_memcpy   memcpy
+#   define __QUEX_STD_memmove  memmove
+#   define __QUEX_STD_memset   memset
+#   define __QUEX_STD_printf   printf
+#   define __QUEX_STD_sprintf  sprintf
+#   define __QUEX_STD_strncat  strncat
 
 #   define QUEX_INLINE     static
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 

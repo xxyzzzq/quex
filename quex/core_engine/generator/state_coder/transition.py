@@ -1,8 +1,6 @@
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
 
-LanguageDB = Setup.language_db
-
 def __goto_distinct_terminal(Origin):
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
@@ -100,6 +98,7 @@ def do_dead_end_router(State, StateIdx, BackwardLexingF):
     #    or not. They are the only once, that are 'implemented' as routers, that map to
     #    a terminal correspondent the pre-conditions.
     assert State.is_acceptance()
+    LanguageDB = Setup.language_db
 
     if State.origins().contains_any_pre_context_dependency() == False: 
         return "" # LanguageDB["$goto-last_acceptance"] + "\n"

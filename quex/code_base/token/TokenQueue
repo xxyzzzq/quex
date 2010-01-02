@@ -55,12 +55,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( N == 0 ) {
             QUEX_NAME(TokenQueue_init)(me, 0x0, 0x0, 0); 
         } else {
-            QUEX_TYPE_TOKEN* iterator = 0x0;
-            __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
+            QUEX_TYPE_TOKEN* iterator  = 0x0;
+            QUEX_TYPE_TOKEN* chunk     = 0x0; 
+            QUEX_TYPE_TOKEN* chunk_end = 0x0;
 
-            QUEX_TYPE_TOKEN*  chunk     = \
-                 (QUEX_TYPE_TOKEN*)QUEX_NAME(MemoryManager_TokenArray_allocate)(sizeof(QUEX_TYPE_TOKEN) * N);
-            QUEX_TYPE_TOKEN*  chunk_end = chunk + N;
+            __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
+            chunk     = (QUEX_TYPE_TOKEN*)QUEX_NAME(MemoryManager_TokenArray_allocate)(sizeof(QUEX_TYPE_TOKEN) * N);
+            chunk_end = chunk + N;
 
             /* Call placement new (plain constructor) for all tokens in chunk. */
             for(iterator = chunk; iterator != chunk_end; ++iterator)
@@ -107,7 +108,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return me->end - 1; }
 
     QUEX_INLINE size_t QUEX_NAME(TokenQueue_available_n)(QUEX_NAME(TokenQueue)* me) 
-    { return me->end - me->write_iterator; }
+    { return (size_t)(me->end - me->write_iterator); }
 
 #ifdef QUEX_OPTION_ASSERTS
     QUEX_INLINE void  
@@ -208,7 +209,7 @@ QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAM
      *  Note, that token 3 originally not subject to 'double occurence'. However,
      *  it may be overwritten by filling the queue, and then references to objects
      *  would get lost.                                                         */
-    me->size = token_queue->write_iterator - token_queue->read_iterator;
+    me->size = (size_t)(token_queue->write_iterator - token_queue->read_iterator);
     if( me->size != 0 ) {
         QUEX_TYPE_TOKEN* iterator = 0x0;
         

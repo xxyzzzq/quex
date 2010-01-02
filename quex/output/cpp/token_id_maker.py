@@ -63,7 +63,7 @@ func_str = \
 QUEX_NAMESPACE_TOKEN_OPEN
 
 QUEX_INLINE const char*
-QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
+QUEX_NAME_TOKEN(_map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
    static const char  uninitialized_string[] = "<UNINITIALIZED>";
@@ -75,7 +75,7 @@ $$TOKEN_NAMES$$
     *       used, this function needs to be redefined.                  */
    switch( TokenID ) {
    default: {
-       std::sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+       __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
        return error_string;
    }
    case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;

@@ -10,7 +10,7 @@ Types
    Internal carrier type for characters. This is set automatically by quex
    if the command line option ``-b`` or ``--bytes-per-ucs-code-point`` is specified.
 
-.. cmacro:: QUEX_TYPE_TOKEN_XXX_ID
+.. cmacro:: QUEX_TYPE_TOKEN_ID
 
    Type to be used to store the numeric value of a token identifier. On small systems
    this might be set to ``short`` or ``unsigned char``. On larger systems, if very

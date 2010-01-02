@@ -9,72 +9,82 @@
 
 $$HEADER$$
  
-typedef struct $$TOKEN_CLASS$$_tag {
+typedef struct QUEX_TYPE_TOKEN_TAG {
     QUEX_TYPE_TOKEN_ID    _id;
 $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        QUEX_TYPE_TOKEN_LINE_N    line_n;
+        QUEX_TYPE_TOKEN_LINE_N    _line_n;
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        QUEX_TYPE_TOKEN_COLUMN_N  column_n;
+        QUEX_TYPE_TOKEN_COLUMN_N  _column_n;
 #       endif
 #   endif
 $$BODY$$
-} $$TOKEN_CLASS$$;
+} QUEX_TYPE_TOKEN;
 
-void $$TOKEN_CLASS$$_construct($$TOKEN_CLASS$$* me);
-void $$TOKEN_CLASS$$_copy_construct($$TOKEN_CLASS$$*       me, 
-                                    const $$TOKEN_CLASS$$* Other);
-void $$TOKEN_CLASS$$_copy($$TOKEN_CLASS$$*       me, 
-                          const $$TOKEN_CLASS$$* That);
-void $$TOKEN_CLASS$$_destruct($$TOKEN_CLASS$$*);
+QUEX_INLINE void QUEX_NAME_TOKEN(_construct)(QUEX_TYPE_TOKEN* me);
+QUEX_INLINE void QUEX_NAME_TOKEN(_copy_construct)(QUEX_TYPE_TOKEN*       me, 
+                                                  const QUEX_TYPE_TOKEN* That);
+QUEX_INLINE void QUEX_NAME_TOKEN(_copy)(QUEX_TYPE_TOKEN*       me, 
+                                        const QUEX_TYPE_TOKEN* That);
+QUEX_INLINE void QUEX_NAME_TOKEN(_destruct)(QUEX_TYPE_TOKEN*);
 
 /* NOTE: Setters and getters as in the C++ version of the token class are not
  *       necessary, since the members are accessed directly.                   */
 
-void $$TOKEN_CLASS$$_set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
-$$QUICK_SETTERS$$
+QUEX_INLINE void 
+QUEX_NAME_TOKEN(_set)(QUEX_TYPE_TOKEN*         me, 
+                      const QUEX_TYPE_TOKEN_ID ID) 
+{ me->_id = ID; }
 
-const char*    $$TOKEN_CLASS$$_map_id_to_name(QUEX_TYPE_TOKEN_ID);
+QUEX_INLINE const char*    
+QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
-void $$TOKEN_CLASS$$_construct($$TOKEN_CLASS$$* me);
+QUEX_INLINE void 
+QUEX_NAME_TOKEN(_construct)(QUEX_TYPE_TOKEN* me)
 {
+#   define self (*me)
 $$CONSTRUCTOR$$
+#   undef  self
 }
 
-void $$TOKEN_CLASS$$_copy_construct($$TOKEN_CLASS$$*       me, 
-                                    const $$TOKEN_CLASS$$* Other);
+QUEX_INLINE void 
+QUEX_NAME_TOKEN(_copy_construct)(QUEX_TYPE_TOKEN*       me, 
+                                 const QUEX_TYPE_TOKEN* That)
 {
-    __copy(That);
-$$CONSTRUCTOR$$
+    QUEX_NAME_TOKEN(_copy)(me, That);
+    QUEX_NAME_TOKEN(_construct)(me);
 }
 
-void $$TOKEN_CLASS$$_destruct($$TOKEN_CLASS$$* me);
+QUEX_INLINE void 
+QUEX_NAME_TOKEN(_destruct)(QUEX_TYPE_TOKEN* me)
 {
+#   define self (*me)
 $$DESTRUCTOR$$
+#   undef  self
 }
 
-void $$TOKEN_CLASS$$_copy($$TOKEN_CLASS$$*       me, 
-                          const $$TOKEN_CLASS$$* That);
+void QUEX_NAME_TOKEN(_copy)(QUEX_TYPE_TOKEN*       me, 
+                            const QUEX_TYPE_TOKEN* That)
 {
+#   define self (*me)
 $$COPY$$
+#   undef  self
     /* If the user even misses to copy the token id, then there's
      * something seriously wrong.                                 */
-    __quex_assert(this->_id == That._id);
+    __quex_assert(me->_id == That->_id);
 #ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    __quex_assert(_line_n == That._line_n);
+    __quex_assert(me->_line_n == That->_line_n);
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    __quex_assert(_column_n == That._column_n);
+    __quex_assert(me->_column_n == That->_column_n);
 #   endif
 #endif
 }
 
 $$FOOTER$$
-
-QUEX_NAMESPACE_TOKEN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */
