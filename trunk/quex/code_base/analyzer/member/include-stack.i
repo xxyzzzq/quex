@@ -18,14 +18,11 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER*   me,
-                            QUEX_TYPE_CHARACTER*  InputName,
-                            const int             MODE_ID /* = -1 */, 
-                            const char*           CharacterCodecName /* = 0x0 */)
+    QUEX_FUNC(include_push_by_id)(QUEX_TYPE_ANALYZER*   me,
+                                  QUEX_TYPE_CHARACTER*  InputName,
+                                  const int             MODE_ID /* = -1 */, 
+                                  const char*           CharacterCodecName /* = 0x0 */)
     {
-#       if defined(__QUEX_OPTION_PLAIN_C)
-#       define InputHandleT  FILE
-#       endif
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]             */
         /* CharacterCodecName == 0x0 possible if normal ASCII is ment (e.g. no iconv support) */
         __quex_assert(    MODE_ID == -1 
@@ -72,9 +69,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /*    (6) Keep track of 'who's your daddy?'                                       */
         me->_parent_memento = m;
-#       if defined(__QUEX_OPTION_PLAIN_C)
-#       undef InputHandleT
-#       endif
     }   
 
     TEMPLATE_IN(InputHandleT) void    
@@ -85,9 +79,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_OPTION_PLAIN_C
-        QUEX_FUNC(include_push)<InputHandleT>(me, InputName, mode->id(), CharacterCodecName);
+        QUEX_FUNC(include_push_by_id)<InputHandleT>(me, InputName, mode->id(), CharacterCodecName);
 #       else
-        QUEX_FUNC(include_push)((QUEX_NAME(TestAnalyzer)*)me, InputName, mode->id(), CharacterCodecName);
+        QUEX_FUNC(include_push_by_id)((QUEX_NAME(TestAnalyzer)*)me, InputName, mode->id(), CharacterCodecName);
 #       endif
     }
 
@@ -144,7 +138,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*   InputName,
                               const int              ModeID /* = -1 */, 
                               const char*            CharacterCodecName /* = 0x0 */)
-    { QUEX_FUNC(include_push)<InputHandleT>(this, InputName, ModeID, CharacterCodecName); }
+    { QUEX_FUNC(include_push_by_id)<InputHandleT>(this, InputName, ModeID, CharacterCodecName); }
 
     TEMPLATE_IN(InputHandleT) void    
     QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*     InputName,

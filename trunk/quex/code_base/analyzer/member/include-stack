@@ -13,21 +13,23 @@ struct QUEX_NAME(Memento_tag);
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 void  QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER* me,
                               QUEX_TYPE_CHARACTER*     InputName, 
-                              const QUEX_NAME(Mode)&    mode, 
-                              const char*              IANA_CodingName = 0x0);
-void  QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER* me,
-                              QUEX_TYPE_CHARACTER*     InputName, 
-                              const int                MODE_ID         = -1, 
-                              const char*              IANA_CodingName = 0x0);
+                              const QUEX_NAME(Mode)*   mode, 
+                              const char*              IANA_CodingName /* = 0x0 */);
+void  QUEX_FUNC(include_push_by_id)(QUEX_TYPE_ANALYZER*      me,
+                                    QUEX_TYPE_CHARACTER*     InputName, 
+                                    const int                MODE_ID         /* = -1 */, 
+                                    const char*              IANA_CodingName /* = 0x0 */);
 bool  QUEX_FUNC(include_pop)(QUEX_TYPE_ANALYZER* me);
 
 void  QUEX_FUNC(include_stack_delete)(QUEX_TYPE_ANALYZER* me);
 
-//      -- include events (a file is included)
-TEMPLATE_IN(InputHandleT) struct QUEX_NAME(Memento_tag)*  QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER* me,
-                                                                                  QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-void                                                      QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER* me,
-                                                                                    struct QUEX_NAME(Memento_tag)*);
+/* Packing and unpacking of essential information about the analyzer. */
+TEMPLATE_IN(InputHandleT) struct QUEX_NAME(Memento_tag)*  
+QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER* me,
+                        QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
+void                      
+QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER* me,
+                          struct QUEX_NAME(Memento_tag)*);
 #   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

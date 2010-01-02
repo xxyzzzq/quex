@@ -134,7 +134,7 @@ def write_engine_header(Modes):
 
     QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                                    + Setup.language_db["$code_base"] 
-                                                   + "/analyzer/CppTemplate.txt")
+                                                   + Setup.language_db["$analyzer_template_file"]).replace("//","/")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerFileStem               = Setup.output_file_stem
     LexerClassName              = Setup.analyzer_class_name
@@ -203,18 +203,18 @@ def write_engine_header(Modes):
 
 
 quex_mode_init_call_str = """
-     me->$$MN$$.id   = QUEX_NAME(QuexModeID_$$MN$$);
-     me->$$MN$$.name = "$$MN$$";
-     me->$$MN$$.analyzer_function = $analyzer_function;
+     QUEX_NAME($$MN$$).id   = QUEX_NAME(QuexModeID_$$MN$$);
+     QUEX_NAME($$MN$$).name = "$$MN$$";
+     QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-     me->$$MN$$.on_indentation = $on_indentation;
+     QUEX_NAME($$MN$$).on_indentation = $on_indentation;
 #    endif
-     me->$$MN$$.on_entry       = $on_entry;
-     me->$$MN$$.on_exit        = $on_exit;
+     QUEX_NAME($$MN$$).on_entry       = $on_entry;
+     QUEX_NAME($$MN$$).on_exit        = $on_exit;
 #    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-     me->$$MN$$.has_base       = $has_base;
-     me->$$MN$$.has_entry_from = $has_entry_from;
-     me->$$MN$$.has_exit_to    = $has_exit_to;
+     QUEX_NAME($$MN$$).has_base       = $has_base;
+     QUEX_NAME($$MN$$).has_entry_from = $has_entry_from;
+     QUEX_NAME($$MN$$).has_exit_to    = $has_exit_to;
 #    endif
 """
 
@@ -306,7 +306,7 @@ def get_constructor_code(Modes, LexerClassName):
         txt += __get_mode_init_call(mode, LexerClassName)
 
     for mode in Modes:
-        txt += "        me->mode_db[QUEX_NAME(QuexModeID_%s)]%s = &me->%s;\n" % \
+        txt += "        me->mode_db[QUEX_NAME(QuexModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
                (mode.name, " " * (L-len(mode.name)), mode.name)
     return txt
 
@@ -323,7 +323,7 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
 
     members_txt = ""    
     for mode in Modes:
-        members_txt += "        static QUEX_NAME(Mode)  %s;\n" % mode.name
+        members_txt += "        extern QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode.name
 
     mode_functions_txt = __get_mode_function_declaration(Modes, LexerClassName, FriendF=False)
     friends_txt        = __get_mode_function_declaration(Modes, LexerClassName, FriendF=True)
