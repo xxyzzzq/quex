@@ -33,11 +33,7 @@
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
 QUEX_NAMESPACE_TOKEN_OPEN
-#ifndef __QUEX_OPTION_PLAIN_C
     class  $$TOKEN_CLASS$$;
-#else
-    struct $$TOKEN_CLASS$$;
-#endif
 QUEX_NAMESPACE_TOKEN_CLOSE
 
 /* START: User defined header content _________________________________________
