@@ -57,8 +57,8 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 typedef struct QUEX_NAME(Memento_tag) {
 #   include <quex/code_base/analyzer/EngineMemento_body>
 
-    QUEX_NAME(Memento_tag)()  {}  /* Con- and Destruction necessary to trigger */
-    ~QUEX_NAME(Memento_tag)() {}  /* con- and destruction of user members.     */
+    /* Con- and Destruction are **not** necessary in C. No con- or de-
+     * structors of members need to be triggered.                              */
 
 /* START: User's memento extentions ___________________________________________*/
 $$MEMENTO_EXTENSIONS$$
@@ -71,7 +71,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
-class QUEX_TYPE_ANALYZER {
+typedef struct $$LEXER_CLASS_NAME$$_tag {
 
 #   include <quex/code_base/analyzer/Engine_body>
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
@@ -80,7 +80,7 @@ $$CLASS_BODY_EXTENSION$$
 /* END: ____________________________________________________________________________*/
 #undef  self
 
-};
+} $$LEXER_CLASS_NAME$$;
 
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
