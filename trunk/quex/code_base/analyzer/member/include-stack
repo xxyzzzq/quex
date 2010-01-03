@@ -27,7 +27,7 @@ void  QUEX_FUNC(include_stack_delete)(QUEX_TYPE_ANALYZER* me);
 TEMPLATE_IN(InputHandleT) struct QUEX_NAME(Memento_tag)*  
 QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER* me,
                         QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-void                      
+QUEX_INLINE void                      
 QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER* me,
                           struct QUEX_NAME(Memento_tag)*);
 #   endif

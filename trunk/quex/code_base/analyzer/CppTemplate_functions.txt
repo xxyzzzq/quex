@@ -65,7 +65,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
      *    -- Post categorizer.                                                 */
 
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
+    /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */
 #   endif
 
 /* START: User's memento 'pack' _______________________________________________*/
@@ -96,7 +96,7 @@ QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
     self.__file_handle_allocated_by_constructor = memento->__file_handle_allocated_by_constructor;
 
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
+    /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */
 #   endif
 
 /* START: User's memento 'unpack' _____________________________________________*/
