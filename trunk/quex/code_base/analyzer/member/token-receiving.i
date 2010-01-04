@@ -70,12 +70,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
-            result_p->__copy(*(QUEX_NAME(TokenQueue_pop)(&me->_token_queue)));
+            QUEX_NAME_TOKEN(_copy)(result_p, QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
             return;  
         } 
         else if( me->_token_queue.remaining_repetitions_of_last_token_n ) {
             --(me->_token_queue.remaining_repetitions_of_last_token_n);
-            result_p->__copy(*(QUEX_NAME(TokenQueue_back)(&me->_token_queue)));
+            QUEX_NAME_TOKEN(_copy)(result_p, QUEX_NAME(TokenQueue_back)(&me->_token_queue));
             return;
         }
 
@@ -88,7 +88,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&me->_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
-        result_p->__copy(*QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
+        QUEX_NAME_TOKEN(_copy)(result_p, QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
 
         return;
     }

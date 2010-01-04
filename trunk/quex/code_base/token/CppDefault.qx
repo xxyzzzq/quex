@@ -21,15 +21,15 @@ token_type {
    inheritable;
 
    copy {
-        _id    = That._id;
-        text   = That.text;
-        number = That.number;
+        self._id    = That->_id;
+        self.text   = That->text;
+        self.number = That->number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
     #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            _line_n = That._line_n;
+            self._line_n = That->_line_n;
     #       endif
     #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_n = That._column_n;
+            self._column_n = That->_column_n;
     #       endif
     #   endif
    }
@@ -43,7 +43,7 @@ token_type {
             std::string             tmp;
             std::string::size_type  pos  = 0;
 
-            tmp = map_id_to_name(this->_id);
+            tmp = map_id_to_name(self._id);
 
             tmp += " '" + utf8_text() + "' ";
 
@@ -60,7 +60,7 @@ token_type {
         {
             uint8_t                    utf8_buffer[QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE];
             std::string                tmp;
-            QUEX_TYPE_TOKEN::__string  tmp2 = text;
+            QUEX_TYPE_TOKEN::__string  tmp2 = self.text;
 
             uint8_t* end = QUEX_NAMESPACE_MAIN::Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), 
                                                        tmp2.length(), utf8_buffer, 

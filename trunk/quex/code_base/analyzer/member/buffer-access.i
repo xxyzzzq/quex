@@ -18,6 +18,10 @@ QUEX_NAMESPACE_MAIN_OPEN
      *          If the whole content was copied, then the return value
      *          is equal to BufferEnd.                                        */
     {
+        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
+        size_t                CopiedByteN = 0;
+        size_t                CopiedCharN = 0;
+
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
         __quex_assert(me->buffer._content_character_index_begin == 0); 
         __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
@@ -29,13 +33,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
 
         /* Determine the insertion position. */
-        QUEX_TYPE_CHARACTER*  insertion_p = me->buffer._memory._end_of_file_p;
+        insertion_p = me->buffer._memory._end_of_file_p;
 
-        const size_t CopiedByteN = QUEX_NAME(MemoryManager_insert)((uint8_t*)insertion_p,  
+        CopiedByteN = QUEX_NAME(MemoryManager_insert)((uint8_t*)insertion_p,  
                                             (uint8_t*)(QUEX_NAME(Buffer_content_back)(&me->buffer) + 1),
                                             (uint8_t*)ContentBegin, 
                                             (uint8_t*)ContentEnd);
-        const size_t CopiedCharN = CopiedByteN / sizeof(QUEX_TYPE_CHARACTER);
+        CopiedCharN = CopiedByteN / sizeof(QUEX_TYPE_CHARACTER);
 
         if( me->buffer._byte_order_reversion_active_f ) 
             QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, 

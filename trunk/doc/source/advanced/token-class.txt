@@ -233,7 +233,8 @@ code fragment
         ...
 
 does exactly the same as the previously mentioned one. Standard operations to
-objects can be specified via three code sections.
+objects can be specified via three code sections. The variable ``self`` is a 
+reference to the token object itself.
 
 .. note::
 
@@ -253,7 +254,7 @@ objects can be specified via three code sections.
    .. code-block:: cpp
 
        constructor { 
-           pointer_to_something = 0x0;            /* default */
+           self.pointer_to_something = 0x0;            /* default */
            std::cout << "Constructor\n"; 
        }
 
@@ -265,7 +266,7 @@ objects can be specified via three code sections.
    .. code-block:: cpp
 
        destructor { 
-           if( pointer_to_something != 0x0 ) delete pointer_to_something;
+           if( self.pointer_to_something != 0x0 ) delete pointer_to_something;
            std::cout << "Destructor\n"; 
        }
 
@@ -282,21 +283,21 @@ objects can be specified via three code sections.
        copy { 
            std::cout << "Copy\n"; 
            /* Copy core elements: id, line, and column number */
-           _id         = That._id;
+           self._id = That._id;
        #      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
        #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-                  _line_n = That._line_n;
+                  self._line_n = That._line_n;
        #      endif
        #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                         _column_n = That._column_n;
+                  self._column_n = That._column_n;
        #      endif
        #      endif
 
            /* copy all members */
-           name        = That.name;
-           number_list = That.number_list;
+           self.name        = That.name;
+           self.number_list = That.number_list;
            /* plain content copy of the union content */
-           content     = That.content;
+           self.content     = That.content;
        }
 
    Alternative to copying each member one-by-one, it may be advantegous to rely
@@ -309,23 +310,18 @@ objects can be specified via three code sections.
 
        copy { 
            /* Explicit Deletion of non-trivial members */
-           name.~std::basic_string<QUEX_TYPE_CHARACTER>();
-           number_list.~std::vector<int>();
+           self.name.~std::basic_string<QUEX_TYPE_CHARACTER>();
+           self.number_list.~std::vector<int>();
 
            /* Copy the plain memory chunk of the token object. */
-           __STD_QUEX_memcpy((void*)this, (void*)That), sizeof(QUEX_TYPE_TOKEN));
+           __STD_QUEX_memcpy((void*)&self, (void*)That), sizeof(QUEX_TYPE_TOKEN));
            
            /* Call placement new for non-trivial types: */
-           new(&name)        std::basic_string<QUEX_TYPE_CHARACTER>(That.name);
-           new(&number_list) std::vector<int>(That.number_list);
+           new(&self.name)        std::basic_string<QUEX_TYPE_CHARACTER>(That.name);
+           new(&self.number_list) std::vector<int>(That.number_list);
        }
 
 
-.. note:: When generating C code, the token itself can be accessed via 'self'.
-          Thus, in the above code fragments ``self._line_n`` accesses the member 
-          ``_line_n`` of the current token. In any case using explicit reference to ``self``
-          is more 'migration safe' since when generating C++ code ``self`` refers to
-          ``(*this)``.
 
 Additionally, content may be added to the class' body using the following
 code section:
@@ -679,8 +675,12 @@ A hand written token class must comply to the following constraints:
       
       .. cfunction:: QUEX_TYPE_TOKEN_ID   type_id()
 
-    * There must be a ``__copy(...)`` member function that copies the content
-      of the token.
+    * There must be a function 
+    
+      .. cfunction:: void QUEX_NAME_TOKEN(_copy)(Token* me, const Token* Other)`` 
+      
+      in the token's namespace which copies the content of token ``Other`` to the
+      content of token ``me``.
 
     * The must be member and member function definitions for line and column 
       numbers which are dependent on compilation macros. The user must
