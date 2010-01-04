@@ -82,9 +82,9 @@ $$CONSTRUCTOR$$
 }
 
 inline
-$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& Other)
 {
-   QUEX_NAME_TOKEN(_copy)(this, &That);
+   QUEX_NAME_TOKEN(_copy)(this, &Other);
 #  define self (*this)
 $$CONSTRUCTOR$$
 #  undef  self
@@ -99,20 +99,22 @@ $$DESTRUCTOR$$
 }
 
 inline void
-QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That)
+QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* __this, const $$TOKEN_CLASS$$* __That)
 {
-#  define self (*me)
+#  define self  (*__this)
+#  define Other (*__That)
 $$COPY$$
+#  undef Other
 #  undef self
    /* If the user even misses to copy the token id, then there's
     * something seriously wrong.                                 */
-   __quex_assert(me->_id == That->_id);
+   __quex_assert(__this->_id == __That->_id);
 #ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #  ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-   __quex_assert(me->_line_n == That->_line_n);
+   __quex_assert(__this->_line_n == __That->_line_n);
 #  endif
 #  ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-   __quex_assert(me->_column_n == That->_column_n);
+   __quex_assert(__this->_column_n == __That->_column_n);
 #  endif
 #endif
 }
