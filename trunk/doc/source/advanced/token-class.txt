@@ -276,28 +276,28 @@ reference to the token object itself.
    executed when the member function ``__copy`` is called or when the assigment 
    operator is used. 
 
-   Implicit Argument: ``That`` which is a reference to the token to be copied.
+   Implicit Argument: ``Other`` which is a reference to the token to be copied.
 
    .. code-block:: cpp
 
        copy { 
            std::cout << "Copy\n"; 
            /* Copy core elements: id, line, and column number */
-           self._id = That._id;
+           self._id = Other._id;
        #      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
        #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-                  self._line_n = That._line_n;
+                  self._line_n = Other._line_n;
        #      endif
        #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                  self._column_n = That._column_n;
+                  self._column_n = Other._column_n;
        #      endif
        #      endif
 
            /* copy all members */
-           self.name        = That.name;
-           self.number_list = That.number_list;
+           self.name        = Other.name;
+           self.number_list = Other.number_list;
            /* plain content copy of the union content */
-           self.content     = That.content;
+           self.content     = Other.content;
        }
 
    Alternative to copying each member one-by-one, it may be advantegous to rely
@@ -314,11 +314,11 @@ reference to the token object itself.
            self.number_list.~std::vector<int>();
 
            /* Copy the plain memory chunk of the token object. */
-           __STD_QUEX_memcpy((void*)&self, (void*)That), sizeof(QUEX_TYPE_TOKEN));
+           __STD_QUEX_memcpy((void*)&self, (void*)&Other), sizeof(QUEX_TYPE_TOKEN));
            
            /* Call placement new for non-trivial types: */
-           new(&self.name)        std::basic_string<QUEX_TYPE_CHARACTER>(That.name);
-           new(&self.number_list) std::vector<int>(That.number_list);
+           new(&self.name)        std::basic_string<QUEX_TYPE_CHARACTER>(Other.name);
+           new(&self.number_list) std::vector<int>(Other.number_list);
        }
 
 
@@ -328,9 +328,9 @@ code section:
 
 .. describe:: body
 
-   This allows to add constructors, member functions, friend declarations, internal type definitions
-   etc. being added the token class. The content of this section is pasted as-is into the
-   class body. Example:
+   This allows to add constructors, member functions, friend declarations,
+   internal type definitions etc. being added the token class. The content of
+   this section is pasted as-is into the class body. Example:
 
    .. code-block:: cpp
 
@@ -449,20 +449,20 @@ can be specified. The following shows a sample definition of a ``token_type`` se
        copy        { 
            std::cout << "Copy\n"; 
            /* Copy core elements: id, line, and column number */
-           _id         = That._id;
+           _id         = Other._id;
     #      ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
     #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-                  _line_n = That._line_n;
+                  _line_n = Other._line_n;
     #      endif
     #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                  _column_n = That._column_n;
+                  _column_n = Other._column_n;
     #      endif
     #      endif
            /* copy all members */
-           name        = That.name;
-           number_list = That.number_list;
+           name        = Other.name;
+           number_list = Other.number_list;
            /* plain content copy of the union content */
-           content     = That.content;
+           content     = Other.content;
        }
     }
 
