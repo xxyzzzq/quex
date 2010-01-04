@@ -61,7 +61,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_FUNC(map_mode_id_to_mode)(QUEX_TYPE_ANALYZER* me, const int ModeID)
     { 
         __quex_assert(ModeID >= 0);
-        __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1); // first mode is unused by quex
+        __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N); 
         return me->mode_db[ModeID]; 
     }
 
@@ -82,7 +82,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     { 
         __quex_assert(me->_mode_stack.end != me->_mode_stack.begin);
         --(me->_mode_stack.end);
-        // do not care about what was popped
+        /* do not care about what was popped */
     }
         
     QUEX_INLINE void       
