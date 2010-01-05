@@ -7,11 +7,15 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple --nsacc --token-type-no-stringless-check
-rm -f *.o
+quex -i simple.qx -o Simple --nsacc --token-type-no-stringless-check >& tmp.txt
+cat tmp.txt
+rm -f tmp.txt
+
 echo "No error -- is just fine"
-gcc -c -Wall -I$QUEX_PATH -I. *.cpp
-ls *.o
+gcc -c -Wall -I$QUEX_PATH -I. *.cpp >& tmp.txt
+cat tmp.txt
+rm -f tmp.txt
+ls -f *.o
 
 # cleansening
 rm -f Simple*
