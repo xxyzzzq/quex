@@ -59,7 +59,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
         __quex_assert(me->_input_p == me->_memory._front + 1);
-
     }
 
     QUEX_INLINE void
@@ -289,7 +288,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Buffer_distance_input_to_text_end)(QUEX_NAME(Buffer)* me)
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
-        return QUEX_NAME(Buffer_text_end)(me) - me->_input_p;
+        return (size_t)(QUEX_NAME(Buffer_text_end)(me) - me->_input_p);
     }
 
     QUEX_INLINE void
@@ -431,7 +430,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * current setting of the input pointer. Note, that the content starts
          * at one position after the memory (buffer limitting char at _front.).         
          */
-        const size_t DeltaToBufferBegin = me->_input_p - me->_memory._front - 1;
+        const size_t DeltaToBufferBegin = (size_t)(me->_input_p - me->_memory._front - 1);
         /* Adding the current offset of the content of the buffer in the stream. 
          * If there is no filler, there is no stream, then there is also no offset. */
         if( me->filler == 0x0 ) 
@@ -475,7 +474,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*  RemainderBegin    = me->_input_p;
         QUEX_TYPE_CHARACTER*  RemainderEnd      = me->_memory._end_of_file_p;
         QUEX_TYPE_CHARACTER*  MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
-        size_t                MoveRegionSize    = RemainderEnd - MoveRegionBegin;
+        size_t                MoveRegionSize    = (size_t)(RemainderEnd - MoveRegionBegin);
 
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
         __quex_assert(me->_content_character_index_begin == 0); 
@@ -505,7 +504,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE size_t          
     QUEX_NAME(BufferMemory_size)(QUEX_NAME(BufferMemory)* me)
-    { return me->_back - me->_front + 1; }
+    { return (size_t)(me->_back - me->_front + 1); }
 
     QUEX_INLINE void
     QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)

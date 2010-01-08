@@ -14,6 +14,7 @@
 #   include <cstdio>   // gets: fprintf
 #   include <cstdlib>
 #   include <stdexcept>
+#   define __QUEX_STD_fopen    std::fopen
 #   define __QUEX_STD_fclose   std::fclose
 #   define __QUEX_STD_fprintf  std::fprintf
 #   define __QUEX_STD_fread    std::fread 
@@ -33,6 +34,7 @@
 #   include <string.h>  /* gets: memmove, memcpy     */
 #   include <stdio.h>   /* gets: fprintf             */
 #   include <stdlib.h>
+#   define __QUEX_STD_fopen    fopen
 #   define __QUEX_STD_fclose   fclose
 #   define __QUEX_STD_fprintf  fprintf
 #   define __QUEX_STD_fread    fread 

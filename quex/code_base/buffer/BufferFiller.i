@@ -38,8 +38,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
-                         const char*    CharacterEncodingName,
-                         const size_t   TranslationBufferMemorySize)
+                                const char*    CharacterEncodingName,
+                                const size_t   TranslationBufferMemorySize)
     {
         if( CharacterEncodingName != 0x0 ) {
 

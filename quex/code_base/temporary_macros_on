@@ -26,8 +26,6 @@
 #    define STREAM_POSITION_TYPE(IH_TYPE)       typename InputPolicy<IH_TYPE*>::stream_position
 #    define STREAM_OFFSET_TYPE(IH_TYPE)         typename InputPolicy<IH_TYPE*>::stream_offset
 #    define TEMPLATED(X)                        QUEX_NAME(X)<InputHandleT>
-#    define TEMPLATED_WITH(X, Y)                QUEX_NAME(X)<Y>
-
 #else
 #    define TEMPLATIFIER(X, SOME_CLASS)         typedef struct QUEX_NAME(X ## _tag)
 #    define TEMPLATIFIER_END(X)                 QUEX_NAME(X)
@@ -36,7 +34,6 @@
 #    define STREAM_OFFSET_TYPE(IH_TYPE)         long
 #    define InputHandleT                        FILE
 #    define TEMPLATED(X)                        QUEX_NAME(X)
-#    define TEMPLATED_WITH(X, Y)                QUEX_NAME(X)
 #endif
 
 
