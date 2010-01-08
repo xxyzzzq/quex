@@ -103,8 +103,11 @@ QUEX_NAMESPACE_MAIN_OPEN
          * RETURNS: Number of bytes that have been copied.                      */
     {
         /* Determine the insertion size. */
-        const size_t DrainSize = drain_end_p  - drain_begin_p;
-        size_t       size      = source_end_p - source_begin_p;
+        const size_t DrainSize = (size_t)(drain_end_p  - drain_begin_p);
+        size_t       size      = (size_t)(source_end_p - source_begin_p);
+        __quex_assert(drain_end_p  >= drain_begin_p);
+        __quex_assert(source_end_p >= source_begin_p);
+
         if( DrainSize < size ) size = DrainSize;
 
         /* memcpy() might fail if the source and drain domain overlap! */

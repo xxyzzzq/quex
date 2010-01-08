@@ -65,6 +65,9 @@ QUEX_NAMESPACE_MAIN_OPEN
      * is useful in cases where the 'break' may appear in between characters, or
      * where the statefulness of the converter cannot be controlled.              */
     {
+        size_t                CopiedByteN = 0;
+        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
+
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = \
                   (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
@@ -75,10 +78,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*     -- Move away passed buffer content.                                      */
         QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(filler);
 
-        const size_t CopiedByteN = QUEX_NAME(MemoryManager_insert)(filler->raw_buffer.end, 
-                                                        filler->raw_buffer.memory_end,
-                                                        (uint8_t*)ContentBegin, 
-                                                        (uint8_t*)ContentEnd);
+        CopiedByteN = QUEX_NAME(MemoryManager_insert)(filler->raw_buffer.end, 
+                                                      filler->raw_buffer.memory_end,
+                                                      (uint8_t*)ContentBegin, 
+                                                      (uint8_t*)ContentEnd);
 
         filler->raw_buffer.end += CopiedByteN;
 
@@ -88,7 +91,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
 
         /*     -- Perform the conversion.                                               */
-        QUEX_TYPE_CHARACTER*  insertion_p = me->buffer._memory._end_of_file_p;
+        insertion_p = me->buffer._memory._end_of_file_p;
         filler->converter->convert(filler->converter, 
                                    &filler->raw_buffer.iterator, filler->raw_buffer.end,
                                    &insertion_p,                 QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
@@ -109,24 +112,26 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE uint8_t*
     QUEX_FUNC(buffer_fill_region_append_conversion_direct)(QUEX_TYPE_ANALYZER*  me,
-                                                              uint8_t*             ContentBegin, 
-                                                              uint8_t*             ContentEnd)
+                                                           uint8_t*             ContentBegin, 
+                                                           uint8_t*             ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
      * analyzer buffer. Note, that this can only be used, if it is safe to assume
      * that appended chunks do not break in between the encoding of a single 
      * character.                                                                  */
     {
+        QUEX_TYPE_CHARACTER*  insertion_p   = 0x0;
+        uint8_t*              content_begin = 0x0;
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
         __quex_assert(ContentEnd > ContentBegin);
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 
-        /*     -- Move away passed buffer content.                                      */
+        /* Move away passed buffer content.                                      */
         QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
 
-        /*     -- Perform the conversion.                                               */
-        QUEX_TYPE_CHARACTER*  insertion_p   = me->buffer._memory._end_of_file_p;
-        uint8_t*              content_begin = ContentBegin;
+        /* Perform the conversion.                                               */
+        insertion_p   = me->buffer._memory._end_of_file_p;
+        content_begin = ContentBegin;
         filler->converter->convert(filler->converter, 
                                    &content_begin, ContentEnd,
                                    &insertion_p,  QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
@@ -134,9 +139,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( me->buffer._byte_order_reversion_active_f ) 
             QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, insertion_p);
 
-        /*      -- 'convert' has adapted the insertion_p so that is points to the first 
-         *         position after the last filled position.                             */
-        /*      -- double check that no buffer limit code is mixed under normal content */
+        /* 'Convert' has adapted the insertion_p so that is points to the first 
+         * position after the last filled position.                            
+         * Double check that no buffer limit code is mixed under normal content */
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(me->buffer._memory._end_of_file_p, insertion_p);
 
         QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, insertion_p);
@@ -228,6 +233,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_FUNC(buffer_conversion_fill_region_finish)(QUEX_TYPE_ANALYZER* me,
                                                        const size_t        ByteN)
     {
+        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
 
         filler->raw_buffer.end += ByteN;
@@ -236,7 +242,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
 
         /*     -- Perform the conversion.                                               */
-        QUEX_TYPE_CHARACTER*  insertion_p = me->buffer._memory._end_of_file_p;
+        insertion_p = me->buffer._memory._end_of_file_p;
         filler->converter->convert(filler->converter, 
                                    &filler->raw_buffer.iterator, filler->raw_buffer.end,
                                    &insertion_p,                 QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
