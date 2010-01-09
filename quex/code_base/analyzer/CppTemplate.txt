@@ -109,12 +109,12 @@ public:
     virtual ~QUEX_TYPE_ANALYZER();
 
     /* Direct Access to Memory */
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
-                                                    QUEX_TYPE_CHARACTER* ContentEnd);
-    uint8_t*              buffer_fill_region_append_conversion(uint8_t* ContentBegin, 
-                                                               uint8_t* ContentEnd);
-    uint8_t*              buffer_fill_region_append_conversion_direct(uint8_t* ContentBegin, 
-                                                                      uint8_t* ContentEnd);
+    void*                 buffer_fill_region_append(void* ContentBegin, 
+                                                    void* ContentEnd);
+    void*                 buffer_fill_region_append_conversion(void* ContentBegin, 
+                                                               void* ContentEnd);
+    void*                 buffer_fill_region_append_conversion_direct(void* ContentBegin, 
+                                                                      void* ContentEnd);
     void                  buffer_fill_region_prepare();
     QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
     QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
