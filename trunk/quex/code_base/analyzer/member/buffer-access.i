@@ -12,6 +12,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t 
     QUEX_NAME(UserBufferFiller_Plain_insert)(QUEX_TYPE_ANALYZER*   me,
                                              QUEX_TYPE_CHARACTER** insertion_p,
+                                             QUEX_TYPE_CHARACTER*  BufferEnd,
                                              void*                 ContentBegin,
                                              void*                 ContentEnd)
     {
@@ -19,7 +20,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE((QUEX_TYPE_CHARACTER*)ContentBegin, (QUEX_TYPE_CHARACTER*)ContentEnd);
         CopiedByteN = QUEX_NAME(MemoryManager_insert)((uint8_t*)*insertion_p,  
-                                                      (uint8_t*)(QUEX_NAME(Buffer_content_back)(&me->buffer) + 1),
+                                                      (uint8_t*)BufferEnd,
                                                       (uint8_t*)ContentBegin, 
                                                       (uint8_t*)ContentEnd);
 
@@ -28,51 +29,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         return CopiedByteN;
     }
 
-    QUEX_INLINE void*
-    QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
-                                         void*   ContentBegin, 
-                                         void*   ContentEnd)
-    /* RETURNS: The position of the first character that could not be copied
-     *          into the fill region, because it did not have enough space.
-     *          If the whole content was copied, then the return value
-     *          is equal to BufferEnd.                                        */
-    {
-        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
-        size_t                CopiedByteN = 0;
-
-        /* Asserts ensure, that we are running in 'buffer-based-mode' */
-        __quex_assert(me->buffer._content_character_index_begin == 0); 
-        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
-        __quex_assert(ContentEnd > ContentBegin);
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-
-        /* (1) Move away unused passed buffer content. */
-        QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
-
-        /* (2) Determine place to insert new content */
-        insertion_p = me->buffer._memory._end_of_file_p;
-
-        CopiedByteN = QUEX_NAME(UserBufferFiller_Plain_insert)(me, &insertion_p,
-                                                               ContentBegin, ContentEnd);
-
-        /* (3) If necessary perform a byte order inversion on the loaded content */
-        if( me->buffer._byte_order_reversion_active_f ) 
-            QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, insertion_p);
-
-        /* (4) When lexing directly on the buffer, the end of file pointer is always set. */
-        QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, insertion_p);
-
-        /* NOT:
-         *      buffer->_input_p        = front;
-         *      buffer->_lexeme_start_p = front;            
-         * We might want to allow to append during lexical analysis. */
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        return (uint8_t*)ContentBegin + CopiedByteN;
-    }
-
     QUEX_INLINE size_t 
     QUEX_NAME(UserBufferFiller_Converter_insert)(QUEX_TYPE_ANALYZER*   me,
                                                  QUEX_TYPE_CHARACTER** insertion_p,
+                                                 QUEX_TYPE_CHARACTER*  BufferEnd,
                                                  void*                 ContentBegin,
                                                  void*                 ContentEnd)
     {
@@ -98,11 +58,75 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*     -- Perform the conversion.                                               */
         filler->converter->convert(filler->converter, 
                                    &filler->raw_buffer.iterator, filler->raw_buffer.end,
-                                   insertion_p,                  QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
+                                   insertion_p,                  BufferEnd);
 
         return CopiedByteN;
     }
 
+    QUEX_INLINE size_t 
+    QUEX_NAME(UserBufferFiller_Converter_insert_direct)(QUEX_TYPE_ANALYZER*   me,
+                                                        QUEX_TYPE_CHARACTER** insertion_p,
+                                                        QUEX_TYPE_CHARACTER*  BufferEnd,
+                                                        void*                 ContentBegin,
+                                                        void*                 ContentEnd)
+    {
+        QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
+        uint8_t*      read_iterator = (uint8_t*)ContentBegin;
+
+        filler->converter->convert(filler->converter, 
+                                   &read_iterator, (uint8_t*)ContentEnd,
+                                   insertion_p,    BufferEnd);
+
+        /* 'read_iterator' has been adapted by the converter, so that the 
+         * number of read bytes can be determined by: read_iterator - ContentEnd */ 
+        return read_iterator - (uint8_t*)ContentBegin;
+    }
+
+
+
+    QUEX_INLINE void*
+    QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
+                                         void*   ContentBegin, 
+                                         void*   ContentEnd)
+    /* RETURNS: The position of the first character that could not be copied
+     *          into the fill region, because it did not have enough space.
+     *          If the whole content was copied, then the return value
+     *          is equal to BufferEnd.                                        */
+    {
+        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
+        size_t                CopiedByteN = 0;
+
+        /* Asserts ensure, that we are running in 'buffer-based-mode' */
+        __quex_assert(me->buffer._content_character_index_begin == 0); 
+        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
+        __quex_assert(ContentEnd > ContentBegin);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+
+        /* (1) Move away unused passed buffer content. */
+        QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
+
+        /* (2) Determine place to insert new content */
+        insertion_p = me->buffer._memory._end_of_file_p;
+
+        CopiedByteN = QUEX_NAME(UserBufferFiller_Plain_insert)(me, 
+                                                               &insertion_p,
+                                                               me->buffer._memory._back + 1,
+                                                               ContentBegin, ContentEnd);
+
+        /* (3) If necessary perform a byte order inversion on the loaded content */
+        if( me->buffer._byte_order_reversion_active_f ) 
+            QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, insertion_p);
+
+        /* (4) When lexing directly on the buffer, the end of file pointer is always set. */
+        QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, insertion_p);
+
+        /* NOT:
+         *      buffer->_input_p        = front;
+         *      buffer->_lexeme_start_p = front;            
+         * We might want to allow to append during lexical analysis. */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+        return (uint8_t*)ContentBegin + CopiedByteN;
+    }
 
     QUEX_INLINE void*
     QUEX_FUNC(buffer_fill_region_append_conversion)(QUEX_TYPE_ANALYZER*  me,
@@ -126,6 +150,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* (3) Insert new content */
         CopiedByteN = QUEX_NAME(UserBufferFiller_Converter_insert)(me, &insertion_p,
+                                                                   me->buffer._memory._back + 1,
                                                                    ContentBegin,
                                                                    ContentEnd);
 
@@ -143,24 +168,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         return (uint8_t*)ContentBegin + CopiedByteN;
-    }
-
-    QUEX_INLINE size_t 
-    QUEX_NAME(UserBufferFiller_Converter_insert_direct)(QUEX_TYPE_ANALYZER*   me,
-                                                        QUEX_TYPE_CHARACTER** insertion_p,
-                                                        void*                 ContentBegin,
-                                                        void*                 ContentEnd)
-    {
-        QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
-        uint8_t*      read_iterator = (uint8_t*)ContentBegin;
-
-        filler->converter->convert(filler->converter, 
-                                   &read_iterator, (uint8_t*)ContentEnd,
-                                   insertion_p,  QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
-
-        /* 'read_iterator' has been adapted by the converter, so that the 
-         * number of read bytes can be determined by: read_iterator - ContentEnd */ 
-        return read_iterator - (uint8_t*)ContentBegin;
     }
 
     QUEX_INLINE void*
@@ -185,7 +192,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         insertion_p = me->buffer._memory._end_of_file_p;
 
         /* (3) Insert new content */
-        CopiedByteN = QUEX_NAME(UserBufferFiller_Converter_insert_direct)(me, &insertion_p,
+        CopiedByteN = QUEX_NAME(UserBufferFiller_Converter_insert_direct)(me, 
+                                                                          &insertion_p,
+                                                                          me->buffer._memory._back + 1,
                                                                           ContentBegin,
                                                                           ContentEnd);
 
