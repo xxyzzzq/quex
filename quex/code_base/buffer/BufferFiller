@@ -38,14 +38,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t   (*read_characters)(struct QUEX_NAME(BufferFiller_tag)*,
                                     QUEX_TYPE_CHARACTER* memory, const size_t N);
 
-#       ifdef __QUEX_OPTION_USER_BUFFER
-        size_t   (*insert_content)(struct QUEX_NAME(BufferFiller_tag)* me,
-                                   QUEX_TYPE_CHARACTER** insertion_p,
-                                   QUEX_TYPE_CHARACTER*  BufferEnd,
-                                   void*                 ContentBegin,
-                                   void*                 ContentEnd));
-#       endif
-
         /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
          *    to lexeme end exceeds the buffer size.                                                 */
         bool     (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
