@@ -14,12 +14,14 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void  QUEX_NAME(Buffer_init)(QUEX_NAME(Buffer)*  me, bool ByteOrderReversionF); 
-    QUEX_INLINE void  QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*  me, bool ByteOrderReversionF);
-    QUEX_INLINE void  QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*    me, 
-                                                 QUEX_TYPE_CHARACTER* memory, size_t Size);
-    QUEX_INLINE void  QUEX_NAME(BufferMemory_init)(QUEX_NAME(BufferMemory)*     me, 
-                                            QUEX_TYPE_CHARACTER*  InputMemory, size_t  MemorySize);
+    QUEX_INLINE void  QUEX_NAME(Buffer_init)(QUEX_NAME(Buffer)*  me, 
+                                             bool                ByteOrderReversionF); 
+    QUEX_INLINE void  QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*  me, 
+                                                      bool                ByteOrderReversionF);
+    QUEX_INLINE void  QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
+                                                        QUEX_TYPE_CHARACTER*      memory, size_t Size);
+    QUEX_INLINE void  QUEX_NAME(BufferMemory_init)(QUEX_NAME(BufferMemory)*  me, 
+                                                   QUEX_TYPE_CHARACTER*      InputMemory, size_t  MemorySize);
     QUEX_INLINE void  QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
     TEMPLATE_IN(InputHandleT) void
