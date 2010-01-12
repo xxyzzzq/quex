@@ -9,7 +9,7 @@ The transition from one mode to another can be controlled via the commands ``GOT
 .. code-block:: cpp
 
     mode NORMAL {
-        "<" => GOTO(TAG);
+        "<" => GOTO(TAG, QUEX_TKN_OPEN_TAG, Lexeme);
         .   => QUEX_TKN_LETTER(Lexeme);
         
     }
@@ -28,7 +28,7 @@ may be extended as follows
 .. code-block:: cpp
 
     mode NORMAL {
-        "<" => GOTO(TAG, QUEX_TKN_OPEN_TAG);
+        "<" => GOTO(TAG, QUEX_TKN_OPEN_TAG, Lexeme);
         .   => QUEX_TKN_LETTER(Lexeme);
         
     }

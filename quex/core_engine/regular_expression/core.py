@@ -128,7 +128,7 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
                       "Please, log a defect at the projects website quex.sourceforge.net.", fh)
 
     if acceptance_f == False:
-        error_msg("Pattern has no acceptance state an can never match.\n" + \
+        error_msg("Pattern has no acceptance state and can never match.\n" + \
                   "Aborting generation process.", fh)
         
     return sm
