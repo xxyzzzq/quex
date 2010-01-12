@@ -6,19 +6,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-typedef struct QUEX_NAME(BufferFillerDirectMemory_tag) {
-    size_t   (*insert)(struct QUEX_NAME(BufferFiller_tag)* me,
-                       QUEX_TYPE_CHARACTER**               insertion_p,
-                       QUEX_TYPE_CHARACTER*                BufferEnd,
-                       void*                               ContentBegin,
-                       void*                               ContentEnd));
-    size_t   (*fill_region_prepare)(struct QUEX_NAME(BufferFiller_tag)* me);
-    size_t   (*fill_region_finish)(struct QUEX_NAME(BufferFiller_tag)* me);
-    size_t   (*fill_region_get_begin)(struct QUEX_NAME(BufferFiller_tag)* me);
-    size_t   (*fill_region_get_end)(struct QUEX_NAME(BufferFiller_tag)* me);
-} QUEX_NAME(BufferFillerDirectMemory);
-
-
 /* Direct Access to Memory */
 QUEX_INLINE  void*  QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*  me,
                                                          void* ContentBegin, 

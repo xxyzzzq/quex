@@ -9,21 +9,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
-                                            size_t   (*tell_character_index)(QUEX_NAME(BufferFiller)*),
-                                            void     (*seek_character_index)(QUEX_NAME(BufferFiller)*, const size_t),
-                                            size_t   (*insert_content)(struct QUEX_NAME(BufferFiller_tag)* me,
-                                                                       QUEX_TYPE_CHARACTER** insertion_p,
-                                                                       QUEX_TYPE_CHARACTER*  BufferEnd,
-                                                                       void*                 ContentBegin,
-                                                                       void*                 ContentEnd));
-                                            size_t   (*fill_region_prepare)(struct QUEX_NAME(BufferFiller_tag)* me),
-                                            size_t   (*fill_region_finish)(struct QUEX_NAME(BufferFiller_tag)* me),
-                                            size_t   (*fill_region_get_begin)(struct QUEX_NAME(BufferFiller_tag)* me),
-                                            size_t   (*fill_region_get_end)(struct QUEX_NAME(BufferFiller_tag)* me),
-                                            void     (*delete_self)(QUEX_NAME(BufferFiller)*));
-
     QUEX_INLINE size_t 
     QUEX_NAME(BufferFillerUser_Plain_insert)(QUEX_NAME(BufferFiller)*  me,
                                              QUEX_TYPE_CHARACTER**     insertion_p,
@@ -56,9 +41,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         size_t CopiedByteN = 0;
 
+#       if ! defined(__QUEX_OPTION_PLAIN_C)
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
-        QUEX_NAME(BufferFiller_Converter)<void>*  me = \
-                           (QUEX_NAME(BufferFiller_Converter)<void>*)alter_ego;
+        QUEX_NAME(BufferFiller_Converter)<void>*  me = (QUEX_NAME(BufferFiller_Converter)<void>*)alter_ego;
+#       else
+        QUEX_NAME(BufferFiller_Converter)*        me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+#       endif
 
         /* (1) Append the content to the 'raw' buffer. */
         /*     -- Move away passed buffer content.                                      */
@@ -92,7 +80,12 @@ QUEX_NAMESPACE_MAIN_OPEN
      * that appended chunks do not break in between the encoding of a single 
      * character.                                                                  */
     {
-        QUEX_NAME(BufferFiller_Converter)<void>*  me            = (QUEX_NAME(BufferFiller_Converter)<void>*)alter_ego;
+#       if ! defined(__QUEX_OPTION_PLAIN_C)
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
+        QUEX_NAME(BufferFiller_Converter)<void>*  me = (QUEX_NAME(BufferFiller_Converter)<void>*)alter_ego;
+#       else
+        QUEX_NAME(BufferFiller_Converter)*        me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+#       endif
         uint8_t*                                  read_iterator = (uint8_t*)ContentBegin;
 
         me->converter->convert(me->converter, 
@@ -107,18 +100,19 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void*
-    QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*  me, 
-                                         void*                ContentBegin, 
-                                         void*                ContentEnd)
+    QUEX_FUNC(buffer_fill_region_append_core)(QUEX_TYPE_ANALYZER*    me, 
+                                              void*   ContentBegin, 
+                                              void*   ContentEnd,
+                                              size_t (*insert)(QUEX_NAME(BufferFiller)*   me,
+                                                               QUEX_TYPE_CHARACTER**      insertion_p,
+                                                               QUEX_TYPE_CHARACTER*  BufferEnd,
+                                                               void*                 ContentBegin,
+                                                               void*                 ContentEnd))
     /* RETURNS: The position of the first character that could not be copied
      *          into the fill region, because it did not have enough space.
      *          If the whole content was copied, then the return value
      *          is equal to BufferEnd.                                        */
     {
-#       ifndef __QUEX_OPTION_BUFFER_USER_CONTROLLED
-        QUEX_ERROR_EXIT("Compile option __QUEX_OPTION_BUFFER_USER_CONTROLLED has not been set.\n" \
-                        "Function call to buffer_fill_region_append(...) is not allowed.\n")
-#       else
         QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
         size_t                CopiedByteN = 0;
 
@@ -134,9 +128,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* (2) Determine place to insert new content */
         insertion_p = me->buffer._memory._end_of_file_p;
 
-        CopiedByteN = me->manual_filler.insert_content(me->buffer.filler, &insertion_p,
-                                                       me->buffer._memory._back + 1,
-                                                       ContentBegin, ContentEnd);
+        CopiedByteN = insert(me->buffer.filler, &insertion_p,
+                             me->buffer._memory._back + 1,
+                             ContentBegin, ContentEnd);
 
         /* (3) If necessary perform a byte order inversion on the loaded content */
         if( me->buffer._byte_order_reversion_active_f ) 
@@ -151,7 +145,40 @@ QUEX_NAMESPACE_MAIN_OPEN
          * We might want to allow to append during lexical analysis. */
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         return (uint8_t*)ContentBegin + CopiedByteN;
-#       endif
+    }
+
+    QUEX_INLINE void*
+    QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
+                                         void*                  ContentBegin, 
+                                         void*                  ContentEnd)
+    {
+        return QUEX_FUNC(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+                                                         QUEX_NAME(BufferFillerUser_Plain_insert));
+    }
+
+    QUEX_INLINE void*
+    QUEX_FUNC(buffer_fill_region_append_conversion)(QUEX_TYPE_ANALYZER*  me,
+                                                    void*                ContentBegin, 
+                                                    void*                ContentEnd)
+    /* Appends the content first into a 'raw' buffer and then converts it. This
+     * is useful in cases where the 'break' may appear in between characters, or
+     * where the statefulness of the converter cannot be controlled.              */
+    {
+        return QUEX_FUNC(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+                                                         QUEX_NAME(BufferFillerUser_Converter_insert));
+    }
+
+    QUEX_INLINE void*
+    QUEX_FUNC(buffer_fill_region_append_conversion_direct)(QUEX_TYPE_ANALYZER*  me,
+                                                           void*                ContentBegin, 
+                                                           void*                ContentEnd)
+    /* Does the conversion directly from the given user buffer to the internal 
+     * analyzer buffer. Note, that this can only be used, if it is safe to assume
+     * that appended chunks do not break in between the encoding of a single 
+     * character.                                                                  */
+    {
+        return QUEX_FUNC(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+                                                         QUEX_NAME(BufferFillerUser_Converter_insert_direct));
     }
 
     QUEX_INLINE void
@@ -203,7 +230,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_FUNC(buffer_conversion_fill_region_prepare)(QUEX_TYPE_ANALYZER* me) 
     {
+#       if ! defined(__QUEX_OPTION_PLAIN_C)
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
+#       else
+        QUEX_NAME(BufferFiller_Converter)*        filler = (QUEX_NAME(BufferFiller_Converter)*)me->buffer.filler;
+#       endif
 
         /* It is always assumed that the buffer filler w/ direct buffer accesss
          * is a converter. Now, move away past content in the raw buffer.       */
@@ -213,14 +245,24 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE uint8_t*  
     QUEX_FUNC(buffer_conversion_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
     { 
+#       if ! defined(__QUEX_OPTION_PLAIN_C)
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
+#       else
+        QUEX_NAME(BufferFiller_Converter)*        filler = (QUEX_NAME(BufferFiller_Converter)*)me->buffer.filler;
+#       endif
         return filler->raw_buffer.end;
     }
     
     QUEX_INLINE uint8_t*  
     QUEX_FUNC(buffer_conversion_fill_region_end)(QUEX_TYPE_ANALYZER* me)
     { 
+#       if ! defined(__QUEX_OPTION_PLAIN_C)
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
+#       else
+        QUEX_NAME(BufferFiller_Converter)*        filler = (QUEX_NAME(BufferFiller_Converter)*)me->buffer.filler;
+#       endif
 
         return filler->raw_buffer.memory_end;
     }
@@ -236,8 +278,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_FUNC(buffer_conversion_fill_region_finish)(QUEX_TYPE_ANALYZER* me,
                                                     const size_t        ByteN)
     {
-        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
+#       if ! defined(__QUEX_OPTION_PLAIN_C)
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
+#       else
+        QUEX_NAME(BufferFiller_Converter)*        filler = (QUEX_NAME(BufferFiller_Converter)*)me->buffer.filler;
+#       endif
+        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
 
         filler->raw_buffer.end += ByteN;
 
