@@ -18,20 +18,16 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_FUNC(include_push_by_id)(QUEX_TYPE_ANALYZER*   me,
-                                  QUEX_TYPE_CHARACTER*  InputName,
-                                  const int             MODE_ID /* = -1 */, 
-                                  const char*           CharacterCodecName /* = 0x0 */)
+    QUEX_FUNC(include_push)(QUEX_TYPE_ANALYZER*    me,
+                            InputHandleT*          Optional_InputHandle,
+                            QUEX_TYPE_CHARACTER*   Optional_InputName,
+                            const QUEX_NAME(Mode)* Mode, 
+                            const char*            CharacterCodecName /* = 0x0 */)
     {
-        /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]             */
-        /* CharacterCodecName == 0x0 possible if normal ASCII is ment (e.g. no iconv support) */
-        __quex_assert(    MODE_ID == -1 
-                      || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
-
         /* (A) Freezing and Copying away:
          *
          *     memento_pack(...): Store the lexical analyzer's to the state before including   */
-        InputHandleT*        input_handle = 0x0;
+        InputHandleT*        input_handle = Optional_InputHandle;
         QUEX_NAME(Memento)*  m            = QUEX_FUNC(memento_pack)<InputHandleT>(me, InputName, &input_handle);
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
@@ -45,7 +41,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                     me->buffer._byte_order_reversion_active_f);
 
         /*    (2) If requested: transition to a specific mode for new file.               */
-        if( MODE_ID != -1 ) QUEX_FUNC(set_mode_brutally_by_id)(me, MODE_ID);
+        if( Mode* != 0x0 ) QUEX_FUNC(set_mode_brutally)(me, Mode);
         /*        now leave alone:
          *               __current_mode_p 
          *               current_analyzer_function                                       
@@ -72,19 +68,33 @@ QUEX_NAMESPACE_MAIN_OPEN
     }   
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_FUNC(include_push_mode)(QUEX_TYPE_ANALYZER*      me,
-                                 QUEX_TYPE_CHARACTER*     InputName,
-                                 const QUEX_NAME(Mode)*   mode, 
-                                 const char*              CharacterCodecName /* = 0x0 */)
+    QUEX_FUNC(include_push_input_name)(QUEX_TYPE_ANALYZER*      me,
+                                       InputHandleT*            sh,
+                                       const QUEX_NAME(Mode)*   mode, 
+                                       const char*              CharacterCodecName /* = 0x0 */)
     {
-        /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
+        /* The Optional_InputHandle = 0x0, which indicates that InputName tells how to 
+         * open the input stream.                                                       */
 #       ifndef __QUEX_OPTION_PLAIN_C
-        QUEX_FUNC(include_push_by_id)<InputHandleT>(me, InputName, mode->id(), CharacterCodecName);
+        QUEX_FUNC(include_push_by_id)<InputHandleT>(me, 0x0, InputName, mode->id(), CharacterCodecName);
 #       else
-        QUEX_FUNC(include_push_by_id)((QUEX_NAME(TestAnalyzer)*)me, InputName, mode->id(), CharacterCodecName);
+        QUEX_FUNC(include_push_by_id)((QUEX_NAME(TestAnalyzer)*)me, 0x0, InputName, mode->id(), CharacterCodecName);
 #       endif
     }
 
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_FUNC(include_push_input_handle)(QUEX_TYPE_ANALYZER*      me,
+                                         InputHandleT*            sh,
+                                         const QUEX_NAME(Mode)*   mode, 
+                                         const char*              CharacterCodecName /* = 0x0 */)
+    {
+        /* The Optional_InputName = 0x0, which indicates that the InputName is defined. */
+#       ifndef __QUEX_OPTION_PLAIN_C
+        QUEX_FUNC(include_push_by_id)<InputHandleT>(me, sh, 0x0, mode->id(), CharacterCodecName);
+#       else
+        QUEX_FUNC(include_push_by_id)((QUEX_NAME(TestAnalyzer)*)me, sh, 0x0, mode->id(), CharacterCodecName);
+#       endif
+    }
 
     QUEX_INLINE bool
     QUEX_FUNC(include_pop)(QUEX_TYPE_ANALYZER* me) 
@@ -135,16 +145,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #if ! defined( __QUEX_OPTION_PLAIN_C )
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*   InputName,
-                              const int              ModeID /* = -1 */, 
+    QUEX_MEMBER(include_push)(InputHandleT*          sh,
+                              const QUEX_NAME(Mode)* Mode, 
                               const char*            CharacterCodecName /* = 0x0 */)
-    { QUEX_FUNC(include_push_by_id)<InputHandleT>(this, InputName, ModeID, CharacterCodecName); }
+    { QUEX_FUNC(include_push_mode_by_handle)<InputHandleT>(this, sh, ModeID, CharacterCodecName); }
 
     TEMPLATE_IN(InputHandleT) void    
-    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*     InputName,
-                              const QUEX_NAME(Mode)&   mode, 
-                              const char*              CharacterCodecName /* = 0x0 */)
-    { QUEX_FUNC(include_push_mode)<InputHandleT>(this, InputName, mode, CharacterCodecName); }
+    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*   InputName,
+                              const QUEX_NAME(Mode)* Mode, 
+                              const char*            CharacterCodecName /* = 0x0 */)
+    { QUEX_FUNC(include_push_by_id)<InputHandleT>(this, InputName, ModeID, CharacterCodecName); }
 
     QUEX_INLINE bool
     QUEX_MEMBER(include_pop)() 
