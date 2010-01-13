@@ -1,8 +1,8 @@
-<test-database execution-time-sec="0.18" date="Mon Jan 11 23:10:24 2010">
+<test-database execution-time-sec="0.15" date="Tue Jan 12 21:17:12 2010">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-required="True" time-sum-sec="0.02"> 
-        <application file-name="accumulator.exe" info-request-time="1263247824L"/>
-        <make-procedure success="True" time_sec="0.526530"/>
+        <application file-name="accumulator.exe" info-request-time="1263323908L"/>
+        <make-procedure success="True" time_sec="0.472844"/>
         <choice-list number="5" same_result="False">
            <choice name="String" result="OK" time_sec="0.00" crc="1490722418"/>
            <choice name="Character" result="OK" time_sec="0.00" crc="-276754526"/>
@@ -13,29 +13,29 @@
     </test>
     <group name="Count Line and Column">
         <test title="Without Indentation Count II" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line-x.exe" info-request-time="1263247818L"/>
-            <make-procedure success="True" time_sec="0.552915"/>
+            <application file-name="counter-column_line-x.exe" info-request-time="1263323902L"/>
+            <make-procedure success="True" time_sec="0.553973"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="1161278526"/>
             </choice-list>
         </test>
         <test title="With Indentation" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line-indentation.exe" info-request-time="1263247818L"/>
-            <make-procedure success="True" time_sec="0.535363"/>
+            <application file-name="counter-column_line-indentation.exe" info-request-time="1263323903L"/>
+            <make-procedure success="True" time_sec="0.536587"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-1633920135"/>
             </choice-list>
         </test>
         <test title="Without Indentation Count" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line.exe" info-request-time="1263247817L"/>
-            <make-procedure success="True" time_sec="0.543377"/>
+            <application file-name="counter-column_line.exe" info-request-time="1263323902L"/>
+            <make-procedure success="True" time_sec="0.634957"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="821766212"/>
             </choice-list>
         </test>
         <test title="With Indentation II" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line-indentation-x.exe" info-request-time="1263247819L"/>
-            <make-procedure success="True" time_sec="0.537574"/>
+            <application file-name="counter-column_line-indentation-x.exe" info-request-time="1263323903L"/>
+            <make-procedure success="True" time_sec="0.556461"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-626731824"/>
             </choice-list>
@@ -43,8 +43,8 @@
     </group>
     <group name="Post Categorizer">
         <test title="Enter" make-required="True" time-sum-sec="0.02"> 
-            <application file-name="post-categorizer-find.exe" info-request-time="1263247823L"/>
-            <make-procedure success="True" time_sec="0.907189"/>
+            <application file-name="post-categorizer-find.exe" info-request-time="1263323908L"/>
+            <make-procedure success="True" time_sec="0.747800"/>
             <choice-list number="7" same_result="True">
                <choice name="0" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="1" result="OK" time_sec="0.00" crc="-978220029"/>
@@ -55,9 +55,9 @@
                <choice name="6" result="OK" time_sec="0.00" crc="-978220029"/>
             </choice-list>
         </test>
-        <test title="Remove Total" make-required="True" time-sum-sec="0.03"> 
-            <application file-name="post-categorizer-remove-total.exe" info-request-time="1263247822L"/>
-            <make-procedure success="True" time_sec="0.795483"/>
+        <test title="Remove Total" make-required="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove-total.exe" info-request-time="1263323907L"/>
+            <make-procedure success="True" time_sec="0.762818"/>
             <choice-list number="7" same_result="True">
                <choice name="1" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="2" result="OK" time_sec="0.00" crc="312237205"/>
@@ -68,22 +68,22 @@
                <choice name="7" result="OK" time_sec="0.00" crc="312237205"/>
             </choice-list>
         </test>
-        <test title="Enter" make-required="True" time-sum-sec="0.03"> 
-            <application file-name="post-categorizer-enter.exe" info-request-time="1263247820L"/>
-            <make-procedure success="True" time_sec="0.770289"/>
+        <test title="Enter" make-required="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-enter.exe" info-request-time="1263323904L"/>
+            <make-procedure success="True" time_sec="0.743791"/>
             <choice-list number="7" same_result="False">
-               <choice name="1" result="OK" time_sec="0.01" crc="-998642932"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-998642932"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-271066271"/>
                <choice name="3" result="OK" time_sec="0.00" crc="72151989"/>
                <choice name="4" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="0" result="OK" time_sec="0.00" crc="-530099081"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="-1772219006"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-1772219006"/>
                <choice name="6" result="OK" time_sec="0.00" crc="-376401680"/>
             </choice-list>
         </test>
         <test title="Remove Non-Existent Node" make-required="True" time-sum-sec="0.03"> 
-            <application file-name="post-categorizer-remove.exe" info-request-time="1263247821L"/>
-            <make-procedure success="True" time_sec="0.767979"/>
+            <application file-name="post-categorizer-remove.exe" info-request-time="1263323905L"/>
+            <make-procedure success="True" time_sec="0.756448"/>
             <choice-list number="8" same_result="True">
                <choice name="Aa" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
@@ -95,14 +95,14 @@
                <choice name="Be" result="OK" time_sec="0.00" crc="1918139693"/>
             </choice-list>
         </test>
-        <test title="Remove Existent Node" make-required="True" time-sum-sec="0.03"> 
-            <application file-name="post-categorizer-remove-2.exe" info-request-time="1263247822L"/>
-            <make-procedure success="True" time_sec="0.851950"/>
+        <test title="Remove Existent Node" make-required="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove-2.exe" info-request-time="1263323906L"/>
+            <make-procedure success="True" time_sec="0.857576"/>
             <choice-list number="7" same_result="False">
                <choice name="Ab" result="OK" time_sec="0.00" crc="156350769"/>
                <choice name="Ad" result="OK" time_sec="0.00" crc="-615592824"/>
                <choice name="Af" result="OK" time_sec="0.00" crc="-271613736"/>
-               <choice name="Ah" result="OK" time_sec="0.01" crc="-639697045"/>
+               <choice name="Ah" result="OK" time_sec="0.00" crc="-639697045"/>
                <choice name="Bb" result="OK" time_sec="0.00" crc="-1397501183"/>
                <choice name="Bd" result="OK" time_sec="0.00" crc="1509696768"/>
                <choice name="Bf" result="OK" time_sec="0.00" crc="1062816794"/>
