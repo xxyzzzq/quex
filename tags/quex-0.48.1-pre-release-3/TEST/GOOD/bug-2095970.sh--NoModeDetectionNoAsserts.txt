@@ -1,0 +1,11 @@
+g++ -I./ -I/home/fschaef/prj/quex/trunk -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED -DQUEX_OPTION_ASSERTS_DISABLED -ggdb -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED lexer.cpp Simple.cpp -o lexer 
+,------------------------------------------------------------------------------------
+| [START]
+EVENT_MODE_CHANGE
+STRING_LITERAL
+EVENT_MODE_CHANGE
+<TERMINATION>
+| [END] number of token = 4
+`------------------------------------------------------------------------------------
+buffer size = 65536
+clean
