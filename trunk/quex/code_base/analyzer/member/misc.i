@@ -115,7 +115,7 @@ QUEX_MEMBER(token_object)()
 
 QUEX_INLINE const char* 
 QUEX_MEMBER(version)() const
-{ return QUEX_FUNC(version)(this); }
+{ return QUEX_FUNC(version)((QUEX_TYPE_ANALYZER*)this); }
 
 QUEX_INLINE void
 QUEX_MEMBER(print_this)()
