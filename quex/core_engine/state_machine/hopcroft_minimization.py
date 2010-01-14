@@ -124,21 +124,21 @@ class StateSet_List:
         # Assumption: Transitions do not appear twice. Thus, both lists have the same
         #             length and any element of A appears in B, the two must be equal.
         for t0_target_state_index, t0_trigger_set in transition_list_0:
-            # find transition in 'That' state that contains the same trigger set
+            target_0 = self.map[t0_target_state_index]
+            
+            # Find transition in 'That' state that contains the same trigger set
             for t1_target_state_index, t1_trigger_set in transition_list_1:
-                if t0_trigger_set.is_equal(t1_trigger_set): break
+                target_1 = self.map[t1_target_state_index]
+                # Only of t0_target_state_index and t1_target_state_index come from
+                # the same state set and have the same trigger, an equivalent transition
+                # is found.
+                if target_1 == target_0 and t0_trigger_set.is_equal(t1_trigger_set): 
+                    break
             else:
                 # no trigger set found in 'That' that corresponds to 'This' => not equivalent
                 return False
 
-            target_0 = self.map[t0_target_state_index]
-            target_1 = self.map[t1_target_state_index]
-
-            # do both states trigger on the same trigger set to the same target state?
-            if target_0 != target_1: return False
-
         return True
-            
 
 def do(SM, CreateNewStateMachineF=True):
     """Reduces the number of states according to equivalence classes of states. It starts
