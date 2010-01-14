@@ -192,7 +192,6 @@ QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me)
     QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
 }
 
-
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth)
 {
@@ -216,6 +215,13 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
     QUEX_NAME(PostCategorizer_print_tree)(node->lesser, Depth + 1);
 }
 
+QUEX_INLINE void
+QUEX_NAME(PostCategorizer_print_this)(QUEX_NAME(Dictionary)* me)
+{
+    QUEX_NAME(PostCategorizer_print_tree)(&me->root, 0)
+}
+
+
 #ifndef __QUEX_OPTION_PLAIN_C
 QUEX_INLINE void
 QUEX_NAME(Dictionary)::clear()
@@ -231,8 +237,13 @@ QUEX_NAME(Dictionary)::remove(const QUEX_TYPE_CHARACTER* EntryName)
 
 QUEX_INLINE void
 QUEX_NAME(Dictionary)::enter(const QUEX_TYPE_CHARACTER*  EntryName, 
-                                  const QUEX_TYPE_TOKEN_ID    TokenID)
+                             const QUEX_TYPE_TOKEN_ID    TokenID)
 { QUEX_NAME(PostCategorizer_enter)(this, EntryName, TokenID); }
+
+QUEX_INLINE void
+QUEX_NAME(Dictionary)::print_this()
+{ QUEX_NAME(PostCategorizer_print_this)(this); }
+
 #endif 
 
 QUEX_NAMESPACE_MAIN_CLOSE

@@ -69,6 +69,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)*       me, 
                                      QUEX_NAME(DictionaryNode)*  branch);
 
+    QUEX_INLINE void
+    QUEX_NAME(PostCategorizer_print_this)(QUEX_NAME(Dictionary)* me);
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */
