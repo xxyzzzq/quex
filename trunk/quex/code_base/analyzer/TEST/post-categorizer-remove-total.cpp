@@ -38,5 +38,5 @@ main(int argc, char** argv)
 
     pc.enter("The only node", 77);
 
-    QUEX_NAME(PostCategorizer_print_tree)(pc.root, 0);
+    QUEX_NAME(PostCategorizer_print_this)(&pc);
 }

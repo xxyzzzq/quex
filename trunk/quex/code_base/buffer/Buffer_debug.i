@@ -19,8 +19,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(BufferFiller_show_brief_content)(QUEX_NAME(Buffer)* buffer) 
     {
-        __quex_assert(buffer != 0x0);
         QUEX_NAME(BufferFiller)* me = buffer->filler;
+
+        __quex_assert(buffer != 0x0);
         __quex_assert(me != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -60,6 +61,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Buffer_show_content)(QUEX_NAME(Buffer)* buffer)
     {
         size_t                i = 0;
+        size_t                length = 0;
+
         QUEX_TYPE_CHARACTER   EmptyChar    = (QUEX_TYPE_CHARACTER)(-1);
         QUEX_TYPE_CHARACTER*  ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
@@ -74,8 +77,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
         __QUEX_STD_printf("%c", QUEX_NAME(__BufferFiller_get_border_char)(buffer, end_p));
         /**/
-        const size_t L = (buffer->_memory._end_of_file_p == 0x0) ? 0 : BufferBack - buffer->_memory._end_of_file_p;
-        for(i=0; i < L; ++i) __QUEX_STD_printf("|");
+        length = (buffer->_memory._end_of_file_p == 0x0) ? 0 : (size_t)(BufferBack - buffer->_memory._end_of_file_p);
+        for(i=0; i < length; ++i) __QUEX_STD_printf("|");
 
         __QUEX_STD_printf("|");
     }
@@ -83,19 +86,20 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  
     QUEX_NAME(BufferFiller_show_content)(QUEX_NAME(Buffer)* buffer) 
     {
-        __quex_assert(buffer != 0x0);
         /* NOTE: If the limiting char needs to be replaced temporarily by
          *       a terminating zero.
          * NOTE: This is a **simple** printing function for unit testing and debugging
          *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         size_t                i = 0;
+        char*                 tmp = 0;
         const size_t          ContentSize  = QUEX_NAME(Buffer_content_size)(buffer);
         QUEX_TYPE_CHARACTER*  ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
 
+        __quex_assert(buffer != 0x0);
         /*_________________________________________________________________________________*/
-        char* tmp = (char*)__QUEX_ALLOCATE_MEMORY(ContentSize + 4);
+        tmp = (char*)__QUEX_ALLOCATE_MEMORY(ContentSize + 4);
         /* tmp[0]                 = outer border*/
         /* tmp[1]                 = buffer limit*/
         /* tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]*/
@@ -131,14 +135,15 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  
     QUEX_NAME(Buffer_show_byte_content)(QUEX_NAME(Buffer)* buffer, const int IndentationN) 
     {
-        __quex_assert(buffer != 0x0);
         QUEX_NAME(BufferMemory)*  memory = &buffer->_memory;
-        __quex_assert(memory != 0x0);
 
         int      i = 0, j = 0;
         uint8_t* byte_p      = (uint8_t*)memory->_front;
         uint8_t* next_byte_p = (uint8_t*)memory->_front + 1;
         uint8_t* End         = (uint8_t*)(memory->_back + 1);
+
+        __quex_assert(buffer != 0x0);
+        __quex_assert(memory != 0x0);
 
         for(j=0; j<IndentationN; ++j) fprintf(stdout, " ");
         for(; byte_p != End; ++byte_p, ++next_byte_p, ++i) {

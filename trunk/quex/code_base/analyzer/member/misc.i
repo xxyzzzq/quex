@@ -62,6 +62,8 @@ QUEX_FUNC(byte_order_reversion_set)(QUEX_TYPE_ANALYZER* me, bool Value)
 QUEX_INLINE void
 QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
 {
+    QUEX_NAME(Mode)** iterator = 0x0;
+
     __QUEX_STD_printf("   CurrentMode = %s;\n", 
                       me->__current_mode_p == 0x0 ? 
                          "0x0" 
@@ -77,12 +79,12 @@ QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
     QUEX_FIX(COUNTER, _print_this)(&me->counter);
 #   endif
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
-    me->post_categorizer.print_this();
+    QUEX_NAME(PostCategorizer_print_this)(&me->post_categorizer);
 #   endif
     __QUEX_STD_printf("   Mode Stack (%i/%i) = [", 
                       (int)(me->_mode_stack.end        - me->_mode_stack.begin),
                       (int)(me->_mode_stack.memory_end - me->_mode_stack.begin));
-    for(QUEX_NAME(Mode)** iterator=me->_mode_stack.end-1; iterator >= me->_mode_stack.begin; --iterator)
+    for(iterator=me->_mode_stack.end-1; iterator >= me->_mode_stack.begin; --iterator)
         __QUEX_STD_printf("%s, ", (*iterator)->name);
 
     __QUEX_STD_printf("]\n");
