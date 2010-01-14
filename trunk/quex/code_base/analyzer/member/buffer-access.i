@@ -94,7 +94,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* 'read_iterator' has been adapted by the converter, so that the 
          * number of read bytes can be determined by: read_iterator - ContentEnd */ 
-        return read_iterator - (uint8_t*)ContentBegin;
+        return (size_t)(read_iterator - (uint8_t*)ContentBegin);
     }
 
 
@@ -203,8 +203,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t
     QUEX_FUNC(buffer_fill_region_size)(QUEX_TYPE_ANALYZER* me)
     { 
-        return   QUEX_FUNC(buffer_fill_region_end)(me) \
-               - QUEX_FUNC(buffer_fill_region_begin)(me); 
+        __quex_assert(   QUEX_FUNC(buffer_fill_region_end)(me) 
+                      >= QUEX_FUNC(buffer_fill_region_begin)(me)); 
+
+        return (size_t)(  QUEX_FUNC(buffer_fill_region_end)(me) 
+                        - QUEX_FUNC(buffer_fill_region_begin)(me)); 
     }
 
     QUEX_INLINE void
@@ -217,7 +220,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * has been filled with data.                                                        */
         if( me->buffer._byte_order_reversion_active_f ) 
             QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, 
-                                        me->buffer._memory._end_of_file_p + CharacterN);
+                                                 me->buffer._memory._end_of_file_p + CharacterN);
 
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(me->buffer._memory._end_of_file_p, 
                                                 me->buffer._memory._end_of_file_p + CharacterN);
@@ -270,8 +273,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t
     QUEX_FUNC(buffer_conversion_fill_region_size)(QUEX_TYPE_ANALYZER* me)
     { 
-        return   QUEX_FUNC(buffer_conversion_fill_region_end)(me) \
-               - QUEX_FUNC(buffer_conversion_fill_region_begin)(me); 
+        __quex_assert(   QUEX_FUNC(buffer_conversion_fill_region_end)(me) 
+                      >= QUEX_FUNC(buffer_conversion_fill_region_begin)(me)); 
+
+        return (size_t)(  QUEX_FUNC(buffer_conversion_fill_region_end)(me) 
+                        - QUEX_FUNC(buffer_conversion_fill_region_begin)(me)); 
     }
 
     QUEX_INLINE void
