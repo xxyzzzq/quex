@@ -1,6 +1,8 @@
 import sys
+import bisect
 
 from   quex.core_engine.interval_handling import NumberSet, Interval
+from   quex.frs_py.file_in                import error_msg
 
 # definitions for 'history items':
 INTERVAL_BEGIN            = True
@@ -212,7 +214,12 @@ class TransitionMap:
         return history      
 
     def get_trigger_map(self):
-        """Consider the set of possible characters as aligned on a 1 dimensional line.
+        """NOTE: This is a 'new' implementation 10y01m14d.
+        
+                 The earlier implementation is available under release 0.47.1 on 
+                 the SVN server.
+        
+           Consider the set of possible characters as aligned on a 1 dimensional line.
            This one-dimensional line is remiscent of a 'time line' so we call the change
            of interval coverage 'history'.         
 
@@ -238,74 +245,58 @@ class TransitionMap:
         #       'empty reply' needs to be treated by the caller.
         if len(self.__db) == 0: return []
             
-        history = self.get_trigger_set_line_up()
-        
-        def query_trigger_map(EndPosition, TargetIdx):
-            """Find all map entries that have or have not an open interval and
-               point to the given TargetIdx. If TargetIdx = None it is not checked.
-            """
-            entry_list = []
-            for entry in trigger_map:
-                if entry[0].end == EndPosition and entry[1] == TargetIdx: 
-                    entry_list.append(entry)
-            return entry_list 
+        all = self.__db.items()
 
-        # (*) build the trigger map
-        trigger_map = []    
-        for item in history:
-            if item.change == INTERVAL_BEGIN: 
-                # if an interval has same target index and ended at the current
-                # intervals begin, then extend the last interval, do not create a new one.
-                adjacent_trigger_list = query_trigger_map(item.position, item.target_idx)
-                if adjacent_trigger_list == []:
-                    # open a new interval (set .end = None to indicate 'open')
-                    trigger_map.append([Interval(item.position, INTERVAL_UNDEFINED_BORDER), 
-                                       item.target_idx])
-                else:
-                    for entry in adjacent_trigger_list: 
-                        # re-open the adjacent interval (set .end = None to indicate 'open')
-                        entry[0].end = INTERVAL_UNDEFINED_BORDER
-                
-            else:
-                # item.change == INTERVAL_END   
-                # close the correspondent intervals
-                # (search for .end = None indicating 'open interval')           
-                for entry in query_trigger_map(INTERVAL_UNDEFINED_BORDER, item.target_idx):
-                    entry[0].end = item.position
+        # The first set is easy, the intervals are already lined up.
+        target_index     = all[0][0]
+        interval_list    = all[0][1].get_intervals()
+        trigger_map      = map(lambda x: (x, target_index), interval_list)
+        trigger_map_size = len(trigger_map)
+
+        # Note, that due to DFA constraint, the intervals shall not overlap
+        for target_index, trigger_set in all[1:]:
+
+            hint_i             = 0
+            interval_list      = trigger_set.get_intervals()
+            interval_list_size = len(interval_list)
+
+            for interval in interval_list:
+                x   = (interval, target_index)
+                pos = hint_i
+                while pos < trigger_map_size and trigger_map[pos][0].begin < interval.begin:
+                    pos += 1
+                trigger_map.insert(pos, x)
+                trigger_map_size += 1
+
+                # Since the intervals are sorted, the remaining intervals can only
+                # lie after 'pos'.
+                hint_i = pos
             
         # (*) fill all gaps in the trigger map with 'None' target = Drop Out !
+        trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), None) ] \
+                      + trigger_map
 
-        drop_out_target = None
-        ## NOTE: Trigger maps shall only be computed for DFA, see assert above. 
-        #        Thus, there cannot be an epsilon transition.
-        ## if self.__drop_out_target_index_list != []: 
-        ##    drop_out_target = self.__drop_out_target_index_list[0]   
-        gap_filler = [] 
-        if len(trigger_map) >= 2:    
-            prev_entry = trigger_map[0]    
-            for entry in trigger_map[1:]:    
-                if prev_entry[0].end != entry[0].begin: 
-                    gap_filler.append([Interval(prev_entry[0].end, entry[0].begin), drop_out_target])
-                prev_entry = entry
-    
-        # -- append the last interval until 'infinity' (if it is not yet specified   
-        #    (do not switch this with the following step, .. or you screw it)           
-        if trigger_map[-1][0].end != sys.maxint:    
-            trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), drop_out_target])
-        # -- insert a first interval from -'infinity' to the start of the first interval
-        if trigger_map[0][0].begin != -sys.maxint:
-            trigger_map.append([Interval(-sys.maxint, trigger_map[0][0].begin), drop_out_target])
-           
-        # -- insert the gap fillers and get the trigger map straigtened up again
-        trigger_map.extend(gap_filler) 
-        trigger_map.sort(lambda a, b: cmp(a[0].begin, b[0].begin))
+        # The first two intervals are already adjacent
+        i    = 2 
+        size = len(trigger_map)
+        while i < size:
+            if trigger_map[i][0].begin < trigger_map[i - 1][0].end:
+                error_msg(".get_trigger_map(...) Serious internal error. Please, report Bug!\n" \
+                          " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+            if trigger_map[i][0].begin != trigger_map[i - 1][0].end:
+                trigger_map.insert(i, (Interval(trigger_map[i - 1][0].end, trigger_map[i][0].begin), None))
+                i    += 1
+                size += 1
+            i += 1
+        trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), None) )
 
-        # (*) post check assert
-        for entry in trigger_map:
-            assert entry[0].end != None, \
-                   "remaining open intervals in trigger map construction"
+        # double check:
+        # prev_interval = trigger_map[0][0]
+        # for interval, target_index in trigger_map[1:]:
+        #    if prev_interval.end != interval.begin:
+        #        print "##ERROR GAP: ", prev_interval, interval
+        #    prev_interval = interval
 
-        ## OPT: self.__DEBUG_trigger_map = trigger_map
         return trigger_map
 
     def get_trigger_set_to_target(self, TargetIdx):

@@ -220,6 +220,49 @@ class Interval:
         txt += "%i %f\n" % (self.begin, y_coordinate)
         return txt
 
+    def __eq__(self, Other):
+        if Other == None: return False
+        return self.begin == Other.begin and self.end == Other.end
+
+    def __ne__(self, Other):
+        if Other == None: return True
+        return self.begin != Other.begin or self.end != Other.end
+
+    def __lt__(self, Other):
+        if   self.begin < Other.begin: return True
+        elif self.begin > Other.begin: return False
+        elif self.end   < Other.end:   return True
+        elif self.end   > Other.end:   return False
+        else:                          return False  # The 'equal' case
+
+    def __le__(self, Other):
+        if   self.begin < Other.begin: return True
+        elif self.begin > Other.begin: return False
+        elif self.end   < Other.end:   return True
+        elif self.end   > Other.end:   return False
+        else:                          return True   # The 'equal' case
+
+    def __gt__(self, Other):
+        if   self.begin > Other.begin: return True
+        elif self.begin < Other.begin: return False
+        elif self.end   > Other.end:   return True
+        elif self.end   < Other.end:   return False
+        else:                          return False  # The 'equal' case
+
+    def __ge__(self, Other):
+        if   self.begin > Other.begin: return True
+        elif self.begin < Other.begin: return False
+        elif self.end   > Other.end:   return True
+        elif self.end   < Other.end:   return False
+        else:                          return True   # The 'equal' case
+
+    def __cmp__(self, Other):
+        if   self.begin < Other.begin: return -1
+        elif self.begin > Other.begin: return  1
+        elif self.end   < Other.end:   return -1
+        elif self.end   > Other.end:   return  1
+        return 0
+
 class NumberSet:
     """Represents an arbitrary set of numbers. The set is described
        in terms of intervals, i.e. objects of class 'Interval'. This

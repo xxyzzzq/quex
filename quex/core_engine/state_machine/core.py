@@ -272,31 +272,28 @@ class StateMachine:
         result = {}
 
         for state_idx in StateIdxList:
-            self.get_epsilon_closure(state_idx, result)
+            result[state_idx] = True
+            self.__dive_for_epsilon_closure(state_idx, result)
 
         return result.keys()
 
-    def get_epsilon_closure(self, StateIdx, result_ref=None):
+    def __dive_for_epsilon_closure(self, state_index, result):
+        index_list = self.states[state_index].transitions().get_epsilon_target_state_index_list()
+        for target_index in index_list:
+            if result.has_key(target_index): continue
+            result[target_index] = True
+            self.__dive_for_epsilon_closure(target_index, result)
+
+    def get_epsilon_closure(self, StateIdx):
         """Return all states that can be reached from 'StateIdx' via epsilon
            transition."""
         assert self.states.has_key(StateIdx)
 
-        if result_ref != None: 
-            result = result_ref
-            result[StateIdx] = True
-        else:
-            result = { StateIdx: True } 
+        result = { StateIdx: True } 
 
-        def __dive(state_index):
-            index_list = self.states[state_index].transitions().get_epsilon_target_state_index_list()
-            for target_index in index_list:
-                if result.has_key(target_index): continue
-                result[target_index] = True
-                __dive(target_index)
-        __dive(StateIdx)
+        self.__dive_for_epsilon_closure(StateIdx, result)
 
-        if result_ref == None: return result.keys()
-        else:                  return None
+        return result.keys()
  
     def get_elementary_trigger_sets(self, StateIdxList):
         """Considers the trigger dictionary that contains a mapping from target state index 
