@@ -20,14 +20,14 @@ struct QUEX_NAME(Memento_tag);
 
     TEMPLATE_IN(InputHandleT) void    
     QUEX_FUNC(include_push_input_name)(QUEX_TYPE_ANALYZER*      me,
-                                       InputHandleT*            sh,
-                                       const QUEX_NAME(Mode)*   mode, 
+                                       QUEX_TYPE_CHARACTER*     InputName          /* = 0x0 */,
+                                       const QUEX_NAME(Mode)*   mode               /* = 0x0 */, 
                                        const char*              CharacterCodecName /* = 0x0 */);
 
     TEMPLATE_IN(InputHandleT) void    
     QUEX_FUNC(include_push_input_handle)(QUEX_TYPE_ANALYZER*      me,
-                                         InputHandleT*            sh,
-                                         const QUEX_NAME(Mode)*   mode, 
+                                         InputHandleT*            sh                 /* = 0x0 */,
+                                         const QUEX_NAME(Mode)*   mode               /* = 0x0 */, 
                                          const char*              CharacterCodecName /* = 0x0 */);
 
     QUEX_INLINE bool  QUEX_FUNC(include_pop)(QUEX_TYPE_ANALYZER* me);

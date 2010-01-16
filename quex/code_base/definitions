@@ -14,6 +14,7 @@
 #   include <cstdio>   // gets: fprintf
 #   include <cstdlib>
 #   include <stdexcept>
+#   define __QUEX_STD_FILE     std::FILE
 #   define __QUEX_STD_fopen    std::fopen
 #   define __QUEX_STD_fclose   std::fclose
 #   define __QUEX_STD_fprintf  std::fprintf
@@ -34,6 +35,7 @@
 #   include <string.h>  /* gets: memmove, memcpy     */
 #   include <stdio.h>   /* gets: fprintf             */
 #   include <stdlib.h>
+#   define __QUEX_STD_FILE     FILE
 #   define __QUEX_STD_fopen    fopen
 #   define __QUEX_STD_fclose   fclose
 #   define __QUEX_STD_fprintf  fprintf
@@ -167,17 +169,17 @@ __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
 
 #if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
 #    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
-        "\nThe provided input stream behaves strangely. The quex engine detected\n" \
-        "that the number of characters is not proportional to the character\n"    \
-        "position increase. The buffer filler type which you are using might\n"  \
-        "be able to deal with those cases, if you define the compile option:\n"   \
+        "\nThe provided input stream behaves strangely. Number of read\n"   \
+        "characters is not proportional to the stream position increase.\n" \
+        "The buffer filler type which you are using might\n"                \
+        "be able to deal with those cases. Try compile option:\n"           \
         "\n" \
                   "-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n" \
         "\n" \
-        "Note, however, that those mechanisms imply a tradeoff in terms of\n"     \
-        "computational speed. Please, consider using a 'binary' mode of your\n"   \
-        "input stream instead, or use a different implementation of the\n"        \
-        "standard input/output library (e.g. not Microsoft).\n"
+        "However, those mechanisms imply a tradeoff in terms of speed.\n"  \
+        "Please, consider using a 'binary' for your input stream,\n"       \
+        "or use a different implementation of the standard I/O library\n"  \
+        "(e.g. not Microsoft).\n"
 #else
 #    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
         "\nThe macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \

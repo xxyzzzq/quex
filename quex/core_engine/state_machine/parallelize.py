@@ -1,4 +1,6 @@
-#! /usr/bin/env python
+# (C) 2005-2010 Frank-Rene Schaefer
+# ABSOLUTELY NO WARRANTY
+###############################################################################
 import sys
 from copy import deepcopy
 sys.path.append("../")
@@ -15,6 +17,7 @@ def do(the_state_machines):
               
     # filter out empty state machines from the consideration          
     state_machines = filter(lambda sm: not sm.is_empty(), the_state_machines)
+    empty_state_machine_occured_f = len(state_machines) != len(the_state_machines)
 
     def __add_optional_free_pass(result_state_machine,
                                  TerminationStateIdx=-1):
@@ -22,15 +25,17 @@ def do(the_state_machines):
         # if there was an empty state, then the number of elements in the list changed
         # in case there was an empty state one has to add a 'free pass' from begin to 
         # the final acceptance state.   
+        if empty_state_machine_occured_f == False:
+            return result_state_machine
+
         if TerminationStateIdx == -1:
             acceptance_state_index_list = result_state_machine.get_acceptance_state_index_list()
             assert acceptance_state_index_list != [], \
                    "resulting state machine has no acceptance state!"
             TerminationStateIdx = acceptance_state_index_list[0]
 
-        if len(state_machines) != len(the_state_machines):
-            result_state_machine.add_epsilon_transition(result_state_machine.init_state_index, 
-                                                        TerminationStateIdx)
+        result_state_machine.add_epsilon_transition(result_state_machine.init_state_index, 
+                                                    TerminationStateIdx)
         return result_state_machine
 
     if len(state_machines) < 2:
@@ -47,10 +52,7 @@ def do(the_state_machines):
     #     (clone to ensure unique identifiers of states)
     result = StateMachine()
     for clone in clone_list:
-        for start_state_index, states in clone.states.items():        
-            # DOUBT: is deepcopy necessary at this place?
-            # ANSWER: it does not harm, because no new state indices are created
-            result.states[start_state_index] = deepcopy(states)
+        result.states.update(clone.states)
 
     # (*) add additional **init** and **end** state
     #     NOTE: when the result state machine was created, it already contains a 
@@ -62,9 +64,9 @@ def do(the_state_machines):
     #           to 'accepted' (see below)
     new_terminal_state_index = result.create_new_state() 
     
-    # (*) connect from the new initial state to the initial states of the
+    # (*) Connect from the new initial state to the initial states of the
     #     clones via epsilon transition. 
-    #     connect from each success state of the clones to the new end state
+    #     Connect from each success state of the clones to the new end state
     #     via epsilon transition.
     for clone in clone_list:
         result.mount_to_initial_state(clone.init_state_index)

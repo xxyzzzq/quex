@@ -594,12 +594,11 @@ class StateMachine:
                                    LeaveStoreInputPositionsF=False):
         """Mount on any acceptance state the MountedStateIdx via epsilon transition.
         """
-
         for state_idx, state in self.states.items():
             # -- only consider state other than the state to be mounted
             # -- only handle only acceptance states
-            if not state_idx != MountedStateIdx: continue
-            if not state.is_acceptance(): continue
+            if state_idx == MountedStateIdx: continue
+            if not state.is_acceptance():    continue
             # add the MountedStateIdx to the list of epsilon transition targets
             state.transitions().add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status

@@ -29,7 +29,7 @@ QUEX_FUNC(construct_memory)(QUEX_TYPE_ANALYZER*  me,
 
 QUEX_INLINE void
 QUEX_FUNC(construct_FILE)(QUEX_TYPE_ANALYZER* me,
-                          std::FILE*          fh, 
+                          __QUEX_STD_FILE*    fh, 
                           const char*         CharacterEncodingName /* = 0x0   */,
                           bool                ByteOrderReversionF   /* = false */)
 {
@@ -50,7 +50,7 @@ QUEX_FUNC(construct_file_name)(QUEX_TYPE_ANALYZER* me,
     /* Buffer: Size = (see macro def.), Fallback = 10 Characters
      * prefer FILE* based buffers, because we can turn low-level buffering off.
      * ownership of FILE* id passed to the input strategy of the buffer.         */
-    std::FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
+    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
 
     QUEX_FUNC(construct_FILE)(me, fh, CharacterEncodingName, ByteOrderReversionF);
 

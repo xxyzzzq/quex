@@ -18,4 +18,7 @@
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator.i>
 #endif
+#ifdef      QUEX_OPTION_POST_CATEGORIZER
+#   include <quex/code_base/analyzer/PostCategorizer.i>
+#endif
 

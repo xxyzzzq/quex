@@ -82,11 +82,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) size_t 
     QUEX_NAME(__BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego) 
     { 
-       __quex_assert(alter_ego != 0x0); 
        /* The type cast is necessary, since the function signature needs to 
         * work with the first argument being of base class type. */
        TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
 
+       __quex_assert(alter_ego != 0x0); 
        __quex_assert(me->ih != 0x0); 
        /* Ensure, that the stream position is only influenced by
         *    __read_characters(...) 
@@ -105,13 +105,17 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void 
     QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, const size_t CharacterIndex) 
     { 
+        TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
+        long                           avoid_tmp_arg = -1;
+
         __quex_assert(alter_ego != 0x0); 
         /* The type cast is necessary, since the function signature needs to 
          * work with the first argument being of base class type. */
-        TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
         __quex_assert(me->ih != 0x0); 
 
-        long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_TYPE_CHARACTER) + me->start_position); 
+        avoid_tmp_arg =   (long)(CharacterIndex * sizeof(QUEX_TYPE_CHARACTER)) \
+                        + (long)(me->start_position); 
+
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
@@ -142,22 +146,26 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(__BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*        alter_ego,
                                                     QUEX_TYPE_CHARACTER* buffer_memory, const size_t N)  
     { 
+        TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
+        size_t                         ByteN = (size_t)-1;
+        size_t                         CharacterN = (size_t)-1;
+
         __quex_assert(alter_ego != 0x0); 
         __quex_assert(buffer_memory != 0x0); 
         /* The type cast is necessary, since the function signature needs to 
          * work with the first argument being of base class type. */
-        TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
 #       ifdef QUEX_OPTION_ASSERTS
         __QUEX_STD_memset((uint8_t*)buffer_memory, 0xFF, N * sizeof(QUEX_TYPE_CHARACTER));
 #       endif
 
         __quex_assert(me->ih != 0x0); 
-        const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
-                                                          buffer_memory, N * sizeof(QUEX_TYPE_CHARACTER));
+        ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
+                                             buffer_memory, N * sizeof(QUEX_TYPE_CHARACTER));
 
         if( ByteN % sizeof(QUEX_TYPE_CHARACTER) != 0 ) 
             QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
-        const size_t   CharacterN = ByteN / sizeof(QUEX_TYPE_CHARACTER); 
+
+        CharacterN = ByteN / sizeof(QUEX_TYPE_CHARACTER); 
 
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index += CharacterN;

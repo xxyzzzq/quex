@@ -81,6 +81,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       newline in the lexeme. Otherwise, it adds the fixed pattern length
      *       or the LexemeLength directly.                                      */
     {
+        QUEX_TYPE_CHARACTER* it = 0x0; 
+
         __quex_assert(Begin < End);  /* LexemeLength >= 1 */
 
         /* loop from [End] to [Begin]:
@@ -90,8 +92,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *     \n xxxxxxxxxxxxxxxxxxxxxxxx[End]
          *               <---------
          *                                                */
-        QUEX_TYPE_CHARACTER* it = End - 1;
-        for(; *it != '\n' ; --it) {
+        for(it = End - 1; *it != '\n' ; --it) {
             if( it == Begin ) {
                 /* -- in case NO newline occurs, the column index is to be INCREASED 
                  *    by the length of the string -1, since counting starts at zero

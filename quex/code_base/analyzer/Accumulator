@@ -17,10 +17,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* (*) pure text accumulation and flushing */
     typedef struct {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        int  _begin_line;
+        size_t  _begin_line;
 #       endif
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        int  _begin_column;
+        size_t  _begin_column;
 #       endif
 
         struct { 

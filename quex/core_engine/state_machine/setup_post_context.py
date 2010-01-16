@@ -99,7 +99,8 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
 
     # -- mount on every acceptance state the initial state of the following state
     #    machine via epsilon transition
-    result.mount_to_acceptance_states(post_clone.init_state_index, CancelStartAcceptanceStateF=True)
+    result.mount_to_acceptance_states(post_clone.init_state_index, 
+                                      CancelStartAcceptanceStateF=True)
     for start_state_index, state in post_clone.states.items():        
         result.states[start_state_index] = state # states are already cloned
 
