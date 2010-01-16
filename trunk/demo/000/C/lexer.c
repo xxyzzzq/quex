@@ -5,24 +5,25 @@ main(int argc, char** argv)
 {        
     Token        Token;
     tiny_lexer   qlex;
+    int          token_n = 0;
 
-    tiny_lexer_construct(&qlex, "example.txt");
+    QUEX_FUNC(construct_file_name)(&qlex, "example.txt", 0x0, false);
 
-    fprintf(",------------------------------------------------------------------------------------\n");
-    fprintf("| [START]\n");
+    printf(",------------------------------------------------------------------------------------\n");
+    printf("| [START]\n");
 
-    int number_of_tokens = 0;
     /* Loop until the 'termination' token arrives */
+    token_n = 0;
     do {
         /* Get next token from the token stream   */
         QUEX_FUNC(receive)(&qlex, &Token);
         /* Print out token information            */
-        ++number_of_tokens;
+        ++token_n;
         /* Check against 'termination'            */
     } while( Token.type_id != QUEX_TKN_TERMINATION );
 
-    fprintf("| [END] number of token = %i\n", number_of_tokens);
-    fprintf("`------------------------------------------------------------------------------------\n");
+    printf("| [END] number of token = %i\n", token_n);
+    printf("`------------------------------------------------------------------------------------\n");
 
     return 0;
 }

@@ -24,13 +24,31 @@ QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
 }
 
 QUEX_INLINE int
-QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*  me, 
-                                          QUEX_TYPE_CHARACTER               FirstCharacter, 
-                                          const QUEX_TYPE_CHARACTER*        Remainder)
+QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*        me, 
+                                   QUEX_TYPE_CHARACTER        FirstCharacter, 
+                                   const QUEX_TYPE_CHARACTER* Remainder)
+/* Returns: '0'   if both strings are the same
+            '< 0' string 0 < string 1
+            '> 0' string 0 > string 1           */
 {
+    const QUEX_TYPE_CHARACTER* it0 = 0x0;
+    const QUEX_TYPE_CHARACTER* it1 = 0x0;
+
     if     ( FirstCharacter > me->name_first_character ) return 1;
     else if( FirstCharacter < me->name_first_character ) return -1;
-    else                                                 return strcmp(Remainder, me->name_remainder);
+    else {
+        /* Implementation according to: P.J. Plauger, "The Standard C Library", 1992 */
+        it1 = me->name_remainder;
+        it0 = Remainder;
+        for(; *it0 == *it1; ++it0, ++it1) {
+            /* Until here both strings are the same, if string 0 ends before string 1
+             * then it is 'less' --> -1.                                              */
+            if( *it0 == 0 ) return -1;
+            /* If string 1 ends before string 0, or both end at the same position, then
+             * the loop is exited. The final operation before return deals with it.   */
+        }
+        return (int)(*it0 - *it1);
+    }
 }
 
 QUEX_INLINE void
@@ -44,11 +62,11 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
                                    const QUEX_TYPE_CHARACTER*  EntryName, 
                                    const QUEX_TYPE_TOKEN_ID    TokenID)
 {
-    QUEX_TYPE_CHARACTER                 FirstCharacter = EntryName[0];
-    const QUEX_TYPE_CHARACTER*          Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
+    QUEX_TYPE_CHARACTER           FirstCharacter = EntryName[0];
+    const QUEX_TYPE_CHARACTER*    Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
     QUEX_NAME(DictionaryNode)*    node      = me->root;
     QUEX_NAME(DictionaryNode)*    prev_node = 0x0;
-    int                                 result = 0;
+    int                           result = 0;
 
     if( me->root == 0x0 ) {
         me->root = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
@@ -57,14 +75,14 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
     while( node != 0x0 ) {
         prev_node = node;
         result    = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
-        if     ( result == 1 )  node = node->greater;
-        else if( result == -1 ) node = node->lesser;
-        else                    return; /* Node with that name already exists */
+        if     ( result > 0 ) node = node->greater;
+        else if( result < 0 ) node = node->lesser;
+        else                  return; /* Node with that name already exists */
     }
     __quex_assert( prev_node != 0x0 );
     __quex_assert( result != 0 );
 
-    if( result == 1 ) 
+    if( result > 0 ) 
         prev_node->greater = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
     else 
         prev_node->lesser  = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
@@ -91,8 +109,8 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
 
         parent = found;
 
-        if     ( result == 1 )  found = found->greater;
-        else if( result == -1 ) found = found->lesser;
+        if     ( result > 0 ) found = found->greater;
+        else if( result < 0 ) found = found->lesser;
 
         if( found == 0x0 ) return; /* Not found name with that name */
     };
@@ -161,9 +179,9 @@ QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)*  me,
     while( node != 0x0 ) {
         int result = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
 
-        if     ( result == 1 )  node = node->greater;
-        else if( result == -1 ) node = node->lesser;
-        else                    return node;
+        if     ( result > 0 ) node = node->greater;
+        else if( result < 0 ) node = node->lesser;
+        else                  return node;
     }
     return 0x0;
 }
@@ -195,21 +213,22 @@ QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me)
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth)
 {
+    int i = 0;
     if( node == 0x0 ) {
-        for(int i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
+        for(i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
         __QUEX_STD_printf("[EMPTY]\n");
         return;
     }
 
     QUEX_NAME(PostCategorizer_print_tree)(node->greater, Depth + 1);
 
-    for(int i=0; i < Depth + 1; ++i) __QUEX_STD_printf("        ");
+    for(i=0; i < Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("/\n");
 
-    for(int i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
+    for(i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("[%c]%s: %i\n", node->name_first_character, node->name_remainder, (int)node->token_id);
 
-    for(int i=0; i<Depth + 1; ++i) __QUEX_STD_printf("        ");
+    for(i=0; i<Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("\\\n");
 
     QUEX_NAME(PostCategorizer_print_tree)(node->lesser, Depth + 1);
@@ -218,7 +237,7 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_this)(QUEX_NAME(Dictionary)* me)
 {
-    QUEX_NAME(PostCategorizer_print_tree)(&me->root, 0)
+    QUEX_NAME(PostCategorizer_print_tree)(me->root, 0);
 }
 
 

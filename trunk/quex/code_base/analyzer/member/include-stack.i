@@ -28,7 +28,12 @@ QUEX_NAMESPACE_MAIN_OPEN
          *
          *     memento_pack(...): Store the lexical analyzer's to the state before including   */
         InputHandleT*        input_handle = Optional_InputHandle;
+#       ifndef __QUEX_OPTION_PLAIN_C
         QUEX_NAME(Memento)*  m            = QUEX_FUNC(memento_pack)<InputHandleT>(me, Optional_InputName, &input_handle);
+#       else
+        QUEX_NAME(Memento)*  m            = QUEX_FUNC(memento_pack)(me, Optional_InputName, &input_handle);
+#       endif
+
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
         }
@@ -78,7 +83,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifndef __QUEX_OPTION_PLAIN_C
         QUEX_FUNC(include_push)<InputHandleT>(me, 0x0, InputName, mode, CharacterCodecName);
 #       else
-        QUEX_FUNC(include_push)(me, 0x0, InputName, mode), CharacterCodecName);
+        QUEX_FUNC(include_push)(me, 0x0, InputName, mode, CharacterCodecName);
 #       endif
     }
 

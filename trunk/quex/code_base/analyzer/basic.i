@@ -118,7 +118,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        me->accumulator.clear();
+        QUEX_NAME(Accumulator_clear)(&me->accumulator);
 #       endif
 
 #       ifdef QUEX_OPTION_INCLUDE_STACK
@@ -126,7 +126,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
-        me->post_categorizer.clear();
+        QUEX_NAME(PostCategorizer_clear)(&me->post_categorizer);
 #       endif
 
         me->_mode_stack.end        = me->_mode_stack.begin;
@@ -142,9 +142,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE bool 
     QUEX_FUNC(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
+        size_t LoadedCharacterN = 0;
+
         if( buffer->filler == 0x0 ) return false;
 
-        const size_t LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
+        LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
         if( LoadedCharacterN == 0 ) return false;
         
         /* Backward lexing happens in two cases:
@@ -165,12 +167,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                      const size_t                  PostContextN)
     {
+        size_t                        LoadedCharacterN = 0;
         QUEX_TYPE_CHARACTER_POSITION* iterator = 0x0;
         QUEX_TYPE_CHARACTER_POSITION* End = post_context_start_position + PostContextN;
 
         if( buffer->filler == 0x0 ) return false;
         if( buffer->_memory._end_of_file_p != 0x0 ) return false;
-        const size_t LoadedCharacterN = QUEX_NAME(BufferFiller_load_forward)(buffer);
+        LoadedCharacterN = QUEX_NAME(BufferFiller_load_forward)(buffer);
         if( LoadedCharacterN == 0 ) return false;
 
         if( *last_acceptance_input_position != 0x0 ) { 

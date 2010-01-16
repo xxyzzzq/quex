@@ -55,10 +55,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                                           const char*            ToCoding,
                                           size_t                 RawBufferSize)
     { 
+        TEMPLATED(BufferFiller_Converter)*  me = (TEMPLATED(BufferFiller_Converter)*)0x0;
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
-        TEMPLATED(BufferFiller_Converter)*  me = \
-              (TEMPLATED(BufferFiller_Converter)*) \
-               QUEX_NAME(MemoryManager_BufferFiller_allocate)(sizeof(TEMPLATED(BufferFiller_Converter)));
+
+        me = (TEMPLATED(BufferFiller_Converter)*) \
+              QUEX_NAME(MemoryManager_BufferFiller_allocate)(sizeof(TEMPLATED(BufferFiller_Converter)));
         __quex_assert(me != 0x0);
 
         QUEX_NAME(BufferFiller_Converter_construct)(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
@@ -92,6 +93,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                            const char*              ToCoding,
                                            size_t                   RawBufferSize)
     {
+        uint8_t* raw_buffer_p = 0x0;
+
         me->ih = input_handle;
 
         /* Initialize the conversion operations                                             */
@@ -103,7 +106,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
-        uint8_t* raw_buffer_p = QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(RawBufferSize);
+        raw_buffer_p = QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(RawBufferSize);
         QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
                                   me->start_position);
 
@@ -139,13 +142,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                       const size_t           N)
     {
         TEMPLATED(BufferFiller_Converter)* me = (TEMPLATED(BufferFiller_Converter)*)alter_ego;
-        __quex_assert(me->converter != 0x0);
-        __quex_assert(alter_ego != 0x0); 
-        __quex_assert(user_memory_p != 0x0); 
-        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
-#       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset((uint8_t*)user_memory_p, 0xFF, N * sizeof(QUEX_TYPE_CHARACTER));
-#       endif
 
         /* TWO CASES:
          * (1) There are still some bytes in the raw buffer from the last load.
@@ -174,6 +170,15 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*        user_buffer_iterator = user_memory_p;
         const QUEX_TYPE_CHARACTER*  UserBufferEnd        = user_memory_p + N;
         const size_t                StartCharacterIndex  = me->raw_buffer.iterators_character_index;
+        size_t                      ConvertedCharN       = 0;
+
+        __quex_assert(me->converter != 0x0);
+        __quex_assert(alter_ego != 0x0); 
+        __quex_assert(user_memory_p != 0x0); 
+        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+#       ifdef QUEX_OPTION_ASSERTS
+        __QUEX_STD_memset((uint8_t*)user_memory_p, 0xFF, N * sizeof(QUEX_TYPE_CHARACTER));
+#       endif
 
         while( ! me->converter->convert(me->converter, 
                                         &me->raw_buffer.iterator, me->raw_buffer.end,
@@ -195,15 +200,16 @@ QUEX_NAMESPACE_MAIN_OPEN
             }
         }
 
-        const size_t ConvertedCharN = (size_t)(user_buffer_iterator - user_memory_p);
+        ConvertedCharN = (size_t)(user_buffer_iterator - user_memory_p);
         me->raw_buffer.iterators_character_index = StartCharacterIndex + ConvertedCharN;
 
         if( ConvertedCharN != N ) {
             /* The buffer was not filled completely, because the end of the file was reached.   */
 #           ifdef QUEX_OPTION_ASSERTS
+            __quex_assert(UserBufferEnd >= user_buffer_iterator);
             /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
             __QUEX_STD_memset((uint8_t*)(user_buffer_iterator), (uint8_t)0xFF, 
-                              (UserBufferEnd - user_buffer_iterator) * sizeof(QUEX_TYPE_CHARACTER));
+                              (size_t)(UserBufferEnd - user_buffer_iterator) * sizeof(QUEX_TYPE_CHARACTER));
 #           endif
         }
         return ConvertedCharN;
@@ -211,9 +217,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) size_t 
     QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego)
-{ 
-    __quex_assert(alter_ego != 0x0); 
+    { 
         TEMPLATED(BufferFiller_Converter)* me = (TEMPLATED(BufferFiller_Converter)*)alter_ego;
+        __quex_assert(alter_ego != 0x0); 
         __quex_assert(me->converter != 0x0);
         /* The raw buffer iterator stands on the next character to be read. In general it holds
          * that the raw_buffer's iterator points to the first byte of the next character to be
@@ -232,12 +238,16 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
          *       stream to a particular position given by a character index. QuexBuffer_seek(..)
          *       sets the _input_p to a particular position.                                      */
-        __quex_assert(alter_ego != 0x0); 
         TEMPLATED(BufferFiller_Converter)*  me     = (TEMPLATED(BufferFiller_Converter)*)alter_ego;
         TEMPLATED(RawBuffer)*               buffer = &me->raw_buffer;
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
         const size_t     Hint_Index   = me->hint_begin_character_index;
         uint8_t*         Hint_Pointer = buffer->begin;
+        size_t           ContentSize  = 0;
+        size_t           EndIndex     = 0;
+        uint8_t*         new_iterator = 0;
+
+        __quex_assert(alter_ego != 0x0); 
         __quex_assert(me->converter != 0x0);
 
         /* Seek_character_index(Pos) means that the next time when a character buffer
@@ -266,17 +276,19 @@ QUEX_NAMESPACE_MAIN_OPEN
          *       until one reaches the specified character index.                                 */
         if( me->converter->dynamic_character_size_f == false ) { 
             /* (1) Fixed Character Width */
-            const size_t ContentSize = buffer->end - buffer->begin;
-            const size_t EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_TYPE_CHARACTER));
+            __quex_assert(buffer->end >= buffer->begin);
+            ContentSize = (size_t)(buffer->end - buffer->begin);
+            EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_TYPE_CHARACTER));
             /* NOTE: the hint index must be valid (i.e. != -1) */
             if( Index >= Hint_Index && Index < EndIndex && Hint_Index != (size_t)-1 ) {
-                uint8_t* new_iterator  = buffer->begin + (Index - Hint_Index) * sizeof(QUEX_TYPE_CHARACTER);
+                new_iterator  = buffer->begin + (Index - Hint_Index) * sizeof(QUEX_TYPE_CHARACTER);
                 buffer->iterator                  = new_iterator;
                 buffer->iterators_character_index = Index;
             }
             else  /* Index not in [BeginIndex:EndIndex) */ {
                 STREAM_POSITION_TYPE(InputHandleT) avoid_tmp_arg =
-                    (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_TYPE_CHARACTER) + me->start_position);
+                    (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_TYPE_CHARACTER)) \
+                    + me->start_position;
                 QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
                 buffer->end_stream_position = avoid_tmp_arg;
                 /* iterator == end => trigger reload                                              */
@@ -331,57 +343,60 @@ QUEX_NAMESPACE_MAIN_OPEN
         * The filling starts from its current position, thus the remaining bytes
         * to be translated are exactly the number of bytes in the buffer.              */
        TEMPLATED(RawBuffer)*  buffer          = &me->raw_buffer;
-        const size_t          RemainingBytesN = buffer->end - buffer->iterator;
-        QUEX_ASSERT_BUFFER_INFO(buffer);
-        __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
-        __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
+       const size_t           RemainingBytesN = (size_t)(buffer->end - buffer->iterator);
+       uint8_t*               FillStartPosition = 0;
+       size_t                 FillSize          = 0;
+       size_t                 LoadedByteN       = 0;
 
-        /* Store information about the current position's character index. 
-         * [Ref 1] -- 'end' may point point into the middle of an (not yet converted) character. 
-         *         -- 'iterator' points always to the first byte after the last interpreted char.
-         *         -- The stretch starting with 'iterator' to 'end - 1' contains the fragment
-         *            of the uninterpreted character.
-         *         -- The stretch of the uninterpreted character fragment is to be copied 
-         *            to the  beginning of the buffer. 
-         *  
-         *         ==> The character index of the iterator relates always to the begin of 
-         *             the buffer.
-         */
-        /* NOTE: Some converters contain a weird statefulness. Let us assume that if
-         *       the converter provides a 'on_conversion_discontinuity()' function, than
-         *       it such a weird subject, and we cannot make any good assumptions about
-         *       character index and buffer position. The good news is that currently
-         *       only ICU converters behave so strangely.                               */
-        if( me->converter->on_conversion_discontinuity == 0x0 )
-            me->hint_begin_character_index = buffer->iterators_character_index;
+       QUEX_ASSERT_BUFFER_INFO(buffer);
+       __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
+       __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
 
-        /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
-         * the buffer) where there are bytes left in the raw buffer. These need to be
-         * moved to the beginning of the buffer.                                        */
-        if( RemainingBytesN != 0 ) {
-            /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
-             * following is safe against overlaps.                                      */
-            /* Cast to uint8_t to avoid a spurious function overload                    */
-            __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), RemainingBytesN);
-        }
+       /* Store information about the current position's character index. 
+        * [Ref 1] -- 'end' may point point into the middle of an (not yet converted) character. 
+        *         -- 'iterator' points always to the first byte after the last interpreted char.
+        *         -- The stretch starting with 'iterator' to 'end - 1' contains the fragment
+        *            of the uninterpreted character.
+        *         -- The stretch of the uninterpreted character fragment is to be copied 
+        *            to the  beginning of the buffer. 
+        *  
+        *         ==> The character index of the iterator relates always to the begin of 
+        *             the buffer.
+        */
+       /* NOTE: Some converters contain a weird statefulness. Let us assume that if
+        *       the converter provides a 'on_conversion_discontinuity()' function, than
+        *       it such a weird subject, and we cannot make any good assumptions about
+        *       character index and buffer position. The good news is that currently
+        *       only ICU converters behave so strangely.                               */
+       if( me->converter->on_conversion_discontinuity == 0x0 )
+           me->hint_begin_character_index = buffer->iterators_character_index;
 
-        uint8_t*     FillStartPosition = buffer->begin + RemainingBytesN;
-        size_t       FillSize          = (buffer->memory_end - buffer->begin) - RemainingBytesN;
-        const size_t LoadedByteN = \
-                     QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, FillStartPosition, FillSize);
+       /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
+        * the buffer) where there are bytes left in the raw buffer. These need to be
+        * moved to the beginning of the buffer.                                        */
+       if( RemainingBytesN != 0 ) {
+           /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
+            * following is safe against overlaps.                                      */
+           /* Cast to uint8_t to avoid a spurious function overload                    */
+           __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), RemainingBytesN);
+       }
 
+       FillStartPosition = buffer->begin + RemainingBytesN;
+       FillSize          = (size_t)(buffer->memory_end - buffer->begin) - RemainingBytesN;
+       LoadedByteN       = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
+                                                        FillStartPosition, FillSize);
 
-        buffer->end_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-        /* '.character_index' remains to be updated after character conversion */
+       buffer->end_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+       /* '.character_index' remains to be updated after character conversion */
 
-        /* In any case, we start reading from the beginning of the raw buffer. */
-        buffer->iterator = buffer->begin; 
-        buffer->end      = buffer->begin + LoadedByteN + RemainingBytesN;
+       /* In any case, we start reading from the beginning of the raw buffer. */
+       buffer->iterator = buffer->begin; 
+       buffer->end      = buffer->begin + LoadedByteN + RemainingBytesN;
 
-        /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
-        QUEX_ASSERT_BUFFER_INFO(buffer);
+       /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
+       QUEX_ASSERT_BUFFER_INFO(buffer);
 
-        return LoadedByteN;
+       return LoadedByteN;
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -389,7 +404,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* Service function for 'direct buffer' access to the lexical analyzer. */
     {
         TEMPLATED(RawBuffer)*  buffer          = &me->raw_buffer;
-        const size_t           RemainingBytesN = buffer->end - buffer->iterator;
+        const size_t           RemainingBytesN = (size_t)(buffer->end - buffer->iterator);
+
         QUEX_ASSERT_BUFFER_INFO(buffer);
         __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
 
@@ -407,8 +423,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         buffer->iterator = buffer->begin; 
         buffer->end      = buffer->begin + RemainingBytesN;
 #       ifdef QUEX_OPTION_ASSERTS
+        __quex_assert((size_t)(buffer->memory_end - buffer->begin) >= RemainingBytesN);
         __QUEX_STD_memset((uint8_t*)(buffer->begin) + RemainingBytesN, 0xFF, 
-                          (size_t)(buffer->memory_end - buffer->begin - RemainingBytesN));
+                          (size_t)(buffer->memory_end - buffer->begin) - RemainingBytesN);
 #       endif
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
         QUEX_ASSERT_BUFFER_INFO(buffer);

@@ -128,8 +128,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
         error_msg("After '%s'" % Place + "\n" + \
                   "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                  "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
-                  fh, DontExitF=True)
+                  "Orphan state(s) = " + repr(orphan_state_list)                       + "\n") 
 
     def __check_on_init_state_not_acceptance(Place, sm):
         init_state = sm.get_init_state()

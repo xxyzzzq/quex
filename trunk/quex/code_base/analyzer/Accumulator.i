@@ -11,7 +11,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/analyzer/member/token-sending.i>
+#include <quex/code_base/analyzer/member/token-sending>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -43,14 +43,18 @@ QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
 QUEX_INLINE bool
 QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
 {
-    const size_t  OldContentSize = me->text.end - me->text.begin;
-    const size_t  Size    = me->text.memory_end - me->text.begin;
+    const size_t  OldContentSize = (size_t)(me->text.end - me->text.begin);
+    const size_t  Size    = (size_t)(me->text.memory_end - me->text.begin);
     const size_t  AddSize = (size_t)((float)Size * (float)QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR);
     const size_t  NewSize = Size + (AddSize < MinAddSize ? MinAddSize : AddSize);
 
     QUEX_TYPE_CHARACTER*  chunk = \
           QUEX_NAME(MemoryManager_AccumulatorText_allocate)(NewSize*sizeof(QUEX_TYPE_CHARACTER));
+
     if( chunk == 0x0 ) return false;
+
+    __quex_assert(me->text.end >= me->text.begin);
+    __quex_assert(me->text.memory_end >= me->text.begin);
 
     __QUEX_STD_memcpy(chunk, me->text.begin, sizeof(QUEX_TYPE_CHARACTER) * Size);
 
@@ -74,7 +78,7 @@ QUEX_INLINE void
 QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)* me,
                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
 { 
-    const size_t L = End - Begin;
+    const size_t L = (size_t)(End - Begin);
     __quex_assert(End > Begin);
 
     /* If it is the first string to be appended, the store the location */
@@ -145,7 +149,9 @@ QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
 
     *(me->text.end) = (QUEX_TYPE_CHARACTER)0; /* see above '__quex_assert()' */
 
-    me->the_lexer->send(TokenID, me->text.begin);
+#   define self (*me->the_lexer)
+    self_send1(TokenID, me->text.begin);
+#   undef  self
 
     QUEX_NAME(Accumulator_clear)(me);
 }
