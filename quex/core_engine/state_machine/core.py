@@ -271,9 +271,24 @@ class StateMachine:
            of the epsilon closures of the single states."""
         result = {}
 
+        # Alternative Implementationi (little faster, since it avoids function call):
+        
+        # todo = [ StateIdxList ]
+        # while len(todo) != 0:
+        #   for index in todo.pop():
+        #       if result.has_key(index): continue
+        #       result[index] = True
+        #       index_list = self.states[index].transitions().get_epsilon_target_state_index_list()
+        #       todo.append(index_list)
+
         for state_idx in StateIdxList:
             result[state_idx] = True
-            self.__dive_for_epsilon_closure(state_idx, result)
+            # Do the first 'level of recursion' without function call, to save time
+            index_list = self.states[state_idx].transitions().get_epsilon_target_state_index_list()
+            for target_index in index_list:
+                if result.has_key(target_index): continue
+                result[target_index] = True
+                self.__dive_for_epsilon_closure(target_index, result)
 
         return result.keys()
 

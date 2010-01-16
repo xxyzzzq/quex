@@ -1,5 +1,6 @@
 import sys
 import bisect
+import array
 
 from   quex.core_engine.interval_handling import NumberSet, Interval
 from   quex.frs_py.file_in                import error_msg
@@ -14,14 +15,14 @@ INTERVAL_UNDEFINED_BORDER = -7777
 class TransitionMap:
     def __init__(self):
         self.__db = {}               # [target index] --> [trigger set that triggers to target]
-        self.__epsilon_target_index_list = []
+        self.__epsilon_target_index_list = array.array("l", [])
         ## OPTIMIZATION OPTION: Store the trigger map in a 'cache' variable. This, however,
         ## requires that all possible changes to the database need to annulate the cache value.
         ## self.__DEBUG_trigger_map = None
 
     def clear(self):
         self.__db = {}
-        self.__epsilon_target_index_list = []
+        self.__epsilon_target_index_list = array.array("l", [])
 
     def is_empty(self):
         return len(self.__db) == 0 and len(self.__epsilon_target_index_list) == 0
@@ -34,7 +35,7 @@ class TransitionMap:
                              be part of a deterministic finite automaton (DFA).
         """
         # DFA's do not have epsilon transitions
-        if self.__epsilon_target_index_list != []: return False
+        if len(self.__epsilon_target_index_list) != 0: return False
 
         # check wether trigger sets intersect
         all_trigger_sets = NumberSet()
@@ -139,7 +140,7 @@ class TransitionMap:
                 if trigger_set.contains(Trigger) and target_index not in result:
                     result.append(target_index) 
 
-        if self.__epsilon_target_index_list != []:
+        if len(self.__epsilon_target_index_list) != 0:
             for target_index in self.__epsilon_target_index_list:
                 if target_index not in result:
                     result.append(self.__epsilon_target_index_list)
@@ -237,7 +238,7 @@ class TransitionMap:
         ## OPT: if self.__DEBUG_trigger_map != None: return self.__DEBUG_trigger_map
         # At this point only DFAs shall be considered. Thus there cannot be any epsilon
         # target transitions.
-        assert self.__epsilon_target_index_list == [], \
+        assert len(self.__epsilon_target_index_list) == 0, \
                "Trigger maps can only be computed on DFAs. Epsilon transition detected."
 
         # NOTE: The response '[]' is a **signal** that there is only an epsilon
@@ -323,7 +324,7 @@ class TransitionMap:
             msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
 
         # epsilon transitions
-        if self.__epsilon_target_index_list != []:
+        if len(self.__epsilon_target_index_list) != 0:
             txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
             msg += "%s ==<epsilon>==> " % FillStr 
             for txt in txt_list:

@@ -20,7 +20,7 @@ def do(state, StateIdx, SMD, InitStateF=False):
 
     # (*) check that no epsilon transition triggers to a real state                   
     if __DEBUG_CHECK_ACTIVE_F:
-        assert state.transitions().get_epsilon_target_state_index_list() == [], \
+        assert len(state.transitions().get_epsilon_target_state_index_list()) == 0, \
                "epsilon transition contained target states: state machine was not made a DFA!\n" + \
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
