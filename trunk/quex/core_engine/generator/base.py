@@ -152,7 +152,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     map(lambda x: x.mark_state_origins(), StateMachine_List)
     
     # (2) setup all patterns in paralell 
-    sm = parallelize.do(StateMachine_List)
+    sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False, CloneF=False)
     __check("Parallelization", sm)
 
     # (3) convert the state machine to an DFA (paralellization created an NFA)

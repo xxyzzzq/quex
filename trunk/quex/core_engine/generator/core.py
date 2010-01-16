@@ -179,3 +179,29 @@ def delete_unused_labels(Code):
         code = blue_print(code, replacement_list, first_letter)
     return code
         
+def NEW_delete_unused_labels(Code):
+    """It happens, that this implementation seems to be slower than the other
+    
+       Delete unused labels, so that compilers won't complain.
+
+       This function is performance critical, so we do a high speed replacement,
+       where we write into the text itself. The original label is overwritten
+       with the replaced label text.
+    """
+    LanguageDB = Setup.language_db
+
+    comment_overhead = len(LanguageDB["$comment"](""))
+    label_list = languages.label_db_get_unused_label_list()
+
+    for label in label_list:
+        original = LanguageDB["$label-pure"](label)
+        if len(label) < comment_overhead:
+            replacement = LanguageDB["$comment"](original)
+            # This should never happen, but to be safe ...
+            Code = Code.replace(original, replacement)
+        else:
+            replacement = LanguageDB["$comment"](label[:-comment_overhead])
+            Code = Code.replace(original, replacement)
+
+    return Code
+        
