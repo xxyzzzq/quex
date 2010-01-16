@@ -42,25 +42,26 @@ def blue_print(BluePrintStr, Replacements, CommonStart="$"):
     L = len(Replacements[0][0])
 
     txt      = BluePrintStr
-    result   = ""
+    result   = []
     prev_end = 0
     while 1 + 1 == 2:
         i = txt.find(CommonStart, prev_end)
         if i == -1: 
-            result += txt[prev_end:]
-            return result
+            result.append(txt[prev_end:])
+            return "".join(result)
 
         for orig, replacement in Replacements:
             assert orig[0] == CommonStart[0]
             if txt.find(orig, i, i + L) == i: 
                 ## print "##", orig, replacement.__class__.__name__
-                result += txt[prev_end:i] + replacement
+                result.append(txt[prev_end:i])
+                result.append(replacement)
                 prev_end = i + len(orig)
                 break
         else:
             # Nothing matched the expression starting with '$' simply
             # continue as if nothing happend.
-            result   += txt[prev_end:i+1]
+            result.append(txt[prev_end:i+1])
             prev_end  = i + 1
             pass
 

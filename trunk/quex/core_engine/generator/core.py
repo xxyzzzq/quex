@@ -167,7 +167,7 @@ def delete_unused_labels(Code):
     replacement_list_db = {}
     for label in label_list:
         original    = LanguageDB["$label-pure"](label)
-        replacement = LanguageDB["$ml-comment"](original)
+        replacement = LanguageDB["$comment"](original)
         first_letter = original[0]
         if replacement_list_db.has_key(first_letter) == False:
             replacement_list_db[first_letter] = [ [original, replacement] ]
@@ -179,6 +179,7 @@ def delete_unused_labels(Code):
         code = blue_print(code, replacement_list, first_letter)
     return code
         
+
 def NEW_delete_unused_labels(Code):
     """It happens, that this implementation seems to be slower than the other
     

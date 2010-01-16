@@ -355,6 +355,8 @@ class StateMachine:
              T0, T2                      [---)     [)
              T0, T1, T2                      [-----)
         """
+        self._DEBUG = {}
+
         def DEBUG_print_history(history):
             txt = ""
             for item in history:
