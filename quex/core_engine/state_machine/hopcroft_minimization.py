@@ -116,10 +116,13 @@ class StateSet_List:
         """Do state 'This' and state 'That' trigger on the same triggers to the
            same target state?
         """
-        transition_list_0 = This.transitions().get_map().items()
-        transition_list_1 = That.transitions().get_map().items()
+        map_0 = This.transitions().get_map()
+        map_1 = That.transitions().get_map()
 
-        if len(transition_list_0) != len(transition_list_1): return False
+        if len(map_0) != len(map_1): return False
+
+        transition_list_0 = map_0.items()
+        transition_list_1 = map_1.items()
 
         # Assumption: Transitions do not appear twice. Thus, both lists have the same
         #             length and any element of A appears in B, the two must be equal.

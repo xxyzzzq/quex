@@ -499,8 +499,7 @@ class NumberSet:
     def is_equal(self, Other):
         """Assume: All intervals are sorted and adjacent intervals are combined.
         """
-        N = len(self.__intervals)
-        if N != len(Other.__intervals): return False
+        if len(self.__intervals) != len(Other.__intervals): return False
         i = -1
         for interval in self.__intervals:
             i += 1

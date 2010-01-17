@@ -37,7 +37,8 @@ for key, trigger_set in sm.states[10].transitions().get_map().items():
     print trigger_set.gnuplot_string(key)
 
 # (*) compute the elementary trigger set
-ets = sm.get_elementary_trigger_sets([10])
+epsilon_closure_db = sm.get_epsilon_closure_db()
+ets = sm.get_elementary_trigger_sets([10], epsilon_closure_db)
 i = 10
 for target_indices, trigger_set in ets:
     i += 1
