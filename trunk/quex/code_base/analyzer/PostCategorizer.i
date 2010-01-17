@@ -47,7 +47,7 @@ QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*        me,
             /* If string 1 ends before string 0, or both end at the same position, then
              * the loop is exited. The final operation before return deals with it.   */
         }
-        return (int)(*it0 - *it1);
+        return (*it0 == *it1) ? 0 : (*it0 < *it) ? -1 : 1;
     }
 }
 
@@ -75,14 +75,14 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
     while( node != 0x0 ) {
         prev_node = node;
         result    = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
-        if     ( result > 0 ) node = node->greater;
-        else if( result < 0 ) node = node->lesser;
-        else                  return; /* Node with that name already exists */
+        if     ( result == 1 )  node = node->greater;
+        else if( result == -1 ) node = node->lesser;
+        else                    return; /* Node with that name already exists */
     }
     __quex_assert( prev_node != 0x0 );
     __quex_assert( result != 0 );
 
-    if( result > 0 ) 
+    if( result == 1 ) 
         prev_node->greater = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
     else 
         prev_node->lesser  = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
@@ -109,8 +109,8 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
 
         parent = found;
 
-        if     ( result > 0 ) found = found->greater;
-        else if( result < 0 ) found = found->lesser;
+        if     ( result == 1 )  found = found->greater;
+        else if( result == -1 ) found = found->lesser;
 
         if( found == 0x0 ) return; /* Not found name with that name */
     };
@@ -179,9 +179,9 @@ QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)*  me,
     while( node != 0x0 ) {
         int result = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
 
-        if     ( result > 0 ) node = node->greater;
-        else if( result < 0 ) node = node->lesser;
-        else                  return node;
+        if     ( result == 1 )  node = node->greater;
+        else if( result == -1 ) node = node->lesser;
+        else                    return node;
     }
     return 0x0;
 }
