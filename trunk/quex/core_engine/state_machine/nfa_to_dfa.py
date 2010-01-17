@@ -26,6 +26,8 @@ def do(SM):
     # (*) prepare the initial worklist
     worklist = [ ( result.init_state_index, initial_state_epsilon_closure) ]
 
+    epsilon_closure_db = SM.get_epsilon_closure_db()
+
     while worklist != []:
         # 'start_state_index' is the index of an **existing** state in the state machine.
         # It was either created above, in StateMachine's constructor, or as a target
@@ -41,7 +43,8 @@ def do(SM):
         #                [24:60]  --> [ State1 ]
         #                [61:123] --> [ State2, State10 ]
         #
-        elementary_trigger_set_infos = SM.get_elementary_trigger_sets(start_state_combination)
+        elementary_trigger_set_infos = SM.get_elementary_trigger_sets(start_state_combination,
+                                                                      epsilon_closure_db)
         ## DEBUG_print(start_state_combination, elementary_trigger_set_infos)
 
         # (*) loop over all elementary trigger sets

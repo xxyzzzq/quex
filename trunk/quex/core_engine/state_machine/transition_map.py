@@ -1,6 +1,6 @@
 import sys
 import bisect
-import array
+# import array
 
 from   quex.core_engine.interval_handling import NumberSet, Interval
 from   quex.frs_py.file_in                import error_msg
@@ -15,14 +15,14 @@ INTERVAL_UNDEFINED_BORDER = -7777
 class TransitionMap:
     def __init__(self):
         self.__db = {}               # [target index] --> [trigger set that triggers to target]
-        self.__epsilon_target_index_list = array.array("l", [])
+        self.__epsilon_target_index_list = [] # array.array("l", [])
         ## OPTIMIZATION OPTION: Store the trigger map in a 'cache' variable. This, however,
         ## requires that all possible changes to the database need to annulate the cache value.
         ## self.__DEBUG_trigger_map = None
 
     def clear(self):
         self.__db = {}
-        self.__epsilon_target_index_list = array.array("l", [])
+        self.__epsilon_target_index_list = [] # array.array("l", [])
 
     def is_empty(self):
         return len(self.__db) == 0 and len(self.__epsilon_target_index_list) == 0

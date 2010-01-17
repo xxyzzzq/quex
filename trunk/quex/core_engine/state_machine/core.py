@@ -266,29 +266,35 @@ class StateMachine:
 
         return result
 
-    def get_epsilon_closure_of_state_set(self, StateIdxList):
-        """Returns the epsilon closure of a set of states, i.e. the union
-           of the epsilon closures of the single states."""
-        result = {}
-
-        # Alternative Implementationi (little faster, since it avoids function call):
-        
-        # todo = [ StateIdxList ]
-        # while len(todo) != 0:
-        #   for index in todo.pop():
-        #       if result.has_key(index): continue
-        #       result[index] = True
-        #       index_list = self.states[index].transitions().get_epsilon_target_state_index_list()
-        #       todo.append(index_list)
-
-        for state_idx in StateIdxList:
-            result[state_idx] = True
+    def get_epsilon_closure_db(self):
+        db = {}
+        for index, state in self.states.items():
             # Do the first 'level of recursion' without function call, to save time
-            index_list = self.states[state_idx].transitions().get_epsilon_target_state_index_list()
-            for target_index in index_list:
-                if result.has_key(target_index): continue
-                result[target_index] = True
-                self.__dive_for_epsilon_closure(target_index, result)
+            index_list = state.transitions().get_epsilon_target_state_index_list()
+
+            # Epsilon closure for current state
+            ec = { index: True }
+            if len(index_list) != 0: 
+                for target_index in index_list:
+                    if ec.has_key(target_index): continue
+                    ec[target_index] = True
+                    self.__dive_for_epsilon_closure(target_index, ec)
+
+            db[index] = ec
+
+        return db
+
+    def get_epsilon_closure_of_state_set(self, StateIdxList, EC_DB):
+        """Returns the epsilon closure of a set of states, i.e. the union
+           of the epsilon closures of the single states.
+           
+           StateIdxList: List of states to be considered.
+           EC_DB:        Epsilon closure database, as computed once by
+                         'get_epsilon_closure_db()'.
+        """
+        result = {}
+        for index in StateIdxList:
+            result.update(EC_DB[index])
 
         return result.keys()
 
@@ -310,8 +316,12 @@ class StateMachine:
 
         return result.keys()
  
-    def get_elementary_trigger_sets(self, StateIdxList):
-        """Considers the trigger dictionary that contains a mapping from target state index 
+    def get_elementary_trigger_sets(self, StateIdxList, epsilon_closure_db):
+        """NOTE: 'epsilon_closure_db' must previously be calculcated by 
+                 self.get_epsilon_closure_db(). This has to happen once
+                 and for all in order to save computation time.
+        
+           Considers the trigger dictionary that contains a mapping from target state index 
            to the trigger set that triggers to it: 
      
                    target_state_index   --->   trigger_set 
@@ -383,8 +393,8 @@ class StateMachine:
         combinations = {}                             # use dictionary for uniqueness
         map_key_str_to_target_index_combination = {}  # use dictionary for uniqueness 
         current_interval_begin = None
-        current_involved_target_indices = {}          # use dictionary for uniqueness
-        current_involved_targets_epsilon_closure = []
+        current_target_indices = {}          # use dictionary for uniqueness
+        current_target_epsilon_closure = []
         for item in history:
             # -- add interval and target indice combination to the data
             #    (only build interval when current begin is there, 
@@ -392,14 +402,14 @@ class StateMachine:
             #     when the epsilon closure of target states is not empty)                   
             if current_interval_begin != None and \
                current_interval_begin != item.position and \
-               current_involved_target_indices.keys() != []:
+               current_target_indices.keys() != []:
 
                 interval = Interval(current_interval_begin, item.position)
-                key_str  = repr(current_involved_targets_epsilon_closure)
+                key_str  = repr(current_target_epsilon_closure)
                 if not combinations.has_key(key_str):   
                     combinations[key_str] = NumberSet(interval, ArgumentIsYoursF=True)
                     map_key_str_to_target_index_combination[key_str] = \
-                                     current_involved_targets_epsilon_closure
+                                     current_target_epsilon_closure
                 else:
                     combinations[key_str].unite_with(interval)
            
@@ -408,20 +418,21 @@ class StateMachine:
             #    NOTE: More than one state can trigger on the same range to the same target state.
             #          Thus, one needs to keep track of the 'opened' target states.
             if item.change == INTERVAL_BEGIN:
-                if current_involved_target_indices.has_key(item.target_idx):
-                    current_involved_target_indices[item.target_idx] += 1
+                if current_target_indices.has_key(item.target_idx):
+                    current_target_indices[item.target_idx] += 1
                 else:
-                    current_involved_target_indices[item.target_idx] = 1
+                    current_target_indices[item.target_idx] = 1
             else:        # == INTERVAL_END
-                if current_involved_target_indices[item.target_idx] > 1:
-                    current_involved_target_indices[item.target_idx] -= 1
+                if current_target_indices[item.target_idx] > 1:
+                    current_target_indices[item.target_idx] -= 1
                 else:    
-                    del current_involved_target_indices[item.target_idx] 
+                    del current_target_indices[item.target_idx] 
     
             # -- re-compute the epsilon closure of the target states
-            current_involved_targets_epsilon_closure = \
-                self.get_epsilon_closure_of_state_set(current_involved_target_indices.keys())
-            current_involved_targets_epsilon_closure.sort()             
+            current_target_epsilon_closure = \
+                self.get_epsilon_closure_of_state_set(current_target_indices.keys(),
+                                                      epsilon_closure_db)
+            current_target_epsilon_closure.sort()             
     
             # -- set the begin of interval to come
             current_interval_begin = item.position                      
