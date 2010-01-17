@@ -38,16 +38,14 @@ QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*        me,
     else if( FirstCharacter < me->name_first_character ) return -1;
     else {
         /* Implementation according to: P.J. Plauger, "The Standard C Library", 1992 */
-        it1 = me->name_remainder;
         it0 = Remainder;
+        it1 = me->name_remainder;
         for(; *it0 == *it1; ++it0, ++it1) {
-            /* Until here both strings are the same, if string 0 ends before string 1
-             * then it is 'less' --> -1.                                              */
-            if( *it0 == 0 ) return -1;
-            /* If string 1 ends before string 0, or both end at the same position, then
-             * the loop is exited. The final operation before return deals with it.   */
+            /* Both letters are the same and == 0?
+             * => both reach terminall zero without being different. */
+            if( *it0 == 0 ) return 0;
         }
-        return (*it0 == *it1) ? 0 : (*it0 < *it) ? -1 : 1;
+        return (*it0 < *it1) ? -1 : 1;
     }
 }
 
