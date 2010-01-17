@@ -11,6 +11,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 typedef struct { } Token;
 
+#define self_send1(TokenID, Msg) \
+        self.send(TokenID, Msg)
+
 struct TestAnalyzer {
     void  send(QUEX_TYPE_TOKEN_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
         printf("Lexical Analyzer Receives:\n");
@@ -27,6 +30,7 @@ struct TestAnalyzer {
 QUEX_NAMESPACE_MAIN_CLOSE
 
 // Prevent the inclusion of 'token-sending.i' since we do it on our own.
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
 #define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/analyzer/Accumulator.i>
