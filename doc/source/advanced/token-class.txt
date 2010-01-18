@@ -670,10 +670,9 @@ A hand written token class must comply to the following constraints:
           self.send(TKN_SOMETHING, LexemeL, tmp); 
           return; 
 
-    * It must provide a member function that tells about the token's via a 
-      function with the following signature 
+    * It must provide a member ``_id`` token's identifier 
       
-      .. cfunction:: QUEX_TYPE_TOKEN_ID   type_id()
+      .. cfunction:: QUEX_TYPE_TOKEN_ID   _id
 
     * There must be a function 
     
@@ -682,7 +681,7 @@ A hand written token class must comply to the following constraints:
       in the token's namespace which copies the content of token ``Other`` to the
       content of token ``me``.
 
-    * The must be member and member function definitions for line and column 
+    * There must be member and member ``_line_n`` and ``_column_n`` for line and column 
       numbers which are dependent on compilation macros. The user must
       provide the functionality of the example code segment below.
 
@@ -690,16 +689,14 @@ A hand written token class must comply to the following constraints:
 
          #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
          #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-                private:
-                    size_t  _line_n;
                 public:
+                    size_t  _line_n;
                     size_t  line_number() const                 { return _line_n; }
                     void    set_line_number(const size_t Value) { _line_n = Value; }
          #       endif
          #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                private:
-                    size_t  _column_n;
                 public:
+                    size_t  _column_n;
                     size_t  column_number() const                 { return _column_n; }
                     void    set_column_number(const size_t Value) { _column_n = Value; }
          #       endif
