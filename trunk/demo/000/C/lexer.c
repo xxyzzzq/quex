@@ -20,7 +20,7 @@ main(int argc, char** argv)
         /* Print out token information            */
         ++token_n;
         /* Check against 'termination'            */
-    } while( Token.type_id != QUEX_TKN_TERMINATION );
+    } while( Token._id != QUEX_TKN_TERMINATION );
 
     printf("| [END] number of token = %i\n", token_n);
     printf("`------------------------------------------------------------------------------------\n");

@@ -56,7 +56,7 @@
 #     define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
              /* empty */
 #     define QUEX_TOKEN_POLICY_NO_TOKEN() \
-             (self.token->type_id() == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
+             (self.token->_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
 #endif
 
 /* Option: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
@@ -70,14 +70,14 @@
  * exist if the corresponding stamping is active.                            */
 #if    defined(QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN) \
     && defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
-#       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    TOKEN->set_line_number(self.line_number());
+#       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    TOKEN->_line_n = self.counter.base._line_number_at_begin;
 #else
 #       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    /* empty */
 #endif
 
 #if    defined(QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN) \
     && defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-#       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)    TOKEN->set_column_number(self.column_number());
+#       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)    TOKEN->_column_n = self.counter.base._line_number_at_begin;
 #else
 #       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)  /* empty */
 #endif
@@ -108,7 +108,7 @@
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(TOKEN_ID_TERMINATION) \
            __quex_assert(    self._token_queue.write_iterator == self._token_queue.begin \
-                         || (self._token_queue.write_iterator-1)->type_id() != TOKEN_ID_TERMINATION)
+                         || (self._token_queue.write_iterator-1)->_id != TOKEN_ID_TERMINATION)
 #else
 #   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(CLASS_NAME) 
            /* empty */
