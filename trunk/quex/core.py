@@ -35,13 +35,6 @@ def do():
 
     mode_db = __get_mode_db(Setup)
 
-    if lexer_mode.token_type_definition == None:
-        fh = open_file_or_die(Setup.QUEX_INSTALLATION_DIR 
-                              + Setup.language_db["$code_base"] 
-                              + Setup.language_db["$token-default-file"])
-        quex_file_parser.parse_section(fh)
-        fh.close()
-
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
     mode_list      = filter(lambda mode: mode.options["inheritable"] != "only", mode_db.values())

@@ -85,6 +85,7 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
 
     assert True == False, "this code section should have never been reached!"
 
+
 def parse_section(fh):
 
     # NOTE: End of File is supposed to be reached when trying to read a new
@@ -132,10 +133,30 @@ def parse_section(fh):
             return
 
         elif word == "token_type":       
-            lexer_mode.token_type_definition = token_type_definition.parse(fh)
+            if len(lexer_mode.mode_db) != 0:
+                error_msg("Section 'token_type' must appear before first mode definition.", fh)
+
+            elif lexer_mode.token_type_definition != None:
+                error_msg("Section 'token_type' has been defined twice.", fh, DontExitF=True)
+                error_msg("Previously defined here.",
+                          lexer_mode.token_type_definition.file_name_of_token_type_definition,
+                          lexer_mode.token_type_definition.line_n_of_token_type_definition)
+
+            else:
+                lexer_mode.token_type_definition = token_type_definition.parse(fh)
+
             return
 
         elif word == "mode":
+            # When the first mode is parsed then a token_type definition must be 
+            # present. If not, the default token type definition is considered.
+            if lexer_mode.token_type_definition == None:
+                sub_fh = open_file_or_die(Setup.QUEX_INSTALLATION_DIR 
+                                          + Setup.language_db["$code_base"] 
+                                          + Setup.language_db["$token-default-file"])
+                parse_section(sub_fh)
+                sub_fh.close()
+
             mode_definition.parse(fh)
             return
 
