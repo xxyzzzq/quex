@@ -39,6 +39,15 @@ __label_db = \
 
 __label_printed_list_unique = {}
 __label_used_list_unique = {}
+
+def label_db_marker_init():
+    global __label_printed_list_unique
+    global __label_used_list_unique
+
+    __label_printed_list_unique.clear()
+    __label_used_list_unique.clear()
+
+
 def label_db_get(Type, Index, GotoTargetF=False):
     global __label_printed_list_unique
     global __label_used_list_unique
@@ -55,7 +64,7 @@ def label_db_get(Type, Index, GotoTargetF=False):
 
     return label
 
-def label_db_get_unused_label_list():
+def label_db_marker_get_unused_label_list():
     global __label_target_unique
     global __label_printed_unique
     global __label_db

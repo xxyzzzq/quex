@@ -71,7 +71,7 @@ token_type {
         }
    }
 
-   flush_text {
+   take_text {
        self.text = Begin;
        return true;       // We copied the text away, caller can free memory.
    }

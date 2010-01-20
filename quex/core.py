@@ -59,13 +59,17 @@ def do():
     # (*) implement the lexer mode-specific analyser functions
     inheritance_info_str = ""
     analyzer_code        = ""
+    # generator.init_unused_labels()
     for mode in mode_list:        
+        #generator.init_unused_labels()
+
         # accumulate inheritance information for comment
-        analyzer_code        += get_code_for_mode(mode, mode_name_list, IndentationSupportF) 
+        code = get_code_for_mode(mode, mode_name_list, IndentationSupportF) 
+        # find unused labels
+        analyzer_code += generator.delete_unused_labels(code)
+
         inheritance_info_str += mode.get_documentation()
         
-    # find unused labels
-    analyzer_code = generator.delete_unused_labels(analyzer_code)
 
     # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)
