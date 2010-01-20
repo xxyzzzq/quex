@@ -120,6 +120,16 @@ $$COPY$$
 #endif
 }
 
+QUEX_INLINE bool 
+QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*           __this, 
+                            QUEX_TYPE_ANALYZER*        analyzer, 
+                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+{
+#  define self  (*__this)
+$$FUNC_TAKE_TEXT$$
+#  undef self
+}
+
 $$FOOTER$$
 
 $$NAMESPACE_CLOSE$$

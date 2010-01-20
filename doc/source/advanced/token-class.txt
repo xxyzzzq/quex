@@ -40,16 +40,6 @@ The remaining framework of quex does not any adaptions to a customized token
 class. If the token class is designed according certain rules, then it fits
 smoothly in any generated engine.
 
-.. warning::
-
-   When an *accumulator* is used (see command line option
-   ``--no-string-accumulator``) then the user
-   token class must consider its requirements. The accumulator uses a token
-   class constructor which receives a pointer of type ``const
-   QUEX_TOKEN_TYPE*``. In consequence such a member needs to be defined. This
-   requirement can be circumvented by calling quex with
-   ``--no-string-accumulator`` or ``--nsacc``.
-
 .. _sec-customized-token-class:
 
 Customized Token Classes
@@ -321,6 +311,38 @@ reference to the token object itself.
            new(&self.number_list) std::vector<int>(Other.number_list);
        }
 
+
+.. describe:: take_text
+
+   Optional, only a must if string accumulator is activated.
+
+   Whenever the accumulator flushes accumulated text it accesses the current
+   token and passes its content to the function ``take_text``. Inside the
+   section the following variables can be accessed:
+   
+   .. describe:: self
+
+      which is a reference to the token under concern.
+
+   .. describe:: analyzer
+
+      which gives access to the lexical analyzer so that decisions can be 
+      made according to the current mode, line numbers etc.
+
+   .. describe:: Begin, End
+
+      wich are both pointers of ``QUEX_TYPE_CHARACTER``. ``Begin`` points
+      to the first character in the text to be received by the token. ``End``
+      points to the first character *after* the string to be received.
+
+   The ``take_text`` section receives the raw memory chunk and is free to do
+   what it wants with it. However, it must return a boolean value[#f2]_.  If
+   ``true`` is returned the token took over the ownership over the memory chunk
+   and claims responsibility to delete it. This is the case if the token
+   maintains a reference to the text and does not want it to be deleted.  If
+   ``false`` is returned the caller shall remain responsible. This can be
+   used if the token does not need the text, or has copied it in a 'private'
+   copy.
 
 
 Additionally, content may be added to the class' body using the following
@@ -681,6 +703,18 @@ A hand written token class must comply to the following constraints:
       in the token's namespace which copies the content of token ``Other`` to the
       content of token ``me``.
 
+    * If a text accumulator is to be used, i.e. ``QUEX_OPTION_STRING_ACCUMULATOR`` is 
+      defined, then there must be a function 
+    
+      .. cfunction:: bool QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*     me, 
+                                                      QUEX_TYPE_ANALYZER*  analyzer, 
+                                                      const QUEX_TYPE_CHARACTER* Begin, 
+                                                      const QUEX_TYPE_CHARACTER* End)
+      
+
+      The meaning and requirements of this functions are the same as for the ``take_text``
+      section above.
+
     * There must be member and member ``_line_n`` and ``_column_n`` for line and column 
       numbers which are dependent on compilation macros. The user must
       provide the functionality of the example code segment below.
@@ -716,3 +750,5 @@ concepts.
 .. [#f1] Section :ref:sec-token-stamping` discusses when line and column numbers 
    are required inside the token object.
 
+.. [#f2] In C the boolean values ``true`` and ``false`` are available as macro
+   definitions in ``stdbool.h``.

@@ -71,6 +71,11 @@ token_type {
         }
    }
 
+   flush_text {
+       self.text = Begin;
+       return true;       // We copied the text away, caller can free memory.
+   }
+
    footer {
         inline std::ostream&
         operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)

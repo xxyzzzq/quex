@@ -7,6 +7,7 @@ token_type_code_fragment_db = {
         "constructor": True, "destructor": True, 
         "copy":        True, "body":       True, 
         "header":      True, "footer":     True,
+        "take_text":   True,
         }
 
 class TokenTypeDescriptorCore:
