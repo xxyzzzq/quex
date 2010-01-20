@@ -11,7 +11,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/analyzer/member/token-sending>
+#include <quex/code_base/token/TokenPolicy>
 
 QUEX_NAMESPACE_MAIN_OPEN
 

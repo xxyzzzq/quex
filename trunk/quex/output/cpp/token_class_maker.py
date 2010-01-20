@@ -46,6 +46,7 @@ def _do(Descr):
                       ["$$QUICK_SETTERS$$",    get_quick_setters(Descr)],
                       ["$$COPY$$",             copy_str],
                       ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
+                      ["$$FUNC_TAKE_TEXT$$",   Descr.take_text.get_code()],
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                       ["$$HEADER$$",           Descr.header.get_code()],
                       ["$$FOOTER$$",           Descr.footer.get_code()],
