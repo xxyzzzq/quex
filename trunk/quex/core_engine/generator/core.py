@@ -160,6 +160,9 @@ def do(PatternActionPair_List, OnFailureAction,
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)
 
+def init_unused_labels():
+    languages.label_db_marker_init()
+
 def delete_unused_labels(Code):
     """Delete unused labels, so that compilers won't complain.
 
@@ -170,11 +173,12 @@ def delete_unused_labels(Code):
        The body of this function contains the 'good old' but slow method
        in case that the new method has doubts about being able to perform well.
     """
-    result = delete_unused_labels_FAST(Code)
-    if result != "": return result
-
     LanguageDB = Setup.language_db
-    label_list = languages.label_db_get_unused_label_list()
+    label_list = languages.label_db_marker_get_unused_label_list()
+
+    # If the fast function was successful we are done
+    #result = delete_unused_labels_FAST(Code, label_list)
+    #if result != "": return result
 
     replacement_list_db = {}
     for label in label_list:
@@ -189,21 +193,22 @@ def delete_unused_labels(Code):
     code = Code
     for first_letter, replacement_list in replacement_list_db.items():
         code = blue_print(code, replacement_list, first_letter)
+
     return code
         
 
 import array
-def delete_unused_labels_FAST(Code):
+def delete_unused_labels_FAST(Code, LabelList):
     LanguageDB = Setup.language_db
 
     code = array.array("c", Code)
     if code.itemsize != 1: return ""
 
     comment_overhead = len(LanguageDB["$comment"](""))
-    label_list = languages.label_db_get_unused_label_list()
 
-    for label in label_list:
+    for label in LabelList:
         original = LanguageDB["$label-pure"](label)
+        print "##", original
         length = len(original)
         if length < 4: return ""
         idx = Code.find(original)
