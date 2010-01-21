@@ -92,12 +92,12 @@ def parse_mode_option(fh, new_mode):
         opener_sm = StateMachine()
         opener_sm.add_transition(opener_sm.init_state_index, trigger_set, AcceptanceF=True)
             
-        action = CodeFragment(create_skip_code(trigger_set))
+        action = CodeFragment("")
  
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         new_mode.add_match(pattern_str, action, opener_sm)
 
-        return True
+        value = [action, trigger_set]
 
     elif identifier == "skip_range":
         # A non-nesting skipper can contain a full fledged regular expression as opener,
@@ -116,11 +116,12 @@ def parse_mode_option(fh, new_mode):
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        action = CodeFragment(create_skip_range_code(closer_sequence))
+        action = CodeFragment("")
 
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         new_mode.add_match(opener_str, action, opener_sm)
-        return True
+
+        value = [action, closer_sequence]
         
     elif identifier == "skip_nesting_range":
         error_msg("skip_nesting_range is not yet supported.", fh)

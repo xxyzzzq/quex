@@ -11,7 +11,10 @@ from   quex.input.setup import setup as Setup
 sys.path.append(os.environ["QUEX_PATH"])
 
 def do(X, TrafoInfo=None, FH=-1, LineN=None):
-    """RETURNS: True  transformation successful
+    """Transforms a given state machine from 'Unicode Driven' to another
+       character encoding type.
+    
+       RETURNS: True  transformation successful
                 False transformation failed, number set possibly in inconsistent state!
 
        X = state machine or number set

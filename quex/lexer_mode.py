@@ -129,11 +129,7 @@ class ModeDescription:
 
         oi = mode_option_info_db[Option]
         if oi.type == "list":
-            # Append the value, assume in lists everything is allowed
-            if Option in ["skip", "skip_range", "skip_nested_range"]:
-                self.options.setdefault(Option, []).append(transformation.do(Value))
-            else:
-                self.options.setdefault(Option, []).append(Value)
+            self.options.setdefault(Option, []).append(Value)
         else:
             assert Value in oi.domain
             self.options[Option] = Value

@@ -61,15 +61,14 @@ def do():
     analyzer_code        = ""
     # generator.init_unused_labels()
     for mode in mode_list:        
-        #generator.init_unused_labels()
+        generator.init_unused_labels()
 
         # accumulate inheritance information for comment
         code = get_code_for_mode(mode, mode_name_list, IndentationSupportF) 
-        # find unused labels
-        analyzer_code += generator.delete_unused_labels(code)
-
         inheritance_info_str += mode.get_documentation()
-        
+
+        # Find unused labels
+        analyzer_code += generator.delete_unused_labels(code)
 
     # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)
@@ -88,6 +87,8 @@ def do():
     UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
 
 def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
+
+    implement_skippers(Mode)
 
     # -- some modes only define event handlers that are inherited
     if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
@@ -128,6 +129,33 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                  ModeNameList                   = ModeNameList)
 
     return analyzer_code
+
+
+from quex.core_engine.generator.state_coder.skipper_core import create_skip_code, create_skip_range_code
+
+def implement_skippers(mode):
+    """Code generation for skippers.
+
+       This happens at this point in time in order to have the parsing and 
+       code generation separate. Also, the code generator keeps track of 
+       defined and unused labels per mode. For this, the skipper code
+       generation must happen together with the code generation for the mode--
+       not as it was before when the skippers are parsed.
+    """
+
+    for info in mode.options["skip"]:
+        action      = info[0]
+        trigger_set = info[1]
+
+        action.set_code(create_skip_code(trigger_set))
+
+    for info in mode.options["skip_range"]:
+        action          = info[0]
+        closer_sequence = info[1]
+
+        action.set_code(create_skip_range_code(closer_sequence))
+
+
     
 def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 
