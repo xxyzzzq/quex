@@ -142,17 +142,25 @@ def implement_skippers(mode):
        generation must happen together with the code generation for the mode--
        not as it was before when the skippers are parsed.
     """
+    def get_action(Mode, PatternStr):
+        for x in Mode.get_pattern_action_pair_list():
+            if x.pattern == PatternStr:
+                return x.action()
+        assert False, \
+               "quex/core.py: implement_skippers() pattern string reference not found."
 
     for info in mode.options["skip"]:
-        action      = info[0]
+        pattern_str = info[0]
         trigger_set = info[1]
 
+        action = get_action(mode, pattern_str)
         action.set_code(create_skip_code(trigger_set))
 
     for info in mode.options["skip_range"]:
-        action          = info[0]
+        pattern_str     = info[0]
         closer_sequence = info[1]
 
+        action = get_action(mode, pattern_str)
         action.set_code(create_skip_range_code(closer_sequence))
 
 

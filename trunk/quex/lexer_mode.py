@@ -473,6 +473,7 @@ class Mode:
         for mode in self.__base_mode_sequence[:-1]:
             for name, option_descr in mode_option_info_db.items():
                 if option_descr.type != "list": continue
+                # Need to decouple by means of 'deepcopy'
                 self.options.setdefault(name, []).extend(mode.options[name])
 
 #-----------------------------------------------------------------------------------------
