@@ -78,6 +78,11 @@ def write_configuration_header(Modes, IndentationSupportF):
     token_descr = lexer_mode.token_type_definition
     namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
+    def namespace(NameSpaceList):
+        result = Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)
+        assert len(result) > 2, "Error while generating namespace reference."
+        return result[:-2]
+
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
@@ -95,11 +100,11 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
-             ["$$NAMESPACE_MAIN$$",             Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)[:-2]],
+             ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_STR$$",         namespace_main_str],
              ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN$$",            Setup.language_db["$namespace-ref"](token_descr.name_space)],
+             ["$$NAMESPACE_TOKEN$$",            namespace(token_descr.name_space)],
              ["$$NAMESPACE_TOKEN_STR$$",        namespace_token_str],
              ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN_CLOSE$$",      Setup.language_db["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],

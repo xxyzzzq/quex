@@ -3,6 +3,9 @@ token_type {
     distinct {
         text : std::string;
     }
+    take_text {
+        /* Some */
+    }
 }
 token { A }
 mode THE_A { a => QUEX_TKN_A; }

@@ -50,6 +50,9 @@ test1 = \
    destructor {
        this = is = a = destructor;
    }
+   take_text {
+       return true;
+   }
    copy {
        this = is = a = copy-code;
    }

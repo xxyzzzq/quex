@@ -103,7 +103,6 @@
 #define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3, X4);
 
 #define QUEX_TOKEN_POLICY_SET_ID(ID)     do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
-#define QUEX_TOKEN_POLICY_SET_TEXT(TEXT) do { __QUEX_CURRENT_TOKEN_ACCESS.text = TEXT; } while(0)
 
 /* Ensure that no token is sent after the token 'TERMINATION'. If files are included
  * the token queue is reset.                                                          */

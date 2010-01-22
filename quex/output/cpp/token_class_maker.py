@@ -39,6 +39,9 @@ def _do(Descr):
     else:
         copy_str = Descr.copy.get_code()
 
+    take_text_str = Descr.take_text.get_code()
+    if take_text_str == "": take_text_str = "return true;\n" 
+
     txt = blue_print(template_str,
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
@@ -46,7 +49,7 @@ def _do(Descr):
                       ["$$QUICK_SETTERS$$",    get_quick_setters(Descr)],
                       ["$$COPY$$",             copy_str],
                       ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
-                      ["$$FUNC_TAKE_TEXT$$",   Descr.take_text.get_code()],
+                      ["$$FUNC_TAKE_TEXT$$",   take_text_str],
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                       ["$$HEADER$$",           Descr.header.get_code()],
                       ["$$FOOTER$$",           Descr.footer.get_code()],
