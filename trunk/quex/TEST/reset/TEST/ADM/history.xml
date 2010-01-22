@@ -1,4 +1,4 @@
-<history date="Thu Jan 21 13:48:23 2010" element-n="129">
+<history date="Fri Jan 22 12:48:56 2010" element-n="130">
     <day year="2009" month="08" day="10">
         <history-init time="00:26:39"/>
         <crc-error time="00:28:59" application="simple-lexer" choice="1" database-crc="-1773350601" real-crc="759753114"/>
@@ -269,5 +269,8 @@
     </day>
     <day year="2010" month="01" day="21">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="12:48:23"/>
+    </day>
+    <day year="2010" month="01" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:48:56"/>
     </day>
 </history>

@@ -201,41 +201,25 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
                "Available: " + repr(self.__member_db.keys())
         return self.__member_db[MemberName][1]
 
-    def __member_can_accept_a_QUEX_TYPE_CHARACTER_string(self, TypeInfo):
-        """For some functionality inside the engine a 'set' function is required
-           which can receive a QUEX_TYPE_CHARACTER pointer. This function 
-           checks wether the given argument list represents such a function.
-        """
-        type_info = TypeInfo.get_pure_code()
-        type_info = type_info.strip()
-        type_info = type_info.replace(" ", "")
-        type_info = type_info.replace("\t", "")
-        type_info = type_info.replace("\n", "")
-        if type_info == "constQUEX_TYPE_CHARACTER*": return True
-        if type_info == "std::basic_string<QUEX_TYPE_CHARACTER>": return True
-        if     Setup.bytes_per_ucs_code_point == 1 \
-           and type_info in ["char*", "unsigned char*", "uint8_t*", "int8_t*", "std::string"]: return True
-        if     Setup.bytes_per_ucs_code_point == "wchar_t" \
-           and type_info in ["wchar_t*", "unsigned wchar_t*", "std::wstring"]: return True
-        return False
 
     def consistency_check(self):
-        # (*) If the 'accumulator' feature is active there *must* be a quick setter
-        #     that can take a QUEX_TYPE_CHARACTER*.
-        member_for_QUEX_TYPE_CHARACTER_P_present_f = False
-        for info in self.__member_db.values():
-            if self.__member_can_accept_a_QUEX_TYPE_CHARACTER_string(info[0]):
-                member_for_QUEX_TYPE_CHARACTER_P_present_f = True
+        # If the 'accumulator' feature is active there *must* be a 'take_text' section
 
-        if not Setup.token_class_stringless_check_f: return
+        if not Setup.token_class_take_text_check_f: return
 
-        if member_for_QUEX_TYPE_CHARACTER_P_present_f == False:
-            error_msg(_warning_msg, 
+        # Is 'take_text' section defined
+        if len(self.take_text.get_pure_code()) != 0: return
+
+        error_msg(_warning_msg, 
+                  self.file_name_of_token_type_definition,
+                  self.line_n_of_token_type_definition,
+                  DontExitF=True)
+
+        if Setup.string_accumulator_f == True:
+            error_msg(_warning_msg2, 
                       self.file_name_of_token_type_definition,
                       self.line_n_of_token_type_definition,
                       DontExitF=True)
-            if Setup.string_accumulator_f == True:
-                error_msg(_warning_msg2, DontExitF=True)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
 
@@ -571,45 +555,22 @@ def something_different(fh):
     return TokenTypeMember(member_name, type_name, array_element_n)
 
 _warning_msg = \
-"""The implemented token type does not have a member which can
-directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
-
-    content : const QUEX_TYPE_TOKEN*;
-
-or 
-
-    content : std::basic_string<QUEX_TYPE_TOKEN>;
-
-This means, that you might not be able to pass the 'Lexeme' 
-to a token constructor. To disable this warning set one of 
-the command line flag:
-
-    '--token-type-no-stringless-check' or '--ttnsc'.
-
-Note, that the stringless check is not perfect and is not
-aware of the conversions and constructors of all the member
-types. If you are sure that one of your members can receive
-the QUEX_TYPE_CHARACTER pointer through a conversion
-operator or a constructor, please, disable this warning 
-as mentioned above.
-
-In any case: If you can compile generated code dispite of
-this warning you can set the command line flags above. The
-fact that it compiles is prove enough that such a member
-exists.
+"""
+Section token_type does not contain a 'take_text' section. It would be
+necessary if the analyzer uses the string accumulator. To disable this warning
+set the command line flag: --token-type-no-take_test-check or --ttnttc.
 """
 
 _warning_msg2 = \
 """The 'Accumulator' feature is activated, which mandatorily
-requires such a member as mentioned above. Please, do one of
+requires the 'take_text' section to be defined. Please, do one of
 the following:
 
--- deactivate the stringless check as mentioned above, if
-   you are sure that the stringless check missed something.
+-- Set the command line option: --token-type-no-stringless-check or 
+   --ttnsc.
 
 -- deactivate the accumulator feature using command line options:
-   '--no-string-accumulator' or  '--nsacc'.
+   --no-string-accumulator or  --nsacc.
 
--- specify at least one member in the token class that can 
-   receive a QUEX_TYPE_CHARACTER pointer.
+-- consult the documentatoin and specify a 'take_text' section.
 """

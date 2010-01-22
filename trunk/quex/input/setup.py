@@ -26,7 +26,7 @@ SETUP_INFO = {
     "input_mode_files":               [["-i", "--mode-files"],                 LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class_name":               [["--token-class", "--tc"],              "Token"],
-    "token_class_stringless_check_f": [["--token-type-no-stringless-check",    "--ttnsc"], NEGATED_FLAG],
+    "token_class_take_text_check_f":  [["--token-type-no-take_text-check",    "--ttnttc"], NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
     "token_id_counter_offset":        [["--token-offset"],                   "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
@@ -70,6 +70,7 @@ SETUP_INFO = {
     "XX_input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
     "XX_input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
     "XX_token_class_name":               [["--token-class-name"],               ""],             # DEPRECATED
+    "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",    "--ttnsc"], NEGATED_FLAG], # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -128,7 +129,11 @@ DEPRECATED = {
        "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3"),
   "XX_token_class_name":
       ("Command line option '--token-class--name' has been renamed to '--token-class'\n"
-       "for uniformity.", "0.46.3")
+       "for uniformity.", "0.46.3"),
+  "XX_token_class_stringless_check_f": 
+      ("Command line options --token-type-no-stringless-check and --ttnsc are deprecated. Please,\n"
+       "use --token-type-no-take_text-check or --ttnttc", 
+       "0.48.1"), 
 }
  
 

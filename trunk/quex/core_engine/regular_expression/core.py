@@ -334,12 +334,6 @@ def snap_primary(stream, PatternDict):
     x = stream.read(1)
     if x == "": return __debug_exit(None, stream)
 
-    def eat_this(supposed_first_char, the_string):
-        if len(the_string) < 1 or the_string[0] != supposed_first_char:
-            raise RegularExpressionException("missing '%s'" % supposed_first_char + "\n" + \
-                                             "remaining string = '%s'" % the_string) 
-        return the_string[1:]    
-
     # -- 'primary' primary
     if   x == "\"": result = snap_character_string.do(stream)
     elif x == "[":  
@@ -351,7 +345,11 @@ def snap_primary(stream, PatternDict):
         __start_position = stream.tell()
         result = snap_expression(stream, PatternDict)
         if not check(stream, ")"): 
-            raise RegularExpressionException("missing closing ')' after expression. found '%s'" % stream.read())
+            stream.seek(__start_position)
+            remainder_txt = stream.readline().replace("\n", "").replace("\r", "")
+            raise RegularExpressionException("Missing closing ')' after expression; found '%s'.\n" % remainder_txt \
+                                             + "Note, that patterns end with the first non-quoted whitespace.\n" \
+                                             + "Also, closing brackets in quotes do not close a syntax block.")
 
         if result == None:
             __expression_length = stream.tell() - __start_position

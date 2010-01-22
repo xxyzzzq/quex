@@ -16,10 +16,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me, 
-                                 QUEX_TYPE_ANALYZER*       lexer)
+QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me) 
 {
-    me->the_lexer       = lexer;
     me->text.begin      = \
         QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
            QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE * sizeof(QUEX_TYPE_CHARACTER));
@@ -29,6 +27,15 @@ QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me,
     me->text.end        = me->text.begin;
     me->text.memory_end = me->text.begin + QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE;
 }
+
+QUEX_INLINE void
+QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me, 
+                                 QUEX_TYPE_ANALYZER*       lexer)
+{
+    me->the_lexer = lexer;
+    QUEX_NAME(Accumulator_init_memory)(me);
+}
+
 
 QUEX_INLINE void
 QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
@@ -151,11 +158,16 @@ QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
 
 #   define self (*me->the_lexer)
     QUEX_TOKEN_POLICY_SET_ID(TokenID);
-    QUEX_TOKEN_POLICY_SET_TEXT(me->text.begin);
+    if( QUEX_NAMESPACE_TOKEN::QUEX_NAME_TOKEN(_take_text)(me, me->the_lexer, me->text.begin, me->text.end) ) {
+        /* The called function does not need the memory chunk, we reuse it. */
+        QUEX_NAME(Accumulator_clear)(me);
+    } else {
+        /* The called function wants to use the memory, so we get some new. */
+        QUEX_NAME(Accumulator_init_memory)(me) 
+    }
     QUEX_TOKEN_POLICY_PREPARE_NEXT();            
 #   undef  self
 
-    QUEX_NAME(Accumulator_clear)(me);
 }
 
 QUEX_INLINE void  

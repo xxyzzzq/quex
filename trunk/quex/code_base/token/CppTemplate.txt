@@ -67,6 +67,10 @@ $$BODY$$
 
     private:
         friend void QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
+        friend bool QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*                           __this, 
+                                                QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
+                                                const QUEX_TYPE_CHARACTER* Begin, 
+                                                const QUEX_TYPE_CHARACTER* End);
 };
 
 inline
@@ -121,9 +125,10 @@ $$COPY$$
 }
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*           __this, 
-                            QUEX_TYPE_ANALYZER*        analyzer, 
-                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*                           __this, 
+                            QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
+                            const QUEX_TYPE_CHARACTER* Begin, 
+                            const QUEX_TYPE_CHARACTER* End)
 {
 #  define self  (*__this)
 $$FUNC_TAKE_TEXT$$

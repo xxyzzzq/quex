@@ -208,7 +208,7 @@ QUEX_NAME_TOKEN(_copy)(MeinToken* __this, const MeinToken* __That)
 #  define self  (*__this)
 #  define Other (*__That)
 
-#line 27 "a string"
+#line 30 "a string"
 
        this = is = a = copy-code;
    
@@ -228,6 +228,23 @@ QUEX_NAME_TOKEN(_copy)(MeinToken* __this, const MeinToken* __That)
    __quex_assert(__this->_column_n == __That->_column_n);
 #  endif
 #endif
+}
+
+QUEX_INLINE bool 
+QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*           __this, 
+                            QUEX_TYPE_ANALYZER*        analyzer, 
+                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+{
+#  define self  (*__this)
+
+#line 27 "a string"
+
+       return true;
+   
+
+/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
+
+#  undef self
 }
 
 
