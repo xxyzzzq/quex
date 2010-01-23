@@ -79,7 +79,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
     def namespace(NameSpaceList):
-        result = Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)
+        result = Setup.language_db["$namespace-ref"](NameSpaceList)
         assert len(result) > 2, "Error while generating namespace reference."
         return result[:-2]
 

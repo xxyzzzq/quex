@@ -37,7 +37,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
 QUEX_NAMESPACE_TOKEN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN
-    class QUEX_TYPE_ANALYZER;
+    class QUEX_TYPE0_ANALYZER;
 QUEX_NAMESPACE_MAIN_CLOSE
 
 /* START: User defined header content _________________________________________
@@ -80,37 +80,37 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
-class QUEX_TYPE_ANALYZER {
+class QUEX_TYPE0_ANALYZER {
 public:
 #   include <quex/code_base/analyzer/Engine_body>
 
-    /* DISABLED */ QUEX_TYPE_ANALYZER(const QUEX_TYPE_ANALYZER&);
+    /* DISABLED */ QUEX_TYPE0_ANALYZER(const QUEX_TYPE0_ANALYZER&);
 public:
-    QUEX_TYPE_ANALYZER(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-                       const char*          CharacterEncodingName = 0x0,
-                       bool                 ByteOrderReversionF   = false);
-    QUEX_TYPE_ANALYZER(const std::string&   Filename,       
-                       const char*          CharacterEncodingName = 0x0,
-                       bool                 ByteOrderReversionF   = false);
-    QUEX_TYPE_ANALYZER(std::istream*        p_input_stream, 
-                       const char*          CharacterEncodingName = 0x0,
-                       bool                 ByteOrderReversionF   = false);
+    QUEX_TYPE0_ANALYZER(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
+                        const char*          CharacterEncodingName = 0x0,
+                        bool                 ByteOrderReversionF   = false);
+    QUEX_TYPE0_ANALYZER(const std::string&   Filename,       
+                        const char*          CharacterEncodingName = 0x0,
+                        bool                 ByteOrderReversionF   = false);
+    QUEX_TYPE0_ANALYZER(std::istream*        p_input_stream, 
+                        const char*          CharacterEncodingName = 0x0,
+                        bool                 ByteOrderReversionF   = false);
 #   if defined(__QUEX_OPTION_WCHAR_T)
-    QUEX_TYPE_ANALYZER(std::wistream*       p_input_stream,
-                       const char*          CharacterEncodingName = 0x0,
-                       bool                 ByteOrderReversionF   = false);
+    QUEX_TYPE0_ANALYZER(std::wistream*       p_input_stream,
+                        const char*          CharacterEncodingName = 0x0,
+                        bool                 ByteOrderReversionF   = false);
 #   endif
-    QUEX_TYPE_ANALYZER(std::FILE*           input_fh,       
-                       const char*          CharacterEncodingName = 0x0,
-                       bool                 ByteOrderReversionF   = false);
+    QUEX_TYPE0_ANALYZER(std::FILE*           input_fh,       
+                        const char*          CharacterEncodingName = 0x0,
+                        bool                 ByteOrderReversionF   = false);
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
-    QUEX_TYPE_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-                       const char*                              CharacterEncodingName = 0x0,
-                       bool                                     ByteOrderReversionF   = false);
+        QUEX_TYPE0_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+                            const char*                              CharacterEncodingName = 0x0,
+                            bool                                     ByteOrderReversionF   = false);
 #   endif
 
-    virtual ~QUEX_TYPE_ANALYZER();
+    virtual ~QUEX_TYPE0_ANALYZER();
 
     /* Direct Access to Memory */
     void*                 buffer_fill_region_append(void* ContentBegin, 
