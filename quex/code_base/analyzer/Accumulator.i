@@ -158,12 +158,14 @@ QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
 
 #   define self (*me->the_lexer)
     QUEX_TOKEN_POLICY_SET_ID(TokenID);
-    if( QUEX_NAMESPACE_TOKEN::QUEX_NAME_TOKEN(_take_text)(me, me->the_lexer, me->text.begin, me->text.end) ) {
+    if( QUEX_NAMESPACE_TOKEN::QUEX_NAME_TOKEN(_take_text)(__QUEX_CURRENT_TOKEN_P, 
+                                                          me->the_lexer, 
+                                                          me->text.begin, me->text.end) ) {
         /* The called function does not need the memory chunk, we reuse it. */
         QUEX_NAME(Accumulator_clear)(me);
     } else {
         /* The called function wants to use the memory, so we get some new. */
-        QUEX_NAME(Accumulator_init_memory)(me) 
+        QUEX_NAME(Accumulator_init_memory)(me);
     }
     QUEX_TOKEN_POLICY_PREPARE_NEXT();            
 #   undef  self

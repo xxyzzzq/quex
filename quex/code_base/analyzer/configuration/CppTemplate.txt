@@ -361,13 +361,17 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
 #ifdef __QUEX_OPTION_PLAIN_C
 #   define QUEX_TYPE_ANALYZER                   struct $$LEXER_CLASS_NAME$$_tag
+#   define QUEX_TYPE0_ANALYZER                  struct $$LEXER_CLASS_NAME$$_tag
 #   define QUEX_TYPE_DERIVED_ANALYZER           struct $$LEXER_CLASS_NAME$$_tag
 #   define QUEX_TYPE_TOKEN                      $$TOKEN_CLASS$$
 #   define QUEX_TYPE_TOKEN_TAG                  QUEX_TYPE_TOKEN ## _tag
+#   define QUEX_TYPE0_TOKEN                     $$TOKEN_CLASS$$
 #else
-#   define QUEX_TYPE_ANALYZER                   $$LEXER_CLASS_NAME$$
+#   define QUEX_TYPE_ANALYZER                   $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
+#   define QUEX_TYPE0_ANALYZER                  $$LEXER_CLASS_NAME$$
 #   define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
 #   define QUEX_TYPE_TOKEN                      $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
+#   define QUEX_TYPE0_TOKEN                     $$TOKEN_CLASS$$
 #endif
 
 #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE    $$TOKEN_CLASS$$
@@ -405,8 +409,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   ifdef __QUEX_OPTION_PLAIN_C
     /* struct */ QUEX_TYPE_ANALYZER;
 #   else
-    class  QUEX_TYPE_ANALYZER;
-    class  QUEX_TYPE_DERIVED_ANALYZER;
+    class  $$LEXER_DERIVED_CLASS_NAME$$;
+    class  $$LEXER_CLASS_NAME$$;
 #   endif
     typedef void (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
 QUEX_NAMESPACE_MAIN_CLOSE

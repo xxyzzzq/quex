@@ -112,42 +112,42 @@ QUEX_FUNC(reset_plain)(QUEX_TYPE_ANALYZER*  me,
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE_ANALYZER)(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                size_t               BufferMemorySize,
-                                const char*          CharacterEncodingName /* = 0x0   */,
-                                bool                 ByteOrderReversionF   /* = false */)
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                 size_t               BufferMemorySize,
+                                 const char*          CharacterEncodingName /* = 0x0   */,
+                                 bool                 ByteOrderReversionF   /* = false */)
 { QUEX_FUNC(construct_memory)(this, BufferMemoryBegin, BufferMemorySize, CharacterEncodingName, ByteOrderReversionF); }
 
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE_ANALYZER)(const std::string&  Filename, 
-                                const char*         CharacterEncodingName /* = 0x0   */,
-                                bool                ByteOrderReversionF   /* = false */)
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(const std::string&  Filename, 
+                                 const char*         CharacterEncodingName /* = 0x0   */,
+                                 bool                ByteOrderReversionF   /* = false */)
 { QUEX_FUNC(construct_file_name)(this, Filename.c_str(), CharacterEncodingName, ByteOrderReversionF); }
 
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::FILE*   fh, 
-                                const char*  CharacterEncodingName /* = 0x0   */,
-                                bool         ByteOrderReversionF   /* = false */)
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::FILE*   fh, 
+                                 const char*  CharacterEncodingName /* = 0x0   */,
+                                 bool         ByteOrderReversionF   /* = false */)
 { QUEX_FUNC(construct_FILE)(this, fh, CharacterEncodingName, ByteOrderReversionF); }
 
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::istream*   p_input_stream, 
-                                const char*     CharacterEncodingName /* = 0x0   */,
-                                bool            ByteOrderReversionF   /* = false */)
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::istream*   p_input_stream, 
+                                 const char*     CharacterEncodingName /* = 0x0   */,
+                                 bool            ByteOrderReversionF   /* = false */)
 { QUEX_FUNC(construct_istream)(this, p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
 
 #if defined(__QUEX_OPTION_WCHAR_T)
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE_ANALYZER)(std::wistream*  p_input_stream, 
-                                const char*     CharacterEncodingName /* = 0x0   */,
-                                bool            ByteOrderReversionF   /* = false */)
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::wistream*  p_input_stream, 
+                                 const char*     CharacterEncodingName /* = 0x0   */,
+                                 bool            ByteOrderReversionF   /* = false */)
 { QUEX_FUNC(construct_wistream)(this, p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
 #endif
 
 #if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_OPTION_PLAIN_C)
 /* StrangeStreams are not for C-language stuff */
 template<class UnderlyingStreamT> QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
                                 const char*      CharacterEncodingName /* = 0x0   */,
                                 bool             ByteOrderReversionF   /* = false */)
 {
@@ -159,7 +159,7 @@ QUEX_MEMBER(QUEX_TYPE_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_input
 #endif
 
 QUEX_INLINE
-QUEX_MEMBER(~QUEX_TYPE_ANALYZER)() 
+QUEX_MEMBER(~QUEX_TYPE0_ANALYZER)() 
 { QUEX_FUNC(destruct)(this); }
 
 template<class InputHandleT> void

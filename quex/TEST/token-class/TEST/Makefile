@@ -17,12 +17,14 @@ hwut-info:
 	@echo $(TESTS) 
 
 simple-queue.exe: lexer.cpp $(QUEX_CORE) token.qx send-via-name.qx
-	quex -i token.qx send-via-name.qx -o Simple --token-policy queue
+	quex -i token.qx send-via-name.qx -o Simple --token-policy queue \
+		 --ttnttc
 	$(CC) -DTEST_simple \
 		  -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 simple.exe:       lexer.cpp $(QUEX_CORE) token.qx send-via-overload.qx
-	quex -i token.qx send-via-overload.qx -o Simple --token-policy users_token
+	quex -i token.qx send-via-overload.qx -o Simple --token-policy users_token \
+		 --token-type-no-take_text-check
 	$(CC) -DTEST_simple_queue \
 		  -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 

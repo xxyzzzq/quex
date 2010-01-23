@@ -18,6 +18,10 @@ class $$TOKEN_CLASS$$;
 const char*  QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
 inline void  QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
+inline bool  QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*            __this, 
+                                         QUEX_TYPE_ANALYZER*         analyzer, 
+                                         const QUEX_TYPE_CHARACTER*  Begin, 
+                                         const QUEX_TYPE_CHARACTER*  End);
 
 class $$TOKEN_CLASS$$ {
 public:
@@ -67,10 +71,10 @@ $$BODY$$
 
     private:
         friend void QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
-        friend bool QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*                           __this, 
-                                                QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
-                                                const QUEX_TYPE_CHARACTER* Begin, 
-                                                const QUEX_TYPE_CHARACTER* End);
+        friend bool QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*            __this, 
+                                                QUEX_TYPE_ANALYZER*         analyzer, 
+                                                const QUEX_TYPE_CHARACTER*  Begin, 
+                                                const QUEX_TYPE_CHARACTER*  End);
 };
 
 inline
@@ -125,8 +129,8 @@ $$COPY$$
 }
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*                           __this, 
-                            QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
+QUEX_NAME_TOKEN(_take_text)($$TOKEN_CLASS$$*           __this, 
+                            QUEX_TYPE_ANALYZER*        analyzer, 
                             const QUEX_TYPE_CHARACTER* Begin, 
                             const QUEX_TYPE_CHARACTER* End)
 {

@@ -9,16 +9,19 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-typedef struct { } Token;
+//#define QUEX_TOKEN_POLICY_SET_ID()       /* empty */
+//#define QUEX_TOKEN_POLICY_PREPARE_NEXT() /* empty */
 
-#define self_send1(TokenID, Msg) \
-        self.send(TokenID, Msg)
+typedef struct { int _id; } Token;
 
-struct TestAnalyzer {
-    void  send(QUEX_TYPE_TOKEN_ID TokenID, QUEX_TYPE_CHARACTER* Msg) {
-        printf("Lexical Analyzer Receives:\n");
-        printf("   '%s'\n", Msg);
-    }
+class TestAnalyzer {
+public:
+    struct { 
+        QUEX_TYPE_TOKEN   begin[1];
+        QUEX_TYPE_TOKEN*  write_iterator;
+        QUEX_TYPE_TOKEN*  read_iterator;
+        QUEX_TYPE_TOKEN*  memory_end;
+    } _token_queue;
     struct {
         struct {
             size_t  _column_number_at_begin;
@@ -27,11 +30,23 @@ struct TestAnalyzer {
     } counter;
 };
 
+bool 
+QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*                           __this, 
+                            QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
+                            const QUEX_TYPE_CHARACTER* Begin, 
+                            const QUEX_TYPE_CHARACTER* End)
+{
+    printf("Lexical Analyzer Receives:\n");
+    printf("   '%s'\n", Begin);
+    return true;
+}
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 // Prevent the inclusion of 'token-sending.i' since we do it on our own.
-#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
-#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
+//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
+//#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/analyzer/Accumulator.i>
 
@@ -57,6 +72,8 @@ main(int argc, char** argv)
     TestAnalyzer           analyzer;
     QUEX_NAME(Accumulator) accumulator;
 
+    analyzer._token_queue.write_iterator = analyzer._token_queue.begin;
+    analyzer._token_queue.read_iterator = analyzer._token_queue.begin;
     QUEX_NAME(Accumulator_construct)(&accumulator, &analyzer);
 
     if     ( strcmp(argv[1], "String") == 0 ) {
