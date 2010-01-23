@@ -415,6 +415,59 @@ token {
 	SYMBOLIC
 }
 
+token_type {
+	name = quex::Token;
+
+	distinct {
+		integerValue: float;
+		stringValue : UnicodeString;
+		unicodeValue: UChar32;
+		pointieType : PointieValueID;
+		pointieValue: double;
+	}
+
+	constructor {
+		self.integerValue = 0x00;
+		self.stringValue  = UnicodeString();
+		self.unicodeValue = 0x00;
+		self.pointieType  = POINTIE_VALUE_COMPUTED;
+		self.pointieValue = 0.0;
+	}
+	destructor {
+		/* ... */
+	}
+	inheritable;
+
+	body {
+		/* ... */
+	}
+	copy {
+		// Copy the core element: Token ID...
+		self._id = Other._id;
+
+/*
+		// Plain copy of the union content...
+		self.content = Other.content;
+*/
+
+#ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#	ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+		self._line_n = Other._line_n;
+#	endif
+
+#	ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+		self._column_n = Other._column_n;
+#	endif
+#endif
+
+		self.integerValue = Other.integerValue;
+		self.stringValue  = Other.stringValue;
+		self.unicodeValue = Other.unicodeValue;
+		self.pointieType  = Other.pointieType;
+		self.pointieValue = Other.pointieValue;
+	}
+}
+
 mode DEFAULT {
 	"#" {
 		self.textAccumulator = UnicodeString();
@@ -755,55 +808,3 @@ mode STRING {
 	on_failure => QUEX_UUID_FCK;
 }
 
-token_type {
-	name = quex::Token;
-
-	distinct {
-		integerValue: float;
-		stringValue : UnicodeString;
-		unicodeValue: UChar32;
-		pointieType : PointieValueID;
-		pointieValue: double;
-	}
-
-	constructor {
-		self.integerValue = 0x00;
-		self.stringValue  = UnicodeString();
-		self.unicodeValue = 0x00;
-		self.pointieType  = POINTIE_VALUE_COMPUTED;
-		self.pointieValue = 0.0;
-	}
-	destructor {
-		/* ... */
-	}
-	inheritable;
-
-	body {
-		/* ... */
-	}
-	copy {
-		// Copy the core element: Token ID...
-		self._id = Other._id;
-
-/*
-		// Plain copy of the union content...
-		self.content = Other.content;
-*/
-
-#ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#	ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-		self._line_n = Other._line_n;
-#	endif
-
-#	ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-		self._column_n = Other._column_n;
-#	endif
-#endif
-
-		self.integerValue = Other.integerValue;
-		self.stringValue  = Other.stringValue;
-		self.unicodeValue = Other.unicodeValue;
-		self.pointieType  = Other.pointieType;
-		self.pointieValue = Other.pointieValue;
-	}
-}

@@ -4,4 +4,4 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
-quex -i token_type-member-name.qx --token-type-no-stringless-check
+quex -i token_type-member-name.qx --token-type-no-take_text-check

@@ -8,7 +8,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i $1.qx -o Simple --token-type-no-stringless-check
+quex -i $1.qx -o Simple --token-type-no-take_text-check
 cat Simple-token | awk '/set\_/ { print; } /get\_/ { print; } /union/ { print; } /content/ { print; }'
 
 # cleansening
