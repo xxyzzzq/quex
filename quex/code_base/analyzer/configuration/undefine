@@ -132,6 +132,9 @@
 #ifdef    QUEX_TYPE_ANALYZER
 #   undef QUEX_TYPE_ANALYZER
 #endif
+#ifdef    QUEX_TYPE0_ANALYZER
+#   undef QUEX_TYPE0_ANALYZER
+#endif
 #ifdef    QUEX_TYPE_COUNTER
 #   undef QUEX_TYPE_COUNTER
 #endif
@@ -143,6 +146,9 @@
 #endif
 #ifdef    QUEX_TYPE_TOKEN
 #   undef QUEX_TYPE_TOKEN                    
+#endif
+#ifdef    QUEX_TYPE0_TOKEN
+#   undef QUEX_TYPE0_TOKEN                    
 #endif
 #ifdef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN 
 #   undef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN 
@@ -206,6 +212,9 @@
 #endif
 #ifdef    QUEX_TYPE_TOKEN_COLUMN_N 
 #   undef QUEX_TYPE_TOKEN_COLUMN_N 
+#endif
+#ifdef    QUEX_NAMESPACE_TOKEN 
+#   undef QUEX_NAMESPACE_TOKEN 
 #endif
 #ifdef    QUEX_NAMESPACE_TOKEN_OPEN 
 #   undef QUEX_NAMESPACE_TOKEN_OPEN 

@@ -22,6 +22,10 @@ class MeinToken;
 const char*  QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
 inline void  QUEX_NAME_TOKEN(_copy)(MeinToken* me, const MeinToken* That);
+inline bool  QUEX_NAME_TOKEN(_take_text)(MeinToken*            __this, 
+                                         QUEX_TYPE_ANALYZER*         analyzer, 
+                                         const QUEX_TYPE_CHARACTER*  Begin, 
+                                         const QUEX_TYPE_CHARACTER*  End);
 
 class MeinToken {
 public:
@@ -149,6 +153,10 @@ public:
 
     private:
         friend void QUEX_NAME_TOKEN(_copy)(MeinToken* me, const MeinToken* That);
+        friend bool QUEX_NAME_TOKEN(_take_text)(MeinToken*            __this, 
+                                                QUEX_TYPE_ANALYZER*         analyzer, 
+                                                const QUEX_TYPE_CHARACTER*  Begin, 
+                                                const QUEX_TYPE_CHARACTER*  End);
 };
 
 inline
@@ -231,9 +239,10 @@ QUEX_NAME_TOKEN(_copy)(MeinToken* __this, const MeinToken* __That)
 }
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*           __this, 
+QUEX_NAME_TOKEN(_take_text)(MeinToken*           __this, 
                             QUEX_TYPE_ANALYZER*        analyzer, 
-                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+                            const QUEX_TYPE_CHARACTER* Begin, 
+                            const QUEX_TYPE_CHARACTER* End)
 {
 #  define self  (*__this)
 

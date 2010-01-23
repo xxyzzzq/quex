@@ -86,7 +86,12 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
     assert True == False, "this code section should have never been reached!"
 
 
+#
+
+default_token_type_definition_triggered_by_mode_definition_f = False
+
 def parse_section(fh):
+    global default_token_type_definition_triggered_by_mode_definition_f
 
     # NOTE: End of File is supposed to be reached when trying to read a new
     #       section. Thus, the end-of-file catcher does not encompass the beginning.
@@ -133,18 +138,19 @@ def parse_section(fh):
             return
 
         elif word == "token_type":       
-            if len(lexer_mode.mode_db) != 0:
-                error_msg("Section 'token_type' must appear before first mode definition.", fh)
 
-            elif lexer_mode.token_type_definition != None:
+            if lexer_mode.token_type_definition == None:
+                lexer_mode.token_type_definition = token_type_definition.parse(fh)
+                return
+
+            # Error case:
+            if default_token_type_definition_triggered_by_mode_definition_f:
+                error_msg("Section 'token_type' must appear before first mode definition.", fh)
+            else:
                 error_msg("Section 'token_type' has been defined twice.", fh, DontExitF=True)
                 error_msg("Previously defined here.",
                           lexer_mode.token_type_definition.file_name_of_token_type_definition,
                           lexer_mode.token_type_definition.line_n_of_token_type_definition)
-
-            else:
-                lexer_mode.token_type_definition = token_type_definition.parse(fh)
-
             return
 
         elif word == "mode":
@@ -156,6 +162,7 @@ def parse_section(fh):
                                           + Setup.language_db["$token-default-file"])
                 parse_section(sub_fh)
                 sub_fh.close()
+                default_token_type_definition_triggered_by_mode_definition_f = True
 
             mode_definition.parse(fh)
             return
