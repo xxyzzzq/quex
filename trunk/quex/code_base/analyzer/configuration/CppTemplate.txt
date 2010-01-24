@@ -363,8 +363,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TYPE_ANALYZER                   struct $$LEXER_CLASS_NAME$$_tag
 #   define QUEX_TYPE0_ANALYZER                  struct $$LEXER_CLASS_NAME$$_tag
 #   define QUEX_TYPE_DERIVED_ANALYZER           struct $$LEXER_CLASS_NAME$$_tag
-#   define QUEX_TYPE_TOKEN                      $$TOKEN_CLASS$$
-#   define QUEX_TYPE_TOKEN_TAG                  QUEX_TYPE_TOKEN ## _tag
+#   define QUEX_TYPE_TOKEN                      struct $$TOKEN_CLASS$$_tag
 #   define QUEX_TYPE0_TOKEN                     $$TOKEN_CLASS$$
 #else
 #   define QUEX_TYPE_ANALYZER                   $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$

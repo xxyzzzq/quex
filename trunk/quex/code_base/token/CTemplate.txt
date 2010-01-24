@@ -9,7 +9,7 @@
 
 $$HEADER$$
  
-typedef struct QUEX_TYPE_TOKEN_TAG {
+typedef struct $$TOKEN_CLASS$$_tag {
     QUEX_TYPE_TOKEN_ID    _id;
 $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
@@ -22,7 +22,7 @@ $$UNION_MEMBERS$$
 #       endif
 #   endif
 $$BODY$$
-} QUEX_TYPE_TOKEN;
+} $$TOKEN_CLASS$$;
 
 QUEX_INLINE void QUEX_NAME_TOKEN(_construct)(QUEX_TYPE_TOKEN*);
 QUEX_INLINE void QUEX_NAME_TOKEN(_copy_construct)(QUEX_TYPE_TOKEN*, 

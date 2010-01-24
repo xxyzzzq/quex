@@ -336,13 +336,42 @@ reference to the token object itself.
       points to the first character *after* the string to be received.
 
    The ``take_text`` section receives the raw memory chunk and is free to do
-   what it wants with it. However, it must return a boolean value[#f2]_.  If
-   ``true`` is returned the token took over the ownership over the memory chunk
-   and claims responsibility to delete it. This is the case if the token
-   maintains a reference to the text and does not want it to be deleted.  If
-   ``false`` is returned the caller shall remain responsible. This can be
-   used if the token does not need the text, or has copied it in a 'private'
-   copy.
+   what it wants with it. However, it must return a boolean value[#f2]_.  
+   
+   .. describe:: ``true`` 
+   
+      If ``true`` is returned the token took over the ownership over the memory
+      chunk and claims responsibility to delete it. This is the case if the
+      token maintains a reference to the text and does not want it to be
+      deleted.  
+   
+   .. describe:: ``false`` 
+   
+      If ``false`` is returned the caller shall remain responsible. This can be
+      used if the token does not need the text, or has copied it in a 'private'
+      copy. 
+      
+      
+   If the token takes over the responsibility for the memory chunk it must be
+   freed in a way that correponds the memory management of the string
+   accumulator. The safe way to accomplish this is by adding something like 
+
+   .. code-block:: cpp
+
+      constructor {
+           self.text = 0x0;
+      }
+
+      destructor {
+           if( self.text ) {
+                QUEX_NAME(MemoryManager_AccumulatorText_free)((void*)self.text);
+           }
+      }
+
+      take_text {
+          self.text = Begin;
+          return true;
+      }
 
 
 Additionally, content may be added to the class' body using the following
