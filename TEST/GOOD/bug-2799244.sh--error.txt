@@ -1,71 +1,26 @@
 (*) Full Error
 
-error.qx:2:warning: The implemented token type does not have a member which can
-error.qx:2:warning: directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
 error.qx:2:warning: 
-error.qx:2:warning:     content : const QUEX_TYPE_TOKEN*;
+error.qx:2:warning: Section token_type does not contain a 'take_text' section. It would be
+error.qx:2:warning: necessary if the analyzer uses the string accumulator. To disable this warning
+error.qx:2:warning: set the command line flag: --token-type-no-take_test-check or --ttnttc.
 error.qx:2:warning: 
-error.qx:2:warning: or 
+error.qx:2:warning: The 'Accumulator' feature is activated, which mandatorily
+error.qx:2:warning: requires the 'take_text' section to be defined. Please, do one of
+error.qx:2:warning: the following:
 error.qx:2:warning: 
-error.qx:2:warning:     content : std::basic_string<QUEX_TYPE_TOKEN>;
+error.qx:2:warning: -- Set the command line option: --token-type-no-stringless-check or 
+error.qx:2:warning:    --ttnsc.
 error.qx:2:warning: 
-error.qx:2:warning: This means, that you might not be able to pass the 'Lexeme' 
-error.qx:2:warning: to a token constructor. To disable this warning set one of 
-error.qx:2:warning: the command line flag:
+error.qx:2:warning: -- deactivate the accumulator feature using command line options:
+error.qx:2:warning:    --no-string-accumulator or  --nsacc.
 error.qx:2:warning: 
-error.qx:2:warning:     '--token-type-no-stringless-check' or '--ttnsc'.
+error.qx:2:warning: -- consult the documentatoin and specify a 'take_text' section.
 error.qx:2:warning: 
-error.qx:2:warning: Note, that the stringless check is not perfect and is not
-error.qx:2:warning: aware of the conversions and constructors of all the member
-error.qx:2:warning: types. If you are sure that one of your members can receive
-error.qx:2:warning: the QUEX_TYPE_CHARACTER pointer through a conversion
-error.qx:2:warning: operator or a constructor, please, disable this warning 
-error.qx:2:warning: as mentioned above.
-error.qx:2:warning: 
-error.qx:2:warning: In any case: If you can compile generated code dispite of
-error.qx:2:warning: this warning you can set the command line flags above. The
-error.qx:2:warning: fact that it compiles is prove enough that such a member
-error.qx:2:warning: exists.
-error.qx:2:warning: 
-command line: The 'Accumulator' feature is activated, which mandatorily
-command line: requires such a member as mentioned above. Please, do one of
-command line: the following:
-command line: 
-command line: -- deactivate the stringless check as mentioned above, if
-command line:    you are sure that the stringless check missed something.
-command line: 
-command line: -- deactivate the accumulator feature using command line options:
-command line:    '--no-string-accumulator' or  '--nsacc'.
-command line: 
-command line: -- specify at least one member in the token class that can 
-command line:    receive a QUEX_TYPE_CHARACTER pointer.
-command line: 
 (*) No String Accumulator
 
-error.qx:2:warning: The implemented token type does not have a member which can
-error.qx:2:warning: directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
 error.qx:2:warning: 
-error.qx:2:warning:     content : const QUEX_TYPE_TOKEN*;
-error.qx:2:warning: 
-error.qx:2:warning: or 
-error.qx:2:warning: 
-error.qx:2:warning:     content : std::basic_string<QUEX_TYPE_TOKEN>;
-error.qx:2:warning: 
-error.qx:2:warning: This means, that you might not be able to pass the 'Lexeme' 
-error.qx:2:warning: to a token constructor. To disable this warning set one of 
-error.qx:2:warning: the command line flag:
-error.qx:2:warning: 
-error.qx:2:warning:     '--token-type-no-stringless-check' or '--ttnsc'.
-error.qx:2:warning: 
-error.qx:2:warning: Note, that the stringless check is not perfect and is not
-error.qx:2:warning: aware of the conversions and constructors of all the member
-error.qx:2:warning: types. If you are sure that one of your members can receive
-error.qx:2:warning: the QUEX_TYPE_CHARACTER pointer through a conversion
-error.qx:2:warning: operator or a constructor, please, disable this warning 
-error.qx:2:warning: as mentioned above.
-error.qx:2:warning: 
-error.qx:2:warning: In any case: If you can compile generated code dispite of
-error.qx:2:warning: this warning you can set the command line flags above. The
-error.qx:2:warning: fact that it compiles is prove enough that such a member
-error.qx:2:warning: exists.
+error.qx:2:warning: Section token_type does not contain a 'take_text' section. It would be
+error.qx:2:warning: necessary if the analyzer uses the string accumulator. To disable this warning
+error.qx:2:warning: set the command line flag: --token-type-no-take_test-check or --ttnttc.
 error.qx:2:warning: 
