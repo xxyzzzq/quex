@@ -121,12 +121,6 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     local_variable_list = []
     signature = __function_signature
 
-    if not StandAloneEngineF: 
-        L = max(map(lambda name: len(name), ModeNameList))
-        for name in ModeNameList:
-            local_variable_list.append(["QUEX_NAMESPACE_MAIN::QUEX_NAME(Mode)&", name + " " * (L- len(name)), 
-                                        "QUEX_NAME(%s)" % name]) 
-
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
     txt += signature
     txt  = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
@@ -146,6 +140,11 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     # -- pre-condition fulfillment flags                
     for pre_context_sm_id in PreConditionIDList:
         local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
+
+    if not StandAloneEngineF: 
+        L = max(map(lambda name: len(name), ModeNameList))
+        for name in ModeNameList:
+            txt += "#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name) 
 
     txt += __local_variable_definitions(local_variable_list)
     txt += comment_on_post_context_position_init_str
@@ -175,6 +174,11 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
 
     txt += "    }\n"
+
+    if not StandAloneEngineF: 
+        L = max(map(lambda name: len(name), ModeNameList))
+        for name in ModeNameList:
+            txt += "#   undef %s\n" % name 
 
     txt += "}\n"
 

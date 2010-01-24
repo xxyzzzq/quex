@@ -19,10 +19,10 @@ def do(Modes):
     for mode_name in Modes:
         mode_objects_txt += "/* Global */QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode_name
 
-    txt += Setup.language_db["$namespace-open"](Setup.analyzer_name_space)
+    txt += "QUEX_NAMESPACE_MAIN_OPEN\n"
     txt += mode_objects_txt
     txt += mode_class_member_functions_txt
-    txt += Setup.language_db["$namespace-close"](Setup.analyzer_name_space)
+    txt += "QUEX_NAMESPACE_MAIN_CLOSE\n"
 
     txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
                            ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])

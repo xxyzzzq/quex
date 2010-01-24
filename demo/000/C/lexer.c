@@ -16,7 +16,7 @@ main(int argc, char** argv)
     token_n = 0;
     do {
         /* Get next token from the token stream   */
-        QUEX_FUNC(receive)(&qlex, &token);
+        QUEX_FUNC(receive_p)(&qlex, &token);
         /* Print out token information            */
         ++token_n;
         /* Check against 'termination'            */
