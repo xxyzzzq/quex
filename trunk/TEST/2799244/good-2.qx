@@ -4,6 +4,9 @@ name = Token;
 distinct {
 fred : std::basic_string<QUEX_TYPE_CHARACTER>;
 }
+take_text {
+    return Token();
+}
 }
 token {
 A

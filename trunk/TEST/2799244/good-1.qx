@@ -4,6 +4,9 @@ name = Token;
 distinct {
 fred : const QUEX_TYPE_CHARACTER*;
 }
+take_text {
+    return true;
+}
 }
 token {
 A

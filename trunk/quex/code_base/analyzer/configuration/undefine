@@ -147,6 +147,9 @@
 #ifdef    QUEX_TYPE_TOKEN
 #   undef QUEX_TYPE_TOKEN                    
 #endif
+#ifdef    QUEX_TYPE_TOKEN_TAG
+#   undef QUEX_TYPE_TOKEN_TAG                    
+#endif
 #ifdef    QUEX_TYPE0_TOKEN
 #   undef QUEX_TYPE0_TOKEN                    
 #endif

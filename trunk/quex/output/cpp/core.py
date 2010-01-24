@@ -81,7 +81,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     def namespace(NameSpaceList):
         result = Setup.language_db["$namespace-ref"](NameSpaceList)
 
-        if result == "::": return result
+        if result == "::": return ""
 
         assert len(result) > 2, \
                "Error while generating namespace reference '%s'" % result
