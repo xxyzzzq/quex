@@ -1,0 +1,48 @@
+token_type {
+   header {
+       #include <stdio.h>
+       #include <string.h>
+
+       #include <quex/code_base/definitions>
+       #include <quex/code_base/asserts>
+       #include <quex/code_base/unicode>
+       #include <quex/code_base/compatibility/inttypes.h>
+   }
+   standard {
+        id            : uint32_t;
+        line_number   : size_t;
+        column_number : size_t;
+   }
+   distinct {
+       text   :  const QUEX_TYPE_CHARACTER*;
+       number :  int;
+   }
+
+   inheritable;
+
+   copy {
+        self._id    = Other._id;
+        self.text   = Other.text;
+        self.number = Other.number;
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+            self._line_n   = Other._line_n;
+    #       endif
+    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            self._column_n = Other._column_n;
+    #       endif
+    #   endif
+   }
+
+   body {
+
+       /*
+        */
+   }
+
+   footer {
+       /*
+        */
+   }
+}
+
