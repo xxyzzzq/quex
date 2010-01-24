@@ -41,10 +41,12 @@ QUEX_NAMESPACE_TOKEN_CLOSE
  *        might rely on contents of the header.                                */
 $$USER_DEFINED_HEADER$$
 /* END: _______________________________________________________________________*/
+
+#include <quex/code_base/analyzer/headers>
+
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
-#include <quex/code_base/analyzer/headers>
 
 QUEX_NAMESPACE_MAIN_OPEN 
 

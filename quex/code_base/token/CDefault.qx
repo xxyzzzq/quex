@@ -20,6 +20,21 @@ token_type {
 
    inheritable;
 
+   constructor {
+       self.text = 0x0;
+   }
+
+   destructor {
+       if( self.text != 0x0 ) {
+           QUEX_NAME(MemoryManager_AccumulatorText_free)((void*)self.text);
+       }
+   }
+
+   take_text {
+       self.text = Begin;
+       return true;
+   }
+
    copy {
         self._id    = Other._id;
         self.text   = Other.text;

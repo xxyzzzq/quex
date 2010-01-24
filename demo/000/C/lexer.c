@@ -3,7 +3,7 @@
 int 
 main(int argc, char** argv) 
 {        
-    Token        Token;
+    Token        token;
     tiny_lexer   qlex;
     int          token_n = 0;
 
@@ -16,11 +16,11 @@ main(int argc, char** argv)
     token_n = 0;
     do {
         /* Get next token from the token stream   */
-        QUEX_FUNC(receive)(&qlex, &Token);
+        QUEX_FUNC(receive)(&qlex, &token);
         /* Print out token information            */
         ++token_n;
         /* Check against 'termination'            */
-    } while( Token._id != QUEX_TKN_TERMINATION );
+    } while( token._id != QUEX_TKN_TERMINATION );
 
     printf("| [END] number of token = %i\n", token_n);
     printf("`------------------------------------------------------------------------------------\n");
