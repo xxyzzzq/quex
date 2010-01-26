@@ -30,7 +30,11 @@ mode ONE_AND_ONLY
     "{"         => QUEX_TKN_BRACKET_OPEN;
     "}"         => QUEX_TKN_BRACKET_CLOSE;
     [0-9]+      => QUEX_TKN_NUMBER(number=atoi((char*)Lexeme));
-    [_a-zA-Z]+  { self_send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; }
+    [_a-zA-Z]+  { 
+        QUEX_TOKEN_POLICY_SET_ID(QUEX_TKN_IDENTIFIER);
+        QUEX_NAME_TOKEN(_take_text)(__QUEX_CURRENT_TOKEN_P, &self, Lexeme, LexemeEnd);
+        return; 
+    }
 }
 
 

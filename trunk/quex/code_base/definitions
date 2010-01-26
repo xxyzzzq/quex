@@ -49,7 +49,7 @@
 #   define __QUEX_STD_sprintf  sprintf
 #   define __QUEX_STD_strncat  strncat
 
-#   define QUEX_INLINE     static
+#   define QUEX_INLINE     /*static*/
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 

@@ -55,7 +55,7 @@ def _do(Descr):
                       ["$$FOOTER$$",           Descr.footer.get_code()],
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
-                      ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
+                      ["$$INCLUDE_GUARD_EXTENSION$$", get_include_guard_extension(
                                                            Setup.language_db["$namespace-ref"](Descr.name_space) 
                                                            + "__" + Descr.class_name)],
                       ["$$TOKEN_CLASS$$",      Descr.class_name],
