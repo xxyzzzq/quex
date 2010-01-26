@@ -203,7 +203,7 @@ __terminal_state_str  = """
 #define LexemeBegin  (me->buffer._lexeme_start_p)
 #define LexemeEnd    (me->buffer._input_p)
 #define LexemeNull   (&__QuexLexemeNullObject)
-#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
+#define LexemeL      (me->buffer._input_p - me->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -266,7 +266,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-    QUEX_TOKEN_POLICY_SET_1(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+    QUEX_TOKEN_POLICY_SET_ID(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
     return;
 #elif defined(QUEX_OPTION_ASSERTS)
     QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
@@ -459,14 +459,15 @@ def __frame_of_all(Code, Setup):
     # if len(namespace_ref) > 2 and namespace_ref[-2:] == "::": namespace_ref = namespace_ref[:-2]
     # "using namespace " + namespace_ref + ";\n"       + \
 
+    if Setup.language != "C++":
+        implementation_header_str = "#include <quex/code_base/analyzer/headers.i>\n"
+    else:
+        implementation_header_str = ""
     return "#include \"%s\"\n" % Setup.output_file_stem     + \
-           "#if ! defined(__QUEX_OPTION_PLAIN_C)\n"        + \
-           namespace_open + "\n"                            + \
-           "#endif\n"                                       + \
+           implementation_header_str                        + \
+           "QUEX_NAMESPACE_MAIN_OPEN"                       + \
            Code                                             + \
-           "#if ! defined(__QUEX_OPTION_PLAIN_C)\n"        + \
-           namespace_close + "\n"                           + \
-           "#endif\n"                                       
+           "QUEX_NAMESPACE_MAIN_CLOSE"                     
 
 def __get_if_in_character_set(ValueList):
     assert type(ValueList) == list

@@ -221,6 +221,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#include <quex/code_base/buffer/Buffer.i>\n"
     txt += "#include <quex/code_base/buffer/BufferFiller.i>\n"
     txt += "#include <quex/code_base/test_environment/TestAnalyzer>\n"
+    txt += "#include <quex/code_base/token/TokenQueue>\n"
+    txt += "#include <quex/code_base/token/TokenQueue.i>\n"
     txt += "#include <quex/code_base/analyzer/basic.i>\n"
     txt += "\n"
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
@@ -361,6 +363,8 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/MemoryManager.i>
 #include <quex/code_base/test_environment/TestAnalyzer>
+#include <quex/code_base/token/TokenQueue>
+#include <quex/code_base/token/TokenQueue.i>
 #include <quex/code_base/analyzer/basic.i>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;

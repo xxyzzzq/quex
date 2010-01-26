@@ -73,7 +73,9 @@ token_type {
 
    take_text {
        self.text = Begin;
-       return true;       // We copied the text away, caller can free memory.
+       /* This token copied the text from the chunk into the string, 
+        * so we do not claim owneship over it.                       */
+       return false;      
    }
 
    footer {

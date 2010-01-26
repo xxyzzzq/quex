@@ -22,7 +22,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define self_send(ID)                    \
     do {                                    \
         __QUEX_ASSERT_SEND_ENTRY();         \
-        QUEX_TOKEN_POLICY_SET_1(ID);        \
+        QUEX_TOKEN_POLICY_SET_ID(ID);       \
         QUEX_TOKEN_POLICY_PREPARE_NEXT();   \
     } while ( 0 )
 
@@ -35,13 +35,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                                   \
         for(int n=0; n < N; n++) {                                                \
             __QUEX_ASSERT_SEND_ENTRY();                                           \
-            QUEX_TOKEN_POLICY_SET_1(ID);                                          \
+            QUEX_TOKEN_POLICY_SET_ID(ID);                                         \
             QUEX_TOKEN_POLICY_PREPARE_NEXT();                                     \
         }                                                                         \
         if( N - AvailableN ) {                                                    \
             self._token_queue.remaining_repetitions_of_last_token_n = N - AvailableN; \
         }                                                                         \
-        QUEX_TOKEN_POLICY_SET_1(ID);                                              \
+        QUEX_TOKEN_POLICY_SET_ID(ID);                                             \
     } while ( 0 )
 #else
 #   define self_send_n(RepetitionN, ID)  self_send(ID)
@@ -50,6 +50,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define self_send0(ID)                            \
            self_send(ID)
 
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define self_send1(ID, X0)                        \
     do {                                             \
         __QUEX_ASSERT_SEND_ENTRY();                  \
@@ -77,6 +78,16 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3); \
         QUEX_TOKEN_POLICY_PREPARE_NEXT();            \
     } while ( 0 )
+#else
+#   define self_send1(ID, X0)                        \
+    QUEX_ERROR_EXIT("Quex does not support unspecified multiple arguments for token\n" \
+                    "senders in plain 'C'. Please use something like\n\n"              \
+                    "           '=> TKN_MY_TOKEN(ID, text=Lexeme)");
+
+#   define self_send2(ID, X0, X1)         self_send1(ID, X0)
+#   define self_send3(ID, X0, X1, X2)     self_send1(ID, X0)
+#   define self_send4(ID, X0, X1, X2, X3) self_send1(ID, X0)
+#endif
 
 #   undef self
 
