@@ -54,6 +54,14 @@
 #   endif
 #endif
 
+#ifndef    QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
+#   define QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE  ((const size_t)(512))
+#endif
+#ifndef    QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE
+#   define QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE                (64)
+#endif
+
+
 #ifndef    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
 #   define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (1)
 #endif

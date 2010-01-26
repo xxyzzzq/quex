@@ -16,6 +16,20 @@
  
 QUEX_NAMESPACE_MAIN_OPEN
 
+    QUEX_INLINE uint8_t*
+    QUEX_NAME(MemoryManager_Default_allocate)(const size_t ByteN)
+    {
+         uint8_t*  result = (uint8_t*)__QUEX_STD_malloc((size_t)ByteN);
+#        ifdef QUEX_OPTION_ASSERTS
+         __QUEX_STD_memset((void*)result, 0xFF, ByteN);
+#        endif
+         return result;
+    }
+       
+    QUEX_INLINE void 
+    QUEX_NAME(MemoryManager_Default_free)(void* Obj)  
+    { __QUEX_STD_free(Obj); }
+
     struct __QuexBufferFiller_tag;
 
     /* CONCEPT: -- All allocator functions receive an argument 'ByteN' that indicates
@@ -28,44 +42,44 @@ QUEX_NAMESPACE_MAIN_OPEN
      *          be applied.                                                              */
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_NAME(MemoryManager_BufferMemory_allocate)(const size_t ByteN)
-    { return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY(ByteN); }
+    { return (QUEX_TYPE_CHARACTER*)QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_BufferMemory_free)(QUEX_TYPE_CHARACTER* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 
     QUEX_INLINE void*
     QUEX_NAME(MemoryManager_BufferFiller_allocate)(const size_t ByteN)
-    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
+    { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_BufferFiller_free)(void* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 
     QUEX_INLINE uint8_t*
     QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(const size_t ByteN)
-    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
+    { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY(memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)(memory); }
 
     QUEX_INLINE void*
     QUEX_NAME(MemoryManager_Converter_allocate)(const size_t ByteN)
-    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
+    { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_Converter_free)(void* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_NAME(MemoryManager_AccumulatorText_allocate)(const size_t ByteN)
-    { return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY(ByteN); }
+    { return (QUEX_TYPE_CHARACTER*)QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_AccumulatorText_free)(QUEX_TYPE_CHARACTER* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #   endif
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
@@ -83,14 +97,14 @@ QUEX_NAMESPACE_MAIN_OPEN
         const size_t   BaseSize      = sizeof(QUEX_NAME(DictionaryNode));
         /* Length + 1 == memory size (terminating zero) */
         const size_t   RemainderSize = sizeof(QUEX_TYPE_CHARACTER) * (RemainderL + 1);
-        uint8_t*       base          = __QUEX_ALLOCATE_MEMORY(BaseSize + RemainderSize);
+        uint8_t*       base          = QUEX_NAME(MemoryManager_Default_allocate)(BaseSize + RemainderSize);
         ((QUEX_NAME(DictionaryNode)*)base)->name_remainder = (const QUEX_TYPE_CHARACTER*)(base + BaseSize);
         return (QUEX_NAME(DictionaryNode)*)base;
     }
 
     QUEX_INLINE  void 
     QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QUEX_NAME(DictionaryNode)* node)
-    { if( node != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)node); }
+    { if( node != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)node); }
 #   endif
 
     QUEX_INLINE size_t
@@ -123,11 +137,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     QUEX_INLINE void* 
     QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t ByteN)
-    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
+    { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void 
     QUEX_NAME(MemoryManager_TokenArray_free)(void* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #endif
 
 #if defined (QUEX_OPTION_INCLUDE_STACK)
@@ -147,12 +161,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(MemoryManager_Memento_allocate)()
     {
         const size_t     MemorySize = sizeof(QUEX_NAME(Memento));
-        return (QUEX_NAME(Memento)*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+        return (QUEX_NAME(Memento)*)QUEX_NAME(MemoryManager_Default_allocate)(MemorySize);
     }
 
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_NAME(Memento_tag)* memory)
-    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
