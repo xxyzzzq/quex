@@ -80,9 +80,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void       
     QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)* me)
     { 
-        /* if no dedicated deallocator is specified then free only the basic
-         * BufferFiller structure.                                           */
-        if( me->delete_self == 0x0 ) __QUEX_FREE_MEMORY(me);
+        if( me->delete_self == 0x0 ) QUEX_ERROR_EXIT("BufferFiller object did not specify 'delete_self()'\n");
         else                         me->delete_self(me);
     }
 

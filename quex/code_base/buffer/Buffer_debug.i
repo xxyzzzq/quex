@@ -99,7 +99,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         __quex_assert(buffer != 0x0);
         /*_________________________________________________________________________________*/
-        tmp = (char*)__QUEX_ALLOCATE_MEMORY(ContentSize + 4);
+        tmp = (char*)__QUEX_STD_malloc(ContentSize + 4);
         /* tmp[0]                 = outer border*/
         /* tmp[1]                 = buffer limit*/
         /* tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]*/
@@ -129,7 +129,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* std::cout << " = 0x" << std::hex << int(*buffer->_input_p) << std::dec */
         __QUEX_STD_printf("\n");
         QUEX_NAME(Buffer_show_content)(buffer);
-        __QUEX_FREE_MEMORY(tmp);
+        __QUEX_STD_free(tmp);
     }
 
     QUEX_INLINE void  
