@@ -40,8 +40,16 @@
 #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID  (0)
 #endif
 
+#ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
+#   define QUEX_SETTING_BUFFER_LIMIT_CODE        (0x00)
+#endif
+
 #ifndef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N
-#   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
+#   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N    (0)
+#endif
+
+#ifndef    QUEX_SETTING_BUFFER_SIZE
+#   define QUEX_SETTING_BUFFER_SIZE  (65536)
 #endif
 
 #ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
@@ -135,11 +143,30 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #endif
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define     QUEX_TYPE_COUNTER             CounterLineColumnIndentation
+#   define     QUEX_TYPE_COUNTER               CounterLineColumnIndentation
+#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   CounterLineColumnIndentation_construct
+#   define     QUEX_TYPE_COUNTER_RESET         CounterLineColumnIndentation_reset
+#   define     QUEX_TYPE_COUNTER_PRINT_THIS    CounterLineColumnIndentation_print_this
 #elif  defined(__QUEX_OPTION_COUNTER)
-#   define     QUEX_TYPE_COUNTER             CounterLineColumn
+#   define     QUEX_TYPE_COUNTER               CounterLineColumn
+#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   CounterLineColumn_construct
+#   define     QUEX_TYPE_COUNTER_RESET         CounterLineColumn_reset
+#   define     QUEX_TYPE_COUNTER_PRINT_THIS    CounterLineColumn_print_this
 #else
-#   define     QUEX_TYPE_COUNTER             void*
+#   define     QUEX_TYPE_COUNTER               void*
+#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   /* empty */
+#   define     QUEX_TYPE_COUNTER_RESET         /* empty */
+#   define     QUEX_TYPE_COUNTER_PRINT_THIS    /* empty */
+#endif
+
+/* Decide about computed gotos */
+#if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
+#   if    defined(__GNUC__) \
+       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
+#       if ! defined(__QUEX_OPTION_USE_COMPUTED_GOTOS)
+#           define __QUEX_OPTION_USE_COMPUTED_GOTOS
+#       endif
+#   endif
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT */

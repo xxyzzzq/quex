@@ -8,6 +8,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>

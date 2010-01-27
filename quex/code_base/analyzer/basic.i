@@ -48,9 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Accumulator_construct)(&me->accumulator, (QUEX_TYPE_ANALYZER*)me);
 #       endif
        
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_FIX(COUNTER, _construct)(&me->counter, me);
-#       endif
+        QUEX_TYPE_COUNTER_CONSTRUCTOR(&me->counter, me);
 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Initialize everything to 0xFF which is most probably causing an error
@@ -109,9 +107,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                            const char*          CharacterEncodingName, 
                            const size_t         TranslationBufferMemorySize)
     {
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_FIX(COUNTER, _reset)(&me->counter);
-#       endif
+        QUEX_TYPE_COUNTER_RESET(&me->counter);
 
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);

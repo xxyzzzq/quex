@@ -1,5 +1,5 @@
 /* -*- C++ -*- vim: set syntax=cpp: 
- * (C) 2005-2009 Frank-Rene Schaefer
+ * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                */
 #ifndef __QUEX_INCLUDE_GUARD__DEFINITIONS
 #define __QUEX_INCLUDE_GUARD__DEFINITIONS
@@ -76,16 +76,6 @@ __QUEX_STD_strcmp(const QUEX_TYPE_CHARACTER* it0, const QUEX_TYPE_CHARACTER* it1
     return (int)(*it0) - (int)(*it1);
 }
 
-/* Detect the compiler */
-#if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
-#   if    defined(__GNUC__) \
-       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
-#       if ! defined(__QUEX_OPTION_USE_COMPUTED_GOTOS)
-#           define __QUEX_OPTION_USE_COMPUTED_GOTOS
-#       endif
-#   endif
-#endif
- 
 /* Support of computed goto */
 #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
     typedef  void*     QUEX_TYPE_GOTO_LABEL;
@@ -107,64 +97,28 @@ __QUEX_STD_strcmp(const QUEX_TYPE_CHARACTER* it0, const QUEX_TYPE_CHARACTER* it1
 #endif
 
 
-#   if ! defined(__QUEX_OPTION_PLAIN_C)
-#       define QUEX_ERROR_EXIT(Msg) \
-        do { throw std::runtime_error(Msg); } while(0)
-#   else
-#       define QUEX_ERROR_EXIT(Msg) \
-        do { __QUEX_STD_fprintf(stderr, Msg); exit(-1); } while(0)
-#   endif
-
-#  if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
-#   define QUEX_DEBUG_PRINT(Buffer, FormatStr)       /* empty */
-#   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg) /* empty */
-#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character) /* empty */
-#  else
-#   define __QUEX_PRINT_SOURCE_POSITION(Buffer)                       \
-          __QUEX_STD_fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, \
-                             (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
-
-#   define QUEX_DEBUG_PRINT(Buffer, FormatStr)        \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n")
-
-#   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg)  \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n", Arg)
-
-#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)                       \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)                            \
-             Character == '\n' ? __QUEX_STD_fprintf(stdout, "input:    '\\n'\n") \
-           : Character == '\t' ? __QUEX_STD_fprintf(stdout, "input:    '\\t'\n") \
-           :                     __QUEX_STD_fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
-#  endif /* ! __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS */
-
-#  if ! defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
-
-#    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg) /* empty */
-
-#  else
-
-#    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)  \
-            __QUEX_STD_fprintf(stdout, Msg);           \
-            QUEX_NAME(BufferFiller_x_show_content)(Filler); 
-
-#  endif /* ! __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { throw std::runtime_error(Msg); } while(0)
+#else
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { __QUEX_STD_fprintf(stderr, Msg); exit(-1); } while(0)
+#endif
 
 
 #if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
 #    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
         "\nThe provided input stream behaves strangely. Number of read\n"   \
         "characters is not proportional to the stream position increase.\n" \
-        "The buffer filler type which you are using might\n"                \
-        "be able to deal with those cases. Try compile option:\n"           \
+        "The buffer filler type which you are using might be able to\n"     \
+        "deal with those cases. Try compile option:\n"                      \
         "\n" \
                   "-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n" \
         "\n" \
-        "However, those mechanisms imply a tradeoff in terms of speed.\n"  \
-        "Please, consider using a 'binary' for your input stream,\n"       \
-        "or use a different implementation of the standard I/O library\n"  \
-        "(e.g. not Microsoft).\n"
+        "However, those mechanisms imply a tradeoff in terms of speed.\n"   \
+        "Please, consider using a 'binary' for your input stream, or use\n" \
+        "a different implementation of the standard I/O library (e.g.\n"    \
+        "not Microsoft(tm)).\n"
 #else
 #    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
         "\nThe macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \
@@ -195,28 +149,6 @@ __QUEX_STD_strcmp(const QUEX_TYPE_CHARACTER* it0, const QUEX_TYPE_CHARACTER* it1
         "##\n"                                                                              \
         "###############################################################################\n"
 
-/* Generating names on the fly while existing macros are to be used. */
-#define QUEX_STRING(X)        #X
-#define QUEX_EXPAND(X)        X
-#define QUEX_PURE_FIX(X, Y)   X ## Y
-#define __QUEX_FIX(X, Y)      QUEX_PURE_FIX(X, Y)
-#define QUEX_FIX(X, Y)        __QUEX_FIX(QUEX_TYPE_ ## X, Y)
-
-#define __QUEX_FIX3(A, x, B)  A ## x ## B
-#define QUEX_FIX3(A, x, B)    __QUEX_FIX3(A, x, B)
-
-#ifdef     __QUEX_OPTION_PLAIN_C
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_FIX(QUEX_TYPE_ ## CLASS, _constructor ## SUFFIX)
-#   define QUEX_DESTRUCTOR(CLASS)            QUEX_FIX(QUEX_TYPE_ ## CLASS, _destruct)
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_FIX(QUEX_TYPE_ ## CLASS, MEMBER_NAME)
-#   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_FIX(QUEX_TYPE_ ## CLASS, MEMBER_NAME)
-#else
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_EXPAND(QUEX_TYPE_ ## CLASS) :: QUEX_EXPAND(QUEX_TYPE_ ## CLASS)
-#   define QUEX_DESTRUCTOR(CLASS)            QUEX_EXPAND(QUEX_TYPE_ ## CLASS) ::~ QUEX_EXPAND(QUEX_TYPE_ ## CLASS)
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_EXPAND(QUEX_TYPE_ ## CLASS) :: MEMBER_NAME
-#   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_EXPAND(QUEX_TYPE_ ## CLASS) :: MEMBER_NAME
-#endif
-
-
+#define QUEX_STRING(X)   #X
 
 #endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */
