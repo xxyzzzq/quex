@@ -145,18 +145,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 #endif
 
 #if defined (QUEX_OPTION_INCLUDE_STACK)
-    /* NOTE: The macro 'QUEX_MACRO_STRING_CONCATINATE' is used to generate a function
-     *       name. For example, if the macro QUEX_NAME(Memento) is defined as 'LexerMemento',
-     *       then the macro call
-     *
-     *           QUEX_FIX3(MemoryManager_, QUEX_NAME(Memento), _allocate)
-     *
-     *       generates the function name:
-     *
-     *           MemoryManager_LexerMemento_allocate
-     *
-     *       Results of C-Preprocessing can always be viewed with 'gcc -E'.
-     *                                                                                    */
     QUEX_INLINE QUEX_NAME(Memento)*
     QUEX_NAME(MemoryManager_Memento_allocate)()
     {
