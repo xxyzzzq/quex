@@ -20,4 +20,4 @@ if "--hwut-info" in sys.argv:
 sm1 = regex.do("[ΆΈΉΊΌΎ-Ϋ]+", {}, 0)
 sm2 = regex.do("[ \\t\\n]", {}, 0)
 result = trafo.do(get_combined_state_machine([sm1, sm2]))
-print result.get_graphviz_string(Option="hex")
+print result.get_graphviz_string(NormalizeF=True, Option="hex")

@@ -1,13 +1,13 @@
 
-        digraph state_machine_12 {
+        digraph state_machine_14 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 72; 74;
+	       node [shape = doublecircle]; 2; 3;
            node [shape = circle];
-           71 -> 72 [label ="[0009, 000A] [0020] "];
-71 -> 73 [label ="[00CE] "];
-73 -> 74 [label ="[0086] [0088, 008A] [008C] [008E, 00AB] "];
-74 -> 73 [label ="[00CE] "];
+           0 -> 3 [label ="[0009, 000A] [0020] "];
+0 -> 1 [label ="[00CE] "];
+1 -> 2 [label ="[0086] [0088, 008A] [008C] [008E, 00AB] "];
+2 -> 1 [label ="[00CE] "];
 
         }
         
