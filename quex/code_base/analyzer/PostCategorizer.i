@@ -14,7 +14,7 @@ QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
                                const QUEX_TYPE_CHARACTER*  Remainder,
                                QUEX_TYPE_TOKEN_ID          TokenID)
 {
-    QUEX_NAME(DictionaryNode)* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(__QUEX_STD_strlen(Remainder));
+    QUEX_NAME(DictionaryNode)* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(QUEX_NAME(strlen)(Remainder));
     me->name_first_character = FirstCharacter;
     me->name_remainder       = Remainder;
     me->token_id             = TokenID;

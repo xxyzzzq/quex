@@ -57,25 +57,6 @@
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 
-QUEX_INLINE size_t 
-__QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
-{
-    const QUEX_TYPE_CHARACTER* iterator = Str;
-    while( *iterator != 0 ) ++iterator; 
-    return (size_t)(iterator - Str);
-}
-
-QUEX_INLINE size_t 
-__QUEX_STD_strcmp(const QUEX_TYPE_CHARACTER* it0, const QUEX_TYPE_CHARACTER* it1)
-{
-    for(; *it0 == *it1; ++it0, ++it1) {
-        /* Both letters are the same and == 0?
-         * => both reach terminall zero without being different. */
-        if( *it0 == 0 ) return 0;
-    }
-    return (int)(*it0) - (int)(*it1);
-}
-
 /* Support of computed goto */
 #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
     typedef  void*     QUEX_TYPE_GOTO_LABEL;

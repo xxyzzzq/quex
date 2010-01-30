@@ -9,6 +9,7 @@
 #ifdef      __QUEX_OPTION_UNIT_TEST
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif
+#include    <quex/code_base/aux-string>
 
 #include    <quex/code_base/buffer/Buffer>
 #include    <quex/code_base/buffer/BufferFiller>
