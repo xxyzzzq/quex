@@ -13,7 +13,8 @@ import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "DFA: Hopcroft optimization (minimize state set)"
-    print "CHOICES: NEW, ADAPT"
+    print "CHOICES: NEW, ADAPT;"
+    print "SAME;"
     sys.exit(0)
 
 if "NEW" in sys.argv:     CreateNewStateMachineF=True
@@ -90,5 +91,5 @@ print optimal_sm
 
 print "_______________________________________________________________________________"
 print "Example F:"
-optimal_sm = hopcroft.do(sm3, CreateNewStateMachineF=CreateNewStateMachineF).get_string()
+optimal_sm = hopcroft.do(sm3, CreateNewStateMachineF=CreateNewStateMachineF) # .get_string(NormalizeF=True)
 print optimal_sm
