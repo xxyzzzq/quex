@@ -688,7 +688,7 @@ __QUEX_STD_memset	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	105;
 __QUEX_STD_memset	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	88;"	d	file:
 __QUEX_STD_printf	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	108;"	d	file:
 __QUEX_STD_printf	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	91;"	d	file:
-__QUEX_STD_strlen	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	/^QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)$/;"	f
+QUEX_NAME(strlen)	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	/^QUEX_INLINE size_t QUEX_NAME(strlen)(const QUEX_TYPE_CHARACTER* Str)$/;"	f
 __QUEX_STD_strncat	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	106;"	d	file:
 __QUEX_STD_strncat	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	89;"	d	file:
 __QUEX_TOKEN_ID_TERMINATION	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	30;"	d	file:
