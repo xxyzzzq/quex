@@ -2,6 +2,7 @@
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                      */
 #include    <quex/code_base/aux-string.i>
+#include    <quex/code_base/unicode.i>
 
 #include    <quex/code_base/analyzer/member/token-sending.i>
 #include    <quex/code_base/analyzer/member/token-receiving.i>

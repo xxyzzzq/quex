@@ -2,6 +2,7 @@
 #include <quex/code_base/analyzer/configuration/default>
 #include ___HEADER___
 #include <quex/code_base/unicode>
+#include <quex/code_base/unicode.i>
 using namespace std;
 using namespace quex;
 
