@@ -76,7 +76,9 @@ QUEX_FUNC(print_this)(QUEX_TYPE_ANALYZER* me)
     QUEX_NAME(Accumulator_print_this)(&me->accumulator);
 #   endif
 
+#   ifdef __QUEX_OPTION_COUNTER
     QUEX_TYPE_COUNTER_PRINT_THIS(&me->counter);
+#   endif
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
     QUEX_NAME(PostCategorizer_print_this)(&me->post_categorizer);

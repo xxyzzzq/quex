@@ -56,7 +56,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*    (*) Tokens and token queues are not subject to include handling.            */
 
         /*    (3) Initialize line, column, and indentation counters.                      */
+#       ifdef __QUEX_OPTION_COUNTER
         QUEX_TYPE_COUNTER_CONSTRUCTOR(&me->counter, me);
+#       endif
+
         /*    (4) Initialize accumulator content.                                         */
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
         QUEX_NAME(Accumulator_construct)(&me->accumulator, me);

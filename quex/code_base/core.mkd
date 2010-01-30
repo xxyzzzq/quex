@@ -50,8 +50,8 @@ __QUEX_CORE = \
     ./analyzer/Mode \
     ./analyzer/PostCategorizer.i \
     ./analyzer/PostCategorizer \
-    ./analyzer/basic \
-    ./analyzer/basic.i \
+    ./analyzer/member/basic \
+    ./analyzer/member/basic.i \
     ./analyzer/asserts \
     ./analyzer/member/include-stack.i \
     ./analyzer/member/mode-handling.i \
