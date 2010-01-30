@@ -2,8 +2,8 @@
  *
  * (C) 2004-2009 Frank-Rene Schaefer 
  * ABSOLUTELY NO WARRANTY               */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__BASIC
-#define __QUEX_INCLUDE_GUARD__ANALYZER__BASIC
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC
 
 #include <quex/code_base/buffer/Buffer>
 
@@ -39,4 +39,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__BASIC */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC */

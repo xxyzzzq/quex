@@ -5,6 +5,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MODE_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MODE_I
 
+QUEX_NAMESPACE_MAIN_OPEN
+
     QUEX_INLINE void
     QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER* me)
     { __quex_assert(0); return; }
@@ -18,5 +20,7 @@
     QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER* me, 
                                                 const QUEX_NAME(Mode)* TheMode) 
     { }
+
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MODE_I */

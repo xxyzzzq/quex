@@ -10,6 +10,9 @@
 #ifdef     __QUEX_INCLUDE_GUARD__UNICODE
 #   undef  __QUEX_INCLUDE_GUARD__UNICODE
 #endif 
+#ifdef     __QUEX_INCLUDE_GUARD__UNICODE_I
+#   undef  __QUEX_INCLUDE_GUARD__UNICODE_I
+#endif 
 #ifdef     __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 #   undef  __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 #endif 
@@ -104,14 +107,17 @@
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__BASIC                             
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__BASIC                             
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC                             
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__BASIC_I                             
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC_I
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC_I                             
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MODE
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MODE
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MODE_I
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MODE_I
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE                             
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE                             

@@ -2,6 +2,7 @@
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #include <quex/code_base/unicode>
+#include <quex/code_base/unicode.i>
 using namespace std;
 using namespace quex;
 
