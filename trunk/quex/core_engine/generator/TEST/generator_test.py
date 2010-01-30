@@ -223,7 +223,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#include <quex/code_base/test_environment/TestAnalyzer>\n"
     txt += "#include <quex/code_base/token/TokenQueue>\n"
     txt += "#include <quex/code_base/token/TokenQueue.i>\n"
-    txt += "#include <quex/code_base/analyzer/basic.i>\n"
+    txt += "#include <quex/code_base/analyzer/member/basic.i>\n"
     txt += "\n"
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
     txt += "\n"
@@ -344,6 +344,7 @@ const int TKN_TERMINATION = 0;
 $$__QUEX_OPTION_PLAIN_C$$
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
+#define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
 #include <quex/code_base/analyzer/configuration/default>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     namespace quex {
@@ -352,7 +353,6 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     }
 #endif
-#define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
 /* #define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN */
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
@@ -365,7 +365,7 @@ typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
 #include <quex/code_base/test_environment/TestAnalyzer>
 #include <quex/code_base/token/TokenQueue>
 #include <quex/code_base/token/TokenQueue.i>
-#include <quex/code_base/analyzer/basic.i>
+#include <quex/code_base/analyzer/member/basic.i>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;
 #endif
