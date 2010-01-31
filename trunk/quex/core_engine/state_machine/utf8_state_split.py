@@ -73,11 +73,14 @@ import codecs
 from copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
+from   quex.core_engine.utf8                     import utf8_to_unicode, unicode_to_utf8
 from   quex.core_engine.interval_handling        import Interval
 import quex.core_engine.state_machine            as     state_machine
 from   quex.core_engine.state_machine.core       import State
 import quex.core_engine.state_machine.nfa_to_dfa as     nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft_minimization
+
+utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
 
 def do(sm):
     """The UTF8 encoding causes a single unicode character code being translated
@@ -138,35 +141,6 @@ def create_intermediate_states(sm, state_index, target_state_index, X):
         plug_state_sequence_for_trigger_set_sequence(sm, state_index, target_state_index,
                                                      trigger_set_sequence_db, seq_length, 
                                                      first_diff_byte_idx) 
-
-utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
-utf8c = codecs.getencoder("utf-8")
-utf8d = codecs.getdecoder("utf-8")
-def unicode_to_utf8(UnicodeValue):
-    return map(ord, utf8c(eval("u'\\U%08X'" % UnicodeValue))[0])
-
-def utf8_to_unicode(ByteSequence):
-    """Unfortunately, there is no elegant way to do the utf8-decoding 
-       safely, since due to strange behavior of a python narrow build
-       a character >= 0x10000 may appear as a 2 byte string and cannot
-       be handled by 'ord' in python 2.x.
-
-       Thus: 
-              return ord(utf8d("".join(map(chr, ByteSequence)))[0])
-
-       would be unsafe.
-    """
-    # Assume that the byte sequence is valid, thus a byte sequence of length 'N'
-    # has a N - 1 leading ones in the header plus a zero. Remaining bits in the
-    # header are therefore 8 - N. All other bytes in the sequence start with bits '10'
-    # and contain 6 bits of useful payload.
-    header_bit_n = 8 - len(ByteSequence)
-    mask         = (1 << header_bit_n) - 1
-    value = ByteSequence[0] & mask
-    for byte in ByteSequence[1:]:
-        value <<= 6
-        value |=  (byte & 0x3F)   # blend off the highest two buts
-    return value
 
 def unicode_interval_to_utf8_intervals(X):
     front_list = unicode_to_utf8(X.begin)

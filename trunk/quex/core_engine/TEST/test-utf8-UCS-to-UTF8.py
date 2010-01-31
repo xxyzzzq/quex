@@ -8,7 +8,7 @@ from quex.core_engine.interval_handling import Interval
 import quex.core_engine.utf8            as utf8
 
 if "--hwut-info" in sys.argv:
-    print "Utf8-Module: Map UTF8 String To Unicode Values"
+    print "UTF8: Map UTF8 String To Unicode Values"
     sys.exit(0)
     
 # the unequal sign from the utf-8 manpage

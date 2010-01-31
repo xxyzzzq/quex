@@ -1,6 +1,7 @@
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/unicode.i>
 #include <cstring>
 
 int cl_has(int argc, char** argv, const char* What)
