@@ -49,8 +49,8 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Mode
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/basic
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/basic.i
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/basic
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/basic.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/asserts
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/include-stack.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/mode-handling.i

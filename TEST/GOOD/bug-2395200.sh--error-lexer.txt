@@ -2,15 +2,15 @@ terminate called after throwing an instance of 'std::runtime_error'
   what():  
 The provided input stream behaves strangely. Number of read
 characters is not proportional to the stream position increase.
-The buffer filler type which you are using might
-be able to deal with those cases. Try compile option:
+The buffer filler type which you are using might be able to
+deal with those cases. Try compile option:
 
 -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
 
 However, those mechanisms imply a tradeoff in terms of speed.
-Please, consider using a 'binary' for your input stream,
-or use a different implementation of the standard I/O library
-(e.g. not Microsoft).
+Please, consider using a 'binary' for your input stream, or use
+a different implementation of the standard I/O library (e.g.
+not Microsoft(tm)).
 
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
