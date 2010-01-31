@@ -1,6 +1,53 @@
 from copy import copy
-import StringIO
+from quex.frs_py.file_in import error_msg
 
+import StringIO
+import codecs
+
+def unicode_to_utf8(UnicodeValue):
+    if UnicodeValue < 0x80:
+        return [ UnicodeValue, ]
+    elif UnicodeValue < 0x800:
+        return [ 0xC0 | (UnicodeValue >> 6),
+                 0x80 | (UnicodeValue & 0x3F)]
+    elif UnicodeValue < 0x10000:
+        return [ 0xE0 | (UnicodeValue           >> 12),
+                 0x80 | ((UnicodeValue & 0xFFF) >> 6),
+                 0x80 | (UnicodeValue  & 0x3F)]
+    elif UnicodeValue < 0x00200000:
+        return [ 0xF0 | (UnicodeValue             >> 18),
+                 0x80 | ((UnicodeValue & 0x3FFFF) >> 12),
+                 0x80 | ((UnicodeValue & 0xFFF)   >> 6),
+                 0x80 | (UnicodeValue  & 0x3F)]
+    else:
+        error_msg("Unicode character > 0x10FFFF detected. Cannot be handled.")
+
+    # utf8c = codecs.getencoder("utf-8")
+    # return map(ord, utf8c(eval("u'\\U%08X'" % UnicodeValue))[0])
+
+def utf8_to_unicode(ByteSequence):
+    """Unfortunately, there is no elegant way to do the utf8-decoding 
+       safely, since due to strange behavior of a python narrow build
+       a character >= 0x10000 may appear as a 2 byte string and cannot
+       be handled by 'ord' in python 2.x.
+
+       Thus: 
+              utf8d = codecs.getdecoder("utf-8")
+              return ord(utf8d("".join(map(chr, ByteSequence)))[0])
+
+       would be unsafe.
+    """
+    # Assume that the byte sequence is valid, thus a byte sequence of length 'N'
+    # has a N - 1 leading ones in the header plus a zero. Remaining bits in the
+    # header are therefore 8 - N. All other bytes in the sequence start with bits '10'
+    # and contain 6 bits of useful payload.
+    header_bit_n = 8 - len(ByteSequence)
+    mask         = (1 << header_bit_n) - 1
+    value = ByteSequence[0] & mask
+    for byte in ByteSequence[1:]:
+        value <<= 6
+        value |=  (byte & 0x3F)   # blend off the highest two buts
+    return value
 
 def map_utf8_to_unicode(utf8_string_or_stream):
     """Maps the start of the 'utf8_string' to a single unicode character. 

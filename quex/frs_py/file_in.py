@@ -65,12 +65,22 @@ def skip_whitespace(fh):
             return                
 
 def is_identifier_start(character):
+    if len(character) != 1:
+        # It is theoretically possible that a character > 0x10000 arrives on a python
+        # narrow build.
+        error_msg("The underlying python build cannot handle character '%s'." % character)
+
     char_value = ord(character)
     return    character == "_" \
            or (char_value >= ord('a') and char_value <= ord('z')) \
            or (char_value >= ord('A') and char_value <= ord('Z'))
 
 def is_identifier_continue(character):
+    if len(character) != 1:
+        # It is theoretically possible that a character > 0x10000 arrives on a python
+        # narrow build.
+        error_msg("The underlying python build cannot handle character '%s'." % character)
+
     char_value = ord(character)
     return    is_identifier_start(character) \
            or (char_value >= ord('0') and char_value <= ord('9'))
@@ -533,6 +543,11 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
 def make_safe_identifier(String, NoCodeF=True):
     txt = ""
     for letter in String:
+        if len(letter) != 1:
+            # It is theoretically possible that a character > 0x10000 arrives on a python
+            # narrow build.
+            error_msg("The underlying python build cannot handle character '%s'." % character)
+
         if letter.isalpha() or letter.isdigit() or letter == "_": txt += letter.upper()
         elif letter == ":":                                       txt += "_"
         elif NoCodeF:                                             txt += "_" 

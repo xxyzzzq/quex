@@ -5,6 +5,7 @@
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/unicode>
+#include <quex/code_base/unicode.i>
 #include <string.h>
 #include <cstdio>
 

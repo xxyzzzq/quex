@@ -34,6 +34,7 @@ import codecs
 from copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
+from   quex.core_engine.utf16                    import utf16_to_unicode, unicode_to_utf16
 from   quex.core_engine.interval_handling        import Interval
 import quex.core_engine.state_machine            as     state_machine
 from   quex.core_engine.state_machine.core       import State
@@ -98,28 +99,6 @@ def create_intermediate_states(sm, StartStateIdx, EndStateIdx, X):
             trigger_seq = get_trigger_sequence_for_interval(interval)
             s_idx = sm.add_transition(StartStateIdx, trigger_seq[0])
             sm.add_transition(s_idx, trigger_seq[1], EndStateIdx)
-
-utf16c = codecs.getencoder("utf-16be")
-
-def unicode_to_utf16(UnicodeValue):
-    """Do not do this by hand in order to have a 'reference' to double check
-       wether otherwise hand coded values are correct.
-    """
-    byte_seq = map(ord, utf16c(eval("u'\\U%08X'" % UnicodeValue))[0])
-    if UnicodeValue >= 0x10000:
-        word_seq = [ (byte_seq[0] << 8) + byte_seq[1], (byte_seq[2] << 8) + byte_seq[3] ]
-    else:
-        word_seq = [ (byte_seq[0] << 8) + byte_seq[1] ]
-
-    return word_seq
-
-def utf16_to_unicode(WordSeq):
-    if len(WordSeq) == 1: return WordSeq[0]
-
-    x0 = WordSeq[0] - 0xD800
-    x1 = WordSeq[1] - 0xDC00
-
-    return (x0 << 10) + x1 + 0x10000
 
 def get_contigous_intervals(X):
     """Split Unicode interval into intervals where all values

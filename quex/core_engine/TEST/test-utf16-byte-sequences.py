@@ -23,7 +23,7 @@ def reference_utf16_encoder(UnicodeValue):
 error_n = 0
 def test(UC):
     global error_n
-    correct = tuple(reference_utf16_encoder(UC))
+    correct = reference_utf16_encoder(UC)
     output  = unicode_to_utf16(UC)
 
     if correct != output:

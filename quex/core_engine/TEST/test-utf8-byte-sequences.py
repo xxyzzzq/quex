@@ -21,7 +21,7 @@ def reference_utf8_decoder(ByteSequence):
 error_n = 0
 def test(UC):
     global error_n
-    correct = tuple(reference_utf8_encoder(UC))
+    correct = reference_utf8_encoder(UC)
     output  = unicode_to_utf8(UC)
 
     if correct != output:
