@@ -146,7 +146,27 @@ def unicode_to_utf8(UnicodeValue):
     return map(ord, utf8c(eval("u'\\U%08X'" % UnicodeValue))[0])
 
 def utf8_to_unicode(ByteSequence):
-    return ord(utf8d(reduce(lambda x, y: x + y, map(chr, ByteSequence)))[0])
+    """Unfortunately, there is no elegant way to do the utf8-decoding 
+       safely, since due to strange behavior of a python narrow build
+       a character >= 0x10000 may appear as a 2 byte string and cannot
+       be handled by 'ord' in python 2.x.
+
+       Thus: 
+              return ord(utf8d("".join(map(chr, ByteSequence)))[0])
+
+       would be unsafe.
+    """
+    # Assume that the byte sequence is valid, thus a byte sequence of length 'N'
+    # has a N - 1 leading ones in the header plus a zero. Remaining bits in the
+    # header are therefore 8 - N. All other bytes in the sequence start with bits '10'
+    # and contain 6 bits of useful payload.
+    header_bit_n = 8 - len(ByteSequence)
+    mask         = (1 << header_bit_n) - 1
+    value = ByteSequence[0] & mask
+    for byte in ByteSequence[1:]:
+        value <<= 6
+        value |=  (byte & 0x3F)   # blend off the highest two buts
+    return value
 
 def unicode_interval_to_utf8_intervals(X):
     front_list = unicode_to_utf8(X.begin)
