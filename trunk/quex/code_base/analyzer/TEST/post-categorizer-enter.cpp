@@ -6,6 +6,7 @@
 #define QUEX_OPTION_POST_CATEGORIZER
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/analyzer/PostCategorizer.i>
+#include <quex/code_base/aux-string.i>
 
 /* See: post-categorizer-common.c */
 using namespace quex;

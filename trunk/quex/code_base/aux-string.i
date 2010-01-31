@@ -4,6 +4,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__AUX_STRING_I
 #define __QUEX_INCLUDE_GUARD__AUX_STRING_I
 
+QUEX_NAMESPACE_MAIN_OPEN
+
 QUEX_INLINE size_t 
 QUEX_NAME(strlen)(const QUEX_TYPE_CHARACTER* Str)
 {
@@ -23,5 +25,7 @@ QUEX_NAME(strcmp)(const QUEX_TYPE_CHARACTER* it0,
     }
     return (size_t)(*it0) - (size_t)(*it1);
 }
+
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__AUX_STRING_I */

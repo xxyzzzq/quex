@@ -5,6 +5,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/PostCategorizer>
 #include <quex/code_base/analyzer/PostCategorizer.i>
+#include <quex/code_base/aux-string.i>
 
 using namespace quex;
 

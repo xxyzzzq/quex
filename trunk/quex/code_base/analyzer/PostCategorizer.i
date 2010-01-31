@@ -5,6 +5,7 @@
 
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/analyzer/PostCategorizer>
+#include <quex/code_base/aux-string>
 
 QUEX_NAMESPACE_MAIN_OPEN
 

@@ -9,8 +9,8 @@ tmp=`pwd`
 cd $bug/ 
 ./compile.sh >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
-valgrind --leak-check=full ./uXa example.txt >& tmp.txt
-python show.py 
+valgrind -v --leak-check=full ./uXa example.txt >& tmp.txt
+python ./show.py 
 rm tmp.txt
 
 # cleansening

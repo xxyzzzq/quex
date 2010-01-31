@@ -1,9 +1,3 @@
 Note: the important phrase is 'no leaks are possible'.
- HEAP SUMMARY:
-     in use at exit: 0 bytes in 0 blocks
-   total heap usage: 416 allocs, 416 frees, 248,357 bytes allocated
- 
  All heap blocks were freed -- no leaks are possible
- 
- For counts of detected and suppressed errors, rerun with: -v
- ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 7 from 7)
+
