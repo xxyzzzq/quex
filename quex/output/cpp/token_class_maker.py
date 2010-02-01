@@ -14,10 +14,15 @@ from   quex.input.setup_parser                import __prepare_file_name
 def do():
     assert lexer_mode.token_type_definition != None
 
-    txt       = _do(lexer_mode.token_type_definition)
+    txt, txt_i = _do(lexer_mode.token_type_definition)
 
     file_name = lexer_mode.token_type_definition.get_file_name()
     write_safely_and_close(file_name, txt) 
+
+    # If the implementation happens in a separate file, write it!
+    if txt_i != None:
+        file_name = lexer_mode.token_type_definition.get_file_name() + ".i"
+        write_safely_and_close(file_name, txt_i) 
 
 def _do(Descr):
     # The following things must be ensured before the function is called
@@ -28,6 +33,15 @@ def _do(Descr):
     TemplateFile = Setup.QUEX_INSTALLATION_DIR \
                    + Setup.language_db["$code_base"] \
                    + Setup.language_db["$token_template_file"]
+
+    TemplateIFile  = None
+    template_i_str = ""
+    if Setup.language_db.has_key("$token_template_i_file"):
+        TemplateIFile = Setup.QUEX_INSTALLATION_DIR \
+                       + Setup.language_db["$code_base"] \
+                       + Setup.language_db["$token_template_i_file"]
+        template_i_str = open_file_or_die(TemplateFile, Mode="rb").read()
+
     template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     
     virtual_destructor_str = ""
@@ -43,7 +57,8 @@ def _do(Descr):
     if take_text_str == "": take_text_str = "return true;\n" 
 
     txt = blue_print(template_str,
-                     [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
+                     [
+                      ["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
                       ["$$SETTERS_GETTERS$$",  get_setter_getter(Descr)],
                       ["$$QUICK_SETTERS$$",    get_quick_setters(Descr)],
@@ -63,7 +78,20 @@ def _do(Descr):
                       ["$$NAMESPACE_CLOSE$$",  Setup.language_db["$namespace-close"](Descr.name_space)],
                      ])
 
-    return txt
+    # If declaration and implementation happen in a single file (C++) 
+    # then we are done at this point
+    if TemplateIFile == None: return txt, None
+
+    txt_i = blue_print(template_i_str, 
+                       [
+                        ["$$COPY$$",             copy_str],
+                        ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
+                        ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
+                        ["$$FUNC_TAKE_TEXT$$",   take_text_str],
+                       ])
+
+    # Return declaration and implementation as two strings
+    return txt, txt_i
 
 def get_distinct_members(Descr):
     # '0' to make sure, that it works on an empty sequence too.
