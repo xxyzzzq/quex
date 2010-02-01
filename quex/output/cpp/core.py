@@ -183,13 +183,15 @@ def write_engine_header(Modes):
 
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
+    include_guard_ext = get_include_guard_extension(
+            Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
+            + "__" + Setup.analyzer_class_name)
+
     txt = blue_print(template_code_txt,
             [
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
                 ["$$CLASS_FUNCTIONS$$",                  function_code_txt],
-                ["$$INCLUDE_GUARD_EXTENSION$$",          get_include_guard_extension(
-                                                         Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
-                                                             + "__" + Setup.analyzer_class_name)],
+                ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
                 ["$$LEXER_CONFIG_FILE$$",                Setup.output_configuration_file],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
@@ -211,6 +213,15 @@ def write_engine_header(Modes):
 
     write_safely_and_close(QuexClassHeaderFileOutput, txt)
 
+    # In the 'C' case the class's constructor and memento functions must
+    # appear in a separate '.i' implementation file
+    if Setup.language == "C":
+        txt  = "#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I\n"
+        txt += "#define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I\n"
+        txt += function_code_txt + "\n"
+        txt += "#define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I\n"
+        txt = txt.replace("$$INCLUDE_GUARD_EXTENSION$$", include_guard_ext)
+        write_safely_and_close(QuexClassHeaderFileOutput + ".i", txt)
 
 quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).id   = QUEX_NAME(QuexModeID_$$MN$$);
@@ -302,7 +313,6 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     txt += "\n"
 
     return txt
-
 
 def get_constructor_code(Modes, LexerClassName):
     L = max(map(lambda m: len(m.name), Modes))
