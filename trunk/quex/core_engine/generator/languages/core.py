@@ -191,6 +191,7 @@ db["C++"] = {
 db["C"] = copy(db["C++"])
 db["C"]["$token-default-file"]     = "/token/CDefault.qx"
 db["C"]["$token_template_file"]    = "/token/CTemplate.txt"
+db["C"]["$token_template_i_file"]  = "/token/CTemplateI.txt"
 db["C"]["$analyzer_template_file"] = "/analyzer/CTemplate.txt"
 db["C"]["$file_extension"]         = ".c"
 
