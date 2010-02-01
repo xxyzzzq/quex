@@ -112,7 +112,8 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #
     txt =  "    " + transition.do(info.state_index, interval, target_state_index, info.dsm)
     if interval != None:
-        txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
+        if Setup.engine_character_encoding != "":
+            txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
     else:
         txt += "\n"
 
