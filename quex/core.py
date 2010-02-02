@@ -43,9 +43,14 @@ def do():
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
     IndentationSupportF = __requires_indentation_count(mode_db)
-    quex_class_out.do(mode_db, IndentationSupportF)
 
-    mode_implementation_txt = mode_classes.do(mode_db)
+    header_engine_txt,           \
+    constructor_and_memento_txt, \
+    header_configuration_txt     = quex_class_out.do(mode_db, IndentationSupportF)
+    # NOTE: In C++, constructor_and_memento_txt == "" since the implementation of templates
+    #       needs to happen inside the header files.
+
+    mode_implementation_txt     = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
     token_id_maker.do(Setup) 
@@ -77,8 +82,14 @@ def do():
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file
+    write_safely_and_close(Setup.output_configuration_file,
+                           header_configuration_txt)
+    write_safely_and_close(Setup.output_file_stem,
+                           header_engine_txt)
     write_safely_and_close(Setup.output_code_file, 
-                           mode_implementation_txt + "\n" + analyzer_code)
+                           mode_implementation_txt       + "\n" 
+                           + constructor_and_memento_txt + "\n" 
+                           + analyzer_code)
 
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")

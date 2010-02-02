@@ -1,4 +1,5 @@
 #include "tiny_lexer"
+#include "tiny_lexer-token.i"
 
 int 
 main(int argc, char** argv) 

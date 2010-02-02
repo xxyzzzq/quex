@@ -87,7 +87,4 @@ $$CLASS_BODY_EXTENSION$$
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
-$$CLASS_FUNCTIONS$$
-
-
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */

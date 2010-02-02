@@ -40,6 +40,11 @@ except:
     
 from quex.frs_py.file_in  import error_msg
 
+def on_exception(x, Txt):
+    if "--debug-exception" in sys.argv: 
+        raise x
+    error_msg(Txt)
+
 try:
     # (*) Check if everything is correctly installed
     import quex.DEFINITIONS
@@ -55,20 +60,18 @@ try:
     import quex.core               as core
 
 
-except AssertionError:
-    error_msg("Module Assertion error -- please report a bug under\n" + \
-              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+except AssertionError, x:
+    on_exception(x, "Module Assertion error -- please report a bug under\n" + \
+                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
 except KeyboardInterrupt: 
     print
     error_msg("#\n# Keyboard interrupt -- exiting while loading modules unfinished.\n#")
 
-except Exception:
-    error_msg("Module Exception occured -- please, report a bug under\n" + \
-              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+except Exception, x:
+    on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
+                 " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
-
-
 if __name__ == "__main__":
     try:
         core._exception_checker()
@@ -88,15 +91,15 @@ if __name__ == "__main__":
         if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
         else:                               core.do_plot()  # plot transition graphs
 
-    except AssertionError:
-        error_msg("Assertion error -- please report a bug under\n" + \
-                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    except AssertionError, x:
+        on_exception(x, "Assertion error -- please report a bug under\n" + \
+                        " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     except KeyboardInterrupt: 
         print
         error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
-    except Exception:
-        error_msg("Exception occured -- please, report a bug under\n" + \
-                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    except Exception, x:
+        on_exception(x, "Exception occured -- please, report a bug under\n" + \
+                        " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
         

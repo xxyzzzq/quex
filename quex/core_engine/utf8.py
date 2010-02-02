@@ -2,7 +2,6 @@ from copy import copy
 from quex.frs_py.file_in import error_msg
 
 import StringIO
-import codecs
 
 def unicode_to_utf8(UnicodeValue):
     if UnicodeValue < 0x80:
@@ -21,9 +20,6 @@ def unicode_to_utf8(UnicodeValue):
                  0x80 | (UnicodeValue  & 0x3F)]
     else:
         error_msg("Unicode character > 0x10FFFF detected. Cannot be handled.")
-
-    # utf8c = codecs.getencoder("utf-8")
-    # return map(ord, utf8c(eval("u'\\U%08X'" % UnicodeValue))[0])
 
 def utf8_to_unicode(ByteSequence):
     """Unfortunately, there is no elegant way to do the utf8-decoding 
@@ -46,7 +42,7 @@ def utf8_to_unicode(ByteSequence):
     value = ByteSequence[0] & mask
     for byte in ByteSequence[1:]:
         value <<= 6
-        value |=  (byte & 0x3F)   # blend off the highest two buts
+        value |=  (byte & 0x3F)   # blend off the highest two bits
     return value
 
 def map_utf8_to_unicode(utf8_string_or_stream):

@@ -33,8 +33,8 @@ def test(UC):
     backward = utf8_to_unicode(correct)
 
     if backward != UC:
-        print "ERROR: utf8_to_unicode with %06X" % UC
-        error_n += 1
+       print "ERROR: utf8_to_unicode with %06X" % UC
+       error_n += 1
 
 if False:
     # The lower plain is tested completely below
