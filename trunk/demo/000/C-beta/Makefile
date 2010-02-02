@@ -59,6 +59,7 @@ clean:
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o
 	rm -f $(ENGINE_NAME)-token
+	rm -f $(ENGINE_NAME)-token.i
 	rm -f lexer.o
 	rm -f lexer
 	rm -f token_ids

@@ -105,7 +105,7 @@
 #   define QUEX_TYPE_TOKEN_ID uint8_t
 #endif
 
-#define QUEX_FUNC(NAME)        QuexDefault ## _ ## NAME                
+#define QUEX_NAME(NAME)        QuexDefault ## _ ## NAME                
 #define QUEX_MEMBER(NAME)      QUEX_TYPE_ANALYZER :: NAME                
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
@@ -130,7 +130,6 @@
 #    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
 #endif
 
-#define QUEX_NAME(X)          QuexDefault ## X
 #define QUEX_NAME_TOKEN(X)    QuexToken ## X
 
 QUEX_NAMESPACE_MAIN_OPEN

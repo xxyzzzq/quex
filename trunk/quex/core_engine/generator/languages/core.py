@@ -175,9 +175,9 @@ db["C++"] = {
     #
     "$header-definitions":   cpp.__header_definitions,
     "$frame":                cpp.__frame_of_all,
-    "$goto-mode":            lambda Mode: "QUEX_FUNC(enter_mode)(&self, &" + Mode + ");",
-    "$gosub-mode":           lambda Mode: "QUEX_FUNC(push_mode)(&self, &" + Mode + ");",
-    "$goup-mode":            lambda Mode: "QUEX_FUNC(pop_mode)(&self);",                  # Must be function, w/o arg
+    "$goto-mode":            lambda Mode: "QUEX_NAME(enter_mode)(&self, &" + Mode + ");",
+    "$gosub-mode":           lambda Mode: "QUEX_NAME(push_mode)(&self, &" + Mode + ");",
+    "$goup-mode":            lambda Mode: "QUEX_NAME(pop_mode)(&self);",                  # Must be function, w/o arg
     "$code_base":               "/quex/code_base/",
     "$token-default-file":      "/token/CppDefault.qx",
     "$token_template_file":     "/token/CppTemplate.txt",

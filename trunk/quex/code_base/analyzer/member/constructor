@@ -14,7 +14,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 TEMPLATE_IN(InputHandleT)
 #endif
 void
-QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
+QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             InputHandleT*          input_handle, 
                             const char*            CharacterEncodingName,
                             bool                   ByteOrderReversionF,
@@ -22,48 +22,48 @@ QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             size_t                 BufferMemorySize);
 
 QUEX_INLINE void
-QUEX_FUNC(construct_memory)(QUEX_TYPE_ANALYZER*  me,
+QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                             QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                             size_t               BufferMemorySize,
                             const char*          CharacterEncodingName /* = 0x0   */,
                             bool                 ByteOrderReversionF   /* = false */);
 
 QUEX_INLINE void
-QUEX_FUNC(construct_file_name)(QUEX_TYPE_ANALYZER* me,
+QUEX_NAME(construct_file_name)(QUEX_TYPE_ANALYZER* me,
                                const std::string&  Filename, 
                                const char*         CharacterEncodingName /* = 0x0   */,
                                bool                ByteOrderReversionF   /* = false */);
 
 QUEX_INLINE void
-QUEX_FUNC(construct_FILE)(QUEX_TYPE_ANALYZER* me,
+QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
                           std::FILE*          fh, 
                           const char*         CharacterEncodingName /* = 0x0   */,
                           bool                ByteOrderReversionF   /* = false */);
 
 QUEX_INLINE void
-QUEX_FUNC(construct_istream)(QUEX_TYPE_ANALYZER* me,
+QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
                              std::istream*       p_input_stream, 
                              const char*         CharacterEncodingName /* = 0x0   */,
                              bool                ByteOrderReversionF   /* = false */);
 
 #if defined(__QUEX_OPTION_WCHAR_T)
 QUEX_INLINE void
-QUEX_FUNC(construct_wistream)(QUEX_TYPE_ANALYZER* me,
+QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
                               std::wistream*      p_input_stream, 
                               const char*         CharacterEncodingName /* = 0x0   */,
                               bool                ByteOrderReversionF   /* = false */);
 #endif
 
 QUEX_INLINE void
-QUEX_FUNC(destruct)(QUEX_TYPE_ANALYZER* me); 
+QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER* me); 
 
 TEMPLATE_IN(InputHandleT) void
-QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*  me,
+QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
                  InputHandleT*        input_handle, 
                  const char*          CharacterEncodingName /* = 0x0 */);
 
 QUEX_INLINE void 
-QUEX_FUNC(reset_plain)(QUEX_TYPE_ANALYZER*  me,
+QUEX_NAME(reset_plain)(QUEX_TYPE_ANALYZER*  me,
                        const char*          CharacterEncodingName /* = 0x0 */);
 
 QUEX_NAMESPACE_MAIN_CLOSE

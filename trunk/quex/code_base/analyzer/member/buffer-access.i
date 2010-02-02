@@ -100,7 +100,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void*
-    QUEX_FUNC(buffer_fill_region_append_core)(QUEX_TYPE_ANALYZER*    me, 
+    QUEX_NAME(buffer_fill_region_append_core)(QUEX_TYPE_ANALYZER*    me, 
                                               void*   ContentBegin, 
                                               void*   ContentEnd,
                                               size_t (*insert)(QUEX_NAME(BufferFiller)*   me,
@@ -148,28 +148,28 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void*
-    QUEX_FUNC(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
+    QUEX_NAME(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
                                          void*                  ContentBegin, 
                                          void*                  ContentEnd)
     {
-        return QUEX_FUNC(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+        return QUEX_NAME(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
                                                          QUEX_NAME(BufferFillerUser_Plain_insert));
     }
 
     QUEX_INLINE void*
-    QUEX_FUNC(buffer_fill_region_append_conversion)(QUEX_TYPE_ANALYZER*  me,
+    QUEX_NAME(buffer_fill_region_append_conversion)(QUEX_TYPE_ANALYZER*  me,
                                                     void*                ContentBegin, 
                                                     void*                ContentEnd)
     /* Appends the content first into a 'raw' buffer and then converts it. This
      * is useful in cases where the 'break' may appear in between characters, or
      * where the statefulness of the converter cannot be controlled.              */
     {
-        return QUEX_FUNC(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+        return QUEX_NAME(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
                                                          QUEX_NAME(BufferFillerUser_Converter_insert));
     }
 
     QUEX_INLINE void*
-    QUEX_FUNC(buffer_fill_region_append_conversion_direct)(QUEX_TYPE_ANALYZER*  me,
+    QUEX_NAME(buffer_fill_region_append_conversion_direct)(QUEX_TYPE_ANALYZER*  me,
                                                            void*                ContentBegin, 
                                                            void*                ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
@@ -177,41 +177,41 @@ QUEX_NAMESPACE_MAIN_OPEN
      * that appended chunks do not break in between the encoding of a single 
      * character.                                                                  */
     {
-        return QUEX_FUNC(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+        return QUEX_NAME(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
                                                          QUEX_NAME(BufferFillerUser_Converter_insert_direct));
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(buffer_fill_region_prepare)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_fill_region_prepare)(QUEX_TYPE_ANALYZER* me)
     {
         /* Move away unused passed buffer content. */
         QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_FUNC(buffer_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
     { 
         return QUEX_NAME(Buffer_text_end)(&me->buffer); 
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_FUNC(buffer_fill_region_end)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_fill_region_end)(QUEX_TYPE_ANALYZER* me)
     { 
         return QUEX_NAME(Buffer_content_back)(&me->buffer) + 1; 
     }
 
     QUEX_INLINE size_t
-    QUEX_FUNC(buffer_fill_region_size)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_fill_region_size)(QUEX_TYPE_ANALYZER* me)
     { 
-        __quex_assert(   QUEX_FUNC(buffer_fill_region_end)(me) 
-                      >= QUEX_FUNC(buffer_fill_region_begin)(me)); 
+        __quex_assert(   QUEX_NAME(buffer_fill_region_end)(me) 
+                      >= QUEX_NAME(buffer_fill_region_begin)(me)); 
 
-        return (size_t)(  QUEX_FUNC(buffer_fill_region_end)(me) 
-                        - QUEX_FUNC(buffer_fill_region_begin)(me)); 
+        return (size_t)(  QUEX_NAME(buffer_fill_region_end)(me) 
+                        - QUEX_NAME(buffer_fill_region_begin)(me)); 
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(buffer_fill_region_finish)(QUEX_TYPE_ANALYZER*  me,
+    QUEX_NAME(buffer_fill_region_finish)(QUEX_TYPE_ANALYZER*  me,
                                          const size_t         CharacterN)
     {
         __quex_assert(me->buffer._memory._end_of_file_p + CharacterN <= me->buffer._memory._back);
@@ -231,7 +231,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(buffer_conversion_fill_region_prepare)(QUEX_TYPE_ANALYZER* me) 
+    QUEX_NAME(buffer_conversion_fill_region_prepare)(QUEX_TYPE_ANALYZER* me) 
     {
 #       if ! defined(__QUEX_OPTION_PLAIN_C)
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
@@ -246,7 +246,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE uint8_t*  
-    QUEX_FUNC(buffer_conversion_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_conversion_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
     { 
 #       if ! defined(__QUEX_OPTION_PLAIN_C)
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
@@ -258,7 +258,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
     
     QUEX_INLINE uint8_t*  
-    QUEX_FUNC(buffer_conversion_fill_region_end)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_conversion_fill_region_end)(QUEX_TYPE_ANALYZER* me)
     { 
 #       if ! defined(__QUEX_OPTION_PLAIN_C)
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
@@ -271,17 +271,17 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
     
     QUEX_INLINE size_t
-    QUEX_FUNC(buffer_conversion_fill_region_size)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(buffer_conversion_fill_region_size)(QUEX_TYPE_ANALYZER* me)
     { 
-        __quex_assert(   QUEX_FUNC(buffer_conversion_fill_region_end)(me) 
-                      >= QUEX_FUNC(buffer_conversion_fill_region_begin)(me)); 
+        __quex_assert(   QUEX_NAME(buffer_conversion_fill_region_end)(me) 
+                      >= QUEX_NAME(buffer_conversion_fill_region_begin)(me)); 
 
-        return (size_t)(  QUEX_FUNC(buffer_conversion_fill_region_end)(me) 
-                        - QUEX_FUNC(buffer_conversion_fill_region_begin)(me)); 
+        return (size_t)(  QUEX_NAME(buffer_conversion_fill_region_end)(me) 
+                        - QUEX_NAME(buffer_conversion_fill_region_begin)(me)); 
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(buffer_conversion_fill_region_finish)(QUEX_TYPE_ANALYZER* me,
+    QUEX_NAME(buffer_conversion_fill_region_finish)(QUEX_TYPE_ANALYZER* me,
                                                     const size_t        ByteN)
     {
 #       if ! defined(__QUEX_OPTION_PLAIN_C)
@@ -315,74 +315,74 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_FUNC(buffer_lexeme_start_pointer_get)(QUEX_TYPE_ANALYZER* me) 
+    QUEX_NAME(buffer_lexeme_start_pointer_get)(QUEX_TYPE_ANALYZER* me) 
     { return me->buffer._lexeme_start_p; }
 
     QUEX_INLINE void
-    QUEX_FUNC(buffer_input_pointer_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Adr)
+    QUEX_NAME(buffer_input_pointer_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Adr)
     { me->buffer._input_p = Adr; }
 
 
 #   ifndef __QUEX_OPTION_PLAIN_C
     QUEX_INLINE void*
     QUEX_MEMBER(buffer_fill_region_append)(void*  ContentBegin, void*  ContentEnd)
-    { return QUEX_FUNC(buffer_fill_region_append)(this, ContentBegin, ContentEnd); }
+    { return QUEX_NAME(buffer_fill_region_append)(this, ContentBegin, ContentEnd); }
 
     QUEX_INLINE void*
     QUEX_MEMBER(buffer_fill_region_append_conversion)(void*  ContentBegin, void*  ContentEnd)
-    { return QUEX_FUNC(buffer_fill_region_append_conversion)(this, ContentBegin, ContentEnd); }
+    { return QUEX_NAME(buffer_fill_region_append_conversion)(this, ContentBegin, ContentEnd); }
 
     QUEX_INLINE void*
     QUEX_MEMBER(buffer_fill_region_append_conversion_direct)(void*  ContentBegin, void*  ContentEnd)
-    { return QUEX_FUNC(buffer_fill_region_append_conversion_direct)(this, ContentBegin, ContentEnd); }
+    { return QUEX_NAME(buffer_fill_region_append_conversion_direct)(this, ContentBegin, ContentEnd); }
 
     QUEX_INLINE void
     QUEX_MEMBER(buffer_fill_region_prepare)()
-    { QUEX_FUNC(buffer_fill_region_prepare)(this); }
+    { QUEX_NAME(buffer_fill_region_prepare)(this); }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
     QUEX_MEMBER(buffer_fill_region_begin)()
-    { return QUEX_FUNC(buffer_fill_region_begin)(this); }
+    { return QUEX_NAME(buffer_fill_region_begin)(this); }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
     QUEX_MEMBER(buffer_fill_region_end)()
-    { return QUEX_FUNC(buffer_fill_region_end)(this); }
+    { return QUEX_NAME(buffer_fill_region_end)(this); }
 
     QUEX_INLINE size_t
     QUEX_MEMBER(buffer_fill_region_size)()
-    { return QUEX_FUNC(buffer_fill_region_size)(this); }
+    { return QUEX_NAME(buffer_fill_region_size)(this); }
 
     QUEX_INLINE void
     QUEX_MEMBER(buffer_fill_region_finish)(const size_t CharacterN)
-    { QUEX_FUNC(buffer_fill_region_finish)(this, CharacterN); }
+    { QUEX_NAME(buffer_fill_region_finish)(this, CharacterN); }
 
     QUEX_INLINE void
     QUEX_MEMBER(buffer_conversion_fill_region_prepare)() 
-    { QUEX_FUNC(buffer_fill_region_prepare)(this); }
+    { QUEX_NAME(buffer_fill_region_prepare)(this); }
 
     QUEX_INLINE uint8_t*  
     QUEX_MEMBER(buffer_conversion_fill_region_begin)()
-    { return QUEX_FUNC(buffer_conversion_fill_region_begin)(this); }
+    { return QUEX_NAME(buffer_conversion_fill_region_begin)(this); }
     
     QUEX_INLINE uint8_t*  
     QUEX_MEMBER(buffer_conversion_fill_region_end)()
-    { return QUEX_FUNC(buffer_conversion_fill_region_end)(this); }
+    { return QUEX_NAME(buffer_conversion_fill_region_end)(this); }
     
     QUEX_INLINE size_t
     QUEX_MEMBER(buffer_conversion_fill_region_size)()
-    { return QUEX_FUNC(buffer_conversion_fill_region_size)(this); }
+    { return QUEX_NAME(buffer_conversion_fill_region_size)(this); }
 
     QUEX_INLINE void
     QUEX_MEMBER(buffer_conversion_fill_region_finish)(const size_t ByteN)
-    { QUEX_FUNC(buffer_conversion_fill_region_finish)(this, ByteN); }
+    { QUEX_NAME(buffer_conversion_fill_region_finish)(this, ByteN); }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
     QUEX_MEMBER(buffer_lexeme_start_pointer_get)() 
-    { return QUEX_FUNC(buffer_lexeme_start_pointer_get)(this); }
+    { return QUEX_NAME(buffer_lexeme_start_pointer_get)(this); }
 
     QUEX_INLINE void
     QUEX_MEMBER(buffer_input_pointer_set)(QUEX_TYPE_CHARACTER* Adr)
-    { QUEX_FUNC(buffer_input_pointer_set)(this, Adr); }
+    { QUEX_NAME(buffer_input_pointer_set)(this, Adr); }
 #   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

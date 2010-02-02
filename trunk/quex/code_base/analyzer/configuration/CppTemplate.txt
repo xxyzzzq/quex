@@ -349,16 +349,29 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
 #endif 
 
-#define QUEX_NAME(NAME)                      $$NAMESPACE_MAIN_STR$$_$$LEXER_CLASS_NAME$$_ ## NAME
-#define QUEX_NAME_TOKEN(NAME)                $$NAMESPACE_TOKEN_STR$$Token ## NAME
-
 #if defined(__QUEX_OPTION_PLAIN_C)
-#   define QUEX_MEMBER(NAME)                 void /* Undefined, not required */
-#else
-#   define QUEX_MEMBER(NAME)                 $$LEXER_CLASS_NAME$$::NAME                
-#endif
+#   define QUEX_NAMESPACE_MAIN        
+#   define QUEX_NAMESPACE_MAIN_OPEN   
+#   define QUEX_NAMESPACE_MAIN_CLOSE  
+#   define QUEX_NAMESPACE_TOKEN   
+#   define QUEX_NAMESPACE_TOKEN_OPEN  
+#   define QUEX_NAMESPACE_TOKEN_CLOSE 
 
-#define QUEX_FUNC(NAME)                      $$LEXER_CLASS_NAME$$_ ## NAME                
+#   define QUEX_NAME(NAME)             $$NAMESPACE_MAIN_STR$$_$$LEXER_CLASS_NAME$$_ ## NAME
+#   define QUEX_NAME_TOKEN(NAME)       $$NAMESPACE_TOKEN_STR$$Token ## NAME
+#   define QUEX_MEMBER(NAME)           void /* Undefined, not required */
+#else
+#   define QUEX_NAMESPACE_MAIN         $$NAMESPACE_MAIN$$
+#   define QUEX_NAMESPACE_MAIN_OPEN    $$NAMESPACE_MAIN_OPEN$$
+#   define QUEX_NAMESPACE_MAIN_CLOSE   $$NAMESPACE_MAIN_CLOSE$$
+#   define QUEX_NAMESPACE_TOKEN        $$NAMESPACE_TOKEN$$
+#   define QUEX_NAMESPACE_TOKEN_OPEN   $$NAMESPACE_TOKEN_OPEN$$
+#   define QUEX_NAMESPACE_TOKEN_CLOSE  $$NAMESPACE_TOKEN_CLOSE$$
+
+#   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME$$_ ## NAME
+#   define QUEX_NAME_TOKEN(NAME)       Token ## NAME
+#   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
+#endif
 
 #if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
 #    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
@@ -400,22 +413,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define     QUEX_TYPE_COUNTER_CONSTRUCTOR /* empty */
 #   define     QUEX_TYPE_COUNTER_RESET       /* empty */
 #   define     QUEX_TYPE_COUNTER_PRINT_THIS  /* empty */
-#endif
-
-#ifdef __QUEX_OPTION_PLAIN_C
-#   define QUEX_NAMESPACE_MAIN        
-#   define QUEX_NAMESPACE_MAIN_OPEN   
-#   define QUEX_NAMESPACE_MAIN_CLOSE  
-#   define QUEX_NAMESPACE_TOKEN   
-#   define QUEX_NAMESPACE_TOKEN_OPEN  
-#   define QUEX_NAMESPACE_TOKEN_CLOSE 
-#else
-#   define QUEX_NAMESPACE_MAIN                  $$NAMESPACE_MAIN$$
-#   define QUEX_NAMESPACE_MAIN_OPEN             $$NAMESPACE_MAIN_OPEN$$
-#   define QUEX_NAMESPACE_MAIN_CLOSE            $$NAMESPACE_MAIN_CLOSE$$
-#   define QUEX_NAMESPACE_TOKEN                 $$NAMESPACE_TOKEN$$
-#   define QUEX_NAMESPACE_TOKEN_OPEN            $$NAMESPACE_TOKEN_OPEN$$
-#   define QUEX_NAMESPACE_TOKEN_CLOSE           $$NAMESPACE_TOKEN_CLOSE$$
 #endif
 
 /* Decide about computed gotos */

@@ -62,7 +62,12 @@ func_str = \
 """
 QUEX_NAMESPACE_TOKEN_OPEN
 
-QUEX_INLINE const char*
+#ifndef __QUEX_OPTION_PLAIN_C
+    inline
+#else
+    static
+#endif
+const char*
 QUEX_NAME_TOKEN(_map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
