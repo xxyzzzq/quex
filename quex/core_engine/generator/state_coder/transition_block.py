@@ -10,8 +10,7 @@ class __info:
 
         self.state_index        = StateIdx
         self.is_init_state_f    = IsInitStateF
-
-        self.dsm = DSM
+        self.dsm                = DSM
 
 def do(TriggerMap, StateIdx, InitStateF, DSM):
     assert type(TriggerMap) == list

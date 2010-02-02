@@ -163,7 +163,9 @@ def write_engine_header(Modes):
     i = -1
     for name in Modes.keys():
         i += 1
-        mode_id_definition_str += "const int QUEX_NAME(ModeID_%s) = %i;\n" % (name, i)
+        mode_id_definition_str += "    QUEX_NAME(ModeID_%s) = %i,\n" % (name, i)
+    if mode_id_definition_str != "":
+        mode_id_definition_str = mode_id_definition_str[:-2]
 
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \

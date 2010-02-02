@@ -259,7 +259,7 @@ public:
 private:
     // (*) Common core of all constructors ___________________________________________
     TEMPLATE_IN(InputHandleT) friend void
-    QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*       me,
+    QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*       me,
                                 InputHandleT*             input_handle, 
                                 const char*               CharacterEncodingName,
                                 bool                      ByteOrderReversionF,
@@ -267,13 +267,13 @@ private:
                                 size_t                    BufferMemorySize);
 
     template<class InputHandleT> friend QUEX_NAME(Memento)*
-    QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
+    QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
                             InputHandleT**);
     friend void
-    QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_NAME(Memento)*);
+    QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_NAME(Memento)*);
 
     template<class InputHandleT> friend void
-    QUEX_FUNC(reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
+    QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
 
     /* (*) All Modes are Friends ___________________________________________________*/
     friend     void QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
@@ -301,7 +301,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 QUEX_NAMESPACE_MAIN_OPEN
 
 TEMPLATE_IN(InputHandleT) void
-QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
+QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             InputHandleT*          input_handle, 
                             const char*            CharacterEncodingName,
                             bool                   ByteOrderReversionF,
@@ -326,14 +326,14 @@ QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
         me->mode_db[QUEX_NAME(QuexModeID_ONE_AND_ONLY)] = &(QUEX_NAME(ONE_AND_ONLY));
 
 
-    QUEX_FUNC(construct_basic)(me, input_handle,
+    QUEX_NAME(construct_basic)(me, input_handle,
                                BufferMemory, QUEX_SETTING_BUFFER_SIZE,
                                CharacterEncodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                ByteOrderReversionF);
 
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    QUEX_FUNC(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
 /* START: User's constructor extensions _______________________________________*/
 
@@ -345,7 +345,7 @@ QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
 TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
-QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
+QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
                         QUEX_TYPE_CHARACTER*  InputName, 
                         InputHandleT**        input_handle)
 {
@@ -389,7 +389,7 @@ QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 }
 
 QUEX_INLINE void
-QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
+QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
                           QUEX_NAME(Memento)*  memento)
 {
 #   define self  (*me)
@@ -786,7 +786,7 @@ STATE_248_DROP_OUT_DIRECT:
         goto TERMINAL_END_OF_STREAM;
     }
         QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_248_INPUT;
     }
@@ -837,7 +837,7 @@ STATE_256_DROP_OUT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_256_INPUT;
     }
@@ -906,7 +906,7 @@ STATE_257_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_257_INPUT;
     }
@@ -963,7 +963,7 @@ STATE_258_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_258_INPUT;
     }
@@ -1032,7 +1032,7 @@ STATE_259_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_259_INPUT;
     }
@@ -1101,7 +1101,7 @@ STATE_260_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_260_INPUT;
     }
@@ -1170,7 +1170,7 @@ STATE_261_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_261_INPUT;
     }
@@ -1239,7 +1239,7 @@ STATE_262_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_262_INPUT;
     }
@@ -1308,7 +1308,7 @@ STATE_263_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_263_INPUT;
     }
@@ -1365,7 +1365,7 @@ STATE_264_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_264_INPUT;
     }
@@ -1434,7 +1434,7 @@ STATE_265_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_265_INPUT;
     }
@@ -1491,7 +1491,7 @@ STATE_266_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_266_INPUT;
     }
@@ -1560,7 +1560,7 @@ STATE_267_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_267_INPUT;
     }
@@ -1629,7 +1629,7 @@ STATE_268_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_268_INPUT;
     }
@@ -1698,7 +1698,7 @@ STATE_269_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_269_INPUT;
     }
@@ -1767,7 +1767,7 @@ STATE_270_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_270_INPUT;
     }
@@ -1824,7 +1824,7 @@ STATE_271_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_271_INPUT;
     }
@@ -1893,7 +1893,7 @@ STATE_272_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_272_INPUT;
     }
@@ -1950,7 +1950,7 @@ STATE_273_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_273_INPUT;
     }
@@ -2019,7 +2019,7 @@ STATE_274_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_274_INPUT;
     }
@@ -2088,7 +2088,7 @@ STATE_275_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_275_INPUT;
     }
@@ -2157,7 +2157,7 @@ STATE_276_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_276_INPUT;
     }
@@ -2226,7 +2226,7 @@ STATE_277_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_277_INPUT;
     }
@@ -2283,7 +2283,7 @@ STATE_278_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_278_INPUT;
     }
@@ -2323,7 +2323,7 @@ STATE_249_DROP_OUT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_249_INPUT;
     }
@@ -2392,7 +2392,7 @@ STATE_251_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_251_INPUT;
     }
@@ -2461,7 +2461,7 @@ STATE_253_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_253_INPUT;
     }
@@ -2530,7 +2530,7 @@ STATE_254_DROP_OUT_DIRECT:
     last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
     
     QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_FUNC(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                                       post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_254_INPUT;
     }

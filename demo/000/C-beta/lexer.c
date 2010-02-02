@@ -8,7 +8,7 @@ main(int argc, char** argv)
     tiny_lexer   qlex;
     int          token_n = 0;
 
-    QUEX_FUNC(construct_file_name)(&qlex, "example.txt", 0x0, false);
+    QUEX_NAME(construct_file_name)(&qlex, "example.txt", 0x0, false);
 
     printf(",------------------------------------------------------------------------------------\n");
     printf("| [START]\n");
@@ -17,7 +17,7 @@ main(int argc, char** argv)
     token_n = 0;
     do {
         /* Get next token from the token stream   */
-        QUEX_FUNC(receive_p)(&qlex, &token);
+        QUEX_NAME(receive_p)(&qlex, &token);
         /* Print out token information            */
         printf("%s\n", QUEX_NAME_TOKEN(_map_id_to_name)(token._id));
         ++token_n;

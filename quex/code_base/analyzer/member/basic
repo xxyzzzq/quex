@@ -12,7 +12,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_FUNC(construct_basic)(QUEX_TYPE_ANALYZER*   me,
+    QUEX_NAME(construct_basic)(QUEX_TYPE_ANALYZER*   me,
                                InputHandleT*         input_handle,
                                QUEX_TYPE_CHARACTER*  BufferMemory,
                                const size_t          BufferMemorySize,
@@ -21,16 +21,16 @@ QUEX_NAMESPACE_MAIN_OPEN
                                bool                  ByteOrderReversionF);
 
     QUEX_INLINE void 
-    QUEX_FUNC(destruct_basic)(QUEX_TYPE_ANALYZER* me);
+    QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me);
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_FUNC(reset_basic)(QUEX_TYPE_ANALYZER*   me,
+    QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*   me,
                            InputHandleT*         input_handle, 
                            const char*           CharacterEncodingName, 
                            const size_t          TranslationBufferMemorySize);
 
-    QUEX_INLINE bool      QUEX_FUNC(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
-    QUEX_INLINE bool      QUEX_FUNC(buffer_reload_forward)(QUEX_NAME(Buffer)*  buffer, 
+    QUEX_INLINE bool      QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
+    QUEX_INLINE bool      QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*  buffer, 
                                                            QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
                                                            QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                                            const size_t                  PostContextN);

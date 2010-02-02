@@ -19,7 +19,7 @@ QUEX_NAMESPACE_MAIN_OPEN
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
-    QUEX_FUNC(receive_pp)(QUEX_TYPE_ANALYZER* me,
+    QUEX_NAME(receive_pp)(QUEX_TYPE_ANALYZER* me,
                           QUEX_TYPE_TOKEN**   result_pp) 
     /* NOTE: As long as the 'receive()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
@@ -66,7 +66,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(receive_p)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* result_p) 
+    QUEX_NAME(receive_p)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
@@ -95,7 +95,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 
     QUEX_INLINE void
-    QUEX_FUNC(receive_p)(QUEX_TYPE_ANALYZER*  me,
+    QUEX_NAME(receive_p)(QUEX_TYPE_ANALYZER*  me,
                          QUEX_TYPE_TOKEN*     result_p) 
     {
         me->token = result_p;
@@ -108,7 +108,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_FUNC(receive)(QUEX_TYPE_ANALYZER* me) 
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
     {
         __quex_assert(me->token != 0x0);
 
@@ -122,7 +122,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_FUNC(receive_to_array)(QUEX_TYPE_ANALYZER* me,
+    QUEX_NAME(receive_to_array)(QUEX_TYPE_ANALYZER* me,
                                 QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
         /* RETURNS: Pointer to first token after the last filled in token. */
     {
@@ -144,25 +144,25 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN**   result_pp) 
-    { QUEX_FUNC(receive_pp)(this, result_pp); }
+    { QUEX_NAME(receive_pp)(this, result_pp); }
 
     QUEX_INLINE void
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN*   result_p) 
-    { QUEX_FUNC(receive_p)(this, result_p); }
+    { QUEX_NAME(receive_p)(this, result_p); }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     QUEX_INLINE void
     QUEX_MEMBER(receive)() 
-    { QUEX_FUNC(receive)(this); }
+    { QUEX_NAME(receive)(this); }
 
     QUEX_INLINE void
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN*   result_p) 
-    { QUEX_FUNC(receive_p)(this, result_p); }
+    { QUEX_NAME(receive_p)(this, result_p); }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     QUEX_INLINE QUEX_TYPE_TOKEN*
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
-    { return QUEX_FUNC(receive_to_array)(this, QueueMemoryBegin, QueueMemoryEnd); } 
+    { return QUEX_NAME(receive_to_array)(this, QueueMemoryBegin, QueueMemoryEnd); } 
 #   endif
 #endif
 

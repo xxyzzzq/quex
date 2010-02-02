@@ -14,7 +14,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_FUNC(construct_basic)(QUEX_TYPE_ANALYZER*     me,
+    QUEX_NAME(construct_basic)(QUEX_TYPE_ANALYZER*     me,
                                InputHandleT*           input_handle,
                                QUEX_TYPE_CHARACTER*    BufferMemory,
                                const size_t            BufferMemorySize,
@@ -87,7 +87,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void
-    QUEX_FUNC(destruct_basic)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me)
     {
         QUEX_NAME(Buffer_destruct)(&me->buffer);
 
@@ -104,7 +104,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_FUNC(reset_basic)(QUEX_TYPE_ANALYZER*  me,
+    QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*  me,
                            InputHandleT*        input_handle, 
                            const char*          CharacterEncodingName, 
                            const size_t         TranslationBufferMemorySize)
@@ -122,7 +122,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       ifdef QUEX_OPTION_INCLUDE_STACK
-        QUEX_FUNC(include_stack_delete)((QUEX_TYPE_ANALYZER*)me);
+        QUEX_NAME(include_stack_delete)((QUEX_TYPE_ANALYZER*)me);
 #       endif
 
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
@@ -140,7 +140,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     QUEX_INLINE bool 
-    QUEX_FUNC(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
+    QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
         size_t LoadedCharacterN = 0;
 
@@ -162,7 +162,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool 
-    QUEX_FUNC(buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
+    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
                                      QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
                                      QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                      const size_t                  PostContextN)
