@@ -40,7 +40,7 @@ def _do(Descr):
         TemplateIFile = Setup.QUEX_INSTALLATION_DIR \
                        + Setup.language_db["$code_base"] \
                        + Setup.language_db["$token_template_i_file"]
-        template_i_str = open_file_or_die(TemplateFile, Mode="rb").read()
+        template_i_str = open_file_or_die(TemplateIFile, Mode="rb").read()
 
     template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     

@@ -2,7 +2,10 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-TEMPLATE_IN(InputHandleT) void
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+void
 QUEX_FUNC(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             InputHandleT*          input_handle, 
                             const char*            CharacterEncodingName,
@@ -31,7 +34,10 @@ $$CONSTRUCTOR_EXTENSTION$$
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
-TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+QUEX_NAME(Memento)*
 QUEX_FUNC(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
                         QUEX_TYPE_CHARACTER*  InputName, 
                         InputHandleT**        input_handle)
@@ -76,7 +82,10 @@ $$MEMENTO_EXTENSIONS_PACK$$
 #   undef self
 }
 
-QUEX_INLINE void
+#ifndef __QUEX_OPTION_PLAIN_C
+QUEX_INLINE 
+#endif
+void
 QUEX_FUNC(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
                           QUEX_NAME(Memento)*  memento)
 {

@@ -20,7 +20,8 @@ def test(Txt):
     sh = StringIO(Txt)
     sh.name = "a string"
     descriptor = parser.parse(sh)
-    print token_class._do(descriptor)
+    txt, txt_i = token_class._do(descriptor)
+    print txt
 
 test0 = "{ "
 test1 = \

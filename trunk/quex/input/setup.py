@@ -9,7 +9,8 @@ FLAG = -2
 NEGATED_FLAG = -3
 
 SETUP_INFO = {         
-    # [Name in Setup]                 [ Flags ]                              [Default / Type]
+    # [Name in Setup]                 [ Flags ]                                [Default / Type]
+    "_debug_exception_f":             [["--debug-exception"],                  FLAG], 
     "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "quex::lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],

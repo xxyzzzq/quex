@@ -152,7 +152,7 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
     txt  = "\n"
     txt += "switch( Mode->id ) {\n"
     for mode_name in ThoseModes:
-        txt += "case $$CLASS$$_QuexModeID_%s: return true;\n" % mode_name
+        txt += "case QUEX_NAME(ModeID_%s): return true;\n" % mode_name
     txt += "default:\n"
     if ConsiderDerivedClassesF:
         for mode_name in ThoseModes:

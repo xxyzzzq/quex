@@ -5,21 +5,21 @@ import time
 
 from quex.frs_py.string_handling import blue_print
 from quex.frs_py.file_in  import get_file_content_or_die, \
-                                 write_safely_and_close, \
                                  get_include_guard_extension, \
                                  make_safe_identifier
 
-import quex.lexer_mode              as lexer_mode
-from   quex.input.setup             import setup as Setup
+import quex.lexer_mode  as lexer_mode
+from   quex.input.setup import setup as Setup
 
 def do(Modes, IndentationSupportF):
     assert lexer_mode.token_type_definition != None
 
-    write_engine_header(Modes)
-    write_configuration_header(Modes, IndentationSupportF)
+    header_engine_txt, code_engine_txt = write_engine_header(Modes)
+    header_configuration_txt           = write_configuration_header(Modes, IndentationSupportF)
+
+    return header_engine_txt, code_engine_txt, header_configuration_txt
 
 def write_configuration_header(Modes, IndentationSupportF):
-    OutputConfigurationFile   = Setup.output_configuration_file
     LexerClassName            = Setup.analyzer_class_name
     ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
                                    + Setup.language_db["$code_base"] 
@@ -98,7 +98,7 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
-             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(QuexModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
+             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
@@ -118,14 +118,16 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
 
-    write_safely_and_close(OutputConfigurationFile, txt)
+    return txt
 
 def __switch(txt, Name, SwitchF):
     if SwitchF: txt = txt.replace("$$SWITCH$$ %s" % Name, "#define    %s" % Name)
     else:       txt = txt.replace("$$SWITCH$$ %s" % Name, "/* #define %s */" % Name)
     return txt
     
-def write_constructor_and_memento_functions(ModeDB, LexerClassName):
+def write_constructor_and_memento_functions(ModeDB):
+    LexerClassName = Setup.analyzer_class_name
+
     FileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                     + Setup.language_db["$code_base"] 
                                     + "/analyzer/CppTemplate_functions.txt")
@@ -145,7 +147,6 @@ def write_engine_header(Modes):
     QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                                    + Setup.language_db["$code_base"] 
                                                    + Setup.language_db["$analyzer_template_file"]).replace("//","/")
-    QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerFileStem               = Setup.output_file_stem
     LexerClassName              = Setup.analyzer_class_name
 
@@ -162,7 +163,7 @@ def write_engine_header(Modes):
     i = -1
     for name in Modes.keys():
         i += 1
-        mode_id_definition_str += "const int QUEX_NAME(QuexModeID_%s) = %i;\n" % (name, i)
+        mode_id_definition_str += "const int QUEX_NAME(ModeID_%s) = %i;\n" % (name, i)
 
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
@@ -179,13 +180,13 @@ def write_engine_header(Modes):
 
     token_class_file_name = lexer_mode.token_type_definition.get_file_name()
 
-    function_code_txt = write_constructor_and_memento_functions(Modes, LexerClassName)
-
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
     include_guard_ext = get_include_guard_extension(
             Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
+
+    function_code_txt = write_constructor_and_memento_functions(Modes)
 
     txt = blue_print(template_code_txt,
             [
@@ -211,20 +212,15 @@ def write_engine_header(Modes):
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
 
-    write_safely_and_close(QuexClassHeaderFileOutput, txt)
-
-    # In the 'C' case the class's constructor and memento functions must
-    # appear in a separate '.i' implementation file
-    if Setup.language == "C":
-        txt  = "#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I\n"
-        txt += "#define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I\n"
-        txt += function_code_txt + "\n"
-        txt += "#define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I\n"
-        txt = txt.replace("$$INCLUDE_GUARD_EXTENSION$$", include_guard_ext)
-        write_safely_and_close(QuexClassHeaderFileOutput + ".i", txt)
+    if Setup.language != "C":
+        return txt, ""
+    else:
+        # In the 'C' case the class's constructor and memento functions must
+        # appear in a separate '.i' implementation file.
+        return txt, function_code_txt
 
 quex_mode_init_call_str = """
-     QUEX_NAME($$MN$$).id   = QUEX_NAME(QuexModeID_$$MN$$);
+     QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);
      QUEX_NAME($$MN$$).name = "$$MN$$";
      QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
@@ -319,14 +315,14 @@ def get_constructor_code(Modes, LexerClassName):
 
     txt = ""
     for mode in Modes:
-        txt += "        __quex_assert(QUEX_NAME(QuexModeID_%s) %s< %i);\n" % \
+        txt += "        __quex_assert(QUEX_NAME(ModeID_%s) %s< %i);\n" % \
                (mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:
         txt += __get_mode_init_call(mode, LexerClassName)
 
     for mode in Modes:
-        txt += "        me->mode_db[QUEX_NAME(QuexModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
+        txt += "        me->mode_db[QUEX_NAME(ModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
                (mode.name, " " * (L-len(mode.name)), mode.name)
     return txt
 
