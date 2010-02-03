@@ -19,7 +19,7 @@ from copy import copy, deepcopy
 from   quex.frs_py.file_in                       import error_msg
 import quex.core_engine.generator.languages.core as languages
 import sys
-import codecs
+import quex.core_engine.utf8 as utf8
 
 utf8_char_db = {
     -sys.maxint:   "-oo",
@@ -29,7 +29,6 @@ utf8_char_db = {
     ord('\t'):     "'\\t'",
     ord('\r'):     "'\\r'",
 }
-utf8_c = codecs.getencoder("utf-8")
 
 class Interval:
     """Representing an interval with a minimum and a maximum border. Implements
@@ -181,10 +180,8 @@ class Interval:
         if utf8_char_db.has_key(Code): return utf8_char_db[Code]
         elif Code < ord(' '):          return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
         else:
-            char_str = utf8_c(eval("u'\\U%08X'" % Code))[0]     # NOT 'unichr' for compatibility
-            return "'" + char_str + "'"                         #     with 'python narrow build'
-        # elif Code < ord('0') or Code > ord('z'): return "\\" + repr(Code)
-        # else:                                    return "'" + chr(Code) + "'"
+            char_str = "".join(["'"] + map(chr, utf8.unicode_to_utf8(Code)) + ["'"])
+            return char_str
 
     def get_string(self, Option="", Delimiter=", "):
         assert self.end >= self.begin
