@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.11" date="Tue Feb  2 23:10:04 2010">
+<test-database execution-time-sec="0.11" date="Wed Feb  3 22:23:01 2010">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.03"> 
