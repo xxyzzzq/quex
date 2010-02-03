@@ -107,11 +107,11 @@
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC                             
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC                             
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC                             
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC_I
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER_BASIC_I                             
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC_I
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC_I                             
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MODE
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MODE
@@ -181,4 +181,13 @@
 #endif
 #ifdef     __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER                    
 #   undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER                    
+#endif
+#ifdef    __QUEX_INCLUDE_GUARD__AUX_STRING
+#   undef __QUEX_INCLUDE_GUARD__AUX_STRING
+#endif
+#ifdef    __QUEX_INCLUDE_GUARD__AUX_STRING_I
+#   undef __QUEX_INCLUDE_GUARD__AUX_STRING_I
+#endif
+#ifdef    __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE_I
+#   undef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE_I
 #endif

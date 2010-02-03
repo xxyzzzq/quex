@@ -63,28 +63,28 @@ def __get_code(TriggerMap, info):
             previous_interval = deepcopy(trigger_interval)
 
     #________________________________________________________________________________
-    txt = "    "
 
     if TriggerSetN == 1 :
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
         #     If the input falls into this interval the target trigger is identified!
-        txt += __create_transition_code(TriggerMap[0], info)
+        txt = __create_transition_code(TriggerMap[0], info)
         
     else:    
         simple_txt = __try_very_simplest_case(TriggerMap, info)
         if simple_txt != None: 
-            txt += simple_txt
+            txt = "".join(["    ", simple_txt])
         else:
             # two or more intervals => cut in the middle
             MiddleTrigger_Idx = int(TriggerSetN / 2)
             middle = TriggerMap[MiddleTrigger_Idx]
 
             # input < 0 is impossible, since unicode codepoints start at 0!
-            if middle[0].begin == 0: txt += __get_code(TriggerMap[MiddleTrigger_Idx:], info) 
-            elif TriggerSetN == 2:   txt += __bracket_two_intervals(TriggerMap, info) 
-            elif TriggerSetN == 3:   txt += __bracket_three_intervals(TriggerMap, info)
-            else:                    txt += __bracket_normally(MiddleTrigger_Idx, TriggerMap, info)
+            if middle[0].begin == 0: txt = __get_code(TriggerMap[MiddleTrigger_Idx:], info) 
+            elif TriggerSetN == 2:   txt = __bracket_two_intervals(TriggerMap, info) 
+            elif TriggerSetN == 3:   txt = __bracket_three_intervals(TriggerMap, info)
+            else:                    txt = __bracket_normally(MiddleTrigger_Idx, TriggerMap, info)
+            txt = "".join(["    ", txt])
         
 
     # (*) indent by four spaces (nested blocks are correctly indented)
@@ -93,7 +93,7 @@ def __get_code(TriggerMap, info):
     txt = txt.replace("\n", "\n    ") + "\n"
     return txt 
 
-def __create_transition_code(TriggerMapEntry, info, IndentF=False):
+def __create_transition_code(TriggerMapEntry, info):
     """Creates the transition code to a given target based on the information in
        the trigger map entry.
     """
@@ -116,8 +116,7 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     else:
         txt += "\n"
 
-    if IndentF: 
-        txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
+    txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
     return txt
 
 def __try_very_simplest_case(TriggerMap, info):
@@ -175,9 +174,9 @@ def __try_very_simplest_case(TriggerMap, info):
     return "".join([
                     txt0,
                     # TriggerInfo = [None, TargetStateIndex] because the interval does not matter.
-                    __create_transition_code([None, common_target_state_index], info, IndentF=True),
+                    __create_transition_code([None, common_target_state_index], info),
                     LanguageDB["$endif-else"],
-                    __create_transition_code([None, None], info, IndentF=True),
+                    __create_transition_code([None, None], info),
                     LanguageDB["$end-else"]
                    ])
 
@@ -205,9 +204,9 @@ def __bracket_two_intervals(TriggerMap, info):
 
     return "".join([
                     txt0,
-                    __create_transition_code(first, info, IndentF=True),
+                    __create_transition_code(first, info),
                     LanguageDB["$endif-else"],
-                    __create_transition_code(second, info, IndentF=True),
+                    __create_transition_code(second, info),
                     LanguageDB["$end-else"]
                    ])
 
@@ -240,12 +239,12 @@ def __bracket_three_intervals(TriggerMap, info):
 
         return "".join([
                         txt0,
-                        __create_transition_code(TriggerMap[1], info, IndentF=True),
+                        __create_transition_code(TriggerMap[1], info),
                         LanguageDB["$endif-else"],
                         # TODO: Add somehow a mechanism to report that here the 
                         #       intervals 0 **and** 1 are triggered
                         #       (only for the comments in the generated code)
-                        __create_transition_code(TriggerMap[0], info, IndentF=True),
+                        __create_transition_code(TriggerMap[0], info),
                         LanguageDB["$end-else"]
                        ])
 

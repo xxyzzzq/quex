@@ -60,6 +60,12 @@
 #ifdef    QUEX_SETTING_BUFFER_SIZE 
 #   undef QUEX_SETTING_BUFFER_SIZE 
 #endif
+#ifdef    QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
+#   undef QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
+#endif
+#ifdef    QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE 
+#   undef QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE 
+#endif
 #ifdef    QUEX_SETTING_MODE_STACK_SIZE 
 #   undef QUEX_SETTING_MODE_STACK_SIZE 
 #endif
@@ -95,6 +101,15 @@
 #endif
 #ifdef    __QUEX_OPTION_LINE_COLUMN_COUNTER
 #   undef __QUEX_OPTION_LINE_COLUMN_COUNTER
+#endif
+#ifdef    QUEX_TYPE_COUNTER_CONSTRUCTOR 
+#   undef QUEX_TYPE_COUNTER_CONSTRUCTOR 
+#endif
+#ifdef    QUEX_TYPE_COUNTER_RESET 
+#   undef QUEX_TYPE_COUNTER_RESET 
+#endif
+#ifdef    QUEX_TYPE_COUNTER_PRINT_THIS 
+#   undef QUEX_TYPE_COUNTER_PRINT_THIS 
 #endif
 #ifdef    __QUEX_OPTION_LITTLE_ENDIAN
 #   undef __QUEX_OPTION_LITTLE_ENDIAN
@@ -147,9 +162,6 @@
 #ifdef    QUEX_TYPE_TOKEN
 #   undef QUEX_TYPE_TOKEN                    
 #endif
-#ifdef    QUEX_TYPE_TOKEN_TAG
-#   undef QUEX_TYPE_TOKEN_TAG                    
-#endif
 #ifdef    QUEX_TYPE0_TOKEN
 #   undef QUEX_TYPE0_TOKEN                    
 #endif
@@ -201,9 +213,6 @@
 #ifdef    QUEX_MEMBER 
 #   undef QUEX_MEMBER 
 #endif
-#ifdef    QUEX_FUNC 
-#   undef QUEX_FUNC 
-#endif
 #ifdef    QUEX_TYPE_CHARACTER_POSITION 
 #   undef QUEX_TYPE_CHARACTER_POSITION 
 #endif
@@ -224,4 +233,7 @@
 #endif
 #ifdef    QUEX_NAMESPACE_TOKEN_CLOSE 
 #   undef QUEX_NAMESPACE_TOKEN_CLOSE 
+#endif
+#ifdef    __QUEX_OPTION_USE_COMPUTED_GOTOS 
+#   undef __QUEX_OPTION_USE_COMPUTED_GOTOS 
 #endif

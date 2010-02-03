@@ -57,9 +57,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
-const int QUEX_NAME(QuexModeID_ONE_AND_ONLY) = 0;
+enum {
+    QUEX_NAME(ModeID_ONE_AND_ONLY) = 0
+};
 
-    
         extern QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);
 
 
@@ -300,7 +301,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-TEMPLATE_IN(InputHandleT) void
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+void
 QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             InputHandleT*          input_handle, 
                             const char*            CharacterEncodingName,
@@ -308,9 +312,9 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             QUEX_TYPE_CHARACTER*   BufferMemory,    
                             size_t                 BufferMemorySize)
 {
-        __quex_assert(QUEX_NAME(QuexModeID_ONE_AND_ONLY) < 1);
+        __quex_assert(QUEX_NAME(ModeID_ONE_AND_ONLY) < 1);
 
-     QUEX_NAME(ONE_AND_ONLY).id   = QUEX_NAME(QuexModeID_ONE_AND_ONLY);
+     QUEX_NAME(ONE_AND_ONLY).id   = QUEX_NAME(ModeID_ONE_AND_ONLY);
      QUEX_NAME(ONE_AND_ONLY).name = "ONE_AND_ONLY";
      QUEX_NAME(ONE_AND_ONLY).analyzer_function = QUEX_NAME(ONE_AND_ONLY_analyzer_function);
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
@@ -323,7 +327,7 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
      QUEX_NAME(ONE_AND_ONLY).has_entry_from = QUEX_NAME(ONE_AND_ONLY_has_entry_from);
      QUEX_NAME(ONE_AND_ONLY).has_exit_to    = QUEX_NAME(ONE_AND_ONLY_has_exit_to);
 #    endif
-        me->mode_db[QUEX_NAME(QuexModeID_ONE_AND_ONLY)] = &(QUEX_NAME(ONE_AND_ONLY));
+        me->mode_db[QUEX_NAME(ModeID_ONE_AND_ONLY)] = &(QUEX_NAME(ONE_AND_ONLY));
 
 
     QUEX_NAME(construct_basic)(me, input_handle,
@@ -344,7 +348,10 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
-TEMPLATE_IN(InputHandleT) QUEX_NAME(Memento)*
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+QUEX_NAME(Memento)*
 QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
                         QUEX_TYPE_CHARACTER*  InputName, 
                         InputHandleT**        input_handle)
@@ -388,7 +395,10 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 #   undef self
 }
 
-QUEX_INLINE void
+#ifndef __QUEX_OPTION_PLAIN_C
+QUEX_INLINE 
+#endif
+void
 QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
                           QUEX_NAME(Memento)*  memento)
 {
@@ -476,6 +486,7 @@ __quex_assert(Indentation >= 0);
 #endif    
 #undef self
 QUEX_NAMESPACE_MAIN_CLOSE
+
 
     /* 
      * MODE: ONE_AND_ONLY
@@ -2570,7 +2581,7 @@ TERMINAL_35:
         self_send1(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
-#line 2148 "Simple.cpp"
+#line 2149 "Simple.cpp"
         
         }
     }
@@ -2614,7 +2625,7 @@ TERMINAL_7:
         self_send0(QUEX_TKN_STRUCT);
         CONTINUE;
         
-#line 2192 "Simple.cpp"
+#line 2193 "Simple.cpp"
         
         }
     }
@@ -2639,7 +2650,7 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2217 "Simple.cpp"
+#line 2218 "Simple.cpp"
         
         }
     }
@@ -2664,7 +2675,7 @@ TERMINAL_10:
         self_send0(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
-#line 2242 "Simple.cpp"
+#line 2243 "Simple.cpp"
         
         }
     }
@@ -2689,7 +2700,7 @@ TERMINAL_13:
         self_send0(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
-#line 2267 "Simple.cpp"
+#line 2268 "Simple.cpp"
         
         }
     }
@@ -2714,7 +2725,7 @@ TERMINAL_16:
         self_send0(QUEX_TKN_SEND);
         CONTINUE;
         
-#line 2292 "Simple.cpp"
+#line 2293 "Simple.cpp"
         
         }
     }
@@ -2739,7 +2750,7 @@ TERMINAL_19:
         self_send0(QUEX_TKN_EXPECT);
         CONTINUE;
         
-#line 2317 "Simple.cpp"
+#line 2318 "Simple.cpp"
         
         }
     }
@@ -2765,7 +2776,7 @@ TERMINAL_22_DIRECT:
         self_send0(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
-#line 2343 "Simple.cpp"
+#line 2344 "Simple.cpp"
         
         }
     }
@@ -2791,7 +2802,7 @@ TERMINAL_25_DIRECT:
         self_send0(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
-#line 2369 "Simple.cpp"
+#line 2370 "Simple.cpp"
         
         }
     }
@@ -2817,7 +2828,7 @@ TERMINAL_28_DIRECT:
         self_send0(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
-#line 2395 "Simple.cpp"
+#line 2396 "Simple.cpp"
         
         }
     }
@@ -2838,7 +2849,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self_send0(QUEX_TKN_TERMINATION);
         
-#line 2416 "Simple.cpp"
+#line 2417 "Simple.cpp"
         
         }
                 }
@@ -2992,7 +3003,12 @@ QUEX_NAMESPACE_MAIN_CLOSE/* -*- C++ -*- vim: set syntax=cpp:
 
 QUEX_NAMESPACE_TOKEN_OPEN
 
-QUEX_INLINE const char*
+#ifndef __QUEX_OPTION_PLAIN_C
+    inline
+#else
+    static
+#endif
+const char*
 QUEX_NAME_TOKEN(_map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
