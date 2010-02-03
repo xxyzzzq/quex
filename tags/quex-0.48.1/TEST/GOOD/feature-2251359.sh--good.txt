@@ -1,0 +1,29 @@
+(*) Core Engine
+        self_send(QUEX_TKN_UCS_0x000061);
+        self_send(QUEX_TKN_UCS_0x001000);
+        self_send(QUEX_TKN_UCS_0x00012E);
+        self_send(QUEX_TKN_UCS_0x0086A5);
+        self_send(QUEX_TKN_UCS_0x000058);
+        self_send(QUEX_TKN_UCS_0x00001B);
+        self_send(QUEX_TKN_UCS_0x00062C);
+        self_send(QUEX_TKN_UCS_0x00000C);
+        self_send(QUEX_TKN_TERMINATION);
+(*) Token IDs
+#define QUEX_TKN_TERMINATION   ((QUEX_TYPE_TOKEN_ID)0)
+#define QUEX_TKN_UCS_0x00000C  ((QUEX_TYPE_TOKEN_ID)12)
+#define QUEX_TKN_UCS_0x00001B  ((QUEX_TYPE_TOKEN_ID)27)
+#define QUEX_TKN_UCS_0x000058  ((QUEX_TYPE_TOKEN_ID)88)
+#define QUEX_TKN_UCS_0x000061  ((QUEX_TYPE_TOKEN_ID)97)
+#define QUEX_TKN_UCS_0x00012E  ((QUEX_TYPE_TOKEN_ID)302)
+#define QUEX_TKN_UCS_0x00062C  ((QUEX_TYPE_TOKEN_ID)1580)
+#define QUEX_TKN_UCS_0x001000  ((QUEX_TYPE_TOKEN_ID)4096)
+#define QUEX_TKN_UCS_0x0086A5  ((QUEX_TYPE_TOKEN_ID)34469)
+#define QUEX_TKN_UNINITIALIZED ((QUEX_TYPE_TOKEN_ID)1)
+   case QUEX_TKN_UCS_0x00000C:  return token_id_str_UCS_0x00000C;
+   case QUEX_TKN_UCS_0x00062C:  return token_id_str_UCS_0x00062C;
+   case QUEX_TKN_UCS_0x00012E:  return token_id_str_UCS_0x00012E;
+   case QUEX_TKN_UCS_0x000058:  return token_id_str_UCS_0x000058;
+   case QUEX_TKN_UCS_0x001000:  return token_id_str_UCS_0x001000;
+   case QUEX_TKN_UCS_0x0086A5:  return token_id_str_UCS_0x0086A5;
+   case QUEX_TKN_UCS_0x00001B:  return token_id_str_UCS_0x00001B;
+   case QUEX_TKN_UCS_0x000061:  return token_id_str_UCS_0x000061;

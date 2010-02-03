@@ -1,0 +1,16 @@
+-----------------------------
+IN:
+    [ {name = deutschland::ispringen;}]
+
+OUT:
+
+class:     'ispringen'
+namespace: ''deutschland''
+type(token_id)      = size_t
+type(column_number) = size_t
+type(line_number)   = size_t
+distinct members {
+}
+union members {
+}
+

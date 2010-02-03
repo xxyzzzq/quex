@@ -1,0 +1,50 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
+definitions.qx:56:warning: Token identifier 'QUEX_TKN_GREEK_IDENTIFIER' starts with token prefix 'QUEX_TKN_'.
+definitions.qx:56:warning: Token prefix is mounted automatically. This token id appears in the source
+definitions.qx:56:warning: code as 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER'.
+program.qx:19:warning: Token id 'QUEX_TKN_ARABIC_NUMBER' defined implicitly.
+program.qx:20:warning: Token id 'QUEX_TKN_DEVANGARI_NUMBER' defined implicitly.
+program.qx:21:warning: Token id 'QUEX_TKN_THAI_NUMBER' defined implicitly.
+program.qx:24:warning: Token id 'QUEX_TKN_GREEK_IDENTIFIER' defined implicitly.
+program.qx:24:warning: NOTE: 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER' has been defined in a token { ... } section!
+program.qx:24:warning: Note, that tokens in the token { ... } section are automatically prefixed.
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+PI 'π' 
+ALLMOST_EQUAL '≈' 
+LATIN_NUMBER '3.14159' 
+ALLMOST_EQUAL '≈' 
+ARABIC_NUMBER '٣.١٤١٥٩' 
+ALLMOST_EQUAL '≈' 
+DEVANGARI_NUMBER '३.१४१५९' 
+ALLMOST_EQUAL '≈' 
+THAI_NUMBER '๓.๑๔๑๕๙' 
+DJAMEEL 'ليمج' 
+ALLMOST_EQUAL '≈' 
+LATIN_IDENTIFIER 'nice' 
+ALLMOST_EQUAL '≈' 
+LATIN_IDENTIFIER 'schön' 
+OPEN_FRENCH_QUOTE '«' 
+LATIN_IDENTIFIER 'tan' 
+L_BRACKET '(' 
+ALPHA 'α' 
+R_BRACKET ')' 
+ARROW '→' 
+INFINITY '∞' 
+LATIN_IDENTIFIER 'for' 
+ALPHA 'α' 
+ARROW '→' 
+LATIN_NUMBER '90' 
+DEGREE_CELSIUS '°C' 
+CLOSE_FRENCH_QUOTE '»' 
+OK '✓' 
+COPYRIGHT '©' 
+LATIN_IDENTIFIER 'Schäfer' 
+<TERMINATION> '' 
+| [END] number of token = 31
+`------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
+cleaning ...

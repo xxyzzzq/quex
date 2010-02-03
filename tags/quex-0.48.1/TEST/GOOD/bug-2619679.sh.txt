@@ -1,0 +1,6 @@
+quex -i simple.qx --engine tiny_lexer 
+##
+## The issue here was that there were warnings about double defined macros.
+##
+g++ -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS -I./ -I/home/fschaef/prj/quex/trunk -DQUEX_OPTION_ASSERTS_DISABLED  -o lexer \
+		  ./lexer.cpp tiny_lexer.cpp 
