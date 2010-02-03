@@ -1,7 +1,7 @@
-<test-database execution-time-sec="168.46" date="Tue Feb  2 23:06:29 2010">
+<test-database execution-time-sec="168.50" date="Wed Feb  3 22:22:59 2010">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
-        <test title="Single Mode Example" make-required="True" time-sum-sec="5.25"> 
+        <test title="Single Mode Example" make-required="True" time-sum-sec="5.26"> 
             <application file-name="000.sh" info-request-time="1264886942L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.53" crc="1242242695"/>
@@ -38,7 +38,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="3.95" crc="1432168134"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="16.32"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="16.33"> 
             <application file-name="003-icu.sh" info-request-time="1264886942L"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.15" crc="-77570413"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" make-required="True" time-sum-sec="10.18"> 
+        <test title="Including Files" make-required="True" time-sum-sec="10.19"> 
             <application file-name="005.sh" info-request-time="1264886942L"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="2.61" crc="-65032981"/>
@@ -78,7 +78,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" make-required="True" time-sum-sec="5.79"> 
+        <test title="Miscellaneous Features" make-required="True" time-sum-sec="5.80"> 
             <application file-name="007.sh" info-request-time="1264886942L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.77" crc="372258276"/>
@@ -119,7 +119,7 @@
                <choice name="fill" result="OK" time_sec="8.35" crc="-1542605786"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="20.69"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="20.68"> 
             <application file-name="010c.sh" info-request-time="1264886942L"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="10.27" crc="-470382527"/>
@@ -138,7 +138,7 @@
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" make-required="True" time-sum-sec="5.14"> 
+        <test title="Engine Encoding UTF16" make-required="True" time-sum-sec="5.15"> 
             <application file-name="011b.sh" info-request-time="1264886942L"/>
             <choice-list number="2" same_result="True">
                <choice name="LE" result="OK" time_sec="2.58" crc="2001714839"/>
