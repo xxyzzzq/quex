@@ -13,7 +13,7 @@ QUEX_NAME_TOKEN(_set)(QUEX_TYPE_TOKEN*         __this,
 { __this->_id = ID; }
 
 QUEX_INLINE const char*    
-QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID);
+QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
 QUEX_INLINE void 
 QUEX_NAME_TOKEN(_construct)(QUEX_TYPE_TOKEN* __this)
@@ -62,9 +62,9 @@ $$COPY$$
 }
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*           __this, 
-                            QUEX_TYPE_ANALYZER*        analyzer, 
-                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this, 
+                           QUEX_TYPE_ANALYZER*        analyzer, 
+                           const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
 {
 #  define self  (*__this)
 $$FUNC_TAKE_TEXT$$

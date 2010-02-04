@@ -1,0 +1,41 @@
+
+#ifdef    self_accumulator_add
+#   undef self_accumulator_add
+#endif
+#ifdef    self_accumulator_clear
+#   undef self_accumulator_clear
+#endif
+#ifdef    self_accumulator_flush
+#   undef self_accumulator_flush
+#endif
+
+/* Accumulator */
+#define self_accumulator_add(Begin, End)   QUEX_NAME(Accumulator_add)(&(self.accumulator), (Begin), (End))
+#define self_accumulator_clear()           QUEX_NAME(Accumulator_clear)(&(self.accumulator))
+#define self_accumulator_flush()           QUEX_NAME(Accumulator_flush)(&(self.accumulator))
+
+/* Token / Token Policy 
+ * (NOTE: Macros for token sending are defined separately in file 'member/token-sending'.
+ *        Those macros have to perform a little 'type loose').                            */
+#define self_current_token_set_id(ID)            QUEX_TOKEN_POLICY_SET_ID(ID)
+#define self_current_token_take_text(Begin, End) \
+        QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self, (Begin), (End))
+
+/* Modes */
+#define self_current_mode_p()     /* QUEX_NAME(Mode)* */ QUEX_NAME(mode)(&self)
+#define self_current_mode_id()    /* int */              QUEX_NAME(mode_id)(&self)
+#define self_current_mode_name()  /* const char* */      QUEX_NAME(mode_name)(&self)
+
+/* Map: mode id to mode and vice versa */
+#define self_map_mode_id_to_mode_p(ID)    QUEX_NAME(map_mode_id_to_mode)(&self, (ID))
+#define self_map_mode_p_to_mode_id(ModeP) QUEX_NAME(map_mode_to_mode_id)(&self, (ModeP))
+
+/* Changing Modes */
+#define self_set_mode_brutally(ModeP)     QUEX_NAME(set_mode_brutally)(&self, (ModeP))
+#define self_enter_mode(ModeP)            QUEX_NAME(enter_mode)(&self, (ModeP))
+
+/* Changing Modes with stack */ 
+#define self_pop_mode()                   QUEX_NAME(pop_mode)(&self)
+#define self_pop_drop_mode()              QUEX_NAME(pop_drop_mode)(&self)
+#define self_push_mode()                  QUEX_NAME(push_mode)(&self, (NewModeP))
+

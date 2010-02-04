@@ -68,7 +68,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
     static
 #endif
 const char*
-QUEX_NAME_TOKEN(_map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
+QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
    static const char  uninitialized_string[] = "<UNINITIALIZED>";
