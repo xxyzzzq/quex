@@ -23,11 +23,11 @@ def do(SMD):
 
     state_machine = SMD.sm()
 
-    txt = ""
+    txt = []
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
         # (only define the init state label, if it is really needed)
-        txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
+        txt.extend([LanguageDB["$label-def"]("$entry", state_machine.init_state_index), "\n"])
 
     init_state = state_machine.states[state_machine.init_state_index]
     #
@@ -35,9 +35,10 @@ def do(SMD):
     #       case, end of file needs to cause a drop out! After the drop out, lexing
     #       starts at furthest right before the EndOfFile and the init state transits
     #       into the TERMINAL_END_OF_FILE.
-    txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
-    txt += state_coder.do(init_state, 
-                          state_machine.init_state_index, SMD, InitStateF = True)
+    txt.extend([LanguageDB["$label-def"]("$entry", state_machine.init_state_index), "\n"])
+    txt.append(state_coder.do(init_state, 
+                              state_machine.init_state_index, 
+                              SMD, InitStateF = True))
 
     # -- all other states
     for state_index, state in state_machine.states.items():
@@ -49,11 +50,10 @@ def do(SMD):
         # some states are not coded (some dead end states)
         if state_code == "": continue
 
-        txt += LanguageDB["$label-def"]("$entry", state_index) + "\n"
-        txt += state_code
-        txt += "\n"
+        txt.extend([LanguageDB["$label-def"]("$entry", state_index), "\n",
+                    state_code, "\n"])
     
-    return txt
+    return "".join(txt)
 
 
 

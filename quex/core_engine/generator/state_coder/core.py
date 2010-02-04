@@ -35,27 +35,25 @@ def do(state, StateIdx, SMD, InitStateF=False):
     #       increment the current pointer before referencing the character to be read. 
     #       However, when the init state is entered during analysis else, the current 
     #       pointer needs to be incremented.
-    txt = ""
     # note down information about success, if state is an acceptance state
-    txt += input_block(StateIdx, InitStateF, SMD.backward_lexing_f())
-
-    txt += acceptance_info.do(state, StateIdx, SMD)
-
-    txt += transition_block.do(TriggerMap, StateIdx, InitStateF, SMD)
-
-    txt += drop_out.do(state, StateIdx, SMD, InitStateF) 
+    txt = [ 
+            input_block(StateIdx, InitStateF, SMD.backward_lexing_f()),
+            acceptance_info.do(state, StateIdx, SMD),
+            transition_block.do(TriggerMap, StateIdx, InitStateF, SMD),
+            drop_out.do(state, StateIdx, SMD, InitStateF)
+          ]
 
     # Define the entry of the init state after the init state itself. This is so,
     # since the init state does not require an increment on the first beat. Later on,
     # when other states enter here, they need to increase/decrease the input pointer.
     if not SMD.backward_lexing_f():
         if InitStateF:
-            txt += LanguageDB["$label-def"]("$input", StateIdx)
-            txt += "    " + LanguageDB["$input/increment"] + "\n"
-            txt += "    " + LanguageDB["$goto"]("$entry", StateIdx) + "\n"
+            txt.extend([        LanguageDB["$label-def"]("$input", StateIdx),
+                        "    ", LanguageDB["$input/increment"],          "\n",
+                        "    ", LanguageDB["$goto"]("$entry", StateIdx), "\n"])
 
     
-    return txt # .replace("\n", "\n    ") + "\n"
+    return "".join(txt) # .replace("\n", "\n    ") + "\n"
 
 def input_block(StateIdx, InitStateF, BackwardLexingF):
     # The initial state starts from the character to be read and is an exception.
@@ -63,16 +61,17 @@ def input_block(StateIdx, InitStateF, BackwardLexingF):
     # This is so, since the beginning of the state is considered to be the 
     # transition action (setting the pointer to the next position to be read).
     LanguageDB = Setup.language_db
-    txt = ""
     if not BackwardLexingF:
         if not InitStateF:
-            txt += LanguageDB["$label-def"]("$input", StateIdx) + "\n"
-            txt += "    " + LanguageDB["$input/increment"] + "\n"
+            txt = [        LanguageDB["$label-def"]("$input", StateIdx), "\n",
+                   "    ", LanguageDB["$input/increment"], "\n"]
+        else:
+            txt = []
     else:
-        txt += LanguageDB["$label-def"]("$input", StateIdx) + "\n"
-        txt += "    " + LanguageDB["$input/decrement"] + "\n"
+        txt = [         LanguageDB["$label-def"]("$input", StateIdx), "\n",
+               "    " + LanguageDB["$input/decrement"], "\n"]
 
-    txt += "    " + LanguageDB["$input/get"] + "\n"
+    txt.extend(["    ", LanguageDB["$input/get"], "\n"])
 
-    return txt
+    return "".join(txt)
 
