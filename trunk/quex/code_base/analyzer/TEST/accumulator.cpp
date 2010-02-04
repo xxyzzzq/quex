@@ -31,10 +31,10 @@ public:
 };
 
 bool 
-QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*                           __this, 
-                            QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
-                            const QUEX_TYPE_CHARACTER* Begin, 
-                            const QUEX_TYPE_CHARACTER* End)
+QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*                           __this, 
+                           QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
+                           const QUEX_TYPE_CHARACTER* Begin, 
+                           const QUEX_TYPE_CHARACTER* End)
 {
     printf("Lexical Analyzer Receives:\n");
     printf("   '%s'\n", Begin);

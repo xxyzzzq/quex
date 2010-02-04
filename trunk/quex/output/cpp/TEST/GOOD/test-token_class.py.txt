@@ -19,13 +19,13 @@ class MeinToken;
 
 /* NOTE: The following function might have to be defined by the user if one
  *       does not rely on quex's function generation.                        */
-const char*  QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID);
+const char*  QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
 inline void  QUEX_NAME_TOKEN(_copy)(MeinToken* me, const MeinToken* That);
-inline bool  QUEX_NAME_TOKEN(_take_text)(MeinToken*            __this, 
-                                         QUEX_TYPE_ANALYZER*         analyzer, 
-                                         const QUEX_TYPE_CHARACTER*  Begin, 
-                                         const QUEX_TYPE_CHARACTER*  End);
+inline bool  QUEX_NAME_TOKEN(take_text)(MeinToken*            __this, 
+                                        QUEX_TYPE_ANALYZER*         analyzer, 
+                                        const QUEX_TYPE_CHARACTER*  Begin, 
+                                        const QUEX_TYPE_CHARACTER*  End);
 
 class MeinToken {
 public:
@@ -129,7 +129,7 @@ public:
          * same for C and Cpp.                                               */
         QUEX_TYPE_TOKEN_ID    _id;
         QUEX_TYPE_TOKEN_ID    type_id() const                             { return _id; }
-        const char*           map_id_to_name(QUEX_TYPE_TOKEN_ID ID) const { return QUEX_NAME_TOKEN(_map_id_to_name)(ID); }
+        const char*           map_id_to_name(QUEX_TYPE_TOKEN_ID ID) const { return QUEX_NAME_TOKEN(map_id_to_name)(ID); }
         const std::string     type_id_name() const                        { return map_id_to_name(_id); }
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
@@ -153,10 +153,10 @@ public:
 
     private:
         friend void QUEX_NAME_TOKEN(_copy)(MeinToken* me, const MeinToken* That);
-        friend bool QUEX_NAME_TOKEN(_take_text)(MeinToken*            __this, 
-                                                QUEX_TYPE_ANALYZER*         analyzer, 
-                                                const QUEX_TYPE_CHARACTER*  Begin, 
-                                                const QUEX_TYPE_CHARACTER*  End);
+        friend bool QUEX_NAME_TOKEN(take_text)(MeinToken*            __this, 
+                                               QUEX_TYPE_ANALYZER*         analyzer, 
+                                               const QUEX_TYPE_CHARACTER*  Begin, 
+                                               const QUEX_TYPE_CHARACTER*  End);
 };
 
 inline
@@ -239,10 +239,10 @@ QUEX_NAME_TOKEN(_copy)(MeinToken* __this, const MeinToken* __That)
 }
 
 QUEX_INLINE bool 
-QUEX_NAME_TOKEN(_take_text)(MeinToken*           __this, 
-                            QUEX_TYPE_ANALYZER*        analyzer, 
-                            const QUEX_TYPE_CHARACTER* Begin, 
-                            const QUEX_TYPE_CHARACTER* End)
+QUEX_NAME_TOKEN(take_text)(MeinToken*           __this, 
+                           QUEX_TYPE_ANALYZER*        analyzer, 
+                           const QUEX_TYPE_CHARACTER* Begin, 
+                           const QUEX_TYPE_CHARACTER* End)
 {
 #  define self  (*__this)
 

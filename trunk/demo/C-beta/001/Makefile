@@ -15,45 +15,46 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 MODE_FILES       = simple.qx
 # -- FILES PRODUCED BY QUEX
 ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-ENGINE_SOURCES   = $(ENGINE_NAME)                     \
-                   $(ENGINE_NAME).cpp                 \
-                   $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       
+ENGINE_SOURCES   = $(ENGINE_NAME)                  \
+                   $(ENGINE_NAME).c                \
+                   $(ENGINE_NAME)-token_ids        \
+                   $(ENGINE_NAME)-configuration     
 # -- OUTPUT
 APPLICATION      = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
-#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
-CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
+#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = gcc -ansi -Wconversion -ggdb -DQUEX_OPTION_NO_COMPUTED_GOTOS # -Wall -pedantic 
+CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-     -ggdb \
-	 # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
-	 #-DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
+     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
-LD = $(COMPILER)
+LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
 $(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o 
-	$(LD) $(APPLICATION).o $(ENGINE_NAME).o -o $(APPLICATION) 
+	$(LD) -o $(APPLICATION) \
+		  ./$(APPLICATION).o $(ENGINE_NAME).o 
 
 # -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
+%.o: %.c $(ENGINE_SOURCES)
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	$(QUEX_PATH)/quex-exe.py -i $(MODE_FILES) --engine $(ENGINE_NAME)  
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 0x1000 \
+		 --language C
 
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME)-token
+	rm -f $(ENGINE_NAME)-token.i
 	rm -f $(ENGINE_NAME).o
 	rm -f lexer.o
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.bak
+	rm -f *.E

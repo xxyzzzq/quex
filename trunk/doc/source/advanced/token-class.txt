@@ -685,7 +685,7 @@ A hand written token class must comply to the following constraints:
 
     * A member function that maps token-ids to token-names inside the token's namespace
     
-      .. cfunction:: const char* QUEX_NAME_TOKEN(_map_id_to_name)(QUEX_TYPE_TOKEN_ID Id)
+      .. cfunction:: const char* QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID Id)
    
       that maps any token-id to a human readable string. Note, that queχ does
       generate this function automatically, as long as it is not told not to do
@@ -735,10 +735,10 @@ A hand written token class must comply to the following constraints:
     * If a text accumulator is to be used, i.e. ``QUEX_OPTION_STRING_ACCUMULATOR`` is 
       defined, then there must be a function 
     
-      .. cfunction:: bool QUEX_NAME_TOKEN(_take_text)(QUEX_TYPE_TOKEN*     me, 
-                                                      QUEX_TYPE_ANALYZER*  analyzer, 
-                                                      const QUEX_TYPE_CHARACTER* Begin, 
-                                                      const QUEX_TYPE_CHARACTER* End)
+      .. cfunction:: bool QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*     me, 
+                                                     QUEX_TYPE_ANALYZER*  analyzer, 
+                                                     const QUEX_TYPE_CHARACTER* Begin, 
+                                                     const QUEX_TYPE_CHARACTER* End)
       
 
       The meaning and requirements of this functions are the same as for the ``take_text``
