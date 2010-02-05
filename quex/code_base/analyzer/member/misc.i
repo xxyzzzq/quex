@@ -1,9 +1,9 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
- *
- * No include guards, the header might be included from multiple lexers.
- *
- * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__
- * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__       */
+ * (C) Frankt-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY               */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC_I
+
 #include <quex/code_base/analyzer/counter/Base>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -134,3 +134,4 @@ QUEX_MEMBER(byte_order_reversion_set)(bool Value)
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC_I */

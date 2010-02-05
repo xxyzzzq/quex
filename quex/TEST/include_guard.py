@@ -17,19 +17,23 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
     elif root.find("/TEST/OUT")  != -1: continue
     elif root.find("/TEST/GOOD") != -1: continue
     elif root.find("/TEST/ADM")  != -1: continue
+    elif root.find("/DESIGN")    != -1: continue
     elif root.find("/code_base") == -1: continue
 
-    # print root
+    ## print root
     for file in file_list:
+        ext = os.path.splitext(file)[1]
+        if ext not in ["", ".i", ".h"]: continue
+        if file.lower() in ["makefile", "tags", "readme"]: continue
         file_name = root + "/" + file
-        # print "##", file_name
+        ## print "##", file_name
 
         fh = open(file_name, "rb")
         try:    skip_whitespace(fh)
         except: continue 
-        # Consider only the first 32 lines for include guards
-        for line in fh.readlines(32):
-            if line.find("INCLUDE_GUARD") == -1:  continue
+        for line in fh.readlines():
+            if line.find("INCLUDE_GUARD") == -1:  
+                continue
             line = line.strip()
             if line[0] != "#":                    continue
             fields = line[1:].split()
@@ -38,6 +42,9 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
             if len(fields) < 2:                   continue
             include_guard_list.append(info(file_name, get_current_line_info_number(fh), fields[1]))
             if len(fields[1]) > max_length: max_length = len(fields[1])
+            break
+        else:
+            include_guard_list.append(info(file_name, 0, "<<No INCLUDE_GUARD derective found>>"))
 
     
 def better_name(FileName):

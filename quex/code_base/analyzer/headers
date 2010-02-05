@@ -1,10 +1,8 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
- *
- * NOTE: No include guard needed here, the headers take care of double 
- *       inclusion by itself.    
- *
  * (C) 2005-2010 Frank-Rene Schaefer
- * ABSOLUTELY NO WARRANTY                                                      */
+ * ABSOLUTELY NO WARRANTY                      */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
+#define __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
 
 #ifdef      __QUEX_OPTION_UNIT_TEST
 #   include <quex/code_base/test_environment/StrangeStream>
@@ -35,3 +33,4 @@
 #include    <quex/code_base/analyzer/member/token-sending>
 #include    <quex/code_base/analyzer/member/include-stack>
 
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS */

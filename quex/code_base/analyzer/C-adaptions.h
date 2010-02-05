@@ -1,18 +1,29 @@
 
-#ifdef    self_accumulator_add
+#ifdef self_accumulator_add
+/* Token / Token Policy _____________________________________________________*/
+#   undef self_current_token_set_id
+#   undef self_current_token_take_text
+
+/* Modes ____________________________________________________________________*/
+#   undef self_current_mode_p
+#   undef self_current_mode_id
+#   undef self_current_mode_name
+/* Map: mode id to mode and vice versa */
+#   undef self_map_mode_id_to_mode_p
+#   undef self_map_mode_p_to_mode_id
+/* Changing Modes */
+#   undef self_set_mode_brutally
+#   undef self_enter_mode
+/* Changing Modes with stack */ 
+#   undef self_pop_mode
+#   undef self_pop_drop_mode
+#   undef self_push_mode
+
+/* Accumulator ______________________________________________________________*/
 #   undef self_accumulator_add
-#endif
-#ifdef    self_accumulator_clear
 #   undef self_accumulator_clear
-#endif
-#ifdef    self_accumulator_flush
 #   undef self_accumulator_flush
 #endif
-
-/* Accumulator */
-#define self_accumulator_add(Begin, End)   QUEX_NAME(Accumulator_add)(&(self.accumulator), (Begin), (End))
-#define self_accumulator_clear()           QUEX_NAME(Accumulator_clear)(&(self.accumulator))
-#define self_accumulator_flush()           QUEX_NAME(Accumulator_flush)(&(self.accumulator))
 
 /* Token / Token Policy 
  * (NOTE: Macros for token sending are defined separately in file 'member/token-sending'.

@@ -1,6 +1,9 @@
 /* -*- C++ -*- vim:set syntax=cpp:
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                      */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS_I
+
 #include    <quex/code_base/aux-string.i>
 #include    <quex/code_base/unicode.i>
 
@@ -29,3 +32,4 @@
 #   include <quex/code_base/analyzer/PostCategorizer.i>
 #endif
 
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS_I */
