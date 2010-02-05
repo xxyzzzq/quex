@@ -1,7 +1,8 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Wed Feb  3 23:51:58 2010
+2010y02m05d 07h28
 TEST
+make: bug-1935701.exe ..................................................[MADE]
 -------------------------------------------------------------------------------
 
  -- attardi:
@@ -241,7 +242,7 @@ TEST
 
 ===============================================================================
 Demo-Applications
-Wed Feb  3 23:42:00 2010
+2010y02m05d 07h31
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -343,25 +344,26 @@ demo/TEST
  -- demo/012:
 
     Single Application/Multiple Lexical Analyzers
-        012.sh NDEBUG ..........................................[OK]
-               DEBUG ...........................................[OK]
+        012.sh NDEBUG ........................................[FAIL]
+               DEBUG .........................................[FAIL]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: 012.sh NDEBUG
+Error: 012.sh DEBUG
 ===============================================================================
 Miscellaneous Basic Tests
-Wed Feb  3 23:42:01 2010
+2010y02m05d 07h34
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
         test-exceptions-in-place.sh ............................[OK]
  -- Include Guards for C/C++
-        include_guard.py convention ............................[OK]
-                         undefinition ..........................[OK]
+        include_guard.py convention ..........................[FAIL]
+                         undefinition ........................[FAIL]
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ......................[OK]
  -- Propper undefinition of configuration parameters.
@@ -372,15 +374,16 @@ quex/TEST
     __parse_token_id_file
         test-token_id_file-find_ids.py .........................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: include_guard.py convention
+Error: include_guard.py undefinition
 ===============================================================================
 Check Applications of 'Did you mean'.
-Wed Feb  3 23:42:05 2010
+2010y02m05d 07h34
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -396,8 +399,10 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Wed Feb  3 23:42:05 2010
+2010y02m05d 07h34
 quex/TEST/event-handling/TEST
+make: transition-x.exe .................................................[MADE]
+make: transition.exe ...................................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Mode Transitions:
@@ -421,8 +426,11 @@ quex/TEST/event-handling/TEST
 
 ===============================================================================
 Include Stack Handling
-Wed Feb  3 23:42:05 2010
+2010y02m05d 07h34
 quex/TEST/include-stack/TEST
+make: queue.exe ........................................................[MADE]
+make: users_token.exe ..................................................[MADE]
+make: users_queue.exe ..................................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Include Stack:
@@ -460,7 +468,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Wed Feb  3 23:42:10 2010
+2010y02m05d 07h34
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -484,7 +492,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 The 'Reset' Button
-Wed Feb  3 23:42:10 2010
+2010y02m05d 07h34
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -559,8 +567,10 @@ quex/TEST/reset/TEST
 
 ===============================================================================
 Customized Token Class
-Wed Feb  3 23:42:11 2010
+2010y02m05d 07h34
 quex/TEST/token-class/TEST
+make: simple-queue.exe .................................................[MADE]
+make: simple.exe .......................................................[MADE]
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
         misc.sh empty ..........................................[OK]
@@ -580,8 +590,14 @@ quex/TEST/token-class/TEST
 
 ===============================================================================
 Tests related to token queues
-Wed Feb  3 23:42:11 2010
+2010y02m05d 07h34
 quex/TEST/token-policies/TEST
+make: queue.exe ........................................................[MADE]
+make: users_token.exe ..................................................[MADE]
+make: queue-real.exe ...................................................[MADE]
+make: users_queue-real.exe .............................................[MADE]
+make: users_queue.exe ..................................................[MADE]
+make: users_token-real.exe .............................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Token Policy Queue:
@@ -617,8 +633,10 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Wed Feb  3 23:42:12 2010
+2010y02m05d 07h34
 quex/code_base/TEST
+make: strange_stream.exe ...............................................[MADE]
+make: strange_wstream.exe ..............................................[MADE]
 -------------------------------------------------------------------------------
 
  -- StrangeStream:
@@ -642,8 +660,18 @@ quex/code_base/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Wed Feb  3 23:42:12 2010
+2010y02m05d 07h34
 quex/code_base/analyzer/TEST
+make: post-categorizer-find.exe ........................................[MADE]
+make: post-categorizer-remove-total.exe ................................[MADE]
+make: accumulator.exe ..................................................[MADE]
+make: counter-column_line-x.exe ........................................[MADE]
+make: counter-column_line-indentation.exe ..............................[MADE]
+make: post-categorizer-remove-2.exe ....................................[MADE]
+make: post-categorizer-remove.exe ......................................[MADE]
+make: post-categorizer-enter.exe .......................................[MADE]
+make: counter-column_line-indentation-x.exe ............................[MADE]
+make: counter-column_line.exe ..........................................[MADE]
 -------------------------------------------------------------------------------
  -- Accumulator
         accumulator.exe String .................................[OK]
@@ -715,8 +743,18 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Wed Feb  3 23:42:13 2010
+2010y02m05d 07h35
 quex/code_base/buffer/TEST
+make: BufferFiller_backward_copy-32.exe ................................[MADE]
+make: BufferFiller_forward_copy-32.exe .................................[MADE]
+make: Buffer_tell_and_seek-32.exe ......................................[MADE]
+make: BufferFiller_forward_copy.exe ....................................[MADE]
+make: Buffer_move_forward.exe ..........................................[MADE]
+make: BufferFiller_backward_copy.exe ...................................[MADE]
+make: Buffer_move_backward-32.exe ......................................[MADE]
+make: Buffer_move_forward-32.exe .......................................[MADE]
+make: Buffer_move_backward.exe .........................................[MADE]
+make: Buffer_tell_and_seek.exe .........................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Backward:
@@ -777,8 +815,19 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Wed Feb  3 23:42:15 2010
+2010y02m05d 07h35
 quex/code_base/buffer/converter/iconv/TEST
+make: converter-32.exe .................................................[MADE]
+make: converter-statefulness-16.exe ....................................[MADE]
+make: one-beat.exe .....................................................[MADE]
+make: seek_character_index-zikzak.exe ..................................[MADE]
+make: Buffer_move_forward.exe ..........................................[MADE]
+make: converter-16.exe .................................................[MADE]
+make: n-beat.exe .......................................................[MADE]
+make: seek_character_index.exe .........................................[MADE]
+make: Buffer_move_backward.exe .........................................[MADE]
+make: converter-statefulness-32.exe ....................................[MADE]
+make: Buffer_tell_and_seek.exe .........................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Converter:
@@ -851,8 +900,19 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Wed Feb  3 23:42:16 2010
+2010y02m05d 07h35
 quex/code_base/buffer/converter/icu/TEST
+make: converter-32.exe .................................................[MADE]
+make: converter-statefulness-16.exe ....................................[MADE]
+make: one-beat.exe .....................................................[MADE]
+make: seek_character_index-zikzak.exe ..................................[MADE]
+make: Buffer_move_forward.exe ..........................................[MADE]
+make: converter-16.exe .................................................[MADE]
+make: n-beat.exe .......................................................[MADE]
+make: seek_character_index.exe .........................................[MADE]
+make: Buffer_move_backward.exe .........................................[MADE]
+make: converter-statefulness-32.exe ....................................[MADE]
+make: Buffer_tell_and_seek.exe .........................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Converter:
@@ -925,8 +985,31 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Wed Feb  3 23:42:18 2010
+2010y02m05d 07h35
 quex/code_base/buffer/plain/TEST
+make: Buffer_move_forward-1-fb0.exe ....................................[MADE]
+make: Buffer_move_forward-1-fb1.exe ....................................[MADE]
+make: BufferFiller_forward_load-1-fb0.exe ..............................[MADE]
+make: Buffer_tell_and_seek-1-fb0.exe ...................................[MADE]
+make: BufferFiller_forward_load-2-fb1.exe ..............................[MADE]
+make: BufferFiller_forward_load-error.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb1.exe ..............................[MADE]
+make: Buffer_move_backward-4-fb0.exe ...................................[MADE]
+make: Buffer_tell_and_seek-wiostream.exe ...............................[MADE]
+make: BufferFiller_backward_load-4.exe .................................[MADE]
+make: BufferFiller_backward_load-1.exe .................................[MADE]
+make: Buffer_tell_and_seek-1-fb1.exe ...................................[MADE]
+make: BufferFiller_backward_load-2.exe .................................[MADE]
+make: BufferFiller_forward_load-4-fb5.exe ..............................[MADE]
+make: Buffer_move_backward-1-fb1.exe ...................................[MADE]
+make: Buffer_tell_and_seek-4-fb0.exe ...................................[MADE]
+make: Buffer_move_backward-1-fb0.exe ...................................[MADE]
+make: Buffer_move_forward-4-fb0.exe ....................................[MADE]
+make: BufferFiller_forward_load-1-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-1-fb1.exe ..............................[MADE]
 -------------------------------------------------------------------------------
 
  -- Load Backward:
@@ -1019,7 +1102,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Wed Feb  3 23:42:32 2010
+2010y02m05d 07h35
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1073,7 +1156,7 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Wed Feb  3 23:44:22 2010
+2010y02m05d 07h36
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1255,7 +1338,7 @@ quex/core_engine/generator/TEST
 
 ===============================================================================
 Regular Expression Parsing
-Wed Feb  3 23:44:24 2010
+2010y02m05d 07h37
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1321,7 +1404,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Wed Feb  3 23:44:36 2010
+2010y02m05d 07h37
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1481,7 +1564,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Wed Feb  3 23:44:36 2010
+2010y02m05d 07h38
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1507,7 +1590,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Wed Feb  3 23:44:48 2010
+2010y02m05d 07h38
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1574,7 +1657,7 @@ quex/input/TEST
 
 ===============================================================================
 Basic Code Writing Functionality
-Wed Feb  3 23:44:49 2010
+2010y02m05d 07h38
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1604,7 +1687,7 @@ quex/output/cpp/TEST
 
 ===============================================================================
 Testing Statemachine Plots
-Wed Feb  3 23:44:50 2010
+2010y02m05d 07h38
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1631,8 +1714,8 @@ SUMMARY:
  Verdict: Fails: Directory:
 
   [OK]           TEST
-  [OK]           demo/TEST
-  [OK]           quex/TEST
+  [FAIL]      2  demo/TEST
+  [FAIL]      2  quex/TEST
   [OK]           quex/TEST/did-you-mean/TEST
   [OK]           quex/TEST/event-handling/TEST
   [OK]           quex/TEST/include-stack/TEST
@@ -1655,9 +1738,10 @@ SUMMARY:
   [OK]           quex/output/cpp/TEST
   [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+     _____     _ _          _  _            
+    |  ___|_ _(_) |___     | || |     __  __
+    | |_ / _` | | / __|    | || |_    \ \/ /
+    |  _| (_| | | \__ \    |__   _     >  < 
+    |_|  \__,_|_|_|___/       |_|     /_/\_\
+                   
 ===============================================================================

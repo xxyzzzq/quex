@@ -9,12 +9,12 @@
  *
  * Instead of an include guard, there is an include indicator 
  *
- *         __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+ *         __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
  *
  * If the indicator is defined at the entry of this file, all internally 
  * defined macros are undefined right at the beginning, so they can be 
  * safely redefined.                                                     */
-#ifdef __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#ifdef __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
 #    undef __QUEX_CURRENT_TOKEN_P
 #    undef QUEX_TOKEN_POLICY_PREPARE_NEXT
 #    undef QUEX_TOKEN_POLICY_NO_TOKEN
@@ -31,7 +31,7 @@
 #    undef __QUEX_ASSERT_SEND_ENTRY
 #    undef QUEX_TOKEN_POLICY_SET_ID
 #else
-#    define __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#    define __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
 #endif
 /*_______________________________________________________________________*/
 

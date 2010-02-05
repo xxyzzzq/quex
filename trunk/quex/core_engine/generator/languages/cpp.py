@@ -461,13 +461,14 @@ def __frame_of_all(Code, Setup):
 
     if Setup.language != "C++":
         implementation_header_str = "#include <quex/code_base/analyzer/headers.i>\n"
+        implementation_header_str = "#include <quex/code_base/analyzer/C-adaptions.h>\n"
     else:
         implementation_header_str = ""
-    return "#include \"%s\"\n" % Setup.output_file_stem     + \
-           implementation_header_str                        + \
-           "QUEX_NAMESPACE_MAIN_OPEN"                       + \
-           Code                                             + \
-           "QUEX_NAMESPACE_MAIN_CLOSE"                     
+    return "".join(["#include \"%s\"\n" % Setup.output_file_stem,
+                    implementation_header_str,
+                    "QUEX_NAMESPACE_MAIN_OPEN",
+                    Code,
+                    "QUEX_NAMESPACE_MAIN_CLOSE"])                     
 
 def __get_if_in_character_set(ValueList):
     assert type(ValueList) == list
