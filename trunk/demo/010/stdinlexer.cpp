@@ -9,11 +9,9 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    // (*) create token
-    quex::Token        Token;
-    // (*) create the lexical analyser
-    //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer   qlex();
+    quex::Token       Token;
+    // Zero pointer to constructor --> use raw memory
+    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
@@ -23,14 +21,22 @@ main(int argc, char** argv)
     cout << "-- The word 'bye' in order to terminate.\n";
     cout << "Please, terminate each line with pressing [enter].\n";
 
-
     int number_of_tokens = 0;
     while( cin ) {
+        qlex.buffer_fill_region_prepare();
+        
         // Read a line from standard input
-        cin.getline((char*)qlex.buffer_begin(), qlex.buffer_size());
+        cin.getline((char*)qlex.buffer_fill_region_begin(), 
+                    qlex.buffer_fill_region_size());
         cout << "[[Received " << cin.gcount() << " characters in line.]]\n";
-        // Prepare the read the characters that we just flooded into the buffer
-        qlex.buffer_prepare(cin.gcount());
+        
+        if( cin.gcount() == 0 ) {
+            return 0;
+        }
+        // Inform about number of read characters. Note, that getline
+        // writes a terminating zero, which has not to be part of the 
+        // buffer content.
+        qlex.buffer_fill_region_finish(cin.gcount() - 1);
         
         // Loop until the 'termination' token arrives
         do {
@@ -40,10 +46,6 @@ main(int argc, char** argv)
         } while( Token.type_id() != QUEX_TKN_TERMINATION && Token.type_id() != QUEX_TKN_BYE );
         
         cout << "[[End of Input]]\n";
-        if( qlex.buffer_distance_to_text_end() != 0 ) {
-            // The end of the text is always zero terminated, that is why we can print it
-            cout << "[[Warning: not all characters treated.]]\n";
-        }
 
         if( Token.type_id() == QUEX_TKN_BYE ) break;
     }

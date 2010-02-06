@@ -121,11 +121,10 @@ def do(setup):
     #
     if len(lexer_mode.token_id_db.keys()) == 2:
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
-        print "error: No token id other than %sTERMINATION and %sUNINITIALIZED are defined. " % \
-              (setup.token_id_prefix, setup.token_id_prefix)
-        print "error: Quex refuses to proceed. Please, use the 'token { ... }' section to "
-        print "error: specify at least one other token id."
-        sys.exit(-1)
+        error_msg("No token id other than %sTERMINATION and %sUNINITIALIZED are defined. " % \
+                  (setup.token_id_prefix, setup.token_id_prefix) + \
+                  "Quex refuses to proceed. Please, use the 'token { ... }' section to " + \
+                  "specify at least one other token id.")
 
     #______________________________________________________________________________________
     L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
@@ -217,8 +216,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print "error: missing command line parameter: input 'token file'"
-        sys.exit(-1)
+        error_msg("Missing command line parameter: input 'token file'")
 
     cl = GetPot(sys.argv)
     input_file       = cl.follow("", "-i")
@@ -229,8 +227,7 @@ if __name__ == "__main__":
     token_prefix         = cl.follow("TKN_", "--tp")
     
     if "" in [input_file, output_file]:
-        print "error: please specify input (option '-i') and output file (option '-o')"
-        sys.exit(-1)
+        error_msg("please specify input (option '-i') and output file (option '-o')")
         
     do(Setup(input_file, output_file, token_class_file, token_class, token_prefix, token_id_counter_offset))
 

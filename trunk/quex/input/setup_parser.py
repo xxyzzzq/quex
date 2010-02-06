@@ -16,6 +16,9 @@ from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPR
 from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
 def do(argv):
+    """RETURN:  True, if process needs to be started.
+                False, if job is done.
+    """
     global setup
 
     # (*) Interpret Command Line (A) _____________________________________________________
@@ -24,15 +27,21 @@ def do(argv):
     if command_line.search("--version", "-v"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Version " + QUEX_VERSION
-        print "(C) 2006-2009 Frank-Rene Schaefer"
-        sys.exit(0)
+        print "(C) 2006-2010 Frank-Rene Schaefer"
+        print "ABSOLUTELY NO WARRANTY"
+        return False
 
     if command_line.search("--help", "-h"):
         print "Quex - Fast Universal Lexical Analyzer Generator"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.org"
-        print "(C) 2006-2009 Frank-Rene Schaefer"
-        sys.exit(0)
+        print "(C) 2006-2010 Frank-Rene Schaefer"
+        print "ABSOLUTELY NO WARRANTY"
+        return False
+
+    if command_line.search("--plot-format-list"):
+        print quex.output.graphviz.interface.get_supported_graphic_format_description()
+        return False
 
     for variable_name, info in SETUP_INFO.items():
         # Some parameters are not set on the command line. Their entry is not associated
@@ -132,7 +141,7 @@ def do(argv):
                             CommentDelimiterList, IncludeRE)
 
     # (*) return setup ___________________________________________________________________
-    return
+    return True
 
 def validate(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
@@ -205,7 +214,6 @@ def validate(setup, command_line, argv):
         if bpc not in ["1", "2", "4"]:
             error_msg("choice for --bytes-per-ucs-code-point: %s" % bpc + \
                       "quex only supports 1, 2, or 4 bytes per character in internal engine")
-            sys.exit(-1)
         else:
             setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
 

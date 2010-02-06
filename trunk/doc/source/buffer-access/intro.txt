@@ -42,6 +42,20 @@ is used to refer to some kind of entity that delivers the data.
    them explicitly. A so called 'buffer filler' can be created ouside the quex
    engine.
 
+.. note::
+
+   In some frameworks, the buffer filling implies that a terminating
+   zero character is set. This can cause an error::
+
+        exception: ... Buffer limit code character appeared as normal 
+                   text content.
+
+   To avoid this, report one character less when using ``buffer_fill_region_finish``,
+   or make sure that the terminating zero is not copied.
+      
+
+
+
 In case of interrupted character streams, there is no direct way for the
 analyzer engine to determine wether a stream is terminated or not. Thus, either
 a 'end of analyzis' pattern must be introduced, or the analyzis is to be

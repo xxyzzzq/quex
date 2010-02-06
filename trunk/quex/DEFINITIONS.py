@@ -44,7 +44,7 @@ except:
         print "error: for your system '%s' it is not known how to set environment" % os.name
         print "error: variables. if you find out, please, send an email to"
         print "error: <fschaef@users.sourceforge.net>"
-    sys.exit(-1)
+    sys.exit(-1) # sys.exit(-1) is acceptable
 
 sys.path.insert(0, QUEX_INSTALLATION_DIR)
 
@@ -57,7 +57,7 @@ def check():
         print "error: a valid installation directory of quex."
         print "error: current setting of 'QUEX_PATH':"
         print "error:", QUEX_INSTALLATION_DIR
-        sys.exit(-1)
+        sys.exit(-1) # sys.exit(-1) is acceptable
 
     # -- Check for version 2.4 or higher
     if sys.version_info[0] < 2 or \
@@ -65,5 +65,5 @@ def check():
         print "error: Quex requires Python version 2.4 or higher. Detected version '%i.%i'." % \
               (sys.version_info[0], sys.version_info[1])
         print "error: Please, visit http://www.python.org and download an appropriate release."
-        sys.exit(-1)
+        sys.exit(-1) # sys.exit(-1) is acceptable
 

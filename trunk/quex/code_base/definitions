@@ -15,6 +15,7 @@
 #   include <cstdlib>
 #   include <stdexcept>
 #   define __QUEX_STD_FILE     std::FILE
+#   define __QUEX_STD_STDIN    std::stdin
 #   define __QUEX_STD_fopen    std::fopen
 #   define __QUEX_STD_fclose   std::fclose
 #   define __QUEX_STD_fprintf  std::fprintf
@@ -38,6 +39,7 @@
 #   include <stdio.h>   /* gets: fprintf             */
 #   include <stdlib.h>
 #   define __QUEX_STD_FILE     FILE
+#   define __QUEX_STD_STDIN    stdin
 #   define __QUEX_STD_fopen    fopen
 #   define __QUEX_STD_fclose   fclose
 #   define __QUEX_STD_fprintf  fprintf
@@ -129,6 +131,14 @@
         "##          http://sourceforge.net/tracker/?group_id=168259&atid=846112\n"         \
         "##\n"                                                                              \
         "###############################################################################\n"
+
+#define __QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR \
+        "Error: Quex engine constructor has received a standard input handle!\n"   \
+        "Error: Standard input has to be treated like buffered input. Please,\n"   \
+        "Error: consult the documentation or the example 'stdinlexer.cpp' in\n"    \
+        "Error: directory $QUEX_PATH/demo/010 (> make stdinlexer.exe). Please,\n"  \
+        "Error: review the other (non-stdin) examples in this directory to\n"      \
+        "Error: conclude how to read encoded data via stdin.\n"
 
 #define QUEX_STRING(X)   #X
 
