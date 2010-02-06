@@ -81,15 +81,12 @@ if __name__ == "__main__":
             sys.exit(0)                 # query, then no further processing is performed
 
         # (*) Get Setup from Command Line and Config File ____________________________________
-        setup_parser.do(sys.argv)
-
-        if Setup.plot_graphic_format_list_f:
-            print quex.output.graphviz.interface.get_supported_graphic_format_description()
-            sys.exit(0)
-
-        # (*) Run the Quex ___________________________________________________________________
-        if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
-        else:                               core.do_plot()  # plot transition graphs
+        #     If the setup parser returns 'False' the requested job was minor
+        #     and no further processing has to be done. If 'True' start the process.
+        if setup_parser.do(sys.argv):
+            # (*) Run Quex ___________________________________________________________________
+            if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
+            else:                               core.do_plot()  # plot transition graphs
 
     except AssertionError, x:
         on_exception(x, "Assertion error -- please report a bug under\n" + \

@@ -443,8 +443,7 @@ def indented_open(Filename, Indentation = 3, Reference="quex"):
     try:
         fh = open(file_name, "rb")
     except:
-        print "%s:error: failed to open file '%s' " % (Reference, Filename)
-        sys.exit(-1)
+        error_msg("%s:error: failed to open file '%s' " % (Reference, Filename))
     new_content = ""
     for line in fh.readlines():
         new_content += IndentString + line
@@ -538,7 +537,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     for line in split(ErrMsg, "\n"):
         print prefix + ": %s" % line
 
-    if not DontExitF: sys.exit(-1)
+    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
 
 def make_safe_identifier(String, NoCodeF=True):
     txt = ""

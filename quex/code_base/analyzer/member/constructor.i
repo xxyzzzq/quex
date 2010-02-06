@@ -33,7 +33,15 @@ QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
                           const char*         CharacterEncodingName /* = 0x0   */,
                           bool                ByteOrderReversionF   /* = false */)
 {
-    if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
+    if( fh == NULL )             QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
+
+    /* At the time of this writing 'stdin' as located in the C++ global namespace. 
+     * This seemed suspicous to the author. To avoid compilation errors in the future
+     * the test for the standard input is only active in 'C'. It is only about
+     * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
+#   ifdef __QUEX_OPTION_PLAIN_C
+    if( fh == __QUEX_STD_STDIN ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR);
+#   endif
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
     QUEX_NAME(constructor_core)(me, fh, 
@@ -65,7 +73,8 @@ QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
                              const char*         CharacterEncodingName /* = 0x0   */,
                              bool                ByteOrderReversionF   /* = false */)
 {
-    if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    if( p_input_stream == NULL )     QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    if( p_input_stream == std::cin ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR);
     QUEX_NAME(constructor_core)(me, p_input_stream, 
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, 0);
