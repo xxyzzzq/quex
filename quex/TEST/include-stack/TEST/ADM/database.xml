@@ -1,22 +1,9 @@
-<test-database execution-time-sec="0.23" date="Sun Feb  7 15:39:55 2010">
+<test-database execution-time-sec="0.21" date="Sun Feb  7 23:09:26 2010">
     <last-used-diff-display-program name=""/>
     <group name="Include Stack">
-        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.11"> 
-            <application file-name="queue.exe" info-request-time="1265553590L" vanished="False"/>
-            <make-procedure success="True" time_sec="2.200418"/>
-            <choice-list number="7" same_result="False">
-               <choice name="empty" result="OK" time_sec="0.03" crc="-916438617"/>
-               <choice name="1" result="OK" time_sec="0.01" crc="1408623060"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="1458330682"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="-273893819"/>
-               <choice name="4" result="OK" time_sec="0.03" crc="-1412402768"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="502946858"/>
-               <choice name="20" result="OK" time_sec="0.02" crc="-1349073584"/>
-            </choice-list>
-        </test>
-        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.06"> 
-            <application file-name="users_token.exe" info-request-time="1265553593L" vanished="False"/>
-            <make-procedure success="True" time_sec="2.039509"/>
+        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.08"> 
+            <application file-name="queue.exe" info-request-time="1265580561L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.558298"/>
             <choice-list number="7" same_result="False">
                <choice name="empty" result="OK" time_sec="0.00" crc="-916438617"/>
                <choice name="1" result="OK" time_sec="0.00" crc="1408623060"/>
@@ -24,20 +11,33 @@
                <choice name="3" result="OK" time_sec="0.01" crc="-273893819"/>
                <choice name="4" result="OK" time_sec="0.02" crc="-1412402768"/>
                <choice name="5" result="OK" time_sec="0.01" crc="502946858"/>
-               <choice name="20" result="OK" time_sec="0.01" crc="-1349073584"/>
+               <choice name="20" result="OK" time_sec="0.02" crc="-1349073584"/>
             </choice-list>
         </test>
-        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.07"> 
-            <application file-name="users_queue.exe" info-request-time="1265553594L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.988888"/>
+        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.06"> 
+            <application file-name="users_token.exe" info-request-time="1265580563L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.980119"/>
             <choice-list number="7" same_result="False">
-               <choice name="empty" result="OK" time_sec="0.00" crc="-916438617"/>
-               <choice name="1" result="OK" time_sec="0.00" crc="1408623060"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="1458330682"/>
-               <choice name="3" result="OK" time_sec="0.02" crc="-273893819"/>
+               <choice name="empty" result="OK" time_sec="0.01" crc="-916438617"/>
+               <choice name="1" result="OK" time_sec="0.01" crc="1408623060"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="1458330682"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="-273893819"/>
                <choice name="4" result="OK" time_sec="0.01" crc="-1412402768"/>
                <choice name="5" result="OK" time_sec="0.01" crc="502946858"/>
                <choice name="20" result="OK" time_sec="0.01" crc="-1349073584"/>
+            </choice-list>
+        </test>
+        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.08"> 
+            <application file-name="users_queue.exe" info-request-time="1265580565L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.064329"/>
+            <choice-list number="7" same_result="False">
+               <choice name="empty" result="OK" time_sec="0.01" crc="-916438617"/>
+               <choice name="1" result="OK" time_sec="0.01" crc="1408623060"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="1458330682"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="-273893819"/>
+               <choice name="4" result="OK" time_sec="0.01" crc="-1412402768"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="502946858"/>
+               <choice name="20" result="OK" time_sec="0.02" crc="-1349073584"/>
             </choice-list>
         </test>
     </group>
