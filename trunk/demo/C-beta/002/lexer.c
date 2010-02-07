@@ -1,12 +1,12 @@
-#include "tiny_lexer"
-#include "tiny_lexer-token.i"
+#include "indy_lex"
+#include "indy_lex-token.i"
 
 int 
 main(int argc, char** argv) 
 {        
-    Token        token;
-    tiny_lexer   qlex;
-    int          token_n = 0;
+    Token     token;
+    indy_lex  qlex;
+    int       token_n = 0;
 
     QUEX_NAME(construct_file_name)(&qlex, "example.txt", 0x0, false);
 
