@@ -62,7 +62,7 @@ mode PROGRAM :
 
     {P_STRING_DELIMITER} {
         self_send(QUEX_TKN_QUOTE);
-        self_enter_mode(STRING_READER);
+        self_enter_mode(&STRING_READER);
         RETURN;
     }
 }
@@ -81,7 +81,7 @@ mode STRING_READER :
     {P_BACKSLASHED_STRING_DELIMITER} { self_accumulator_add(Lexeme, LexemeEnd); }
     {P_BACKSLASHED_BACKSLASH}        { self_accumulator_add(Lexeme, LexemeEnd); }
 
-    {P_STRING_DELIMITER}             { self_enter_mode(PROGRAM); RETURN; }
+    {P_STRING_DELIMITER}             { self_enter_mode(&PROGRAM); return; }
 
     <<FAIL>> {
         self_accumulator_add(Lexeme, LexemeEnd); 
