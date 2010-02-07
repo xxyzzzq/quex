@@ -9,6 +9,7 @@ if [[ $1 == "copy-conversion" ]]; then
 fi
 make  stdinlexer.exe >& tmp.txt
 cat tmp.txt | awk ' ! /g++/ { print; }' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/ '
+rm -f tmp.txt
 echo "Hello World" | valgrind --leak-check=full ./stdinlexer.exe >& tmp0.txt
 echo "212 W32orld" | valgrind --leak-check=full ./stdinlexer.exe >& tmp1.txt
 cat tmp0.txt tmp1.txt >> tmp.txt

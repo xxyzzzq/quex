@@ -22,9 +22,31 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
 
     __quex_assert(memory_size > 2);
 
-    QUEX_NAME(constructor_core)(me, (void*)0x0, 
+    QUEX_NAME(constructor_core)(me, 
+#   if defined(__QUEX_OPTION_PLAIN_C)
+                                (FILE*)0x0,
+#   else
+                                (void*)0x0, 
+#   endif
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 BufferMemoryBegin, memory_size);
+}
+
+QUEX_INLINE void
+QUEX_NAME(construct_file_name)(QUEX_TYPE_ANALYZER* me,
+                               const char*         Filename, 
+                               const char*         CharacterEncodingName /* = 0x0   */,
+                               bool                ByteOrderReversionF   /* = false */)
+{
+    /* Buffer: Size = (see macro def.), Fallback = 10 Characters
+     * prefer FILE* based buffers, because we can turn low-level buffering off.
+     * ownership of FILE* id passed to the input strategy of the buffer.         */
+    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
+
+    QUEX_NAME(construct_FILE)(me, fh, CharacterEncodingName, ByteOrderReversionF);
+
+    /* Recall, that this thing as to be deleted/closed */
+    me->__file_handle_allocated_by_constructor = fh;
 }
 
 QUEX_INLINE void
@@ -47,23 +69,6 @@ QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
     QUEX_NAME(constructor_core)(me, fh, 
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, 0);
-}
-
-QUEX_INLINE void
-QUEX_NAME(construct_file_name)(QUEX_TYPE_ANALYZER* me,
-                               const char*         Filename, 
-                               const char*         CharacterEncodingName /* = 0x0   */,
-                               bool                ByteOrderReversionF   /* = false */)
-{
-    /* Buffer: Size = (see macro def.), Fallback = 10 Characters
-     * prefer FILE* based buffers, because we can turn low-level buffering off.
-     * ownership of FILE* id passed to the input strategy of the buffer.         */
-    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
-
-    QUEX_NAME(construct_FILE)(me, fh, CharacterEncodingName, ByteOrderReversionF);
-
-    /* Recall, that this thing as to be deleted/closed */
-    me->__file_handle_allocated_by_constructor = fh;
 }
 
 #ifndef __QUEX_OPTION_PLAIN_C

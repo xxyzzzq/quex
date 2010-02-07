@@ -13,14 +13,14 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE uint8_t*
-    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, 
-                         uint8_t*             utf8_result);
+    QUEX_NAME(unicode_to_utf8)(QUEX_TYPE_CHARACTER  UCS_CharacterCode, 
+                               uint8_t*             utf8_result);
 
     QUEX_INLINE uint8_t*
-    Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER* Source, 
-                                size_t               SourceSize, 
-                                uint8_t*             Drain, 
-                                size_t               DrainSize);
+    QUEX_NAME(unicode_to_utf8_string)(QUEX_TYPE_CHARACTER* Source, 
+                                      size_t               SourceSize, 
+                                      uint8_t*             Drain, 
+                                      size_t               DrainSize);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

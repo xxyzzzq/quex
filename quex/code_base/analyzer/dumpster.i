@@ -1,3 +1,5 @@
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__DUMPSTER_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__DUMPSTER_I
 /*
     // (*) utilities for string triming
     //
@@ -129,3 +131,4 @@ typedef struct QUEX_NAME(BufferFillerExtern_tag) {
     void*                 delete_self(QUEX_NAME(BufferFillerExtern_tag)*);
     
 } QUEX_NAME(BufferFillerExtern);
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__DUMPSTER_I */

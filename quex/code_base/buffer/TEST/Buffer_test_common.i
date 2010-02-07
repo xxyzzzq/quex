@@ -1,4 +1,7 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__TEST__BUFFER_TEST_COMMON_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__TEST__BUFFER_TEST_COMMON_I
+
 #include <quex/code_base/analyzer/configuration/default>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
@@ -39,7 +42,7 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
         printf("%s= %i (--> '\\n')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
                Appendix);
     } else {
-        p = quex::Quex_unicode_to_utf8(UC, utf8_char_str);
+        p = QUEX_NAME(unicode_to_utf8)(UC, utf8_char_str);
         *p = '\0';
         printf("%s= %i (--> '%s')%c", 
                (char*)Name,
@@ -100,3 +103,4 @@ test_seek_and_tell(QUEX_NAME(Buffer)* buffer, size_t* SeekIndices)
     }
 }
 
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__TEST__BUFFER_TEST_COMMON_I */

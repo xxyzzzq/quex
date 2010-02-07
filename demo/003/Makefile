@@ -11,7 +11,6 @@
 #
 #         creates a lexer using the icu library.
 #
-#
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
 include $(QUEX_PATH)/quex/code_base/core.mkd

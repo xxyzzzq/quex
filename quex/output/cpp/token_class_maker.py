@@ -56,6 +56,9 @@ def _do(Descr):
     take_text_str = Descr.take_text.get_code()
     if take_text_str == "": take_text_str = "return true;\n" 
 
+    include_guard_extension_str = get_include_guard_extension(
+                                        Setup.language_db["$namespace-ref"](Descr.name_space) 
+                                        + "__" + Descr.class_name)
     txt = blue_print(template_str,
                      [
                       ["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
@@ -70,9 +73,7 @@ def _do(Descr):
                       ["$$FOOTER$$",           Descr.footer.get_code()],
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
-                      ["$$INCLUDE_GUARD_EXTENSION$$", get_include_guard_extension(
-                                                           Setup.language_db["$namespace-ref"](Descr.name_space) 
-                                                           + "__" + Descr.class_name)],
+                      ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                       ["$$TOKEN_CLASS$$",      Descr.class_name],
                       ["$$NAMESPACE_OPEN$$",   Setup.language_db["$namespace-open"](Descr.name_space)],
                       ["$$NAMESPACE_CLOSE$$",  Setup.language_db["$namespace-close"](Descr.name_space)],
@@ -88,6 +89,7 @@ def _do(Descr):
                         ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
                         ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                         ["$$FUNC_TAKE_TEXT$$",   take_text_str],
+                        ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                        ])
 
     # Return declaration and implementation as two strings

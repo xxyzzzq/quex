@@ -252,10 +252,15 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
         member_value_pairs = map(lambda x: x.split("="), ArgList)
         txt = ""
         for member, value in member_value_pairs:
+            if member == "take_text":
+                txt += "QUEX_NAME_TOKEN(take_text)(Lexeme, LexemeEnd);"
+                txt += "QUEX_NAME_TOKEN(take_text)(self_token_object(), &self, Lexeme, LexemeEnd);\n" \
+
             if value == "":
                 error_msg("One explicit argument name mentioned requires all arguments to\n" + \
                           "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
                           % member, fh)
+
             else:
                 member_name = member.strip()
                 verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
@@ -269,6 +274,18 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
         txt += "self_send(%s);\n" % TokenName
         return txt
     else:
+        if Setup.language == "C" and len(ArgList) != 1:
+            error_msg("When output is generated for '%s', then multiple arguments to token\n" \
+                      "senders must be named, e.g. MY_TOKEN(number=atoi(Lexeme)).", fh)
+
+        elif "take_text" in ArgList:
+            if len(ArgList) > 2:
+                error_msg("The 'take_text' short hand can only be used with named token senders\n" \
+                          "or without andy further argument.\n")
+            return "QUEX_NAME_TOKEN(take_text)(self_token_object(), &self, Lexeme, LexemeEnd);\n" \
+                   "self_send(%s);\n" % (TokenName)
+
+
         length = 0
         tail   = ""
         for arg in ArgList:

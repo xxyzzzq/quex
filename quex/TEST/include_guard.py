@@ -44,7 +44,8 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
             if len(fields[1]) > max_length: max_length = len(fields[1])
             break
         else:
-            include_guard_list.append(info(file_name, 0, "<<No INCLUDE_GUARD derective found>>"))
+            ## print "##", file_name
+            include_guard_list.append(info(file_name, -1, "<<No INCLUDE_GUARD derective found>>"))
 
     
 def better_name(FileName):
@@ -82,6 +83,8 @@ def check_include_guard_convention():
               (x.name, " " * (L - len(x.name)), better_name(x.file_name))
 
 def check_include_guard_undefinition():
+    global include_guard_list
+
     undef_file_name = os.environ["QUEX_PATH"] + "/quex/code_base/include-guard-undef"
     fh = open(undef_file_name)
     undef_unique = {}
@@ -91,6 +94,9 @@ def check_include_guard_undefinition():
         fields = line[index:].split()
         if len(fields) < 2: continue
         undef_unique[fields[1]] = True
+
+    # Filter out empty include guards
+    include_guard_list = filter(lambda x: x.line_n != -1, include_guard_list)
 
     undef_list = undef_unique.keys()
     stranger_list = filter(lambda x: x.name not in undef_list, include_guard_list)

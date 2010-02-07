@@ -63,6 +63,20 @@ for making decisions about what codec to choose. Note, that in case that the eng
 is implemented for a specific codec, there is no 'coding name' to be passed to
 the constructor.
 
+.. note::
+
+   When ``--codec`` is used, then the command line flag ``--bytes-per-ucs-code-point``
+   (respectively ``-b``) has a slightly different meaning. When quex generates an
+   engine that actually understands the codec, this flag specifies the size of the
+   code elements. 
+   
+   For example, UTF8 covers the complete UCS code plane. So, its code points
+   would require at least three bytes (0x0 - 0x10FFFF). However, the code elements
+   of UTF8 are *bytes* and the internal engine triggers on bytes. Thus for codec ``utf8``
+   ``-b 1`` must be specified. In the same way, UTF16 covers the whole plain, but its
+   elements consist of *two bytes*, thus here ``-b 2`` must be specified.
+
+
 Helper Functions
 ################
 

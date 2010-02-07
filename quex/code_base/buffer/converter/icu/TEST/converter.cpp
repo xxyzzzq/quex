@@ -101,7 +101,7 @@ print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
 
     size_t    i = 0;
     for(QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++iterator, ++i) {
-        p  = quex::Quex_unicode_to_utf8(*iterator, utf8_c);
+        p  = QUEX_NAME(unicode_to_utf8)(*iterator, utf8_c);
         *p = '\0';
 
         printf("$%04X: ", (int)i * sizeof(QUEX_TYPE_CHARACTER));

@@ -460,8 +460,8 @@ def __frame_of_all(Code, Setup):
     # "using namespace " + namespace_ref + ";\n"       + \
 
     if Setup.language != "C++":
-        implementation_header_str = "#include <quex/code_base/analyzer/headers.i>\n"
-        implementation_header_str = "#include <quex/code_base/analyzer/C-adaptions.h>\n"
+        implementation_header_str  = "#include <quex/code_base/analyzer/headers.i>\n"
+        implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
     else:
         implementation_header_str = ""
     return "".join(["#include \"%s\"\n" % Setup.output_file_stem,

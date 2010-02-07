@@ -13,7 +13,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE uint8_t*
-    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, uint8_t* utf8_result)
+    QUEX_NAME(unicode_to_utf8)(QUEX_TYPE_CHARACTER  UCS_CharacterCode, uint8_t* utf8_result)
     {
         /* PURPOSE: This function converts the specified unicode character
          *          into its utf8 representation. The result is stored
@@ -102,7 +102,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE uint8_t*
-    Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
+    QUEX_NAME(unicode_to_utf8_string)(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
     {
         QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
         QUEX_TYPE_CHARACTER*  source_end = 0x0;
@@ -118,7 +118,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
             if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
-            drain_iterator = Quex_unicode_to_utf8(*source_iterator, drain_iterator);
+            drain_iterator = QUEX_NAME(unicode_to_utf8)(*source_iterator, drain_iterator);
         }
 
         return drain_iterator;
