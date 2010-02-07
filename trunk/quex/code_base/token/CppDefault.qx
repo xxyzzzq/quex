@@ -62,9 +62,9 @@ token_type {
             std::string                tmp;
             QUEX_TYPE_TOKEN::__string  tmp2 = self.text;
 
-            uint8_t* end = QUEX_NAMESPACE_MAIN::Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), 
-                                                       tmp2.length(), utf8_buffer, 
-                                                       QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE);
+            uint8_t* end = QUEX_NAME(unicode_to_utf8_string)((QUEX_TYPE_CHARACTER*)tmp2.c_str(), 
+                                                             tmp2.length(), utf8_buffer, 
+                                                             QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE);
             *end = '\0'; /* terminating zero */
 
             return std::string((char*)utf8_buffer);

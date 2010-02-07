@@ -26,14 +26,25 @@ additional arguments may be specified in brackets, such as
 
    mode MINE {
      ...
+         // (not allowed when generating C code)
          [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(atoi(Lexeme));
          [a-z]+  => QUEX_TKN_KEYWORD_WORD(Lexeme);
      ...
    }
 
 where the former line calls the token constructor with a numeric argument, and
-the second one calls it with the lexeme itself.  Additional arguments are
-conceivable, but they would require a user defined token class.
+the second one calls it with the lexeme itself. A more explicit way is
+to name the token members, i.e.
+
+.. code-block:: cpp
+
+   mode MINE {
+     ...
+         // More general, and required when generating 'C' code:
+         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(number=atoi(Lexeme));
+         [a-z]+  => QUEX_TKN_KEYWORD_WORD(text=Lexeme);
+     ...
+   }
 
 .. _fig-lexeme-variables:
 
@@ -70,6 +81,22 @@ which are available to access the matched lexeme. In detail they are:
 
    This is a pseudo-lexeme of length zero. It is useful in cases where 
    it is required to set some string inside a token[#f2]_.
+
+.. data:: take_text
+
+   This special identifier triggers a call to
+
+   .. code-block:: cpp
+
+      QUEX_NAME_TOKEN(take_text)(... , LexemeBegin, LexemeEnd)
+
+   This feature is not necessary in C++, because token members can
+   do memory management inside their constructors. When creating C
+   engines, though, this function is required to copy the lexeme
+   from inside the buffer to a safe place in memory.
+
+   The ``take_text`` identifier can only be used in isolation or 
+   in the context of named token parameters.
 
 Instead of relying on a named constant definition for a token-id, quex can
 directly use character codes as token-ids. This comes handy when used

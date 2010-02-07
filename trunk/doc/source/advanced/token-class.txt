@@ -343,8 +343,27 @@ reference to the token object itself.
       If ``true`` is returned the token took over the ownership over the memory
       chunk and claims responsibility to delete it. This is the case if the
       token maintains a reference to the text and does not want it to be
-      deleted.  
-   
+      deleted.
+
+      .. warning:: 
+      
+          It is highly dangerous to apply this strategy if ``take_text``
+          is called from inside the lexical analyzer. To claim ownership
+          would mean that the token owns a piece of memory from the
+          analyzer's buffer. This is impossible!
+
+          There is a way to check whether the memory chunk is from the 
+          analyzer's buffer. A check like the following is sufficient
+
+          .. code-block:: cpp
+
+             if(    Begin >= analyzer.buffer._memory._front 
+                 && End   <= analyzer.buffer._memory._back ) {
+                 /* Never claim ownership on analyzer's buffer ... */
+             } else {
+                 /* Maybe, claim ownership. */
+             }
+
    .. describe:: ``false`` 
    
       If ``false`` is returned the caller shall remain responsible. This can be

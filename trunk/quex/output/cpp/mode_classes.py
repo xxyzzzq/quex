@@ -12,6 +12,8 @@ def do(Modes):
     if DerivedClassHeaderFileName != "": txt = "#include<" + DerivedClassHeaderFileName +">\n"
     else:                                txt = "#include\"" + OutputFilestem +"\"\n"
 
+    txt += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
+
     # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
     mode_class_member_functions_txt = write_member_functions(Modes.values())
 
@@ -118,7 +120,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
                                                   ConsiderDerivedClassesF=true)
         # check whether the mode we come from is an allowed mode
     except:
-        has_entry_from_str = "    return true; // default"        
+        has_entry_from_str = "    return true; /* default */"        
 
     # (*) has exit to
     try:
@@ -126,7 +128,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
         has_exit_to_str = get_IsOneOfThoseCode(exit_list,
                                                ConsiderDerivedClassesF=true)
     except:
-        has_exit_to_str = "    return true; // default"
+        has_exit_to_str = "    return true; /* default */"
 
     
     txt = blue_print(mode_function_implementation_str,

@@ -28,9 +28,9 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
+COMPILER = gcc
 
-CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
+CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall -Wimplicit -pedantic\
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
 	 -D___QUEX_UNIT_TESTING___ -ggdb \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
@@ -63,41 +63,41 @@ endif
 
 # (*) SETUP ____________________________________________________________________
 # -- INPUT
-MODE_FILES       = definitions.qx end_of_file.qx program.qx
+MODE_FILES  = definitions.qx \
+			  end_of_file.qx \
+			  program.qx
 # -- FILES PRODUCED BY QUEX
-ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-ENGINE_SOURCES   = $(ENGINE_NAME)                     \
-                   $(ENGINE_NAME).cpp                 \
-                   $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       
+ENGINE_NAME = tiny_lexer# NOTE: a whitespace after this name creates chaos!
+
 # -- OUTPUT
-OBJS        = $(APPLICATION).o \
-			  $(ENGINE_NAME).o 
-APPLICATION = lexer
+OBJS = lexer.o $(ENGINE_NAME).o 
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(OBJS)
-	$(LD) $(OBJS) -o $(APPLICATION) 
+lexer: $(OBJS)
+	$(LD) $(OBJS) -o lexer
 
-# -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
+# -- engine and object files (make sure that code has been generated)
+%.o: %.c tiny_lexer
 	$(CC) $< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
+%.o: %.E 
+	$(CC:-c=-E) $< -o $@
+
+tiny_lexer: $(MODE_FILES) $(QUEX_CORE)
 	echo ":$(CONVERTER):" $(QUEX_FLAG)
 	quex -i                         $(MODE_FILES)          \
 		 --engine                   $(ENGINE_NAME)         \
 	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
+		 --language C                                      \
 	     $(QUEX_FLAG)
 
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
-	rm -f $(ENGINE_NAME)-token
-	rm -f $(ENGINE_NAME).o
-	rm -f lexer.o
+	rm -f $(ENGINE_NAME)-*
+	rm -f $(ENGINE_NAME).[oE]
+	rm -f lexer.[oE]
 	rm -f lexer
-	rm -f token_ids
 	rm -f *.bak

@@ -130,12 +130,14 @@ $$COPY$$
 
 QUEX_INLINE bool 
 QUEX_NAME_TOKEN(take_text)($$TOKEN_CLASS$$*           __this, 
-                           QUEX_TYPE_ANALYZER*        analyzer, 
+                           QUEX_TYPE_ANALYZER*        __analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, 
                            const QUEX_TYPE_CHARACTER* End)
 {
-#  define self  (*__this)
+#  define self      (*__this)
+#  define analyzer  (*__analyzer)
 $$FUNC_TAKE_TEXT$$
+#  undef analyzer
 #  undef self
 }
 

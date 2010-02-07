@@ -26,18 +26,33 @@ token_type {
 
    destructor {
        if( self.text != 0x0 ) {
-           QUEX_NAME(MemoryManager_AccumulatorText_free)((void*)self.text);
+           QUEX_NAME(MemoryManager_AccumulatorText_free)((QUEX_TYPE_CHARACTER*)self.text);
+           self.text = 0x0;
        }
    }
 
    take_text {
-       self.text = Begin;
+       self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
+                              sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
+       __QUEX_STD_memcpy(self.text, Begin, 
+                         sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
        return true;
    }
 
    copy {
-        self._id    = Other._id;
-        self.text   = Other.text;
+        self._id  = Other._id;
+
+        if( self.text != 0x0 ) {
+            QUEX_NAME(MemoryManager_AccumulatorText_free)((QUEX_TYPE_CHARACTER*)self.text);
+        }
+        if( Other.text != 0x0 ) {
+            self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
+                                    sizeof(QUEX_TYPE_CHARACTER) 
+                                  * (QUEX_NAME(strlen)(Other.text)));
+            __QUEX_STD_memcpy(self.text, Other.text, 
+                                sizeof(QUEX_TYPE_CHARACTER) 
+                              * (QUEX_NAME(strlen)(Other.text)));
+        }
         self.number = Other.number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
     #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING

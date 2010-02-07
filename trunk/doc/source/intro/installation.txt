@@ -70,7 +70,14 @@ feature of quex:
 
 .. data:: demo/003
 
-          implements a lexical analyzer handling Unicode.
+          implements a lexical analyzer handling UTF8 encoding. Quex creates an
+          engine that relies on *converters* ICU and IConv. The converters
+          are used to convert the incoming data stream to unicode. The internal
+          engine still runs on plain unicode code points.
+
+          In contrast, directory demo/011 an example is shown how quex creates
+          analyzer engines that do not need converters. The engine itself 
+          understands the codec and triggers on its code elements.
 
 .. data:: demo/004
 
@@ -112,6 +119,10 @@ feature of quex:
           lexical analyzer engine without using converters. Example codecs are 
           iso8859-7 and utf8.
 
+.. data:: demo/012
+
+          gives an example of how to use multiple lexical analyzers in one single
+          application. 
 
 The author of this document suggests that the user looks at these
 sample applications first before continuing with the remainder of this text. 

@@ -9,9 +9,9 @@
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include <cstddef>  // gets: size_t, ptrdiff_t
-#   include <cstring>  // gets: memmove, memcpy
-#   include <cstdio>   // gets: fprintf
+#   include <cstddef>  /* gets: size_t, ptrdiff_t */
+#   include <cstring>  /* gets: memmove, memcpy   */
+#   include <cstdio>   /* gets: fprintf           */
 #   include <cstdlib>
 #   include <stdexcept>
 #   define __QUEX_STD_FILE     std::FILE
@@ -139,6 +139,11 @@
         "Error: directory $QUEX_PATH/demo/010 (> make stdinlexer.exe). Please,\n"  \
         "Error: review the other (non-stdin) examples in this directory to\n"      \
         "Error: conclude how to read encoded data via stdin.\n"
+
+#define __QUEX_MESSAGE_C_DOES_NOT_SUPPORT_MULTIPLE_IMPLICIT_TOKEN_ARGS \
+        "Error: Quex does not support unspecified multiple arguments for token\n" \
+        "Error: senders in plain 'C'. Please use something like\n\n"              \
+        "Error:           '=> TKN_MY_TOKEN(ID, text=Lexeme)\n\n"
 
 #define QUEX_STRING(X)   #X
 

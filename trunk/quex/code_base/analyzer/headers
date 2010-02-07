@@ -26,6 +26,7 @@
 #include    <quex/code_base/analyzer/counter/Base>
 #include    <quex/code_base/analyzer/member/basic>
 
+#include    <quex/code_base/analyzer/member/constructor>
 #include    <quex/code_base/analyzer/member/buffer-access>
 #include    <quex/code_base/analyzer/member/misc>
 #include    <quex/code_base/analyzer/member/mode-handling>

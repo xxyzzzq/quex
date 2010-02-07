@@ -1,4 +1,3 @@
-make: `stdinlexer.exe' is up to date.
 ,------------------------------------------------------------------------------------
 | [START]
 Please, type an arbitrary sequence of the following:

@@ -1,10 +1,5 @@
 start = PROGRAM;
 
-header {
-#include <cstdlib>  // C++ adapted 'stdlib.h'
-//                  // gets:  atoi(const char*) 
-}
-
 define {
     // \G{Nd}       is the set of characters with the general category property 'decimal number'
     // [\X0-\XFFFF] is the set of characters below 0-65536 to restrict characters to two bytes.
