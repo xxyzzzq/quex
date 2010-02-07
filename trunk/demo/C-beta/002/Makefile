@@ -77,11 +77,11 @@ clean:
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_NAME) $(ENGINE_NAME).c \
 		  $(ENGINE_NAME)-token \
+		  $(ENGINE_NAME)-token.i \
 		  $(ENGINE_NAME)-token_ids \
 		  $(ENGINE_NAME)-configuration
 	rm -f $(ENGINE_NAME).o
-	rm -f lexer.o
-	rm -f lexer.E
+	rm -f lexer.[oE]
 	rm -f lexer
 	rm -f gmon.out
 	rm -f token_ids
