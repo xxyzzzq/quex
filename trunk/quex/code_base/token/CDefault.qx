@@ -32,11 +32,14 @@ token_type {
    }
 
    take_text {
-       self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
+        if( self.text != 0x0 ) {
+            QUEX_NAME(MemoryManager_AccumulatorText_free)((QUEX_TYPE_CHARACTER*)self.text);
+        }
+        self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
                               sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
-       __QUEX_STD_memcpy(self.text, Begin, 
-                         sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
-       return true;
+        __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
+                          sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
+        return true;
    }
 
    copy {
@@ -49,7 +52,7 @@ token_type {
             self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
                                     sizeof(QUEX_TYPE_CHARACTER) 
                                   * (QUEX_NAME(strlen)(Other.text)));
-            __QUEX_STD_memcpy(self.text, Other.text, 
+            __QUEX_STD_memcpy((void*)self.text, (void*)Other.text, 
                                 sizeof(QUEX_TYPE_CHARACTER) 
                               * (QUEX_NAME(strlen)(Other.text)));
         }

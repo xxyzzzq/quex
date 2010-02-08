@@ -102,12 +102,15 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE uint8_t*
-    QUEX_NAME(unicode_to_utf8_string)(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
+    QUEX_NAME(unicode_to_utf8_string)(const QUEX_TYPE_CHARACTER*  Source, 
+                                      size_t                      SourceSize, 
+                                      uint8_t*                    Drain, 
+                                      size_t                      DrainSize)
     {
-        QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
-        QUEX_TYPE_CHARACTER*  source_end = 0x0;
-        uint8_t*              drain_iterator = 0x0; 
-        uint8_t*              drain_end = 0x0;
+        const QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
+        const QUEX_TYPE_CHARACTER*  source_end = 0x0;
+        uint8_t*                    drain_iterator = 0x0; 
+        uint8_t*                    drain_end = 0x0;
 
         __quex_assert(Source != 0x0);
         __quex_assert(Drain != 0x0);

@@ -51,7 +51,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             /* Call placement new (plain constructor) for all tokens in chunk. */
             for(iterator = chunk; iterator != chunk_end; ++iterator)
 #               ifdef __QUEX_OPTION_PLAIN_C
-                /* QuexToken_construct() */
+                QUEX_NAME_TOKEN(_construct)(iterator);
 #               else
                 new ((void*)iterator) QUEX_TYPE_TOKEN;  
 #               endif
@@ -66,7 +66,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Call explicit destructors for all tokens in array */
         for(iterator = me->begin; iterator != me->end; ++iterator)
 #           ifdef __QUEX_OPTION_PLAIN_C
-            /* QuexToken_destruct() */
+            QUEX_NAME_TOKEN(_destruct)(iterator);
 #           else
             iterator->QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
 #           endif
@@ -207,6 +207,7 @@ QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAM
         for(iterator = token_queue->read_iterator; 
             iterator != token_queue->write_iterator; ++iterator) {
 #           ifdef __QUEX_OPTION_PLAIN_C
+            QUEX_NAME_TOKEN(_construct)(iterator);
 #           else
             /* Clean-up by placement new */
             new ((void*)iterator) QUEX_TYPE_TOKEN;

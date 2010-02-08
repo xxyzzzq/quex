@@ -30,7 +30,7 @@ endif
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = gcc
 
-CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall -Wimplicit -pedantic\
+CC = $(COMPILER) -c -fPIC -Wall -Wimplicit -pedantic\
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
 	 -D___QUEX_UNIT_TESTING___ -ggdb \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
