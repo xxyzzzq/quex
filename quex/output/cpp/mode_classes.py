@@ -170,7 +170,7 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
         txt += "std::cerr << \"mode '%s' is not one of:\\n\";" % mode_name
     for mode_name in ThoseModes:
             txt += "    std::cerr << \"         %s\\n\";\n" % mode_name
-    txt += "#endif // QUEX_OPTION_ERROR_OUTPUT_ON_MODE_CHANGE_ERROR\n"
+    txt += "#endif\n"
     txt += "return false;\n"
 
     return txt.replace("\n", "\n" + Indentation)
