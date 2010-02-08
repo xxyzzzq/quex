@@ -51,8 +51,10 @@ token {
     ALLMOST_EQUAL
     LATIN_IDENTIFIER
     LATIN_NUMBER
-    // The follwing 'error' is by purpose to see if the correct error messages
-    // is reported.
-    QUEX_TKN_GREEK_IDENTIFIER
+    GREEK_IDENTIFIER
+    ARABIC_NUMBER
+    DEVANGARI_NUMBER
+    THAI_NUMBER
+    GREEK_IDENTIFIER
 }
 
