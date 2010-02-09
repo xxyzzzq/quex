@@ -1,7 +1,8 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Sun Feb  7 23:06:20 2010
+2010y02m08d 23h04
 TEST
+make: bug-1935701.exe ..................................................[MADE]
 -------------------------------------------------------------------------------
 
  -- attardi:
@@ -244,7 +245,7 @@ Error: bug-1885304.sh
 Error: bug-1969629.sh 
 ===============================================================================
 Demo-Applications
-Sun Feb  7 23:09:09 2010
+2010y02m08d 23h07
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -359,7 +360,7 @@ demo/TEST
 
 ===============================================================================
 Miscellaneous Basic Tests
-Sun Feb  7 23:09:10 2010
+2010y02m08d 23h10
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
@@ -386,7 +387,7 @@ Error: include_guard.py convention
 Error: include_guard.py undefinition
 ===============================================================================
 Check Applications of 'Did you mean'.
-Sun Feb  7 23:09:14 2010
+2010y02m08d 23h10
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -401,9 +402,27 @@ quex/TEST/did-you-mean/TEST
     \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
+<no file 'ADM/title.txt'>
+2010y02m08d 23h10
+quex/TEST/errors-warnings/TEST
+Warning: No database file for hwut-information found for directory: 
+Warning: /home/fschaef/prj/quex/trunk/quex/TEST/errors-warnings/TEST 
+Warning: no history file found. 
+        _ _     _                         _     _       
+     __| (_)___| |_ _ __ __ _ _   _  __ _| |__ | |_     
+    / _` | / __| __| '__/ _` | | | |/ _` | '_ \| __|    
+   | (_| | \__ \ |_| | | (_| | |_| | (_| | | | | |_   _
+    \__,_|_|___/\__|_|  \__,_|\__,_|\__, |_| |_|\__| (_)
+                                    |___/               
+   Directory: /home/fschaef/prj/quex/trunk/quex/TEST/errors-warnings/TEST
+   HWUT cannot find any test application.
+
+===============================================================================
 Event Handlers
-Sun Feb  7 23:09:18 2010
+2010y02m08d 23h10
 quex/TEST/event-handling/TEST
+make: transition-x.exe .................................................[MADE]
+make: transition.exe ...................................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Mode Transitions:
@@ -427,8 +446,11 @@ quex/TEST/event-handling/TEST
 
 ===============================================================================
 Include Stack Handling
-Sun Feb  7 23:09:26 2010
+2010y02m08d 23h10
 quex/TEST/include-stack/TEST
+make: queue.exe ........................................................[MADE]
+make: users_token.exe ..................................................[MADE]
+make: users_queue.exe ..................................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Include Stack:
@@ -466,7 +488,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Sun Feb  7 23:09:30 2010
+2010y02m08d 23h10
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -490,7 +512,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 The 'Reset' Button
-Sun Feb  7 23:09:31 2010
+2010y02m08d 23h10
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -565,12 +587,15 @@ quex/TEST/reset/TEST
 
 ===============================================================================
 Customized Token Class
-Sun Feb  7 23:09:35 2010
+2010y02m08d 23h10
 quex/TEST/token-class/TEST
+make: simple-queue.exe .................................................[MADE]
+make: simple.exe .......................................................[MADE]
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
         misc.sh empty ..........................................[OK]
-                no-namespace ...................................[OK]
+        (CRC check failed for 'GOOD/misc.sh--no-namespace.txt' !)
+                no-namespace .................................[FAIL]
                 double-colon ...................................[OK]
                 token ..........................................[OK]
  -- With token policy 'queue'.
@@ -578,16 +603,22 @@ quex/TEST/token-class/TEST
  -- With token policy 'users_token'.
         simple-queue.exe .......................................[OK]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: misc.sh no-namespace
 ===============================================================================
 Tests related to token queues
-Sun Feb  7 23:09:47 2010
+2010y02m08d 23h10
 quex/TEST/token-policies/TEST
+make: queue.exe ........................................................[MADE]
+make: users_token.exe ..................................................[MADE]
+make: queue-real.exe ...................................................[MADE]
+make: users_queue-real.exe .............................................[MADE]
+make: users_queue.exe ..................................................[MADE]
+make: users_token-real.exe .............................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Token Policy Queue:
@@ -623,8 +654,10 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Sun Feb  7 23:09:49 2010
+2010y02m08d 23h10
 quex/code_base/TEST
+make: strange_stream.exe ...............................................[MADE]
+make: strange_wstream.exe ..............................................[MADE]
 -------------------------------------------------------------------------------
 
  -- StrangeStream:
@@ -648,8 +681,18 @@ quex/code_base/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Sun Feb  7 23:09:58 2010
+2010y02m08d 23h10
 quex/code_base/analyzer/TEST
+make: post-categorizer-find.exe ........................................[MADE]
+make: post-categorizer-remove-total.exe ................................[MADE]
+make: accumulator.exe ..................................................[MADE]
+make: counter-column_line-x.exe ........................................[MADE]
+make: counter-column_line-indentation.exe ..............................[MADE]
+make: post-categorizer-remove-2.exe ....................................[MADE]
+make: post-categorizer-remove.exe ......................................[MADE]
+make: post-categorizer-enter.exe .......................................[MADE]
+make: counter-column_line-indentation-x.exe ............................[MADE]
+make: counter-column_line.exe ..........................................[MADE]
 -------------------------------------------------------------------------------
  -- Accumulator
         accumulator.exe String .................................[OK]
@@ -721,8 +764,18 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Sun Feb  7 23:10:06 2010
+2010y02m08d 23h10
 quex/code_base/buffer/TEST
+make: BufferFiller_backward_copy-32.exe ................................[MADE]
+make: BufferFiller_forward_copy-32.exe .................................[MADE]
+make: Buffer_tell_and_seek-32.exe ......................................[MADE]
+make: BufferFiller_forward_copy.exe ....................................[MADE]
+make: Buffer_move_forward.exe ..........................................[MADE]
+make: BufferFiller_backward_copy.exe ...................................[MADE]
+make: Buffer_move_backward-32.exe ......................................[MADE]
+make: Buffer_move_forward-32.exe .......................................[MADE]
+make: Buffer_move_backward.exe .........................................[MADE]
+make: Buffer_tell_and_seek.exe .........................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Backward:
@@ -783,8 +836,19 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Sun Feb  7 23:10:13 2010
+2010y02m08d 23h11
 quex/code_base/buffer/converter/iconv/TEST
+make: converter-32.exe .................................................[MADE]
+make: converter-statefulness-16.exe ....................................[MADE]
+make: one-beat.exe .....................................................[MADE]
+make: seek_character_index-zikzak.exe ..................................[MADE]
+make: Buffer_move_forward.exe ..........................................[MADE]
+make: converter-16.exe .................................................[MADE]
+make: n-beat.exe .......................................................[MADE]
+make: seek_character_index.exe .........................................[MADE]
+make: Buffer_move_backward.exe .........................................[MADE]
+make: converter-statefulness-32.exe ....................................[MADE]
+make: Buffer_tell_and_seek.exe .........................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Converter:
@@ -857,8 +921,19 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Sun Feb  7 23:10:22 2010
+2010y02m08d 23h11
 quex/code_base/buffer/converter/icu/TEST
+make: converter-32.exe .................................................[MADE]
+make: converter-statefulness-16.exe ....................................[MADE]
+make: one-beat.exe .....................................................[MADE]
+make: seek_character_index-zikzak.exe ..................................[MADE]
+make: Buffer_move_forward.exe ..........................................[MADE]
+make: converter-16.exe .................................................[MADE]
+make: n-beat.exe .......................................................[MADE]
+make: seek_character_index.exe .........................................[MADE]
+make: Buffer_move_backward.exe .........................................[MADE]
+make: converter-statefulness-32.exe ....................................[MADE]
+make: Buffer_tell_and_seek.exe .........................................[MADE]
 -------------------------------------------------------------------------------
 
  -- Converter:
@@ -931,8 +1006,31 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Sun Feb  7 23:10:39 2010
+2010y02m08d 23h11
 quex/code_base/buffer/plain/TEST
+make: Buffer_move_forward-1-fb0.exe ....................................[MADE]
+make: Buffer_move_forward-1-fb1.exe ....................................[MADE]
+make: BufferFiller_forward_load-1-fb0.exe ..............................[MADE]
+make: Buffer_tell_and_seek-1-fb0.exe ...................................[MADE]
+make: BufferFiller_forward_load-2-fb1.exe ..............................[MADE]
+make: BufferFiller_forward_load-error.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb1.exe ..............................[MADE]
+make: Buffer_move_backward-4-fb0.exe ...................................[MADE]
+make: Buffer_tell_and_seek-wiostream.exe ...............................[MADE]
+make: BufferFiller_backward_load-4.exe .................................[MADE]
+make: BufferFiller_backward_load-1.exe .................................[MADE]
+make: Buffer_tell_and_seek-1-fb1.exe ...................................[MADE]
+make: BufferFiller_backward_load-2.exe .................................[MADE]
+make: BufferFiller_forward_load-4-fb5.exe ..............................[MADE]
+make: Buffer_move_backward-1-fb1.exe ...................................[MADE]
+make: Buffer_tell_and_seek-4-fb0.exe ...................................[MADE]
+make: Buffer_move_backward-1-fb0.exe ...................................[MADE]
+make: Buffer_move_forward-4-fb0.exe ....................................[MADE]
+make: BufferFiller_forward_load-1-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-1-fb1.exe ..............................[MADE]
 -------------------------------------------------------------------------------
 
  -- Load Backward:
@@ -1025,7 +1123,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Sun Feb  7 23:10:53 2010
+2010y02m08d 23h11
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1079,132 +1177,132 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Sun Feb  7 23:12:39 2010
+2010y02m08d 23h11
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
  -- Buffer Reload:
 
     Backwards
-        test-backward_loading.py ANSI-C-PlainMemory ............[OK]
-                                 ANSI-C ........................[OK]
-                                 Cpp ...........................[OK]
-                                 Cpp_StrangeStream .............[OK]
+        test-backward_loading.py ANSI-C-PlainMemory ..........[FAIL]
+                                 ANSI-C ......................[FAIL]
+                                 Cpp .........................[FAIL]
+                                 Cpp_StrangeStream ...........[FAIL]
     Forward Position Adaption
-        test-position_adaption.py Cpp_ASSERTS ..................[OK]
-                                  Cpp ..........................[OK]
-                                  ANSI-C-ASSERTS ...............[OK]
-                                  ANSI-C .......................[OK]
-                                  Cpp_StrangeStream ............[OK]
+        test-position_adaption.py Cpp_ASSERTS ................[FAIL]
+                                  Cpp ........................[FAIL]
+                                  ANSI-C-ASSERTS .............[FAIL]
+                                  ANSI-C .....................[FAIL]
+                                  Cpp_StrangeStream ..........[FAIL]
     No Backward Reload -- Precondition at Border
-        test-no-backward-reloading.py Cpp_ASSERTS ..............[OK]
-                                      Cpp ......................[OK]
-                                      ANSI-C-ASSERTS ...........[OK]
-                                      ANSI-C ...................[OK]
-                                      Cpp_StrangeStream ........[OK]
+        test-no-backward-reloading.py Cpp_ASSERTS ............[FAIL]
+                                      Cpp ....................[FAIL]
+                                      ANSI-C-ASSERTS .........[FAIL]
+                                      ANSI-C .................[FAIL]
+                                      Cpp_StrangeStream ......[FAIL]
 
  -- CONTINUE:
 
     (special use case)
-        test-continue-without-return-2.py ANSI-C-PlainMemory ...[OK]
-                                          ANSI-C ...............[OK]
-                                          Cpp ..................[OK]
-                                          Cpp_StrangeStream ....[OK]
+        test-continue-without-return-2.py ANSI-C-PlainMemory .[FAIL]
+                                          ANSI-C .............[FAIL]
+                                          Cpp ................[FAIL]
+                                          Cpp_StrangeStream ..[FAIL]
     Mode Changes
-        test-mode-changes.py ANSI-C-PlainMemory ................[OK]
-                             ANSI-C ............................[OK]
-                             Cpp ...............................[OK]
-                             Cpp_StrangeStream .................[OK]
+        test-mode-changes.py ANSI-C-PlainMemory ..............[FAIL]
+                             ANSI-C ..........................[FAIL]
+                             Cpp .............................[FAIL]
+                             Cpp_StrangeStream ...............[FAIL]
     Reentry analysis without return from function
-        test-continue-without-return.py ANSI-C-PlainMemory .....[OK]
-                                        ANSI-C .................[OK]
-                                        Cpp ....................[OK]
-                                        Cpp_StrangeStream ......[OK]
+        test-continue-without-return.py ANSI-C-PlainMemory ...[FAIL]
+                                        ANSI-C ...............[FAIL]
+                                        Cpp ..................[FAIL]
+                                        Cpp_StrangeStream ....[FAIL]
 
  -- Post Conditions:
 
     Part 1
-        test-post-conditions.py ANSI-C-PlainMemory .............[OK]
-                                ANSI-C .........................[OK]
-                                Cpp ............................[OK]
-                                Cpp_StrangeStream ..............[OK]
+        test-post-conditions.py ANSI-C-PlainMemory ...........[FAIL]
+                                ANSI-C .......................[FAIL]
+                                Cpp ..........................[FAIL]
+                                Cpp_StrangeStream ............[FAIL]
     Part 2
-        test-post-conditions-2.py ANSI-C-PlainMemory ...........[OK]
-                                  ANSI-C .......................[OK]
-                                  Cpp ..........................[OK]
-                                  Cpp_StrangeStream ............[OK]
+        test-post-conditions-2.py ANSI-C-PlainMemory .........[FAIL]
+                                  ANSI-C .....................[FAIL]
+                                  Cpp ........................[FAIL]
+                                  Cpp_StrangeStream ..........[FAIL]
     Part 3
-        test-post-conditions-3.py ANSI-C-PlainMemory ...........[OK]
-                                  ANSI-C .......................[OK]
-                                  Cpp ..........................[OK]
-                                  Cpp_StrangeStream ............[OK]
+        test-post-conditions-3.py ANSI-C-PlainMemory .........[FAIL]
+                                  ANSI-C .....................[FAIL]
+                                  Cpp ........................[FAIL]
+                                  Cpp_StrangeStream ..........[FAIL]
 
  -- Pre Conditions:
 
     Multiple Identical Pre-Conditions
-        test-pre-conditions-3.py ANSI-C-PlainMemory ............[OK]
-                                 ANSI-C ........................[OK]
-                                 Cpp ...........................[OK]
-                                 Cpp_StrangeStream .............[OK]
+        test-pre-conditions-3.py ANSI-C-PlainMemory ..........[FAIL]
+                                 ANSI-C ......................[FAIL]
+                                 Cpp .........................[FAIL]
+                                 Cpp_StrangeStream ...........[FAIL]
     Part 1
-        test-pre-conditions.py ANSI-C-PlainMemory ..............[OK]
-                               ANSI-C ..........................[OK]
-                               Cpp .............................[OK]
-                               Cpp_StrangeStream ...............[OK]
+        test-pre-conditions.py ANSI-C-PlainMemory ............[FAIL]
+                               ANSI-C ........................[FAIL]
+                               Cpp ...........................[FAIL]
+                               Cpp_StrangeStream .............[FAIL]
     Part 2
-        test-pre-conditions-2.py ANSI-C-PlainMemory ............[OK]
-                                 ANSI-C ........................[OK]
-                                 Cpp ...........................[OK]
-                                 Cpp_StrangeStream .............[OK]
+        test-pre-conditions-2.py ANSI-C-PlainMemory ..........[FAIL]
+                                 ANSI-C ......................[FAIL]
+                                 Cpp .........................[FAIL]
+                                 Cpp_StrangeStream ...........[FAIL]
 
  -- Pre- and Post- Conditions:
 
     Simple
-        test-pre-post-condition.py ANSI-C-PlainMemory ..........[OK]
-                                   ANSI-C ......................[OK]
-                                   Cpp .........................[OK]
-                                   Cpp_StrangeStream ...........[OK]
+        test-pre-post-condition.py ANSI-C-PlainMemory ........[FAIL]
+                                   ANSI-C ....................[FAIL]
+                                   Cpp .......................[FAIL]
+                                   Cpp_StrangeStream .........[FAIL]
 
  -- Pseudo Ambgiguous Post Condition:
 
     Part I
-        test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory [OK]
-                                                 ANSI-C ........[OK]
-                                                 Cpp ...........[OK]
-                                                 Cpp_StrangeStream [OK]
+        test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory [FAIL]
+                                                 ANSI-C ......[FAIL]
+                                                 Cpp .........[FAIL]
+                                                 Cpp_StrangeStream [FAIL]
     Part II
-        test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory [OK]
-                                                   ANSI-C ......[OK]
-                                                   Cpp .........[OK]
-                                                   Cpp_StrangeStream [OK]
+        test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory [FAIL]
+                                                   ANSI-C ....[FAIL]
+                                                   Cpp .......[FAIL]
+                                                   Cpp_StrangeStream [FAIL]
 
  -- Simple:
 
     Begin of Line (BOL), End of Line (EOL)
-        test-bol-eol.py ANSI-C-PlainMemory .....................[OK]
-                        ANSI-C .................................[OK]
-                        Cpp ....................................[OK]
-                        Cpp_StrangeStream ......................[OK]
+        test-bol-eol.py ANSI-C-PlainMemory ...................[FAIL]
+                        ANSI-C ...............................[FAIL]
+                        Cpp ..................................[FAIL]
+                        Cpp_StrangeStream ....................[FAIL]
     Keywords 'for', 'forest', 'forester', and 'formidable'
-        test-simple-5.py ANSI-C-PlainMemory ....................[OK]
-                         ANSI-C ................................[OK]
-                         Cpp ...................................[OK]
-                         Cpp_StrangeStream .....................[OK]
+        test-simple-5.py ANSI-C-PlainMemory ..................[FAIL]
+                         ANSI-C ..............................[FAIL]
+                         Cpp .................................[FAIL]
+                         Cpp_StrangeStream ...................[FAIL]
     Maximum Length Match
-        test-simple-2.py ANSI-C-PlainMemory ....................[OK]
-                         ANSI-C ................................[OK]
-                         Cpp ...................................[OK]
-                         Cpp_StrangeStream .....................[OK]
+        test-simple-2.py ANSI-C-PlainMemory ..................[FAIL]
+                         ANSI-C ..............................[FAIL]
+                         Cpp .................................[FAIL]
+                         Cpp_StrangeStream ...................[FAIL]
     Special Case '.' (drop out on valid target state)
-        test-simple-3.py ANSI-C-PlainMemory ....................[OK]
-                         ANSI-C ................................[OK]
-                         Cpp ...................................[OK]
-                         Cpp_StrangeStream .....................[OK]
+        test-simple-3.py ANSI-C-PlainMemory ..................[FAIL]
+                         ANSI-C ..............................[FAIL]
+                         Cpp .................................[FAIL]
+                         Cpp_StrangeStream ...................[FAIL]
     Tiny Expressions
-        test-simple.py ANSI-C-PlainMemory ......................[OK]
-                       ANSI-C ..................................[OK]
-                       Cpp .....................................[OK]
-                       Cpp_StrangeStream .......................[OK]
+        test-simple.py ANSI-C-PlainMemory ....................[FAIL]
+                       ANSI-C ................................[FAIL]
+                       Cpp ...................................[FAIL]
+                       Cpp_StrangeStream .....................[FAIL]
 
  -- Single State:
 
@@ -1218,50 +1316,157 @@ quex/core_engine/generator/TEST
  -- Skip-Characters:
 
     Large Buffer
-        test-skip-trigger-set.py ANSI-C-PlainMemory ............[OK]
-                                 ANSI-C ........................[OK]
-                                 Cpp ...........................[OK]
-                                 Cpp_StrangeStream .............[OK]
+        test-skip-trigger-set.py ANSI-C-PlainMemory ..........[FAIL]
+                                 ANSI-C ......................[FAIL]
+                                 Cpp .........................[FAIL]
+                                 Cpp_StrangeStream ...........[FAIL]
     Varrying Buffer Size
-        test-skip-trigger-set-2.py 3 ...........................[OK]
-                                   4 ...........................[OK]
-                                   5 ...........................[OK]
-                                   6 ...........................[OK]
-                                   7 ...........................[OK]
-                                   8 ...........................[OK]
+        test-skip-trigger-set-2.py 3 .........................[FAIL]
+                                   4 .........................[FAIL]
+                                   5 .........................[FAIL]
+                                   6 .........................[FAIL]
+                                   7 .........................[FAIL]
+                                   8 .........................[FAIL]
 
  -- Skip-Range:
 
     DelimiterLength=2, Large Buffer
-        test-skip-simple.py ANSI-C-PlainMemory .................[OK]
-                            ANSI-C .............................[OK]
-                            Cpp ................................[OK]
-                            Cpp_StrangeStream ..................[OK]
+        test-skip-simple.py ANSI-C-PlainMemory ...............[FAIL]
+                            ANSI-C ...........................[FAIL]
+                            Cpp ..............................[FAIL]
+                            Cpp_StrangeStream ................[FAIL]
     Semi-Complete Delimiters, BufferSize = DelimiterLength + 2
-        test-skip-simple-4.py 2 ................................[OK]
-                              3 ................................[OK]
-                              4 ................................[OK]
-                              5 ................................[OK]
+        test-skip-simple-4.py 2 ..............................[FAIL]
+                              3 ..............................[FAIL]
+                              4 ..............................[FAIL]
+                              5 ..............................[FAIL]
     Varrying DelimiterLength, BufferSize = DelimiterLength + 2
-        test-skip-simple-3.py 1 ................................[OK]
-                              2 ................................[OK]
-                              3 ................................[OK]
-                              4 ................................[OK]
+        test-skip-simple-3.py 1 ..............................[FAIL]
+                              2 ..............................[FAIL]
+                              3 ..............................[FAIL]
+                              4 ..............................[FAIL]
     Varrying DelimiterLength, Large Buffer
-        test-skip-simple-2.py DL=1 .............................[OK]
-                              DL=2 .............................[OK]
-                              DL=3 .............................[OK]
-                              DL=4 .............................[OK]
+        test-skip-simple-2.py DL=1 ...........................[FAIL]
+                              DL=2 ...........................[FAIL]
+                              DL=3 ...........................[FAIL]
+                              DL=4 ...........................[FAIL]
 
-     ___  _ _   _  __                        _     _ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: test-backward_loading.py ANSI-C-PlainMemory
+Error: test-backward_loading.py ANSI-C
+Error: test-backward_loading.py Cpp
+Error: test-backward_loading.py Cpp_StrangeStream
+Error: test-position_adaption.py Cpp_ASSERTS
+Error: test-position_adaption.py Cpp
+Error: test-position_adaption.py ANSI-C-ASSERTS
+Error: test-position_adaption.py ANSI-C
+Error: test-position_adaption.py Cpp_StrangeStream
+Error: test-no-backward-reloading.py Cpp_ASSERTS
+Error: test-no-backward-reloading.py Cpp
+Error: test-no-backward-reloading.py ANSI-C-ASSERTS
+Error: test-no-backward-reloading.py ANSI-C
+Error: test-no-backward-reloading.py Cpp_StrangeStream
+Error: test-continue-without-return-2.py ANSI-C-PlainMemory
+Error: test-continue-without-return-2.py ANSI-C
+Error: test-continue-without-return-2.py Cpp
+Error: test-continue-without-return-2.py Cpp_StrangeStream
+Error: test-mode-changes.py ANSI-C-PlainMemory
+Error: test-mode-changes.py ANSI-C
+Error: test-mode-changes.py Cpp
+Error: test-mode-changes.py Cpp_StrangeStream
+Error: test-continue-without-return.py ANSI-C-PlainMemory
+Error: test-continue-without-return.py ANSI-C
+Error: test-continue-without-return.py Cpp
+Error: test-continue-without-return.py Cpp_StrangeStream
+Error: test-post-conditions.py ANSI-C-PlainMemory
+Error: test-post-conditions.py ANSI-C
+Error: test-post-conditions.py Cpp
+Error: test-post-conditions.py Cpp_StrangeStream
+Error: test-post-conditions-2.py ANSI-C-PlainMemory
+Error: test-post-conditions-2.py ANSI-C
+Error: test-post-conditions-2.py Cpp
+Error: test-post-conditions-2.py Cpp_StrangeStream
+Error: test-post-conditions-3.py ANSI-C-PlainMemory
+Error: test-post-conditions-3.py ANSI-C
+Error: test-post-conditions-3.py Cpp
+Error: test-post-conditions-3.py Cpp_StrangeStream
+Error: test-pre-conditions-3.py ANSI-C-PlainMemory
+Error: test-pre-conditions-3.py ANSI-C
+Error: test-pre-conditions-3.py Cpp
+Error: test-pre-conditions-3.py Cpp_StrangeStream
+Error: test-pre-conditions.py ANSI-C-PlainMemory
+Error: test-pre-conditions.py ANSI-C
+Error: test-pre-conditions.py Cpp
+Error: test-pre-conditions.py Cpp_StrangeStream
+Error: test-pre-conditions-2.py ANSI-C-PlainMemory
+Error: test-pre-conditions-2.py ANSI-C
+Error: test-pre-conditions-2.py Cpp
+Error: test-pre-conditions-2.py Cpp_StrangeStream
+Error: test-pre-post-condition.py ANSI-C-PlainMemory
+Error: test-pre-post-condition.py ANSI-C
+Error: test-pre-post-condition.py Cpp
+Error: test-pre-post-condition.py Cpp_StrangeStream
+Error: test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory
+Error: test-pseudo_ambiguous_post_conditions.py ANSI-C
+Error: test-pseudo_ambiguous_post_conditions.py Cpp
+Error: test-pseudo_ambiguous_post_conditions.py Cpp_StrangeStream
+Error: test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory
+Error: test-pseudo_ambiguous_post_conditions-2.py ANSI-C
+Error: test-pseudo_ambiguous_post_conditions-2.py Cpp
+Error: test-pseudo_ambiguous_post_conditions-2.py Cpp_StrangeStream
+Error: test-bol-eol.py ANSI-C-PlainMemory
+Error: test-bol-eol.py ANSI-C
+Error: test-bol-eol.py Cpp
+Error: test-bol-eol.py Cpp_StrangeStream
+Error: test-simple-5.py ANSI-C-PlainMemory
+Error: test-simple-5.py ANSI-C
+Error: test-simple-5.py Cpp
+Error: test-simple-5.py Cpp_StrangeStream
+Error: test-simple-2.py ANSI-C-PlainMemory
+Error: test-simple-2.py ANSI-C
+Error: test-simple-2.py Cpp
+Error: test-simple-2.py Cpp_StrangeStream
+Error: test-simple-3.py ANSI-C-PlainMemory
+Error: test-simple-3.py ANSI-C
+Error: test-simple-3.py Cpp
+Error: test-simple-3.py Cpp_StrangeStream
+Error: test-simple.py ANSI-C-PlainMemory
+Error: test-simple.py ANSI-C
+Error: test-simple.py Cpp
+Error: test-simple.py Cpp_StrangeStream
+Error: test-skip-trigger-set.py ANSI-C-PlainMemory
+Error: test-skip-trigger-set.py ANSI-C
+Error: test-skip-trigger-set.py Cpp
+Error: test-skip-trigger-set.py Cpp_StrangeStream
+Error: test-skip-trigger-set-2.py 3
+Error: test-skip-trigger-set-2.py 4
+Error: test-skip-trigger-set-2.py 5
+Error: test-skip-trigger-set-2.py 6
+Error: test-skip-trigger-set-2.py 7
+Error: test-skip-trigger-set-2.py 8
+Error: test-skip-simple.py ANSI-C-PlainMemory
+Error: test-skip-simple.py ANSI-C
+Error: test-skip-simple.py Cpp
+Error: test-skip-simple.py Cpp_StrangeStream
+Error: test-skip-simple-4.py 2
+Error: test-skip-simple-4.py 3
+Error: test-skip-simple-4.py 4
+Error: test-skip-simple-4.py 5
+Error: test-skip-simple-3.py 1
+Error: test-skip-simple-3.py 2
+Error: test-skip-simple-3.py 3
+Error: test-skip-simple-3.py 4
+Error: test-skip-simple-2.py DL=1
+Error: test-skip-simple-2.py DL=2
+Error: test-skip-simple-2.py DL=3
+Error: test-skip-simple-2.py DL=4
 ===============================================================================
 Regular Expression Parsing
-Sun Feb  7 23:12:41 2010
+2010y02m08d 23h12
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1327,7 +1532,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Sun Feb  7 23:12:55 2010
+2010y02m08d 23h12
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1487,7 +1692,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Sun Feb  7 23:12:55 2010
+2010y02m08d 23h12
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1513,7 +1718,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Sun Feb  7 23:13:07 2010
+2010y02m08d 23h12
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1580,10 +1785,11 @@ quex/input/TEST
 
 ===============================================================================
 Basic Code Writing Functionality
-Sun Feb  7 23:19:07 2010
+2010y02m08d 23h13
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
+        (CRC check failed for 'GOOD/test-token_class.py.txt' !)
         test-token_class.py ..................................[FAIL]
 
  -- Converter:
@@ -1610,7 +1816,7 @@ quex/output/cpp/TEST
 Error: test-token_class.py 
 ===============================================================================
 Testing Statemachine Plots
-Sun Feb  7 23:13:11 2010
+2010y02m08d 23h13
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1644,7 +1850,7 @@ SUMMARY:
   [OK]           quex/TEST/include-stack/TEST
   [OK]           quex/TEST/match-precedence/TEST
   [OK]           quex/TEST/reset/TEST
-  [OK]           quex/TEST/token-class/TEST
+  [FAIL]      1  quex/TEST/token-class/TEST
   [OK]           quex/TEST/token-policies/TEST
   [OK]           quex/code_base/TEST
   [OK]           quex/code_base/analyzer/TEST
@@ -1653,7 +1859,7 @@ SUMMARY:
   [OK]           quex/code_base/buffer/converter/icu/TEST
   [OK]           quex/code_base/buffer/plain/TEST
   [OK]           quex/core_engine/TEST
-  [OK]           quex/core_engine/generator/TEST
+  [FAIL]    108  quex/core_engine/generator/TEST
   [OK]           quex/core_engine/regular_expression/TEST
   [OK]           quex/core_engine/state_machine/TEST
   [OK]           quex/frs_py/TEST
@@ -1661,10 +1867,10 @@ SUMMARY:
   [FAIL]      1  quex/output/cpp/TEST
   [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-     _____     _ _          ____             
-    |  ___|_ _(_) |___     | ___|      __  __
-    | |_ / _` | | / __|    |___ \      \ \/ /
-    |  _| (_| | | \__ \     ___) |      >  < 
-    |_|  \__,_|_|_|___/    |____/      /_/\_\
-                    
+     _____     _ _          _  _  _  _            
+    |  ___|_ _(_) |___     / |/ || || |     __  __
+    | |_ / _` | | / __|    | || || || |_    \ \/ /
+    |  _| (_| | | \__ \    | || ||__   _     >  < 
+    |_|  \__,_|_|_|___/    |_||_|   |_|     /_/\_\
+                         
 ===============================================================================

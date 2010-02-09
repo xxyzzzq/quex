@@ -21,7 +21,7 @@ class MeinToken;
  *       does not rely on quex's function generation.                        */
 const char*  QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
-inline void  QUEX_NAME_TOKEN(_copy)(MeinToken* me, const MeinToken* That);
+inline void  QUEX_NAME_TOKEN(copy)(MeinToken* me, const MeinToken* That);
 inline bool  QUEX_NAME_TOKEN(take_text)(MeinToken*            __this, 
                                         QUEX_TYPE_ANALYZER*         analyzer, 
                                         const QUEX_TYPE_CHARACTER*  Begin, 
@@ -34,7 +34,7 @@ public:
     /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
      *                BETTER USE __copy(That)                                */
     MeinToken& operator=(const MeinToken& That) 
-    { QUEX_NAME_TOKEN(_copy)(this, &That); return *this; }
+    { QUEX_NAME_TOKEN(copy)(this, &That); return *this; }
     virtual ~MeinToken();
 
 
@@ -152,7 +152,7 @@ public:
 #   undef  self
 
     private:
-        friend void QUEX_NAME_TOKEN(_copy)(MeinToken* me, const MeinToken* That);
+        friend void QUEX_NAME_TOKEN(copy)(MeinToken* me, const MeinToken* That);
         friend bool QUEX_NAME_TOKEN(take_text)(MeinToken*            __this, 
                                                QUEX_TYPE_ANALYZER*         analyzer, 
                                                const QUEX_TYPE_CHARACTER*  Begin, 
@@ -182,7 +182,7 @@ MeinToken::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
 inline
 MeinToken::MeinToken(const MeinToken& Other)
 {
-   QUEX_NAME_TOKEN(_copy)(this, &Other);
+   QUEX_NAME_TOKEN(copy)(this, &Other);
 #  define self (*this)
 
 #line 20 "a string"
@@ -211,7 +211,7 @@ MeinToken::~MeinToken()
 }
 
 inline void
-QUEX_NAME_TOKEN(_copy)(MeinToken* __this, const MeinToken* __That)
+QUEX_NAME_TOKEN(copy)(MeinToken* __this, const MeinToken* __That)
 {
 #  define self  (*__this)
 #  define Other (*__That)

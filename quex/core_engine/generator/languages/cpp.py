@@ -243,7 +243,7 @@ $$REENTRY_PREPARATION$$
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) return;
 #   else
-    if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
 #   endif
 #endif
 

@@ -746,7 +746,7 @@ A hand written token class must comply to the following constraints:
 
     * There must be a function 
     
-      .. cfunction:: void QUEX_NAME_TOKEN(_copy)(Token* me, const Token* Other)`` 
+      .. cfunction:: void QUEX_NAME_TOKEN(copy)(Token* me, const Token* Other)`` 
       
       in the token's namespace which copies the content of token ``Other`` to the
       content of token ``me``.

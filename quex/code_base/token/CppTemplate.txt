@@ -17,7 +17,7 @@ class $$TOKEN_CLASS$$;
  *       does not rely on quex's function generation.                        */
 const char*  QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
 
-inline void  QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
+inline void  QUEX_NAME_TOKEN(copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
 inline bool  QUEX_NAME_TOKEN(take_text)($$TOKEN_CLASS$$*            __this, 
                                         QUEX_TYPE_ANALYZER*         analyzer, 
                                         const QUEX_TYPE_CHARACTER*  Begin, 
@@ -30,7 +30,7 @@ public:
     /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
      *                BETTER USE __copy(That)                                */
     $$TOKEN_CLASS$$& operator=(const $$TOKEN_CLASS$$& That) 
-    { QUEX_NAME_TOKEN(_copy)(this, &That); return *this; }
+    { QUEX_NAME_TOKEN(copy)(this, &That); return *this; }
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_CLASS$$();
 
 $$DISTINCT_MEMBERS$$
@@ -70,7 +70,7 @@ $$BODY$$
 #   undef  self
 
     private:
-        friend void QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
+        friend void QUEX_NAME_TOKEN(copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
         friend bool QUEX_NAME_TOKEN(take_text)($$TOKEN_CLASS$$*            __this, 
                                                QUEX_TYPE_ANALYZER*         analyzer, 
                                                const QUEX_TYPE_CHARACTER*  Begin, 
@@ -93,7 +93,7 @@ $$CONSTRUCTOR$$
 inline
 $$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& Other)
 {
-   QUEX_NAME_TOKEN(_copy)(this, &Other);
+   QUEX_NAME_TOKEN(copy)(this, &Other);
 #  define self (*this)
 $$CONSTRUCTOR$$
 #  undef  self
@@ -108,7 +108,20 @@ $$DESTRUCTOR$$
 }
 
 inline void
-QUEX_NAME_TOKEN(_copy)($$TOKEN_CLASS$$* __this, const $$TOKEN_CLASS$$* __That)
+QUEX_NAME_TOKEN(construct)($$TOKEN_CLASS$$* __this)
+{
+    /* Clean-up by placement new */
+    new ((void*)__this) QUEX_TYPE_TOKEN;
+}
+
+inline void
+QUEX_NAME_TOKEN(destruct)($$TOKEN_CLASS$$* __this)
+{
+    __this->QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
+}
+
+inline void
+QUEX_NAME_TOKEN(copy)($$TOKEN_CLASS$$* __this, const $$TOKEN_CLASS$$* __That)
 {
 #  define self  (*__this)
 #  define Other (*__That)

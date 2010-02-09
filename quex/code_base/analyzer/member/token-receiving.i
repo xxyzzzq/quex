@@ -70,12 +70,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
-            QUEX_NAME_TOKEN(_copy)(result_p, QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
+            QUEX_NAME_TOKEN(copy)(result_p, QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
             return;  
         } 
         else if( me->_token_queue.remaining_repetitions_of_last_token_n ) {
             --(me->_token_queue.remaining_repetitions_of_last_token_n);
-            QUEX_NAME_TOKEN(_copy)(result_p, QUEX_NAME(TokenQueue_back)(&me->_token_queue));
+            QUEX_NAME_TOKEN(copy)(result_p, QUEX_NAME(TokenQueue_back)(&me->_token_queue));
             return;
         }
 
@@ -88,7 +88,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&me->_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
-        QUEX_NAME_TOKEN(_copy)(result_p, QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
+        QUEX_NAME_TOKEN(copy)(result_p, QUEX_NAME(TokenQueue_pop)(&me->_token_queue));
 
         return;
     }
@@ -99,7 +99,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                          QUEX_TYPE_TOKEN*     result_p) 
     {
         me->token = result_p;
-        me->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+        self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
             me->current_analyzer_function(me);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
@@ -111,8 +111,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
     {
         __quex_assert(me->token != 0x0);
-
-        me->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+        self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
             me->current_analyzer_function(me);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        

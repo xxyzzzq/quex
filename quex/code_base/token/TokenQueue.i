@@ -49,12 +49,9 @@ QUEX_NAMESPACE_MAIN_OPEN
             chunk_end = chunk + N;
 
             /* Call placement new (plain constructor) for all tokens in chunk. */
-            for(iterator = chunk; iterator != chunk_end; ++iterator)
-#               ifdef __QUEX_OPTION_PLAIN_C
-                QUEX_NAME_TOKEN(_construct)(iterator);
-#               else
-                new ((void*)iterator) QUEX_TYPE_TOKEN;  
-#               endif
+            for(iterator = chunk; iterator != chunk_end; ++iterator) {
+                QUEX_NAME_TOKEN(construct)(iterator);
+            }
             QUEX_NAME(TokenQueue_init)(me, chunk, chunk_end, QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
         }
     }
@@ -64,12 +61,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_TYPE_TOKEN* iterator = 0x0;
         /* Call explicit destructors for all tokens in array */
-        for(iterator = me->begin; iterator != me->end; ++iterator)
-#           ifdef __QUEX_OPTION_PLAIN_C
-            QUEX_NAME_TOKEN(_destruct)(iterator);
-#           else
-            iterator->QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
-#           endif
+        for(iterator = me->begin; iterator != me->end; ++iterator) {
+            QUEX_NAME_TOKEN(destruct)(iterator);
+        }
 
         if( me->begin != 0x0 ) {
             QUEX_NAME(MemoryManager_TokenArray_free)((void*)me->begin);
@@ -206,12 +200,7 @@ QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAM
          *         potential double deletion.                                   */
         for(iterator = token_queue->read_iterator; 
             iterator != token_queue->write_iterator; ++iterator) {
-#           ifdef __QUEX_OPTION_PLAIN_C
-            QUEX_NAME_TOKEN(_construct)(iterator);
-#           else
-            /* Clean-up by placement new */
-            new ((void*)iterator) QUEX_TYPE_TOKEN;
-#           endif
+            QUEX_NAME_TOKEN(construct)(iterator);
         }
     }
     QUEX_NAME(TokenQueue_reset)(token_queue);
@@ -243,10 +232,7 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
         /* Step 1: Call explicit destructors for token objects that are overwritten  */
         for(iterator = token_queue->begin; 
             iterator != token_queue->begin + me->size; ++iterator) {
-#           ifdef __QUEX_OPTION_PLAIN_C
-#           else
-            iterator->~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();
-#           endif
+            QUEX_NAME_TOKEN(destruct)(iterator);
         }
         /* Step 2: Plain copy of objects stored in the 'remainder store'             */
         __QUEX_STD_memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN) * me->size);
