@@ -1,11 +1,11 @@
-#include<fstream>    
-#include<iostream> 
+#include<cstdio> 
 #include<cstring>
 
-
 #include "TPLex"
+#if defined(__cplusplus)
 using namespace std;
 using namespace quex;
+#endif
 
 void                pseudo_analysis(QUEX_TYPE_ANALYZER* me);
 QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
@@ -33,19 +33,19 @@ main(int argc, char** argv)
 #       endif
         return 0;
     }
-    cout << "NOTE: The production of an assertion error might be part of the test.\n";
-    cout << "---------------------------------------------------------------------\n";
+    printf("NOTE: The production of an assertion error might be part of the test.\n");
+    printf("---------------------------------------------------------------------\n");
     stderr = stdout;
-#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   if defined(  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASE)
     if( argc < 2 ) return 0;
 #   endif
 
     /* Allocating on 'heap' allows for easier memory violation detection via 'efence' */
-    TPLex*     qlex = new TPLex("real.txt");  /* In case of pseudo_analysis the file does not matter */
-
+    TPLex*     qlex = new TPLex("real.txt");  /* In case of pseudo_analysis the file  *
+                                               * does not matter.                     */
 #   if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
-    cout << "Pseudo Analysis: Replace analysis pointer with own function.\n";
-    cout << "Queue Size: " << QUEX_SETTING_TOKEN_QUEUE_SIZE << endl;
+    printf("Pseudo Analysis: Replace analysis pointer with own function.\n");
+    printf("Queue Size: %i\n", QUEX_SETTING_TOKEN_QUEUE_SIZE);
     qlex->current_analyzer_function = pseudo_analysis;
 #   endif
 
@@ -57,16 +57,16 @@ main(int argc, char** argv)
 #if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
 QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {
-    quex::Token   token;
-    quex::Token*  token_p;
+    QUEX_TYPE_TOKEN   token;
+    QUEX_TYPE_TOKEN*  token_p;
     if( strcmp(Choice, "receive-1") == 0 ) {
         qlex.receive(&token);
-        cout << "received: " << token.type_id_name() << endl;
+        printf("received: %s\n", token.type_id_name().c_str());
         return token.type_id();
     }
     else {
         qlex.receive(&token_p);
-        cout << "received: " << token_p->type_id_name() << endl;
+        printf("received: %s\n", token_p->type_id_name().c_str());
         return token_p->type_id();
     }
 }
@@ -74,26 +74,25 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
 QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {        
-    quex::Token Token;
-    if( strcmp(Choice, "receive-1") == 0 ) { qlex.token = &Token; qlex.receive(); }
-    else                                   qlex.receive(&Token);
-    cout << "received: " << Token.type_id_name() << endl;
-    return Token.type_id();
+    QUEX_TYPE_TOKEN token;
+    if( strcmp(Choice, "receive-1") == 0 ) { qlex.token = &token; qlex.receive(); }
+    else                                   qlex.receive(&token);
+    printf("received: %s\n", token.type_id_name().c_str());
+    return token.type_id();
 }
 
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
 QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {        
-    quex::Token   MyArray[5];
-    quex::Token*  water_mark = qlex.receive(MyArray, MyArray + 5);
+    QUEX_TYPE_TOKEN   MyArray[5];
+    QUEX_TYPE_TOKEN*  water_mark = qlex.receive(MyArray, MyArray + 5);
 
-    for(quex::Token* iterator = MyArray; iterator != water_mark; ++iterator) {
-        cout << "    received: " << iterator->type_id_name() << endl;
+    for(QUEX_TYPE_TOKEN* iterator = MyArray; iterator != water_mark; ++iterator) {
+        printf("    received: %s\n", iterator->type_id_name().c_str());
     }
-    cout << "---- \n";
+    printf("---- \n");
     return (water_mark-1)->type_id();
 }
-
 #endif
 
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)

@@ -21,7 +21,8 @@ token_type {
    inheritable;
 
    constructor {
-       self.text = 0x0;
+       self.number = 0;
+       self.text   = 0x0;
    }
 
    destructor {
@@ -29,17 +30,6 @@ token_type {
            QUEX_NAME(MemoryManager_AccumulatorText_free)((QUEX_TYPE_CHARACTER*)self.text);
            self.text = 0x0;
        }
-   }
-
-   take_text {
-        if( self.text != 0x0 ) {
-            QUEX_NAME(MemoryManager_AccumulatorText_free)((QUEX_TYPE_CHARACTER*)self.text);
-        }
-        self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
-                              sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
-        __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
-                          sizeof(QUEX_TYPE_CHARACTER) * (End - Begin));
-        return true;
    }
 
    copy {
@@ -51,10 +41,10 @@ token_type {
         if( Other.text != 0x0 ) {
             self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
                                     sizeof(QUEX_TYPE_CHARACTER) 
-                                  * (QUEX_NAME(strlen)(Other.text)));
+                                  * (QUEX_NAME(strlen)(Other.text) + 1));
             __QUEX_STD_memcpy((void*)self.text, (void*)Other.text, 
                                 sizeof(QUEX_TYPE_CHARACTER) 
-                              * (QUEX_NAME(strlen)(Other.text)));
+                              * (QUEX_NAME(strlen)(Other.text) + 1));
         }
         self.number = Other.number;
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
@@ -65,6 +55,17 @@ token_type {
             self._column_n = Other._column_n;
     #       endif
     #   endif
+   }
+
+   take_text {
+        if( self.text != 0x0 ) {
+            QUEX_NAME(MemoryManager_AccumulatorText_free)((QUEX_TYPE_CHARACTER*)self.text);
+        }
+        self.text = QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
+                              sizeof(QUEX_TYPE_CHARACTER) * (End - Begin + 1));
+        __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
+                          sizeof(QUEX_TYPE_CHARACTER) * (End - Begin + 1));
+        return false;
    }
 
    body {

@@ -253,6 +253,9 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
         txt = ""
         for member, value in member_value_pairs:
             if member == "take_text":
+                if value != "":
+                    error_msg("In brief token sender's 'take_text' is a special identifier.\n"
+                              "It cannot be assigned a value.\n", fh)
                 txt += "QUEX_NAME_TOKEN(take_text)(Lexeme, LexemeEnd);"
                 txt += "QUEX_NAME_TOKEN(take_text)(self_token_object(), &self, Lexeme, LexemeEnd);\n" \
 
@@ -274,12 +277,13 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
         txt += "self_send(%s);\n" % TokenName
         return txt
     else:
-        if Setup.language == "C" and len(ArgList) != 1:
-            error_msg("When output is generated for '%s', then multiple arguments to token\n" \
-                      "senders must be named, e.g. MY_TOKEN(number=atoi(Lexeme)).", fh)
+        if Setup.language == "C" and len(ArgList) > 0:
+            error_msg("When output is generated for '%s', then multiple arguments to token\n" % Setup.language \
+                      + "senders must be named, e.g. MY_TOKEN(number=atoi(Lexeme)).\n" \
+                      + "Found: " + repr(ArgList)[1:-1] + ".", fh)
 
         elif "take_text" in ArgList:
-            if len(ArgList) > 2:
+            if len(ArgList) > 1:
                 error_msg("The 'take_text' short hand can only be used with named token senders\n" \
                           "or without andy further argument.\n")
             return "QUEX_NAME_TOKEN(take_text)(self_token_object(), &self, Lexeme, LexemeEnd);\n" \

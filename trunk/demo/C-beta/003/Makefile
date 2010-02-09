@@ -95,7 +95,7 @@ tiny_lexer: $(MODE_FILES) $(QUEX_CORE)
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch $(MODE_FILES)
-	rm -f $(ENGINE_SOURCES)
+	rm -f tiny_lexer*
 	rm -f $(ENGINE_NAME)-*
 	rm -f $(ENGINE_NAME).[oE]
 	rm -f lexer.[oE]
