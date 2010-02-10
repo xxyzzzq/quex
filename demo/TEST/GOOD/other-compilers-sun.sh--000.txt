@@ -34,4 +34,5 @@ BRACKET_CLOSE
 <TERMINATION>
 | [END] number of token = 28
 `------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

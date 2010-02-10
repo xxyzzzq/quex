@@ -2,15 +2,9 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
-sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
@@ -48,4 +42,5 @@ Per File Letter Count = 26
 2: (1)<TERMINATION>	''
 | [END] number of token = 4
 `------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

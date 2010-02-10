@@ -1,4 +1,4 @@
-<history date="Tue Feb  9 08:12:34 2010" element-n="613">
+<history date="Wed Feb 10 23:16:24 2010" element-n="620">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -1297,5 +1297,14 @@
     </day>
     <day year="2010" month="02" day="09">
         <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="07:12:34"/>
+    </day>
+    <day year="2010" month="02" day="10">
+        <crc-error time="22:12:54" application="other-compilers-intel.sh" choice="000" database-crc="2112531109" real-crc="206599625"/>
+        <crc-error time="22:12:57" application="other-compilers-intel.sh" choice="001" database-crc="1164626837" real-crc="-374056955"/>
+        <crc-error time="22:13:00" application="other-compilers-intel.sh" choice="002" database-crc="-88869927" real-crc="1706884011"/>
+        <crc-error time="22:13:03" application="other-compilers-intel.sh" choice="003" database-crc="-1049325301" real-crc="-1790542260"/>
+        <crc-error time="22:13:06" application="other-compilers-intel.sh" choice="005" database-crc="1631416856" real-crc="-740077430"/>
+        <crc-error time="22:13:08" application="other-compilers-intel.sh" choice="006" database-crc="212480428" real-crc="2116552673"/>
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="22:16:24"/>
     </day>
 </history>

@@ -10,10 +10,6 @@ sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
 executing ...
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
@@ -57,4 +53,5 @@ CURLY_BRACKET_C
 <TERMINATION>
 | [END] number of token = 19
 `------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

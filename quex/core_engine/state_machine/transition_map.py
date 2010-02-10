@@ -274,8 +274,9 @@ class TransitionMap:
                 hint_i = pos
             
         # (*) fill all gaps in the trigger map with 'None' target = Drop Out !
-        trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), None) ] \
-                      + trigger_map
+        if trigger_map[0][0].begin != -sys.maxint:
+            trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), None) ] \
+                          + trigger_map
 
         # The first two intervals are already adjacent
         i    = 2 
@@ -289,7 +290,9 @@ class TransitionMap:
                 i    += 1
                 size += 1
             i += 1
-        trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), None) )
+
+        if trigger_map[-1][0].end != sys.maxint:
+            trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), None) )
 
         # double check:
         # prev_interval = trigger_map[0][0]

@@ -26,7 +26,7 @@ def do(state, StateIdx, SMD, InitStateF=False):
 
     if SMD.dead_end_state_db().has_key(StateIdx):
         return transition.do_dead_end_router(state, StateIdx, SMD.backward_lexing_f())
-       
+
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
     #                        # ==> here, the trigger map cannot be empty.
