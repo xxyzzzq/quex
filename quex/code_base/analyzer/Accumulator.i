@@ -19,7 +19,7 @@ QUEX_INLINE void
 QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me) 
 {
     me->text.begin      = \
-        QUEX_NAME(MemoryManager_AccumulatorText_allocate)(
+        QUEX_NAME(MemoryManager_Text_allocate)(
            QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE * sizeof(QUEX_TYPE_CHARACTER));
     if( me->text.begin == 0x0 ) {
         QUEX_ERROR_EXIT("Quex engine: out of memory--cannot allocate Accumulator.");
@@ -40,7 +40,7 @@ QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me,
 QUEX_INLINE void
 QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
 {
-    QUEX_NAME(MemoryManager_AccumulatorText_free)(me->text.begin);
+    QUEX_NAME(MemoryManager_Text_free)(me->text.begin);
     me->the_lexer       = 0x0;
     me->text.begin      = 0x0;
     me->text.end        = 0x0;
@@ -56,7 +56,7 @@ QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
     const size_t  NewSize = Size + (AddSize < MinAddSize ? MinAddSize : AddSize);
 
     QUEX_TYPE_CHARACTER*  chunk = \
-          QUEX_NAME(MemoryManager_AccumulatorText_allocate)(NewSize*sizeof(QUEX_TYPE_CHARACTER));
+          QUEX_NAME(MemoryManager_Text_allocate)(NewSize*sizeof(QUEX_TYPE_CHARACTER));
 
     if( chunk == 0x0 ) return false;
 
@@ -65,7 +65,7 @@ QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
 
     __QUEX_STD_memcpy(chunk, me->text.begin, sizeof(QUEX_TYPE_CHARACTER) * Size);
 
-    QUEX_NAME(MemoryManager_AccumulatorText_free)(me->text.begin);
+    QUEX_NAME(MemoryManager_Text_free)(me->text.begin);
 
     me->text.begin      = chunk;
     me->text.end        = chunk + OldContentSize;

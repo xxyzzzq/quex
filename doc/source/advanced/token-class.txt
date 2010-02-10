@@ -360,6 +360,11 @@ reference to the token object itself.
              if(    Begin >= analyzer.buffer._memory._front 
                  && End   <= analyzer.buffer._memory._back ) {
                  /* Never claim ownership on analyzer's buffer ... */
+                 /* Need one more space to store the terminating zero */
+                 if( self.text != 0x0 ) {
+                     QUEX_NAME(MemoryManager_Text_free(self.text);
+                 }
+                 self.text = QUEX_NAME(MemoryManager_Text_allocate)(sizeof(QUEX_TYPE_CHARACTER)*(End - Begin + 1));
              } else {
                  /* Maybe, claim ownership. */
              }
@@ -383,7 +388,7 @@ reference to the token object itself.
 
       destructor {
            if( self.text ) {
-                QUEX_NAME(MemoryManager_AccumulatorText_free)((void*)self.text);
+                QUEX_NAME(MemoryManager_Text_free)((void*)self.text);
            }
       }
 

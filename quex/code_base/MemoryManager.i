@@ -74,11 +74,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     QUEX_INLINE QUEX_TYPE_CHARACTER*
-    QUEX_NAME(MemoryManager_AccumulatorText_allocate)(const size_t ByteN)
+    QUEX_NAME(MemoryManager_Text_allocate)(const size_t ByteN)
     { return (QUEX_TYPE_CHARACTER*)QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
 
     QUEX_INLINE void
-    QUEX_NAME(MemoryManager_AccumulatorText_free)(QUEX_TYPE_CHARACTER* memory)
+    QUEX_NAME(MemoryManager_Text_free)(QUEX_TYPE_CHARACTER* memory)
     { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #   endif
 
