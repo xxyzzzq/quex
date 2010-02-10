@@ -26,6 +26,7 @@ $$FUNCTION_BODY$$
 
 def do(sm, LanguageDB, PrintStateMachineF):
 
+
     decorated_state_machine = StateMachineDecorator(sm, 
                                                     "BACKWARD_DETECTOR_" + repr(sm.get_id()),
                                                     PostContextSM_ID_List = [], 

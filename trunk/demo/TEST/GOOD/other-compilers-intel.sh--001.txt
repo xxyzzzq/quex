@@ -44,4 +44,5 @@ CURLY_BRACKET_C
 <TERMINATION>
 | [END] number of token = 19
 `------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

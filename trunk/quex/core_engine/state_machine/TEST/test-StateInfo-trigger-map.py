@@ -47,6 +47,7 @@ s.add_transition(NumberSet(Interval(46, 47)), 1L)
 s.add_transition(NumberSet(Interval(48, 49)), 1L)
 test(s)
         
+print "#---------------------------------------------------------------------------------------"
 # (*) special case: only one interval at all
 s = State()
 s.add_transition(NumberSet(Interval(46, 47)), 1L)

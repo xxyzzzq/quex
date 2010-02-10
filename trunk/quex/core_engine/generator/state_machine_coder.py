@@ -42,9 +42,11 @@ def do(SMD):
 
     # -- all other states
     for state_index, state in state_machine.states.items():
+
         # the init state has been coded already
         if state_index == state_machine.init_state_index: continue
 
+        txt.append("    __quex_assert(false); /* No drop-through between states */\n")
         state_code = state_coder.do(state, state_index, SMD)
 
         # some states are not coded (some dead end states)

@@ -36,9 +36,9 @@
 /*_______________________________________________________________________*/
 
 #if        defined(__QUEX_OPTION_PLAIN_C)
-#   define self_token_get_id(ID)    __QUEX_CURRENT_TOKEN_P->_id
+#   define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->_id
 #else
-#   define self_token_get_id(ID)    __QUEX_CURRENT_TOKEN_P->type_id()
+#   define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->type_id()
 #endif
 #define self_token_set_id(ID)    QUEX_TOKEN_POLICY_SET_ID(ID)
 

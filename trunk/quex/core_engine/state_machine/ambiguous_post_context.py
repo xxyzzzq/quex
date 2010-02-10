@@ -249,11 +249,10 @@ def mount(the_state_machine, PostConditionSM):
 
     the_state_machine.core().set_post_context_backward_input_position_detector_sm(backward_detector_sm)
 
-
     # We cannot do a NFA to DFA and Hopcroft Optimization, because otherwise we
     # would create a new state machine. This function, though, is considered to 
     # 'mount' something on an existing state machine, i.e. change the object
-    # that is referenced by the first argument.
+    # that is referenced by the first function argument 'the_state_machine'.
     return the_state_machine
 
 def philosophical_cut(core_sm, post_context_sm):

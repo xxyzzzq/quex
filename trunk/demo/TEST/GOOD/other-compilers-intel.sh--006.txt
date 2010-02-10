@@ -52,4 +52,5 @@ WHITESPACE
 <TERMINATION>	
 | [END] number of token = 26
 `------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

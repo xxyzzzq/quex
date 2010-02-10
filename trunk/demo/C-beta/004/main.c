@@ -91,7 +91,8 @@ func_get_token_id()
     return yylex();
 #else
 #   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
-    QUEX_NAME(receive_p)(&qlex, &token);
+    // QUEX_NAME(receive_p)(&qlex, &token);
+    QUEX_NAME(PROGRAM_analyzer_function)(&qlex);
 #   else
     qlex.receive(&token); 
 #   endif
