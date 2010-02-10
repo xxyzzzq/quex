@@ -1,4 +1,4 @@
-<history date="Wed Feb 10 23:16:24 2010" element-n="620">
+<history date="Thu Feb 11 00:22:25 2010" element-n="625">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -1305,6 +1305,11 @@
         <crc-error time="22:13:03" application="other-compilers-intel.sh" choice="003" database-crc="-1049325301" real-crc="-1790542260"/>
         <crc-error time="22:13:06" application="other-compilers-intel.sh" choice="005" database-crc="1631416856" real-crc="-740077430"/>
         <crc-error time="22:13:08" application="other-compilers-intel.sh" choice="006" database-crc="212480428" real-crc="2116552673"/>
-        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="22:16:24"/>
+        <crc-error time="23:19:17" application="other-compilers-sun.sh" choice="000" database-crc="561690640" real-crc="-1777342691"/>
+        <crc-error time="23:19:20" application="other-compilers-sun.sh" choice="001" database-crc="-911645252" real-crc="-1399683474"/>
+        <crc-error time="23:19:24" application="other-compilers-sun.sh" choice="002" database-crc="-680253880" real-crc="145868241"/>
+        <crc-error time="23:19:30" application="other-compilers-sun.sh" choice="005" database-crc="2058595367" real-crc="-581593297"/>
+        <crc-error time="23:19:33" application="other-compilers-sun.sh" choice="006" database-crc="-237504580" real-crc="1243948531"/>
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:22:25"/>
     </day>
 </history>
