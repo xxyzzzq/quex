@@ -3,8 +3,6 @@
 
 #ifdef self_accumulator_add
 /* Token / Token Policy _____________________________________________________*/
-#   undef self_token_get_id
-#   undef self_token_set_id
 #   undef self_token_take_text
 
 /* Modes ____________________________________________________________________*/
@@ -46,12 +44,6 @@
 /* Token / Token Policy 
  * (NOTE: Macros for token sending are defined separately in file 'member/token-sending'.
  *        Those macros have to perform a little 'type loose').                            */
-#if        defined(__QUEX_OPTION_PLAIN_C)
-#   define self_token_get_id(ID)    __QUEX_CURRENT_TOKEN_P->_id
-#else
-#   define self_token_get_id(ID)    __QUEX_CURRENT_TOKEN_P->type_id()
-#endif
-#define self_token_set_id(ID)    QUEX_TOKEN_POLICY_SET_ID(ID)
 #define self_token_take_text(Begin, End) \
         QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self, (Begin), (End))
 

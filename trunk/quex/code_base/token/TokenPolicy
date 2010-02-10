@@ -35,6 +35,13 @@
 #endif
 /*_______________________________________________________________________*/
 
+#if        defined(__QUEX_OPTION_PLAIN_C)
+#   define self_token_get_id(ID)    __QUEX_CURRENT_TOKEN_P->_id
+#else
+#   define self_token_get_id(ID)    __QUEX_CURRENT_TOKEN_P->type_id()
+#endif
+#define self_token_set_id(ID)    QUEX_TOKEN_POLICY_SET_ID(ID)
+
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 
 #    define __QUEX_CURRENT_TOKEN_P  (self._token_queue.write_iterator)

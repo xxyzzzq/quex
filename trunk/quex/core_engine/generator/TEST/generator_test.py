@@ -211,6 +211,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    namespace quex {\n"
     txt += "#endif\n"
     txt += "typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;\n"
+    txt += "void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}\n"
+    txt += "void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}\n"
     txt += "#if ! defined (__QUEX_OPTION_PLAIN_C)\n"
     txt += "    }\n"
     txt += "#endif\n"
@@ -350,6 +352,8 @@ $$__QUEX_OPTION_PLAIN_C$$
     namespace quex {
 #endif
 typedef struct {} QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE;
+void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}
+void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     }
 #endif
