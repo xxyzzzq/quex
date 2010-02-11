@@ -7,22 +7,20 @@
 
 using namespace std;
 
-QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
-
 int 
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::Token       my_token;
+    QUEX_TYPE_TOKEN     my_token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer  qlex(argc == 1 ? "example.txt" : argv[1]);
+    QUEX_TYPE_ANALYZER  qlex;
+    
+    QUEX_NAME_TOKEN(construct)(&my_token);
+    QUEX_NAME(construct_file_name)(&qlex, "example.txt", 0x0, false);
 
-    // (*) print the version 
-    // cout << qlex.version() << endl << endl;
-
-    cout << ",------------------------------------------------------------------------------------\n";
-    cout << "| [START]\n";
+    printf(",------------------------------------------------------------------------------------\n");
+    printf("| [START]\n");
 
     int  number_of_tokens = 0;
     bool continue_lexing_f = true;
@@ -59,27 +57,33 @@ main(int argc, char** argv)
         // (*) check against 'termination'
     } while( continue_lexing_f );
 
-    cout << "| [END] number of token = " << number_of_tokens << "\n";
-    cout << "`------------------------------------------------------------------------------------\n";
+    printf("| [END] number of token = %i\n", (int)number_of_tokens);
+    printf("`------------------------------------------------------------------------------------\n");
 
     return 0;
 }
 
-string  space(int N)
-{ string tmp; for(int i=0; i<N; ++i) tmp += "    "; return tmp; }
+void  
+space(int N)
+{ for(int i=0; i<N; ++i) printf("    "); }
 
-void  print(quex::tiny_lexer& qlex, quex::Token& my_token, bool TextF /* = false */)
+void  
+print(QUEX_TYPE_ANALYZER& qlex, quex::Token& my_token, bool TextF /* = false */)
 { 
-    cout << space(qlex.include_depth) << my_token.line_number() << ": (" << my_token.column_number() << ")";
-    cout << my_token.type_id_name();
-    if( TextF ) cout << "\t'" << my_token.get_text().c_str() << "'";
-    cout << endl;
+    space(qlex.include_depth);
+    printf("%i: (%i)", (int)my_token.line_number(), (int)my_token.column_number());
+    printf(my_token.type_id_name());
+    if( TextF ) printf("\t'%s'", my_token._text "'");
+    printf("\n");
 }
 
-void print(quex::tiny_lexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
+void 
+print(QUEX_TYPE_ANALYZER& qlex, const char* Str1, 
+      const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
 {
-    cout << space(qlex.include_depth) << Str1;
-    if( Str2 != 0x0 ) cout << Str2;
-    if( Str3 != 0x0 ) cout << Str3;
-    cout << endl;
+    space(qlex.include_depth);
+    printf(Str1);
+    if( Str2 != 0x0 ) printf(Str2);
+    if( Str3 != 0x0 ) printf(Str3);
+    printf("\n");
 }

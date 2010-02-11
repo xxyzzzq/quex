@@ -84,7 +84,7 @@ $(APPLICATION): $(OBJS)
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	echo ":$(CONVERTER):" $(QUEX_FLAG)
+	@echo ":$(CONVERTER):" $(QUEX_FLAG)
 	quex -i                         $(MODE_FILES)          \
 		 --engine                   $(ENGINE_NAME)         \
 	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
