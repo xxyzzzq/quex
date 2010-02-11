@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.32" date="Thu Feb 11 00:26:16 2010">
+<test-database execution-time-sec="0.12" date="Thu Feb 11 07:44:42 2010">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" make-dependent="True" time-sum-sec="0.03"> 
@@ -13,18 +13,18 @@
                <choice name="" result="OK" time_sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Function delete_comment(...)" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="test-delete_comment.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.04" crc="1761513741"/>
             </choice-list>
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" make-dependent="True" time-sum-sec="0.22"> 
+        <test title="Trim (replaced by string.strip(..))" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="test-trim.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.22" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.02" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

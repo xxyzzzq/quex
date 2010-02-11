@@ -78,7 +78,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
         return txt
 
     if PatternStateMachine == None:
-        return txt + "QUEX_NAME(CounterLineColumnIndentation_icount)(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(CounterLineColumnIndentation_count)(&self.counter, Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -94,18 +94,18 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
         # IDEA: (case newline_n > 0) 
         #       Try to determine number of characters backwards to newline directly
         #       from the pattern state machine.
-        func = "QUEX_NAME(CounterLineColumnIndentation_icount)(&self.counter, Lexeme, LexemeEnd);"       
+        func = "QUEX_NAME(CounterLineColumnIndentation_count)(&self.counter, Lexeme, LexemeEnd);"       
 
     else:
         if character_n == -1: column_increment = "LexemeL"          # based on matched lexeme
         else:                 column_increment = "%i" % character_n # fixed length
             
         if starts_never_on_whitespace_f:
-            func = "QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace)(&self.counter, %s);" % column_increment
+            func = "QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(&self.counter, %s);" % column_increment
         elif contains_only_spaces_f:
-            func = "QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpaces)(&self.counter, %s);" % column_increment
+            func = "QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpaces)(&self.counter, %s);" % column_increment
         else:
-            func = "QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline)(&self.counter, Lexeme, LexemeL);"
+            func = "QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(&self.counter, Lexeme, LexemeL);"
 
     return txt + func + "\n"
 

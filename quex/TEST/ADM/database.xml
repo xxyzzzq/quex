@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.04" date="Thu Feb 11 00:22:26 2010">
+<test-database execution-time-sec="0.97" date="Thu Feb 11 07:41:03 2010">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" make-dependent="True" time-sum-sec="0.43"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
@@ -6,10 +6,10 @@
            <choice name="" result="OK" time_sec="0.43" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" make-dependent="True" time-sum-sec="0.10"> 
+    <test title="Prepare Pattern Information for Code Generation" make-dependent="True" time-sum-sec="0.08"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.10" crc="443378679"/>
+           <choice name="" result="OK" time_sec="0.08" crc="443378679"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." make-dependent="True" time-sum-sec="0.03"> 
@@ -18,11 +18,11 @@
            <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" make-dependent="True" time-sum-sec="0.42"> 
+    <test title="Include Guards for C/C++" make-dependent="True" time-sum-sec="0.39"> 
         <application file-name="include_guard.py" info-request-time="1265550491L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="FAIL" time_sec="0.23" crc="393530305"/>
-           <choice name="undefinition" result="FAIL" time_sec="0.19" crc="-1566893673"/>
+           <choice name="convention" result="FAIL" time_sec="0.19" crc="393530305"/>
+           <choice name="undefinition" result="FAIL" time_sec="0.20" crc="-1566893673"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

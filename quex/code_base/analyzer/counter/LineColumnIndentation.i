@@ -70,9 +70,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void    
-    QUEX_NAME(CounterLineColumnIndentation_icount)(QUEX_NAME(CounterLineColumnIndentation)*   me,
-                                  QUEX_TYPE_CHARACTER*      Lexeme,
-                                  QUEX_TYPE_CHARACTER*      LexemeEnd)
+    QUEX_NAME(CounterLineColumnIndentation_count)(QUEX_NAME(CounterLineColumnIndentation)*   me,
+                                                  QUEX_TYPE_CHARACTER*      Lexeme,
+                                                  QUEX_TYPE_CHARACTER*      LexemeEnd)
     /* Lexeme:    Pointer to first character of Lexeme.
      * LexemeEnd: Pointer to first character after Lexeme.
      *
@@ -98,11 +98,11 @@ QUEX_NAMESPACE_MAIN_OPEN
          *  
          *      (2.1) no newline in lexeme?
          *      yes => indentation_counting == ON ?
-         *             no => perform normal line number and column number counting
-         *                   (we are not in between newline and the first non-whitespace 
-         *                    character of a line).
-         *                   END
          *             yes => start_consideration_it = Begin_it
+         *             no  => perform normal line number and column number counting
+         *                    (we are not in between newline and the first non-whitespace 
+         *                     character of a line).
+         *                    END
          *  
          *  (3) Count
          *  
@@ -114,22 +114,22 @@ QUEX_NAMESPACE_MAIN_OPEN
          *      column_number_at_end  = End_it - start_consideration_it
          *      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
          *                                                                       */
-        QUEX_TYPE_CHARACTER* Begin = (QUEX_TYPE_CHARACTER*)Lexeme;
-        QUEX_TYPE_CHARACTER* Last  = LexemeEnd - 1;                
-        QUEX_TYPE_CHARACTER* it    = Last;
+        QUEX_TYPE_CHARACTER*   Begin = (QUEX_TYPE_CHARACTER*)Lexeme;
+        QUEX_TYPE_CHARACTER*   Last  = LexemeEnd - 1;                
+        QUEX_TYPE_CHARACTER*   it    = Last;
 
         __quex_assert(Begin < LexemeEnd);   /* LexemeLength >= 1: NEVER COMPROMISE THIS ! */
 
         /* (1) Last character == newline ? _______________________________________________ */
         if( *Last == '\n' ) {
-            me->_indentation = 0;
+            me->_indentation                 = 0;
             me->_indentation_count_enabled_f = true;
 #           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
             ++(me->base._line_number_at_end);
             CounterBase_count_newline_n_backwards((__CounterBase*)me, it, Begin);
 #           endif
 #           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            me->base._column_number_at_end = 1;  /* next lexeme starts at _column_number_at_end + 1 */
+            me->base._column_number_at_end   = 1;  /* next lexeme starts at _column_number_at_end + 1 */
 #           endif
             __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
             return;
@@ -147,12 +147,12 @@ QUEX_NAMESPACE_MAIN_OPEN
                  *       => there is always an iterator behind 'it'
                  *          if *it == "\n". The incrementation does
                  *          not need a check;                                             */
-                start_consideration_it = it;
+                start_consideration_it           = it;
                 ++start_consideration_it;  /* point to first character after newline      */
-                me->_indentation = 0;
+                me->_indentation                 = 0;
                 me->_indentation_count_enabled_f = true;
 #               ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                me->base._column_number_at_end = 1;
+                me->base._column_number_at_end   = 1;
 #               endif
                 break; 
             }	    
@@ -194,7 +194,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void    
-    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
                                             QUEX_TYPE_CHARACTER*     Lexeme,
                                             const int                LexemeL)
     /* Lexeme:    Pointer to first character of Lexeme.
@@ -230,7 +230,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace)(QUEX_NAME(CounterLineColumnIndentation)* me, 
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(QUEX_NAME(CounterLineColumnIndentation)* me, 
                                                                    const int ColumnNIncrement) 
     /* This is the fastest way to count: simply add the constant integer that represents 
      * the constant length of the lexeme (for patterns with fixed length, e.g. keywords). */
@@ -247,7 +247,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpace)(QUEX_NAME(CounterLineColumnIndentation)*  me, 
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpace)(QUEX_NAME(CounterLineColumnIndentation)*  me, 
                                                               const int                ColumnNIncrement) 
     {
         __quex_assert(ColumnNIncrement > 0);  /* lexeme length >= 1 */
@@ -259,11 +259,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__CounterLineColumnIndentation_count_whitespace_to_first_non_whitespace)(QUEX_NAME(CounterLineColumnIndentation)* me,
-                                                                      QUEX_TYPE_CHARACTER* start_consideration_it, 
-                                                                      QUEX_TYPE_CHARACTER* Begin,
-                                                                      QUEX_TYPE_CHARACTER* End,
-                                                                      const bool           LicenseToIncrementLineCountF)
+    QUEX_NAME(__CounterLineColumnIndentation_count_whitespace_to_first_non_whitespace)(
+                           QUEX_NAME(CounterLineColumnIndentation)* me,
+                           QUEX_TYPE_CHARACTER*   start_consideration_it, 
+                           QUEX_TYPE_CHARACTER*   Begin,
+                           QUEX_TYPE_CHARACTER*   End,
+                           const bool             LicenseToIncrementLineCountF)
     /* NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
      *       from the following function or implement it unconditionally, since the decision
      *       is based on a constant (either true or false) -- once the function has been inlined.  */ 
