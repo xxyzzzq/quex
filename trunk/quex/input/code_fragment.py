@@ -277,8 +277,8 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
         txt += "self_send(%s);\n" % TokenName
         return txt
     else:
-        if Setup.language == "C" and len(ArgList) > 0:
-            error_msg("When output is generated for '%s', then multiple arguments to token\n" % Setup.language \
+        if Setup.language == "C" and len(ArgList) > 0 and ArgList[0] != "take_text":
+            error_msg("When output is generated for '%s', then arguments to token\n" % Setup.language \
                       + "senders must be named, e.g. MY_TOKEN(number=atoi(Lexeme)).\n" \
                       + "Found: " + repr(ArgList)[1:-1] + ".", fh)
 

@@ -78,14 +78,14 @@ lexer: $(OBJS)
 	$(LD) $(OBJS) -o lexer
 
 # -- engine and object files (make sure that code has been generated)
-%.o: %.c tiny_lexer
+%.o: %.c tiny_lexer.c
 	$(CC) $< -o $@
 
 %.o: %.E 
 	$(CC:-c=-E) $< -o $@
 
-tiny_lexer: $(MODE_FILES) $(QUEX_CORE)
-	echo ":$(CONVERTER):" $(QUEX_FLAG)
+tiny_lexer.c: $(MODE_FILES) $(QUEX_CORE)
+	@echo ":$(CONVERTER):" $(QUEX_FLAG)
 	quex -i                         $(MODE_FILES)          \
 		 --engine                   $(ENGINE_NAME)         \
 	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
