@@ -270,6 +270,11 @@ def validate(setup, command_line, argv):
         error_msg("More than one character converter has been specified. Note, that the\n" + \
                   "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n" + \
                   "to be used mutually exclusively.")
+    if converter_n == 1 and setup.engine_character_encoding != "":  
+        error_msg("An engine that is to be generated for a specific codec cannot rely\n" + \
+                  "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
+                  "`--converter-new`.")
+
 
     # token transmission policy
     token_policy_list = ["queue", "users_token", "users_queue"]

@@ -20,6 +20,7 @@ OPTION_DB = {
         "--property-match":     ["Find property values that match wildcards"],
         "--numeric":            ["Display sets numerically",  ["--set-by-property", "--set-by-expression"]],
         "--intervals":          ["Display sets by intervals", ["--set-by-property", "--set-by-expression"]],
+        "--names":              ["Display unicode names",     ["--set-by-property", "--set-by-expression"]],
 }
 
 def get_supported_command_line_option_description():
@@ -188,11 +189,12 @@ def __display_set(CharSet, cl):
     if cl.search("--numeric"): display = "hex"
     else:                      display = "utf8"
 
+    print "Characters:\n", 
     if cl.search("--intervals"): 
-        print "Characters:\n", 
         __print_set_in_intervals(CharSet, display, 80)
+    if cl.search("--names"):
+        __print_set_character_names(CharSet, display, 80)
     else:
-        print "Characters:\n", 
         __print_set_single_characters(CharSet, display, 80)
 
     print 
@@ -231,6 +233,11 @@ def __print_set_in_intervals(CharSet, Display, ScreenWidth):
         txt += interval_string
 
     print txt
+
+def __print_set_character_names(CharSet, Display, ScreenWidth):
+    for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
+        for code_point in range(interval.begin, interval.end):
+            print ucs_property_db.map_code_point_to_character_name(code_point)
 
 def __print_set_single_characters(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]

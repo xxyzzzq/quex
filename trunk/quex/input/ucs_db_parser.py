@@ -310,6 +310,8 @@ class PropertyInfoDB:
         self.property_name_to_alias_map = {}  # map: property alias to property name
         self.db = {}                          # map: property alias to property information
 
+        self.__code_point_to_name_db = {}
+
     def __getitem__(self, PropertyName):
         if self.db == {}: self.init_db()
 
@@ -492,6 +494,17 @@ class PropertyInfoDB:
         self.db["na1"].code_point_db = names_uc1_db         # Name Unicode 1
         self.db["isc"].code_point_db = iso_comment_db       # ISO_Comment
 
+    def map_code_point_to_character_name(self, CodePoint):
+        if self.db["na"].code_point_db == None:
+            self.load_UnicodeData()
+        if len(self.__code_point_to_name_db) == 0:
+            for key, value in self.db["na"].code_point_db.items():
+                self.__code_point_to_name_db[value] = key
+            for key, value in self.db["na1"].code_point_db.items():
+                if self.__code_point_to_name_db.has_key(value): continue
+                self.__code_point_to_name_db[value] = key
+
+        return self.__code_point_to_name_db.get(CodePoint, "UCS 0x%06X" % CodePoint)
 
     def get_property_descriptions(self):
         item_list = self.db.items()

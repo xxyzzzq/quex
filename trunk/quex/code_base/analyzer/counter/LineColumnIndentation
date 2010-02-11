@@ -49,7 +49,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(CounterLineColumnIndentation_on_end_of_file)(QUEX_NAME(CounterLineColumnIndentation)* me);
 
     QUEX_INLINE void    
-    QUEX_NAME(CounterLineColumnIndentation_icount)(QUEX_NAME(CounterLineColumnIndentation)*  me,
+    QUEX_NAME(CounterLineColumnIndentation_count)(QUEX_NAME(CounterLineColumnIndentation)*  me,
                                                    QUEX_TYPE_CHARACTER*     Lexeme,
                                                    QUEX_TYPE_CHARACTER*     LexemeEnd);
 
@@ -61,16 +61,16 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                    QUEX_TYPE_CHARACTER* End,
                                                    const bool           LicenseToIncrementLineCountF);
     QUEX_INLINE void    
-    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
                                             QUEX_TYPE_CHARACTER*     Lexeme,
                                             const int                LexemeL);
     QUEX_INLINE void  
-    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_NeverStartOnWhitespace)(
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(
                                                  QUEX_NAME(CounterLineColumnIndentation)*  me, 
                                                  const int                                 ColumnNIncrement); 
 
     QUEX_INLINE void  
-    QUEX_NAME(CounterLineColumnIndentation_icount_NoNewline_ContainsOnlySpace)(
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpace)(
                                                      QUEX_NAME(CounterLineColumnIndentation)*  me, 
                                                      const int                                 ColumnNIncrement);
 

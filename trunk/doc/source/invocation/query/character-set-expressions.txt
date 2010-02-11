@@ -57,7 +57,19 @@ command line option ``--set-by-expression``. The following call
 
 Displays all characters that are numeric digits in the arabic script. Note
 that the display of characters on the screen is not always meaningful, so 
-you might specify the option ``--numeric`` in order to display numeric
-values of the characters. The option ``--intervals`` prints out character
-intervals instead of each isolated character. This way output may become
-more brief and understandable.
+you might specify the one of the options:
+
+.. describe:: ``--numeric`` 
+
+   in order to display numeric values of the characters. 
+
+.. describe:: ``--intervals`` 
+
+   prints out character intervals instead of each isolated character. 
+
+.. describe:: ``-names`` 
+
+   which prints out the character names.
+
+Depending on the specific information required, these options allow to display
+the results appropriately.
