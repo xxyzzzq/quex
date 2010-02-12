@@ -12,6 +12,8 @@
 
 using namespace std;
 
+extern  FILE*  global_fh;
+
 /* NOTE: the following *must* be included after 'c_lexer' */
 #if ANALYZER_GENERATOR_FLEX
    extern int    yylex();
@@ -19,9 +21,41 @@ using namespace std;
    extern void   yyrestart(FILE*);
 
    typedef int QUEX_TYPE_TOKEN_ID;
+#  define ANALYZER_ANALYZE(TokenID) \
+          do {                      \
+              TokenID = yylex();    \
+          } while ( 0 )
+
+#  define ANALYZER_RESET() \
+          do {                          \
+             fseek(yyin, 0, SEEK_SET);  \
+             yyrestart(yyin);           \
+          while( 0 )
 #else
+   extern quex::c_lexer*  global_qlex; 
+   extern quex::Token     global_token; 
    using namespace quex;
+#  ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#     define ANALYZER_ANALYZE(TokenID)       \
+              do {                           \
+                  global_qlex->receive();           \
+                  TokenID = global_token.type_id(); \
+              } while( 0 )
+#  else
+#     define ANALYZER_ANALYZE(TokenID)       \
+              do {                           \
+                  global_qlex->receive(&global_token); \
+                  TokenID = global_token.type_id();    \
+              } while( 0 )
+#  endif
+#  define ANALYZER_RESET() \
+              do {                          \
+                  fseek(global_fh, 100, SEEK_SET); \
+                  global_qlex->reset(global_fh);   \
+              } while( 0 )
+
 #endif
+#define ANALYZER_PSEUDO_ANALYZE(TokenID) TokenID = func_empty()
 
 typedef QUEX_TYPE_TOKEN_ID   (*GetTokenIDFuncP)(void);
 typedef void                 (*ResetFuncP)(void);
@@ -34,9 +68,8 @@ void               func_reset();
 size_t    get_file_size(const char*, bool SilentF=false);
 
 // lexer.cpp
-double    benchmark(GetTokenIDFuncP, ResetFuncP, const double MinExperimentTime_sec,
-                    size_t TokenN, int CheckSum, double* repetition_n);
-size_t    count_token_n(GetTokenIDFuncP FuncP_get_token_id, int* checksum);
+int       run_multiple_analyzis(size_t RepetitionN, size_t TokenN, bool PsuedoF);
+void      get_statistics(int* checksum, int* token_n, double* time_per_run_ms);
 
 // report.cpp:
 void      print_date_string();

@@ -1,9 +1,6 @@
-#include <time.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdio.h>
 
 #include "token-ids.h"
 #if defined(ANALYZER_GENERATOR_FLEX)
@@ -11,7 +8,14 @@
 #    include "c_lexer"
 #endif
 #ifdef __cplusplus
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
+#else
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #endif
 
 #define QUOTE_THIS(NAME) #NAME

@@ -1,17 +1,22 @@
-#include <ctime>
-#include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <cstdio>
-#include <iostream>
 
 #include "token-ids.h"
 #if defined(ANALYZER_GENERATOR_FLEX)
 #else
 #    include "c_lexer"
 #endif
+#ifdef __cplusplus
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
+#else
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#endif
 
 #define QUOTE_THIS(NAME) #NAME
 
@@ -23,9 +28,8 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
              size_t      FileSize, size_t TokenN, double      RepetitionN,
              size_t      ExecutableSize)
 {
-    using namespace std;
     const double  CharN          = (double)(FileSize) / (CHARACTER_SIZE);
-    const double  CycleTime      = 1.0 / double(CPU_FREQ_MHZ) * 1e-6;
+    const double  CycleTime      = 1.0 / (double)(CPU_FREQ_MHZ) * 1e-6;
     //
     const double  TimePerChar    = TimePerRun  / CharN;
     const double  CCC            = TimePerChar / CycleTime;
@@ -41,78 +45,76 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
         TimePerToken    = TimePerRun;
         RefTimePerToken = RefTimePerRun;
     } else { 
-        TimePerToken    = TimePerRun     / double(TokenN);
-        RefTimePerToken = RefTimePerRun  / double(TokenN);
+        TimePerToken    = TimePerRun     / (double)(TokenN);
+        RefTimePerToken = RefTimePerRun  / (double)(TokenN);
     }
     // Clock Cycles per Token 
     CCT    = TimePerToken    / CycleTime;
     RefCCT = RefTimePerToken / CycleTime;
 
-    cout << "//Result:\n";
-    cout << "//   Time / Run:          " << (TimePerRun  - RefTimePerRun)  << endl;
-    cout << "//   Time / Char:         " << (TimePerChar - RefTimePerChar) << endl;
-    cout << "//   Clock Cycles / Char: " << (CCC - RefCCC)                 << endl;
-    cout << "{" << endl;
-    cout << "   generator       = {" << QUOTE_THIS(ANALYZER_GENERATOR) << "}," << endl;
+    printf("//Result:\n");
+    printf("//   Time / Run:          %f\n", (float)(TimePerRun  - RefTimePerRun));
+    printf("//   Time / Char:         %f\n", (float)(TimePerChar - RefTimePerChar));
+    printf("//   Clock Cycles / Char: %f\n", (float)(CCC - RefCCC));
+    printf("{\n");
+    printf("   generator       = {" QUEX_STRING(ANALYZER_GENERATOR) "},\n");
 #   if defined(ANALYZER_GENERATOR_FLEX)
 #   else
-    cout << "   quex_version    = {" << QUEX_SETTING_VERSION << "}, " << endl;
+    printf("   quex_version    = {" QUEX_STRING(QUEX_SETTING_VERSION) "}, \n");
 #   endif
-    cout << "   cpu_name        = {" << CPU_NAME << "}, " << endl;
-    cout << "   cpu_code        = {" << CPU_CODE << "}, " << endl;
-    cout << "   cpu_freq_mhz    = {" << CPU_FREQ_MHZ << "}, " << endl;
-    cout << "   cc_name         = {" << CC_NAME << "}, " << endl;
-    cout << "   cc_version      = {" << CC_VERSION << "}, " << endl;
-    cout << "   cc_opt_flags    = {" << CC_OPTIMIZATION_FLAGS << "}, " << endl;
-    cout << "   executable_size = {" << ExecutableSize << "}, " << endl;
-    cout << "   os_name         = {" << OS_NAME << "}, " << endl;
-    cout << "   tester_email    = {" << EMAIL << "}, " << endl;
+    printf("   cpu_name        = {" QUEX_STRING(CPU_NAME) "}, \n");
+    printf("   cpu_code        = {" QUEX_STRING(CPU_CODE) "}, \n");
+    printf("   cpu_freq_mhz    = {" QUEX_STRING(CPU_FREQ_MHZ) "}, \n");
+    printf("   cc_name         = {" QUEX_STRING(CC_NAME) "}, \n");
+    printf("   cc_version      = {" QUEX_STRING(CC_VERSION) "}, \n");
+    printf("   cc_opt_flags    = {" QUEX_STRING(CC_OPTIMIZATION_FLAGS) "}, \n");
+    printf("   executable_size = {%li},\n", (long)ExecutableSize);
+    printf("   os_name         = {" QUEX_STRING(OS_NAME) "}, \n");
+    printf("   tester_email    = {" QUEX_STRING(EMAIL) "}, \n");
     print_date_string();
-    cout << "   file_name    = {" << FileName << "}, " << endl;
-    cout << "   file_size    = {" << FileSize << "}, " << endl;
-    cout << "   char_size    = {" << CHARACTER_SIZE << "}, " << endl;
-    cout << "   buffer_size  = {" << QUEX_SETTING_BUFFER_SIZE << "}, " << endl;
+    printf("   file_name    = {%s}, \n", FileName);
+    printf("   file_size    = {%i}, \n", FileSize);
+    printf("   char_size    = {" QUEX_STRING(CHARACTER_SIZE) "}, \n");
+    printf("   buffer_size  = {" QUEX_STRING(QUEX_SETTING_BUFFER_SIZE) "}, \n");
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    cout << "   line_count   = {true}," << endl;
+    printf("   line_count   = {true},\n");
 #       else
-    cout << "   line_count   = {false}," << endl;
+    printf("   line_count   = {false},\n");
 #       endif
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    cout << "   column_count = {true}," << endl;
+    printf("   column_count = {true},\n");
 #       else
-    cout << "   column_count = {false}," << endl;
+    printf("   column_count = {false},\n");
 #       endif
-    cout << "   note         = {" << NOTE << "}, " << endl;
+    printf("   note         = {" QUEX_STRING(NOTE) "}, \n");
     // Result
-    cout << "   repetition_n               = {" << (unsigned int)(RepetitionN) << "}, " << endl;
-    cout << "   time_per_repetition        = {" << (TimePerRun - RefTimePerRun) << "}," << endl;
-    cout << "   token_n                    = {" << TokenN << "}, " << endl;
-    cout << "   clock_cycles_per_character = {" << (CCC - RefCCC) << "}, " << endl;
-    cout << "   clock_cycles_per_token     = {" << (CCT - RefCCT) << "}, " << endl;
-    cout << "}\n" << endl;
+    printf("   repetition_n               = {%li},\n", (long)(RepetitionN));
+    printf("   time_per_repetition        = {%f},\n",  (float)(TimePerRun - RefTimePerRun));
+    printf("   token_n                    = {%i},\n",  (int)TokenN);
+    printf("   clock_cycles_per_character = {%f},\n",  (float)(CCC - RefCCC));
+    printf("   clock_cycles_per_token     = {%f},\n",  (float)(CCT - RefCCT));
+    printf("}\n");
 }
 
 
 double
 report(const char* Name, double TimeDiff, double RepetitionN, size_t FileSize, size_t CharacterSize)
 { 
-    using namespace std;
-
     const double  TimePerRun = TimeDiff / RepetitionN;
 
     printf("// Benchmark Results '%s'\n", Name);
 
-    cout << "//    Total Time:  " << TimeDiff          << " [sec]" << endl;
-    cout << "//    Runs:        " << (long)RepetitionN << " [1]"   << endl;
-    cout << "//    TimePerRun:  " << TimePerRun        << " [sec]" << endl;
+    printf("//    Total Time:  %f\n",  (float)TimeDiff);
+    printf("//    Runs:        %li\n", (long)RepetitionN);
+    printf("//    TimePerRun:  %f\n",  (float)TimePerRun);
 
     const double  CharN          = FileSize / CHARACTER_SIZE;
     const double  CycleTime      = 1.0 / (CPU_FREQ_MHZ * 1e6);
     const double  TimePerChar    = TimePerRun  / CharN;
     const double  CCC            = TimePerChar / CycleTime;
 
-    cout << "//    Time / Char:         " << TimePerChar << endl;
-    cout << "//    Clock Cycles / Char: " << CCC         << endl;
+    printf("//    Time / Char:         %f\n", (float)TimePerChar);
+    printf("//    Clock Cycles / Char: %f\n", (float)CCC);
 
     return TimePerRun;
 }
@@ -120,11 +122,10 @@ report(const char* Name, double TimeDiff, double RepetitionN, size_t FileSize, s
 void
 print_date_string()
 {
-
-    std::time_t  current_time     = time(NULL); 
-    struct tm*   broken_down_time = std::gmtime(&current_time);
+    time_t       current_time     = time(NULL); 
+    struct tm*   broken_down_time = gmtime(&current_time);
     
-    std::cout << "   year         = {" << broken_down_time->tm_year + 1900   << "}," << endl;
-    std::cout << "   month        = {" << broken_down_time->tm_mon  + 1    << "}," << endl;
-    std::cout << "   day          = {" << broken_down_time->tm_mday        << "}," << endl;
+    printf("   year         = {%i}\n", broken_down_time->tm_year + 1900);
+    printf("   month        = {%i}\n", broken_down_time->tm_mon  + 1   );
+    printf("   day          = {%i}\n", broken_down_time->tm_mday       );
 }
