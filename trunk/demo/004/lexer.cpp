@@ -10,89 +10,89 @@ void __PRINT_END()
 #   define __PRINT_END() /* empty */
 #endif
 
-double
-benchmark(GetTokenIDFuncP FuncP_get_token_id, ResetFuncP FuncP_reset, 
-          const double MinExperimentTime_sec,
-          size_t TokenN, int CheckSum, double* repetition_n)
+int
+run_multiple_analyzis(size_t RepetitionN, size_t TokenN, bool PseudoF)
+    /* PseudoF == true: Execute only the 'overhead' not the real
+     *                  analyzsis.                                */
 {
-    register int   token_id     = TKN_TERMINATION;
-    const clock_t  StartTime    = clock();
-    const clock_t  MinExperimentTime = (clock_t)(MinExperimentTime_sec * (double)CLOCKS_PER_SEC);
-    const clock_t  EndTime           = StartTime + MinExperimentTime;
-    clock_t        current_time = 0;
-    int            checksum     = 0;
-    
-    FuncP_reset();
+    register int token_id  = TKN_TERMINATION;
+    int          checksum  = 0;
+    size_t       token_i   = (size_t)-1; 
+    size_t       i         = 0;
 
-    do { 
-        checksum       = CHECKSUM_INIT_VALUE;
-        *repetition_n += 1.0f;
-        
-        for(size_t token_i = 0; token_i < TokenN; ++token_i) {
-            token_id = FuncP_get_token_id();
+    ANALYZER_RESET();
+    /* The only reason of the checksum is to prevent that the return value
+     * of the analyzis is not ommitted by the compiler, because it is not used.
+     * Maybe, in this case, even the function call might be omitted.            */
+    checksum = CHECKSUM_INIT_VALUE;
 
-            // checksum = (checksum + TokenP->type_id()) % 0xFF; 
-            checksum = CHECKSUM_ACCUMULATE(checksum, token_id); 
+    for(i = 0; i < RepetitionN; ++i) {
+
+        /* Assume that the time spent in ANALYZER_ANALYZE/ANALYZER_PSEUDO_ANALYZE
+         * is much higher than the test for 'PseudoF' so it will to influence the
+         * measurement.                                                           */
+        if( PseudoF == false ) {
+
+            for(token_i = 0; token_i < TokenN; ++token_i) {
+                ANALYZER_ANALYZE(token_id);
+                checksum = CHECKSUM_ACCUMULATE(checksum, token_id); 
+
 #           if ! defined(QUEX_BENCHMARK_SERIOUS)
-            printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id)));
-            printf("(%i) Checksum: %i\n", (int)token_i, (int)checksum);
+                printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id)));
+                printf("(%i) Checksum: %i\n", (int)token_i, (int)checksum);
 #           endif
-        } 
-        // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n
-
-        __PRINT_END();
-        /* During 'real' testing the checksum == CheckSum, this the second block is entered.
-         * There another trivial test is done, thus:
-         * (1) 'real' tests --> 2x trivial tests.
-         *
-         * During 'overhead' testing the checksum != CheckSum and the first block is entered.
-         * Again, a trivial tests to prevent eroneous error reports, thus:
-         * (2) 'overhead' tests --> 2x trivial tests.                                          
-         *
-         * In both cases the same number of trivial tests.                                     */
-        if( checksum != CheckSum ) {
-            if( CheckSum  != -1 ) {
-                fprintf(stderr, "run:                %i\n", (int)*repetition_n);
-                fprintf(stderr, "checksum-reference: %i\n", (int)CheckSum);
-                fprintf(stderr, "checksum:           %i\n", (int)checksum);
-                exit(-1);
-            }
+            } 
+            /* Overhead-Intern: (addition, modulo division, assignment, 
+             *                   increment by one, comparison) * token_n */
         } else {
-            if( CheckSum == -1 ) {
-                printf("#################\n");
-                printf("## Weird World ##\n");
-                printf("#################\n");
-                exit(-1);
-            }
-        }
-        FuncP_reset();
 
-        current_time = clock();
-    } while( current_time < EndTime );
-    
-    /* Make sure, that the 'clock()' function call is not optimized strangely. */
-    current_time = clock();
-    return (double)(current_time - StartTime) / double(CLOCKS_PER_SEC);
+            for(token_i = 0; token_i < TokenN; ++token_i) {
+                ANALYZER_PSEUDO_ANALYZE(token_id);
+                checksum = CHECKSUM_ACCUMULATE(checksum, token_id); 
+            } 
+
+        }
+        __PRINT_END();
+        ANALYZER_RESET();
+    }
+    /* Need to return 'checksum' so that it is not omitted by the compiler
+     * because it is not used.                                             */
+    return checksum;
 }
 
-size_t
-count_token_n(GetTokenIDFuncP FuncP_get_token_id, int* checksum)
+void      
+get_statistics(int* checksum, int* token_n, double* time_per_run_ms)
+    /* The time_per_run_ms is only an estimate, not necessarily 
+     * a propper measurement.                                     */
 {
-    int token_id = TKN_TERMINATION;
-    int token_n  = 0;
-    *checksum    = CHECKSUM_INIT_VALUE;
+    int            token_id  = TKN_TERMINATION;
+    const clock_t  StartTime = clock();
+    clock_t        end_time  = (clock_t)-1;
+    /* Run at least 200 ms */
+    const clock_t  MinTime   = (clock_t)(StartTime + 0.2 * (double)CLOCKS_PER_SEC);
+    double         repetition_n = 0;
 
-    // (*) loop until the 'termination' token arrives
-    for(token_n=0; ; ++token_n) {
-        token_id  = FuncP_get_token_id();
-        *checksum = CHECKSUM_ACCUMULATE(*checksum, token_id); 
-#       if ! defined(QUEX_BENCHMARK_SERIOUS)
-        printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id)));
-        printf("(%i) Checksum: %i\n", (int)token_n, (int)*checksum);
-#       endif
-        if( token_id == TKN_TERMINATION ) break;
-    } 
-    printf("// TokenN: %i [1]\n", token_n);
-    return token_n;
+    *checksum = CHECKSUM_INIT_VALUE;
+
+    do {
+        // (*) loop until the 'termination' token arrives
+        for(*token_n=0; ; ++(*token_n)) {
+            ANALYZER_ANALYZE(token_id);
+
+            *checksum = CHECKSUM_ACCUMULATE(*checksum, token_id); 
+#           if 1 || ! defined(QUEX_BENCHMARK_SERIOUS)
+            // printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id))); 
+            printf("TokenID = %i\n", (int)token_id); 
+            printf("(%i) Checksum: %i\n", (int)*token_n, (int)*checksum);
+#           endif
+            if( token_id == TKN_TERMINATION ) break;
+        } 
+        end_time = clock();
+        repetition_n += 1.0;
+        printf("// TokenN: %i [1]\n", (int)*token_n);
+    } while( end_time < MinTime );
+
+
+    *time_per_run_ms = (end_time - StartTime) / repetition_n / (double)CLOCKS_PER_SEC;
 }
 

@@ -237,7 +237,7 @@ def __print_set_in_intervals(CharSet, Display, ScreenWidth):
 def __print_set_character_names(CharSet, Display, ScreenWidth):
     for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
         for code_point in range(interval.begin, interval.end):
-            print ucs_property_db.map_code_point_to_character_name(code_point)
+            print "%06X: %s" % (code_point, ucs_property_db.map_code_point_to_character_name(code_point))
 
 def __print_set_single_characters(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]

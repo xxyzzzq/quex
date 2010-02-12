@@ -59,15 +59,15 @@ Displays all characters that are numeric digits in the arabic script. Note
 that the display of characters on the screen is not always meaningful, so 
 you might specify the one of the options:
 
-.. describe:: ``--numeric`` 
+.. describe:: --numeric 
 
    in order to display numeric values of the characters. 
 
-.. describe:: ``--intervals`` 
+.. describe:: --intervals 
 
    prints out character intervals instead of each isolated character. 
 
-.. describe:: ``-names`` 
+.. describe:: --names 
 
    which prints out the character names.
 

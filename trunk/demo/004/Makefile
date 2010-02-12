@@ -5,7 +5,7 @@
 COMPILER     = g++    # icpc # g++ 
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 # -ggdb # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -ggdb # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 GENERATOR    = Quex#  Quex, Flex
 PROFILER     = # -pg # '-pg' for gprof profiling information
 CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./get_cpu_mhz.sh` 
