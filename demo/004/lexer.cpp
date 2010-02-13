@@ -72,27 +72,35 @@ get_statistics(int* checksum, int* token_n, double* time_per_run_ms)
     const clock_t  MinTime   = (clock_t)(StartTime + 0.2 * (double)CLOCKS_PER_SEC);
     double         repetition_n = 0;
 
-    *checksum = CHECKSUM_INIT_VALUE;
 
+    int n = 0;
     do {
         // (*) loop until the 'termination' token arrives
-        for(*token_n=0; ; ++(*token_n)) {
+        *checksum = CHECKSUM_INIT_VALUE;
+        for(n=0; ; ++n) {
             ANALYZER_ANALYZE(token_id);
 
             *checksum = CHECKSUM_ACCUMULATE(*checksum, token_id); 
-#           if 1 || ! defined(QUEX_BENCHMARK_SERIOUS)
+#           if ! defined(QUEX_BENCHMARK_SERIOUS)
             // printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id))); 
             printf("TokenID = %i\n", (int)token_id); 
             printf("(%i) Checksum: %i\n", (int)*token_n, (int)*checksum);
 #           endif
+#           ifdef ANALYZER_GENERATOR_RE2C
+            /* WorkArround check for terminating zero by hand: 
+             * How \000 => TKN_TERMINATION in re2c? */
+            if( *global_re2c_buffer_iterator == 0 ) break;
+#           else
             if( token_id == TKN_TERMINATION ) break;
+#           endif
         } 
+        ANALYZER_RESET();
         end_time = clock();
         repetition_n += 1.0;
-        printf("// TokenN: %i [1]\n", (int)*token_n);
     } while( end_time < MinTime );
 
-
+    *token_n = n;
+    printf("// TokenN: %i [1]\n", (int)n);
     *time_per_run_ms = (end_time - StartTime) / repetition_n / (double)CLOCKS_PER_SEC;
 }
 

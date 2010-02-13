@@ -86,6 +86,11 @@ lexer-flex: lex.yy.c
           -DANALYZER_GENERATOR_FLEX \
 		  -I./ main.cpp lex.yy.c lexer.cpp report.cpp -lfl -o lexer-flex 
 
+lexer-re2c: re2c_scan.c 
+	$(CC) \
+          -DANALYZER_GENERATOR_RE2C \
+		  -I./ main.cpp re2c_scan.c lexer.cpp report.cpp -lfl -o lexer-re2c 
+
 # -- application
 %.E: %.cpp 
 	$(CC) -E \
@@ -122,6 +127,8 @@ $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 lex.yy.c: c.lex
 	flex c.lex 
 
+re2c_scan.c:  c-re2c.in
+	re2c -F c-re2c.in | sed -e 's/\#line[^\n]*//g' > re2c_scan.c
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f lexer lexer-lc lexer-flex
@@ -139,6 +146,7 @@ clean:
 	rm -f *.gcov
 	rm -f lex.yy.c
 	rm -f *.E
+	rm -f re2c_scan.*
 
 cpu_mhz:
 	@echo $(CPU_MHZ)
