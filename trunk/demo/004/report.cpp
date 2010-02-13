@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "token-ids.h"
-#if defined(ANALYZER_GENERATOR_FLEX)
+#if defined(ANALYZER_GENERATOR_FLEX) || defined(ANALYZER_GENERATOR_RE2C)
 #else
 #    include "c_lexer"
 #endif
@@ -28,7 +28,7 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
              size_t      FileSize, size_t TokenN, double      RepetitionN,
              size_t      ExecutableSize)
 {
-    const double  CharN          = (double)(FileSize) / (CHARACTER_SIZE);
+    const double  CharN          = (double)(FileSize) / (double)(CHARACTER_SIZE);
     const double  CycleTime      = 1.0 / (double)(CPU_FREQ_MHZ) * 1e-6;
     //
     const double  TimePerChar    = TimePerRun  / CharN;
@@ -54,28 +54,31 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
 
     printf("//Result:\n");
     printf("//   Time / Run:          %f\n", (float)(TimePerRun  - RefTimePerRun));
-    printf("//   Time / Char:         %f\n", (float)(TimePerChar - RefTimePerChar));
+    printf("//   Time / Char:         %e\n", (float)(TimePerChar - RefTimePerChar));
     printf("//   Clock Cycles / Char: %f\n", (float)(CCC - RefCCC));
     printf("{\n");
-    printf("   generator       = {" QUEX_STRING(ANALYZER_GENERATOR) "},\n");
-#   if defined(ANALYZER_GENERATOR_FLEX)
+#   if   defined(ANALYZER_GENERATOR_FLEX)
+    printf("   generator       = {flex},\n");
+#   elif defined(ANALYZER_GENERATOR_RE2C)
+    printf("   generator       = {re2c},\n");
 #   else
-    printf("   quex_version    = {" QUEX_STRING(QUEX_SETTING_VERSION) "}, \n");
+    printf("   generator       = {quex},\n");
+    printf("   quex_version    = {" QUEX_SETTING_VERSION "},\n");
 #   endif
-    printf("   cpu_name        = {" QUEX_STRING(CPU_NAME) "}, \n");
-    printf("   cpu_code        = {" QUEX_STRING(CPU_CODE) "}, \n");
-    printf("   cpu_freq_mhz    = {" QUEX_STRING(CPU_FREQ_MHZ) "}, \n");
-    printf("   cc_name         = {" QUEX_STRING(CC_NAME) "}, \n");
-    printf("   cc_version      = {" QUEX_STRING(CC_VERSION) "}, \n");
-    printf("   cc_opt_flags    = {" QUEX_STRING(CC_OPTIMIZATION_FLAGS) "}, \n");
+    printf("   cpu_name        = {" CPU_NAME "},\n");
+    printf("   cpu_code        = {" CPU_CODE "},\n");
+    printf("   cpu_freq_mhz    = {%f},\n", (float)CPU_FREQ_MHZ);
+    printf("   cc_name         = {" CC_NAME "},\n");
+    printf("   cc_version      = {" CC_VERSION "},\n");
+    printf("   cc_opt_flags    = {" CC_OPTIMIZATION_FLAGS "},\n");
     printf("   executable_size = {%li},\n", (long)ExecutableSize);
-    printf("   os_name         = {" QUEX_STRING(OS_NAME) "}, \n");
-    printf("   tester_email    = {" QUEX_STRING(EMAIL) "}, \n");
+    printf("   os_name         = {" OS_NAME "},\n");
+    printf("   tester_email    = {" EMAIL "},\n");
     print_date_string();
-    printf("   file_name    = {%s}, \n", FileName);
-    printf("   file_size    = {%i}, \n", FileSize);
-    printf("   char_size    = {" QUEX_STRING(CHARACTER_SIZE) "}, \n");
-    printf("   buffer_size  = {" QUEX_STRING(QUEX_SETTING_BUFFER_SIZE) "}, \n");
+    printf("   file_name    = {%s},\n", FileName);
+    printf("   file_size    = {%i},\n", FileSize);
+    printf("   char_size    = {%i},\n", (int)CHARACTER_SIZE);
+    printf("   buffer_size  = {%i},\n", (int)QUEX_SETTING_BUFFER_SIZE);
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     printf("   line_count   = {true},\n");
 #       else
@@ -86,7 +89,7 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
 #       else
     printf("   column_count = {false},\n");
 #       endif
-    printf("   note         = {" QUEX_STRING(NOTE) "}, \n");
+    printf("   note         = {" NOTE "}, \n");
     // Result
     printf("   repetition_n               = {%li},\n", (long)(RepetitionN));
     printf("   time_per_repetition        = {%f},\n",  (float)(TimePerRun - RefTimePerRun));
@@ -108,12 +111,12 @@ report(const char* Name, double TimeDiff, double RepetitionN, size_t FileSize, s
     printf("//    Runs:        %li\n", (long)RepetitionN);
     printf("//    TimePerRun:  %f\n",  (float)TimePerRun);
 
-    const double  CharN          = FileSize / CHARACTER_SIZE;
+    const double  CharN          = FileSize / (double)CharacterSize;
     const double  CycleTime      = 1.0 / (CPU_FREQ_MHZ * 1e6);
     const double  TimePerChar    = TimePerRun  / CharN;
     const double  CCC            = TimePerChar / CycleTime;
 
-    printf("//    Time / Char:         %f\n", (float)TimePerChar);
+    printf("//    Time / Char:         %e\n", (float)TimePerChar);
     printf("//    Clock Cycles / Char: %f\n", (float)CCC);
 
     return TimePerRun;
