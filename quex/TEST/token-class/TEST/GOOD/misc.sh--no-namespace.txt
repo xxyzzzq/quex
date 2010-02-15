@@ -12,5 +12,7 @@ class QToken {
 QToken::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
 QToken::QToken(const QToken& Other)
 QToken::~QToken()
+QUEX_NAME_TOKEN(construct)(QToken* __this)
+QUEX_NAME_TOKEN(destruct)(QToken* __this)
 QUEX_NAME_TOKEN(copy)(QToken* __this, const QToken* __That)
 QUEX_NAME_TOKEN(take_text)(QToken*           __this, 
