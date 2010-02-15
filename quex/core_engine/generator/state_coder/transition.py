@@ -4,13 +4,12 @@ from   quex.input.setup import setup as Setup
 def __goto_distinct_terminal(Origin):
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
-    txt = ""
+    # The seek for the end of the core pattern is part of the 'normal' terminal
+    # if the terminal 'is' a post conditioned pattern acceptance.
     if Origin.post_context_id() == -1:
-        # The seek for the end of the core pattern is part of the 'normal' terminal
-        # if the terminal 'is' a post conditioned pattern acceptance.
-        txt += LanguageDB["$input/increment"] + "\n"
-    txt += LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
-    return txt
+        return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
+    else:
+        return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
 def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
     """

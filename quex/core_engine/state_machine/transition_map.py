@@ -383,19 +383,17 @@ class TransitionMap:
 
     def replace_drop_out_target_states_with_adjacent_targets(self):
         # NOTE: The request does not invalidate anything, invalidate cache after that.
+
+        if len(self.__db) == 0:  # Nothing to be done, since there is nothing adjacent 
+            return               # to the 'drop out' trigger. There is only an epsilon transition.
+
         trigger_map = self.get_trigger_map() 
-
-
-        if trigger_map == []:  # Nothing to be done, since there is nothing adjacent 
-            return             # to the 'drop out' trigger. There is only an epsilon transition.
-
         assert len(trigger_map) >= 2
 
         # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
         # code points below 0.
         assert trigger_map[0][1] == None
         assert trigger_map[0][0].begin == - sys.maxint
-
 
         # The first interval mentioned after that must not point to 'drop out' since
         # the trigger map must collect the same targets into one single interval.

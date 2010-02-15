@@ -37,16 +37,17 @@ __label_db = \
     "$start":                 lambda NoThing:     "__REENTRY",
 }
 
+## 
 __label_printed_list_unique = {}
-__label_used_list_unique = {}
+__label_used_list_unique    = {}
 
 def label_db_marker_init():
     global __label_printed_list_unique
     global __label_used_list_unique
 
     __label_printed_list_unique.clear()
+    ## __label_printed_list_unique["__TERMINAL_ROUTER"] = True
     __label_used_list_unique.clear()
-
 
 def label_db_get(Type, Index, GotoTargetF=False):
     global __label_printed_list_unique
@@ -65,12 +66,14 @@ def label_db_get(Type, Index, GotoTargetF=False):
     return label
 
 def label_db_marker_get_unused_label_list():
-    global __label_target_unique
-    global __label_printed_unique
+    global __label_used_list_unique
+    global __label_printed_list_unique
     global __label_db
     
     result = []
 
+    # print "##0", __label_used_list_unique.keys()
+    # print "##1", __label_printed_list_unique.keys()
     for label in __label_printed_list_unique:
         if label not in __label_used_list_unique:
             result.append(label)
@@ -94,6 +97,9 @@ def __open_namespace(NameList):
         txt += "    " * i + "namespace %s {\n" % name
     return txt
 
+def __string_if_true(Value, Condition):
+    if Condition: return Value
+    else:         return ""
 
 db["C++"] = {
     "$language":      "C++",
@@ -110,19 +116,20 @@ db["C++"] = {
     "$function_end":  "}\n",                                           # still needed ??
     "$if":            "if(",
     "$then":          ") {\n",
-    "$elseif":        "else if(",
+    "$elseif":        "} else if(",
     "$endif":         "}\n",
     "$endif-else":    "} else {\n",
     "$end-else":      "}\n",
     "$else":          "else {",                                                     
     "$and":           "&&",
-    "$loop-start-endless":  "while( 1 + 1 == 2 ) {\n",
-    "$loop-end":            "}\n",
-    "$continue":            "continue;\n",
-    "$break":               "break;\n",
-    "$if not BLC":          "if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n",
-    "$if EOF":              "if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {\n",
-    "$if BOF":              "if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) ) {\n",
+    "$or":            "||",
+    "$loop-start-endless":    "while( 1 + 1 == 2 ) {\n",
+    "$loop-end":              "}\n",
+    "$continue":              "continue;\n",
+    "$break":                 "break;\n",
+    "$not BLC":               "(input != QUEX_SETTING_BUFFER_LIMIT_CODE) ",
+    "$EOF":                   "QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)",
+    "$BOF":                   "QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer)",
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$if begin-of-line":      "if( me->buffer._character_before_lexeme_start == '\\n' ) {\n",
@@ -161,6 +168,7 @@ db["C++"] = {
     "$label-pure":          lambda Label:                "%s:" % Label,
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \
+                                __string_if_true("    ", Type == "$drop-out-direct") + \
                                 "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
     "$analyzer-func":        cpp.__analyzer_function,
     "$terminal-code":        cpp.__terminal_states,      
@@ -210,7 +218,7 @@ db["Python"] = {
     "$if":     "if ",
     "$then":   ":",
     "$if EOF": "if True:\n",
-    "$if not BLC": "#if True:\n",
+    "$not BLC": "True",
     "$if <":   lambda value: "if input < "  + value + ":\n",
     "$if in-set":       python.__get_if_in_character_set,
     "$if in-interval":  python.__get_if_in_interval,

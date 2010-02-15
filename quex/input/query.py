@@ -192,7 +192,7 @@ def __display_set(CharSet, cl):
     print "Characters:\n", 
     if cl.search("--intervals"): 
         __print_set_in_intervals(CharSet, display, 80)
-    if cl.search("--names"):
+    elif cl.search("--names"):
         __print_set_character_names(CharSet, display, 80)
     else:
         __print_set_single_characters(CharSet, display, 80)

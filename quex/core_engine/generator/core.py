@@ -214,10 +214,10 @@ def delete_unused_labels_FAST(Code, LabelList):
         if length < 4: return ""
         idx = Code.find(original)
         while idx != -1:
-            code[idx]              = "/"
-            code[idx + 1]          = "*"
-            code[idx + length - 1] = "*"
-            code[idx + length]     = "/"
+            i = idx
+            while i < idx + length:
+                code[i] = " "
+                i += 1
             idx = Code.find(original, idx + length)
 
     return code.tostring()

@@ -10,7 +10,9 @@ from quex.frs_py.file_in  import open_file_or_die, \
                                  write_safely_and_close, \
                                  delete_comment, \
                                  extract_identifiers_with_specific_prefix, \
-                                 get_include_guard_extension
+                                 get_include_guard_extension, \
+                                 error_msg
+
 import quex.lexer_mode             as lexer_mode
 from   quex.frs_py.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
@@ -121,9 +123,9 @@ def do(setup):
     #
     if len(lexer_mode.token_id_db.keys()) == 2:
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
-        error_msg("No token id other than %sTERMINATION and %sUNINITIALIZED are defined. " % \
+        error_msg("No token id other than %sTERMINATION and %sUNINITIALIZED are defined.\n" % \
                   (setup.token_id_prefix, setup.token_id_prefix) + \
-                  "Quex refuses to proceed. Please, use the 'token { ... }' section to " + \
+                  "Quex refuses to proceed. Please, use the 'token { ... }' section to\n" + \
                   "specify at least one other token id.")
 
     #______________________________________________________________________________________

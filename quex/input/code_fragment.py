@@ -44,7 +44,7 @@ def __parse_normal(fh, code_fragment_name):
     return UserCodeFragment(code, fh.name, line_n, LanguageDB)
 
 def __parse_brief_token_sender(fh, ContinueF):
-    # shorthand for { self.send(TKN_SOMETHING); CONTINUE; }
+    # shorthand for { self.send(TKN_SOMETHING); QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN(); }
     LanguageDB = Setup.language_db
     
     position = fh.tell()
@@ -64,7 +64,7 @@ def __parse_brief_token_sender(fh, ContinueF):
                 code = __create_token_sender_by_token_name(fh, identifier, arg_list)
 
         if code != "": 
-            if ContinueF: code += "CONTINUE;\n"
+            if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
             return UserCodeFragment(code, fh.name, line_n, LanguageDB)
         else:
             return None

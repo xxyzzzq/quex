@@ -1,5 +1,6 @@
-<history date="Mon Feb 15 22:50:55 2010" element-n="1">
+<history date="Mon Feb 15 23:03:49 2010" element-n="2">
     <day year="2010" month="02" day="15">
         <history-init time="21:50:55"/>
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:03:49"/>
     </day>
 </history>

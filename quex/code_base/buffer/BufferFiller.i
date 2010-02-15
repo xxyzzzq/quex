@@ -214,7 +214,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region */
         FallBackN    = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(buffer, 
-                                                                                     Distance_LexemeStart_to_InputP);
+                                                                                 Distance_LexemeStart_to_InputP);
         DesiredLoadN = ContentSize - FallBackN;
         __quex_assert(FallBackN < ContentSize);
         QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(buffer, FallBackN);
@@ -227,13 +227,15 @@ QUEX_NAMESPACE_MAIN_OPEN
         buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
         new_content_begin = ContentFront + FallBackN;
-        LoadedN           =  QUEX_NAME(__BufferFiller_read_characters)(buffer, new_content_begin, DesiredLoadN);
+        LoadedN           =  QUEX_NAME(__BufferFiller_read_characters)(buffer, 
+                                                                       new_content_begin, 
+                                                                       DesiredLoadN);
         
         /*___________________________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
         QUEX_NAME(__BufferFiller_forward_adapt_pointers)(buffer, 
-                                                  DesiredLoadN, LoadedN, FallBackN, 
-                                                  Distance_LexemeStart_to_InputP);
+                                                         DesiredLoadN, LoadedN, FallBackN, 
+                                                         Distance_LexemeStart_to_InputP);
 
         buffer->_content_character_index_end   =   buffer->_content_character_index_begin
                                                  + (size_t)(QUEX_NAME(Buffer_text_end)(buffer) - ContentFront);
@@ -296,6 +298,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*     used instead of memmove().*/
         QUEX_TYPE_CHARACTER*  source = QUEX_NAME(Buffer_content_back)(buffer) - FallBackN + 1; /* end of content - fallback*/
         QUEX_TYPE_CHARACTER*  drain  = QUEX_NAME(Buffer_content_front)(buffer);       
+
         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
         if( drain + FallBackN >= source  ) {
             __QUEX_STD_memmove((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_TYPE_CHARACTER));
@@ -314,10 +317,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(__BufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*  buffer, 
-                                              const size_t DesiredLoadN,
-                                              const size_t LoadedN,
-                                              const size_t FallBackN, 
-                                              const size_t Distance_LexemeStart_to_InputP)
+                                                     const size_t DesiredLoadN,
+                                                     const size_t LoadedN,
+                                                     const size_t FallBackN, 
+                                                     const size_t Distance_LexemeStart_to_InputP)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         const size_t         ContentSize  = QUEX_NAME(Buffer_content_size)(buffer);

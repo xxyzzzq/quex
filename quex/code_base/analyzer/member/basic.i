@@ -139,15 +139,18 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       addresses related to acceptance positions need to be adapted. This
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
-    QUEX_INLINE bool 
+    QUEX_INLINE void 
     QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
         size_t LoadedCharacterN = 0;
 
-        if( buffer->filler == 0x0 ) return false;
+        __quex_assert(buffer != 0x0);
+        __quex_assert(buffer->filler != 0x0);
+
+        QUEX_DEBUG_PRINT(buffer, "BACKWARD: BUFFER RELOAD");
 
         LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
-        if( LoadedCharacterN == 0 ) return false;
+        QUEX_DEBUG_PRINT2(buffer, "BACKWARD: LOADED %i CHARACTERS", (int)LoadedCharacterN);
         
         /* Backward lexing happens in two cases:
          *
@@ -158,10 +161,9 @@ QUEX_NAMESPACE_MAIN_OPEN
          *      the start of the lexeme shall not drop before the begin of the buffer 
          *      and the end of the core pattern, is of course, after the start of the 
          *      lexeme. => there will be no reload backwards.                            */
-        return true;
     }
 
-    QUEX_INLINE bool 
+    QUEX_INLINE void 
     QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
                                      QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
                                      QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
@@ -171,10 +173,14 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER_POSITION* iterator = 0x0;
         QUEX_TYPE_CHARACTER_POSITION* End = post_context_start_position + PostContextN;
 
-        if( buffer->filler == 0x0 ) return false;
-        if( buffer->_memory._end_of_file_p != 0x0 ) return false;
+        QUEX_DEBUG_PRINT(buffer, "FORWARD: BUFFER RELOAD");
+
+        __quex_assert(buffer != 0x0);
+        __quex_assert(buffer->filler != 0x0);
+        __quex_assert(buffer->_memory._end_of_file_p == 0x0);
+
         LoadedCharacterN = QUEX_NAME(BufferFiller_load_forward)(buffer);
-        if( LoadedCharacterN == 0 ) return false;
+        QUEX_DEBUG_PRINT2(buffer, "FORWARD: LOADED %i CHARACTERS", (int)LoadedCharacterN);
 
         if( *last_acceptance_input_position != 0x0 ) { 
             *last_acceptance_input_position -= LoadedCharacterN;
@@ -185,7 +191,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             *iterator -= LoadedCharacterN;
         }
                                                                               
-        return true;
+        return;
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE

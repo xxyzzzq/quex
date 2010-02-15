@@ -167,6 +167,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
+    txt += "        goto __TERMINAL_ROUTER;\n"
     for mode_name in ModeNameList:
         txt += "        unused += (int)%s.id;\n" % mode_name
     txt += "        unused += (int)__QuexLexemeNullObject;\n"
@@ -225,6 +226,10 @@ $$FAILURE_ACTION$$
 __TERMINAL_ROUTER: {
         /*  if last_acceptance => goto correspondent acceptance terminal state*/
         /*  else               => execute defaul action*/
+        if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
+            goto TERMINAL_FAILURE;
+        }
+        $$RESTORE_LAST_ACCEPTANCE_POS$$
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_FAILURE-GOTO$$; /* nothing matched */
@@ -313,12 +318,18 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
     txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
+    txt += "    " + LanguageDB["$input/increment"] + "\n"
 
+    txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
     # (1) Retrieving the input position for the next run
-    #     NOTE: The different scenarios differ in the way they can 'offer' an entry
-    #           to the terminal without restoring the input position. This 'direct'
-    #           entry is useful for direct transitions to a terminal where there
-    #           acceptance position is clear.
+    #     -- Terminal states can be reached directly, so that the input position
+    #        is already set correctly, or via the terminal router because the
+    #        acceptance was 'trailing'. Example two patterns A:'for' and B:'forest'.
+    #        If the input is 'for' than the pattern A triggers acceptance, but
+    #        the lexer still continue trying for B. If the input is 'fortune', 
+    #        then the input position must be after 'for' because B was not matched.
+    #        The right terminal is reached via the terminal router, and the
+    #        terminal router also resets the input position to 'last_acceptance_position'.
     if state_machine.core().post_context_backward_input_position_detector_sm() != None:
         # Pseudo Ambiguous Post Contexts:
         # -- require that the end of the core pattern is to be searched! One 
@@ -327,15 +338,12 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         #    pattern. However, after a match a backward detection of the end
         #    of the core pattern is done. Here, we first need to go to the point
         #    where the 'normal' pattern ended, then we can do a backward detection.
-        txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
-        txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
         txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
                __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
     elif state_machine.core().post_context_id() != -1L: 
         post_condition_index = SMD.get_post_context_index(state_machine_id)
         # Post Contexted Patterns:
-        txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
         # -- have a dedicated register from where they store the end of the core pattern.
         variable = "post_context_start_position[%s]" % __nice(post_condition_index) 
         txt += "    " + LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
@@ -344,11 +352,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
 
     else:
         # Normal Acceptance:
-        # -- only restore the input position
-        txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
-        txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
-
-
+        pass
 
     # -- paste the action code that correponds to the pattern   
     txt += action_code + "\n"    
@@ -374,10 +378,28 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     specific_terminal_states_str = txt
 
     # (*) general terminal state (entered from non-acceptance state)    
+    # terminal_state_idx_list = sorted(action_db.keys())
+    # lowest_terminal_id      = terminal_state_idx_list[0]
+    # def binary_bracket(IdxList):
+    #     L = len(IdxList)
+    #     Middle = L / 2
+    #     if L > 1: 
+    #         return "    " + "if( last_acceptance < %i ) {\n" % Middle + \
+    #                "    " +     binary_bracket(IdxList[:Middle]) + \
+    #                "    " + "} else {\n" + \
+    #                "    " +     binary_bracket(IdxList[Middle:]) + \
+    #                "    " + "}\n"
+    #     else:
+    #         if IdxList[0] == lowest_terminal_id:
+    #             return "    " + LanguageDB["$goto"]("$terminal-FAILURE")]
+    #         else:
+    #             return "    " + "goto TERMINAL_%i;\n" % IdxList[0]
+    # jumps_to_acceptance_states_str = binary_bracket(terminal_state_idx_list)
+                          
     txt = ""    
     for state_machine_id in action_db.keys():
-        txt += "            case %s: " % repr(state_machine_id).replace("L", "")
-        txt += LanguageDB["$goto"]("$terminal", state_machine_id) + "\n"
+       txt += "            case %s: " % repr(state_machine_id).replace("L", "")
+       txt += LanguageDB["$goto"]("$terminal-direct", state_machine_id) + "\n"
     jumps_to_acceptance_states_str = txt
 
     # (*) preparation of the reentry without return:
@@ -400,7 +422,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
     on_failure_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
-    on_failure_str += LanguageDB["$if EOF"] + "\n"
+    on_failure_str += LanguageDB["$if"] + LanguageDB["$EOF"] + LanguageDB["$then"] + "\n"
     on_failure_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
     on_failure_str += LanguageDB["$endif"] + "\n"
     on_failure_str += LanguageDB["$else"] + "\n"
@@ -432,6 +454,8 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     txt = blue_print(__terminal_state_str, 
                      [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
+                      ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"](
+                                                              "last_acceptance_input_position")],
                       ["$$FAILURE_ACTION$$",               on_failure_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                       ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],

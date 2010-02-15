@@ -5,7 +5,7 @@
 COMPILER     = g++    # icpc # g++ 
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -ggdb # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 GENERATOR    = Quex#  Quex, Flex
 PROFILER     = # -pg # '-pg' for gprof profiling information
 CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./get_cpu_mhz.sh` 
@@ -27,7 +27,7 @@ SETUP= \
 .PHONY: clean cpu_mhz
 
 # The following might be overwritten by the caller of make:
-EXTRA_COMPILER_FLAG=#
+EXTRA_COMPILER_FLAG=-lefence#
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
@@ -61,10 +61,10 @@ CC = $(COMPILER) $(EXTRA_COMPILER_FLAG) $(OPTIMIZATION) -Wno-deprecated -Wall \
      -DQUEX_OPTION_ASSERTS_DISABLED	\
 	 -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED \
 	 -DQUEX_BENCHMARK_SERIOUS \
-	 $(PROFILER)
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+	 # $(PROFILER)
      #-DQUEX_SETTING_BUFFER_SIZE=64 \
 	 # -D__QUEX_OPTION_UNIT_TEST \
-     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
      # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
 
 LD = $(COMPILER) $(OPTIMIZATION) $(PROFILER)
@@ -128,7 +128,7 @@ lex.yy.c: c.lex
 	flex c.lex 
 
 re2c_scan.c:  c-re2c.in
-	re2c -F c-re2c.in | sed -e 's/\#line[^\n]*//g' > re2c_scan.c
+	re2c -F -si c-re2c.in | sed -e 's/\#line[^\n]*//g' > re2c_scan.c
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f lexer lexer-lc lexer-flex
