@@ -444,6 +444,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED____QUEX____SIMPLE */
 #include"Simple"
+#include <quex/code_base/analyzer/C-adaptions.h>
 QUEX_NAMESPACE_MAIN_OPEN
 /* Global */QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);
 
@@ -477,11 +478,11 @@ __quex_assert(Indentation >= 0);
     }
     bool
     QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
-    return true; // default
+    return true; /* default */
     }
     bool
     QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
-    return true; // default
+    return true; /* default */
     }
 #endif    
 #undef self
@@ -785,31 +786,21 @@ STATE_248:
 
 STATE_248_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ) {
 STATE_248_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-
+         goto TERMINAL_FAILURE;
+    } else if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+         goto TERMINAL_END_OF_STREAM;
     }
 
-    if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-        /* NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state */
-        goto TERMINAL_END_OF_STREAM;
-    }
-        QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_248_INPUT;
-    }
-
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);    goto STATE_248_INPUT;
 STATE_248_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_INPUT");
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     goto STATE_248;
+    __quex_assert(false); /* No drop-through between states */
 STATE_256:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256");
 
@@ -838,26 +829,16 @@ STATE_256_INPUT:
 
 STATE_256_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 /*ATE_256_DROP_OUT_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256_DROP_OUT_DIRECT");
-            goto TERMINAL_5;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "5");
-    QUEX_SET_last_acceptance(5);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_256_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_256_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_257:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257");
 
@@ -906,27 +887,17 @@ STATE_257_INPUT:
 
 STATE_257_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_257_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_257_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_257_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_258:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258");
 
@@ -963,27 +934,17 @@ STATE_258_INPUT:
 
 STATE_258_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_258_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_258_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_258_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_259:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259");
 
@@ -1032,27 +993,17 @@ STATE_259_INPUT:
 
 STATE_259_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_259_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_259_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_259_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_260:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260");
 
@@ -1101,27 +1052,17 @@ STATE_260_INPUT:
 
 STATE_260_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_260_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_260_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_260_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_261:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261");
 
@@ -1170,27 +1111,17 @@ STATE_261_INPUT:
 
 STATE_261_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_261_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_261_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_261_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_262:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262");
 
@@ -1239,27 +1170,17 @@ STATE_262_INPUT:
 
 STATE_262_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_262_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_262_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_262_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_263:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263");
 
@@ -1308,27 +1229,17 @@ STATE_263_INPUT:
 
 STATE_263_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_263_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_263_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_263_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_264:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264");
 
@@ -1365,27 +1276,17 @@ STATE_264_INPUT:
 
 STATE_264_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_264_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT_DIRECT");
-            goto TERMINAL_7;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "7");
-    QUEX_SET_last_acceptance(7);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_264_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_264_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_265:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265");
 
@@ -1434,27 +1335,17 @@ STATE_265_INPUT:
 
 STATE_265_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_265_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_265_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_265_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_266:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266");
 
@@ -1491,27 +1382,17 @@ STATE_266_INPUT:
 
 STATE_266_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_266_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT_DIRECT");
-            goto TERMINAL_16;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "16");
-    QUEX_SET_last_acceptance(16);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_266_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_266_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_267:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267");
 
@@ -1560,27 +1441,17 @@ STATE_267_INPUT:
 
 STATE_267_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_267_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_267_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_267_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_268:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268");
 
@@ -1629,27 +1500,17 @@ STATE_268_INPUT:
 
 STATE_268_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_268_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_268_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_268_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_269:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269");
 
@@ -1698,27 +1559,17 @@ STATE_269_INPUT:
 
 STATE_269_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_269_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_269_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_269_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_270:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270");
 
@@ -1767,27 +1618,17 @@ STATE_270_INPUT:
 
 STATE_270_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_270_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_270_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_270_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_271:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271");
 
@@ -1824,27 +1665,17 @@ STATE_271_INPUT:
 
 STATE_271_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_271_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT_DIRECT");
-            goto TERMINAL_19;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "19");
-    QUEX_SET_last_acceptance(19);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_271_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_271_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_272:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272");
 
@@ -1893,27 +1724,17 @@ STATE_272_INPUT:
 
 STATE_272_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_272_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_272_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_272_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_273:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273");
 
@@ -1950,27 +1771,17 @@ STATE_273_INPUT:
 
 STATE_273_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_273_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT_DIRECT");
-            goto TERMINAL_10;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "10");
-    QUEX_SET_last_acceptance(10);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_273_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_273_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_274:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274");
 
@@ -2019,27 +1830,17 @@ STATE_274_INPUT:
 
 STATE_274_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_274_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_274_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_274_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_275:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275");
 
@@ -2088,27 +1889,17 @@ STATE_275_INPUT:
 
 STATE_275_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_275_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_275_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_275_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_276:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276");
 
@@ -2157,27 +1948,17 @@ STATE_276_INPUT:
 
 STATE_276_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_276_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_276_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_276_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_277:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277");
 
@@ -2226,27 +2007,17 @@ STATE_277_INPUT:
 
 STATE_277_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_277_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_277_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_277_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_278:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278");
 
@@ -2283,27 +2054,17 @@ STATE_278_INPUT:
 
 STATE_278_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_278_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT_DIRECT");
-            goto TERMINAL_13;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "13");
-    QUEX_SET_last_acceptance(13);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_278_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_278_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_249:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249");
 
@@ -2324,26 +2085,17 @@ STATE_249_INPUT:
 
 STATE_249_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 /*ATE_249_DROP_OUT_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT_DIRECT");
-            goto TERMINAL_35;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "35");
-    QUEX_SET_last_acceptance(35);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_249_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_249_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
+    __quex_assert(false); /* No drop-through between states */
 STATE_251:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251");
 
@@ -2392,27 +2144,18 @@ STATE_251_INPUT:
 
 STATE_251_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_251_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_251_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_251_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
+    __quex_assert(false); /* No drop-through between states */
 STATE_253:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253");
 
@@ -2461,27 +2204,17 @@ STATE_253_INPUT:
 
 STATE_253_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_253_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_253_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_253_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 STATE_254:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254");
 
@@ -2530,27 +2263,17 @@ STATE_254_INPUT:
 
 STATE_254_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT");
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 STATE_254_DROP_OUT_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT_DIRECT");
-            goto TERMINAL_41;
+        QUEX_GOTO_last_acceptance();
     }
 
-        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
-    QUEX_DEBUG_PRINT(&engine->buffer, "FORWARD_BUFFER_RELOAD");
-    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                                      post_context_start_position, PostContextStartPositionN) ) {
-       goto STATE_254_INPUT;
-    }
+    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                     post_context_start_position, PostContextStartPositionN);
+    goto STATE_254_INPUT;
 
-    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
-    QUEX_GOTO_last_acceptance();
-
-
-
+    __quex_assert(false); /* No drop-through between states */
 
   /* (*) Terminal states _______________________________________________________*/
   /**/
@@ -2581,7 +2304,7 @@ TERMINAL_35:
         self_send1(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
-#line 2149 "Simple.cpp"
+#line 1872 "Simple.cpp"
         
         }
     }
@@ -2625,7 +2348,7 @@ TERMINAL_7:
         self_send0(QUEX_TKN_STRUCT);
         CONTINUE;
         
-#line 2193 "Simple.cpp"
+#line 1916 "Simple.cpp"
         
         }
     }
@@ -2650,7 +2373,7 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2218 "Simple.cpp"
+#line 1941 "Simple.cpp"
         
         }
     }
@@ -2675,7 +2398,7 @@ TERMINAL_10:
         self_send0(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
-#line 2243 "Simple.cpp"
+#line 1966 "Simple.cpp"
         
         }
     }
@@ -2700,7 +2423,7 @@ TERMINAL_13:
         self_send0(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
-#line 2268 "Simple.cpp"
+#line 1991 "Simple.cpp"
         
         }
     }
@@ -2725,7 +2448,7 @@ TERMINAL_16:
         self_send0(QUEX_TKN_SEND);
         CONTINUE;
         
-#line 2293 "Simple.cpp"
+#line 2016 "Simple.cpp"
         
         }
     }
@@ -2750,7 +2473,7 @@ TERMINAL_19:
         self_send0(QUEX_TKN_EXPECT);
         CONTINUE;
         
-#line 2318 "Simple.cpp"
+#line 2041 "Simple.cpp"
         
         }
     }
@@ -2776,7 +2499,7 @@ TERMINAL_22_DIRECT:
         self_send0(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
-#line 2344 "Simple.cpp"
+#line 2067 "Simple.cpp"
         
         }
     }
@@ -2802,7 +2525,7 @@ TERMINAL_25_DIRECT:
         self_send0(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
-#line 2370 "Simple.cpp"
+#line 2093 "Simple.cpp"
         
         }
     }
@@ -2828,7 +2551,7 @@ TERMINAL_28_DIRECT:
         self_send0(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
-#line 2396 "Simple.cpp"
+#line 2119 "Simple.cpp"
         
         }
     }
@@ -2849,7 +2572,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self_send0(QUEX_TKN_TERMINATION);
         
-#line 2417 "Simple.cpp"
+#line 2140 "Simple.cpp"
         
         }
                 }
@@ -2862,7 +2585,7 @@ TERMINAL_FAILURE:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_FAILURE");
 
 me->buffer._input_p = me->buffer._lexeme_start_p;
-if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
+if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
 
     /* Next increment will stop on EOF character. */
 }
@@ -2924,7 +2647,7 @@ __REENTRY_PREPARATION:
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) return;
 #   else
-    if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
 #   endif
 #endif
 

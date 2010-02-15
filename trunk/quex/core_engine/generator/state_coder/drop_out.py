@@ -1,7 +1,9 @@
 from   quex.input.setup import setup as Setup
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 
-def do(state, StateIdx, SMD, InitStateF):
+LanguageDB = None
+
+def do(State, StateIdx, SMD, InitStateF):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -11,109 +13,147 @@ def do(state, StateIdx, SMD, InitStateF):
        Case (1) differs from case (2) in the fact that input == buffer limit code. 
        If a buffer limit code is reached, a buffer reload needs to be initiated. If
        the character drops over the edge, then a terminal state needs to be targeted.
+       
+                                      no
+         'input' == BufferLimitCode? ------------------.         
+                    |                                  |
+                    | yes                              |
+                    "                 yes              "
+                end of file?   -------------->  goto terminal of 
+                    |                            winning pattern
+                    | no
+                    "
+            -- reload content
+            -- retry current state
+               with fresh 'input'.
+
+
+       Note, that no error handling for 'reload content' is necessary, since
+       no acceptable reason (such as EOF) for failure remains. On End of file
+       we transit to the winning terminal and leave the detection of 'End of FILE'
+       to the init state. (This spares an EOF check at the end of every terminal.)
+
+       The following C-Code statement does the magic briefly and clearly:
+         
+             if( input != BLC || buffer at EOF? ) {
+                 goto winning terminal;
+             }
+             reload();
+             goto input;
+
+       NOTE: The initial state is a little different, it needs to detect the EOF
+             and jump to the EOF terminal if so, thus:
+
+                                      no
+         'input' == BufferLimitCode? -------->  goto FAILURE terminal 
+                    |                            
+                    | yes                               
+                    "                 yes               
+                end of file?   -------------->  goto EOF terminal
+                    |                           
+                    | no
+                    "
+            -- reload content
+            -- retry current state
+               with fresh 'input'.
+
+       NOTE: There cannot be a 'winning' pattern on a drop-out of the initial state, 
+             because otherwise, this would mean: nothing is acceptable, and thus
+             the analyzis was stuck on the init state.
+
+       The correspondent C-code is straight forward:
+
+            if( input != BLC )       goto FAILURE;
+            else if( buffer at EOF ) goto END_OF_FILE;
+            reload();
+            goto input;
+
+       NOTE: In backward analyzsis a FAILURE simply means that no pre-condition 
+             is fulfilled and there is no special action about it. Also, 
+             there is no special action on 'BEGIN_OF_FILE'. Thus when backward
+             lexing, there is no special treatment of the initial state.
     """
+    global LanguageDB 
     assert SMD.__class__.__name__ == "StateMachineDecorator"
     LanguageDB = Setup.language_db
 
-    TriggerMap = state.transitions().get_trigger_map()
 
-    # -- drop out code (transition to no target state)
-    txt = [ 
-        LanguageDB["$label-def"]("$drop-out", StateIdx),
-        "    ", LanguageDB["$if not BLC"],
-        # -- if input != buffer limit code, then jump to terminal
-        LanguageDB["$label-def"]("$drop-out-direct", StateIdx),
-        "        ", get_drop_out_goto_string(state, StateIdx, SMD.sm(), SMD.backward_lexing_f()), "\n",
-        "    ", LanguageDB["$endif"], "\n"
-    ]
+    if SMD.backward_lexing_f() == False: 
+        reload_str           = __reload_forward()
+        ## If input == buffer limit code, then the input_p stands on either 
+        ## the end of file pointer or the buffer limit. If the end of file
+        ## pointer is != 0 it lies before the buffer limit. Thus, in this
+        ## case the end of file has been reached.
+        load_impossible_str  = "(me->buffer._memory._end_of_file_p != 0x0)"
+        ## load_impossible_str  = LanguageDB["$EOF"]
+        goto_terminal_str    = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
+        goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
+    else:
+        reload_str           = __reload_backward()
+        load_impossible_str  = LanguageDB["$BOF"]
+        load_impossible_str  = LanguageDB["$BOF"]
+        goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
+        goto_terminal_str    = LanguageDB["$goto"]("$terminal-general-bw")
 
-    # -- in case of the init state, the end of file has to be checked.
-    #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
+    if len(State.transitions().get_map()) == 0 or SMD.backward_input_position_detection_f():
+        reload_str = ""
+
     if InitStateF and SMD.backward_lexing_f() == False:
-        comment = "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state" 
-
-        txt.extend([
-            "    ", LanguageDB["$if EOF"],
-            "        ", LanguageDB["$comment"](comment), "\n",
-            "        ", LanguageDB["$goto"]("$terminal-EOF"), "\n",
-            "    ", LanguageDB["$endif"]
-        ])
-
-    BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SMD.backward_input_position_detection_f()
-    if BufferReloadRequiredOnDropOutF:
-        if SMD.backward_lexing_f():
-            txt.append(__reload_backward(StateIdx))
-        else:
-            # In case that it cannot load anything, it still needs to know where to jump to.
-            txt.extend([
-                "    ", acceptance_info.forward_lexing(state, StateIdx, SMD, ForceF=True),
-                __reload_forward(StateIdx)
-            ])
-
-    txt.append("\n")
-    return "".join(txt)
-
-def get_forward_load_procedure(StateIndex):
-    LanguageDB = Setup.language_db
-    return "".join([
-               '    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n',
-               "    if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n",
-               "                                                      post_context_start_position, PostContextStartPositionN) ) {\n",
-               "       ", LanguageDB["$goto"]("$input", StateIndex), "\n"
-               "    ", LanguageDB["$endif"]                        , "\n"
-        ])
-
-def __reload_forward(StateIndex): 
-    LanguageDB = Setup.language_db
-    return "".join([
-        get_forward_load_procedure(StateIndex),
-        '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n',
-        "    ", LanguageDB["$goto-last_acceptance"],  "\n"
-    ])
-
-def __reload_backward(StateIndex): 
-    LanguageDB = Setup.language_db
-
-    return "".join([
-         '    QUEX_DEBUG_PRINT(&me->buffer, "BACKWARD_BUFFER_RELOAD");\n',
-         "    if( QUEX_NAME(buffer_reload_backward)(&me->buffer) ) {\n",
-         "       ", LanguageDB["$goto"]("$input", StateIndex),    "\n"
-         "    ", LanguageDB["$endif"],                            "\n"
-         '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
-         "    ", LanguageDB["$goto"]("$terminal-general-bw"),     "\n"
-        ])
-
-def __goto_distinct_terminal(Origin):
-    LanguageDB = Setup.language_db
-    return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
-
-def __goto_distinct_terminal_direct(Origin):
-    LanguageDB = Setup.language_db
-    return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
-
-def get_drop_out_goto_string(state, StateIdx, SM, BackwardLexingF):
-    assert state.__class__.__name__ == "State"
-    assert SM.__class__.__name__    == "StateMachine"
-    LanguageDB = Setup.language_db
-
-    if not BackwardLexingF:
-        # (*) forward lexical analysis
-        if not state.is_acceptance():
-            # -- non-acceptance state drop-outs
-            return LanguageDB["$goto-last_acceptance"]
-
-        else:
-            if acceptance_info.do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, state, SM):
-                callback = __goto_distinct_terminal
-            else:
-                callback = __goto_distinct_terminal_direct
-            # -- acceptance state drop outs
-            return acceptance_info.get_acceptance_detector(state.origins().get_list(), callback)
+        # Initial State in forward lexing is special! See comments above!
+        txt = [ 
+            LanguageDB["$label-def"]("$drop-out", StateIdx),
+            "    ", LanguageDB["$if"], LanguageDB["$not BLC"],  LanguageDB["$then"], 
+            LanguageDB["$label-def"]("$drop-out-direct", StateIdx), 
+            "        ", LanguageDB["$goto"]("$terminal-FAILURE"),                   "\n",
+            "    ", LanguageDB["$elseif"], load_impossible_str, LanguageDB["$then"], 
+            "        ", LanguageDB["$goto"]("$terminal-EOF"),                       "\n",
+            "    ", LanguageDB["$endif"],                                           "\n",
+            "    ", reload_str,
+            "    ", goto_state_input_str,                                           "\n",
+        ]
 
     else:
-        # (*) backward lexical analysis
-        #     During backward lexing, there are no dedicated terminal states. Only the flags
-        #     'pre-condition' fullfilled are set at the acceptance states. On drop out we
-        #     transit to the general terminal state (== start of forward lexing).
-        return LanguageDB["$goto"]("$terminal-general-bw", True) 
+        # Normal Drop-Out. See comments above!
+        txt = [ 
+            LanguageDB["$label-def"]("$drop-out", StateIdx),
+            "    ", LanguageDB["$if"], "   ", LanguageDB["$not BLC"], "\n",
+            "    ", " " * len(LanguageDB["$if"]), LanguageDB["$or"], 
+                    " ", load_impossible_str, " ", 
+                    LanguageDB["$then"],                            
+            LanguageDB["$label-def"]("$drop-out-direct", StateIdx), 
+            "        ", goto_terminal_str,
+            "    ",     LanguageDB["$endif"],                         "\n",
+            "    ", reload_str,                                       "\n",
+            "    ", goto_state_input_str,                             "\n",
+        ]
+
+    # -- in case of the init state, the end of file has to be checked.
+    return "".join(txt)
+
+def __reload_forward():
+    # NOTE, extra four whitespace in second line by purpose.
+    return "QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n" \
+           "                                     post_context_start_position, PostContextStartPositionN);"
+
+def __reload_backward(): 
+    return "QUEX_NAME(buffer_reload_backward)(&me->buffer);\n"
+
+def __get_forward_goto_terminal_str(state, StateIdx, SM):
+    assert state.__class__.__name__ == "State"
+    assert SM.__class__.__name__    == "StateMachine"
+    global LanguageDB 
+
+    # (1) non-acceptance state drop-outs
+    #     (winner is determined by variable 'last_acceptance', then goto terminal router)
+    if not state.is_acceptance(): return LanguageDB["$goto-last_acceptance"]
+
+    def __goto_terminal(Origin):
+        assert Origin.is_acceptance()
+        global LanguageDB 
+        return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+
+    # -- acceptance state drop outs
+    return acceptance_info.get_acceptance_detector(state.origins().get_list(), __goto_terminal)
+
+
 

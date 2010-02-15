@@ -211,6 +211,19 @@ MeinToken::~MeinToken()
 }
 
 inline void
+QUEX_NAME_TOKEN(construct)(MeinToken* __this)
+{
+    /* Clean-up by placement new */
+    new ((void*)__this) QUEX_TYPE_TOKEN;
+}
+
+inline void
+QUEX_NAME_TOKEN(destruct)(MeinToken* __this)
+{
+    __this->QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
+}
+
+inline void
 QUEX_NAME_TOKEN(copy)(MeinToken* __this, const MeinToken* __That)
 {
 #  define self  (*__this)

@@ -1,9 +1,14 @@
 from quex.core_engine.generator.languages.core import __nice
 from quex.input.setup import setup as Setup
 
+LanguageDB = None
+
 def do(State, StateIdx, SMD):
     assert State.__class__.__name__ == "State"
     assert SMD.__class__.__name__   == "StateMachineDecorator"
+    global LanguageDB
+
+    LanguageDB = Setup.language_db
     
     mode = SMD.mode()
     if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD)
@@ -12,57 +17,49 @@ def do(State, StateIdx, SMD):
     else:
         assert False, "This part of the code should never be reached"
 
-def forward_lexing(State, StateIdx, SMD, ForceF=False):
+def forward_lexing(State, StateIdx, SMD):
     """Forward Lexing:
 
-       (1) If a the end of a core pattern of a post contexted pattern is reached, then
-           the current position needs to be stored in a dedicated register---ultimatively.
+       (1) Pure 'Store-Input-Position' States
 
-       (2) Final acceptance states can contain pre-conditions that have to be checked
-           and their might be priorities.
+           States that mark the end of a core pattern that is followed by a post
+           condition. If such a state reached, then the current position needs 
+           to be stored in a dedicated register---ultimatively.
 
+       (2) 'Real'-Acceptance States
+
+           States that terminate an analyzis step and declare the winning pattern.
+
+           -- No pre-conditions, or all pre-conditions have lower priority than
+              the highest priority non-pre-condition 
+              
+              => decision of who wins can be made at code-generation time.
+
+           -- High-priority pre-conditions involved 
+
+              => code must select from all pre-conditions that have higher
+                 priority than the first non-pre-conditioned pattern.
+           
            => use 'get_acceptance_detector()' in order to get a sequence of 'if-else'
               blocks that determine acceptance. 
     """
     assert SMD.__class__.__name__ == "StateMachineDecorator"
     LanguageDB = Setup.language_db
-    SM = SMD.sm()
 
     OriginList = State.origins().get_list()
 
-    txt = ""
-
     # (1) Set the post context registers (if appropriate)
-    #     (also determine the list of acceptance origins)
-    contains_acceptance_f = False
-    for origin in OriginList: 
-        if origin.is_end_of_post_contexted_core_pattern():
-            # Assumption about origin based on assumption about single pattern state machine:
-            #
-            #    According to 'setup_post_context.py' (currently line 121) no acceptance
-            #    state of a post context can store the input position. This has been made 
-            #    impossible! Otherwise, the post context would have zero length.
-            #
-            #    Post-conditions via backward search, i.e. pseudo ambigous post conditions,
-            #    are a different ball-game.
-            #
-            assert origin.is_acceptance() == False
-            # Store current input position, to be restored when post condition really matches
-            post_context_index = SMD.get_post_context_index(origin.state_machine_id)
-            txt += "    " + LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
-                                                   (__nice(post_context_index), __nice(origin.state_machine_id)))
-            txt += "    " + LanguageDB["$input/tell_position"]("post_context_start_position[%i]\n" % post_context_index)
-
-        elif origin.is_acceptance():
-            contains_acceptance_f = True
+    txt = "".join(__handle_post_conditioned_core_patterns(OriginList, SMD))
 
     # -- If there is no 'real' acceptance, then we're done
-    if not contains_acceptance_f: 
+    #    (Post conditioned core pattern end states are not in itself 
+    #     cannot be acceptance states. If the state is an acceptance 
+    #     state than there must be 'real' acceptance origins.)
+    if not State.is_acceptance(): 
         return txt 
 
     # -- If the current acceptance does not need to be stored, then do not do it
-    if not ForceF and \
-       do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, State, SM) == False: 
+    if not do_subsequent_states_require_save_last_acceptance(StateIdx, State, SMD.sm()): 
         return txt
    
     # (2) Create detector for normal and pre-conditioned acceptances
@@ -83,6 +80,42 @@ def forward_lexing(State, StateIdx, SMD, ForceF=False):
     txt += get_acceptance_detector(OriginList, __on_detection_code)
 
     return txt
+
+def __handle_post_conditioned_core_patterns(OriginList, SMD):
+    """Creates code to store the input position for post conditioned
+       core patterns. That means, that the input pointer must return
+       to this place in case that the post condition is fulfilled.
+    """
+    global LanguageDB
+
+    # (1) Set the post context registers (if appropriate)
+    #     (also determine the list of acceptance origins)
+    txtl = []
+    for origin in OriginList: 
+        if origin.is_end_of_post_contexted_core_pattern():
+            # Assumption about origin based on assumption about single pattern state machine:
+            #
+            #    According to 'setup_post_context.py' (currently line 121) no acceptance
+            #    state of a post context can store the input position. This has been made 
+            #    impossible! Otherwise, the post context would have zero length.
+            #
+            #    Post-conditions via backward search, i.e. pseudo ambigous post conditions,
+            #    are a different ball-game.
+            #
+            assert origin.is_acceptance() == False
+
+            # Store current input position, to be restored when post condition really matches
+            post_context_index = SMD.get_post_context_index(origin.state_machine_id)
+            txtl += [
+                    "    ", 
+                    LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
+                            (__nice(post_context_index), __nice(origin.state_machine_id))),
+                    "    ", 
+                    LanguageDB["$input/tell_position"]("post_context_start_position[%i]\n" % \
+                            post_context_index)
+                    ]
+
+    return txtl
 
 def backward_lexing(State):
     """Backward Lexing:
@@ -193,25 +226,30 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
     if txt == "": return ""
     else:         return "    " + txt[:-1].replace("\n", "\n    ") + txt[-1]
 
-def do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, State, SM):
+def do_subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     """For the 'longest match' approach it is generally necessary to store the last
        pattern that has matched the current input stream. This means, that the
        current pattern index **and** the current input position need to be stored.
        Nothing of that is necessary, if one knows that a state does not have any
-       'critical' follow-up states where the position is to be restored.
+       'critical' follow-up states where the position is to be restored. For example,
+
+                 (0)--- 'a' --->(( 1 ['a'] ))---- 'b' --->(( 2 ['ab'] ))
+
+       When state 1 is reached, it indicates that pattern 'a' has matched. Since
+       all subsequent states are acceptance states the last acceptance does
+       not have to be stored. The only way that 'a' is detected is on drop
+       out from state 1 (see drop-out handling).
+
+       Note, that this is equally true, if the acceptance state transits 
+       on itself.
     """
     assert State.__class__.__name__ == "State"
     assert SM.__class__.__name__ == "StateMachine"
     assert State.is_acceptance()
+
+    # return True
     reachable_state_list = State.transitions().get_target_state_index_list()
 
-    # Ignore the subsequent 'optimization' until the matter is analyzed perfectly
-    # safe and sound.
-    return True
-    # If all directly following states are acceptance states then there is no
-    # point in storing the last acceptance. It is overridden anyway at the 
-    # entry of the next state. If one single state is non-acceptance then we
-    # need to store the acceptance (return True).
     for state_index in reachable_state_list:
         if SM.states[state_index].is_acceptance() == False: return True
     return False

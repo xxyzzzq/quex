@@ -9,7 +9,6 @@ import quex.core_engine.utf8                         as utf8
 from   quex.frs_py.string_handling                   import blue_print
 from   quex.core_engine.state_machine.transition_map import TransitionMap 
 from   quex.core_engine.generator.languages.core     import __nice
-from   quex.core_engine.generator.state_coder.drop_out         import get_forward_load_procedure
 import quex.core_engine.generator.state_coder.transition_block as     transition_block
 
 def do(SkipperDescriptor):
@@ -138,8 +137,9 @@ $$DROP_OUT$$
     $$MARK_LEXEME_START$$
     me->buffer._input_p = text_end;
 $$LC_COUNT_BEFORE_RELOAD$$
-    if(    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                            post_context_start_position, PostContextStartPositionN) ) {
+    if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                         post_context_start_position, PostContextStartPositionN);
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -255,16 +255,17 @@ $$DROP_OUT$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
-        if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                             post_context_start_position, PostContextStartPositionN) ) {
+        if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
+            $$GOTO_TERMINAL_EOF$$
+        } else {
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
+                                             post_context_start_position, PostContextStartPositionN);
 
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
             $$GOTO_LOOP_START$$
-        } else {
-            $$GOTO_TERMINAL_EOF$$
-        }
+        } 
     }
 
 $$DROP_OUT_DIRECT$$

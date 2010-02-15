@@ -103,7 +103,7 @@ QUEX_TYPE_TOKEN_ID re2c_scan(char** p)
         {P_STRING}      { return TKN_STRING; }
         {P_QUOTED_CHAR} { return TKN_QUOTED_CHAR; }
 
-        "\0000"         { return TKN_TERMINATION; }
+        [\000]         { return TKN_TERMINATION; }
      */
      return 0;
 }

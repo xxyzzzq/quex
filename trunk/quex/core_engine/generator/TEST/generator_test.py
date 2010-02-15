@@ -83,7 +83,8 @@ def run_this(Str):
         postponed_list = []
         for line in txt.split("\n"):
             if    line.find("defined but not used") != -1 \
-               or line.find("but never defined") != -1:
+               or line.find("but never defined") != -1 \
+               or (line.find("In function") != -1 and line.lower().find("error") == -1):
                 postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
             else:
                 print line
@@ -237,12 +238,12 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
     txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {\n"
     txt += "        QUEX_NAME(Buffer_mark_lexeme_start)(buffer);\n"
-    txt += "        if( QUEX_NAME(buffer_reload_forward)(buffer, &last_acceptance_input_position,\n"
-    txt += "                                             post_context_start_position, 0) == 0 ) {\n"
-    txt += "            return false;\n"
-    txt += "        } else {\n"
-    txt += "            QUEX_NAME(Buffer_input_p_increment)(buffer);\n"
+    txt += "        if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {\n"
+    txt += "            return false;"
     txt += "        }\n"
+    txt += "        QUEX_NAME(buffer_reload_forward)(buffer, &last_acceptance_input_position,\n"
+    txt += "                                         post_context_start_position, 0);\n"
+    txt += "        QUEX_NAME(Buffer_input_p_increment)(buffer);\n"
     txt += "    }\n"
     txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 )\n"
     if ShowPositionF:
@@ -271,13 +272,13 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
         txt += "    break;\n"
     txt += "        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {\n"
     txt += "            QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);\n"
-    txt += "            if( QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n"
-    txt += "                                                   post_context_start_position, 0) == 0 )\n"
+    txt += "            if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {\n"
     txt += "                goto TERMINAL_END_OF_STREAM;\n"
-    txt += "            QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
-    txt += "        } else {\n"
-    txt += "            QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
+    txt += "            }\n"
+    txt += "            QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "                                             post_context_start_position, 0);\n"
     txt += "        }\n"
+    txt += "        QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
     txt += "    }\n"
     txt += "\n"
     txt += SkipperSourceCode
