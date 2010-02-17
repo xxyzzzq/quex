@@ -132,8 +132,8 @@ def do(State, StateIdx, SMD, InitStateF):
 
 def __reload_forward():
     # NOTE, extra four whitespace in second line by purpose.
-    return "QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,\n" \
-           "                                     post_context_start_position, PostContextStartPositionN);"
+    return "QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,\n" \
+           "                                       post_context_start_position, PostContextStartPositionN);"
 
 def __reload_backward(): 
     return "QUEX_NAME(buffer_reload_backward)(&me->buffer);\n"

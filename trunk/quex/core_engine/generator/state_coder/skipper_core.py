@@ -138,8 +138,8 @@ $$DROP_OUT$$
     me->buffer._input_p = text_end;
 $$LC_COUNT_BEFORE_RELOAD$$
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
-        QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                         post_context_start_position, PostContextStartPositionN);
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                               post_context_start_position, PostContextStartPositionN);
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -258,8 +258,8 @@ $$LC_COUNT_BEFORE_RELOAD$$
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
             $$GOTO_TERMINAL_EOF$$
         } else {
-            QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                             post_context_start_position, PostContextStartPositionN);
+            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                                   post_context_start_position, PostContextStartPositionN);
 
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             QUEX_NAME(Buffer_input_p_increment)(&me->buffer);

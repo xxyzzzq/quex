@@ -26,7 +26,11 @@ __header_definitions_txt = """
 #   undef RETURN
 #endif
 
-#define RETURN   return
+#if defined(__QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED)
+#   define RETURN   return
+#else
+#   define RETURN   do { return __self_result_token_id; } while(0)
+#endif
 #define CONTINUE $$GOTO_START_PREPARATION$$ 
 
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
@@ -62,7 +66,7 @@ def __local_variable_definitions(VariableInfoList):
     return txt
          
 __function_signature = """
-void  
+__QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
     /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
@@ -70,6 +74,9 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
              means, they are something like 'globals'. They receive a pointer to the   
              lexical analyzer, since static member do not have access to the 'this' pointer.
      */
+#   if ! defined(__QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED)
+    QUEX_TYPE_TOKEN_ID   __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+#   endif
 #   ifdef     self
 #       undef self
 #   endif
@@ -211,7 +218,7 @@ $$TERMINAL_END_OF_STREAM-DEF$$
 $$END_OF_STREAM_ACTION$$
      /* End of Stream causes a return from the lexical analyzer, so that no
       * tokens can be filled after the termination token.                    */
-     return;          
+     RETURN;          
 
 $$TERMINAL_FAILURE-DEF$$
 $$FAILURE_ACTION$$
@@ -246,9 +253,9 @@ $$REENTRY_PREPARATION$$
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) return;
+    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
 #   else
-    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
 #   endif
 #endif
 
@@ -272,7 +279,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
     QUEX_TOKEN_POLICY_SET_ID(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-    return;
+    RETURN;
 #elif defined(QUEX_OPTION_ASSERTS)
     QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
 #endif
