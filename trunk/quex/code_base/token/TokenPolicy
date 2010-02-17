@@ -64,7 +64,7 @@
 #   define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
            /* empty */
 #   define QUEX_TOKEN_POLICY_NO_TOKEN() \
-           (self.token->_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
+           (__self_result_token_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
 
 #   define self_token_get_id()    (__self_result_token_id)
 #   define self_token_set_id(ID)  do { __self_result_token_id = ID; QUEX_TOKEN_POLICY_SET_ID(ID); } while( 0 )

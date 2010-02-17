@@ -6,9 +6,8 @@ COMPILER     = g++    # icpc # g++
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
 OPTIMIZATION = -O3 # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
-GENERATOR    = Quex#  Quex, Flex
 PROFILER     = # -pg # '-pg' for gprof profiling information
-CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./get_cpu_mhz.sh` 
+CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./common/get_cpu_mhz.sh` 
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \
@@ -34,7 +33,7 @@ ifndef QUEX_PATH
 endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-SOURCE_FILES     = lexer.cpp report.cpp main.cpp 
+SOURCE_FILES    = $(addprefix common/, lexer.cpp report.cpp main.cpp)
 
 OBJECT_FILES    = $(SOURCE_FILES:.cpp=.o)  # object file w/o line and column counting
 OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column counting
@@ -45,10 +44,10 @@ OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column count
 PROFILE_ACTIVATE = -fprofile-arcs -fprofile-values
 PROFILE_USE      = -fbranch-probabilities
 CC_CORE = $(COMPILER) $(EXTRA_COMPILER_FLAG) $(OPTIMIZATION) -Wno-deprecated -Wall \
-		 -I./ -I$(QUEX_PATH)  \
+		 -I./ -I./common -I$(QUEX_PATH)  \
 		 $(SETUP) \
-		 -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \
 		 -DNDEBUG \
+		 -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \
 		 -DQUEX_OPTION_ASSERTS_DISABLED	\
 		 -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED \
 		 -DQUEX_BENCHMARK_SERIOUS \
@@ -71,7 +70,9 @@ LD = $(COMPILER) $(OPTIMIZATION) $(PROFILER)
 # (*) RULES ____________________________________________________________________
 #    lexer    --> application w/o line or column counting
 #    lexer-lc --> application w/ line and column counting
-all: lexer-quex lexer-quex-lc lexer-flex lexer-re2c
+EXECUTABLES = lexer-quex lexer-quex-lc lexer-flex lexer-re2c
+
+all: $(EXECUTABLES)
 
 lexer-quex: quex_scan.o $(OBJECT_FILES) 
 	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(OBJECT_FILES) -o $@ 
@@ -109,7 +110,7 @@ quex_scan.cpp: quex/c.qx $(QUEX_CORE)
 		 --token-offset 3                     \
 		 --token-prefix TKN_                  \
 	     --token-policy           users_token \
-         --foreign-token-id-file  token-ids.h 
+         --foreign-token-id-file  common/token-ids.h 
 
 flex_scan.c: flex/c.lex
 	flex $< -o $@
@@ -119,23 +120,9 @@ re2c_scan.c:  re2c/c-re2c.in
 	
 # (*) HELPERS __________________________________________________________________
 clean:	
-	rm -f lexer lexer-lc lexer-flex
-	rm -f lexer-token lexer-lc-token lexer-flex-token
-	rm -f c_lexer-token
-	touch quex/c.qx
-	rm -f lexer
-	rm -f token_ids
-	rm -f *.o
-	rm -f *.bak
-	rm -f *.asm
-	rm -f *.gcno 
-	rm -f *.gcda
-	rm -f *.gcov
-	rm -f lex.yy.c
+	rm -f $(EXECUTABLES)
+	rm -f quex_scan*
 	rm -f *.E
-	rm -f re2c_scan.*
-	rm -f flex_scan.*
-	rm -f quex_scan.*
 
 cpu_mhz:
 	@echo $(CPU_MHZ)

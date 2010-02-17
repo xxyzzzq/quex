@@ -107,7 +107,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
     # -- 'end of stream' action
     if not Mode.has_code_fragment_list("on_end_of_stream"):
         txt  = "self_send(%sTERMINATION);\n" % Setup.token_id_prefix 
-        txt += "return;\n"
+        txt += "RETURN;\n"
         Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
 
     end_of_stream_action = action_code_formatter.do(Mode, 
@@ -117,7 +117,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
     # -- 'on failure' action (nothing matched)
     if not Mode.has_code_fragment_list("on_failure"):
         txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-        txt += "return;\n"
+        txt += "RETURN;\n"
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 
     on_failure_action = action_code_formatter.do(Mode, 
