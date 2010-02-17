@@ -5,7 +5,7 @@
 #if    defined(ANALYZER_GENERATOR_FLEX) \
     || defined(ANALYZER_GENERATOR_RE2C)
 #else
-#    include "c_lexer"
+#    include "quex_scan"
 #endif
 #include <cstdio>
 #include <ctime>
@@ -15,7 +15,7 @@ using namespace std;
 
 extern  FILE*  global_fh;
 
-/* NOTE: the following *must* be included after 'c_lexer' */
+/* NOTE: the following *must* be included after 'quex_scan' */
 #if ANALYZER_GENERATOR_FLEX
    extern int    yylex();
    extern FILE*  yyin;
@@ -51,8 +51,8 @@ extern  FILE*  global_fh;
           } while ( 0 )
 
 #else
-    extern quex::c_lexer*  global_qlex; 
-    extern quex::Token     global_token; 
+    extern quex::quex_scan*  global_qlex; 
+    extern quex::Token       global_token; 
     using namespace quex;
 #  ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 #     define ANALYZER_ANALYZE(TokenID)       \

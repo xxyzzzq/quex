@@ -5,7 +5,7 @@
 #include "token-ids.h"
 #if defined(ANALYZER_GENERATOR_FLEX) || defined(ANALYZER_GENERATOR_RE2C)
 #else
-#    include "c_lexer"
+#    include "quex_scan"
 #endif
 #ifdef __cplusplus
 #include <cstdio>
