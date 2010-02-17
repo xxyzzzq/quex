@@ -1,6 +1,7 @@
 // -*- C++ -*- vim: set syntax=cpp:
 start = PROGRAM;
 
+
 define {
     // Pattern definitions for example application
     P_WHITESPACE          [ \t\n]+
