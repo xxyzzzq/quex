@@ -3,11 +3,15 @@
 #include "main.h"
 #include <sys/stat.h>
 
-FILE*   global_fh;
-#if  defined(ANALYZER_GENERATOR_FLEX) || defined(ANALYZER_GENERATOR_RE2C)
+FILE*             global_fh;
+#if   defined(ANALYZER_GENERATOR_FLEX)
+#elif defined(ANALYZER_GENERATOR_RE2C)
+char*             global_re2c_buffer_begin;
+char*             global_re2c_buffer_end;
+char*             global_re2c_buffer_iterator;
 #else
-quex::c_lexer*  global_qlex; 
-quex::Token     global_token; 
+quex::quex_scan*  global_qlex; 
+quex::Token       global_token; 
 #endif
 
 int 
@@ -36,7 +40,7 @@ main(int argc, char** argv)
     *(global_re2c_buffer_begin + Size + 1) = '\0';
     global_re2c_buffer_end = global_re2c_buffer_begin + FileSize;
 #else
-    global_qlex = new c_lexer(global_fh);
+    global_qlex = new quex::quex_scan(global_fh);
 #   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
     global_qlex->token = &global_token;
 #   endif

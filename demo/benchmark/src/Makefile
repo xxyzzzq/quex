@@ -89,29 +89,32 @@ lexer-re2c: re2c_scan.c
 %.o: %.cpp 
 	$(CC) -c $< -o $@
 
-%-lc.o: %.cpp c_lexer
+%.o: %.c 
+	$(CC) -c $< -o $@
+
+%-lc.o: %.cpp quex_scan 
 	$(CC_LC) -c $< -o $@
 
-%.asm: %.cpp c_lexer
+%.asm: %.cpp 
 	$(CC) -S $< -o $@
 
 %.E: %.cpp 
 	$(CC) -E $< -o $@
 
 
-quex_scan.cpp: c.qx $(QUEX_CORE)
-	quex -i c.qx \
-		 --engine quex_scan.cpp               \
+quex_scan.cpp: quex/c.qx $(QUEX_CORE)
+	quex -i $< \
+		 --engine quex_scan                   \
 		 --no-string-accumulator              \
 		 --token-offset 3                     \
 		 --token-prefix TKN_                  \
 	     --token-policy           users_token \
          --foreign-token-id-file  token-ids.h 
 
-flex_scan.c: c.lex
+flex_scan.c: flex/c.lex
 	flex $< -o $@
 
-re2c_scan.c:  c-re2c.in
+re2c_scan.c:  re2c/c-re2c.in
 	re2c -F -si $< | sed -e 's/\#line[^\n]*//g' > $@
 	
 # (*) HELPERS __________________________________________________________________
@@ -120,7 +123,6 @@ clean:
 	rm -f lexer-token lexer-lc-token lexer-flex-token
 	rm -f c_lexer-token
 	touch quex/c.qx
-	rm -f $(ENGINE_SOURCES)
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.o
