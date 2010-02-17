@@ -26,9 +26,9 @@
 #   define  __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
 #endif
 
-#include "$$LEXER_CONFIG_FILE$$"
-
 #include <quex/code_base/definitions>
+
+#include "$$LEXER_CONFIG_FILE$$"
 
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */

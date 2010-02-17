@@ -720,8 +720,7 @@ STATE_248:
             } else {
                 if( input < 65) {
                     if( input == 59) {
-                        QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
-                        goto TERMINAL_22_DIRECT;    /* ';' */
+                        goto TERMINAL_22;    /* ';' */
                     } else {
                         goto STATE_248_DROP_OUT_DIRECT;    /* ['<', '@'] */
                     }
@@ -767,15 +766,13 @@ STATE_248:
             } else {
                 if( input < 125) {
                     if( input == 123) {
-                        QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
-                        goto TERMINAL_25_DIRECT;    /* '{' */
+                        goto TERMINAL_25;    /* '{' */
                     } else {
                         goto STATE_248_DROP_OUT_DIRECT;    /* '|' */
                     }
                 } else {
                     if( input == 125) {
-                        QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
-                        goto TERMINAL_28_DIRECT;    /* '}' */
+                        goto TERMINAL_28;    /* '}' */
                     } else {
                         goto STATE_248_DROP_OUT_DIRECT;    /* ['~', oo] */
                     }
@@ -788,10 +785,10 @@ STATE_248_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_DROP_OUT");
     if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ) {
 STATE_248_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_DROP_OUT_DIRECT");
-         goto TERMINAL_FAILURE;
-    } else if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
-         goto TERMINAL_END_OF_STREAM;
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_DROP_OUT_DIRECT");
+        goto TERMINAL_FAILURE;
+    } else if((me->buffer._memory._end_of_file_p != 0x0)) {
+        goto TERMINAL_END_OF_STREAM;
     }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
@@ -809,10 +806,6 @@ STATE_256_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "5");
-    QUEX_SET_last_acceptance(5);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 13) {
         if( input == 9 || input == 10 ) {
             goto STATE_256;
@@ -829,10 +822,11 @@ STATE_256_INPUT:
 
 STATE_256_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
-/*ATE_256_DROP_OUT_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256_DROP_OUT_DIRECT");
+            goto TERMINAL_5_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -847,10 +841,6 @@ STATE_257_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 97) {
         if( input < 91) {
             if( input < 65) {
@@ -887,11 +877,11 @@ STATE_257_INPUT:
 
 STATE_257_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_257_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -906,10 +896,6 @@ STATE_258_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 95) {
         if( input >= 65 && input < 91 ) {
             goto STATE_258;    /* ['A', 'Z'] */
@@ -934,11 +920,11 @@ STATE_258_INPUT:
 
 STATE_258_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_258_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -953,10 +939,6 @@ STATE_259_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -993,11 +975,11 @@ STATE_259_INPUT:
 
 STATE_259_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_259_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1012,10 +994,6 @@ STATE_260_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1052,11 +1030,11 @@ STATE_260_INPUT:
 
 STATE_260_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_260_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1071,10 +1049,6 @@ STATE_261_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1111,11 +1085,11 @@ STATE_261_INPUT:
 
 STATE_261_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_261_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1130,10 +1104,6 @@ STATE_262_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1170,11 +1140,11 @@ STATE_262_INPUT:
 
 STATE_262_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_262_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1189,10 +1159,6 @@ STATE_263_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1229,11 +1195,11 @@ STATE_263_INPUT:
 
 STATE_263_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_263_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1248,10 +1214,6 @@ STATE_264_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "7");
-    QUEX_SET_last_acceptance(7);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 95) {
         if( input >= 65 && input < 91 ) {
             goto STATE_258;    /* ['A', 'Z'] */
@@ -1276,11 +1238,11 @@ STATE_264_INPUT:
 
 STATE_264_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_264_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT_DIRECT");
+            goto TERMINAL_7_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1295,10 +1257,6 @@ STATE_265_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1335,11 +1293,11 @@ STATE_265_INPUT:
 
 STATE_265_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_265_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1354,10 +1312,6 @@ STATE_266_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "16");
-    QUEX_SET_last_acceptance(16);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 95) {
         if( input >= 65 && input < 91 ) {
             goto STATE_258;    /* ['A', 'Z'] */
@@ -1382,11 +1336,11 @@ STATE_266_INPUT:
 
 STATE_266_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_266_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT_DIRECT");
+            goto TERMINAL_16_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1401,10 +1355,6 @@ STATE_267_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1441,11 +1391,11 @@ STATE_267_INPUT:
 
 STATE_267_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_267_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1460,10 +1410,6 @@ STATE_268_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1500,11 +1446,11 @@ STATE_268_INPUT:
 
 STATE_268_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_268_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1519,10 +1465,6 @@ STATE_269_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1559,11 +1501,11 @@ STATE_269_INPUT:
 
 STATE_269_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_269_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1578,10 +1520,6 @@ STATE_270_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1618,11 +1556,11 @@ STATE_270_INPUT:
 
 STATE_270_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_270_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1637,10 +1575,6 @@ STATE_271_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "19");
-    QUEX_SET_last_acceptance(19);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 95) {
         if( input >= 65 && input < 91 ) {
             goto STATE_258;    /* ['A', 'Z'] */
@@ -1665,11 +1599,11 @@ STATE_271_INPUT:
 
 STATE_271_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_271_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT_DIRECT");
+            goto TERMINAL_19_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1684,10 +1618,6 @@ STATE_272_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1724,11 +1654,11 @@ STATE_272_INPUT:
 
 STATE_272_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_272_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1743,10 +1673,6 @@ STATE_273_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "10");
-    QUEX_SET_last_acceptance(10);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 95) {
         if( input >= 65 && input < 91 ) {
             goto STATE_258;    /* ['A', 'Z'] */
@@ -1771,11 +1697,11 @@ STATE_273_INPUT:
 
 STATE_273_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_273_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT_DIRECT");
+            goto TERMINAL_10_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1790,10 +1716,6 @@ STATE_274_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1830,11 +1752,11 @@ STATE_274_INPUT:
 
 STATE_274_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_274_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1849,10 +1771,6 @@ STATE_275_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1889,11 +1807,11 @@ STATE_275_INPUT:
 
 STATE_275_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_275_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1908,10 +1826,6 @@ STATE_276_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1948,11 +1862,11 @@ STATE_276_INPUT:
 
 STATE_276_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_276_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -1967,10 +1881,6 @@ STATE_277_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2007,11 +1917,11 @@ STATE_277_INPUT:
 
 STATE_277_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_277_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -2026,10 +1936,6 @@ STATE_278_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "13");
-    QUEX_SET_last_acceptance(13);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 95) {
         if( input >= 65 && input < 91 ) {
             goto STATE_258;    /* ['A', 'Z'] */
@@ -2054,11 +1960,11 @@ STATE_278_INPUT:
 
 STATE_278_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_278_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT_DIRECT");
+            goto TERMINAL_13_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -2073,10 +1979,6 @@ STATE_249_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "35");
-    QUEX_SET_last_acceptance(35);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input >= 48 && input < 58 ) {
         goto STATE_249;    /* ['0', '9'] */
     } else {
@@ -2085,10 +1987,11 @@ STATE_249_INPUT:
 
 STATE_249_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
-/*ATE_249_DROP_OUT_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT_DIRECT");
+            goto TERMINAL_35_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -2104,10 +2007,6 @@ STATE_251_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2144,11 +2043,11 @@ STATE_251_INPUT:
 
 STATE_251_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_251_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -2164,10 +2063,6 @@ STATE_253_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2204,11 +2099,11 @@ STATE_253_INPUT:
 
 STATE_253_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_253_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -2223,10 +2118,6 @@ STATE_254_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
-    QUEX_SET_last_acceptance(41);
-    last_acceptance_input_position = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-    
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2263,11 +2154,11 @@ STATE_254_INPUT:
 
 STATE_254_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ||QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
+       || (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_254_DROP_OUT_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-    }
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT_DIRECT");
+            goto TERMINAL_41_DIRECT;    }
 
     QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
                                      post_context_start_position, PostContextStartPositionN);
@@ -2285,12 +2176,12 @@ STATE_254_DROP_OUT_DIRECT:
 
 /* Lexeme descriptions: There is a temporary zero stored at the end of each
  * lexeme. A pointer to the zero provides the Null-lexeme.                     */
-TERMINAL_35:
+            
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_35");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_35_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_35_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_35_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_35_DIRECT");
 
     QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);
     {
@@ -2302,21 +2193,21 @@ TERMINAL_35:
         
         #line 27 "dos_lf_2.qx"
         self_send1(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1872 "Simple.cpp"
+#line 1763 "Simple.cpp"
         
         }
     }
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_5:
+           
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_5");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_5_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_5_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_5_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_5_DIRECT");
 
     {
         {
@@ -2330,12 +2221,12 @@ TERMINAL_5:
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_7:
+           
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_7");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_7_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_7_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_7_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_7_DIRECT");
 
     {
         {
@@ -2346,21 +2237,21 @@ TERMINAL_7:
         
         #line 19 "dos_lf_2.qx"
         self_send0(QUEX_TKN_STRUCT);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1916 "Simple.cpp"
+#line 1807 "Simple.cpp"
         
         }
     }
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_41:
+            
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_41");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_41_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_41_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_41_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_41_DIRECT");
 
     QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);
     {
@@ -2373,19 +2264,19 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 1941 "Simple.cpp"
+#line 1832 "Simple.cpp"
         
         }
     }
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_10:
+            
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_10_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_10_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10_DIRECT");
 
     {
         {
@@ -2396,21 +2287,21 @@ TERMINAL_10:
         
         #line 20 "dos_lf_2.qx"
         self_send0(QUEX_TKN_TYPE_INT);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1966 "Simple.cpp"
+#line 1857 "Simple.cpp"
         
         }
     }
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_13:
+            
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_13");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_13_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_13_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_13_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_13_DIRECT");
 
     {
         {
@@ -2421,21 +2312,21 @@ TERMINAL_13:
         
         #line 21 "dos_lf_2.qx"
         self_send0(QUEX_TKN_TYPE_DOUBLE);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1991 "Simple.cpp"
+#line 1882 "Simple.cpp"
         
         }
     }
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_16:
+            
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_16_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_16_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16_DIRECT");
 
     {
         {
@@ -2446,21 +2337,21 @@ TERMINAL_16:
         
         #line 22 "dos_lf_2.qx"
         self_send0(QUEX_TKN_SEND);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2016 "Simple.cpp"
+#line 1907 "Simple.cpp"
         
         }
     }
 
     goto __REENTRY_PREPARATION;
 
-TERMINAL_19:
+            
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_19");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
-/*RMINAL_19_DIRECT*/    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_19_DIRECT");
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+TERMINAL_19_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_19_DIRECT");
 
     {
         {
@@ -2471,9 +2362,9 @@ TERMINAL_19:
         
         #line 23 "dos_lf_2.qx"
         self_send0(QUEX_TKN_EXPECT);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2041 "Simple.cpp"
+#line 1932 "Simple.cpp"
         
         }
     }
@@ -2483,8 +2374,7 @@ TERMINAL_19:
 TERMINAL_22:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_22");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
 TERMINAL_22_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_22_DIRECT");
 
@@ -2497,9 +2387,9 @@ TERMINAL_22_DIRECT:
         
         #line 24 "dos_lf_2.qx"
         self_send0(QUEX_TKN_SEMICOLON);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2067 "Simple.cpp"
+#line 1957 "Simple.cpp"
         
         }
     }
@@ -2509,8 +2399,7 @@ TERMINAL_22_DIRECT:
 TERMINAL_25:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
 TERMINAL_25_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25_DIRECT");
 
@@ -2523,9 +2412,9 @@ TERMINAL_25_DIRECT:
         
         #line 25 "dos_lf_2.qx"
         self_send0(QUEX_TKN_BRACKET_OPEN);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2093 "Simple.cpp"
+#line 1982 "Simple.cpp"
         
         }
     }
@@ -2535,8 +2424,7 @@ TERMINAL_25_DIRECT:
 TERMINAL_28:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_28");
 
-    QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
-
+    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
 TERMINAL_28_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_28_DIRECT");
 
@@ -2549,9 +2437,9 @@ TERMINAL_28_DIRECT:
         
         #line 26 "dos_lf_2.qx"
         self_send0(QUEX_TKN_BRACKET_CLOSE);
-        CONTINUE;
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2119 "Simple.cpp"
+#line 2007 "Simple.cpp"
         
         }
     }
@@ -2572,7 +2460,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self_send0(QUEX_TKN_TERMINATION);
         
-#line 2140 "Simple.cpp"
+#line 2028 "Simple.cpp"
         
         }
                 }
@@ -2618,18 +2506,23 @@ else {
 __TERMINAL_ROUTER: {
         /*  if last_acceptance => goto correspondent acceptance terminal state*/
         /*  else               => execute defaul action*/
+        if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
+            goto TERMINAL_FAILURE;
+        }
+        QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
+
         switch( last_acceptance ) {
-            case 35: goto TERMINAL_35;
-            case 5: goto TERMINAL_5;
-            case 7: goto TERMINAL_7;
-            case 41: goto TERMINAL_41;
-            case 10: goto TERMINAL_10;
-            case 13: goto TERMINAL_13;
-            case 16: goto TERMINAL_16;
-            case 19: goto TERMINAL_19;
-            case 22: goto TERMINAL_22;
-            case 25: goto TERMINAL_25;
-            case 28: goto TERMINAL_28;
+            case 35: goto TERMINAL_35_DIRECT;
+            case 5: goto TERMINAL_5_DIRECT;
+            case 7: goto TERMINAL_7_DIRECT;
+            case 41: goto TERMINAL_41_DIRECT;
+            case 10: goto TERMINAL_10_DIRECT;
+            case 13: goto TERMINAL_13_DIRECT;
+            case 16: goto TERMINAL_16_DIRECT;
+            case 19: goto TERMINAL_19_DIRECT;
+            case 22: goto TERMINAL_22_DIRECT;
+            case 25: goto TERMINAL_25_DIRECT;
+            case 28: goto TERMINAL_28_DIRECT;
 
             default: goto TERMINAL_FAILURE;; /* nothing matched */
         }
@@ -2693,6 +2586,7 @@ __REENTRY_PREPARATION:
     /* that is never reached (and deleted by the compiler anyway).*/
     if( 0 == 1 ) {
         int unused = 0;
+        goto __TERMINAL_ROUTER;
         unused += (int)ONE_AND_ONLY.id;
         unused += (int)__QuexLexemeNullObject;
     }

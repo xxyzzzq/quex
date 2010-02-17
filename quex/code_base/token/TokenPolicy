@@ -35,36 +35,40 @@
 #endif
 /*_______________________________________________________________________*/
 
-#if        defined(__QUEX_OPTION_PLAIN_C)
-#   define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->_id
-#else
-#   define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->type_id()
-#endif
-#define self_token_set_id(ID)    QUEX_TOKEN_POLICY_SET_ID(ID)
-
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 
-#    define __QUEX_CURRENT_TOKEN_P  (self._token_queue.write_iterator)
+#   define __QUEX_CURRENT_TOKEN_P  (self._token_queue.write_iterator)
 
-#    define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
-            ++(self._token_queue.write_iterator); 
+#   define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
+           ++(self._token_queue.write_iterator); 
 
-#    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
-            self._token_queue.remaining_repetitions_of_last_token_n = N;
+#   define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
+           self._token_queue.remaining_repetitions_of_last_token_n = N;
 
-#    define QUEX_TOKEN_POLICY_NO_TOKEN() \
-            (QUEX_NAME(TokenQueue_is_empty)(&self._token_queue))
+#   define QUEX_TOKEN_POLICY_NO_TOKEN() \
+           (QUEX_NAME(TokenQueue_is_empty)(&self._token_queue))
+
+#   if        defined(__QUEX_OPTION_PLAIN_C)
+#      define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->_id
+#   else
+#      define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->type_id()
+#   endif
+#   define self_token_set_id(ID)    QUEX_TOKEN_POLICY_SET_ID(ID)
 
 #else
 
-#     define __QUEX_CURRENT_TOKEN_P  (self.token)
+#   define __QUEX_CURRENT_TOKEN_P  (self.token)
 
-#     define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
-             /* empty */
-#     define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
-             /* empty */
-#     define QUEX_TOKEN_POLICY_NO_TOKEN() \
-             (self.token->_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
+#   define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
+           /* empty */
+#   define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
+           /* empty */
+#   define QUEX_TOKEN_POLICY_NO_TOKEN() \
+           (self.token->_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
+
+#   define self_token_get_id()    (__self_result_token_id)
+#   define self_token_set_id(ID)  do { __self_result_token_id = ID; QUEX_TOKEN_POLICY_SET_ID(ID); } while( 0 )
+
 #endif
 
 /* Option: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN

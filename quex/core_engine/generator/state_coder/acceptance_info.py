@@ -59,7 +59,7 @@ def forward_lexing(State, StateIdx, SMD):
         return txt 
 
     # -- If the current acceptance does not need to be stored, then do not do it
-    if not do_subsequent_states_require_save_last_acceptance(StateIdx, State, SMD.sm()): 
+    if not subsequent_states_require_save_last_acceptance(StateIdx, State, SMD.sm()): 
         return txt
    
     # (2) Create detector for normal and pre-conditioned acceptances
@@ -226,7 +226,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
     if txt == "": return ""
     else:         return "    " + txt[:-1].replace("\n", "\n    ") + txt[-1]
 
-def do_subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
+def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     """For the 'longest match' approach it is generally necessary to store the last
        pattern that has matched the current input stream. This means, that the
        current pattern index **and** the current input position need to be stored.
@@ -251,7 +251,27 @@ def do_subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     reachable_state_list = State.transitions().get_target_state_index_list()
 
     for state_index in reachable_state_list:
-        if SM.states[state_index].is_acceptance() == False: return True
+        state = SM.states[state_index]
+        if state.is_acceptance() == False: return True
+        # Is there at least one origin that is unconditioned? If not,
+        # the trailing last acceptance must be stored.
+        for origin in state.origins().get_list():
+            if   not origin.is_acceptance():                      continue
+            elif origin.pre_context_begin_of_line_f():            continue
+            elif origin.pre_context_id() != -1L:                  continue
+            elif origin.pseudo_ambiguous_post_context_id() != -1: continue
+            else:
+                # We found an un-conditioned acceptance state.
+                # => State is 'OK' (There will be an acceptance that 
+                # overwrites the acceptance of the current one)
+                break
+                # (Post conditioned states store only the input position,
+                #  but are not acceptance states)
+        else:
+            # No un-conditioned acceptance origin found 
+            # => State must be treated as if it was non-acceptance
+            return True
+
     return False
 
 

@@ -163,15 +163,10 @@ QUEX_NAMESPACE_MAIN_OPEN
          *      lexeme. => there will be no reload backwards.                            */
     }
 
-    QUEX_INLINE void 
-    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)* buffer, 
-                                     QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
-                                     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
-                                     const size_t                  PostContextN)
+    QUEX_INLINE size_t 
+    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*  buffer) 
     {
-        size_t                        LoadedCharacterN = 0;
-        QUEX_TYPE_CHARACTER_POSITION* iterator = 0x0;
-        QUEX_TYPE_CHARACTER_POSITION* End = post_context_start_position + PostContextN;
+        size_t loaded_character_n = (size_t)-1;
 
         QUEX_DEBUG_PRINT(buffer, "FORWARD: BUFFER RELOAD");
 
@@ -179,20 +174,79 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(buffer->filler != 0x0);
         __quex_assert(buffer->_memory._end_of_file_p == 0x0);
 
-        LoadedCharacterN = QUEX_NAME(BufferFiller_load_forward)(buffer);
-        QUEX_DEBUG_PRINT2(buffer, "FORWARD: LOADED %i CHARACTERS", (int)LoadedCharacterN);
+        loaded_character_n = QUEX_NAME(BufferFiller_load_forward)(buffer);
+        QUEX_DEBUG_PRINT2(buffer, "FORWARD: LOADED %i CHARACTERS", (int)loaded_character_n);
+        return loaded_character_n;
+    }
 
-        if( *last_acceptance_input_position != 0x0 ) { 
-            *last_acceptance_input_position -= LoadedCharacterN;
-        }                                                                  
-        for(iterator = post_context_start_position; iterator != End; ++iterator) {
+    QUEX_INLINE void
+    QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const size_t                  LoadedCharacterN,
+                                                             QUEX_TYPE_CHARACTER_POSITION* pos)
+    { *pos -= LoadedCharacterN; }
+
+    QUEX_INLINE void
+    QUEX_NAME(__buffer_adapt_post_context_start_positions)(const size_t                  LoadedCharacterN,
+                                                           QUEX_TYPE_CHARACTER_POSITION* pos_array,
+                                                           const size_t                  N)
+    {
+        QUEX_TYPE_CHARACTER_POSITION*  iterator = 0x0;
+        QUEX_TYPE_CHARACTER_POSITION*  End = pos_array + N;
+        for(iterator = pos_array; iterator != End; ++iterator) {
             /* NOTE: When the post_context_start_position is still undefined the following operation may
              *       underflow. But, do not care, once it is **assigned** to a meaningful value, it won't */
             *iterator -= LoadedCharacterN;
         }
-                                                                              
-        return;
     }
+
+    QUEX_INLINE void 
+    QUEX_NAME(buffer_reload_forward_LA_PC)(QUEX_NAME(Buffer)* buffer, 
+                                           QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                           QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
+                                           const size_t                  PostContextN)
+    {
+        size_t  loaded_character_n = (size_t)-1;    
+
+        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer);
+
+        QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(loaded_character_n,
+                                                                 last_acceptance_input_position); 
+
+        QUEX_NAME(__buffer_adapt_post_context_start_positions)(loaded_character_n,
+                                                               post_context_start_position, 
+                                                               PostContextN);
+    }
+
+#   if 0
+    /* The following differentiation between 'considering last_acceptance' and 'not
+     * considering last acceptance', etc. was done in the hope that it influences the
+     * storage requirements and/or speed. But it did not, since the compiler optimizations
+     * seem to do things that are beyond the scope of such thoughts.  <fschaef9 10y02m15d> */
+    QUEX_INLINE void 
+    QUEX_NAME(buffer_reload_forward_LA)(QUEX_NAME(Buffer)*             buffer, 
+                                        QUEX_TYPE_CHARACTER_POSITION*  last_acceptance_input_position)
+    {
+        size_t  loaded_character_n = (size_t)-1;    
+
+        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer);
+
+        QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(loaded_character_n,
+                                                                 last_acceptance_input_position); 
+    }
+
+    QUEX_INLINE void 
+    QUEX_NAME(buffer_reload_forward_PC)(QUEX_NAME(Buffer)* buffer, 
+                                        QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
+                                        const size_t                  PostContextN)
+    {
+        size_t  loaded_character_n = (size_t)-1;    
+
+        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer); 
+
+        QUEX_NAME(__buffer_adapt_post_context_start_positions)(loaded_character_n,
+                                                               post_context_start_position, 
+                                                               PostContextN);
+    }
+#   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

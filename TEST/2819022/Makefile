@@ -5,6 +5,7 @@ lexer:
 		lexer.cpp Simple.cpp  \
 		-Wall \
 		-o lexer
+        # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
 
 Simple.E:
 	g++ -c -E -I$(QUEX_PATH) -I. \

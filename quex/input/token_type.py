@@ -21,7 +21,8 @@ class TokenTypeDescriptorCore:
                                 "token class (options --token-class, --tc)")
             self.class_name            = Setup.token_class_name
             self.name_space            = Setup.token_class_name_space
-            self.open_for_derivation_f = False
+            self.open_for_derivation_f      = False
+            self.token_contains_token_id_f  = True
             self.token_id_type         = CodeFragment("size_t")
             self.column_number_type    = CodeFragment("size_t")
             self.line_number_type      = CodeFragment("size_t")
@@ -36,7 +37,8 @@ class TokenTypeDescriptorCore:
             self._file_name            = Core._file_name
             self.class_name            = Core.class_name
             self.name_space            = Core.name_space
-            self.open_for_derivation_f = Core.open_for_derivation_f
+            self.open_for_derivation_f      = Core.open_for_derivation_f
+            self.token_contains_token_id_f  = Core.token_contains_token_id_f
             self.token_id_type         = Core.token_id_type
             self.column_number_type    = Core.column_number_type
             self.line_number_type      = Core.line_number_type
@@ -58,6 +60,8 @@ class TokenTypeDescriptorCore:
         txt += "class:     '%s'\n" % self.class_name
         if self.open_for_derivation_f: 
             txt += "           (with virtual destructor)\n"
+        if self.token_contains_token_id_f == False:
+            txt += "           (token id not part of token object)\n"
         txt += "namespace: '%s'\n" % repr(self.name_space)[1:-1]
         txt += "type(token_id)      = %s\n" % self.token_id_type.get_pure_code()
         txt += "type(column_number) = %s\n" % self.column_number_type.get_pure_code()
@@ -279,7 +283,7 @@ def __parse_section(fh, descriptor, already_defined_list):
     global token_type_code_fragment_db
     assert type(already_defined_list) == list
 
-    SubsectionList = ["name", "file_name", "standard", "distinct", "union", "inheritable"] \
+    SubsectionList = ["name", "file_name", "standard", "distinct", "union", "inheritable", "noid"] \
                       + token_type_code_fragment_db.keys()
 
     position = fh.tell()
@@ -304,6 +308,10 @@ def __parse_section(fh, descriptor, already_defined_list):
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True
+        verify_next_word(fh, ";")
+
+    elif word == "noid":
+        descriptor.token_contains_token_id_f = False;
         verify_next_word(fh, ";")
 
     elif word == "file_name":

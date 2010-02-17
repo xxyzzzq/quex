@@ -94,29 +94,34 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 
-    QUEX_INLINE void
+    QUEX_INLINE  QUEX_TYPE_TOKEN_ID
     QUEX_NAME(receive_p)(QUEX_TYPE_ANALYZER*  me,
                          QUEX_TYPE_TOKEN*     result_p) 
     {
+        QUEX_TYPE_TOKEN_ID   __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+
         me->token = result_p;
+
         self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
-            me->current_analyzer_function(me);
+            __self_result_token_id = me->current_analyzer_function(me);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
-        return;
+        return __self_result_token_id;
     }
 
-    QUEX_INLINE void
+    QUEX_INLINE  QUEX_TYPE_TOKEN_ID
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
     {
+        QUEX_TYPE_TOKEN_ID   __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+
         __quex_assert(me->token != 0x0);
         self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
-            me->current_analyzer_function(me);
+            __self_result_token_id = me->current_analyzer_function(me);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
-        return;
+        return __self_result_token_id;
     }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
@@ -150,13 +155,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     { QUEX_NAME(receive_p)(this, result_p); }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-    QUEX_INLINE void
+    QUEX_INLINE QUEX_TYPE_TOKEN_ID
     QUEX_MEMBER(receive)() 
-    { QUEX_NAME(receive)(this); }
+    { return QUEX_NAME(receive)(this); }
 
-    QUEX_INLINE void
+    QUEX_INLINE QUEX_TYPE_TOKEN_ID
     QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN*   result_p) 
-    { QUEX_NAME(receive_p)(this, result_p); }
+    { return QUEX_NAME(receive_p)(this, result_p); }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     QUEX_INLINE QUEX_TYPE_TOKEN*
