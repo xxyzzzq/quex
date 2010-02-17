@@ -57,8 +57,7 @@ extern  FILE*  global_fh;
 #  ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 #     define ANALYZER_ANALYZE(TokenID)       \
               do {                           \
-                  global_qlex->receive();           \
-                  TokenID = global_token.type_id(); \
+                  TokenID = global_qlex->receive(); \
               } while( 0 )
 #  else
 #     define ANALYZER_ANALYZE(TokenID)       \
