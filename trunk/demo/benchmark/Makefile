@@ -2,59 +2,56 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
+.PHONY: clean 
 
-OPTIMIZATION = -O3 # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
-CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./common/get_cpu_mhz.sh` 
 
 include info.mk
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \
-      -D'EMAIL="fschaef@users.sourceforge.net"' \
-      -D'CPU_NAME="IntelCoreDuo"' \
-      -D'CPU_CODE="T2400"' \
-	  -D'CPU_MHZ=$(CPU_MHZ)' \
-	  -D'CC_OPTIMIZATION_FLAGS="$(OPTIMIZATION)"' \
-      -D'CHARACTER_SIZE=((unsigned)(1))' \
-	  -D'OS_NAME="linux-2"' \
-	  -D'CC_NAME="$(COMPILER)"' \
-	  -D'CC_VERSION="$(COMPILER_V)"' \
-      -D'QUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE)' \
-	  -D'NOTE=""' 
-
-.PHONY: clean cpu_mhz
-
-# The following might be overwritten by the caller of make:
-EXTRA_COMPILER_FLAG=# -lefence#
+      -DEMAIL='"$(AUTHOR_EMAIL)"' \
+      -DCPU_NAME=$(CPU_NAME) \
+      -DCPU_CODE="$(CPU_CODE)" \
+	  -DCPU_FREQ_MHZ=$(CPU_MHZ) \
+	  -DCC_OPTIMIZATION_FLAGS="$(COMPILER_OPT)" \
+      -DCHARACTER_SIZE="((unsigned)(1))" \
+	  -DOS_NAME='"$(OS_NAME)"' \
+	  -DCC_NAME="$(COMPILER)" \
+	  -D'CC_VERSION=$(COMPILER_V)' \
+      -DQUEX_SETTING_BUFFER_SIZE="$(BUFFER_SIZE)" \
+	  -DNOTE="$(NOTE)"
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-SOURCE_FILES    = $(addprefix common/, lexer.cpp report.cpp main.cpp)
+SOURCES    = lexer.cpp report.cpp main.cpp
 
-OBJECT_FILES    = $(SOURCE_FILES:.cpp=.o)  # object file w/o line and column counting
-OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column counting
+OBJECTS    = $(addprefix out/, $(SOURCES:.cpp=.o))  
+OBJECTS_LC = $(OBJECTS:.o=-lc.o)                   # object file w/ line column counting
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-PROFILE_ACTIVATE = -fprofile-arcs -fprofile-values
-PROFILE_USE      = -fbranch-probabilities
-CC_CORE = $(COMPILER) $(EXTRA_COMPILER_FLAG) $(OPTIMIZATION) -Wno-deprecated -Wall \
-		 -I./ -I./common -I$(QUEX_PATH)  \
-		 $(SETUP) \
+# PROFILE_ENABLE = -fprofile-arcs -fprofile-values
+# PROFILE_USE    = -fbranch-probabilities
+INCLUDE = -I. -I$(QUEX_PATH)  
+WARNING = -Wno-deprecated -Wall -Wimplicit 
+DEFINES = \
 		 -DNDEBUG \
 		 -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \
 		 -DQUEX_OPTION_ASSERTS_DISABLED	\
 		 -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED \
-		 -DQUEX_BENCHMARK_SERIOUS \
+		 -DQUEX_BENCHMARK_SERIOUS 
 		 # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
-		 # $(PROFILER)
-		 #-DQUEX_SETTING_BUFFER_SIZE=64 \
+		 # -DQUEX_SETTING_BUFFER_SIZE=64 \
 		 # -D__QUEX_OPTION_UNIT_TEST \
 		 # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
+
+CC_CORE = $(COMPILER) $(COMPILER_OPT) \
+		  $(WARNING) $(INCLUDE) $(DEFINES) \
+		  $(SETUP) 
 
 CC = $(CC_CORE) \
 	 -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
@@ -71,50 +68,53 @@ LD = $(COMPILER) $(OPTIMIZATION) $(PROFILER)
 #    lexer-lc --> application w/ line and column counting
 EXECUTABLES = lexer-quex lexer-quex-lc lexer-flex lexer-re2c
 
-all: $(EXECUTABLES)
+all: $(addprefix out/, $(EXECUTABLES))
 
-out/lexer-quex: quex_scan.o $(OBJECT_FILES) 
-	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(OBJECT_FILES) -o $@ 
+out/lexer-quex: out/quex_scan.cpp $(OBJECTS) 
+	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(OBJECTS) -o $@ 
 
-out/lexer-quex-lc: quex_scan-lc.o $(OBJECT_FILES_LC) 
-	$(CC_LC) -DANALYZER_GENERATOR_QUEX $< $(OBJECT_FILES_LC) -o $@ 
+out/lexer-flex: out/flex_scan.c   $(OBJECTS) 
+	$(CC)    -DANALYZER_GENERATOR_FLEX $< $(OBJECTS) -lfl -o $@ 
 
-out/lexer-flex: flex_scan.c
-	$(CC)    -DANALYZER_GENERATOR_FLEX $(OBJECT_FILES) $< -lfl -o $@ 
+out/lexer-re2c: out/re2c_scan.c   $(OBJECTS) 
+	$(CC)    -DANALYZER_GENERATOR_RE2C $< $(OBJECTS) -o $@
 
-out/lexer-re2c: re2c_scan.c 
-	$(CC)    -DANALYZER_GENERATOR_RE2C $(OBJECT_FILES) $< -o $@
+out/lexer-quex-lc: out/quex_scan.cpp $(OBJECTS_LC) 
+	$(CC_LC) -DANALYZER_GENERATOR_QUEX $< $(OBJECTS_LC) -o $@ 
 
-# -- application
-out/%.o: %.cpp 
+# Core ________________________________________________________________________
+
+out/%.o: in/%.cpp 
 	$(CC) -c $< -o $@
 
-out/%.o: %.c 
+out/%.o: in/%.c 
 	$(CC) -c $< -o $@
 
-out/%-lc.o: %.cpp quex_scan 
+out/%-lc.o: in/%.cpp quex_scan 
 	$(CC_LC) -c $< -o $@
 
-out/%.asm: %.cpp 
+out/%.asm: in/%.cpp 
 	$(CC) -S $< -o $@
 
-out/%.E: %.cpp 
+out/%.E: in/%.cpp 
 	$(CC) -E $< -o $@
 
+# Scanners ____________________________________________________________________
 
-out/quex_scan.cpp: quex/c.qx $(QUEX_CORE)
+out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 	quex -i $< \
-		 --engine quex_scan                   \
-		 --no-string-accumulator              \
-		 --token-offset 3                     \
-		 --token-prefix TKN_                  \
-	     --token-policy           users_token \
-         --foreign-token-id-file  common/token-ids.h 
+         --foreign-token-id-file  in/token-ids.h \
+	     --output-directory       out            \
+		 --engine quex_scan                      \
+		 --no-string-accumulator                 \
+		 --token-offset 3                        \
+		 --token-prefix TKN_                     \
+	     --token-policy users_token 
 
-out/flex_scan.c: flex/c.lex
+out/flex_scan.c:  in/flex/c.lex
 	flex $< -o $@
 
-out/re2c_scan.c:  re2c/c-re2c.in
+out/re2c_scan.c:  in/re2c/c-re2c.in
 	re2c -F -si $< | sed -e 's/\#line[^\n]*//g' > $@
 	
 # (*) HELPERS __________________________________________________________________
@@ -124,3 +124,5 @@ clean:
 cpu_mhz:
 	@echo $(CPU_MHZ)
 
+os_name:
+	@echo $(OS_NAME)

@@ -2,21 +2,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "token-ids.h"
-#if defined(ANALYZER_GENERATOR_FLEX) || defined(ANALYZER_GENERATOR_RE2C)
-#else
-#    include "quex_scan"
-#endif
-#ifdef __cplusplus
-#include <cstdio>
-#include <ctime>
-#include <cstdlib>
-using namespace std;
-#else
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#endif
 
 #define QUOTE_THIS(NAME) #NAME
 
@@ -69,7 +54,7 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
     printf("   cpu_code        = {" CPU_CODE "},\n");
     printf("   cpu_freq_mhz    = {%f},\n", (float)CPU_FREQ_MHZ);
     printf("   cc_name         = {" CC_NAME "},\n");
-    printf("   cc_version      = {" CC_VERSION "},\n");
+    printf("   cc_version      = {" QUEX_THIS(CC_VERSION) "},\n");
     printf("   cc_opt_flags    = {" CC_OPTIMIZATION_FLAGS "},\n");
     printf("   executable_size = {%li},\n", (long)ExecutableSize);
     printf("   os_name         = {" OS_NAME "},\n");

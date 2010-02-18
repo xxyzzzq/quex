@@ -1,15 +1,22 @@
 #ifndef __INCLUDE_GUARD__QUEX__BENCHMARK_MAIN_H__
 #define __INCLUDE_GUARD__QUEX__BENCHMARK_MAIN_H__
 
-#include "token-ids.h"
+#include "in/token-ids.h"
 #if    defined(ANALYZER_GENERATOR_FLEX) \
     || defined(ANALYZER_GENERATOR_RE2C)
 #else
-#    include "quex_scan"
+#    include "out/quex_scan"
 #endif
-#include <cstdio>
-#include <ctime>
-#include <cstdlib>
+#ifdef __cplusplus
+#   include <cstdio>
+#   include <ctime>
+#   include <cstdlib>
+using namespace std;
+#else
+#   include <stdio.h>
+#   include <time.h>
+#   include <stdlib.h>
+#endif
 
 using namespace std;
 
