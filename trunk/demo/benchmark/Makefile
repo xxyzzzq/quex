@@ -2,19 +2,18 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-COMPILER     = g++    # icpc # g++ 
-COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
-BUFFER_SIZE  = 65536
+
 OPTIMIZATION = -O3 # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
-PROFILER     = # -pg # '-pg' for gprof profiling information
 CPU_MHZ      = -DCPU_FREQ_MHZ=`source ./common/get_cpu_mhz.sh` 
+
+include info.mk
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \
       -D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="IntelCoreDuo"' \
       -D'CPU_CODE="T2400"' \
-	  $(CPU_MHZ) \
+	  -D'CPU_MHZ=$(CPU_MHZ)' \
 	  -D'CC_OPTIMIZATION_FLAGS="$(OPTIMIZATION)"' \
       -D'CHARACTER_SIZE=((unsigned)(1))' \
 	  -D'OS_NAME="linux-2"' \
@@ -74,36 +73,36 @@ EXECUTABLES = lexer-quex lexer-quex-lc lexer-flex lexer-re2c
 
 all: $(EXECUTABLES)
 
-lexer-quex: quex_scan.o $(OBJECT_FILES) 
+out/lexer-quex: quex_scan.o $(OBJECT_FILES) 
 	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(OBJECT_FILES) -o $@ 
 
-lexer-quex-lc: quex_scan-lc.o $(OBJECT_FILES_LC) 
+out/lexer-quex-lc: quex_scan-lc.o $(OBJECT_FILES_LC) 
 	$(CC_LC) -DANALYZER_GENERATOR_QUEX $< $(OBJECT_FILES_LC) -o $@ 
 
-lexer-flex: flex_scan.c
+out/lexer-flex: flex_scan.c
 	$(CC)    -DANALYZER_GENERATOR_FLEX $(OBJECT_FILES) $< -lfl -o $@ 
 
-lexer-re2c: re2c_scan.c 
+out/lexer-re2c: re2c_scan.c 
 	$(CC)    -DANALYZER_GENERATOR_RE2C $(OBJECT_FILES) $< -o $@
 
 # -- application
-%.o: %.cpp 
+out/%.o: %.cpp 
 	$(CC) -c $< -o $@
 
-%.o: %.c 
+out/%.o: %.c 
 	$(CC) -c $< -o $@
 
-%-lc.o: %.cpp quex_scan 
+out/%-lc.o: %.cpp quex_scan 
 	$(CC_LC) -c $< -o $@
 
-%.asm: %.cpp 
+out/%.asm: %.cpp 
 	$(CC) -S $< -o $@
 
-%.E: %.cpp 
+out/%.E: %.cpp 
 	$(CC) -E $< -o $@
 
 
-quex_scan.cpp: quex/c.qx $(QUEX_CORE)
+out/quex_scan.cpp: quex/c.qx $(QUEX_CORE)
 	quex -i $< \
 		 --engine quex_scan                   \
 		 --no-string-accumulator              \
@@ -112,17 +111,15 @@ quex_scan.cpp: quex/c.qx $(QUEX_CORE)
 	     --token-policy           users_token \
          --foreign-token-id-file  common/token-ids.h 
 
-flex_scan.c: flex/c.lex
+out/flex_scan.c: flex/c.lex
 	flex $< -o $@
 
-re2c_scan.c:  re2c/c-re2c.in
+out/re2c_scan.c:  re2c/c-re2c.in
 	re2c -F -si $< | sed -e 's/\#line[^\n]*//g' > $@
 	
 # (*) HELPERS __________________________________________________________________
 clean:	
-	rm -f $(EXECUTABLES)
-	rm -f quex_scan*
-	rm -f *.E
+	rm -f out/*
 
 cpu_mhz:
 	@echo $(CPU_MHZ)
