@@ -18,7 +18,6 @@
 #endif
 
 #if   ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)       \
-   && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) \
    && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 #   error "No token policy specified."
 #endif

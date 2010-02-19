@@ -8,50 +8,55 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-#   define self (*this)
-
 #   ifndef __QUEX_OPTION_PLAIN_C
     QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN& That) 
     { 
-        self_send_token(That); 
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send(Token&)", 
+                                                              "self_send_token()"));
     }
 
     QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID) 
     { 
-        self_send(ID); 
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send(TokenID)", 
+                                                              "self_send(ID)"));
     }
 
     QUEX_INLINE void   
     QUEX_MEMBER(send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
     { 
-        self_send_n(RepetitionN, ID); 
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send_n(TokenID)", 
+                                                              "self_send_n(ID)"));
     }
 
 
     template <typename X0_T> QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID, X0_T X0) 
     {
-        self_send1(ID, X0);
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send()", 
+                                                              "self_send1()"));
     }
 
     template <typename X0_T, typename X1_T> QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1) 
     {
-        self_send2(ID, X0, X1);
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send()", 
+                                                              "self_send2()"));
     }
 
     template <typename X0_T, typename X1_T, typename X2_T> QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2) 
     {
-        self_send3(ID, X0, X1, X2);
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send()", 
+                                                              "self_send3()"));
     }
 
     template <typename X0_T, typename X1_T, typename X2_T, typename X3_T> QUEX_INLINE void   
     QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T X3) 
     {
-        self_send4(ID, X0, X1, X2, X3);
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send()", 
+                                                              "self_send4()"));
     }
 #   endif
 

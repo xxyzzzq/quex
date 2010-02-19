@@ -145,6 +145,9 @@
         "Error: senders in plain 'C'. Please use something like\n\n"              \
         "Error:           '=> TKN_MY_TOKEN(ID, text=Lexeme)\n\n"
 
+#define __QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(NAME, REPLACEMENT) \
+        "Member function " NAME " has been deprecated\n"         \
+        "in version 0.49.1. Please, use macro" REPLACEMENT 
 #define QUEX_STRING(X)   #X
 
 #endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */

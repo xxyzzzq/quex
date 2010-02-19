@@ -3,12 +3,28 @@
 Token Passing Policies
 ======================
 
-The result of a lexical analysis step is a so called token containing a
-token-id. One goal of quex was to decouple analysis from whatever calls the
-analyzer. This means, that the lexical analyzer *sends* (possibly multiple)
-tokens :ref:`sec:usage-sending-tokens` without considering how they are
-received by the caller. This section discusses how the tokens are actually
-between the callee, the generated analyzer, and the caller.
+The primary result result of a lexical analysis step is a so called token
+identifier, that tells how the current input can be catagorized, e.g. as
+a 'KEYWORD', a 'NUMBER', or an 'IP_ADDRESS'. Additionally some information
+about the actual stream content might have to be stored. For example 
+when a 'STRING' is identified the content of the string might be interesting
+for the caller of the lexical analyzer. Thus, for the general case,
+there must be some type of container that allows to store information
+about the current token beyond his token identifier. Here comes a very
+important point about the passing of this information.
+
+.. quote::
+
+   The information contained in a token *is not* owned by the
+   token itself, in a sense that it is *not* responsible for 
+   de-allocating its content. A token only carries values and
+   pointers from the lexical analyzer to its caller and the
+   ownership remains then at the caller of the lexical analyzer.
+
+This means, that the lexical analyzer *sends* (possibly multiple) tokens
+:ref:`sec:usage-sending-tokens` without considering how they are received by
+the caller. This section discusses how the tokens are actually handled between
+the callee, the generated analyzer, and the caller.
 
 Section :ref:`usage-minimalist-example` already depicted how a caller
 of the lexical analyzer initiates a lexical analysis step and how it
@@ -17,10 +33,11 @@ receives the token value. In the heart of it is the function call
 .. code-block:: cpp
 
       ...
-      qlex.receive(&Token);      
+      token_p = qlex.receive();      
       ...
 
-where a pointer to a token object is passed. The lexical analyzer then fills
+where a pointer to a token object is passed as a return value. 
+The lexical analyzer then fills
 it with the information for the current analysis step. The process behind the
 call to the receive function is called the *token passing policy*. They
 are subject of the subsequent sections.
@@ -30,7 +47,7 @@ subsections.
 
 .. warning::
 
-   When using a queue token policy: The state of the lexical analyzer
+   When using token queue: The state of the lexical analyzer
    corresponds to the last token in the token queue! The ``.receive()``
    functions only take one token from the queue which is not necessarily the
    last one. If state elements, such as line numbers or indentation, need to be
@@ -146,73 +163,3 @@ This token policy is fast, but requires some care to be taken, as follows:
        to the token which you provide--either each time when ``receive()`` is
        called, or once at the beginning of the experiment.
 
-Policy 'User's Queue'
----------------------
-
-(To be implemented in V. 0.38.1)
-
-The policy ``users_queue`` is shown in figure :ref:`User's Queue <fig-token-policy-users-queue>`.
-Instead of working on an intermediate queue, such as policy ``queue``, it directly works
-on a chunk of memory that is provided by the caller of ``receive(...)``. The exact signature of the
-receive function is
-
-.. cfunction:: Token*  receive(Token* Begin, Token* End);
-
-   This function receives an array of tokens. The begin of the array is indicated
-   with the ``Begin``-pointer. The ``End`` pointer points right behind the last
-   token object of the array.
-
-   The return value is a pointer right behind the last token that was written 
-   into the array. 
-   
-.. _fig-token-policy-users-queue:
-
-.. figure:: ../figures/token-policy-queue-4.*
-
-   Token passing policy ``users_queue``.
-
-The queue is not necessarily filled to the limit, depending on what the safety 
-border :ref:`advanced-safety-border` was set. Thus the return value needs to 
-be considered. Consider the following example usage
-
-.. code-block:: cpp
-
-    ...
-        Token*  chunk_begin = my_memory_management_token_chunk_allocate(2048);
-        Token*  water_mark  = lexer.receive(chunk_begin, chunk_begin + 2048);
-        
-        for(Token* it = chunk_begin; it != water_mark; ++it) 
-            my_parser_take_this(it);
-
-        return 0;
-    ...
-   
-Thus, one **does not** iterate until the end of the allocated chunk of memory!
-The iteration should only exceed to to watermark that is returned by the
-receive function. This token policy combines the best of both policies ``quex``
-and ``users_token``:
-
-#. It leaves the ownership of the token to the caller, *without* copying.
-
-#. It allows for the sending of multiple tokens for one pattern match. Thus,
-   event handlers can safely send tokens.
-
-However, it puts the responsibility of memory management on the user's shoulders.
-In some scenarios [#f1]_ this requires extra infrastructure to be implemented.
-
-.. warning::
-
-   When using the token policy 'users_queue' it must be ensured that the queue
-   which is provided has at least the size of the safety border plus one. The
-   safety border is defined as the macro 
-
-               ``QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER``
-
-   If a token array of lesser size is passed, the engine throws an exception.
-
-.. rubric:: Footnotes
-
-.. [#f1] For example, if a parser is designed to call the lexical analyzer. It must
-         keep track of the allocated chunks of memory. Maybe, those chunks are 
-         best tracked as members of the lexical analyzer--relying on the 
-         ``body`` section (see :ref:`sec-basics-sections`).

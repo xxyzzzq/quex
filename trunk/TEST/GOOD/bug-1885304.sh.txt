@@ -383,7 +383,7 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
      *    -- Token and token queues.
      *    -- Post categorizer.                                                 */
 
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */
 #   endif
 
@@ -416,7 +416,7 @@ QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 #   endif
     self.__file_handle_allocated_by_constructor = memento->__file_handle_allocated_by_constructor;
 
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */
 #   endif
 
@@ -511,7 +511,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 QUEX_NAMESPACE_MAIN_OPEN
 #include <quex/code_base/analyzer/member/basic>
 #include <quex/code_base/buffer/Buffer>
-#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
@@ -2537,7 +2537,7 @@ __REENTRY_PREPARATION:
      *     at each time when CONTINUE is called at the end of a pattern. */
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) return;
 #   else
     if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;

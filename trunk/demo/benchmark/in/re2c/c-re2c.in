@@ -1,8 +1,4 @@
-#include "main.h"
-
-char*  global_re2c_buffer_begin    = 0x0;
-char*  global_re2c_buffer_end      = 0x0;
-char*  global_re2c_buffer_iterator = 0x0;
+#include "in/main.h"
 
 QUEX_TYPE_TOKEN_ID re2c_scan(char** p)
 {
@@ -15,10 +11,20 @@ QUEX_TYPE_TOKEN_ID re2c_scan(char** p)
         re2c:yych:conversion = 1;
         re2c:indent:top      = 1;
 
+        any	= [\000-\377];
+        O	= [0-7];
+        D	= [0-9];
+        L	= [a-zA-Z_];
+        H	= [a-fA-F0-9];
+        E	= [Ee] [+-]? D+;
+        FS	= [fFlL];
+        IS	= [uUlL]*;
+        ESC	= [\\] ([abfnrtv?'"\\] | "x" H+ | O+);
+
         P_WHITESPACE         = [ \t\n]+;
         P_IDENTIFIER         = [_a-zA-Z][_a-zA-Z0-9]*;
         P_NUMBER             = [0-9]+;
-        P_STRING             = ["][^"]*["];
+        P_STRING             = (["] ({ESC}|{any}\[\n\\"])* ["]);
         P_QUOTED_CHAR_1      = ("'\\''")|("'"[^']?"'");
         P_QUOTED_CHAR_2      = "'\\"[0-9abcfnrtv\\]"'";
         P_QUOTED_CHAR        = ({P_QUOTED_CHAR_1}|{P_QUOTED_CHAR_2});

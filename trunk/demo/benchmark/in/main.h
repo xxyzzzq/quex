@@ -2,95 +2,29 @@
 #define __INCLUDE_GUARD__QUEX__BENCHMARK_MAIN_H__
 
 #include "in/token-ids.h"
-#if    defined(ANALYZER_GENERATOR_FLEX) \
-    || defined(ANALYZER_GENERATOR_RE2C)
-#else
-#    include "out/quex_scan"
-#endif
-#ifdef __cplusplus
-#   include <cstdio>
-#   include <ctime>
-#   include <cstdlib>
-using namespace std;
-#else
-#   include <stdio.h>
-#   include <time.h>
-#   include <stdlib.h>
-#endif
+
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
 extern  FILE*  global_fh;
 
-/* NOTE: the following *must* be included after 'quex_scan' */
-#if ANALYZER_GENERATOR_FLEX
-   extern int    yylex();
-   extern FILE*  yyin;
-   extern void   yyrestart(FILE*);
-
-   typedef int QUEX_TYPE_TOKEN_ID;
-#  define ANALYZER_ANALYZE(TokenID) \
-          do {                      \
-              TokenID = yylex();    \
-          } while ( 0 )
-
-#  define ANALYZER_RESET() \
-          do {                          \
-             fseek(yyin, 0, SEEK_SET);  \
-             yyrestart(yyin);           \
-          } while( 0 )
-
+#if   defined(ANALYZER_GENERATOR_FLEX)
+#    include <in/flex/adaption.h>
 #elif defined(ANALYZER_GENERATOR_RE2C)
-   extern char*  global_re2c_buffer_begin;
-   extern char*  global_re2c_buffer_end;
-   extern char*  global_re2c_buffer_iterator;
-
-#  define QUEX_TYPE_TOKEN_ID  int
-   QUEX_TYPE_TOKEN_ID re2c_scan(char** p);
-#  define ANALYZER_ANALYZE(TokenID) \
-          do {                                                   \
-              TokenID = re2c_scan(&global_re2c_buffer_iterator); \
-          } while ( 0 )
-
-#  define ANALYZER_RESET() \
-          do {                                                        \
-              global_re2c_buffer_iterator = global_re2c_buffer_begin; \
-          } while ( 0 )
-
+#    include <in/re2c/adaption.h>
 #else
-    extern quex::quex_scan*  global_qlex; 
-    extern quex::Token       global_token; 
-    using namespace quex;
-#  ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
-#     define ANALYZER_ANALYZE(TokenID)       \
-              do {                           \
-                  TokenID = global_qlex->receive(); \
-              } while( 0 )
-#  else
-#     define ANALYZER_ANALYZE(TokenID)       \
-              do {                           \
-                  global_qlex->receive(&global_token); \
-                  TokenID = global_token.type_id();    \
-              } while( 0 )
-#  endif
-#  define ANALYZER_RESET() \
-              do {                          \
-                  fseek(global_fh, 100, SEEK_SET); \
-                  global_qlex->reset(global_fh);   \
-              } while( 0 )
-
+#    include <in/quex/adaption.h>
 #endif
-#define ANALYZER_PSEUDO_ANALYZE(TokenID) TokenID = func_empty()
 
-typedef QUEX_TYPE_TOKEN_ID   (*GetTokenIDFuncP)(void);
-typedef void                 (*ResetFuncP)(void);
+// in/*/adaption.c
+void      scan_init(size_t FileSize);
 
 // main.cpp
-QUEX_TYPE_TOKEN_ID func_get_token_id();
-QUEX_TYPE_TOKEN_ID func_empty();
-void               func_reset();
-
-size_t    get_file_size(const char*, bool SilentF=false);
+size_t             get_file_size(const char*, bool SilentF=false);
+QUEX_TYPE_TOKEN_ID pseudo_scan();
 
 // lexer.cpp
 int       run_multiple_analyzis(size_t RepetitionN, size_t TokenN, bool PsuedoF);

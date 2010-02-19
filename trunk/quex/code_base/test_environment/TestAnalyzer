@@ -20,7 +20,7 @@
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
 
-#ifdef  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue>
 #endif
 

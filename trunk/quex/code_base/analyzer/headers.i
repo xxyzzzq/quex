@@ -25,7 +25,7 @@
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator.i>
 #endif
-#ifdef      __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef      QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue.i>
 #endif
 #ifdef      QUEX_OPTION_POST_CATEGORIZER

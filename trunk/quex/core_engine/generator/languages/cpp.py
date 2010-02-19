@@ -15,7 +15,7 @@ def __nice(SM_ID):
 __header_definitions_txt = """
 #include <quex/code_base/analyzer/member/basic>
 #include <quex/code_base/buffer/Buffer>
-#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
@@ -26,7 +26,7 @@ __header_definitions_txt = """
 #   undef RETURN
 #endif
 
-#if defined(__QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED)
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #   define RETURN   return
 #else
 #   define RETURN   do { return __self_result_token_id; } while(0)
@@ -74,8 +74,8 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
              means, they are something like 'globals'. They receive a pointer to the   
              lexical analyzer, since static member do not have access to the 'this' pointer.
      */
-#   if ! defined(__QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED)
-    QUEX_TYPE_TOKEN_ID   __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+#   if ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
 #   endif
 #   ifdef     self
 #       undef self
@@ -252,7 +252,7 @@ $$REENTRY_PREPARATION$$
      *     at each time when CONTINUE is called at the end of a pattern. */
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
 #   else
     if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;

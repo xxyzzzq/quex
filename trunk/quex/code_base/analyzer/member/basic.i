@@ -38,10 +38,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
         /* explict call of placement new for all tokens in the chunk */
         QUEX_NAME(TokenQueue_construct)(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
-#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-        QUEX_NAME(TokenQueue_construct)(&me->_token_queue, 0);
 #       else
-        me->token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
+        me->token = 0x0;     /* User must provide pointer to memory. */
 #       endif
        
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
@@ -113,7 +111,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_COUNTER_RESET(&me->counter);
 #       endif
 
-#       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
 #       endif
 
