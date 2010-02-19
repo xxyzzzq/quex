@@ -1,18 +1,7 @@
-#include<cstdio>    
-
-#include "main.h"
+#include <in/main.h>
 #include <sys/stat.h>
 
-FILE*             global_fh;
-#if   defined(ANALYZER_GENERATOR_FLEX)
-#elif defined(ANALYZER_GENERATOR_RE2C)
-char*             global_re2c_buffer_begin;
-char*             global_re2c_buffer_end;
-char*             global_re2c_buffer_iterator;
-#else
-quex::quex_scan*  global_qlex; 
-quex::Token       global_token; 
-#endif
+FILE*  global_fh;
 
 int 
 main(int argc, char** argv) 
@@ -28,23 +17,7 @@ main(int argc, char** argv)
     }
     const size_t   FileSize = get_file_size(argv[1]);
 
-#if   defined(ANALYZER_GENERATOR_FLEX)
-    yyin = global_fh; yyrestart(yyin);
-#elif defined(ANALYZER_GENERATOR_RE2C)
-    global_re2c_buffer_begin    = (char*)malloc(sizeof(char)*(size_t)(FileSize * 2));
-    global_re2c_buffer_iterator = global_re2c_buffer_begin;
-    /* re2c does not provide the slightest buffer management, 
-     * => load the whole bunch at once.                        */
-    size_t Size = fread(global_re2c_buffer_begin, 1, (size_t)(FileSize * 2), global_fh);
-    /* Set the terminating zero */
-    *(global_re2c_buffer_begin + Size + 1) = '\0';
-    global_re2c_buffer_end = global_re2c_buffer_begin + FileSize;
-#else
-    global_qlex = new quex::quex_scan(global_fh);
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
-    global_qlex->token = &global_token;
-#   endif
-#endif
+    scan_init(FileSize);
 
 #   if   defined(QUEX_QUICK_BENCHMARK_VERSION)
     const double   ExperimentTime = 1.0;   // [sec]
@@ -110,7 +83,7 @@ get_file_size(const char* Filename, bool SilentF /*=false*/)
 }
 
 QUEX_TYPE_TOKEN_ID 
-func_empty()
+pseudo_scan()
 {
     return (QUEX_TYPE_TOKEN_ID)1;
 }

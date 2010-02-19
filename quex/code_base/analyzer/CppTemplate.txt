@@ -145,13 +145,9 @@ public:
     void                  get_token(QUEX_TYPE_TOKEN**  result_p) { get_token(); }
 
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    void                  receive(QUEX_TYPE_TOKEN*   result_p);
-    void                  receive(QUEX_TYPE_TOKEN**  result_pp);
+    QUEX_TYPE_TOKEN*      receive();
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     QUEX_TYPE_TOKEN_ID    receive();
-    QUEX_TYPE_TOKEN_ID    receive(QUEX_TYPE_TOKEN*   result_p);
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_TYPE_TOKEN*      receive(QUEX_TYPE_TOKEN*  begin, QUEX_TYPE_TOKEN* end);
 #   endif
     // NOTE: A pointer to an object of the token queue/object is used in order to make
     //       memory management more flexible. The token queue/token object is heavily

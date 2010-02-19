@@ -3,13 +3,6 @@
 #define CHECKSUM_INIT_VALUE               (0x77)
 #define CHECKSUM_ACCUMULATE(CS, TokenID)  (((CS) + (TokenID)) % 0xFF)
 
-#ifndef QUEX_BENCHMARK_SERIOUS
-void __PRINT_END()
-{ printf("`------------------------------------------------------------------------------------\n"); }
-#else 
-#   define __PRINT_END() /* empty */
-#endif
-
 int
 run_multiple_analyzis(size_t RepetitionN, size_t TokenN, bool PseudoF)
     /* PseudoF == true: Execute only the 'overhead' not the real
@@ -47,12 +40,11 @@ run_multiple_analyzis(size_t RepetitionN, size_t TokenN, bool PseudoF)
         } else {
 
             for(token_i = 0; token_i < TokenN; ++token_i) {
-                ANALYZER_PSEUDO_ANALYZE(token_id);
+                token_id = pseudo_scan();
                 checksum = CHECKSUM_ACCUMULATE(checksum, token_id); 
             } 
 
         }
-        __PRINT_END();
         ANALYZER_RESET();
     }
     /* Need to return 'checksum' so that it is not omitted by the compiler

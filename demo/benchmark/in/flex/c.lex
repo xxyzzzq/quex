@@ -2,7 +2,7 @@
  * (C) 2008 Frank-Rene Schaefer
  * LICENSE: GPL */
 %{
-#include "token-ids.h"
+#include "in/token-ids.h"
 %}
 
 P_WHITESPACE          [ \t\n]+

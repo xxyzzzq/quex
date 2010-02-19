@@ -1,16 +1,16 @@
-<test-database execution-time-sec="0.13" date="Tue Feb 16 00:02:21 2010">
+<test-database execution-time-sec="0.32" date="Fri Feb 19 23:15:03 2010">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" make-dependent="True" time-sum-sec="0.03"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.03" crc="-957083127"/>
             </choice-list>
         </test>
-        <test title="Function read_until_closing_bracket(...)" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="Function read_until_closing_bracket(...)" make-dependent="True" time-sum-sec="0.05"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.05" crc="1489533151"/>
             </choice-list>
         </test>
         <test title="Function delete_comment(...)" make-dependent="True" time-sum-sec="0.03"> 
@@ -21,10 +21,10 @@
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" make-dependent="True" time-sum-sec="0.02"> 
+        <test title="Trim (replaced by string.strip(..))" make-dependent="True" time-sum-sec="0.21"> 
             <application file-name="test-trim.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.02" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.21" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

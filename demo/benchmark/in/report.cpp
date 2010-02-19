@@ -50,12 +50,12 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
     printf("   generator       = {quex},\n");
     printf("   quex_version    = {" QUEX_SETTING_VERSION "},\n");
 #   endif
-    printf("   cpu_name        = {" CPU_NAME "},\n");
-    printf("   cpu_code        = {" CPU_CODE "},\n");
+    printf("   cpu_name        = {" QUOTE_THIS(CPU_NAME) "},\n");
+    printf("   cpu_code        = {" QUOTE_THIS(CPU_CODE) "},\n");
     printf("   cpu_freq_mhz    = {%f},\n", (float)CPU_FREQ_MHZ);
-    printf("   cc_name         = {" CC_NAME "},\n");
-    printf("   cc_version      = {" QUEX_THIS(CC_VERSION) "},\n");
-    printf("   cc_opt_flags    = {" CC_OPTIMIZATION_FLAGS "},\n");
+    printf("   cc_name         = {" QUOTE_THIS(CC_NAME) "},\n");
+    printf("   cc_version      = {" QUOTE_THIS(CC_VERSION) "},\n");
+    printf("   cc_opt_flags    = {" QUOTE_THIS(CC_OPTIMIZATION_FLAGS) "},\n");
     printf("   executable_size = {%li},\n", (long)ExecutableSize);
     printf("   os_name         = {" OS_NAME "},\n");
     printf("   tester_email    = {" EMAIL "},\n");

@@ -91,10 +91,6 @@ the suffix enables something, the option with the suffix disables the 'something
 
    Enables/disables the token sending via a token object owned by the user. 
 
-.. cmacro:: QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
-
-   Enables/disables the token sending via a token queue owned by the user.
-
 .. cmacro:: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 
    Enables/disables the stamping of tokens with the line and column number.

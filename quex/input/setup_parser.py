@@ -276,13 +276,13 @@ def validate(setup, command_line, argv):
                   "`--converter-new`.")
 
 
-    # token transmission policy
+    # Token transmission policy
     token_policy_list = ["queue", "users_token", "users_queue"]
     if setup.token_policy not in token_policy_list:
         error_msg("Token policy '%s' not supported. Use one of the following:\n" % setup.token_policy + \
                   repr(token_policy_list)[1:-1])
-    elif setup.token_policy in ["mini_queue", "users_mini_queue"]:
-        error_msg("Token policy '%s' not yet supported." % setup.token_policy)
+    elif setup.token_policy == "users_queue":
+        error_msg("Token policy 'users_queue' has be deprecated since 0.49.1\n")
 
     # Internal engine character encoding
     if setup.engine_character_encoding != "":

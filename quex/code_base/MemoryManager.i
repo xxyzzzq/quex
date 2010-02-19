@@ -134,7 +134,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         return size;
     }
 
-#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void* 
     QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t ByteN)
     { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }

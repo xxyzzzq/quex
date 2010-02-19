@@ -22,11 +22,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define self_send(ID)                    \
     do {                                    \
         __QUEX_ASSERT_SEND_ENTRY();         \
-        QUEX_TOKEN_POLICY_SET_ID(ID);       \
+        self_token_set_id(ID);              \
         QUEX_TOKEN_POLICY_PREPARE_NEXT();   \
     } while ( 0 )
 
-#ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#ifdef     QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   define self_send_n(RepetitionN, ID)     \
     do {                                                                          \
         const int AvailableN = QUEX_NAME(TokenQueue_available_n)(&_token_queue);  \
@@ -35,13 +35,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                                   \
         for(int n=0; n < N; n++) {                                                \
             __QUEX_ASSERT_SEND_ENTRY();                                           \
-            QUEX_TOKEN_POLICY_SET_ID(ID);                                         \
+            self_token_set_id(ID);                                                \
             QUEX_TOKEN_POLICY_PREPARE_NEXT();                                     \
         }                                                                         \
         if( N - AvailableN ) {                                                    \
             self._token_queue.remaining_repetitions_of_last_token_n = N - AvailableN; \
         }                                                                         \
-        QUEX_TOKEN_POLICY_SET_ID(ID);                                             \
+        self_token_set_id(ID);                                                    \
     } while ( 0 )
 #else
 #   define self_send_n(RepetitionN, ID)  self_send(ID)

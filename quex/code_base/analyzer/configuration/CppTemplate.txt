@@ -64,29 +64,19 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_QUEUE
 #ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN_DISABLED
 $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 #endif
-#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE_DISABLED
-$$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
-#endif
-
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-#   define  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-#endif
-
-#ifdef     __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() CONTINUE
-#else
-#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() RETURN
-#endif
 
 #if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #   ifndef     QUEX_SETTING_TOKEN_QUEUE_SIZE
-#       define QUEX_SETTING_TOKEN_QUEUE_SIZE  ((size_t)$$TOKEN_QUEUE_SIZE$$)
+#      define QUEX_SETTING_TOKEN_QUEUE_SIZE          ((size_t)$$TOKEN_QUEUE_SIZE$$)
 #   endif
-#endif
-#if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   ifndef     QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
-#       define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)$$TOKEN_QUEUE_SAFETY_BORDER$$)
+#      define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)$$TOKEN_QUEUE_SAFETY_BORDER$$)
 #   endif
+#   define __QUEX_TYPE_ANALYZER_RETURN_VALUE            void
+#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() CONTINUE
+#else 
+#   define __QUEX_TYPE_ANALYZER_RETURN_VALUE            QUEX_TYPE_TOKEN_ID
+#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() RETURN
 #endif
 
 /* OPTIONS: ____________________________________________________________________
@@ -337,8 +327,9 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   endif
 #endif
 
-/* Type Definitions */
-/* CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
+/* Type Definitions 
+ *
+ * CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
  *                 a character. This is independent of the coding (ASCII, WinArabic, ...)
  *
  * Both character types are clearly related, because they are supposed to relate to the 
@@ -440,11 +431,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   else
     class  $$LEXER_DERIVED_CLASS_NAME$$; /* Derived Class if different from lexer class. */
     class  $$LEXER_CLASS_NAME$$;
-#   endif
-#   if defined(__QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED)
-#      define __QUEX_TYPE_ANALYZER_RETURN_VALUE  void
-#   else
-#      define __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_TYPE_TOKEN_ID
 #   endif
     typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
 QUEX_NAMESPACE_MAIN_CLOSE
