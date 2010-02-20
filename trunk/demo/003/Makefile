@@ -67,7 +67,7 @@ CC = $(COMPILER) -c \
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
    
-LD = $(COMPILER) 
+LD = $(COMPILER) $(LIB_CONV) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
@@ -89,7 +89,8 @@ EasyLexer.cpp: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
 	quex -i                 definitions.qx end_of_file.qx program.qx \
 	     --engine           EasyLexer  \
 		 --token-offset     0x1000     \
-		 --post-categorizer
+	     -b $(BYTES_PER_CHARACTER)     \
+		 $(QUEX_FLAG)
 
 # (*) HELPERS __________________________________________________________________
 clean:	

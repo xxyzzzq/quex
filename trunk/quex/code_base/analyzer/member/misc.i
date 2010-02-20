@@ -34,12 +34,21 @@ QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
-QUEX_NAME(token_object)(QUEX_TYPE_ANALYZER* me)
+QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
     return __QUEX_CURRENT_TOKEN_P;
 #   undef self
 }
+
+#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+QUEX_INLINE void
+QUEX_NAME(token_p_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* UsersToken)
+{
+    me->token = UsersToken;
+}
+#endif
+
 
 QUEX_INLINE const char* 
 QUEX_NAME(version)(QUEX_TYPE_ANALYZER* me)
@@ -112,8 +121,12 @@ QUEX_MEMBER(seek)(const size_t CharacterIndex)
 { QUEX_NAME(seek)(this, CharacterIndex); }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
-QUEX_MEMBER(token_object)()
-{ return QUEX_NAME(token_object)(this); }
+QUEX_MEMBER(token_p)()
+{ return QUEX_NAME(token_p)(this); }
+
+QUEX_INLINE void
+QUEX_MEMBER(token_p_set)(QUEX_TYPE_TOKEN* UsersToken)
+{ return QUEX_NAME(token_p_set)(this, UsersToken); }
 
 QUEX_INLINE const char* 
 QUEX_MEMBER(version)() const

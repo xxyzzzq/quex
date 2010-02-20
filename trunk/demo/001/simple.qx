@@ -46,20 +46,20 @@ mode PROGRAM :
 <entry: STRING_READER>
 <exit:  STRING_READER>
 {
-    "{"         { self.send(QUEX_TKN_CURLY_BRACKET_O); RETURN; }
+    "{"         { self_send(QUEX_TKN_CURLY_BRACKET_O); RETURN; }
     "}"         => QUEX_TKN_CURLY_BRACKET_C;
     "="         => QUEX_TKN_OP_ASSIGNMENT;
     struct      => QUEX_TKN_STRUCT;
     if          => QUEX_TKN_IF;
     ";"         => QUEX_TKN_SEMICOLON;
 
-    [a-z]+      { self.send(QUEX_TKN_IDENTIFIER, Lexeme); }
+    [a-z]+      { self_send1(QUEX_TKN_IDENTIFIER, Lexeme); }
     {P_NUMBER}  => QUEX_TKN_NUMBER(atoi((const char*)Lexeme));
 
     [ \t\n]     { }
 
     {P_STRING_DELIMITER} {
-        self.send(QUEX_TKN_QUOTE);
+        self_send(QUEX_TKN_QUOTE);
         self << STRING_READER;
         RETURN;
     }

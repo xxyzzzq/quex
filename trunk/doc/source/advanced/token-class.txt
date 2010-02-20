@@ -199,7 +199,7 @@ fragments :ref:`sec:c-code-fragments` and uses
 
     .. code-block:: cpp
 
-        QUEX_TYPE_TOKEN*  token_object()
+        QUEX_TYPE_TOKEN*  token_p()
 
 to get acces to the current token object, and then explicitly call the 
 named setters such as 
@@ -207,8 +207,8 @@ named setters such as
      .. code-block:: cpp
 
         ...
-        self.token_object()->set_name(Lexeme);
-        self.token_object()->set_mini_1(LexemeL); 
+        self.token_p()->set_name(Lexeme);
+        self.token_p()->set_mini_1(LexemeL); 
         ...
          
 Second, the brief token senders may be called with *named* arguments. This is

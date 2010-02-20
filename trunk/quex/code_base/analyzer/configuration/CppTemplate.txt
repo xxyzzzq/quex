@@ -435,7 +435,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     class  $$LEXER_DERIVED_CLASS_NAME$$; /* Derived Class if different from lexer class. */
     class  $$LEXER_CLASS_NAME$$;
 #   endif
-    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 
