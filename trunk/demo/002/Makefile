@@ -1,80 +1,58 @@
-# PURPOSE: Makefile for unit tests.
+# PURPOSE: Makefile Demo Application of Quex
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
+.PHONY: clean
+
+ifndef QUEX_PATH
+    $(error The environment variable QUEX_PATH is not defined!)
+endif
+
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-# (*) SETUP ____________________________________________________________________
-#
-# QUEX_PATH    = ../../ # there should be an environment variable 'QUEX_PATH'
-#                       # thus this does have to be defined explicitly here.
-#
-# -- INPUT
-MODE_FILES   = simple.qx
-DEBUG_F      = # --debug # set flag if debugging info is required
-#
-# -- APPLICATION / LIBRARY specification
-APPLICATION_NAME = lexer
-LIBRARY_NAME     = libLexer
-ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-#
-ENGINE_SOURCES   = $(ENGINE_NAME)                     \
-                   $(ENGINE_NAME).cpp                 \
-                   $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       
-#
-LIBRARY_OBJS     = $(ENGINE_NAME).o
-
+DSWITCH_ASSERTS=# By default asserts are active
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
-#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
-# -- compiler
-CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)      \
-	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
-	 #-DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
-	 #-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = g++ -std=c++0x -ggdb 
 
-# -- linker
-LD         = $(COMPILER) 
+CC = $(COMPILER) -c \
+	 -I./ -I$(QUEX_PATH)                             \
+	 -Wall -Wconversion -pedantic                    \
+	 $(DSWITCH_ASSERTS)                              \
+	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 
+     # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+   
+LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
-#
 # -- application
-$(APPLICATION_NAME): ./$(APPLICATION_NAME).o $(ENGINE_NAME).o 
-	$(LD) ./$(APPLICATION_NAME).o $(ENGINE_NAME).o   \
-          -o $(APPLICATION_NAME) 
+lexer:          example.o EasyLexer.o
+	$(LD) -o $@ example.o EasyLexer.o 
+          
+# Object files:
+EasyLexer.o: EasyLexer.cpp 
+	$(CC) $< -o $@ 
 
-# -- engine and object files
-$(APPLICATION_NAME).o: $(APPLICATION_NAME).cpp $(ENGINE_SOURCES)
-	$(CC) $(APPLICATION_NAME).cpp -o $(APPLICATION_NAME).o
+example.o: ../example.cpp  EasyLexer.cpp
+	$(CC) $< -o $@ 
 
-$(ENGINE_NAME).o: $(ENGINE_SOURCES)
-	$(CC) $(ENGINE_NAME).cpp -o $(ENGINE_NAME).o
+# Macro expansions (only for debugging):
+%.E: %.cpp    
+	$(CC) -E $< -o $@ 
 
-%.o: %.cpp
-	$(CC) $< -o $@
-
-$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex --mode-files $(MODE_FILES)    \
-	     --engine     $(ENGINE_NAME)   
-
+EasyLexer.cpp: simple.qx $(QUEX_CORE)
+	quex -i                 simple.qx  \
+	     --engine           EasyLexer  \
+		 --token-offset     0x1000     \
+		 --post-categorizer
 
 # (*) HELPERS __________________________________________________________________
-#
 clean:	
-	touch $(MODE_FILES)
-	rm -f $(ENGINE_NAME) $(ENGINE_NAME).cpp \
-          $(ENGINE_NAME)-internal.h \
-		  $(ENGINE_NAME)-token \
-		  $(ENGINE_NAME)-token_ids \
-		  $(ENGINE_NAME)-configuration
-	rm -f $(ENGINE_NAME).o
-	rm -f $(LIBRARY_NAME).a $(LIBRARY_NAME).so
-	rm -f lexer.o
-	rm -f lexer
-	rm -f gmon.out
-	rm -f token_ids
+	rm -f EasyLexer*
+	rm -f *.o
 	rm -f *.bak
+	rm -f *.E
+	rm -f lexer
