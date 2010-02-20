@@ -4,18 +4,21 @@
 // (*) include lexical analyser header
 #include <./tiny_lexer>
 
-using namespace std;
+
+#ifndef     ENCODING_NAME
+#    define ENCODING_NAME (0x0)
+#endif
 
 int 
 main(int argc, char** argv) 
 {        
+    using namespace std;
+
     quex::Token*       token_p = 0x0;
     // (*) create the lexical analyser
-    //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer   qlex(argc == 1 ? "example.txt" : argv[1]);
-
-    // (*) print the version 
-    // cout << qlex->version() << endl << endl;
+    //     1st arg: input file, default = 'example.txt'
+    //     2nd arg: input character encoding name, 0x0 --> no codec conversion
+    quex::tiny_lexer   qlex(argc == 1 ? "example.txt" : argv[1], ENCODING_NAME);
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
@@ -27,8 +30,11 @@ main(int argc, char** argv)
         token_p = qlex.receive();
 
         // (*) print out token information
-        //     -- name of the token
+#       ifdef PRINT_TOKEN
+        cout << string(*token_p) << endl;
+#       else
         cout << token_p->type_id_name() << endl;
+#       endif
 
         ++number_of_tokens;
 
