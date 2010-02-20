@@ -8,9 +8,9 @@
 #   else
 #       include <assert.h>
 #   endif
-#   define  __quex_assert(X)   assert(X)
+#   define  __quex_assert(X)      assert(X)
 #else
-#   define  __quex_assert(X)   /*no assert*/
+#   define  __quex_assert(X)      /*no assert*/
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ASSERTS */

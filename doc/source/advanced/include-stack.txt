@@ -381,7 +381,8 @@ mode that all modes implement:
     mode BASE {
         <<EOF>> { 
            if( self.include_pop() ) return;
-           self.send(QUEX_TKN_TERMINATION);
+           /* Send an empty lexeme to overwrite token content. */
+           self_send1(QUEX_TKN_TERMINATION, LexemeNull);
            return;
         }
 

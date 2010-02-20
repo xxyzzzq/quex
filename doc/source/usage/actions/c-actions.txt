@@ -16,14 +16,14 @@ example
 
         {P_STRING_DELIMITER} {
             self << STRING_READER; 
-            self.send(QUEX_TKN_EVENT_MODE_CHANGE);
+            self_send(QUEX_TKN_EVENT_MODE_CHANGE);
             return;
         }
 
         ...
 
         [a-z]+ {
-            self.send(QUEX_TKN_IDENTIFIER, Lexeme);
+            self_send(QUEX_TKN_IDENTIFIER, Lexeme);
             self.allow_opening_indentation_f = true;
             return;
         }
@@ -37,36 +37,47 @@ as follows. The lexical analyzer object can be accessed via
 
    self is a reference to the analyzer inside pattern actions and event handlers.
 
-The are multiple member functions starting with ``send``. They work similar to the brackets
-in the previous token senders. The first argument is the token-id and the
-remaining arguments are arguments as they are passed to the constructor of the
-token class. In particular they are the following:
+The are multiple pseudo member functions starting with ``self_send``. They work
+similar to the brackets in the previous token senders. The first argument is
+the token-id and the remaining arguments are arguments as they are passed to
+the constructor of the token class. In particular they are the following:
 
-.. cfunction:: .send(QUEX_TYPE_TOKEN_ID)
+.. cfunction:: self_send(QUEX_TYPE_TOKEN_ID)
 
     Sends one token to the caller of the lexical analyzer with the given 
     token-id.
 
-.. cfunction:: .send_n(size_t N, QUEX_TYPE_TOKEN_ID)
+.. cfunction:: self_send_n(size_t N, QUEX_TYPE_TOKEN_ID)
 
     Sends a token with the given token-id ``N`` times.
 
-.. cfunction:: .send(QUEX_TYPE_TOKEN_ID, ContentT)
+.. cfunction:: self_send1(QUEX_TYPE_TOKEN_ID, ContentT)
 
-    This is a templated function. It calls the ``.set`` function of the token
-    class that corresponds the type ``ContentT``. For example::
+    This is a macro to act as a non-type checked function. It calls the
+    ``.set`` function of the token class that corresponds the type
+    ``ContentT``. For example::
 
         [a-z]+ {
              ...
-             self.send(TKN_IDENTIFIER, Lexeme);
+             self_send1(TKN_IDENTIFIER, Lexeme);
         }
 
     sends a token with the id ``TKN_IDENTIFIER`` and the content of the current
-    lexeme to the caller of the lexical analyzer.
+    lexeme to the caller of the lexical analyzer. The following macros
+    are provided in C++ to support the setting of multiplt contents:
+
+    .. describe:: self_send2(ID, X0, X1)
+    .. describe:: self_send3(ID, X0, X1, X2)
+    .. describe:: self_send4(ID, X0, X1, X2, X3)
+
+    If more token content is to be set, or if one is tied to plain 'C' then 
+    the current token must be accessed using self_token_object() and 
+    the content is to be set.
+
 
 .. note::
 
-   When a token is sent via the a ``send()`` function, what actually happens is that
+   When a token is sent via the a ``self_send()`` function, what actually happens is that
    the lexical analyzer accesses a token object via a pointer and fills it. If only
    a token-id is sent then the data part of the present token object
    remains as it was. If the same token object was used earlier, then the

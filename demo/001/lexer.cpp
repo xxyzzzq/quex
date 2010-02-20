@@ -9,11 +9,10 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    // (*) create token
-    quex::Token        token;
+    quex::Token*       token_p = 0x0;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer*  qlex = new quex::tiny_lexer(argc == 1 ? "example.txt" : argv[1]);
+    quex::tiny_lexer   qlex(argc == 1 ? "example.txt" : argv[1]);
 
     // (*) print the version 
     // cout << qlex->version() << endl << endl;
@@ -25,22 +24,19 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex->receive(&token);
+        token_p = qlex.receive();
 
         // (*) print out token information
-        //     -- line number and column number
-        // cout << "(" << qlex->line_number() << ", " << qlex->column_number() << ")  \t";
         //     -- name of the token
-        cout << token.type_id_name() << endl;
+        cout << token_p->type_id_name() << endl;
 
         ++number_of_tokens;
 
         // (*) check against 'termination'
-    } while( token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";
 
-    delete qlex;
     return 0;
 }

@@ -32,7 +32,7 @@ COMPILER = gcc
 
 CC = $(COMPILER) -c -fPIC -Wall -Wimplicit -pedantic\
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-	 -D___QUEX_UNIT_TESTING___ -ggdb \
+	 -ggdb \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 LD = $(COMPILER) $(LIB_CONV) 

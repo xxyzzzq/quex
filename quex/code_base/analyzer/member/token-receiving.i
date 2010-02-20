@@ -70,8 +70,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN*   result_p) 
-    { QUEX_NAME(receive_p)(this, result_p); }
+    QUEX_MEMBER(receive)() 
+    { return QUEX_NAME(receive_p)(this); }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 

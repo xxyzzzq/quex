@@ -31,7 +31,7 @@ COMPILER = g++
 
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-	 -D___QUEX_UNIT_TESTING___ -ggdb \
+	 -ggdb \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 LD = $(COMPILER) $(LIB_CONV) 

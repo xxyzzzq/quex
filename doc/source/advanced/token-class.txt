@@ -742,7 +742,7 @@ A hand written token class must comply to the following constraints:
 
           // map lexeme to my_type-object 
           my_type tmp(split(Lexeme, ":"), LexemeL); 
-          self.send(TKN_SOMETHING, LexemeL, tmp); 
+          self_send2(TKN_SOMETHING, LexemeL, tmp); 
           return; 
 
     * It must provide a member ``_id`` token's identifier 
