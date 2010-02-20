@@ -2,7 +2,7 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include <./tiny_lexer>
+#include "EasyLexer"
 
 
 #ifndef     ENCODING_NAME
@@ -18,7 +18,7 @@ main(int argc, char** argv)
     // (*) create the lexical analyser
     //     1st arg: input file, default = 'example.txt'
     //     2nd arg: input character encoding name, 0x0 --> no codec conversion
-    quex::tiny_lexer   qlex(argc == 1 ? "example.txt" : argv[1], ENCODING_NAME);
+    quex::EasyLexer    qlex(argc == 1 ? "example.txt" : argv[1], ENCODING_NAME);
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
