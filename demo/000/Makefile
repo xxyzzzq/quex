@@ -12,11 +12,6 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 
 DSWITCH_ASSERTS=# By default asserts are active
 
-# (*) SETUP ____________________________________________________________________
-# -- INPUT
-# -- FILES PRODUCED BY QUEX
-ENGINE_NAME = EasyLexer# NOTE: a whitespace after this name creates chaos!
-
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
@@ -38,21 +33,17 @@ lexer:          example.o EasyLexer.o
 	$(LD) -o $@ example.o EasyLexer.o 
           
 # Object files:
-%.o: %.cpp    EasyLexer
+EasyLexer.o: EasyLexer.cpp 
 	$(CC) $< -o $@ 
 
-%.o: ../%.cpp EasyLexer
+example.o: ../example.cpp  EasyLexer.cpp
 	$(CC) $< -o $@ 
 
 # Macro expansions (only for debugging):
-%.E: %.cpp    EasyLexer
+%.E: %.cpp    
 	$(CC) -E $< -o $@ 
 
-%.E: ../%.cpp EasyLexer
-	$(CC) -E $< -o $@ 
-
-
-EasyLexer: simple.qx $(QUEX_CORE)
+EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
 		 --token-offset     0x1000     \
@@ -64,3 +55,4 @@ clean:
 	rm -f *.o
 	rm -f *.bak
 	rm -f *.E
+	rm -f lexer
