@@ -20,9 +20,6 @@ ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME)-token_ids           \
                    $(ENGINE_NAME)-configuration     
 
-# -- OUTPUT
-APPLICATION      = lexer
-
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
@@ -35,12 +32,14 @@ LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o 
-	$(LD) -o $(APPLICATION) \
-		  ./$(APPLICATION).o $(ENGINE_NAME).o 
+lexer: example.o $(ENGINE_NAME).o 
+	$(LD) -o $@ example.o $(ENGINE_NAME).o 
           
 
 # -- engine and object files
+%.o: ../%.cpp $(ENGINE_SOURCES)
+	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+
 %.o: %.cpp $(ENGINE_SOURCES)
 	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
