@@ -2,8 +2,8 @@
 
 header {
 extern QUEX_TYPE_CHARACTER  EmptyLexeme;
-void    print(quex::tiny_lexer& qlex, quex::Token& Token, bool TextF = false);
-void    print(quex::tiny_lexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
+void    print(quex::tiny_lexer* qlex, quex::Token* Token, bool TextF = false);
+void    print(quex::tiny_lexer* qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
 }
 
@@ -58,7 +58,7 @@ mode MAIN
 	    self.send(QUEX_TKN_TERMINATION, LexemeNull);
         for(size_t i=0; i<self.include_depth; ++i) std::cout << "    ";
         std::cout << "Per File Letter Count = " << self.letter_count << std::endl;
-        return;
+        RETURN;
     }
 
     "("         => QUEX_TKN_BRACKET_OPEN(LexemeNull);
@@ -68,7 +68,7 @@ mode MAIN
         self.send(QUEX_TKN_INCLUDE, LexemeNull); 
         self.letter_count += strlen((char*)Lexeme); 
         self.enter_mode(FIND_INCLUDE_NAME);
-        return;
+        RETURN;
     }
     //
     ([_a-zA-Z]|("/"|"."|"'"))+  { self.send(QUEX_TKN_IDENTIFIER, Lexeme); self.letter_count += strlen((char*)Lexeme); }
@@ -81,7 +81,7 @@ mode FIND_INCLUDE_NAME {
         self.letter_count += strlen((char*)Lexeme); 
         self.enter_mode(MAIN);
         /* IMPORTANT -- see documentation */
-        return;
+        RETURN;
     }
     [ \t\r\n]+                  { }
 }

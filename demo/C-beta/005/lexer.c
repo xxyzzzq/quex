@@ -68,9 +68,9 @@ space(int N)
 { for(int i=0; i<N; ++i) printf("    "); }
 
 void  
-print(QUEX_TYPE_ANALYZER& qlex, quex::Token& my_token, bool TextF /* = false */)
+print(QUEX_TYPE_ANALYZER* qlex, quex::Token& my_token, bool TextF /* = false */)
 { 
-    space(qlex.include_depth);
+    space(qlex->include_depth);
     printf("%i: (%i)", (int)my_token.line_number(), (int)my_token.column_number());
     printf(my_token.type_id_name());
     if( TextF ) printf("\t'%s'", my_token._text "'");
@@ -78,10 +78,10 @@ print(QUEX_TYPE_ANALYZER& qlex, quex::Token& my_token, bool TextF /* = false */)
 }
 
 void 
-print(QUEX_TYPE_ANALYZER& qlex, const char* Str1, 
+print(QUEX_TYPE_ANALYZER* qlex, const char* Str1, 
       const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
 {
-    space(qlex.include_depth);
+    space(qlex->include_depth);
     printf(Str1);
     if( Str2 != 0x0 ) printf(Str2);
     if( Str3 != 0x0 ) printf(Str3);

@@ -71,7 +71,7 @@ the constructor of the token class. In particular they are the following:
     .. describe:: self_send4(ID, X0, X1, X2, X3)
 
     If more token content is to be set, or if one is tied to plain 'C' then 
-    the current token must be accessed using self_token_object() and 
+    the current token must be accessed using ``self_token_p()`` and 
     the content is to be set.
 
 
@@ -98,7 +98,7 @@ the constructor of the token class. In particular they are the following:
 The token object which is currently ready to be sent can be accessed via the
 member function
 
-.. cfunction:: QUEX_TYPE_TOKEN*  token_object()
+.. cfunction:: QUEX_TYPE_TOKEN*  token_p()
 
 The pointer to this object may be used to prepare the token object *before* sending
 it out. Modes can be switched with the ``<<``-operator, as shown in the example, or

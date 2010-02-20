@@ -257,7 +257,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
                     error_msg("In brief token sender's 'take_text' is a special identifier.\n"
                               "It cannot be assigned a value.\n", fh)
                 txt += "QUEX_NAME_TOKEN(take_text)(Lexeme, LexemeEnd);"
-                txt += "QUEX_NAME_TOKEN(take_text)(self_token_object(), &self, Lexeme, LexemeEnd);\n" \
+                txt += "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, Lexeme, LexemeEnd);\n" \
 
             if value == "":
                 error_msg("One explicit argument name mentioned requires all arguments to\n" + \
@@ -270,7 +270,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
                                     "No member:   '%s' in token type description." % member_name, 
                                     fh)
                 access = lexer_mode.token_type_definition.get_member_access(member_name)
-                txt += "self_token_object()->%s = %s;\n" % (access, value.strip())
+                txt += "self_token_p()->%s = %s;\n" % (access, value.strip())
 
 
         # Box the token, stamp it with an id and 'send' it
@@ -286,7 +286,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
             if len(ArgList) > 1:
                 error_msg("The 'take_text' short hand can only be used with named token senders\n" \
                           "or without andy further argument.\n")
-            return "QUEX_NAME_TOKEN(take_text)(self_token_object(), &self, Lexeme, LexemeEnd);\n" \
+            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, Lexeme, LexemeEnd);\n" \
                    "self_send(%s);\n" % (TokenName)
 
 

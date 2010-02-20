@@ -10,7 +10,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   define self (*this)
 
-#   define self_token_object()      (__QUEX_CURRENT_TOKEN_P)
+#   define self_token_p()      (__QUEX_CURRENT_TOKEN_P)
 
 #   define self_send_token(That)            \
     {                                       \
