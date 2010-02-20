@@ -9,8 +9,7 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    // (*) create token
-    quex::Token        Token;
+    quex::Token*       token_p = 0x0;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::tiny_lexer   qlex(argc == 1 ? "example.txt" : argv[1], "UTF-8");
@@ -22,7 +21,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex.receive(&Token);
+        token_p = qlex.receive();
 
         // (*) print out token information
         //     -- line number and column number
@@ -36,13 +35,13 @@ main(int argc, char** argv)
          *         not to a UTF8 converted text.                                          
          *
          *         If only the text is requested, please use '.utf8_text()'.            */   
-        cout << string(Token);
+        cout << string(*token_p);
         cout << endl;
 
         ++number_of_tokens;
 
         // (*) check against 'termination'
-    } while( Token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";

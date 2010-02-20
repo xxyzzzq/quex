@@ -4,7 +4,7 @@ mode END_OF_FILE :
     <<EOF>> {
         /* NOTE: The local variable is deleted soon, but the sender copies the
          *       content into a string object.                                  */
-	    self.send(QUEX_TKN_TERMINATION, LexemeNull);
+	    self_send1(QUEX_TKN_TERMINATION, LexemeNull);
         RETURN;
     }
 }

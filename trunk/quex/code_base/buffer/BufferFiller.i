@@ -9,9 +9,6 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include <stdexcept>
-#endif
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE size_t  QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
@@ -322,12 +319,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                      const size_t FallBackN, 
                                                      const size_t Distance_LexemeStart_to_InputP)
     {
-#       ifdef QUEX_OPTION_ASSERTS
-        const size_t         ContentSize  = QUEX_NAME(Buffer_content_size)(buffer);
-#       endif
         QUEX_TYPE_CHARACTER* ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
 
-        __quex_assert( buffer->_memory._end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );
+        __quex_assert(    buffer->_memory._end_of_file_p == 0x0 
+                       || LoadedN + FallBackN == QUEX_NAME(Buffer_content_size)(buffer) );
         __quex_assert( DesiredLoadN != 0 );
 
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
@@ -631,8 +626,9 @@ QUEX_NAMESPACE_MAIN_OPEN
          *           about what character index is located at what position may help
          *           to increase speed.                                                */      
 #       ifdef QUEX_OPTION_ASSERTS
-        const size_t         TargetIndex = me->tell_character_index(me) + ForwardN;
+        const size_t  TargetIndex = me->tell_character_index(me) + ForwardN;
 #       endif
+
         /* START: We are now at character index 'CharacterIndex - remaining_character_n'.
          * LOOP:  It remains to interpret 'remaining_character_n' number of characters. Since 
          *        the interpretation is best done using a buffer, we do this in chunks.      */ 

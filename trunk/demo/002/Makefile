@@ -16,7 +16,7 @@ DEBUG_F      = # --debug # set flag if debugging info is required
 # -- APPLICATION / LIBRARY specification
 APPLICATION_NAME = lexer
 LIBRARY_NAME     = libLexer
-ENGINE_NAME      = indy_lex# NOTE: a whitespace after this name creates chaos!
+ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
 #
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
@@ -39,9 +39,6 @@ CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
 
 # -- linker
 LD         = $(COMPILER) 
-STATIC_LD  = ar -rv
-DYNAMIC_LD = $(COMPILER) -shared 
-
 
 # (*) RULES ____________________________________________________________________
 #
@@ -50,16 +47,8 @@ $(APPLICATION_NAME): ./$(APPLICATION_NAME).o $(ENGINE_NAME).o
 	$(LD) ./$(APPLICATION_NAME).o $(ENGINE_NAME).o   \
           -o $(APPLICATION_NAME) 
 
-# -- libraries
-$(LIBRARY_NAME).a:
-	$(STATIC_LD) $@ $(LIBRARY_OBJS)
-
-$(LIBRARY_NAME).so:
-	$(DYNAMIC_LD) $(LIBRARY_OBJS) -o $@ 
-
 # -- engine and object files
 $(APPLICATION_NAME).o: $(APPLICATION_NAME).cpp $(ENGINE_SOURCES)
-#       # require: $(ENGINE_SOURCES) for header files
 	$(CC) $(APPLICATION_NAME).cpp -o $(APPLICATION_NAME).o
 
 $(ENGINE_NAME).o: $(ENGINE_SOURCES)

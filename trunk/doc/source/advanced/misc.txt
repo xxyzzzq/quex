@@ -72,10 +72,10 @@ on the function ``get_token_id(...)``
        [a-z]+ {
            QUEX_TYPE_TOKEN_ID* token_id = self.post_categorizer.get_token_id(Lexeme);
            if( token_id != QUEX_TKN_UNINITIALIZED ) {
-               self.send(QUEX_TKN_IDENTIFIER, Lexeme);
+               self_send1(QUEX_TKN_IDENTIFIER, Lexeme);
            }
            else {
-               self.send(token_id, Lexeme);
+               self_send1(token_id, Lexeme);
            }
        }
        ...

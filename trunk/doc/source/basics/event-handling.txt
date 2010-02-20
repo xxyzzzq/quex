@@ -21,7 +21,7 @@ send tokens that have been accumulated during analysis:
         on_entry { self.accumulator.clear(); }
         on_exit  { 
             self.accumulator.flush(QUEX_TKN_STRING); 
-            self.send(QUEX_TKN_QUOTE);
+            self_send(QUEX_TKN_QUOTE);
         }
         ...
     }
@@ -38,7 +38,7 @@ based languages--as shown in the following example:
                 ...
             }
             while( self.indentation_stack.back() > Indentation ) {
-                self.send(QUEX_TKN_BLOCK_CLOSE);     
+                self_send(QUEX_TKN_BLOCK_CLOSE);     
                 self.indentation_stack.pop_back();
             }
             ...
