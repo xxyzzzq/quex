@@ -53,6 +53,7 @@ token {
 start = MAIN;
 
 mode MAIN
+: <skip: [ \t\r\n]> 
 {
     <<EOF>> {
 	    self_send1(QUEX_TKN_TERMINATION, LexemeNull);
@@ -72,10 +73,11 @@ mode MAIN
     }
     //
     ([_a-zA-Z]|("/"|"."|"'"))+  { self_send1(QUEX_TKN_IDENTIFIER, Lexeme); self.letter_count += strlen((char*)Lexeme); }
-    [ \t\r\n]+                  { }
 }
 
-mode FIND_INCLUDE_NAME {
+mode FIND_INCLUDE_NAME 
+: <skip: [ \t\r\n]> 
+{
     ([_a-zA-Z]|("/"|"."|"'"))+  { 
         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); 
         self.letter_count += strlen((char*)Lexeme); 
@@ -83,7 +85,6 @@ mode FIND_INCLUDE_NAME {
         /* IMPORTANT -- see documentation */
         RETURN;
     }
-    [ \t\r\n]+                  { }
 }
 
 

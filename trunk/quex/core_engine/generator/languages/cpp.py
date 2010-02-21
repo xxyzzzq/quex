@@ -75,7 +75,12 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
              lexical analyzer, since static member do not have access to the 'this' pointer.
      */
 #   if ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+    register QUEX_TYPE_TOKEN_ID __self_result_token_id 
+#      ifdef QUEX_OPTION_ASSERTS
+           = (QUEX_TYPE_TOKEN_ID)-2;
+#      else
+           ;
+#      endif
 #   endif
 #   ifdef     self
 #       undef self
