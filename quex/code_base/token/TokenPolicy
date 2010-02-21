@@ -120,7 +120,7 @@
            __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3);
 #   define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) \
            __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3, X4);
-#elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 #   define QUEX_TOKEN_POLICY_SET_1(X0) \
            do { __self_result_token_id = X0; \
                 __QUEX_CURRENT_TOKEN_ACCESS.set(X0); while(0)
