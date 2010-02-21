@@ -12,11 +12,13 @@ QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 int 
 main(int argc, char** argv) 
 {        
+    using namespace quex;
+
     // (*) create token
-    quex::Token      my_token;
+    Token      my_token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::EasyLexer  qlex(argc == 1 ? "example.txt" : argv[1]);
+    EasyLexer  qlex(argc == 1 ? "example.txt" : argv[1]);
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
@@ -37,7 +39,8 @@ main(int argc, char** argv)
             print(&qlex, &my_token, (const char*)my_token.get_text().c_str());
             if( token_id != QUEX_TKN_IDENTIFIER ) {
                 continue_lexing_f = false;
-                print(&qlex, "Found 'include' without a subsequent filename. hm?\n");
+                print(&qlex, "Found 'include' without a subsequent filename: '%s' hm?\n",
+                      (char*)QUEX_NAME_TOKEN(map_id_to_name)(token_id));
                 break;
             }
             print(&qlex, ">> including: ", (const char*)my_token.get_text().c_str());
