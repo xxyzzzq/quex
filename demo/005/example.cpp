@@ -2,8 +2,8 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include <./tiny_lexer>
-#include <./tiny_lexer-token_ids>
+#include "EasyLexer"
+#include "EasyLexer-token_ids"
 
 using namespace std;
 
@@ -13,10 +13,10 @@ int
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::Token       my_token;
+    quex::Token      my_token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer  qlex(argc == 1 ? "example.txt" : argv[1]);
+    quex::EasyLexer  qlex(argc == 1 ? "example.txt" : argv[1]);
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";

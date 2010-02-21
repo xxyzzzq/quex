@@ -159,7 +159,7 @@ public:
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
     QUEX_TYPE_TOKEN*      token_p();
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     void                  token_p_set(QUEX_TYPE_TOKEN*);
 #   endif
 
