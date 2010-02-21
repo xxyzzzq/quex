@@ -1,56 +1,53 @@
-# PURPOSE: Makefile for unit tests.
+# PURPOSE: Makefile Demo Application of Quex
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
 .PHONY: clean
+
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
+
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-# (*) SETUP ____________________________________________________________________
-# -- INPUT
-MODE_FILES       = simple.qx
-# -- FILES PRODUCED BY QUEX
-ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-ENGINE_SOURCES   = $(ENGINE_NAME)                     \
-                   $(ENGINE_NAME).cpp                 \
-                   $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-configuration       
-# -- OUTPUT
-APPLICATION      = lexer
+DSWITCH_ASSERTS=# By default asserts are active
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
-#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
-CC = $(COMPILER) -c -ggdb -Wno-deprecated -Wall  \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)   \
-     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = g++ -std=c++0x -ggdb 
 
-
-LD = $(COMPILER)
+CC = $(COMPILER) -c \
+	 -I./ -I$(QUEX_PATH)                             \
+	 -Wall -Wconversion -pedantic                    \
+	 $(DSWITCH_ASSERTS)                              \
+	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 
+     # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+   
+LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o 
-	$(LD) $(APPLICATION).o $(ENGINE_NAME).o -o $(APPLICATION) 
+lexer:          example.o EasyLexer.o
+	$(LD) -o $@ example.o EasyLexer.o 
+          
+# Object files:
+%.o: %.cpp EasyLexer
+	$(CC) $< -o $@ 
 
-# -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
-	$(CC) $< -o $@
+# Macro expansions (only for debugging):
+%.E: %.cpp    
+	$(CC) -E $< -o $@ 
 
-$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-policy users_token
+EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
+	quex -i simple.qx --engine EasyLexer \
+		 --token-policy users_token
 
 # (*) HELPERS __________________________________________________________________
-#
 clean:	
-	touch $(MODE_FILES)
-	rm -f $(ENGINE_SOURCES)
-	rm -f $(ENGINE_NAME)-token
-	rm -f $(ENGINE_NAME).o
-	rm -f lexer.o
-	rm -f lexer
-	rm -f token_ids
+	rm -f EasyLexer*
+	rm -f *.o
 	rm -f *.bak
+	rm -f *.E
+	rm -f lexer

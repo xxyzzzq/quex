@@ -124,9 +124,11 @@ QUEX_INLINE QUEX_TYPE_TOKEN*
 QUEX_MEMBER(token_p)()
 { return QUEX_NAME(token_p)(this); }
 
+#if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 QUEX_INLINE void
 QUEX_MEMBER(token_p_set)(QUEX_TYPE_TOKEN* UsersToken)
 { return QUEX_NAME(token_p_set)(this, UsersToken); }
+#endif
 
 QUEX_INLINE const char* 
 QUEX_MEMBER(version)() const
