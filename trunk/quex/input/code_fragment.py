@@ -284,13 +284,6 @@ def __create_token_sender_by_token_name(fh, TokenName):
     member_value_pairs = map(lambda x: x.split("="), argument_list)
     txt = ""
     for member, value in member_value_pairs:
-        if member == "take_text":
-            if value != "":
-                error_msg("In brief token sender's 'take_text' is a special identifier.\n"
-                          "It cannot be assigned a value.\n", fh)
-            txt += "QUEX_NAME_TOKEN(take_text)(Lexeme, LexemeEnd);"
-            txt += "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, Lexeme, LexemeEnd);\n" \
-
         if value == "":
             error_msg("One explicit argument name mentioned requires all arguments to\n" + \
                       "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
@@ -321,12 +314,12 @@ def __create_mode_transition_and_token_sender(fh, Command):
         target_mode = read_identifier(fh)
         skip_whitespace(fh)
         if check(fh, ")"):
-            token_sender_txt = ""
+            token_sender = ""
         elif check(fh, ","):
             skip_whitespace(fh)
             token_name = read_identifier(fh)
             skip_whitespace(fh)
-            token_sender_txt = __create_token_sender_by_token_name(fh, token_name)
+            token_sender = __create_token_sender_by_token_name(fh, token_name)
             if check(fh, ")") == False:
                 fh.seek(position)
                 error_msg("Missing closing ')' for %s." % Command, fh)
@@ -347,7 +340,7 @@ def __create_mode_transition_and_token_sender(fh, Command):
     }[Command](target_mode)
 
     # Code for token sending
-    txt += token_sender_str
+    txt += token_sender
 
     return txt
 
