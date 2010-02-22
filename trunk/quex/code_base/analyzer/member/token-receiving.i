@@ -28,11 +28,14 @@ QUEX_NAMESPACE_MAIN_OPEN
             result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
             return result_p;  
         } 
-        else if( me->_token_queue.remaining_repetitions_of_last_token_n ) {
-            --(me->_token_queue.remaining_repetitions_of_last_token_n);
-            result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+#       if QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+        else if( __QUEX_TOKEN_REPETITION_NUMBER_GET(QUEX_NAME(TokenQueue_back)) > 0 ) {
+            result_p = &QUEX_NAME(TokenQueue_back)();
+            __QUEX_TOKEN_REPETITION_NUMBER_SET((*result_p),
+                     (__QUEX_TOKEN_REPETITION_NUMBER_GET((*result_p)) - 1));
             return result_p;  
         }
+#       endif
 
         /* Restart filling the queue from begin */
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);

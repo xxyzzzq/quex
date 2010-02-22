@@ -9,7 +9,7 @@ The transition from one mode to another can be controlled via the commands ``GOT
 .. code-block:: cpp
 
     mode NORMAL {
-        "<" => GOTO(TAG, QUEX_TKN_OPEN_TAG, Lexeme);
+        "<" => GOTO(TAG);
         .   => QUEX_TKN_LETTER(Lexeme);
         
     }
@@ -21,20 +21,19 @@ The transition from one mode to another can be controlled via the commands ``GOT
 There are two modes ``NORMAL`` and ``TAG``. As soon as an opening ``<`` arrives
 the analyzer transits from ``NORMAL`` mode to ``TAG`` mode. As soon as the
 closing ``>`` arrives, the analyzer transits back to ``NORMAL`` mode.
+
 Additionally to the mode transition, tokens can be sent if more arguments are
-added. If it is required to send tokens for the tag regions, the above example
-may be extended as follows
+added. The syntax is similar to the brief token senders mentioned in
+:ref:`sec:usage-sending-tokens`.  If it is required to send tokens for the tag
+regions, the above example may be extended as follows
 
 .. code-block:: cpp
 
     mode NORMAL {
-        "<" => GOTO(TAG, QUEX_TKN_OPEN_TAG, Lexeme);
-        .   => QUEX_TKN_LETTER(Lexeme);
+        "<"  => GOTO(TAG, QUEX_TKN_OPEN_TAG(Lexeme));
+        "<<" => GOTO(TAG, QUEX_TKN_OPEN_TAG(text=Lexeme, number=2));
+        .    => QUEX_TKN_LETTER(Lexeme);
         
-    }
-    mode TAG {
-        ">" => GOTO(NORMAL, QUEX_TKN_CLOSE_TAG);
-        .   => QUEX_TKN_LETTER(Lexeme);
     }
 
 When transitions to and from the ``TAG`` mode are triggered, tokens

@@ -10,7 +10,7 @@ mode BASE :
 }
 mode ONE : BASE {
     2 => GOTO(TWO);
-    3 => GOSUB(THREE, QUEX_TKN_LETTER, Lexeme);
+    3 => GOSUB(THREE, QUEX_TKN_LETTER(Lexeme));
     4 => GOTO(FOUR);
     . => QUEX_TKN_LETTER(Lexeme);
     

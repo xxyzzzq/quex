@@ -57,11 +57,13 @@ def __parse_brief_token_sender(fh, ContinueF):
         if code != -1: 
             code = __create_token_sender_by_character_code(fh, code)
         else:
-            identifier, arg_list = __parse_function_call(fh)
+            skip_whitespace(fh)
+            identifier = read_identifier(fh)
+            skip_whitespace(fh)
             if identifier in ["GOTO", "GOSUB", "GOUP"]:
-                code = __create_mode_transition_and_token_sender(fh, identifier, arg_list)
+                code = __create_mode_transition_and_token_sender(fh, identifier)
             else:
-                code = __create_token_sender_by_token_name(fh, identifier, arg_list)
+                code = __create_token_sender_by_token_name(fh, identifier)
 
         if code != "": 
             if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
@@ -153,23 +155,27 @@ def read_character_code(fh):
         # Try to interpret it as something else ...
         fh.seek(pos); return -1               
 
-def __parse_function_call(fh):
-    identifier = ""
+def __parse_function_call_begin(fh):
+    """Parses: identifier '(' or
+               identifier ';'
+
+       RETURNS: string containing identifier, boolean 
+
+       The boolean is True, if there is potentially an argument list.
+                   is False, if there is no argument list.
+    """
+
+def __parse_function_argument_list(fh, ReferenceName):
     argument_list = []
     position = fh.tell()
     try:
-        # Read 'function' name
-        skip_whitespace(fh)
-        identifier = read_identifier(fh)
-        skip_whitespace(fh)
-
         # Read argument list
         tmp = fh.read(1)
         if   tmp == ";":
-            return identifier, argument_list
+            return identifier, []
         elif tmp != "(":
-            error_msg("Missing '(' or ';' after '%s'." % identifier, fh)
-
+            error_msg("Missing '(' or ';' after '%s'." % ReferenceName, fh)
+        
         text = ""
         while 1 + 1 == 2:
             tmp = fh.read(1)
@@ -188,7 +194,7 @@ def __parse_function_call(fh):
                 text = ""
             elif tmp == "":
                 fh.seek(position)
-                error_msg("End of file reached while parsing argument list for %s." % identifier, fh)
+                error_msg("End of file reached while parsing argument list for %s." % ReferenceName, fh)
             else:
                 text += tmp
 
@@ -196,7 +202,7 @@ def __parse_function_call(fh):
 
         argument_list = map(lambda arg:    arg.strip(), argument_list)
         argument_list = filter(lambda arg: arg != "",   argument_list)
-        return identifier, argument_list
+        return argument_list
 
     except EndOfStreamException:
         fh.seek(position)
@@ -215,14 +221,16 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 
-def __create_token_sender_by_token_name(fh, TokenName, ArgList):
+def __create_token_sender_by_token_name(fh, TokenName):
     assert type(TokenName) in [str, unicode]
-    assert type(ArgList) == list
+    assert type(ArgListF) == bool
 
     # after 'send' the token queue is filled and one can safely return
     if TokenName.find(Setup.token_id_prefix) != 0:
         error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
                   "found: '%s'" % TokenName, fh)
+
+    argument_list = __parse_function_argument_list(fh, TokenName)
 
     # occasionally add token id automatically to database
     prefix_less_TokenName = TokenName[len(Setup.token_id_prefix):]
@@ -242,82 +250,94 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgList):
 
     # create the token sender
     explicit_member_names_f = False
-    for arg in ArgList:
+    for arg in argument_list:
         if arg.find("=") != -1: explicit_member_names_f = True
 
-    if explicit_member_names_f:
-        assert lexer_mode.token_type_definition != None, \
-               "A valid token_type_definition must have been parsed at this point."
+    assert lexer_mode.token_type_definition != None, \
+           "A valid token_type_definition must have been parsed at this point."
 
-        member_value_pairs = map(lambda x: x.split("="), ArgList)
-        txt = ""
-        for member, value in member_value_pairs:
-            if member == "take_text":
-                if value != "":
-                    error_msg("In brief token sender's 'take_text' is a special identifier.\n"
-                              "It cannot be assigned a value.\n", fh)
-                txt += "QUEX_NAME_TOKEN(take_text)(Lexeme, LexemeEnd);"
-                txt += "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, Lexeme, LexemeEnd);\n" \
-
-            if value == "":
-                error_msg("One explicit argument name mentioned requires all arguments to\n" + \
-                          "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
-                          % member, fh)
-
-            else:
-                member_name = member.strip()
-                verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
-                                    "No member:   '%s' in token type description." % member_name, 
-                                    fh)
-                access = lexer_mode.token_type_definition.get_member_access(member_name)
-                txt += "self_token_p()->%s = %s;\n" % (access, value.strip())
-
-
-        # Box the token, stamp it with an id and 'send' it
-        txt += "self_send(%s);\n" % TokenName
-        return txt
-    else:
-        if Setup.language == "C" and len(ArgList) > 0 and ArgList[0] != "take_text":
-            error_msg("When output is generated for '%s', then arguments to token\n" % Setup.language \
-                      + "senders must be named, e.g. MY_TOKEN(number=atoi(Lexeme)).\n" \
-                      + "Found: " + repr(ArgList)[1:-1] + ".", fh)
-
-        elif "take_text" in ArgList:
-            if len(ArgList) > 1:
-                error_msg("The 'take_text' short hand can only be used with named token senders\n" \
-                          "or without andy further argument.\n")
-            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, Lexeme, LexemeEnd);\n" \
+    if not explicit_member_names_f:
+        # There are only two allowed cases for implicit token member names:
+        #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
+        #  QUEX_TKN_XYZ(Begin, End) --> call to take_text(Begin, End)
+        if   len(argument_list) == 1:
+            if argument_list[0] != "Lexeme":
+                error_msg("When one unnamed argument is specified it must be 'Lexeme'.\n"
+                          "Found '%s'" % argument_list[0], fh)
+            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeBegin, LexemeEnd);\n" \
                    "self_send(%s);\n" % (TokenName)
 
+        elif len(argument_list) == 2:
+            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, (%s), (%s));\n" % \
+                   (argument_list[0], argument_list[1]) + \
+                   "self_send(%s);\n" % (TokenName)
 
-        length = 0
-        tail   = ""
-        for arg in ArgList:
-            if arg == "": continue
-            tail   += arg + ","
-            length += 1
-        if tail != "": tail = ", " + tail[:-1]
-        return "self_send%i(%s%s);\n" % (length, TokenName, tail)
+        else:
+            error_msg("Since 0.49.1, there are only the following brief token senders that can take\n"
+                      "unnamed token arguments:\n"
+                      "     one argument:   'Lexeme'   =>  token.take_text(..., LexemeBegin, LexemeEnd);\n"
+                      "     two arguments:  Begin, End =>  token.take_text(..., Begin, End);\n"
+                      + "Found: " + repr(argument_list)[1:-1] + ".", fh)
 
-def __create_mode_transition_and_token_sender(fh, Command, ArgList):
+        # Returned from Function if implicit member names
+
+    member_value_pairs = map(lambda x: x.split("="), argument_list)
+    txt = ""
+    for member, value in member_value_pairs:
+        if member == "take_text":
+            if value != "":
+                error_msg("In brief token sender's 'take_text' is a special identifier.\n"
+                          "It cannot be assigned a value.\n", fh)
+            txt += "QUEX_NAME_TOKEN(take_text)(Lexeme, LexemeEnd);"
+            txt += "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, Lexeme, LexemeEnd);\n" \
+
+        if value == "":
+            error_msg("One explicit argument name mentioned requires all arguments to\n" + \
+                      "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
+                      % member, fh)
+
+        else:
+            member_name = member.strip()
+            verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
+                                "No member:   '%s' in token type description." % member_name, 
+                                fh)
+            access = lexer_mode.token_type_definition.get_member_access(member_name)
+            txt += "self_token_p()->%s = %s;\n" % (access, value.strip())
+
+
+    # Box the token, stamp it with an id and 'send' it
+    txt += "self_send(%s);\n" % TokenName
+    return txt
+
+def __create_mode_transition_and_token_sender(fh, Command):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
-    assert type(ArgList) == list
 
-    LanguageDB = Setup.language_db
+    position     = fh.tell()
+    LanguageDB   = Setup.language_db
+    target_mode  = ""
+    token_sender = ""
+    if check(fh, "("):
+        skip_whitespace(fh)
+        target_mode = read_identifier(fh)
+        skip_whitespace(fh)
+        if check(fh, ")"):
+            token_sender_txt = ""
+        elif check(fh, ","):
+            skip_whitespace(fh)
+            token_name = read_identifier(fh)
+            skip_whitespace(fh)
+            token_sender_txt = __create_token_sender_by_token_name(fh, token_name)
+            if check(fh, ")") == False:
+                fh.seek(position)
+                error_msg("Missing closing ')' for %s." % Command, fh)
+        else:
+            fh.seek(position)
+            error_msg("Missing closing ')' or ',' after '%s'." % target_mode, fh)
+    elif check(fh, ";") == False:
+        error_msg("Missing ')' or ';' after '%s'." % Command, fh)
 
-    L           = len(ArgList)
-    target_mode = None
-    token_name  = None
-    tail        = []
-    if Command in ["GOTO", "GOSUB"]:
-        if L < 1: 
-            error_msg("The %s mode short cut requires at least one argument: The target mode." % Command, fh)
-        target_mode = ArgList[0]
-        if L > 1: token_name = ArgList[1]
-        if L > 2: tail       = ArgList[2:]
-    else: # Command == "GOUP"
-        if L > 0: token_name = ArgList[0]
-        if L > 1: tail       = ArgList[1:]
+    if Command in ["GOTO", "GOSUB"] and target_mode == "": 
+        error_msg("The %s requires at least one argument: The target mode." % Command, fh)
 
     # Code for mode change
     txt = { 
@@ -327,8 +347,7 @@ def __create_mode_transition_and_token_sender(fh, Command, ArgList):
     }[Command](target_mode)
 
     # Code for token sending
-    if token_name != None:
-        txt += __create_token_sender_by_token_name(fh, token_name, tail)
+    txt += token_sender_str
 
     return txt
 
