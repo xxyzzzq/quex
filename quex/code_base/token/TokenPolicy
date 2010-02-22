@@ -109,34 +109,6 @@
 /* Setting Token Content */
 #   define QUEX_TOKEN_POLICY_SET(X)   __QUEX_CURRENT_TOKEN_ACCESS = (X);
 
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-#   define QUEX_TOKEN_POLICY_SET_1(X0) \
-           __QUEX_CURRENT_TOKEN_ACCESS.set(X0);
-#   define QUEX_TOKEN_POLICY_SET_2(X0, X1) \
-           __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1);
-#   define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2) \
-           __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2);
-#   define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3) \
-           __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3);
-#   define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) \
-           __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3, X4);
-#elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-#   define QUEX_TOKEN_POLICY_SET_1(X0) \
-           do { __self_result_token_id = X0; \
-                __QUEX_CURRENT_TOKEN_ACCESS.set(X0); while(0)
-#   define QUEX_TOKEN_POLICY_SET_2(X0, X1) \
-           do { __self_result_token_id = X0; \
-                __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1); } while(0)
-#   define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2) \
-           do { __self_result_token_id = X0; \
-                __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2); } while(0)
-#   define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3) \
-           do { __self_result_token_id = X0; \
-                __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3); } while(0)
-#   define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) \
-           do { __self_result_token_id = X0; \
-                __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3, X4); } while(0)
-#endif
 
 #define QUEX_TOKEN_POLICY_SET_ID(ID)     do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
 

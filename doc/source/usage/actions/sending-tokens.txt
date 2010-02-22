@@ -26,25 +26,18 @@ additional arguments may be specified in brackets, such as
 
    mode MINE {
      ...
-         // (not allowed when generating C code)
-         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(atoi(Lexeme));
-         [a-z]+  => QUEX_TKN_KEYWORD_WORD(Lexeme);
-     ...
-   }
-
-where the former line calls the token constructor with a numeric argument, and
-the second one calls it with the lexeme itself. A more explicit way is
-to name the token members, i.e.
-
-.. code-block:: cpp
-
-   mode MINE {
-     ...
          // More general, and required when generating 'C' code:
-         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(number=atoi(Lexeme));
+         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(number=atoi(Lexeme), text=4711);
          [a-z]+  => QUEX_TKN_KEYWORD_WORD(text=Lexeme);
      ...
    }
+
+The list of arguments contains assigments such as ``number = atoi(Lexeme)``.
+The assigned attributes are the members of the token class which are set. In
+the above example the lexeme's numerical interpretation is assigned to the
+member variable 'number' inside the token, and the Lexeme itself is assigned
+directly to the text member variable. More than one of those assignments may
+occur. 
 
 .. _fig-lexeme-variables:
 
@@ -82,21 +75,50 @@ which are available to access the matched lexeme. In detail they are:
    This is a pseudo-lexeme of length zero. It is useful in cases where 
    it is required to set some string inside a token[#f2]_.
 
-.. data:: take_text
+Earlier, it was said that the argument list of brief token senders can only
+contain named token members. For the sake of simplicity, though, two shorthands
+are allowed that do not require named attribute assignments:
 
-   This special identifier triggers a call to
+    .. cfunction::  QUEX_TKN_XYZ(Lexeme)
 
-   .. code-block:: cpp
+       That is there is only one single argument and it is explicitly called
+       ``Lexeme``. No other name is allowed. This shorthand triggers a call to the
+       token's function:
 
-      QUEX_NAME_TOKEN(take_text)(... , LexemeBegin, LexemeEnd)
+       .. code-block:: cpp
+        
+          QUEX_NAME_TOKEN(take_text)(..., LexemeBegin, LexemeEnd);
 
-   This feature is not necessary in C++, because token members can
-   do memory management inside their constructors. When creating C
-   engines, though, this function is required to copy the lexeme
-   from inside the buffer to a safe place in memory.
+       This function is going to be discussed below. Example:
 
-   The ``take_text`` identifier can only be used in isolation or 
-   in the context of named token parameters.
+       .. code-block:: cpp
+
+          [a-z]+  => QUEX_TKN_IDENTIFIER(Lexeme);         // CORRECT!
+
+       But not
+
+       .. code-block:: cpp
+
+          "."[a-z]+  => QUEX_TKN_IDENTIFIER(Lexeme + 1);  // WRONG!
+
+       because the name of the argument is not literally ``Lexeme``.
+       
+
+    .. cfunction:: QUEX_TKN_XYZ(Begin, End)
+
+       This special call requires ``Begin`` and ``End`` to be pointers 
+       to ``QUEX_TYPE_CHARACTER``. Their name does not play a role. The
+       shorthand triggers a call to 
+
+       .. code-block:: cpp
+        
+          QUEX_NAME_TOKEN(take_text)(..., Begin, End);
+
+       Example:
+
+       .. code-block:: cpp
+
+          "'"[a-z]+"'"  => QUEX_TKN_QUOTED_IDENTIFIER(LexemeBegin + 1, LexemeEnd - 1);
 
 Instead of relying on a named constant definition for a token-id, quex can
 directly use character codes as token-ids. This comes handy when used
