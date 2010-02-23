@@ -154,19 +154,11 @@ class
   .. code-block:: cpp
 
     void set(const QUEX_TYPE_TOKEN_ID ID);
-    void set(const QUEX_TYPE_TOKEN_ID ID, 
-             const std::basic_string<QUEX_TYPE_CHARACTER>& Value0);
-    void set(const QUEX_TYPE_TOKEN_ID ID, 
-             const std::vector<int>& Value0);
-    void set(const QUEX_TYPE_TOKEN_ID ID, 
-             const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, 
-             const std::vector<int>& Value1);
-    void set(const QUEX_TYPE_TOKEN_ID ID, 
-             const int16_t& Value0, const int16_t& Value1);
-    void set(const QUEX_TYPE_TOKEN_ID ID, 
-             const int8_t& Value0, const int8_t& Value1);
-    void set(const QUEX_TYPE_TOKEN_ID ID, 
-             const uint16_t& Value0);
+    void set_mini_x(const int8_t Value);
+    void set_mini_y(const int8_t Value);
+    void set_big_x(const int16_t Value);
+    void set_big_y(const int16_t Value);
+    void set_position(const int16_t Value);
 
 Those are then implicitly used in the token senders. Note, that it is
 particularly useful to have at least one member that can carry a
@@ -177,32 +169,25 @@ The above setters would allow token senders inside a mode to be defined as
   .. code-block:: cpp
 
     mode TEST { 
-        1      => QUEX_TKN_N1a(Lexeme); 
-        mini_1 => QUEX_TKN_N1b((int8_t)1, (int8_t)1); 
-        big_1  => QUEX_TKN_N1c((int16_t)1, (int16_t)1);
+        fred|otto|karl => QUEX_TKN_NAME(Lexeme);
+        mini_1         => QUEX_TKN_N1b(mini_x=1, position=1); 
+        big_1          => QUEX_TKN_N1c(big_x=1,  position=2);
 
-        2      => QUEX_TKN_N2a(Lexeme); 
-        mini_2 => QUEX_TKN_N2b((int8_t)2, (int8_t)2); 
-        big_2  => QUEX_TKN_N2c((int16_t)2, (int16_t)2);
-
-        3      => QUEX_TKN_N3a(Lexeme); 
-        mini_3 => QUEX_TKN_N3b((int8_t)3, (int8_t)3); 
-        big_3  => QUEX_TKN_N3c((int16_t)3, (int16_t)3);
-
-        fred|otto|karl => QUEX_TKN_WHO((uint16_t)4711);
     }
 
-displays how the terms in the brackets identify the setter. The ``send`` member
-functions work exactly the same. If more then one variable have the same type,
-then there are two alternatives: First, one relies on explicit C-code
-fragments :ref:`sec:c-code-fragments` and uses
+The brief token senders may be rely on with *named* arguments, except for 
+the two convenience pattern ``TKN_X(Lexeme)`` and ``TKN_X(Begin, End)``
+--as mentioned in :ref:`usage-sending-tokens`. 
+
+If more flexibility is required explicit C-code fragments 
+:ref:`sec:c-code-fragments` may be implemented relying on the
+current token pointer, i.e. the member function
 
     .. code-block:: cpp
 
         QUEX_TYPE_TOKEN*  token_p()
 
-to get acces to the current token object, and then explicitly call the 
-named setters such as 
+and then explicitly call the named setters such as 
  
      .. code-block:: cpp
 
@@ -211,20 +196,8 @@ named setters such as
         self.token_p()->set_mini_1(LexemeL); 
         ...
          
-Second, the brief token senders may be called with *named* arguments. This is
-more convinient. The names of the token class members and their assigned values
-are specified by a sequence of the form: ``member = value``. For example, the
-code fragment
-
-     .. code-block:: cpp
-
-        ...
-        "mypattern" => QUEX_TKN_MY_TOKEN(name=Lexeme, mini_x=LexemeL);
-        ...
-
-does exactly the same as the previously mentioned one. Standard operations to
-objects can be specified via three code sections. The variable ``self`` is a 
-reference to the token object itself.
+Standard operations of the token class can be specified via three code
+sections. The variable ``self`` is a reference to the token object itself.
 
 .. note::
 
@@ -244,7 +217,7 @@ reference to the token object itself.
    .. code-block:: cpp
 
        constructor { 
-           self.pointer_to_something = 0x0;            /* default */
+           self.pointer_to_something = 0x0;   /* default */
            std::cout << "Constructor\n"; 
        }
 

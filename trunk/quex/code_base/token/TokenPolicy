@@ -15,21 +15,14 @@
  * defined macros are undefined right at the beginning, so they can be 
  * safely redefined.                                                     */
 #ifdef __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
-#    undef __QUEX_CURRENT_TOKEN_P
-#    undef QUEX_TOKEN_POLICY_PREPARE_NEXT
-#    undef QUEX_TOKEN_POLICY_NO_TOKEN
-#    undef QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET
-#    undef __QUEX_STAMP_LINE_NUMBER
-#    undef __QUEX_STAMP_COLUMN_NUMBER
-#    undef QUEX_TOKEN_POLICY_SET
-#    undef QUEX_TOKEN_POLICY_SET_1
-#    undef QUEX_TOKEN_POLICY_SET_2
-#    undef QUEX_TOKEN_POLICY_SET_3
-#    undef QUEX_TOKEN_POLICY_SET_4
-#    undef QUEX_TOKEN_POLICY_SET_5
 #    undef QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION
+#    undef QUEX_TOKEN_POLICY_NO_TOKEN
+#    undef QUEX_TOKEN_POLICY_PREPARE_NEXT
+#    undef __QUEX_TOKEN_POLICY_SET_ID
 #    undef __QUEX_ASSERT_SEND_ENTRY
-#    undef QUEX_TOKEN_POLICY_SET_ID
+#    undef __QUEX_CURRENT_TOKEN_P
+#    undef __QUEX_STAMP_COLUMN_NUMBER
+#    undef __QUEX_STAMP_LINE_NUMBER
 #else
 #    define __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
 #endif
@@ -42,9 +35,6 @@
 #   define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
            ++(self._token_queue.write_iterator); 
 
-#   define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
-           self._token_queue.remaining_repetitions_of_last_token_n = N;
-
 #   define QUEX_TOKEN_POLICY_NO_TOKEN() \
            (QUEX_NAME(TokenQueue_is_empty)(&self._token_queue))
 
@@ -53,7 +43,7 @@
 #   else
 #      define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->type_id()
 #   endif
-#   define self_token_set_id(ID)    QUEX_TOKEN_POLICY_SET_ID(ID)
+#   define self_token_set_id(ID)    __QUEX_TOKEN_POLICY_SET_ID(ID)
 
 #else
 
@@ -61,13 +51,12 @@
 
 #   define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
            /* empty */
-#   define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
-           /* empty */
+
 #   define QUEX_TOKEN_POLICY_NO_TOKEN() \
            (__self_result_token_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
 
 #   define self_token_get_id()    (__self_result_token_id)
-#   define self_token_set_id(ID)  do { __self_result_token_id = ID; QUEX_TOKEN_POLICY_SET_ID(ID); } while( 0 )
+#   define self_token_set_id(ID)  do { __self_result_token_id = ID; __QUEX_TOKEN_POLICY_SET_ID(ID); } while( 0 )
 
 #endif
 
@@ -106,11 +95,13 @@
         __QUEX_STAMP_COLUMN_NUMBER(__QUEX_CURRENT_TOKEN_P) \
         (*__QUEX_CURRENT_TOKEN_P)
                                     
-/* Setting Token Content */
-#   define QUEX_TOKEN_POLICY_SET(X)   __QUEX_CURRENT_TOKEN_ACCESS = (X);
-
-
-#define QUEX_TOKEN_POLICY_SET_ID(ID)     do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
+#if  defined(QUEX_TOKEN_CONTAINS_NO_ID)
+#   define __QUEX_TOKEN_POLICY_SET_ID(ID) \
+           /* empty */
+#else
+#   define __QUEX_TOKEN_POLICY_SET_ID(ID) \
+           do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
+#endif
 
 /* Ensure that no token is sent after the token 'TERMINATION'. If files are included
  * the token queue is reset.                                                          */
