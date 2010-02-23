@@ -57,7 +57,6 @@ __QUEX_CORE = \
     ./analyzer/member/mode-handling.i \
     ./analyzer/member/buffer-access.i \
     ./analyzer/member/token-receiving.i \
-    ./analyzer/member/token-sending.i \
     ./analyzer/member/constructor.i \
     ./analyzer/member/misc.i \
     ./analyzer/counter/LineColumn \

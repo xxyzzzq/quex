@@ -1,8 +1,9 @@
-<test-database execution-time-sec="189.74" date="Sun Feb 21 20:28:22 2010">
+<test-database execution-time-sec="188.90" date="Tue Feb 23 23:34:45 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-dependent="True" time-sum-sec="21.88"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1264886942L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="FAIL" time_sec="3.45" crc="1607120788"/>
                <choice name="001" result="FAIL" time_sec="4.25" crc="-1399683474"/>
@@ -26,19 +27,18 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" make-dependent="True" time-sum-sec="5.86"> 
+        <test title="Single Mode Example" make-dependent="True" time-sum-sec="5.02"> 
             <application file-name="000.sh" info-request-time="1264886942L" vanished="False"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="2.58" crc="1242242695"/>
-               <choice name="DEBUG" result="OK" time_sec="3.28" crc="1242242695"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.41" crc="1242242695"/>
+               <choice name="DEBUG" result="OK" time_sec="2.61" crc="1242242695"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/001">
         <test title="Multiple Modes, Mode Transitions" make-dependent="True" time-sum-sec="5.87"> 
             <application file-name="001.sh" info-request-time="1264886942L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.04" crc="-201583554"/>
                <choice name="DEBUG" result="OK" time_sec="2.83" crc="-201583554"/>

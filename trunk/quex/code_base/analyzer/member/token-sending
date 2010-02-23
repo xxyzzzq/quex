@@ -35,6 +35,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_NAME_TOKEN(take_text)(self_token_p(), &self,           \
                                        (Str),                           \
                                        (Str) + QUEX_NAME(strlen)(Str)); \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();                           \
         } while ( 0 )
 
 #define self_send2(ID, StrBegin, StrEnd)          \

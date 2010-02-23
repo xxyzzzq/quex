@@ -100,19 +100,24 @@ mode PROGRAM :
             else {
                 // -- higher indentation where it was not allowed to indent higher
                 //    => misaligned indentation
-                self_send1(QUEX_TKN_ERROR_MISALIGNED_INDENTATION, self.line_number_at_end());
+                self.token_p()->set_number(self.line_number_at_end());
+                self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION); 
             }
             return;
         }
+        int i = 0;
         while( self.indentation_stack.back() > Indentation ) {
-            self_send(QUEX_TKN_BLOCK_CLOSE);     
+            ++i;
             self.indentation_stack.pop_back();
         }
+        self_send_n(i, QUEX_TKN_BLOCK_CLOSE);     
 
         // -- 'landing' indentation has to fit an indentation border
         //    if not send an error
-        if( self.indentation_stack.back() != Indentation ) 
-            self_send1(QUEX_TKN_ERROR_MISALIGNED_INDENTATION, self.line_number_at_end());
+        if( self.indentation_stack.back() != Indentation ) {
+            self.token_p()->set_number(self.line_number_at_end());
+            self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION); 
+        }
     }
 
     {P_BACKSLASHED_NEWLINE} {

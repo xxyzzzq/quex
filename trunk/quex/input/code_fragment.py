@@ -155,16 +155,6 @@ def read_character_code(fh):
         # Try to interpret it as something else ...
         fh.seek(pos); return -1               
 
-def __parse_function_call_begin(fh):
-    """Parses: identifier '(' or
-               identifier ';'
-
-       RETURNS: string containing identifier, boolean 
-
-       The boolean is True, if there is potentially an argument list.
-                   is False, if there is no argument list.
-    """
-
 def __parse_function_argument_list(fh, ReferenceName):
     argument_list = []
     position = fh.tell()
@@ -172,7 +162,7 @@ def __parse_function_argument_list(fh, ReferenceName):
         # Read argument list
         tmp = fh.read(1)
         if   tmp == ";":
-            return identifier, []
+            return []
         elif tmp != "(":
             error_msg("Missing '(' or ';' after '%s'." % ReferenceName, fh)
         
@@ -223,7 +213,6 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
 
 def __create_token_sender_by_token_name(fh, TokenName):
     assert type(TokenName) in [str, unicode]
-    assert type(ArgListF) == bool
 
     # after 'send' the token queue is filled and one can safely return
     if TokenName.find(Setup.token_id_prefix) != 0:
@@ -260,17 +249,20 @@ def __create_token_sender_by_token_name(fh, TokenName):
         # There are only two allowed cases for implicit token member names:
         #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
         #  QUEX_TKN_XYZ(Begin, End) --> call to take_text(Begin, End)
-        if   len(argument_list) == 1:
+        if   len(argument_list) == 2:
+            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, (%s), (%s));\n" % \
+                   (argument_list[0], argument_list[1]) + \
+                   "self_send(%s);\n" % (TokenName)
+
+        elif len(argument_list) == 1:
             if argument_list[0] != "Lexeme":
                 error_msg("When one unnamed argument is specified it must be 'Lexeme'.\n"
                           "Found '%s'" % argument_list[0], fh)
             return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeBegin, LexemeEnd);\n" \
                    "self_send(%s);\n" % (TokenName)
 
-        elif len(argument_list) == 2:
-            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, (%s), (%s));\n" % \
-                   (argument_list[0], argument_list[1]) + \
-                   "self_send(%s);\n" % (TokenName)
+        elif len(argument_list) == 0:
+            return "self_send(%s);\n" % TokenName
 
         else:
             error_msg("Since 0.49.1, there are only the following brief token senders that can take\n"
