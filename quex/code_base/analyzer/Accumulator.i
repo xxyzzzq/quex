@@ -157,7 +157,7 @@ QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
     *(me->text.end) = (QUEX_TYPE_CHARACTER)0; /* see above '__quex_assert()' */
 
 #   define self (*me->the_lexer)
-    QUEX_TOKEN_POLICY_SET_ID(TokenID);
+    self_token_set_id(TokenID);
     if( QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, 
                                    me->the_lexer, 
                                    me->text.begin, 

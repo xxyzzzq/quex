@@ -8,35 +8,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-#   ifndef __QUEX_OPTION_PLAIN_C
-    QUEX_INLINE void   
-    QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID) 
-    { 
-        self_send(ID);
-    }
-
-    QUEX_INLINE void   
-    QUEX_MEMBER(send_n)(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
-    { 
-        QUEX_ERROR_EXIT(__QUEX_MESSAGE_MEMBER_FUNC_DEPRECATED(".send_n(TokenID)", 
-                                                              "self_send_n(ID)"));
-    }
-
-    QUEX_INLINE void   
-    QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID ID, QUEX_TYPE_CHARACTER* StrBegin) 
-    {
-        self_send1(ID, StrBegin);
-    }
-
-    QUEX_INLINE void   
-    QUEX_MEMBER(send)(const QUEX_TYPE_TOKEN_ID  ID, 
-                      QUEX_TYPE_CHARACTER*      X0, 
-                      QUEX_TYPE_CHARACTER*      X1) 
-    {
-        self_send2(ID, StrBegin, StrEnd);
-    }
-#   endif
-
 
 #undef self
 
