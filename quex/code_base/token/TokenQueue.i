@@ -19,7 +19,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     {                                                    
         me->read_iterator  = (QUEX_TYPE_TOKEN*)me->begin; 
         me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; 
-        me->remaining_repetitions_of_last_token_n = 0;     
     }
 
     QUEX_INLINE void
@@ -245,7 +244,6 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
     /* Reset the read and write iterators */
     token_queue->read_iterator  = token_queue->begin;
     token_queue->write_iterator = token_queue->begin + me->size;
-    token_queue->remaining_repetitions_of_last_token_n = 0;
 
     QUEX_TOKEN_QUEUE_ASSERT(token_queue);
 }
