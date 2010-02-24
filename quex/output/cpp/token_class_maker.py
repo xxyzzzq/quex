@@ -145,7 +145,20 @@ def get_setter_getter(Descr):
                   variable_name, " " * ((NL + TL)- len(variable_name)), 
                   access)
         txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
-        my_def = "    void%s set_%s(%s& Value) %s{ %s = Value; }" \
+
+        type_str = type_str.strip()
+        type_str = type_str.replace("\t", " ")
+        while type_str.find("  ") != -1:
+            type_str = type_str.replace("  ", " ")
+        if type_str not in ["char", "unsigned char", "singed char",
+                            "short", "unsigned short", "singed short",
+                            "int", "unsigned int", "singed int",
+                            "long", "unsigned long", "singed long",
+                            "float", "unsigned float", "singed float",
+                            "double", "unsigned double", "singed double"]:
+            type_str += "&"
+
+        my_def = "    void%s set_%s(%s Value) %s{ %s = Value; }" \
                % (" " * (TL - len("void")), 
                   variable_name, type_str, " " * (NL + TL - (len(type_str) + len(variable_name))), 
                   access)

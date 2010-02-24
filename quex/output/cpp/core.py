@@ -43,6 +43,13 @@ def write_configuration_header(Modes, IndentationSupportF):
         converter_new_str = "/* " + converter_new_str + " */"
         user_defined_converter_f = False
 
+    # Token repetition support
+    token_repetition_support_f = False
+    if IndentationSupportF or lexer_mode.token_repetition_support_f:
+        token_repetition_support_f = True
+        token_repetition_set       = lexer_mode.token_repetition_set
+        token_repetition_get       = lexer_mode.token_repetition_get
+
     namespace_main_str = make_safe_identifier(Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)[:-2])
 
     # -- determine character type according to number of bytes per ucs character code point
@@ -63,6 +70,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN",      Setup.token_policy == "users_token")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT"       token_repetition_support_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
     txt = __switch(txt, "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT", IndentationSupportF)     
