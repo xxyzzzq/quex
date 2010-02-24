@@ -82,6 +82,15 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 #   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() RETURN
 #endif
 
+#ifndef QUEX_OPTION_TOKEN_REPETITION_SUPPORT_DISABLED
+$$SWITCH$$ QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+#endif
+
+#ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+#   define __QUEX_TOKEN_REPETITION_NUMBER_SET(Token, N)  $$TOKEN_REPEAT_N_SET$$
+#   define __QUEX_TOKEN_REPETITION_NUMBER_GET(Token)     $$TOKEN_REPEAT_N_GET$$
+#endif
+
 /* OPTIONS: ____________________________________________________________________
  *
  * Activate/Deactivate Options via comment/uncomment. Options without a 
