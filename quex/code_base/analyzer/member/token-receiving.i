@@ -29,10 +29,11 @@ QUEX_NAMESPACE_MAIN_OPEN
             return result_p;  
         } 
 #       if QUEX_OPTION_TOKEN_REPETITION_SUPPORT
-        else if( __QUEX_TOKEN_REPETITION_NUMBER_GET(QUEX_NAME(TokenQueue_back)) > 0 ) {
+        else if(   self_token_id_get() == __QUEX_OPTION_REPEATED_TOKEN_ID 
+                && QUEX_TOKEN_NAME(repetition_n_get)(self_token_p()) > 0 ) {
             result_p = &QUEX_NAME(TokenQueue_back)();
-            __QUEX_TOKEN_REPETITION_NUMBER_SET((*result_p),
-                     (__QUEX_TOKEN_REPETITION_NUMBER_GET((*result_p)) - 1));
+            QUEX_TOKEN_NAME(repetition_n_set)(self_token_p(), 
+                     (QUEX_TOKEN_NAME(repetition_n_get)(*result_p) - 1);
             return result_p;  
         }
 #       endif
@@ -56,6 +57,16 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
     {
         register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+
+#       if QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+        if(    self_token_id_get() == __QUEX_OPTION_REPEATED_TOKEN_ID 
+            && QUEX_TOKEN_NAME(repetition_n_get)(me->token) > 0 ) {
+            result_p = &QUEX_NAME(TokenQueue_back)();
+            QUEX_TOKEN_NAME(repetition_n_set)(self_token_p(), 
+                     (QUEX_TOKEN_NAME(repetition_n_get)(*result_p) - 1);
+            return result_p;  
+        }
+#       endif
 
         __quex_assert(me->token != 0x0);
         self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);

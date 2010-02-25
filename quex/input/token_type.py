@@ -8,6 +8,8 @@ token_type_code_fragment_db = {
         "copy":        True, "body":       True, 
         "header":      True, "footer":     True,
         "take_text":   True,
+        "repetition_set":   True,
+        "repetition_get":   True,
         }
 
 class TokenTypeDescriptorCore:
