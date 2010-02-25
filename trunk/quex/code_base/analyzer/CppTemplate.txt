@@ -236,9 +236,6 @@ protected:
     void                               include_stack_delete();
 
 private:
-    //      -- include events (a file is included)
-    template<class InputHandleT> QUEX_NAME(Memento)*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-    void                                              memento_unpack(QUEX_NAME(Memento)*);
 #   endif
 
 public:

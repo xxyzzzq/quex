@@ -78,6 +78,14 @@ token_type {
        return false;      
    }
 
+   repetition_set {
+       self.number = N;
+   }
+
+   repetition_get {
+       return self.number;
+   }
+
    footer {
         inline std::ostream&
         operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)

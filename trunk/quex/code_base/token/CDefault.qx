@@ -74,6 +74,14 @@ token_type {
         */
    }
 
+   repetition_set {
+       self.number = N;
+   }
+
+   repetition_get {
+       return self.number;
+   }
+
    footer {
        /*
         */

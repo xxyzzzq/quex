@@ -561,8 +561,6 @@ memento_unpack_extension = CodeFragment()
 #                           number from inside the token.
 #-----------------------------------------------------------------------------------------
 token_repetition_support_f = False
-token_repetition_set = CodeFragment("((Token).number = (Value)")
-token_repetition_get = CodeFragment("((Token).number)")
 
 fragment_db = {
         "header":         "header",
@@ -571,10 +569,7 @@ fragment_db = {
         "memento":        "memento_class_extension",
         "memento_pack":   "memento_pack_extension",
         "memento_unpack": "memento_unpack_extension",
-        "token_repetition_set": "token_repetition_set",
-        "token_repetition_get": "token_repetition_set",
 }
-
 
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
