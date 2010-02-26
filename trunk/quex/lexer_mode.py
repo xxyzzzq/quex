@@ -550,18 +550,6 @@ memento_pack_extension = CodeFragment()
 memento_unpack_extension = CodeFragment()
 
 
-#-----------------------------------------------------------------------------------------
-# token_repetition_support: Quex can be told to return multiple times the same
-#                           token before further analyzsis happens. For this,
-#                           the engine needs to know how to read and write the
-#                           repetition number in the token itself.
-# token_repetition_get:     Code fragment that *reads* the remaining token repetition 
-#                           number from inside the token.
-# token_repetition_set:     Code fragment that *writes* the remaining token repetition 
-#                           number from inside the token.
-#-----------------------------------------------------------------------------------------
-token_repetition_support_f = False
-
 fragment_db = {
         "header":         "header",
         "body":           "class_body_extension",
@@ -602,6 +590,17 @@ shorthand_db = {}
 #              where they are defined. See token_ide_maker, class TokenInfo.
 #-----------------------------------------------------------------------------------------
 token_id_db = {}
+
+#-----------------------------------------------------------------------------------------
+# token_repetition_support: Quex can be told to return multiple times the same
+#                           token before further analyzsis happens. For this,
+#                           the engine needs to know how to read and write the
+#                           repetition number in the token itself.
+# If the 'token_repetition_token_id' == None, then the token repetition feature
+# is disabled. Otherwise, token repetition in 'token-receiving.i' is enabled
+# and the token id that can be repeated is 'token_repetition_token_id'.
+#-----------------------------------------------------------------------------------------
+token_repetition_token_id = ""
 
 #-----------------------------------------------------------------------------------------
 # token_type_definition: Object that defines a (user defined) token class.

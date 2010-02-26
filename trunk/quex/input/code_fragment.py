@@ -211,18 +211,19 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 
-def __create_token_sender_by_token_name(fh, TokenName):
-    assert type(TokenName) in [str, unicode]
-
-    # after 'send' the token queue is filled and one can safely return
+def verify_token_prefix_or_die(fh, TokenName):
+    global Setup
     if TokenName.find(Setup.token_id_prefix) != 0:
         error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
                   "found: '%s'" % TokenName, fh)
 
-    argument_list = __parse_function_argument_list(fh, TokenName)
+def token_id_db_verify_or_enter_token_id(fh, TokenName):
+    global Setup
 
-    # occasionally add token id automatically to database
+    verify_token_prefix_or_die(fh, TokenName)
+
     prefix_less_TokenName = TokenName[len(Setup.token_id_prefix):]
+    # Occasionally add token id automatically to database
     if not lexer_mode.token_id_db.has_key(prefix_less_TokenName):
         # DO NOT ENFORCE THE TOKEN ID TO BE DEFINED, BECAUSE WHEN THE TOKEN ID
         # IS DEFINED IN C-CODE, THE IDENTIFICATION IS NOT 100% SAFE.
@@ -237,7 +238,16 @@ def __create_token_sender_by_token_name(fh, TokenName):
         lexer_mode.token_id_db[prefix_less_TokenName] = \
                 TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
 
-    # create the token sender
+def __create_token_sender_by_token_name(fh, TokenName):
+    assert type(TokenName) in [str, unicode]
+
+    # Enter token_id into database, if it is not yet defined.
+    token_id_db_verify_or_enter_token_id(fh, TokenName)
+
+    # Parse the token argument list
+    argument_list = __parse_function_argument_list(fh, TokenName)
+
+    # Create the token sender
     explicit_member_names_f = False
     for arg in argument_list:
         if arg.find("=") != -1: explicit_member_names_f = True

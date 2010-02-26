@@ -29,7 +29,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             return result_p;  
         } 
 #       if QUEX_OPTION_TOKEN_REPETITION_SUPPORT
-        else if(   self_token_id_get() == __QUEX_OPTION_REPEATED_TOKEN_ID 
+        else if(   self_token_id_get() == __QUEX_SETTING_TOKEN_ID_REPETITION 
                 && QUEX_TOKEN_NAME(repetition_n_get)(self_token_p()) > 0 ) {
             result_p = &QUEX_NAME(TokenQueue_back)();
             QUEX_TOKEN_NAME(repetition_n_set)(self_token_p(), 
@@ -59,7 +59,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
 #       if QUEX_OPTION_TOKEN_REPETITION_SUPPORT
-        if(    self_token_id_get() == __QUEX_OPTION_REPEATED_TOKEN_ID 
+        if(    self_token_id_get() == __QUEX_SETTING_TOKEN_ID_REPETITION 
             && QUEX_TOKEN_NAME(repetition_n_get)(me->token) > 0 ) {
             result_p = &QUEX_NAME(TokenQueue_back)();
             QUEX_TOKEN_NAME(repetition_n_set)(self_token_p(), 

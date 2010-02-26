@@ -101,7 +101,7 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode", "token_type" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "define", "token", "mode", "repeated_token_id", "token_type" ] + lexer_mode.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
@@ -116,6 +116,8 @@ def parse_section(fh):
         #     -- 'init { ... }'     => define code that is to be pasted in the class' constructors
         #                              of the engine (e.g. "my_member = -1;")
         #     -- 'define { ... }'   => define patterns shorthands such as IDENTIFIER for [a-z]+
+        #     -- 'repeated_token_id = QUEX_TKN_ ...;' => enables token repetition, defines
+        #                                                the token id to be repeated.
         #     -- 'token { ... }'    => define token ids
         #     -- 'token_type { ... }'  => define a customized token type
         #
@@ -126,7 +128,23 @@ def parse_section(fh):
             return
 
         elif word == "start":
-            parse_initial_mode_definition(fh)
+            mode_name = parse_identifier_assignment(fh)
+            if mode_name == "":
+                error_msg("Missing mode_name after 'start ='", fh)
+            elif lexer_mode.initial_mode.get_pure_code() != "":
+                error_msg("start mode defined more than once!", fh, DontExitF=True)
+                error_msg("previously defined here",
+                          lexer_mode.initial_mode.filename,
+                          lexer_mode.initial_mode.line_n)
+        
+            lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, 
+                                                       get_current_line_info_number(fh))
+            return
+
+        elif word == "repeated_token_id":
+            token_id_str = parse_identifier_assignment(fh)
+            code_fragment.token_id_db_verify_or_enter_token_id(fh, token_id_str)
+            lexer_mode.token_repetition_token_id = token_id_str
             return
             
         elif word == "define":
@@ -224,24 +242,16 @@ def parse_pattern_name_definitions(fh):
                                             fh.name, get_current_line_info_number(fh),
                                             regular_expression_str)
 
-def parse_initial_mode_definition(fh):
+def parse_identifier_assignment(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
 
     verify_next_word(fh, "=")
     # specify the name of the intial lexical analyser mode
     skip_whitespace(fh)
-    mode_name = read_identifier(fh)
-    if mode_name == "":
-        error_msg("Missing identifier after 'start ='", fh)
+    identifier = read_identifier(fh)
     verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
 
-    if lexer_mode.initial_mode.get_pure_code() != "":
-        error_msg("start mode defined more than once!", fh, DontExitF=True)
-        error_msg("previously defined here",
-                  lexer_mode.initial_mode.filename,
-                  lexer_mode.initial_mode.line_n)
-        
-    lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh))
+    return identifier.strip()
 
 def parse_token_id_definitions(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
