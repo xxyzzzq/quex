@@ -149,6 +149,9 @@
         "Member function " NAME " has been deprecated\n"         \
         "in version 0.49.1. Please, use macro " REPLACEMENT "."
 
-#define QUEX_STRING(X)   #X
+#define QUEX_STRING(X)            #X
+#define QUEX_NUMBER_TO_STRING(x)  QUEX_STRING(x)
+#define QUEX_SOURCE_POS()         __FILE__ ":" QUEX_NUMBER_TO_STRING(__LINE__) ": "
+
 
 #endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */

@@ -60,24 +60,26 @@ def _do(Descr):
                                         Setup.language_db["$namespace-ref"](Descr.name_space) 
                                         + "__" + Descr.class_name)
     txt = blue_print(template_str,
-                     [
-                      ["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
-                      ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
-                      ["$$SETTERS_GETTERS$$",  get_setter_getter(Descr)],
-                      ["$$QUICK_SETTERS$$",    get_quick_setters(Descr)],
-                      ["$$COPY$$",             copy_str],
-                      ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
-                      ["$$FUNC_TAKE_TEXT$$",   take_text_str],
-                      ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
-                      ["$$HEADER$$",           Descr.header.get_code()],
-                      ["$$FOOTER$$",           Descr.footer.get_code()],
-                      ["$$BODY$$",             Descr.body.get_code()],
-                      ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
-                      ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
-                      ["$$TOKEN_CLASS$$",      Descr.class_name],
-                      ["$$NAMESPACE_OPEN$$",   Setup.language_db["$namespace-open"](Descr.name_space)],
-                      ["$$NAMESPACE_CLOSE$$",  Setup.language_db["$namespace-close"](Descr.name_space)],
-                     ])
+             [
+              ["$$BODY$$",                    Descr.body.get_code()],
+              ["$$CONSTRUCTOR$$",             Descr.constructor.get_code()],
+              ["$$COPY$$",                    copy_str],
+              ["$$DESTRUCTOR$$",              Descr.destructor.get_code()],
+              ["$$DISTINCT_MEMBERS$$",        get_distinct_members(Descr)],
+              ["$$FOOTER$$",                  Descr.footer.get_code()],
+              ["$$FUNC_TAKE_TEXT$$",          take_text_str],
+              ["$$HEADER$$",                  Descr.header.get_code()],
+              ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
+              ["$$NAMESPACE_CLOSE$$",         Setup.language_db["$namespace-close"](Descr.name_space)],
+              ["$$NAMESPACE_OPEN$$",          Setup.language_db["$namespace-open"](Descr.name_space)],
+              ["$$QUICK_SETTERS$$",          get_quick_setters(Descr)],
+              ["$$SETTERS_GETTERS$$",        get_setter_getter(Descr)],
+              ["$$TOKEN_CLASS$$",            Descr.class_name],
+              ["$$TOKEN_REPETITION_N_GET$$", Descr.repetition_get.get_code()],
+              ["$$TOKEN_REPETITION_N_SET$$", Descr.repetition_set.get_code()],
+              ["$$UNION_MEMBERS$$",          get_union_members(Descr)],
+              ["$$VIRTUAL_DESTRUCTOR$$",     virtual_destructor_str],
+             ])
 
     # If declaration and implementation happen in a single file (C++) 
     # then we are done at this point
