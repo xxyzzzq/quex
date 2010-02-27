@@ -97,7 +97,7 @@
                                     
 #if  defined(QUEX_TOKEN_CONTAINS_NO_ID)
 #   define __QUEX_TOKEN_POLICY_SET_ID(ID) \
-           /* empty */
+           std::abort()/* empty */
 #else
 #   define __QUEX_TOKEN_POLICY_SET_ID(ID) \
            do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
