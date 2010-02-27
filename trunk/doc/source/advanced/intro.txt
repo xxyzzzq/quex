@@ -14,6 +14,7 @@ the optimization of memory consumption and analysis speed.
 
    token-policies.txt
    token-class.txt
+   token-repetition.txt
    line-column-number-counting.txt
    stream-navigation.txt
    include-stack.txt

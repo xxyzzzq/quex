@@ -397,6 +397,33 @@ code section:
           complexity. Instead, defining the constructors in the ``body`` section
           is very ease and intuitive.
 
+When token repetition (see :ref:`sec-token-repetition`) is to be used, then 
+the two following code fragments need to be defined 
+
+   .. describe:: repetition_get
+
+        The only implicit argument is ``self``. The return value shall be
+        the stored repetition number.
+
+   .. describe:: repetition_set
+
+        Implicit arguments are ``self`` for the current token and ``N`` for
+        the repetition number to be stored.
+
+The code inside these fragments specifies where and how inside the token
+the repetition number is to be stored and restored. In most cases the setting
+of an integer member will do, e.g.
+
+   .. code-block:: cpp
+
+       repetition_set {
+           self.number = N;
+       }
+
+       repetition_get {
+           return self.number;
+       }
+
 In order to paste code fragments before and after the definition of the token class,
 the following two sections may be used.
 

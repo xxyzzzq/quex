@@ -1,4 +1,4 @@
-<test-database execution-time-sec="183.68" date="Fri Feb 26 08:03:45 2010">
+<test-database execution-time-sec="188.19" date="Sat Feb 27 09:57:30 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-dependent="True" time-sum-sec="21.88"> 
@@ -47,11 +47,11 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" make-dependent="True" time-sum-sec="2.00"> 
+        <test title="Indentation Based Scopes" make-dependent="True" time-sum-sec="6.51"> 
             <application file-name="002.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.99" crc="-1895589146"/>
-               <choice name="DEBUG" result="FAIL" time_sec="1.02" crc="-1895589146"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="3.26" crc="-1895589146"/>
+               <choice name="DEBUG" result="FAIL" time_sec="3.26" crc="-1895589146"/>
             </choice-list>
         </test>
     </group>

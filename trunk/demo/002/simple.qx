@@ -62,6 +62,10 @@ token {
     EVENT_MODE_CHANGE
 }
 
+/* Enables token repetition and defines the token to be
+ * potentially repeated.                                */
+repeated_token_id = QUEX_TKN_BLOCK_CLOSE;
+
 body {
     std::vector<int>  indentation_stack;
     bool              allow_opening_indentation_f;
@@ -169,7 +173,8 @@ mode PROGRAM :
         RETURN;
     }
     {P_NUMBER} {
-        self_send1(QUEX_TKN_NUMBER, atoi((const char*)Lexeme));
+        self_token_p()->set_number(atoi((const char*)Lexeme));
+        self_send(QUEX_TKN_NUMBER);
         RETURN;
     }
 
