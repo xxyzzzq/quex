@@ -114,7 +114,7 @@ mode PROGRAM :
             ++i;
             self.indentation_stack.pop_back();
         }
-        self_send_n(i, QUEX_TKN_BLOCK_CLOSE);     
+        if( i != 0 ) self_send_n(i, QUEX_TKN_BLOCK_CLOSE);     
 
         // -- 'landing' indentation has to fit an indentation border
         //    if not send an error

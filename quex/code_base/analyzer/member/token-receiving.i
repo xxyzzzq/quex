@@ -29,8 +29,8 @@ QUEX_NAMESPACE_MAIN_OPEN
             return result_p;  
         } 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        else if( __QUEX_REPEATED_TOKEN_PRESENT() ) {
-            __QUEX_REPEATED_TOKEN_DECREMENT_N();
+        else if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
+            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
             return self_token_p();  
         }
 #       endif
@@ -44,14 +44,14 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&me->_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
+        result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        if(    self_token_get_id() == __QUEX_SETTING_TOKEN_ID_REPETITION ) {
-            QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO();
-            __QUEX_REPEATED_TOKEN_DECREMENT_N(); /* First rep. is sent now. */
+        if( result_p->_id == __QUEX_SETTING_TOKEN_ID_REPETITION ) {
+            QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(result_p);
+            __QUEX_REPEATED_TOKEN_DECREMENT_N(result_p); /* First rep. is sent now. */
         }
 #       endif
-
-        result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
 
         return result_p;
     }
@@ -64,9 +64,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        if( __QUEX_REPEATED_TOKEN_PRESENT() ) {
-            __QUEX_REPEATED_TOKEN_DECREMENT_N();
-            return self_token_get_id();  
+        if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
+            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
+            return self_token_p()->_id;  
         }
 #       endif
 
@@ -78,8 +78,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         if(    self_token_get_id() == __QUEX_SETTING_TOKEN_ID_REPETITION ) {
-            QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO();
-            __QUEX_REPEATED_TOKEN_DECREMENT_N(); /* First rep. is sent now. */
+            QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(self_token_p());
+            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p()); /* First rep. is sent now. */
         }
 #       endif
 
