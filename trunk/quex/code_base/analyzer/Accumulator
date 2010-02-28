@@ -31,16 +31,19 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_ANALYZER* the_lexer;     
 
 #   ifndef __QUEX_OPTION_PLAIN_C
-    public:
-        void  flush(const QUEX_TYPE_TOKEN_ID TokenID);
-        void  clear();
-        void  add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
-        void  add_chararacter(const QUEX_TYPE_CHARACTER);
-        void  print_this();
-    private:
         friend class QUEX_TYPE_ANALYZER;
 #   endif
     } QUEX_NAME(Accumulator);
+
+#   define self_accumulator_add(Begin, End)      QUEX_NAME(Accumulator_add)(&self, Begin, End)
+#   define self_accumulator_add_character(Char)  QUEX_NAME(Accumulator_add_character)(&self, Char)
+#   define self_accumulator_clear()              QUEX_NAME(Accumulator_add)(&self)
+
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#       define self_accumulator_flush()          QUEX_NAME(Accumulator_flush)(&self)
+#   else
+#       define self_accumulator_flush()          __self_result_token_id = QUEX_NAME(Accumulator_flush)(&self)
+#   endif
 
     QUEX_INLINE void
     QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*, QUEX_TYPE_ANALYZER*);

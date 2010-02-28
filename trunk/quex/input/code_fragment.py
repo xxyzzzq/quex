@@ -265,11 +265,15 @@ def __create_token_sender_by_token_name(fh, TokenName):
                    "self_send(%s);\n" % (TokenName)
 
         elif len(argument_list) == 1:
-            if argument_list[0] != "Lexeme":
-                error_msg("When one unnamed argument is specified it must be 'Lexeme'.\n"
-                          "Found '%s'" % argument_list[0], fh)
-            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeBegin, LexemeEnd);\n" \
-                   "self_send(%s);\n" % (TokenName)
+            if argument_list[0] == "Lexeme":
+                return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeBegin, LexemeEnd);\n" \
+                       "self_send(%s);\n" % (TokenName)
+            elif argument_list[0] == "LexemeNull":
+                return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeNull, LexemeNull);\n" \
+                       "self_send(%s);\n" % (TokenName)
+            else:
+                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"
+                          "or 'LexemeNull'. Found '%s'" % argument_list[0], fh)
 
         elif len(argument_list) == 0:
             return "self_send(%s);\n" % TokenName

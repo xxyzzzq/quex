@@ -84,7 +84,15 @@ init {
 mode END_OF_FILE :
 <inheritable: only>  
 {    
-    <<EOF>> => QUEX_TKN_TERMINATION;
+    <<EOF>> {
+        if( 0 ) {
+            /* End of File closes any open indentation */
+            if( self.indentation_stack.size() > 1 ) {
+                self_send_n(self.indentation_stack.size()-1, QUEX_TKN_BLOCK_CLOSE);
+            }
+        }
+        self_send(QUEX_TKN_TERMINATION);
+    }
 }
 
 
@@ -109,18 +117,24 @@ mode PROGRAM :
             }
             return;
         }
-        int i = 0;
-        while( self.indentation_stack.back() > Indentation ) {
-            ++i;
-            self.indentation_stack.pop_back();
-        }
-        if( i != 0 ) self_send_n(i, QUEX_TKN_BLOCK_CLOSE);     
+        else /* Indentation <= self.indentation_stack.back() */ {
+            
+            int i = 0;
+            while( Indentation < self.indentation_stack.back() ) {
+                ++i;
+                self.indentation_stack.pop_back();
+            }
 
-        // -- 'landing' indentation has to fit an indentation border
-        //    if not send an error
-        if( self.indentation_stack.back() != Indentation ) {
-            self.token_p()->set_number(self.line_number_at_end());
-            self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION); 
+            /* 'landing' indentation has to fit an indentation border
+             * if not send an error                                  */
+            if( Indentation != self.indentation_stack.back() ) {
+                self.token_p()->set_number(self.line_number_at_end());
+                self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION); 
+            }
+            else if( i != 0 ) {
+                self_send_n(i, QUEX_TKN_BLOCK_CLOSE);     
+            }
+
         }
     }
 

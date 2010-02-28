@@ -1,4 +1,4 @@
-<history date="Sat Feb 27 09:57:30 2010" element-n="637">
+<history date="Sun Feb 28 21:58:04 2010" element-n="644">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -1343,5 +1343,14 @@
     </day>
     <day year="2010" month="02" day="27">
         <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:57:30"/>
+    </day>
+    <day year="2010" month="02" day="28">
+        <crc-error time="15:40:45" application="other-compilers-intel.sh" choice="002" database-crc="1706884011" real-crc="-1113072606"/>
+        <crc-error time="15:40:57" application="other-compilers-sun.sh" choice="001" database-crc="-1399683474" real-crc="1867299994"/>
+        <crc-error time="15:41:01" application="other-compilers-sun.sh" choice="002" database-crc="145868241" real-crc="876964816"/>
+        <crc-error time="15:41:05" application="other-compilers-sun.sh" choice="003" database-crc="1412966968" real-crc="-1995325101"/>
+        <crc-error time="15:41:05" application="other-compilers-sun.sh" choice="005" database-crc="-581593297" real-crc="46396233"/>
+        <crc-error time="15:41:05" application="other-compilers-sun.sh" choice="006" database-crc="1243948531" real-crc="-709399709"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:58:04"/>
     </day>
 </history>

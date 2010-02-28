@@ -21,7 +21,9 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(DSWITCH_ASSERTS)                              \
-	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 
+	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 \
+	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=10               \
+	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=4      
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
    

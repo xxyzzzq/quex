@@ -4,13 +4,15 @@ Direct Buffer Access
 ====================
 
 
-A generated lexical analyzer runs its analysis on data located in 
-a buffer. In general, this buffer is filled automatically by the
-underlying buffer management which relies on some type of input
-stream. It is, however, possible to access the buffer directly which,
-in some cases may be advantegous. The following methods can be 
-supplied to setup the analyzer's character buffer. The term 'framework'
-is used to refer to some kind of entity that delivers the data.
+A generated lexical analyzer runs its analysis on data located in a buffer. In
+general, this buffer is filled automatically by the underlying buffer
+management which relies on some type of input stream. It is, however, possible
+to access the buffer directly which, in some cases may be advantegous. In
+particular parsing the standard input, i.e. ``cin`` in C++ or ``stdin`` in C
+must rely on these mechanisms (see example in ``demo/010/stdinlexer.cpp``). The
+following methods can be supplied to setup the analyzer's character buffer. The
+term 'framework' is used to refer to some kind of entity that delivers the
+data.
 
 #. *Copying* content into the buffer.
 
@@ -53,9 +55,6 @@ is used to refer to some kind of entity that delivers the data.
    To avoid this, report one character less when using ``buffer_fill_region_finish``,
    or make sure that the terminating zero is not copied.
       
-
-
-
 In case of interrupted character streams, there is no direct way for the
 analyzer engine to determine wether a stream is terminated or not. Thus, either
 a 'end of analyzis' pattern must be introduced, or the analyzis is to be
