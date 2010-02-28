@@ -143,6 +143,7 @@ QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
     ++(me->text.end);
 }
 
+#if 0
 QUEX_INLINE void
 QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
                              const QUEX_TYPE_TOKEN_ID  TokenID)
@@ -170,8 +171,8 @@ QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
     }
     QUEX_TOKEN_POLICY_PREPARE_NEXT();            
 #   undef  self
-
 }
+#endif
 
 QUEX_INLINE void  
 QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me)
