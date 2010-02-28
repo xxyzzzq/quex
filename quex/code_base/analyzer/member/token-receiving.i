@@ -23,17 +23,17 @@ QUEX_NAMESPACE_MAIN_OPEN
     { 
         register QUEX_TYPE_TOKEN* result_p = 0x0;
 
+#       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
+        if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
+            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
+            return self_token_p();  
+        } else
+#       endif
         /* Tokens are in queue --> take next token from queue */ 
         if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
             result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
             return result_p;  
         } 
-#       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        else if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
-            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
-            return self_token_p();  
-        }
-#       endif
 
         /* Restart filling the queue from begin */
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
@@ -44,16 +44,23 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&me->_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
-        result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
+        result_p = me->_token_queue.read_iterator;
         if( result_p->_id == __QUEX_SETTING_TOKEN_ID_REPETITION ) {
             QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(result_p);
-            __QUEX_REPEATED_TOKEN_DECREMENT_N(result_p); /* First rep. is sent now. */
-        }
+            /* First rep. is sent below. */
+            if( QUEX_NAME_TOKEN(repetition_n_get)(result_p) == 1 ) {
+                (void)QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+            } else {
+                __QUEX_REPEATED_TOKEN_DECREMENT_N(result_p); 
+            }
+            return result_p;
+        } else 
 #       endif
-
-        return result_p;
+        {
+            return QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+        }
     }
 
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)

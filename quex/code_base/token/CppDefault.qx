@@ -72,7 +72,8 @@ token_type {
    }
 
    take_text {
-       self.text = Begin;
+       /* It cannot be assumed that the lexeme is zero terminated. */
+       self.text.assign(Begin, End-Begin);
        /* This token copied the text from the chunk into the string, 
         * so we do not claim owneship over it.                       */
        return false;      

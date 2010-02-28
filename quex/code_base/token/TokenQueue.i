@@ -20,8 +20,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->read_iterator  = (QUEX_TYPE_TOKEN*)me->begin; 
         me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(me->begin, 0xFF, 
-                          sizeof(QUEX_TYPE_TOKEN)*(me->end - me->begin));
+        /* __QUEX_STD_memset(me->begin, 0xFF, sizeof(QUEX_TYPE_TOKEN)*(me->end - me->begin)); */
 #       endif 
     }
 

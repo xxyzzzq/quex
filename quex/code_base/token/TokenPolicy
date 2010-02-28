@@ -137,7 +137,7 @@
 #      define QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(TokenP) \
            if( QUEX_NAME_TOKEN(repetition_n_get)(TokenP) == 0 ) {               \
                QUEX_ERROR_EXIT("\nToken has been sent with zero repetitions.\n" \
-                            "Did you call self_send_n(N,T) with N = 0?\n");     \
+                               "Did you call self_send_n(N,T) with N = 0?\n");  \
            }
 #   else
 #      define QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(TokenP) /* empty */

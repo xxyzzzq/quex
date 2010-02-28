@@ -184,28 +184,6 @@ QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me)
     __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)me->text.begin);
 }
 
-#ifndef __QUEX_OPTION_PLAIN_C
-QUEX_INLINE void  
-QUEX_NAME(Accumulator)::print_this()
-{ QUEX_NAME(Accumulator_print_this)(this); }
-
-QUEX_INLINE void
-QUEX_NAME(Accumulator)::flush(const QUEX_TYPE_TOKEN_ID  TokenID)
-{ QUEX_NAME(Accumulator_flush)(this, TokenID); }
-
-QUEX_INLINE void 
-QUEX_NAME(Accumulator)::add_chararacter(const QUEX_TYPE_CHARACTER  Character)
-{ QUEX_NAME(Accumulator_add_character)(this, Character); }
-
-QUEX_INLINE void 
-QUEX_NAME(Accumulator)::add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
-{ QUEX_NAME(Accumulator_add)(this, Begin, End); }
-
-QUEX_INLINE void
-QUEX_NAME(Accumulator)::clear()
-{ QUEX_NAME(Accumulator_clear)(this); }
-#endif
-
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/MemoryManager.i>
