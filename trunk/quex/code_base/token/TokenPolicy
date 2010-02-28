@@ -125,22 +125,22 @@
 
 #ifdef  QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 
-#   define __QUEX_REPEATED_TOKEN_PRESENT() \
-           (    self_token_get_id() == __QUEX_SETTING_TOKEN_ID_REPETITION \
-             && QUEX_NAME_TOKEN(repetition_n_get)(self_token_p()) > 0 )  
+#   define __QUEX_REPEATED_TOKEN_PRESENT(TokenP) \
+           (    TokenP->_id == __QUEX_SETTING_TOKEN_ID_REPETITION \
+             && QUEX_NAME_TOKEN(repetition_n_get)(TokenP) > 0 )  
 
-#   define __QUEX_REPEATED_TOKEN_DECREMENT_N() \
-            QUEX_NAME_TOKEN(repetition_n_set)(self_token_p(),                      \
-                            (QUEX_NAME_TOKEN(repetition_n_get)(self_token_p()) - 1))
+#   define __QUEX_REPEATED_TOKEN_DECREMENT_N(TokenP) \
+            QUEX_NAME_TOKEN(repetition_n_set)((TokenP),                      \
+                            (QUEX_NAME_TOKEN(repetition_n_get)(TokenP) - 1))
 
 #   ifdef QUEX_OPTION_ASSERTS 
-#      define QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO() \
-           if( QUEX_NAME_TOKEN(repetition_n_get)(self_token_p()) == 0 ) {       \
+#      define QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(TokenP) \
+           if( QUEX_NAME_TOKEN(repetition_n_get)(TokenP) == 0 ) {               \
                QUEX_ERROR_EXIT("\nToken has been sent with zero repetitions.\n" \
-                            "Did you call self_send_n(N,T) with N = 0?\n");  \
+                            "Did you call self_send_n(N,T) with N = 0?\n");     \
            }
 #   else
-#      define QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO() /* empty */
+#      define QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(TokenP) /* empty */
       
 #   endif
 
