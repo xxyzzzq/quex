@@ -1,6 +1,7 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
+Calc_parser.tab.cpp:1174: warning: conversion to ‘short int’ from ‘int’ may alter its value
 executing ...
 Calculator Example Application
 Contributed by: Marco Antonelli (date: 09y11m7d)

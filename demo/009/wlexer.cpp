@@ -14,7 +14,7 @@ int
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::Token         Token;
+    quex::Token         *token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::tiny_wlexer*  qlex = 0x0;
@@ -37,10 +37,10 @@ main(int argc, char** argv)
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
     do {
-        qlex->receive(&Token);
-        cout << string(Token) << endl;
+        token = qlex->receive();
+        cout << string(*token) << endl;
         ++number_of_tokens;
-    } while( Token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";

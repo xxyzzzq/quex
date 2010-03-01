@@ -41,7 +41,7 @@ endif
 
 CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
        -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-       -no-deprecated -Wall
+       -Wall -Wconversion
 
 LD = $(COMPILER) $(LIBICONV)
 

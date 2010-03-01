@@ -10,8 +10,8 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::Token           token;
-    quex::tiny_lexer      qlex(MESSAGING_FRAMEWORK_BUFFER, MESSAGING_FRAMEWORK_BUFFER_SIZE); 
+    quex::Token        token;
+    quex::tiny_lexer   qlex(MESSAGING_FRAMEWORK_BUFFER, MESSAGING_FRAMEWORK_BUFFER_SIZE); 
 
     // -- Call the low lever driver to fill the fill region
     size_t receive_n = messaging_framework_receive_to_internal_buffer();
@@ -20,8 +20,9 @@ main(int argc, char** argv)
     qlex.buffer_fill_region_finish(receive_n-1);
 
     // -- Loop until the 'termination' token arrives
+    qlex.token_p_set(&token);
     do {
-        qlex.receive(&token);
+        qlex.receive();
 
         if( token.type_id() == QUEX_TKN_BYE ) 
             cout << "## ";

@@ -70,19 +70,19 @@ mode STRING_READER :
 <entry: PROGRAM>
 <exit:  PROGRAM>
 {
-    on_entry { self.accumulator.clear(); }
+    on_entry { self_accumulator_clear(); }
     on_exit  { 
-        self.accumulator.flush(QUEX_TKN_STRING); 
+        self_accumulator_flush(QUEX_TKN_STRING); 
         self_send(QUEX_TKN_QUOTE);
     }
 
-    {P_BACKSLASHED_STRING_DELIMITER} { self.accumulator.add(Lexeme, LexemeEnd); }
-    {P_BACKSLASHED_BACKSLASH}        { self.accumulator.add(Lexeme, LexemeEnd); }
+    {P_BACKSLASHED_STRING_DELIMITER} { self_accumulator_add(Lexeme, LexemeEnd); }
+    {P_BACKSLASHED_BACKSLASH}        { self_accumulator_add(Lexeme, LexemeEnd); }
 
     {P_STRING_DELIMITER}             { self << PROGRAM; RETURN; }
 
     <<FAIL>> {
-        self.accumulator.add(Lexeme, LexemeEnd); 
+        self_accumulator_add(Lexeme, LexemeEnd); 
     }
 }
 
