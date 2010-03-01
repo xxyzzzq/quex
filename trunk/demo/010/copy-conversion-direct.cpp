@@ -75,12 +75,13 @@ main(int argc, char** argv)
             
             // Let the previous token be the current token of the previous run.
             swap(&prev_token, &current_token);
+            qlex.token_p_set(current_token);
 
-            qlex.receive(current_token);
+            const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( current_token->type_id() == QUEX_TKN_TERMINATION )
+            if( TokenID == QUEX_TKN_TERMINATION )
                 break;
 
             // If the previous token was not a TERMINATION, it can be considered
@@ -88,7 +89,7 @@ main(int argc, char** argv)
             if( prev_token->type_id() != QUEX_TKN_TERMINATION )
                 cout << "Consider: " << string(*prev_token) << endl;
 
-            if( current_token->type_id() == QUEX_TKN_BYE ) 
+            if( TokenID == QUEX_TKN_BYE ) 
                 break;
         }
 

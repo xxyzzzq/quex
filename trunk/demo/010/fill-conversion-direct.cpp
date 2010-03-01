@@ -36,9 +36,10 @@ main(int argc, char** argv)
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
             swap(prev_token, current_token);
+            qlex.token_p_set(current_token);
 
-            qlex.receive(current_token);
-            if( current_token->type_id() == QUEX_TKN_TERMINATION || current_token->type_id() == QUEX_TKN_BYE )
+            const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
+            if( TokenID == QUEX_TKN_TERMINATION || TokenID == QUEX_TKN_BYE )
                 break;
             if( prev_token->type_id() != QUEX_TKN_TERMINATION ) 
                 cout << "Consider: " << string(*prev_token) << endl;

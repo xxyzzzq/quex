@@ -12,9 +12,8 @@ main(int argc, char** argv)
 
     if( argc == 1 ) return 0;
 
-    Token     token;
-    bool      BigEndianF = (strcmp(argv[1], "BE") == 0); 
-
+    Token*       token;
+    bool         BigEndianF = (strcmp(argv[1], "BE") == 0); 
     const char*  file_name = BigEndianF ? "example-utf16be.txt" : "example-utf16le.txt";
    
     /* NOTE: On a big endian machine (e.g. PowerPC) the byte reversion flag
@@ -25,17 +24,17 @@ main(int argc, char** argv)
     printf("## byte order reversion = %s\n", qlex.byte_order_reversion() ? "true" : "false");
     
     do {
-        qlex.receive(&token);
+        token = qlex.receive();
 
-        printf("%s\t", (char*)token.type_id_name().c_str());
-        for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token.get_text()).c_str();
+        printf("%s\t", (char*)token->type_id_name().c_str());
+        for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token->get_text()).c_str();
             *iterator; ++iterator) {
             printf("%04X.", *iterator);
         }
         printf("\n");
 
         // (*) check against 'termination'
-    } while( token.type_id() != TKN_TERMINATION );
+    } while( token->type_id() != TKN_TERMINATION );
 
     return 0;
 }

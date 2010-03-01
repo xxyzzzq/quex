@@ -1,11 +1,11 @@
-simple.qx:22:7: warning: line number out of range
 simple.qx:23:7: warning: line number out of range
 simple.qx:24:7: warning: line number out of range
-simple.qx:21:7: warning: line number out of range
-simple.qx:25:7: warning: line number out of range
+simple.qx:24:7: warning: line number out of range
+simple.qx:22:7: warning: line number out of range
 simple.qx:26:7: warning: line number out of range
-simple.qx:17:7: warning: line number out of range
-simple.qx:19:7: warning: line number out of range
+simple.qx:27:7: warning: line number out of range
+simple.qx:18:7: warning: line number out of range
+simple.qx:20:7: warning: line number out of range
 Consider: HELLO 'hello' 
 Consider: NUMBER '4711' 
 Consider: HELLO 'bonjour' 
