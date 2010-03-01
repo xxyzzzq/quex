@@ -9,16 +9,16 @@ mode ONE_AND_ONLY
 {
 	
 	<<EOF>>     => TKN_TERMINATION;
-	([0-9]+[.][0-9]*)|([.][0-9]+)|([0-9]+)		=> TKN_NUM(Lexeme);//{self.send(TKN_NUM, Lexeme);RETURN;}
+	([0-9]+[.][0-9]*)|([.][0-9]+)|([0-9]+)		=> TKN_NUM(Lexeme);
 	[ \t]+		{}
-	['\n']		{self.send('\n');RETURN;}
-	['+']		{self.send('+');RETURN;}
-	['\-']		{self.send('-');RETURN;}
-	['*']		{self.send('*');RETURN;}
-	['/']		{self.send('/');RETURN;}
-	['^']		{self.send('^');RETURN;}
-	['(']		{self.send('(');RETURN;}
-	[')']		{self.send(')');RETURN;}
+	['\n']		{self_send('\n');RETURN;}
+	['+']		{self_send('+');RETURN;}
+	['\-']		{self_send('-');RETURN;}
+	['*']		{self_send('*');RETURN;}
+	['/']		{self_send('/');RETURN;}
+	['^']		{self_send('^');RETURN;}
+	['(']		{self_send('(');RETURN;}
+	[')']		{self_send(')');RETURN;}
 	
 }
 

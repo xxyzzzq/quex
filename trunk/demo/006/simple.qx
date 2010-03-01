@@ -12,7 +12,7 @@ token {
 }
 mode ONE_AND_ONLY
 {
-    <<EOF>>   => QUEX_TKN_TERMINATION((const uint8_t*)"");
+    <<EOF>>   => QUEX_TKN_TERMINATION(LexemeNull);
 
     "hey"                    => QUEX_TKN_HEY________________(Lexeme);
     "hallo"                  => QUEX_TKN_HALLO______________(Lexeme);
@@ -22,6 +22,6 @@ mode ONE_AND_ONLY
     (hey)+/hey               => QUEX_TKN_HEY_P___HEY________(Lexeme);
     hey/(hey|hallo)+         => QUEX_TKN_HEY_____HEY_HALLO_P(Lexeme);
     (hey)+/((he[y]?)|hallo)+ => QUEX_TKN_HEY_P___HEY_ETC____(Lexeme);
-    [ \n]+                   => QUEX_TKN_WHITESPACE((const uint8_t*)"");
+    [ \n]+                   => QUEX_TKN_WHITESPACE(LexemeNull);
 }
 

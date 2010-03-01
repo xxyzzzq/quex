@@ -38,6 +38,7 @@ main(int argc, char** argv)
     prev_token    = &(token_bank[1]);
     current_token = &(token_bank[0]);
     current_token->set(QUEX_TKN_TERMINATION);
+
     //
     // -- trigger reload of memory
     chunk.begin = chunk.end;
@@ -74,12 +75,13 @@ main(int argc, char** argv)
             
             // Let the previous token be the current token of the previous run.
             swap(&prev_token, &current_token);
+            qlex.token_p_set(current_token);
 
-            qlex.receive(current_token);
+            const int TokenID = qlex.receive();
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( current_token->type_id() == QUEX_TKN_TERMINATION || current_token->type_id() == QUEX_TKN_BYE )
+            if( TokenID == QUEX_TKN_TERMINATION || TokenID == QUEX_TKN_BYE )
                 break;
 
             // If the previous token was not a TERMINATION, it can be considered

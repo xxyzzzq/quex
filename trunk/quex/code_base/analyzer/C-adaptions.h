@@ -22,6 +22,7 @@
 
 /* Accumulator ______________________________________________________________*/
 #   undef self_accumulator_add
+#   undef self_accumulator_add_character
 #   undef self_accumulator_clear
 #   undef self_accumulator_flush
 /* Indentation/Counter _____________________________________________________*/
@@ -65,11 +66,6 @@
 #define self_pop_drop_mode()              QUEX_NAME(pop_drop_mode)(&self)
 #define self_push_mode()                  QUEX_NAME(push_mode)(&self, (NewModeP))
 
-#define self_accumulator_clear()                     QUEX_NAME(Accumulator_clear)(&self.accumulator)
-#define self_accumulator_flush(TOKEN_ID)             QUEX_NAME(Accumulator_flush)(&self.accumulator, \
-                                                                                  TOKEN_ID)
-#define self_accumulator_add(LexemeBegin, LexemeEnd) QUEX_NAME(Accumulator_add)(&self.accumulator, \
-                                                               (LexemeBegin), (LexemeEnd))
 #ifdef      QUEX_OPTION_LINE_NUMBER_COUNTING
 #   define  self_line_number_at_begin()   (self.counter.base._line_number_at_begin)
 #   define  self_line_number_at_end()     (self.counter.base._line_number_at_end)
@@ -84,5 +80,33 @@
 #   define  self_indentation()                    (self.counter._indentation)
 #   define  self_disable_next_indentation_event() (self.counter._indentation_event_enabled_f = false)
 #endif
+
+/* Accumulator ______________________________________________________________*/
+#   define self_accumulator_add(Begin, End)      QUEX_NAME(Accumulator_add)(&self.accumulator, Begin, End)
+#   define self_accumulator_add_character(Char)  QUEX_NAME(Accumulator_add_character)(&self.accumulator, Char)
+#   define self_accumulator_clear()              QUEX_NAME(Accumulator_clear)(&self.accumulator)
+#   define self_accumulator_flush(TokenID)                                            \
+    do {                                                                              \
+        /* All functions must ensure: there is one cell to store terminating zero. */ \
+        __quex_assert(self.accumulator.text.end < self.accumulator.text.memory_end);  \
+                                                                                      \
+        /* If no text is to be flushed, return undone */                              \
+        if( self.accumulator.text.begin == self.accumulator.text.end ) break;         \
+                                                                                      \
+        *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \
+                                                                                      \
+        self_token_set_id(TokenID);                                                   \
+        if( QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                 \
+                                       self.accumulator.text.begin,                   \
+                                       self.accumulator.text.end) == false ) {        \
+            /* The called function does not need the memory chunk, we reuse it. */    \
+            QUEX_NAME(Accumulator_clear)(&self.accumulator);                          \
+        } else {                                                                      \
+            /* The called function wants to use the memory, so we get some new. */    \
+            QUEX_NAME(Accumulator_init_memory)(&self.accumulator);                    \
+        }                                                                             \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                             \
+    } while(0)
+
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__C_ADAPTIONS_H */
