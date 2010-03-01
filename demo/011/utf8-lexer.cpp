@@ -10,21 +10,21 @@ main(int argc, char** argv)
 {        
     using namespace quex;
 
-    Token    token;
+    Token*   token;
     UTF8Lex  qlex("example-utf8.txt");
     
 
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex.receive(&token);
+        token = qlex.receive();
 
         // (*) print out token information
-        printf("%s\t", (char*)token.type_id_name().c_str());
-        printf("%s\n", (char*)(token.get_text()).c_str());
+        printf("%s\t", (char*)token->type_id_name().c_str());
+        printf("%s\n", (char*)(token->get_text()).c_str());
 
         // (*) check against 'termination'
-    } while( token.type_id() != TKN_TERMINATION );
+    } while( token->type_id() != TKN_TERMINATION );
 
     return 0;
 }

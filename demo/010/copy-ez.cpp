@@ -15,15 +15,17 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
-    quex::Token           token;           // Two tokens required, one for look-ahead
-    QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
+    // Zero pointer to constructor --> memory managed by user
+    quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
+    quex::Token           token;           
+    QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
     MemoryChunk           chunk;
 
     // -- trigger reload of memory
     chunk.begin = chunk.end;
 
     // -- LOOP until 'bye' token arrives
+    qlex.token_p_set(&token);
     while( 1 + 1 == 2 ) {
         // -- Receive content from a messaging framework
         //    The function 'buffer_fill_region_append()' may possibly not
@@ -51,12 +53,12 @@ main(int argc, char** argv)
 
         // -- Loop until the 'termination' token arrives
         while( 1 + 1 == 2 ) {
-            qlex.receive(&token);
+            const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( token.type_id() == QUEX_TKN_TERMINATION ) break;
-            if( token.type_id() == QUEX_TKN_BYE )         return 0;
+            if( TokenID == QUEX_TKN_TERMINATION ) break;
+            if( TokenID == QUEX_TKN_BYE )         return 0;
 
             cout << "Consider: " << string(token) << endl;
         }

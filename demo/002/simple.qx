@@ -205,19 +205,19 @@ mode STRING_READER :
     <exit:  PROGRAM>
 {
     on_entry {
-        self.accumulator.clear();
+        self_accumulator_clear();
     }
 
     on_exit {
-        self.accumulator.flush(QUEX_TKN_STRING);
+        self_accumulator_flush(QUEX_TKN_STRING);
     }
 
     {P_BACKSLASHED_STRING_DELIMITER} {
-        self.accumulator.add(Lexeme, LexemeEnd);
+        self_accumulator_add(Lexeme, LexemeEnd);
     }
 
     {P_BACKSLASHED_BACKSLASH} {
-        self.accumulator.add(Lexeme, LexemeEnd);
+        self_accumulator_add(Lexeme, LexemeEnd);
     }
 
     {P_STRING_DELIMITER} {
@@ -227,6 +227,6 @@ mode STRING_READER :
     }
 
     . {
-        self.accumulator.add(Lexeme, LexemeEnd);
+        self_accumulator_add(Lexeme, LexemeEnd);
     }
 }

@@ -177,8 +177,8 @@ required for the analyzis process.
     main(int argc, char** argv)
     {
         quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
-        quex::Token           token;           // Two tokens required, one for look-ahead
-        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
+        quex::Token           token;           
+        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
         MemoryChunk           chunk;
 
         ...
@@ -190,7 +190,8 @@ The analyzis start with the following:
         // -- trigger reload at loop start
         chunk.end = chunk.begin;
 
-        // LOOP
+        // -- LOOP until 'bye' token arrives
+        qlex.token_p_set(&token);
         while( 1 + 1 == 2 ) {
             // -- Receive content from a messaging framework
             if( chunk.begin == chunk.end ) {
@@ -225,10 +226,10 @@ Now, the buffer is filled and the real analyzis can start.
 
             // -- Loop until the 'termination' token arrives
             while( 1 + 1 == 2 ) {
-                qlex.receive(&token);
+                const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
 
-                if( token.type_id() == QUEX_TKN_TERMINATION ) break;
-                if( token.type_id() == QUEX_TKN_BYE )         return 0;
+                if( TokenID == QUEX_TKN_TERMINATION ) break;
+                if( TokenID == QUEX_TKN_BYE )         return 0;
 
                 cout << "Consider: " << string(token) << endl;
             }
@@ -255,15 +256,17 @@ input frames:
     {        
         using namespace std;
 
-        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);  
-        quex::Token           token;           // Two tokens required, one for look-ahead
-        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
+        // Zero pointer to constructor --> memory managed by user
+        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
+        quex::Token           token;           
+        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
         MemoryChunk           chunk;
 
         // -- trigger reload of memory
         chunk.begin = chunk.end;
 
         // -- LOOP until 'bye' token arrives
+        qlex.token_p_set(&token);
         while( 1 + 1 == 2 ) {
             // -- Receive content from a messaging framework
             if( chunk.begin == chunk.end ) {
@@ -283,17 +286,16 @@ input frames:
 
             // -- Loop until the 'termination' token arrives
             while( 1 + 1 == 2 ) {
-                qlex.receive(&token);
+                const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
 
                 // TERMINATION => possible reload
                 // BYE         => end of game
-                if( token.type_id() == QUEX_TKN_TERMINATION ) break;
-                if( token.type_id() == QUEX_TKN_BYE )         return 0;
+                if( TokenID == QUEX_TKN_TERMINATION ) break;
+                if( TokenID == QUEX_TKN_BYE )         return 0;
 
                 cout << "Consider: " << string(token) << endl;
             }
         }
-
         return 0;
     }
 
@@ -378,11 +380,14 @@ must be considered.
             
             // Let the previous token be the current token of the previous run.
             swap(&prev_token, &current_token);
+            qlex.token_p_set(current_token);
 
-            qlex.receive(current_token);
+            const int TokenID = qlex.receive();
 
-            if( current_token->type_id() == QUEX_TKN_TERMINATION ) break;
-            if( current_token->type_id() == QUEX_TKN_BYE )         return 0;
+            // TERMINATION => possible reload
+            // BYE         => end of game
+            if( TokenID == QUEX_TKN_TERMINATION || TokenID == QUEX_TKN_BYE )
+                break;
 
             // If the previous token was not a TERMINATION, it can be considered
             // by the syntactical analyzer (parser).
