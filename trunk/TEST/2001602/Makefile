@@ -9,7 +9,7 @@ lex_iconv:
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
 		-Wall                         \
-		lexer.cpp                     \
+		../lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
@@ -29,7 +29,7 @@ lex_icu:
 		$(LIB_CONV) \
 		$(X).cpp                      \
 		-Wall                         \
-		lexer.cpp                     \
+		../lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
@@ -43,7 +43,7 @@ lex_codec:
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
 		-Wall                         \
-		lexer.cpp                     \
+		../lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
