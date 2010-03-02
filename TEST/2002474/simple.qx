@@ -1,4 +1,7 @@
 
+header {
+}
+
 define {
   P_TOK       [A-Za-z0-9]+
 }
