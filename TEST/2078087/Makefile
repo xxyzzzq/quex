@@ -10,5 +10,5 @@ lexer:
 	quex -i $(INPUT) -o Simple --token-policy users_token
 	g++ -I$(QUEX_PATH) -I. \
 		$(CFLAGS) \
-		lexer.cpp Simple*.cpp \
+		../lexer-simply.cpp Simple*.cpp \
 		-ggdb -o lexer

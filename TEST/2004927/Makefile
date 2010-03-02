@@ -3,12 +3,12 @@ LIB_CONV  = `icu-config --ldflags`
 
 lex_iconv: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) -b wchar_t --iconv  --token-prefix TKN_
+	@quex -i simple.qx -o $(X) -b wchar_t --iconv 
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
 		-Wall                         \
-		lexer.cpp                     \
+		../lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
@@ -17,13 +17,13 @@ lex_iconv:
 
 lex_icu: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) -b wchar_t --icu  --token-prefix TKN_
+	@quex -i simple.qx -o $(X) -b wchar_t --icu  
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(LIB_CONV) \
 		$(X).cpp                      \
 		-Wall                         \
-		lexer.cpp                     \
+		../lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
@@ -32,12 +32,12 @@ lex_icu:
 
 lex_codec: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) --codec utf8  --token-prefix TKN_
+	@quex -i simple.qx -o $(X) --codec utf8  
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
 		-Wall                         \
-		lexer.cpp                     \
+		../lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \

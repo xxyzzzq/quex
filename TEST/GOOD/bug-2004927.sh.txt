@@ -1,5 +1,3 @@
-,------------------------------------------------------------------------------------
-| [START]
 THING 'Ad' 
 EXPRESSION 'Auvers-sur-Oise' 
 NONE ',' 
@@ -9,6 +7,3 @@ THING 'di'
 THING 'Parigi' 
 NONE ',' 
 THING 'dipinse' 
-<TERMINATION>
-| [END] number of token = 10
-`------------------------------------------------------------------------------------

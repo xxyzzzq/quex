@@ -9,13 +9,22 @@ fi
 echo "## Buffer Size = $1"
 tmp=`pwd`
 cd $bug/ 
-make clean
+
+if [[ $2 == "FIRST" ]]; then
+    make clean
+else
+    make mostlyclean
+fi
 make BUFFER_SIZE=$1 >& tmp.txt
 cat tmp.txt | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
 rm tmp.txt
 valgrind --leak-check=full ./lexer error-example.txt >& tmp.txt
 python ../show-valgrind.py
 rm tmp.txt
-make clean
+if [[ $3 == "LAST" ]]; then
+    make clean
+else
+    make mostlyclean
+fi
 
 cd $tmp
