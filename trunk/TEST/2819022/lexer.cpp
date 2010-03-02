@@ -9,15 +9,15 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    quex::Token    token;
+    quex::Token*   token;
     quex::Simple   qlex(argv[1]);
 
     do {
-        qlex.receive(&token);
+        token = qlex.receive();
 
-        cout << token << endl;
+        cout << *token << endl;
 
-    } while( token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;
 }

@@ -75,7 +75,7 @@ token {
 mode PROGRAM :
 {
     <<EOF>>       { 
-        self.send(QUEX_TKN_TERMINATION); 
+        self_send(QUEX_TKN_TERMINATION); 
     }
 
     "("           => QUEX_TKN_BRACKET_O;

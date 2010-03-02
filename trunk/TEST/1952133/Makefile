@@ -8,19 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-# (*) SETUP ____________________________________________________________________
-# -- INPUT
-MODE_FILES       = simple.qx
-# -- FILES PRODUCED BY QUEX
-ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-ENGINE_SOURCES   = $(ENGINE_NAME)                     \
-                   $(ENGINE_NAME).cpp                 \
-                   $(ENGINE_NAME)-token_ids           \
-                   $(ENGINE_NAME)-token               \
-                   $(ENGINE_NAME)-configuration       
-# -- OUTPUT
-APPLICATION      = lexer
-
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
@@ -35,30 +22,36 @@ CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 # -D__QUEX_OPTION_UNIT_TEST \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
      # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
-     #-DQUEX_SETTING_BUFFER_SIZE=128
 
 LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
-all: $(APPLICATION) 
+all: lexer
 
 # -- application
-$(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o 
-	$(LD) ./$(APPLICATION).o $(ENGINE_NAME).o -o $(APPLICATION) 
+lexer: lexer.o Simple.o 
+	$(LD) lexer.o Simple.o -o $@
 
 # -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
+%.o: %.cpp Simple.cpp
 	$(CC) -Wall $< -ggdb -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES)
-	@quex -i $(MODE_FILES) --engine $(ENGINE_NAME)  >& tmp.txt
-
+Simple.cpp: simple.qx
+	@quex -i simple.qx --engine Simple  >& tmp.txt
 
 # (*) HELPERS __________________________________________________________________
+mostlyclean:
+	@rm -f Simple.o
+	@rm -f lexer.o
+	@rm -f lexer
+	@rm -f *.bak
+	@rm -f tmp.txt
+	@echo "clean"
+
 clean:	
-	@touch $(MODE_FILES)
-	@rm -f $(ENGINE_SOURCES)
-	@rm -f $(ENGINE_NAME).o
+	@touch simple.qx
+	@rm -f Simple*
+	@rm -f Simple.o
 	@rm -f lexer.o
 	@rm -f lexer
 	@rm -f token_ids
