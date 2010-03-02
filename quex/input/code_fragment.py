@@ -64,6 +64,7 @@ def __parse_brief_token_sender(fh, ContinueF):
                 code = __create_mode_transition_and_token_sender(fh, identifier)
             else:
                 code = __create_token_sender_by_token_name(fh, identifier)
+                verify_next_word(fh, ";")
 
         if code != "": 
             if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
@@ -160,17 +161,13 @@ def __parse_function_argument_list(fh, ReferenceName):
     position = fh.tell()
     try:
         # Read argument list
-        tmp = fh.read(1)
-        if   tmp == ";":
+        if check(fh, "(") == False:
             return []
-        elif tmp != "(":
-            error_msg("Missing '(' or ';' after '%s'." % ReferenceName, fh)
-        
+
         text = ""
         while 1 + 1 == 2:
             tmp = fh.read(1)
             if   tmp == ")": 
-                verify_next_word(fh, ";")
                 break
             elif tmp in ["(", "[", "{"]:
                 closing_bracket = {"(": ")", "[": "]", "{": "}"}[tmp]
@@ -321,22 +318,32 @@ def __create_mode_transition_and_token_sender(fh, Command):
         skip_whitespace(fh)
         if check(fh, ")"):
             token_sender = ""
+
         elif check(fh, ","):
             skip_whitespace(fh)
             token_name = read_identifier(fh)
             skip_whitespace(fh)
-            token_sender = __create_token_sender_by_token_name(fh, token_name)
+
+            if check(fh, ","):
+                error_msg("Missing opening '(' after token name specification.\n" 
+                          "Note, that since version 0.50.1 the syntax for token senders\n"
+                          "inside brief mode transitions is like:\n\n"
+                          "     => GOTO(%s, %s(Argument0, Argument1, ...));\n" % (target_mode, token_name))
+
+            token_sender = __create_token_sender_by_token_name(fh, token_name) 
+
             if check(fh, ")") == False:
-                fh.seek(position)
-                error_msg("Missing closing ')' for %s." % Command, fh)
+                error_msg("Missing closing ')' or ',' after '%s'." % target_mode, fh)
+
         else:
             fh.seek(position)
             error_msg("Missing closing ')' or ',' after '%s'." % target_mode, fh)
-    elif check(fh, ";") == False:
+
+    if check(fh, ";") == False:
         error_msg("Missing ')' or ';' after '%s'." % Command, fh)
 
     if Command in ["GOTO", "GOSUB"] and target_mode == "": 
-        error_msg("The %s requires at least one argument: The target mode." % Command, fh)
+        error_msg("Command %s requires at least one argument: The target mode." % Command, fh)
 
     # Code for mode change
     txt = { 

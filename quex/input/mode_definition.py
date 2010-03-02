@@ -220,7 +220,7 @@ def parse_action_code(new_mode, fh, pattern, pattern_state_machine):
             new_mode.add_match_deletion(pattern, pattern_state_machine, fh.name, get_current_line_info_number(fh))
             
         else:
-            error_msg("missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
+            error_msg("Missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
                       "found: '%s'. Note, that since quex version 0.33.5 it is required to add a ';'\n" % word + \
                       "to the commands PRIORITY-MARK and DELETION.", fh)
 

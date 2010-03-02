@@ -12,7 +12,7 @@ mode NORMAL
     (plötz|heim)lich         => TKN_ADVERB____(Lexeme);
     nicht                    => TKN_NEGATION__(Lexeme);
     [,.!]                    => TKN_MARK______(Lexeme);
-    Sägen                    => GOTO(ANGRY, TKN_VERB______, Lexeme);
+    Sägen                    => GOTO(ANGRY, TKN_VERB______(Lexeme));
     [a-zäüöA-Z]+             => TKN_UKNOWN____(Lexeme); 
 }
 
