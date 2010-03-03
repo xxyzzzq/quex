@@ -7,12 +7,16 @@
 #include <cstdio>
 
 struct my_tester;
+
 namespace quex {
-typedef struct {} Token;
-typedef int       CounterLineColumnIndentation;
+    typedef struct {} Token;
+    typedef int       CounterLineColumnIndentation;
 }
 #define  QUEX_TYPE_ANALYZER my_tester
 #include <quex/code_base/analyzer/configuration/default>
+namespace quex {
+    typedef void      (*QUEX_NAME(AnalyzerFunctionP))(struct my_tester*);
+}
 #include <quex/code_base/analyzer/counter/LineColumn>
 #include <quex/code_base/analyzer/Mode>
 #include <quex/code_base/test_environment/TestAnalyzer>

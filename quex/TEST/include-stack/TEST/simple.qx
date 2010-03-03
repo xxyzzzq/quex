@@ -65,9 +65,9 @@ token {
 
 mode END_INCLUDED_FILE {
     <<EOF>> { 
-       if( self.include_pop() ) return;
-       self.send(QUEX_TKN_TERMINATION);
-       return;
+       if( self.include_pop() ) RETURN;
+       self_send(QUEX_TKN_TERMINATION);
+       RETURN;
     }
 
     [ \t\r\n]+  { }
@@ -80,7 +80,7 @@ mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
         self.pop_mode();
         self.include_push<std::ifstream>(Lexeme);
         /* IMPORTANT */
-        return;
+        RETURN;
     }
 
 

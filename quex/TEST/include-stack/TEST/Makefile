@@ -3,7 +3,6 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 TESTS = \
 		queue.exe \
 		users_token.exe \
-		users_queue.exe 
 
 ENGINE = ISLexer.cpp
 
@@ -29,9 +28,11 @@ users_token.exe: lexer.cpp simple.qx $(QUEX_CORE)
 	quex -i simple.qx -o ISLexer --token-policy users_token
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
-users_queue.exe: lexer.cpp simple.qx $(QUEX_CORE)
-	quex -i simple.qx -o ISLexer --token-policy users_queue
-	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
+## User's queue has been deprecated
+##
+## users_queue.exe: lexer.cpp simple.qx $(QUEX_CORE)
+##	quex -i simple.qx -o ISLexer --token-policy users_queue
+##	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 %.E: %.cpp
 	$(CC) -E -I$(QUEX_PATH) $< -o $@
