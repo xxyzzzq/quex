@@ -12,17 +12,26 @@ QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 void    print(quex::ISLexer& qlex, quex::Token& Token, bool TextF = false);
 void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
-#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
-     void get_token_from_users_queue(quex::ISLexer&, quex::Token&);
-#    define RECEIVE(Token)   get_token_from_users_queue(qlex, Token)
+#if 0 && QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
+//     Policy 'users_queue' has been deprecated.
+//     void get_token_from_users_queue(quex::ISLexer&, quex::Token&);
+//#    define RECEIVE(Token)   get_token_from_users_queue(qlex, Token)
+#endif
+#ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
+#    define RECEIVE(TokenP)   TokenP = qlex.receive()
 #else
-#    define RECEIVE(Token)   qlex.receive(&Token)
+#    define RECEIVE(TokenP)   qlex.token_p_set(TokenP); (void)qlex.receive()
 #endif
 
 int 
 main(int argc, char** argv) 
 {        
-    quex::Token       Token;
+#   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
+    quex::Token*  token_p = 0x0;
+#   else
+    quex::Token   MyToken;
+    quex::Token*  token_p = &MyToken;
+#   endif
 
     if( argc < 2 ) {
         printf("Need at least one argument.\n");
@@ -43,11 +52,11 @@ main(int argc, char** argv)
     cout << "[START]\n";
 
     do {
-        RECEIVE(Token);
+        RECEIVE(token_p);
 
-        print(qlex, Token, true);
+        print(qlex, *token_p, true);
 
-    } while( Token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "[END]\n";
 
@@ -73,7 +82,8 @@ void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, 
     cout << endl;
 }
 
-#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
+#if 0 && QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
+// Policy 'users_queue' deprecated.
 void get_token_from_users_queue(quex::ISLexer& qlex, quex::Token& Token)
 {
     static quex::Token   Begin[3];

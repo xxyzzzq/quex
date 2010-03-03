@@ -29,8 +29,9 @@ main(int argc, char** argv)
     qlex.push_mode(quex::QUEX_NAME(EXTRA));
 
     /* Read 'N' tokens before doing the reset. */
+    qlex.token_p_set(&token);
     for(int i=0; i < N; ++i) {
-        qlex.receive(&token);
+        (void)qlex.receive();
     } 
 
     // printf("BEFORE Reset:\n");

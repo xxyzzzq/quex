@@ -28,8 +28,17 @@ public:
             size_t  _line_number_at_begin;
         } base;
     } counter;
+
+    QUEX_NAME(Accumulator) accumulator;
 };
 
+// Prevent the inclusion of 'token-sending.i' since we do it on our own.
+//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
+//#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#include <quex/code_base/analyzer/Accumulator>
+#include <quex/code_base/analyzer/C-adaptions.h>
+#include <quex/code_base/analyzer/Accumulator.i>
 bool 
 QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*                           __this, 
                            QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
@@ -43,12 +52,6 @@ QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*                           __this,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-// Prevent the inclusion of 'token-sending.i' since we do it on our own.
-//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
-//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
-//#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
-#include <quex/code_base/analyzer/Accumulator>
-#include <quex/code_base/analyzer/Accumulator.i>
 
 int
 main(int argc, char** argv)
@@ -72,46 +75,48 @@ main(int argc, char** argv)
     TestAnalyzer           analyzer;
     QUEX_NAME(Accumulator) accumulator;
 
+#   define self analyzer
+
     analyzer._token_queue.write_iterator = analyzer._token_queue.begin;
     analyzer._token_queue.read_iterator = analyzer._token_queue.begin;
     QUEX_NAME(Accumulator_construct)(&accumulator, &analyzer);
 
     if     ( strcmp(argv[1], "String") == 0 ) {
-        accumulator.add(TestString0, TestString0 + strlen(TestString0));
-        accumulator.print_this();
-        accumulator.flush(0);
+        QUEX_NAME(Accumulator_add)(&accumulator, TestString0, TestString0 + strlen(TestString0));
+        QUEX_NAME(Accumulator_print_this)(&accumulator);
+        self_accumulator_flush(0);
     }
     else if( strcmp(argv[1], "Character") == 0 ) {
-        accumulator.add_chararacter('a');
-        accumulator.print_this();
-        accumulator.flush(0);
+        QUEX_NAME(Accumulator_add_chararacter)(&accumulator, 'a');
+        QUEX_NAME(Accumulator_print_this)(&accumulator);
+        self_accumulator_flush(0);
     }
     else if( strcmp(argv[1], "N-Character") == 0 ) {
         for(int i = 0; i != 104; ++i) 
-            accumulator.add_chararacter(i % 26 + 'a');
-        accumulator.print_this();
-        accumulator.flush(0);
+            QUEX_NAME(Accumulator_add_chararacter)(&accumulator, i % 26 + 'a');
+        QUEX_NAME(Accumulator_print_this)(&accumulator);
+        self_accumulator_flush(0);
     }
     else if( strcmp(argv[1], "N-String") == 0 ) {
         for(int i = 0; i != 10; ++i) 
-            accumulator.add(TestString0, TestString0 + strlen(TestString0));
-        accumulator.print_this();
-        accumulator.flush(0);
+            QUEX_NAME(Accumulator_add)(&accumulator, TestString0, TestString0 + strlen(TestString0));
+        QUEX_NAME(Accumulator_print_this)(&accumulator);
+        self_accumulator_flush(0);
     }
     else if( strcmp(argv[1], "Mix") == 0 ) {
         int p = 4711;
         for(int i = 0; i != 10; ++i) {
             p = (p + i) * (p + i) % 4711;  // pseudo random number
             if( p % 2 == 0 )
-                accumulator.add(TestString0, TestString0 + strlen(TestString0));
+                QUEX_NAME(Accumulator_add)(&accumulator, TestString0, TestString0 + strlen(TestString0));
             else {
-                accumulator.add_chararacter(' ');
-                accumulator.add_chararacter(p % 26 + 'a');
-                accumulator.add_chararacter(' ');
+                QUEX_NAME(Accumulator_add_chararacter)(&accumulator, ' ');
+                QUEX_NAME(Accumulator_add_chararacter)(&accumulator, p % 26 + 'a');
+                QUEX_NAME(Accumulator_add_chararacter)(&accumulator, ' ');
             }
         }
-        accumulator.print_this();
-        accumulator.flush(0);
+        QUEX_NAME(Accumulator_print_this)(&accumulator);
+        self_accumulator_flush(0);
     }
 
     QUEX_NAME(Accumulator_destruct)(&accumulator);

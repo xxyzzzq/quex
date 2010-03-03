@@ -7,7 +7,7 @@ using namespace std;
 using namespace quex;
 #endif
 
-void                pseudo_analysis(QUEX_TYPE_ANALYZER* me);
+__QUEX_TYPE_ANALYZER_RETURN_VALUE  pseudo_analysis(QUEX_TYPE_ANALYZER* me);
 QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
 
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
@@ -22,11 +22,9 @@ main(int argc, char** argv)
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
 #       if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
         printf("Token Policy Queue: " NAME ";\n");
-        printf("CHOICES: receive-1, receive-2;\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
         printf("Token Policy UsersToken: " NAME ";\n");
-        printf("CHOICES: receive-1, receive-2;\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
         printf("Token Policy UsersQueue: " NAME ";\n");
@@ -57,26 +55,19 @@ main(int argc, char** argv)
 #if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
 QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {
-    QUEX_TYPE_TOKEN   token;
     QUEX_TYPE_TOKEN*  token_p;
-    if( strcmp(Choice, "receive-1") == 0 ) {
-        qlex.receive(&token);
-        printf("received: %s\n", token.type_id_name().c_str());
-        return token.type_id();
-    }
-    else {
-        qlex.receive(&token_p);
-        printf("received: %s\n", token_p->type_id_name().c_str());
-        return token_p->type_id();
-    }
+
+    token_p = qlex.receive();
+    printf("received: %s\n", token_p->type_id_name().c_str());
+    return token_p->type_id();
 }
 
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
 QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {        
     QUEX_TYPE_TOKEN token;
-    if( strcmp(Choice, "receive-1") == 0 ) { qlex.token = &token; qlex.receive(); }
-    else                                   qlex.receive(&token);
+    qlex.token_p_set(&token);
+    (void)qlex.receive();
     printf("received: %s\n", token.type_id_name().c_str());
     return token.type_id();
 }
@@ -96,52 +87,58 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 #endif
 
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
-void pseudo_analysis(QUEX_TYPE_ANALYZER* me)
+__QUEX_TYPE_ANALYZER_RETURN_VALUE  pseudo_analysis(QUEX_TYPE_ANALYZER* me)
 {
+#   if   defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+    register QUEX_TYPE_TOKEN_ID __self_result_token_id;
+#   endif
     TPLex&     self = *((TPLex*)me);
     static int i = 0;
 
     switch( i++ ) {
-    default: self.send(QUEX_TKN_TERMINATION); break;
-    case 0:  self.send(QUEX_TKN_ONE);         break;
-    case 1:  self.send(QUEX_TKN_TWO);         break;
-    case 2:  self.send(QUEX_TKN_THREE);       break;
-    case 3:  self.send(QUEX_TKN_FOUR);        break;
-    case 4:  self.send(QUEX_TKN_FIVE);        break;
-    case 5:  self.send(QUEX_TKN______NEXT_____); break;
-    case 6:  self.send(QUEX_TKN______NEXT_____); break;
-    case 7:  self.send(QUEX_TKN______NEXT_____); break;
+    default: self_send(QUEX_TKN_TERMINATION); break;
+    case 0:  self_send(QUEX_TKN_ONE);         break;
+    case 1:  self_send(QUEX_TKN_TWO);         break;
+    case 2:  self_send(QUEX_TKN_THREE);       break;
+    case 3:  self_send(QUEX_TKN_FOUR);        break;
+    case 4:  self_send(QUEX_TKN_FIVE);        break;
+    case 5:  self_send(QUEX_TKN______NEXT_____); break;
+    case 6:  self_send(QUEX_TKN______NEXT_____); break;
+    case 7:  self_send(QUEX_TKN______NEXT_____); break;
     case 8:  
-             self.send(QUEX_TKN_ONE);
-             self.send(QUEX_TKN______NEXT_____);
+             self_send(QUEX_TKN_ONE);
+             self_send(QUEX_TKN______NEXT_____);
              break;
     case 9:
-             self.send(QUEX_TKN_ONE);
-             self.send(QUEX_TKN_TWO);
-             self.send(QUEX_TKN______NEXT_____);
+             self_send(QUEX_TKN_ONE);
+             self_send(QUEX_TKN_TWO);
+             self_send(QUEX_TKN______NEXT_____);
              break;
     case 10:
-             self.send(QUEX_TKN_ONE);
-             self.send(QUEX_TKN_TWO);
-             self.send(QUEX_TKN_THREE);
-             self.send(QUEX_TKN______NEXT_____);
+             self_send(QUEX_TKN_ONE);
+             self_send(QUEX_TKN_TWO);
+             self_send(QUEX_TKN_THREE);
+             self_send(QUEX_TKN______NEXT_____);
              break;
     case 11:
-             self.send(QUEX_TKN_ONE);
-             self.send(QUEX_TKN_TWO);
-             self.send(QUEX_TKN_THREE); 
-             self.send(QUEX_TKN_FOUR);   
-             self.send(QUEX_TKN______NEXT_____);
+             self_send(QUEX_TKN_ONE);
+             self_send(QUEX_TKN_TWO);
+             self_send(QUEX_TKN_THREE); 
+             self_send(QUEX_TKN_FOUR);   
+             self_send(QUEX_TKN______NEXT_____);
              break;
     case 12:
-             self.send(QUEX_TKN_ONE);
-             self.send(QUEX_TKN_TWO);
-             self.send(QUEX_TKN_THREE); 
-             self.send(QUEX_TKN_FOUR); 
-             self.send(QUEX_TKN_FIVE); 
-             self.send(QUEX_TKN______NEXT_____);
+             self_send(QUEX_TKN_ONE);
+             self_send(QUEX_TKN_TWO);
+             self_send(QUEX_TKN_THREE); 
+             self_send(QUEX_TKN_FOUR); 
+             self_send(QUEX_TKN_FIVE); 
+             self_send(QUEX_TKN______NEXT_____);
              break;
     }
+#   if   defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+    return __self_result_token_id;
+#   endif
 }
 #endif
 
