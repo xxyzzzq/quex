@@ -314,12 +314,14 @@ def __create_mode_transition_and_token_sender(fh, Command):
     token_sender = ""
     if check(fh, "("):
         skip_whitespace(fh)
-        target_mode = read_identifier(fh)
-        skip_whitespace(fh)
+        if Command != "GOUP":
+            target_mode = read_identifier(fh)
+            skip_whitespace(fh)
+
         if check(fh, ")"):
             token_sender = ""
 
-        elif check(fh, ","):
+        elif Command == "GOUP" or check(fh, ","):
             skip_whitespace(fh)
             token_name = read_identifier(fh)
             skip_whitespace(fh)
@@ -328,16 +330,16 @@ def __create_mode_transition_and_token_sender(fh, Command):
                 error_msg("Missing opening '(' after token name specification.\n" 
                           "Note, that since version 0.50.1 the syntax for token senders\n"
                           "inside brief mode transitions is like:\n\n"
-                          "     => GOTO(%s, %s(Argument0, Argument1, ...));\n" % (target_mode, token_name))
+                          "     => GOTO(MYMODE, QUEX_TKN_MINE(Argument0, Argument1, ...));\n", fh)
 
             token_sender = __create_token_sender_by_token_name(fh, token_name) 
 
             if check(fh, ")") == False:
-                error_msg("Missing closing ')' or ',' after '%s'." % target_mode, fh)
+                error_msg("Missing closing ')' or ',' after '%s'." % Command, fh)
 
         else:
             fh.seek(position)
-            error_msg("Missing closing ')' or ',' after '%s'." % target_mode, fh)
+            error_msg("Missing closing ')' or ',' after '%s'." % Command, fh)
 
     if check(fh, ";") == False:
         error_msg("Missing ')' or ';' after '%s'." % Command, fh)

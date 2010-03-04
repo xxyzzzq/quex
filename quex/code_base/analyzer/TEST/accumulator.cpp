@@ -1,11 +1,18 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_ID  int
+#define QUEX_TYPE_CHARACTER  char
+#define QUEX_TYPE_TOKEN_ID   int
+#define QUEX_TYPE_ANALYZER   TestAnalyzer
 #define QUEX_OPTION_STRING_ACCUMULATOR
-#define QUEX_TYPE_ANALYZER       TestAnalyzer
+
 #include <quex/code_base/analyzer/configuration/default>
+
+QUEX_NAMESPACE_MAIN_OPEN
+class TestAnalyzer;
+QUEX_NAMESPACE_MAIN_OPEN
+
+#include <quex/code_base/analyzer/Accumulator>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -13,6 +20,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 //#define QUEX_TOKEN_POLICY_PREPARE_NEXT() /* empty */
 
 typedef struct { int _id; } Token;
+
 
 class TestAnalyzer {
 public:
@@ -32,13 +40,6 @@ public:
     QUEX_NAME(Accumulator) accumulator;
 };
 
-// Prevent the inclusion of 'token-sending.i' since we do it on our own.
-//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
-//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
-//#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
-#include <quex/code_base/analyzer/Accumulator>
-#include <quex/code_base/analyzer/C-adaptions.h>
-#include <quex/code_base/analyzer/Accumulator.i>
 bool 
 QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*                           __this, 
                            QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
@@ -52,6 +53,12 @@ QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*                           __this,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
+// Prevent the inclusion of 'token-sending.i' since we do it on our own.
+//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+//#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
+//#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#include <quex/code_base/analyzer/C-adaptions.h>
+#include <quex/code_base/analyzer/Accumulator.i>
 
 int
 main(int argc, char** argv)

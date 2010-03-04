@@ -16,7 +16,7 @@ main(int argc, char** argv)
         printf("CHOICES: " __TEST_CHOICES ";\n");
         return 0;
     }
-    quex::Token    Token;
+    quex::Token    token;
     std::string    Directory("examples/");
     quex::EHLexer  qlex(Directory + argv[1] + ".txt");
 
@@ -24,10 +24,11 @@ main(int argc, char** argv)
 
     cout << "| [START]\n";
 
+    qlex.token_p_set(&token);
     do {
-        qlex.receive(&Token);
-        cout << "TOKEN: " << std::string(Token) << endl;
-    } while( Token.type_id() != TK_TERMINATION );
+        (void)qlex.receive();
+        cout << "TOKEN: " << std::string(token) << endl;
+    } while( token.type_id() != TK_TERMINATION );
 
     cout << "| [END]\n";
 

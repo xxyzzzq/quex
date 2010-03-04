@@ -30,11 +30,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         }                   text;
         QUEX_TYPE_ANALYZER* the_lexer;     
 
-#   ifndef __QUEX_OPTION_PLAIN_C
-        friend class QUEX_TYPE_ANALYZER;
-#   endif
     } QUEX_NAME(Accumulator);
-
 
     QUEX_INLINE void
     QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*, QUEX_TYPE_ANALYZER*);
