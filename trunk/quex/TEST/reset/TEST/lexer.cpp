@@ -21,7 +21,7 @@ main(int argc, char** argv)
     quex::Simple   qlex(fh);
 #   endif
 
-    if( argc != 2 ) {
+    if( argc < 2 ) {
         printf("Command line argument required!\n");
         return 0;
     }

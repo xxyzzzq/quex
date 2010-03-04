@@ -36,11 +36,17 @@ def write_member_functions(Modes):
 
     # -- get the implementation of mode class functions
     #    (on_entry, on_exit, on_indendation, has_base, has_entry, has_exit)
-    txt  = "#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)\n"
+    txt  = ""
+    txt += "#ifndef __QUEX_INDICATOR_DUMPED_TOKEN_ID_DEFINED\n"
+    txt += "    static QUEX_TYPE_TOKEN_ID    __QUEX_dumped_token_id;\n"
+    txt += "#endif\n"
+    txt += "#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)\n"
+    txt += "#define __self_result_token_id    __QUEX_dumped_token_id\n"
     for mode in Modes:        
         txt += get_implementation_of_mode_functions(mode, Modes)
 
     txt += "#undef self\n"
+    txt += "#undef __self_result_token_id\n"
     return txt
 
 

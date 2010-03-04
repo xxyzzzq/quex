@@ -76,11 +76,7 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
      */
 #   if ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id 
-#      ifdef QUEX_OPTION_ASSERTS
-           = (QUEX_TYPE_TOKEN_ID)-2;
-#      else
-           ;
-#      endif
+           = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
 #   endif
 #   ifdef     self
 #       undef self

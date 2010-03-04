@@ -13,7 +13,7 @@ main(int argc, char** argv)
     FILE*          fh = fopen("example.txt", "r");
     quex::Simple   qlex(fh);
 
-    if( argc != 2 ) {
+    if( argc < 2 ) {
         printf("Command line argument required!\n");
         return 0;
     }
