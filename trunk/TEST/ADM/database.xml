@@ -1,4 +1,4 @@
-<test-database execution-time-sec="156.82" date="Fri Mar  5 23:53:29 2010">
+<test-database execution-time-sec="158.55" date="Sat Mar  6 00:13:14 2010">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="1.03"> 
@@ -310,10 +310,11 @@
                <choice name="" result="OK" time_sec="0.15" crc="-61416298"/>
             </choice-list>
         </test>
-        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="1.87"> 
-            <application file-name="bug-1895500.sh" info-request-time="1264886931L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.87" crc="None"/>
+        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="3.60"> 
+            <application file-name="bug-1895500.sh" info-request-time="1267830533L" vanished="False"/>
+            <choice-list number="2" same_result="True">
+               <choice name="iconv" result="OK" time_sec="2.09" crc="-94562967"/>
+               <choice name="icu" result="OK" time_sec="1.50" crc="-94562967"/>
             </choice-list>
         </test>
         <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.50"> 
