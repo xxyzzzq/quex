@@ -74,35 +74,35 @@ public:
 #line 9 "a string"
     short            get_index() const                           { return content.data_0.index; }
 #line 9 "a string"
-    void             set_index(short& Value)                      { content.data_0.index = Value; }
+    void             set_index(short Value)                      { content.data_0.index = Value; }
 #line 3 "a string"
     std::string      get_my_name() const                         { return my_name; }
 #line 3 "a string"
-    void             set_my_name(std::string& Value)              { my_name = Value; }
+    void             set_my_name(std::string& Value)             { my_name = Value; }
 #line 8 "a string"
     float            get_number() const                          { return content.data_0.number; }
 #line 8 "a string"
-    void             set_number(float& Value)                     { content.data_0.number = Value; }
+    void             set_number(float Value)                     { content.data_0.number = Value; }
 #line 4 "a string"
     std::vector<int> get_numbers() const                         { return numbers; }
 #line 4 "a string"
-    void             set_numbers(std::vector<int>& Value)         { numbers = Value; }
+    void             set_numbers(std::vector<int>& Value)        { numbers = Value; }
 #line 16 "a string"
     uint16_t         get_who_is_that() const                     { return content.who_is_that; }
 #line 16 "a string"
-    void             set_who_is_that(uint16_t& Value)             { content.who_is_that = Value; }
+    void             set_who_is_that(uint16_t& Value)            { content.who_is_that = Value; }
 #line 12 "a string"
     int16_t          get_x() const                               { return content.data_1.x; }
 #line 12 "a string"
-    void             set_x(int16_t& Value)                        { content.data_1.x = Value; }
+    void             set_x(int16_t& Value)                       { content.data_1.x = Value; }
 #line 13 "a string"
     int16_t          get_y() const                               { return content.data_1.y; }
 #line 13 "a string"
-    void             set_y(int16_t& Value)                        { content.data_1.y = Value; }
+    void             set_y(int16_t& Value)                       { content.data_1.y = Value; }
 #line 15 "a string"
     uint32_t         get_stream_position() const                 { return content.stream_position; }
 #line 15 "a string"
-    void             set_stream_position(uint32_t& Value)         { content.stream_position = Value; }
+    void             set_stream_position(uint32_t& Value)        { content.stream_position = Value; }
 /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
 
     void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
@@ -270,6 +270,24 @@ QUEX_NAME_TOKEN(take_text)(MeinToken*           __this,
 #  undef analyzer
 #  undef self
 }
+
+#ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+QUEX_INLINE size_t 
+QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
+{
+#   define self      (*__this)
+    
+#   undef  self
+}
+
+QUEX_INLINE void 
+QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
+{
+#   define self      (*__this)
+    
+#   undef  self
+}
+#endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 
 
 

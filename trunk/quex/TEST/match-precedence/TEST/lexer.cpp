@@ -8,15 +8,15 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    quex::Token   token;
+    quex::Token*  token;
     quex::Simple  qlex(argv[1]);
 
     cout << "[START]\n";
 
     do {
-        qlex.receive(&token);
-        cout << string(token) << endl;
-    } while( token.type_id() != T_TERMINATION );
+        token = qlex.receive();
+        cout << string(*token) << endl;
+    } while( token->type_id() != T_TERMINATION );
 
     cout << "\n[END]\n";
 
