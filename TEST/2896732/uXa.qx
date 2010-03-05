@@ -523,7 +523,8 @@ mode COMMENT {
 				self << INITIAL;
 
 				// Send token to the caller.
-				self.send(QUEX_UUID_COMMENT,self.textAccumulator);
+                self_token_p()->stringValue = self.textAccumulator;
+				self_send(QUEX_UUID_COMMENT);
 
 				// Return to the caller.
 				return;
@@ -539,11 +540,12 @@ mode COMMENT {
 		if(!self.comment.isBlock) {
 			self << INITIAL;
 
-			self.send(QUEX_UUID_COMMENT,self.textAccumulator);
-			self.send(QUEX_UUID_NL);
+            self_token_p()->stringValue = self.textAccumulator;
+			self_send(QUEX_UUID_COMMENT);
+			self_send(QUEX_UUID_NL);
 
 			// Return to the caller.
-			return;
+			RETURN;
 		} else {
 			self.textAccumulator.append(Lexeme,LexemeL);
 		}
@@ -558,11 +560,12 @@ mode COMMENT {
 			self << INITIAL;
 
 			// Send token to the caller.
-			self.send(QUEX_UUID_COMMENT,self.textAccumulator);
+            self_token_p()->stringValue = self.textAccumulator;
+			self_send(QUEX_UUID_COMMENT);
 		}
 
 		// Send token to the caller.
-		self.send(QUEX_UUID_EOF);
+		self_send(QUEX_UUID_EOF);
 
 		// Return to the caller.
 		return;
@@ -589,45 +592,47 @@ mode INITIAL : DEFAULT {
 	"zero"  => QUEX_UUID_ZERO;
 
 	[0-1]+("b"|"B")
-		=> QUEX_UUID_INTEGER(self.parseBinInteger(Lexeme,LexemeL));
+		=> QUEX_UUID_INTEGER(integerValue=self.parseBinInteger(Lexeme,LexemeL));
 
 	"0"("c"|"C")[0-7]+
-		=> QUEX_UUID_INTEGER(self.parseOctInteger(Lexeme,LexemeL));
+		=> QUEX_UUID_INTEGER(integerValue=self.parseOctInteger(Lexeme,LexemeL));
 
 	[0-9]+
-		=> QUEX_UUID_INTEGER(self.parseDecInteger(Lexeme,LexemeL));
+		=> QUEX_UUID_INTEGER(integerValue=self.parseDecInteger(Lexeme,LexemeL));
 
 	"0"("x"|"X")[a-f0-9A-F]+
-		=> QUEX_UUID_INTEGER(self.parseHexInteger(Lexeme + 2,LexemeL - 2));
+		=> QUEX_UUID_INTEGER(integerValue=self.parseHexInteger(Lexeme + 2,LexemeL - 2));
 
 	[a-f0-9A-F]+("h"|"H")
-		=> QUEX_UUID_INTEGER(self.parseHexInteger(Lexeme,LexemeL - 1));
+		=> QUEX_UUID_INTEGER(integerValue=self.parseHexInteger(Lexeme,LexemeL - 1));
 
 	"NaN"
-		=> QUEX_UUID_POINTIE(POINTIE_VALUE_NAN);
+		=> QUEX_UUID_POINTIE(pointieValue = POINTIE_VALUE_NAN);
 
 	\X221E
-		=> QUEX_UUID_POINTIE(POINTIE_VALUE_INFINITY);
+		=> QUEX_UUID_POINTIE(pointieValue = POINTIE_VALUE_INFINITY);
 
 	([0-9]+("e"|"E")("+"|"-")?[0-9]+)|([0-9]+"."[0-9]+(("e"|"E")("+"|"-")?[0-9]+)?)
-		=> QUEX_UUID_POINTIE(POINTIE_VALUE_COMPUTED,self.parseDecPointie(Lexeme,LexemeL));
+		=> QUEX_UUID_POINTIE(pointieType  = POINTIE_VALUE_COMPUTED,
+                             pointieValue = self.parseDecPointie(Lexeme,LexemeL));
 
 	("0"("x"|"X")[a-f0-9A-F]+("p"|"P")("+"|"-")?[0-9]+)|("0"("x"|"X")[a-f0-9A-F]+"."[a-f0-9A-F]+("p"|"P")("+"|"-")?[0-9]+)
-		=> QUEX_UUID_POINTIE(POINTIE_VALUE_COMPUTED,self.parseHexPointie(Lexeme + 2,LexemeL - 2));
+		=> QUEX_UUID_POINTIE(pointieType  = POINTIE_VALUE_COMPUTED,
+                             pointieValue = self.parseHexPointie(Lexeme + 2,LexemeL - 2));
 
 	"<"[a-zA-Z]+([0-9]+|"("[0-9]+")")?((","[a-zA-Z]+([0-9]+|"("[0-9]+")")?)+|((":"|"-")[a-zA-Z]+([0-9]+|"("[0-9]+")")?))?">"
-		=> QUEX_UUID_REGISTER(UnicodeString(Lexeme + 1,LexemeL - 2));
+		=> QUEX_UUID_REGISTER(stringValue = UnicodeString(Lexeme + 1,LexemeL - 2));
 
 	[$._@a-zA-Z][$._@a-zA-Z0-9]*
-		=> QUEX_UUID_SYMBOLIC(UnicodeString(Lexeme,LexemeL));
+		=> QUEX_UUID_SYMBOLIC(stringValue = UnicodeString(Lexeme,LexemeL));
 
 	.
-		=> QUEX_UUID_UNICODE(UnicodeString(false,Lexeme,LexemeL).char32At(0x00));
+		=> QUEX_UUID_UNICODE(stringValue = UnicodeString(false,Lexeme,LexemeL).char32At(0x00));
 }
 
 mode SINGLE {
 	\X0027
-		=> GOTO(INITIAL,QUEX_UUID_SINGLE,self.textAccumulator);
+		=> GOTO(INITIAL, QUEX_UUID_SINGLE(stringValue = self.textAccumulator));
 
 	"\\x+"[a-f0-9A-F]{2} {
 		// self.textAccumulator.append((UChar32) cln::cl_I_to_UL(self.parseHexInteger(Lexeme + 3,LexemeL - 3)));
@@ -688,7 +693,7 @@ mode SINGLE {
 
 mode SYMBOLIC {
 	\X0060
-		=> GOTO(INITIAL,QUEX_UUID_SYMBOLIC,self.textAccumulator);
+		=> GOTO(INITIAL, QUEX_UUID_SYMBOLIC(stringValue = self.textAccumulator));
 
 	"\\x+"[a-f0-9A-F]{2} {
 		// self.textAccumulator.append((UChar32) cln::cl_I_to_UL(self.parseHexInteger(Lexeme + 3,LexemeL - 3)));
@@ -749,7 +754,7 @@ mode SYMBOLIC {
 
 mode STRING {
 	\X0022
-		=> GOTO(INITIAL,QUEX_UUID_STRING,self.textAccumulator);
+		=> GOTO(INITIAL,QUEX_UUID_STRING(stringValue = self.textAccumulator));
 
 	"\\x+"[a-f0-9A-F]{2} {
 		// self.textAccumulator.append((UChar32) cln::cl_I_to_UL(self.parseHexInteger(Lexeme + 3,LexemeL - 3)));

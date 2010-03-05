@@ -20,7 +20,7 @@ echo "cleaning ..."
 make clean   >& /dev/null
 echo "make $arg1 $3 ##"
 make  $arg1 $3 >& tmp.txt
-cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ && ! /deprecated since quex/ && ! /QUEX_ERROR_EXIT/'
+cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ && ! /deprecated since quex/ && ! /QUEX_ERROR_EXIT/ && ! /QUEX_ERROR_DEPRECATED/'
 rm tmp.txt
 echo "executing ..."
 if [[ -z $application ]]; then

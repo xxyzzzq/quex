@@ -1,8 +1,6 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=icpc ##
-                  self_send1(QUEX_TKN_ERROR_MISALIGNED_INDENTATION, self.line_number_at_end());
-              self_send1(QUEX_TKN_ERROR_MISALIGNED_INDENTATION, self.line_number_at_end());
 executing ...
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 

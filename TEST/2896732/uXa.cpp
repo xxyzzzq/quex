@@ -144,7 +144,7 @@ namespace quex {
 			nextToken = new Token();
 
 			// Receive from lexer...
-			lexer.receive(nextToken);
+			*nextToken = *(lexer.receive());
 		} else {
 			nextToken = tokenQueue.front();
 
@@ -180,7 +180,7 @@ namespace quex {
 				Token * readToken = new Token();
 
 				// Receive from lexer...
-				lexer.receive(readToken);
+				*readToken = *(lexer.receive());
 
 				// Push into look-ahead buffer...
 				tokenQueue.push_back(readToken);
