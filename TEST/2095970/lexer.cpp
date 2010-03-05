@@ -10,7 +10,6 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    QUEX_TYPE_TOKEN_ID  token_id = QUEX_TKN_UNINITIALIZED;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::Simple*       qlex = new quex::Simple(argc == 1 ? "example.txt" : argv[1]);
@@ -21,27 +20,25 @@ main(int argc, char** argv)
 
     int number_of_tokens = 0;
 
-#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-    quex::Token*  token_p = 0x0;
-#   else
     quex::Token   token;
+    quex::Token*  token_p = &token;
+
+#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
     qlex->token_p_set(&token);
 #   endif
 
     // (*) loop until the 'termination' token arrives
     do {
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-        token_p = qlex->receive();
-        cout << token_p->type_id_name() << endl;
-        token_id = token_p->type_id();
+#       ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+        (void)qlex->receive();
 #       else
-        token_id = qlex->receive();
-        cout << token.map_id_to_name(token_id) << endl;
+        token_p = qlex->receive();
 #       endif
+        cout << token_p->type_id_name() << endl;
         ++number_of_tokens;
 
         // (*) check against 'termination'
-    } while( token_id != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     // cout << Token.type_id_name() << endl;
     cout << "| [END] number of token = " << number_of_tokens << "\n";

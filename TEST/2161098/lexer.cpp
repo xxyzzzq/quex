@@ -9,14 +9,15 @@ int
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    quex::Token   Token;
+    quex::Token   token;
     quex::Simple  qlex(argc == 1 ? "example.txt" : argv[1]);
 
     cout << "## An Assert-Abortion might be an intended element of the experiment.\n";
+    qlex.token_p_set(&token);
     do {
-        qlex.receive(&Token);
-        cout << qlex.line_number() << ", " << qlex.column_number() << ": " << string(Token) << endl;
-    } while( Token.type_id() != COL_TERMINATION );
+        qlex.receive();
+        cout << qlex.line_number() << ", " << qlex.column_number() << ": " << string(token) << endl;
+    } while( token.type_id() != COL_TERMINATION );
     
 
     return 0;

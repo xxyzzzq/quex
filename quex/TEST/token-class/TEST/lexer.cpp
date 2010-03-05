@@ -11,52 +11,60 @@ int
 main(int argc, char** argv) 
 {        
     if( argc > 1 && strcmp("--hwut-info", argv[1]) == 0 ) {
-#   if   defined(TEST_simple)
+#       if   defined(TEST_simple)
         printf("With token policy 'users_token'.\n");
-#   elif defined(TEST_simple_queue)
+#       elif defined(TEST_simple_queue)
         printf("With token policy 'queue'.\n");
-#   else
+#       else
         printf("ERROR - unreviewed compilation - ERROR.\n");
-#   endif
+#       endif
         return 0;
     }
     // (*) create token
     // ispringen::MeinToken*      token = new ispringen::MeinToken();
     ispringen::MeinToken      token;
+    ispringen::MeinToken*     token_p = &token;
+    
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::Simple     qlex(argc == 1 ? "example.txt" : argv[1]);
 
-
     // (*) Access the '__nonsense__' member to ensure it has been generated
-    token.__nonsense__ = 0;
+    token_p->__nonsense__ = 0;
 
     cout << "[START]\n";
 
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
+#   if   defined(TEST_simple)
+    qlex.token_p_set(token_p);
+#   endif
     do {
-        qlex.receive(&token);
-        cout << token.type_id_name() << " ";
+#       if   defined(TEST_simple)
+        (void)qlex.receive();
+#       else
+        token_p = qlex.receive();
+#       endif
+        cout << token_p->type_id_name() << " ";
 
-        switch( token.type_id() ) {
+        switch( token_p->type_id() ) {
         case QUEX_TKN_N1a: 
         case QUEX_TKN_N2a: 
         case QUEX_TKN_N3a: 
-            cout << std::string((char*)token.get_name().c_str()) << endl; 
+            cout << std::string((char*)token_p->get_name().c_str()) << endl; 
             break;
         case QUEX_TKN_N1b: 
         case QUEX_TKN_N2b: 
         case QUEX_TKN_N3b: 
-            cout << (int)token.get_mini_x() << ", " << (int)token.get_mini_y() << endl;
+            cout << (int)token_p->get_mini_x() << ", " << (int)token_p->get_mini_y() << endl;
             break;
         case QUEX_TKN_N1c: 
         case QUEX_TKN_N2c: 
         case QUEX_TKN_N3c: 
-            cout << (int)token.get_big_x() << ", " << (int)token.get_big_y() << endl;
+            cout << (int)token_p->get_big_x() << ", " << (int)token_p->get_big_y() << endl;
             break;
         case QUEX_TKN_WHO: 
-            cout << (int)token.get_who_is_that() << endl; 
+            cout << (int)token_p->get_who_is_that() << endl; 
             break;
         }
 
@@ -65,7 +73,7 @@ main(int argc, char** argv)
             QUEX_ERROR_EXIT("Loop beyond border.\n");
         }
 
-    } while( token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "\n[END] number of token = " << number_of_tokens << "\n";
 

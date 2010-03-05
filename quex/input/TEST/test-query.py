@@ -13,7 +13,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 
-if len(sys.argv) != 2 or sys.argv[1] not in ["PropertyInfo", "PropertyList" ]:
+if len(sys.argv) < 2 or sys.argv[1] not in ["PropertyInfo", "PropertyList" ]:
     print "Wrong command line argument. Call with --hwut-info for further info."
     sys.exit(0)
 
