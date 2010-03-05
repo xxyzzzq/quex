@@ -1,8 +1,6 @@
 ** Please note, that '.' in an RE stands for 'anything but newline'   **
 ** Thus, it does not match newline, and the lexer triggers on newline **
 ** to the default terminal.                                           **
-Call to quex
-Compiling
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
 ## define 'QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED' which only disables
@@ -22,13 +20,4 @@ Compiling
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-,------------------------------------------------------------------------------------
-| [START]
 URL 'http://www.dog.com/get?q=food' 
-<TERMINATION> '' 
-| [END] number of token = 2
-`------------------------------------------------------------------------------------
-rm -rf Simple-*
-rm -rf Simple.cpp
-rm -rf Simple
-rm -rf a.out
