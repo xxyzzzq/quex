@@ -29,6 +29,11 @@
 
 #include <quex/code_base/definitions>
 
+QUEX_NAMESPACE_MAIN_OPEN
+    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
+QUEX_NAMESPACE_MAIN_CLOSE
+
+
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
 QUEX_NAMESPACE_TOKEN_OPEN
@@ -64,7 +69,7 @@ enum {
         extern QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);
 
 
-extern     void QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
+extern     __QUEX_TYPE_ANALYZER_RETURN_VALUE QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 extern     bool QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)*);
 extern     bool QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)*);
@@ -146,26 +151,19 @@ public:
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
-    // -- token stream: read next token
-    void                  get_token() 
-    { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-    void                  get_token(QUEX_TYPE_TOKEN*   result_p)  { get_token(); }
-    void                  get_token(QUEX_TYPE_TOKEN**  result_p) { get_token(); }
-
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    void                  receive(QUEX_TYPE_TOKEN*   result_p);
-    void                  receive(QUEX_TYPE_TOKEN**  result_pp);
+    QUEX_TYPE_TOKEN*      receive();
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-    void                  receive();
-    void                  receive(QUEX_TYPE_TOKEN*   result_p);
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_TYPE_TOKEN*      receive(QUEX_TYPE_TOKEN*  begin, QUEX_TYPE_TOKEN* end);
+    QUEX_TYPE_TOKEN_ID    receive();
 #   endif
     // NOTE: A pointer to an object of the token queue/object is used in order to make
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
-    QUEX_TYPE_TOKEN*      token_object();
+    QUEX_TYPE_TOKEN*      token_p();
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+    void                  token_p_set(QUEX_TYPE_TOKEN*);
+#   endif
 
     //
     // (*) Mode handling
@@ -179,8 +177,8 @@ public:
     void        set_mode_brutally(const int       LexerMode);
     void        set_mode_brutally(const QUEX_NAME(Mode)& Mode);
     //
-    void        operator<<(const int MODE_ID);               // not to be used in concatination
-    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  // not to be used in concatination
+    void        operator<<(const int MODE_ID);               
+    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  
     //
     void        pop_mode();
     void        pop_drop_mode();
@@ -192,19 +190,9 @@ public:
     QUEX_NAME(Mode)&   map_mode_id_to_mode(const int              ModeID);       
     int                map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
 
-    // (*) Token sending
-    void        send(const QUEX_TYPE_TOKEN& That);
-    void        send(const QUEX_TYPE_TOKEN_ID TokenID);
-    void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
-    template    <typename ContentT> 
-    void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
-    template    <typename X0_T, typename X1_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1);
-    template    <typename X0_T, typename X1_T, typename X2_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2);
-    template    <typename X0_T, typename X1_T, typename X2_T, typename X3_T> inline 
-    void        send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T); 
-
+    // (*) Token sending happens only via 'self_send*(...)' macros
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID)
+    { QUEX_ERROR_DEPRECATED("Member functions .send()", "macros: self_send*()"); }
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     int         line_number() const          { return line_number_at_begin(); }
@@ -249,9 +237,6 @@ protected:
     void                               include_stack_delete();
 
 private:
-    //      -- include events (a file is included)
-    template<class InputHandleT> QUEX_NAME(Memento)*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-    void                                              memento_unpack(QUEX_NAME(Memento)*);
 #   endif
 
 public:
@@ -277,7 +262,7 @@ private:
     QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
 
     /* (*) All Modes are Friends ___________________________________________________*/
-    friend     void QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
+    friend     __QUEX_TYPE_ANALYZER_RETURN_VALUE QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     friend     bool QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)*);
     friend     bool QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)*);
@@ -292,6 +277,12 @@ public:
 /* END: ____________________________________________________________________________*/
 #undef  self
 
+public:
+    // At least warn those, who still use the old interface ...
+    void                  get_token() 
+    { QUEX_ERROR_DEPRECATED("Member functions .get_token()", ".receive(...)"); }
+    void                  get_token(QUEX_TYPE_TOKEN*   result_p) { get_token(); }
+    void                  get_token(QUEX_TYPE_TOKEN**  result_p) { get_token(); }
 };
 
 QUEX_NAMESPACE_MAIN_CLOSE
@@ -447,6 +438,9 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/analyzer/C-adaptions.h>
 QUEX_NAMESPACE_MAIN_OPEN
 /* Global */QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);
+#ifndef __QUEX_INDICATOR_DUMPED_TOKEN_ID_DEFINED
+    static QUEX_TYPE_TOKEN_ID    __QuexDumpedTokenIdObject;
+#endif
 
     void
     QUEX_NAME(ONE_AND_ONLY_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
@@ -486,6 +480,7 @@ __quex_assert(Indentation >= 0);
     }
 #endif    
 #undef self
+#undef __self_result_token_id
 QUEX_NAMESPACE_MAIN_CLOSE
 
 
@@ -518,10 +513,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 #ifdef    CONTINUE
 #   undef CONTINUE
 #endif
+
 #ifdef    RETURN
 #   undef RETURN
 #endif
 
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   define RETURN   return
+#else
+#   define RETURN   do { return __self_result_token_id; } while(0)
+#endif
 
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
 #   define __QUEX_INFO_LEXEME_NULL_DEFINED
@@ -529,7 +530,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #endif
 #include <quex/code_base/temporary_macros_on>
 
-void  
+__QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
     /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
@@ -537,6 +538,10 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
              means, they are something like 'globals'. They receive a pointer to the   
              lexical analyzer, since static member do not have access to the 'this' pointer.
      */
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+    register QUEX_TYPE_TOKEN_ID __self_result_token_id 
+           = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
+#   endif
 #   ifdef     self
 #       undef self
 #   endif
@@ -791,8 +796,8 @@ STATE_248_DROP_OUT_DIRECT:
         goto TERMINAL_END_OF_STREAM;
     }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);    goto STATE_248_INPUT;
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);    goto STATE_248_INPUT;
 STATE_248_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_248_INPUT");
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
@@ -828,8 +833,8 @@ STATE_256_DROP_OUT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_256_DROP_OUT_DIRECT");
             goto TERMINAL_5_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_256_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -883,8 +888,8 @@ STATE_257_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_257_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -926,8 +931,8 @@ STATE_258_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_258_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_258_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -981,8 +986,8 @@ STATE_259_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_259_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1036,8 +1041,8 @@ STATE_260_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_260_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1091,8 +1096,8 @@ STATE_261_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_261_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1146,8 +1151,8 @@ STATE_262_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_262_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1201,8 +1206,8 @@ STATE_263_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_263_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1244,8 +1249,8 @@ STATE_264_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT_DIRECT");
             goto TERMINAL_7_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_264_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1299,8 +1304,8 @@ STATE_265_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_265_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1342,8 +1347,8 @@ STATE_266_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT_DIRECT");
             goto TERMINAL_16_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_266_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1397,8 +1402,8 @@ STATE_267_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_267_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1452,8 +1457,8 @@ STATE_268_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_268_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1507,8 +1512,8 @@ STATE_269_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_269_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1562,8 +1567,8 @@ STATE_270_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_270_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1605,8 +1610,8 @@ STATE_271_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT_DIRECT");
             goto TERMINAL_19_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_271_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1660,8 +1665,8 @@ STATE_272_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_272_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1703,8 +1708,8 @@ STATE_273_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT_DIRECT");
             goto TERMINAL_10_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_273_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1758,8 +1763,8 @@ STATE_274_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_274_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1813,8 +1818,8 @@ STATE_275_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_275_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1868,8 +1873,8 @@ STATE_276_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_276_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1923,8 +1928,8 @@ STATE_277_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_277_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1966,8 +1971,8 @@ STATE_278_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT_DIRECT");
             goto TERMINAL_13_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_278_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -1993,8 +1998,8 @@ STATE_249_DROP_OUT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT_DIRECT");
             goto TERMINAL_35_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_249_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -2049,8 +2054,8 @@ STATE_251_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_251_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -2105,8 +2110,8 @@ STATE_253_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_253_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_253_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -2160,8 +2165,8 @@ STATE_254_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;    }
 
-    QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position,
-                                     post_context_start_position, PostContextStartPositionN);
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
     goto STATE_254_INPUT;
 
     __quex_assert(false); /* No drop-through between states */
@@ -2192,10 +2197,11 @@ TERMINAL_35_DIRECT:
         #   endif
         
         #line 27 "dos_lf_2.qx"
-        self_send1(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
+        self_token_p()->number = atoi((char*)Lexeme);
+        self_send(QUEX_TKN_NUMBER);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1763 "Simple.cpp"
+#line 1778 "Simple.cpp"
         
         }
     }
@@ -2236,10 +2242,10 @@ TERMINAL_7_DIRECT:
         #   endif
         
         #line 19 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_STRUCT);
+        self_send(QUEX_TKN_STRUCT);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1807 "Simple.cpp"
+#line 1822 "Simple.cpp"
         
         }
     }
@@ -2262,9 +2268,9 @@ TERMINAL_41_DIRECT:
         #   endif
         
         #line 28 "dos_lf_2.qx"
-         self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
+         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 1832 "Simple.cpp"
+#line 1847 "Simple.cpp"
         
         }
     }
@@ -2286,10 +2292,10 @@ TERMINAL_10_DIRECT:
         #   endif
         
         #line 20 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_TYPE_INT);
+        self_send(QUEX_TKN_TYPE_INT);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1857 "Simple.cpp"
+#line 1872 "Simple.cpp"
         
         }
     }
@@ -2311,10 +2317,10 @@ TERMINAL_13_DIRECT:
         #   endif
         
         #line 21 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_TYPE_DOUBLE);
+        self_send(QUEX_TKN_TYPE_DOUBLE);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1882 "Simple.cpp"
+#line 1897 "Simple.cpp"
         
         }
     }
@@ -2336,10 +2342,10 @@ TERMINAL_16_DIRECT:
         #   endif
         
         #line 22 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_SEND);
+        self_send(QUEX_TKN_SEND);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1907 "Simple.cpp"
+#line 1922 "Simple.cpp"
         
         }
     }
@@ -2361,10 +2367,10 @@ TERMINAL_19_DIRECT:
         #   endif
         
         #line 23 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_EXPECT);
+        self_send(QUEX_TKN_EXPECT);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1932 "Simple.cpp"
+#line 1947 "Simple.cpp"
         
         }
     }
@@ -2386,10 +2392,10 @@ TERMINAL_22_DIRECT:
         #   endif
         
         #line 24 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_SEMICOLON);
+        self_send(QUEX_TKN_SEMICOLON);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1957 "Simple.cpp"
+#line 1972 "Simple.cpp"
         
         }
     }
@@ -2411,10 +2417,10 @@ TERMINAL_25_DIRECT:
         #   endif
         
         #line 25 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_BRACKET_OPEN);
+        self_send(QUEX_TKN_BRACKET_OPEN);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1982 "Simple.cpp"
+#line 1997 "Simple.cpp"
         
         }
     }
@@ -2436,10 +2442,10 @@ TERMINAL_28_DIRECT:
         #   endif
         
         #line 26 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_BRACKET_CLOSE);
+        self_send(QUEX_TKN_BRACKET_CLOSE);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2007 "Simple.cpp"
+#line 2022 "Simple.cpp"
         
         }
     }
@@ -2458,16 +2464,16 @@ TERMINAL_END_OF_STREAM:
         #   endif
         
         #line 16 "dos_lf_2.qx"
-        self_send0(QUEX_TKN_TERMINATION);
+        self_send(QUEX_TKN_TERMINATION);
         
-#line 2028 "Simple.cpp"
+#line 2043 "Simple.cpp"
         
         }
                 }
 
      /* End of Stream causes a return from the lexical analyzer, so that no
       * tokens can be filled after the termination token.                    */
-     return;          
+     RETURN;          
 
 TERMINAL_FAILURE:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_FAILURE");
@@ -2490,7 +2496,7 @@ else {
         QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);
         #   endif
         self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-        return;
+        RETURN;
         
         }
                 }
@@ -2538,9 +2544,9 @@ __REENTRY_PREPARATION:
     
 #ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) return;
+    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
 #   else
-    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
 #   endif
 #endif
 
@@ -2573,8 +2579,8 @@ __REENTRY_PREPARATION:
     if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
 #endif
     { 
-    QUEX_TOKEN_POLICY_SET_ID(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-    return;
+    self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+    RETURN;
 #elif defined(QUEX_OPTION_ASSERTS)
     QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
 #endif
@@ -2589,6 +2595,7 @@ __REENTRY_PREPARATION:
         goto __TERMINAL_ROUTER;
         unused += (int)ONE_AND_ONLY.id;
         unused += (int)__QuexLexemeNullObject;
+        unused += (int)__QuexDumpedTokenIdObject;
     }
 #   undef ONE_AND_ONLY
 }

@@ -1,22 +1,31 @@
 X = Simple
 
-all: $(X).cpp 
-	@echo "Compiling"
+lexer-iconv: Simple.cpp
 	@g++ -I./ -I$(QUEX_PATH) \
-		$(X).cpp                      \
-		lexer.cpp                     \
-		-ggdb \
-	   	#-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
-		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
+		Simple.cpp     \
+		../lexer.cpp        \
+		-ggdb               \
+		-o $@               \
+		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV >& tmp.txt
+	@cat tmp.txt
+	@rm  tmp.txt
+	
+lexer-icu: Simple.cpp
+	@g++ -I./ -I$(QUEX_PATH) \
+		Simple.cpp     \
+		../lexer.cpp           \
+		-ggdb               \
+		-o $@               \
+		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICU >& tmp.txt
+	@cat tmp.txt
+	@rm  tmp.txt
 
-
-$(X).cpp: simple.qx
-	@echo "Call to quex"
-	@quex -i $< -o $(X) -b wchar_t --iconv --token-policy queue
+Simple.cpp: simple.qx
+	@quex -i $< -o Simple -b wchar_t --iconv --token-policy queue
 
 
 clean:
-	rm -rf $(X)-*
-	rm -rf $(X).cpp
-	rm -rf $(X)
-	rm -rf a.out
+	@rm -rf Simple-*
+	@rm -rf Simple.cpp
+	@rm -rf Simple
+	@rm -rf a.out
