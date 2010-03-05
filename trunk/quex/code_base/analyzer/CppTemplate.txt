@@ -143,12 +143,6 @@ public:
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
-    // -- token stream: read next token
-    void                  get_token() 
-    { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-    void                  get_token(QUEX_TYPE_TOKEN*   result_p)  { get_token(); }
-    void                  get_token(QUEX_TYPE_TOKEN**  result_p) { get_token(); }
-
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     QUEX_TYPE_TOKEN*      receive();
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
@@ -175,8 +169,8 @@ public:
     void        set_mode_brutally(const int       LexerMode);
     void        set_mode_brutally(const QUEX_NAME(Mode)& Mode);
     //
-    void        operator<<(const int MODE_ID);               // not to be used in concatination
-    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  // not to be used in concatination
+    void        operator<<(const int MODE_ID);               
+    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  
     //
     void        pop_mode();
     void        pop_drop_mode();
@@ -190,7 +184,7 @@ public:
 
     // (*) Token sending happens only via 'self_send*(...)' macros
     void        send(const QUEX_TYPE_TOKEN_ID TokenID)
-    { QUEX_ERROR_EXIT("Member function .send(...) no longer supported. Use 'self_send*()' macros"); }
+    { QUEX_ERROR_DEPRECATED("Member functions .send()", "macros: self_send*()"); }
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     int         line_number() const          { return line_number_at_begin(); }
@@ -270,6 +264,12 @@ $$CLASS_BODY_EXTENSION$$
 /* END: ____________________________________________________________________________*/
 #undef  self
 
+public:
+    // At least warn those, who still use the old interface ...
+    void                  get_token() 
+    { QUEX_ERROR_DEPRECATED("Member functions .get_token()", ".receive(...)"); }
+    void                  get_token(QUEX_TYPE_TOKEN*   result_p) { get_token(); }
+    void                  get_token(QUEX_TYPE_TOKEN**  result_p) { get_token(); }
 };
 
 QUEX_NAMESPACE_MAIN_CLOSE

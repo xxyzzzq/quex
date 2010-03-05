@@ -22,6 +22,8 @@ __header_definitions_txt = """
 #ifdef    CONTINUE
 #   undef CONTINUE
 #endif
+#define   CONTINUE $$GOTO_START_PREPARATION$$ 
+
 #ifdef    RETURN
 #   undef RETURN
 #endif
@@ -31,7 +33,6 @@ __header_definitions_txt = """
 #else
 #   define RETURN   do { return __self_result_token_id; } while(0)
 #endif
-#define CONTINUE $$GOTO_START_PREPARATION$$ 
 
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
 #   define __QUEX_INFO_LEXEME_NULL_DEFINED
@@ -74,7 +75,7 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
              means, they are something like 'globals'. They receive a pointer to the   
              lexical analyzer, since static member do not have access to the 'this' pointer.
      */
-#   if ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id 
            = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
 #   endif

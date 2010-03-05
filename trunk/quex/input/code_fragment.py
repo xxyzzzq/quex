@@ -270,7 +270,8 @@ def __create_token_sender_by_token_name(fh, TokenName):
                        "self_send(%s);\n" % (TokenName)
             else:
                 error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"
-                          "or 'LexemeNull'. Found '%s'" % argument_list[0], fh)
+                          "or 'LexemeNull'. Found '%s'.\n" % argument_list[0] + \
+                          "Alternatively, use named parameters such as 'number=...'.", fh)
 
         elif len(argument_list) == 0:
             return "self_send(%s);\n" % TokenName
