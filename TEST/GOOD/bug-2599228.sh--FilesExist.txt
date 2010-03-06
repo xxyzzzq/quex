@@ -59,7 +59,6 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/mode-handling.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/buffer-access.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-receiving.i exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-sending.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/constructor.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/misc.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/counter/LineColumn exists

@@ -8,15 +8,15 @@
  * NOTE: 'defines' were used instead of propper 'typedefs' because this allows
  *       to define the relation without a existing type definition. By this means
  *       one is discharged of the task of including all required headers. */
-#ifdef __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS
+#ifdef __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS
 #    error "File <template_macros_on> was included twice without including the correspondent\n" + \
            "<template_macros_off> file."
 #endif
-#define __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS
+#define __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS
 
 /* Allow 'undefining' again by inclusion of file  "temporary_macros_off" */
-#ifdef    __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF
-#   undef __QUEX_INCLUDE_GUARD__TEMPORARY_MACRO_DEFINITIONS__OFF
+#ifdef    __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS__OFF
+#   undef __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS__OFF
 #endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)

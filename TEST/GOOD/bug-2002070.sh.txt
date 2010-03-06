@@ -1,6 +1,3 @@
-Call to quex
-Unpacking text.345
-Compiling
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
 ## define 'QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED' which only disables
@@ -20,8 +17,6 @@ Compiling
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-,------------------------------------------------------------------------------------
-| [START]
 WORD '<doc' 
 NONE ' ' 
 WORD 'id="2"' 
@@ -19150,11 +19145,3 @@ TOK 'suoi'
 NONE ' ' 
 WORD 'archi.' 
 NEWLINE '' 
-<TERMINATION> '' 
-| [END] number of token = 19129
-`------------------------------------------------------------------------------------
-rm -rf Simple-*
-rm -rf Simple.cpp
-rm -rf Simple
-rm -rf a.out
-bzip2 text.345

@@ -1,7 +1,7 @@
 ## 006
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
+make DSWITCH_ASSERTS=-DQUEX_OPTION_ASSERTS  COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
 simple.qx:24:warning: Post context requires philosophical cut (handle with care).
 sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
@@ -31,32 +31,32 @@ executing ...
 ###############################################################################
 ,------------------------------------------------------------------------------------
 | [START]
-HEY_P___HEY_ETC____	hey
-LETTER_____________	h
-LETTER_____________	e
-WHITESPACE	
-HEY_____HEY_HALLO_P	hey
-HALLO______________	hallo
-HALLO______________	hallo
-WHITESPACE	
-HEY_P___HEY_ETC____	hey
-LETTER_____________	h
-LETTER_____________	e
-HALLO______________	hallo
-HALLO______________	hallo
-WHITESPACE	
-HEY_____HEY_HALLO_P	hey
-HEY_____HEY_HALLO_P	hey
-HALLO______________	hallo
-HALLO______________	hallo
-WHITESPACE	
-HEY_P___HEY________	heyheyhey
-HEY________________	hey
-WHITESPACE	
-LETTER_____________	x
-HEY________________	hey
-WHITESPACE	
-<TERMINATION>	
+HEY_P___HEY_ETC____ 'hey' 
+LETTER_____________ 'h' 
+LETTER_____________ 'e' 
+WHITESPACE '' 
+HEY_____HEY_HALLO_P 'hey' 
+HALLO______________ 'hallo' 
+HALLO______________ 'hallo' 
+WHITESPACE '' 
+HEY_P___HEY_ETC____ 'hey' 
+LETTER_____________ 'h' 
+LETTER_____________ 'e' 
+HALLO______________ 'hallo' 
+HALLO______________ 'hallo' 
+WHITESPACE '' 
+HEY_____HEY_HALLO_P 'hey' 
+HEY_____HEY_HALLO_P 'hey' 
+HALLO______________ 'hallo' 
+HALLO______________ 'hallo' 
+WHITESPACE '' 
+HEY_P___HEY________ 'heyheyhey' 
+HEY________________ 'hey' 
+WHITESPACE '' 
+LETTER_____________ 'x' 
+HEY________________ 'hey' 
+WHITESPACE '' 
+<TERMINATION> '' 
 | [END] number of token = 26
 `------------------------------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible

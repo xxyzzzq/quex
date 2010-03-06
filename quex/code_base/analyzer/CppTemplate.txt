@@ -15,7 +15,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
 #define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
 
-#ifdef      __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+#ifdef      __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
     /* In case that multiple lexical analyzers are used the same header
      * files are compiled with a different setting of the macros. The
      * undef of the include guards happens in the following file.              */
@@ -23,7 +23,7 @@
 #   include <quex/code_base/analyzer/member/token-sending-undef.i>
 #   undef   __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
 #else
-#   define  __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+#   define  __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
 #endif
 
 #include "$$LEXER_CONFIG_FILE$$"

@@ -35,6 +35,9 @@ counter-%.exe:   counter-%.cpp $(QUEX_CORE)
 accumulator.exe: accumulator.cpp $(QUEX_CORE)
 	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
 
+nonsense.exe: nonsense.cpp $(QUEX_CORE)
+	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+
 
 %.E:   %.cpp $(QUEX_CORE)
 	$(CC) -E -I./. -I$(QUEX_PATH) $< -o $@ 

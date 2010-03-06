@@ -18,12 +18,13 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
     elif root.find("/TEST/GOOD") != -1: continue
     elif root.find("/TEST/ADM")  != -1: continue
     elif root.find("/DESIGN")    != -1: continue
+    elif root.find("/TEST")      != -1: continue
     elif root.find("/code_base") == -1: continue
 
     ## print root
     for file in file_list:
         ext = os.path.splitext(file)[1]
-        if ext not in ["", ".i", ".h"]: continue
+        if ext not in ["", ".i", ".h", ".txt"]: continue
         if file.lower() in ["makefile", "tags", "readme"]: continue
         file_name = root + "/" + file
         ## print "##", file_name
@@ -97,6 +98,8 @@ def check_include_guard_undefinition():
 
     # Filter out empty include guards
     include_guard_list = filter(lambda x: x.line_n != -1, include_guard_list)
+    ## for x in include_guard_list:
+    ##    print "##", x.file_name
 
     undef_list = undef_unique.keys()
     stranger_list = filter(lambda x: x.name not in undef_list, include_guard_list)

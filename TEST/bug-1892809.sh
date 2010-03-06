@@ -8,7 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i error.qx --engine Simple 
-g++ -I./ -I$QUEX_PATH Simple.cpp lexer.cpp -o Simplicism
+g++ -I./ -I$QUEX_PATH Simple.cpp ../lexer-simply.cpp -o Simplicism
 echo "(1)"
 ./Simplicism example.txt
 echo "(2)"
