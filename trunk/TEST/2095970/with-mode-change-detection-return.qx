@@ -24,6 +24,8 @@ mode STRING {
     <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { 
         self << MODULE; 
+        self_token_id_set(self_token_p()->_id);
+        RETURN;
     }
     .    { 
         self_accumulator_add(Lexeme, LexemeEnd); 
