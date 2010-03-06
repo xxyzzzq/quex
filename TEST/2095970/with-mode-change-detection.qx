@@ -8,7 +8,7 @@ token {
 start = MODULE;
 
 mode MODULE {
-    <<EOF>> => QUEX_TKN_TERMINATION;
+    <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
     "\"" { 
         self << STRING; 
     }
@@ -21,7 +21,7 @@ mode STRING {
     on_exit {
         self_accumulator_flush(QUEX_TKN_STRING_LITERAL);
     }
-    <<EOF>> => QUEX_TKN_TERMINATION;
+    <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
     "\"" { 
         self << MODULE; 
     }

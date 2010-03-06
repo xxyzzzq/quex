@@ -55,7 +55,16 @@
 #   define QUEX_TOKEN_POLICY_NO_TOKEN() \
            (__self_result_token_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
 
-#   define self_token_get_id()    (__self_result_token_id)
+/*  Important: Currently the token class needs to contain a token identifier.
+ *             When this changes, the 'get_id' function can rely solely on 
+ *             __self_result_token_id. HOWEVER, the 'on_entry', 'on_exit', 
+ *             and 'on_indentation' need to be revised-->test then carefully. */
+/* #   define self_token_get_id()    (__self_result_token_id) */
+#   if        defined(__QUEX_OPTION_PLAIN_C)
+#      define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->_id
+#   else
+#      define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->type_id()
+#   endif
 #   define self_token_set_id(ID)  do { __self_result_token_id = ID; __QUEX_TOKEN_POLICY_SET_ID(ID); } while( 0 )
 
 #endif
