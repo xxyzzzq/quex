@@ -56,7 +56,6 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/mode-handling.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/buffer-access.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-receiving.i
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-sending.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/constructor.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/misc.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/counter/LineColumn

@@ -1,4 +1,3 @@
-X = IndigoLexer
 
 lexer-iconv: IndigoLexer.cpp
 	@g++ -I./ -I$(QUEX_PATH) \

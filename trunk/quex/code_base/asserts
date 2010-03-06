@@ -13,7 +13,7 @@
 #   define  __quex_assert(X)      /*no assert*/
 #endif
 
-#define __QUEX_INCLUDE_DETECTOR__ASSERTS
+#define __QUEX_INCLUDE_INDICATOR__ASSERTS
 
 #endif /* __QUEX_INCLUDE_GUARD__ASSERTS */
 

@@ -1,8 +1,14 @@
 /* (C) 2005-2009 Frank-Rene Schaefer */
-#ifndef __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
-#   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN is not defined, tells that this is not the case."
+#ifndef __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
+#   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN is not defined, tells that this is not the case."
 #endif
 
+#ifdef     __QUEX_INCLUDE_GUARD__ASSERTS
+#   undef  __QUEX_INCLUDE_GUARD__ASSERTS
+#endif
+#ifdef     __QUEX_INCLUDE_INDICATOR__ASSERTS
+#   undef  __QUEX_INCLUDE_INDICATOR__ASSERTS
+#endif
 #ifdef     __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
 #   undef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
 #endif
@@ -93,10 +99,6 @@
 #ifdef     __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I                
 #   undef  __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I                
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H                  
-#   undef  __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H                  
-#endif
-
 #ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER                       
 #   undef  __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER                        
 #endif
@@ -184,12 +186,6 @@
 #ifdef    __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
 #   undef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
 #endif
-#ifdef    __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
-#   undef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
-#endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H                         
-#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H                         
-#endif
 #ifdef     __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
 #   undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
 #endif
@@ -204,4 +200,7 @@
 #endif
 #ifdef    __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE_I
 #   undef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE_I
+#endif
+#ifdef    __QUEX_INCLUDE_GUARD__ANALYZER__C_ADAPTIONS_H
+#   undef __QUEX_INCLUDE_GUARD__ANALYZER__C_ADAPTIONS_H
 #endif

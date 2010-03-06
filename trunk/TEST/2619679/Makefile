@@ -14,7 +14,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 # -- INPUT
 MODE_FILES       = simple.qx
 # -- FILES PRODUCED BY QUEX
-ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
+ENGINE_NAME      = Simple# NOTE: a whitespace after this name creates chaos!
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
@@ -32,12 +32,12 @@ CC = $(COMPILER) \
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(APPLICATION).cpp $(ENGINE_NAME).cpp 
+$(APPLICATION): ../lexer-simply.cpp $(ENGINE_NAME).cpp 
 	@echo "##"
 	@echo "## The issue here was that there were warnings about double defined macros."
 	@echo "##"
 	$(CC) -o $(APPLICATION) \
-		  ./$(APPLICATION).cpp $(ENGINE_NAME).cpp 
+		  ../lexer-simply.cpp $(ENGINE_NAME).cpp 
           
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 

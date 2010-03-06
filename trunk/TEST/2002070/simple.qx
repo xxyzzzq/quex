@@ -1,34 +1,26 @@
 define {
-P_TOK [A-Za-z0-9]+
+    P_TOK [A-Za-z0-9]+
 }
 
 token {
-TOK
-NONE
-NEWLINE
-WORD
+    TOK
+    NONE
+    NEWLINE
+    WORD
 }
 
 mode ONE_AND_ONLY
 {
 // Order is relevant
 <<EOF>> {
-    /* send an empty string, to ensure that the data part is ready. */
-    QUEX_TYPE_CHARACTER  empty_string = 0x0000;
-    /* NOTE: The local variable is deleted soon, but the sender copies the
-     *       content into a string object.                                  */
-    self.send(QUEX_TKN_TERMINATION, &empty_string);
+    self_send1(QUEX_TKN_TERMINATION, LexemeNull);
     RETURN;
 }
 
 {P_TOK}     => QUEX_TKN_TOK(Lexeme);
 \n          {
-            /* send an empty string, to ensure that the data part is ready. */
-            QUEX_TYPE_CHARACTER  empty_string = 0x0000;
-            /* NOTE: The local variable is deleted soon, but the sender copies the
-             *       content into a string object.                                  */
-            self.send(QUEX_TKN_NEWLINE, &empty_string);
-            RETURN;
+                self_send1(QUEX_TKN_NEWLINE, LexemeNull);
+                RETURN;
             }
 [^ \r\n\t]+ => QUEX_TKN_WORD(Lexeme);
 .           => QUEX_TKN_NONE(Lexeme);

@@ -32,7 +32,7 @@ $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 
 /* By default ASSERTS are enabled ! */
-#if defined(__QUEX_INCLUDE_DETECTOR__ASSERTS)
+#if defined(__QUEX_INCLUDE_INDICATOR__ASSERTS)
 #   error "Asserts have been adapted before the inclusion of the configuration file."
 #endif
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)

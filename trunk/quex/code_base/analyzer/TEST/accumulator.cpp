@@ -8,9 +8,11 @@
 
 #include <quex/code_base/analyzer/configuration/default>
 
+#include <quex/code_base/definitions>
+
 QUEX_NAMESPACE_MAIN_OPEN
 class TestAnalyzer;
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/analyzer/Accumulator>
 
@@ -41,8 +43,8 @@ public:
 };
 
 bool 
-QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*                           __this, 
-                           QUEX_NAMESPACE_MAIN::QUEX_TYPE_ANALYZER*   analyzer, 
+QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this, 
+                           QUEX_TYPE_ANALYZER*        analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, 
                            const QUEX_TYPE_CHARACTER* End)
 {
@@ -57,6 +59,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 //#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
 //#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 //#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
+#include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/analyzer/C-adaptions.h>
 #include <quex/code_base/analyzer/Accumulator.i>
 
@@ -79,8 +82,8 @@ main(int argc, char** argv)
         printf("CHOICES: String, Character, N-Character, N-String, Mix;\n");
         return 0;
     }
-    TestAnalyzer           analyzer;
-    QUEX_NAME(Accumulator) accumulator;
+    TestAnalyzer            analyzer;
+    QUEX_NAME(Accumulator)& accumulator = analyzer.accumulator;
 
 #   define self analyzer
 
@@ -94,13 +97,13 @@ main(int argc, char** argv)
         self_accumulator_flush(0);
     }
     else if( strcmp(argv[1], "Character") == 0 ) {
-        QUEX_NAME(Accumulator_add_chararacter)(&accumulator, 'a');
+        QUEX_NAME(Accumulator_add_character)(&accumulator, 'a');
         QUEX_NAME(Accumulator_print_this)(&accumulator);
         self_accumulator_flush(0);
     }
     else if( strcmp(argv[1], "N-Character") == 0 ) {
         for(int i = 0; i != 104; ++i) 
-            QUEX_NAME(Accumulator_add_chararacter)(&accumulator, i % 26 + 'a');
+            QUEX_NAME(Accumulator_add_character)(&accumulator, i % 26 + 'a');
         QUEX_NAME(Accumulator_print_this)(&accumulator);
         self_accumulator_flush(0);
     }
@@ -117,9 +120,9 @@ main(int argc, char** argv)
             if( p % 2 == 0 )
                 QUEX_NAME(Accumulator_add)(&accumulator, TestString0, TestString0 + strlen(TestString0));
             else {
-                QUEX_NAME(Accumulator_add_chararacter)(&accumulator, ' ');
-                QUEX_NAME(Accumulator_add_chararacter)(&accumulator, p % 26 + 'a');
-                QUEX_NAME(Accumulator_add_chararacter)(&accumulator, ' ');
+                QUEX_NAME(Accumulator_add_character)(&accumulator, ' ');
+                QUEX_NAME(Accumulator_add_character)(&accumulator, p % 26 + 'a');
+                QUEX_NAME(Accumulator_add_character)(&accumulator, ' ');
             }
         }
         QUEX_NAME(Accumulator_print_this)(&accumulator);

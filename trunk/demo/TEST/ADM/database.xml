@@ -1,7 +1,7 @@
-<test-database execution-time-sec="202.45" date="Fri Mar  5 22:11:16 2010">
+<test-database execution-time-sec="199.04" date="Sat Mar  6 13:17:32 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" time-sum-sec="18.86"> 
+        <test title="Sun Microsystem's sunCC" time-sum-sec="15.84"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="2.98" crc="1607120788"/>
@@ -9,10 +9,10 @@
                <choice name="002" result="OK" time_sec="3.18" crc="876964816"/>
                <choice name="003" result="OK" time_sec="3.83" crc="-1995325101"/>
                <choice name="005" result="OK" time_sec="3.22" crc="46396233"/>
-               <choice name="006" result="FAIL" time_sec="3.02" crc="-709399709"/>
+               <choice name="006" result="OK" time_sec="0.00" crc="-53715604"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="20.87"> 
+        <test title="Intel's icpc" time-sum-sec="17.74"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1265833749L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="3.08" crc="206599625"/>
@@ -20,7 +20,7 @@
                <choice name="002" result="OK" time_sec="3.52" crc="1706884011"/>
                <choice name="003" result="OK" time_sec="4.19" crc="-1790542260"/>
                <choice name="005" result="OK" time_sec="4.05" crc="-740077430"/>
-               <choice name="006" result="FAIL" time_sec="3.13" crc="2116552673"/>
+               <choice name="006" result="OK" time_sec="0.00" crc="1748046088"/>
             </choice-list>
         </test>
     </group>
@@ -177,11 +177,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="10.52"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="13.26"> 
             <application file-name="012.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="5.46" crc="546899099"/>
-               <choice name="DEBUG" result="FAIL" time_sec="5.06" crc="546899099"/>
+               <choice name="NDEBUG" result="OK" time_sec="6.64" crc="546899099"/>
+               <choice name="DEBUG" result="OK" time_sec="6.62" crc="546899099"/>
             </choice-list>
         </test>
     </group>

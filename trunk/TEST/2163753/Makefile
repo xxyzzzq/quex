@@ -3,8 +3,8 @@ X = Simple
 all: $(X).cpp 
 	@echo "Compiling"
 	@g++ -I./ -I$(QUEX_PATH) \
-		$(X).cpp                      \
-		lexer.cpp                     \
+		$(X).cpp             \
+		../lexer-simply.cpp  \
 		-ggdb \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 	   	#-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \

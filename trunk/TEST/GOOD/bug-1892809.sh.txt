@@ -24,14 +24,11 @@ error.qx:16:warning: Token id 'QUEX_TKN_F' defined implicitly.
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-,------------------------------------------------------------------------------------
-| [START]
-D
-E
-F
-<TERMINATION>
-| [END] number of token = 4
-`------------------------------------------------------------------------------------
+## An Assert-Abortion might be an intended element of the experiment.
+D '' 
+E '' 
+F '' 
+<TERMINATION> '' 
 (2)
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
@@ -52,8 +49,5 @@ F
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-,------------------------------------------------------------------------------------
-| [START]
-<TERMINATION>
-| [END] number of token = 1
-`------------------------------------------------------------------------------------
+## An Assert-Abortion might be an intended element of the experiment.
+<TERMINATION> '' 
