@@ -26,7 +26,7 @@ CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb \
 all: lexer
 
 # -- application
-lexer: lexer.cpp $(ENGINE_SOURCES)
+lexer: ../lexer-simply.cpp $(ENGINE_SOURCES)
 	$(CC) $< $(ENGINE_NAME).cpp -o $@ 
 
 $(ENGINE_SOURCES): $(EXT_MODE_FILE)

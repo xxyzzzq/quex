@@ -81,6 +81,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
         do {
             __self_result_token_id = me->current_analyzer_function(me);
+            /* Currently it is necessary to check wether the return value
+             * is appropriate, since event handlers may have set the token
+             * identifier, without setting __self_result_token_id.         */
+            if( __self_result_token_id != me->token->_id ) {
+                __self_result_token_id = me->token->_id;
+            }
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
