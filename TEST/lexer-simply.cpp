@@ -13,11 +13,11 @@ main(int argc, char** argv)
     quex::Simple  qlex(argc == 1 ? "example.txt" : argv[1]);
 
     cout << "## An Assert-Abortion might be an intended element of the experiment.\n";
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
     qlex.token_p_set(&token);
 #   endif
     do {
-#       ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#       ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
         qlex.receive();
 #       else
         token = *(qlex.receive());

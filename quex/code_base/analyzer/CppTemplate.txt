@@ -145,7 +145,7 @@ public:
 
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     QUEX_TYPE_TOKEN*      receive();
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
     QUEX_TYPE_TOKEN_ID    receive();
 #   endif
     // NOTE: A pointer to an object of the token queue/object is used in order to make
@@ -153,7 +153,7 @@ public:
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
     QUEX_TYPE_TOKEN*      token_p();
-#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
     void                  token_p_set(QUEX_TYPE_TOKEN*);
 #   endif
 

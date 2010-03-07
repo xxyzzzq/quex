@@ -1,4 +1,4 @@
-<history date="Sun Mar  7 10:17:41 2010" element-n="658">
+<history date="Sun Mar  7 14:39:12 2010" element-n="669">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1344,5 +1344,18 @@
         <crc-error time="23:47:43" application="bug-2095970.sh" choice="NoModeDetectionNoAsserts" database-crc="-1569213271" real-crc="1409311744"/>
         <crc-error time="23:47:54" application="bug-2095970.sh" choice="NoModeDetection_ErrorCase" database-crc="-412537409" real-crc="2147147637"/>
         <crc-error time="23:56:08" application="feature-2078087.sh" choice="GOTO" database-crc="356593217" real-crc="519256649"/>
+    </day>
+    <day year="2010" month="03" day="07">
+        <crc-error time="12:40:50" application="bug-1885304.sh" choice="" database-crc="-363452848" real-crc="-2025237747"/>
+        <crc-error time="12:55:15" application="feature-2078087.sh" choice="GOTO" database-crc="519256649" real-crc="1024113534"/>
+        <crc-error time="12:55:24" application="feature-2078087.sh" choice="GOTO-2" database-crc="477178602" real-crc="1237404641"/>
+        <crc-error time="12:55:36" application="feature-2078087.sh" choice="GOSUB" database-crc="1387546028" real-crc="-432805994"/>
+        <crc-error time="12:55:52" application="feature-2078087.sh" choice="GOSUB-2" database-crc="1451610864" real-crc="539787465"/>
+        <crc-error time="13:37:38" application="bug-2161098.sh" choice="c_comments" database-crc="297957937" real-crc="1207500596"/>
+        <crc-error time="13:37:44" application="bug-2161098.sh" choice="shell_comments" database-crc="1465844714" real-crc="-1243350819"/>
+        <crc-error time="13:37:57" application="bug-2161098.sh" choice="funny_comments" database-crc="-1994449763" real-crc="1841865805"/>
+        <crc-error time="13:38:45" application="bug-2349109.sh" choice="newline-skipper" database-crc="694127258" real-crc="1823189381"/>
+        <crc-error time="13:38:51" application="bug-2349109.sh" choice="newline-skipper-utf8" database-crc="1738530804" real-crc="-2033201796"/>
+        <crc-error time="13:38:58" application="bug-2349109.sh" choice="non-newline-skipper" database-crc="1576730543" real-crc="-1392445156"/>
     </day>
 </history>

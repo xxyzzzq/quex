@@ -63,7 +63,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
     }
 
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
     QUEX_INLINE  QUEX_TYPE_TOKEN_ID
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
@@ -109,7 +109,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_MEMBER(receive)() 
     { return QUEX_NAME(receive_p)(this); }
 
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
     QUEX_INLINE QUEX_TYPE_TOKEN_ID
     QUEX_MEMBER(receive)() 

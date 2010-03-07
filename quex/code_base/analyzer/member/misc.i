@@ -41,7 +41,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 #   undef self
 }
 
-#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
 QUEX_INLINE void
 QUEX_NAME(token_p_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* UsersToken)
 {
@@ -124,7 +124,7 @@ QUEX_INLINE QUEX_TYPE_TOKEN*
 QUEX_MEMBER(token_p)()
 { return QUEX_NAME(token_p)(this); }
 
-#if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 QUEX_INLINE void
 QUEX_MEMBER(token_p_set)(QUEX_TYPE_TOKEN* UsersToken)
 { return QUEX_NAME(token_p_set)(this, UsersToken); }

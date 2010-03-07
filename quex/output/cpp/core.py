@@ -65,7 +65,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK", Setup.mode_transition_check_f)
     txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
-    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN",      Setup.token_policy == "users_token")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_SINGLE",      Setup.token_policy == "single")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      repeated_token_id != "")
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )

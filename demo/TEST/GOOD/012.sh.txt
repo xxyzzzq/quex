@@ -1,6 +1,15 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
+boeck.qx:20:warning: Using 'on_entry' event handler, while the token queue is disabled.
+boeck.qx:20:warning: Use '--token-policy queue', so then tokens can be sent safer
+boeck.qx:20:warning: from inside this event handler.
+max.qx:16:warning: Using 'on_entry' event handler, while the token queue is disabled.
+max.qx:16:warning: Use '--token-policy queue', so then tokens can be sent safer
+max.qx:16:warning: from inside this event handler.
+moritz.qx:16:warning: Using 'on_entry' event handler, while the token queue is disabled.
+moritz.qx:16:warning: Use '--token-policy queue', so then tokens can be sent safer
+moritz.qx:16:warning: from inside this event handler.
 executing ...
                 Max:        Moritz:      Boeck:
 Max       	ME________   MY_BROTHER   SCALLYWAG_

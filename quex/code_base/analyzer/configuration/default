@@ -22,7 +22,7 @@
 #endif
 
 #if   ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)       \
-   && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 #   define QUEX_OPTION_TOKEN_POLICY_QUEUE
 #endif
 #if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) 

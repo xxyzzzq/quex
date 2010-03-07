@@ -23,6 +23,8 @@
 #    undef __QUEX_CURRENT_TOKEN_P
 #    undef __QUEX_STAMP_COLUMN_NUMBER
 #    undef __QUEX_STAMP_LINE_NUMBER
+#    undef self_token_get_id
+#    undef self_token_set_id
 #else
 #    define __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
 #endif

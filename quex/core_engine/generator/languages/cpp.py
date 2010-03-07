@@ -75,7 +75,7 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
              means, they are something like 'globals'. They receive a pointer to the   
              lexical analyzer, since static member do not have access to the 'this' pointer.
      */
-#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id 
            = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
 #   endif

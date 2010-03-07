@@ -116,7 +116,7 @@ $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 		 --token-offset 3 \
 		 --no-string-accumulator --token-prefix TKN_ \
          --foreign-token-id-file token-ids.h \
-	     --token-policy          users_token \
+	     --token-policy          single \
 		 --language C
 
 lex.yy.c: c.lex

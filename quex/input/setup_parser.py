@@ -277,10 +277,13 @@ def validate(setup, command_line, argv):
 
 
     # Token transmission policy
-    token_policy_list = ["queue", "users_token", "users_queue"]
+    token_policy_list = ["queue", "single", "users_token", "users_queue"]
     if setup.token_policy not in token_policy_list:
         error_msg("Token policy '%s' not supported. Use one of the following:\n" % setup.token_policy + \
                   repr(token_policy_list)[1:-1])
+    elif setup.token_policy == "users_token":
+        error_msg("Token policy 'users_queue' has be deprecated since 0.49.1. Use\n"
+                  "equivalent policy 'single'.")
     elif setup.token_policy == "users_queue":
         error_msg("Token policy 'users_queue' has be deprecated since 0.49.1\n")
 
