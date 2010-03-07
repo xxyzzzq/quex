@@ -106,14 +106,17 @@ def check_include_guard_undefinition():
     L = max(map(lambda x: len(x.name), stranger_list))
 
     print "Following include guards are not undefined in %s:" % undef_file_name
+    stranger_list.sort(lambda a,b: cmp(a.name, b.name))
     for x in stranger_list:
-        print "%s%s" % \
-              (x.name, " " * (L - len(x.name)))
+        ext = os.path.splitext(x.file_name)[1]
+        if ext == ".txt": continue
+        print "%s" % x.name
 
     include_guard_name_list = map(lambda x: x.name, include_guard_list)    
     stranger_list = filter(lambda name: name not in include_guard_name_list, undef_list)
 
     print "Following are undefined but nowhere defined:"
+    stranger_list.sort()
     if stranger_list != []:
         L = max(map(lambda name: len(name), stranger_list))
         for name in stranger_list:

@@ -7,30 +7,28 @@ else
     cd ..
     make clean >& /dev/null; 
     make lexer OPTIMIZATION=' ' EXTRA_COMPILER_FLAG='-DQUEX_QUICK_BENCHMARK_VERSION' >& /dev/null
-    cd benchmark
-    ../lexer linux-2.6.22.17-kernel-dir.c > $output
+    cd run
+    ../lexer-quex linux-2.6.22.17-kernel-dir.c > $output
     make clean >& /dev/null; 
     exit
 fi
+
+function test_this {
+    ./$1 code/many-tiny-tokens.c           >> $output
+    ./$1 code/single-large-token.c         >> $output
+    ./$1 code/linux-2.6.22.17-kernel-dir.c >> $output
+}
+
+echo "" > $output
 cd ..
 make clean; make OPTIMIZATION='-O3' >& /dev/null
-cd benchmark
-../lexer-lc many-tiny-tokens.c            > $output
-../lexer-lc single-large-token.c         >> $output
-../lexer-lc linux-2.6.22.17-kernel-dir.c >> $output
-
-../lexer many-tiny-tokens.c           >> $output
-../lexer single-large-token.c         >> $output
-../lexer linux-2.6.22.17-kernel-dir.c >> $output
+cd run
+test_this lexer-quex-lc 
+test_this lexer-quex
 
 cd ..
 make clean; make OPTIMIZATION='-Os' >& /dev/null
-cd benchmark
-../lexer-lc many-tiny-tokens.c           >> $output
-../lexer-lc single-large-token.c         >> $output
-../lexer-lc linux-2.6.22.17-kernel-dir.c >> $output
-
-../lexer many-tiny-tokens.c           >> $output
-../lexer single-large-token.c         >> $output
-../lexer linux-2.6.22.17-kernel-dir.c >> $output
+cd run
+test_this lexer-quex-lc 
+test_this lexer-quex
 

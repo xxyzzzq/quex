@@ -1,15 +1,15 @@
-<test-database execution-time-sec="1.05" date="Sat Mar  6 14:42:30 2010">
+<test-database execution-time-sec="0.96" date="Sun Mar  7 13:10:11 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.56"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.42"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.56" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.42" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.07"> 
+    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.09"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.07" crc="443378679"/>
+           <choice name="" result="OK" time_sec="0.09" crc="443378679"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.02"> 
@@ -18,11 +18,11 @@
            <choice name="" result="OK" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.36"> 
-        <application file-name="include_guard.py" info-request-time="1267865983L" vanished="False"/>
+    <test title="Include Guards for C/C++" time-sum-sec="0.39"> 
+        <application file-name="include_guard.py" info-request-time="1267963690L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.18" crc="-1609475582"/>
-           <choice name="undefinition" result="OK" time_sec="0.18" crc="869898282"/>
+           <choice name="convention" result="OK" time_sec="0.21" crc="-1609475582"/>
+           <choice name="undefinition" result="OK" time_sec="0.18" crc="-1546884230"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

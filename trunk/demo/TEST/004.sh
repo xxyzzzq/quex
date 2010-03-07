@@ -1,9 +1,10 @@
 #! /usr/bin/env bash
+#! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
-    echo "demo/004: Benchmarking a C-Lexical Analyser"
+    echo "demo/004: A C-Lexical Analyser;"
+    echo "CHOICES:  NDEBUG, DEBUG;"
+    echo "SAME;"
     exit
 fi
-cd ../004/benchmark
-./run.sh HWUT-TEST
-cat tmp.dat | awk '/TokenN/  {print;} /file_name/ {print;}'
+source core.sh 004 $1
 
