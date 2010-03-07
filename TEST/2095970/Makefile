@@ -19,7 +19,7 @@ ENGINE_SOURCES = $(ENGINE_NAME)                     \
                  $(ENGINE_NAME)-token               \
 
 # (*) COMPILER SETTINGS ________________________________________________________
-CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb \
+CC = @g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 # (*) RULES ____________________________________________________________________
@@ -42,5 +42,4 @@ clean:
 	@rm -f token_ids
 	@rm -f *.bak
 	@rm -f tmp.txt
-	@echo "clean"
 

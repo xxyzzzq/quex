@@ -22,6 +22,9 @@ main(int argc, char** argv)
 #       else
         token = *(qlex.receive());
 #       endif
+        if( token.type_id() == QUEX_TKN_TERMINATION ) {
+            token.text = (QUEX_TYPE_CHARACTER*)"";
+        }
         cout << string(token) << endl;
     } while( token.type_id() != QUEX_TKN_TERMINATION );
 

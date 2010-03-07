@@ -41,4 +41,4 @@ FromMode: ONE ToMode: TWO
 FromMode: TWO ToMode: THREE
 FromMode: THREE ToMode: FOUR
 FromMode: FOUR ToMode: ONE
-<TERMINATION> '4' 
+<TERMINATION> '' 
