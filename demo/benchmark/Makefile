@@ -87,11 +87,11 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 	quex -i $< \
          --foreign-token-id-file  in/token-ids.h \
 	     --output-directory       out            \
-		 --engine quex_scan                      \
+		 --engine                 quex_scan      \
 		 --no-string-accumulator                 \
-		 --token-offset 3                        \
-		 --token-prefix TKN_                     \
-	     --token-policy users_token 
+		 --token-offset           3              \
+		 --token-prefix           TKN_           \
+	     --token-policy           users_token 
 
 out/flex_scan.c:  in/flex/c.lex
 	flex -o $@ $< 

@@ -82,6 +82,7 @@ feature of quex:
 .. data:: demo/004
 
           contains a setup to generate a lexical analyser for the 'C' language.
+          Users are encouraged to submit other exciting examples of their language.
 
 .. data:: demo/005
 
