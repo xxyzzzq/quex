@@ -3,12 +3,60 @@
 Token Passing Policies
 ======================
 
-The primary result result of a lexical analysis step is a so called token
-identifier, that tells how the current input can be catagorized, e.g. as
-a 'KEYWORD', a 'NUMBER', or an 'IP_ADDRESS'. Additionally some information
-about the actual stream content might have to be stored. For example 
-when a 'STRING' is identified the content of the string might be interesting
-for the caller of the lexical analyzer. Thus, for the general case,
+The primary result result of a lexical analysis step is a so called 'token
+identifier', that tells how the current input can be catagorized, e.g. as a
+'KEYWORD', a 'NUMBER', or an 'IP_ADDRESS'. Additionally some information about
+the actual stream content might have to be stored. For example when a 'STRING'
+is identified the content of the string might be interesting for the caller of
+the lexical analyzer. This basic information needs to be passed to the user of
+the lexical analyzer. The following subsections describe the two token passing
+policies available in quex: ``queue`` and ``single``.
+
+Queue
+-----
+
+Setting the command line parameter ``--token-policy`` followed by the string
+``queue`` enables the 'queue' token passing policy. This is the default token
+passing policy. It has multiple advantages:
+  
+   -- Using a token queue enables the sending of multiple
+      tokens as response to a single pattern match. 
+      
+   -- The events ``on_entry``, ``on_exit``, and ``on_indentation`` 
+      can be used without much consideration of what happens to the 
+      tokens. 
+      
+   -- Finally, multiple pattern matches can be performed without 
+      returning from the lexical analyzer function.
+
+All of this comes with the slight disadvantage that the token queue iterators
+need to be increased and reset for an analyzis step. Since this overhead is
+most likely outweight by the three advantages above, ``queue`` is the default
+token.
+
+When 'queue' is used as token passing policy, then the interaction with 
+the lexical analyzer is simply to receive a pointer to the current
+token, i.e.
+
+   .. code-block:: cpp
+
+      token_p = my_lexer.receive();
+
+All the management of the token queue is hidden inside the analyzer's engine.
+
+
+Single
+------
+
+When a single token is used only all advantages of the token 
+queue are lost. The advantage that remains is the fact that
+no token queue needs to be reset and no iterator needs to be 
+incremented.
+
+
+
+
+Thus, for the general case,
 there must be some type of container that allows to store information
 about the current token beyond his token identifier. Here comes a very
 important point about the passing of this information.
