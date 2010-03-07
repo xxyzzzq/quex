@@ -21,7 +21,6 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(DSWITCH_ASSERTS)                              \
-	 -DPRINT_TOKEN                                   \
 	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
@@ -29,9 +28,10 @@ CC = $(COMPILER) -c \
 LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
-test:
-	 ./lexer ../benchmark/run/code/linux-2.6.22.17-kernel-dir.c
-
+# -- application
+lexer:          example.o EasyLexer.o
+	$(LD) -o $@ example.o EasyLexer.o 
+          
 # Object files:
 EasyLexer.o: EasyLexer.cpp 
 	$(CC) $< -o $@ 
