@@ -56,7 +56,7 @@ all: $(FILES)
 $(SOURCES): simple.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_ENABLE_ICONV'
 	# does all what is required.
-	quex -i simple.qx --engine tiny_lexer --token-policy users_token
+	quex -i simple.qx --engine tiny_lexer --token-policy single
 
 # (*) HELPERS __________________________________________________________________
 clean:	

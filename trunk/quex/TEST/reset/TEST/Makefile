@@ -7,20 +7,20 @@ CC = g++ -I$(QUEX_PATH) \
 	 -ggdb
 
 codec-lexer: lexer.cpp 
-	quex -i simple-hindi.qx -o Simple --token-policy users_token --codec utf8
+	quex -i simple-hindi.qx -o Simple --token-policy single --codec utf8
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		  -DQUEX_SETTING_BUFFER_SIZE=33                     \
 	      -D__QUEX_SETTING_TEST_UTF8 
 
 iconv-lexer: lexer.cpp 
-	quex -i simple-hindi.qx -o Simple --token-policy users_token --iconv -b wchar_t
+	quex -i simple-hindi.qx -o Simple --token-policy single --iconv -b wchar_t
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		  -DQUEX_SETTING_BUFFER_SIZE=20                     \
 		  -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=20          \
 		  -D__QUEX_SETTING_TEST_UTF8           
 
 icu-lexer: lexer.cpp 
-	quex -i simple-hindi.qx -o Simple --token-policy users_token --icu -b wchar_t
+	quex -i simple-hindi.qx -o Simple --token-policy single --icu -b wchar_t
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		  `icu-config --ldflags`                            \
 		  -DQUEX_SETTING_BUFFER_SIZE=20                     \
@@ -28,13 +28,13 @@ icu-lexer: lexer.cpp
 		  -D__QUEX_SETTING_TEST_UTF8           
 
 lexer: lexer.cpp 
-	quex -i simple.qx -o Simple --token-policy users_token
+	quex -i simple.qx -o Simple --token-policy single
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		 -DQUEX_SETTING_BUFFER_SIZE=14                      \
 		 -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=9           
 
 lexer-x: lexer-x.cpp
-	quex -i simple.qx -o Simple --token-policy users_token
+	quex -i simple.qx -o Simple --token-policy single
 	$(CC) lexer-x.cpp Simple.cpp  -o $@ \
 		 -DQUEX_SETTING_BUFFER_SIZE=14                      \
 		 -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=9           

@@ -3,14 +3,14 @@ INPUT=newline-skipper-utf8 # This is overidden by a command line argument of the
 all: $(INPUT)
 
 newline-skipper: 
-	quex -i newline-skipper.qx -o Simple --token-prefix COL_ --token-policy users_token
+	quex -i newline-skipper.qx -o Simple --token-prefix COL_ --token-policy single
 	g++ -I$(QUEX_PATH) -I./ Simple*.cpp lexer.cpp -ggdb -o lexer \
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
 		-DQUEX_SETTING_BUFFER_SIZE=4
 
 newline-skipper-utf8: 
-	quex -i newline-skipper-utf8.qx -o Simple --token-prefix COL_ --iconv -b 2 --token-policy users_token
+	quex -i newline-skipper-utf8.qx -o Simple --token-prefix COL_ --iconv -b 2 --token-policy single
 	g++ -I$(QUEX_PATH) -I./ lexer.cpp Simple*.cpp -ggdb -o lexer \
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
@@ -18,7 +18,7 @@ newline-skipper-utf8:
 		-DQUEX_SETTING_BUFFER_SIZE=1000 
 
 non-newline-skipper: 
-	quex -i non-newline-skipper.qx -o Simple --token-prefix COL_ --token-policy users_token
+	quex -i non-newline-skipper.qx -o Simple --token-prefix COL_ --token-policy single
 	g++ -I$(QUEX_PATH) -I./ Simple*.cpp lexer.cpp -ggdb -o lexer \
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \

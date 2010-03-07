@@ -87,7 +87,7 @@ the suffix enables something, the option with the suffix disables the 'something
    Enables/disables the token sending via a token queue. With the current version of quex (0.36.4)
    some performance increase can be achieved if the token queue is disabled.
 
-.. cmacro:: QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+.. cmacro:: QUEX_OPTION_TOKEN_POLICY_SINGLE
 
    Enables/disables the token sending via a token object owned by the user. 
 

@@ -23,13 +23,13 @@ lexer: $(OBJS)
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 max_Lexer.cpp: max.qx
-	quex -i token.qx $< -o max::Lexer --iconv -b 4 --token-prefix MAX_TKN_ --token-policy users_token
+	quex -i token.qx $< -o max::Lexer --iconv -b 4 --token-prefix MAX_TKN_ --token-policy single
 
 moritz_Lexer.cpp: moritz.qx
-	quex -i token.qx $< -o moritz::Lexer --iconv -b 2 --token-prefix MORITZ_TKN_ --token-policy users_token
+	quex -i token.qx $< -o moritz::Lexer --iconv -b 2 --token-prefix MORITZ_TKN_ --token-policy single
 
 boeck_Lexer.cpp: boeck.qx
-	quex -i token.qx $< -o boeck::Lexer --codec utf8 --token-prefix TKN_ --token-policy users_token
+	quex -i token.qx $< -o boeck::Lexer --codec utf8 --token-prefix TKN_ --token-policy single
 
 clean:
 	rm -rf $(ENGINE)

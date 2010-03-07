@@ -23,13 +23,13 @@ main(int argc, char** argv)
     quex::Token   token;
     quex::Token*  token_p = &token;
 
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
     qlex->token_p_set(&token);
 #   endif
 
     // (*) loop until the 'termination' token arrives
     do {
-#       ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#       ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
         (void)qlex->receive();
 #       else
         token_p = qlex->receive();

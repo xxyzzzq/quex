@@ -359,7 +359,7 @@ void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     }
 #endif
-/* #define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN */
+/* #define QUEX_OPTION_TOKEN_POLICY_SINGLE */
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif

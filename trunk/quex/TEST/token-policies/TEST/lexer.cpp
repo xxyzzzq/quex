@@ -23,7 +23,7 @@ main(int argc, char** argv)
 #       if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
         printf("Token Policy Queue: " NAME ";\n");
         printf("SAME;\n");
-#       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
+#       elif defined( QUEX_OPTION_TOKEN_POLICY_SINGLE )
         printf("Token Policy UsersToken: " NAME ";\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
@@ -62,7 +62,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
     return token_p->type_id();
 }
 
-#elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
+#elif defined( QUEX_OPTION_TOKEN_POLICY_SINGLE )
 QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {        
     QUEX_TYPE_TOKEN token;
@@ -89,7 +89,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  pseudo_analysis(QUEX_TYPE_ANALYZER* me)
 {
-#   if   defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   if   defined( QUEX_OPTION_TOKEN_POLICY_SINGLE)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id;
 #   endif
     TPLex&     self = *((TPLex*)me);
@@ -136,7 +136,7 @@ __QUEX_TYPE_ANALYZER_RETURN_VALUE  pseudo_analysis(QUEX_TYPE_ANALYZER* me)
              self_send(QUEX_TKN______NEXT_____);
              break;
     }
-#   if   defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#   if   defined( QUEX_OPTION_TOKEN_POLICY_SINGLE)
     return __self_result_token_id;
 #   endif
 }

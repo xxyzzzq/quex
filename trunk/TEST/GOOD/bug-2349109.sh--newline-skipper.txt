@@ -1,4 +1,4 @@
-quex -i newline-skipper.qx -o Simple --token-prefix COL_ --token-policy users_token
+quex -i newline-skipper.qx -o Simple --token-prefix COL_ --token-policy single
 newline-skipper.qx:6:warning: Token id 'COL_1' defined implicitly.
 newline-skipper.qx:7:warning: Token id 'COL_2' defined implicitly.
 newline-skipper.qx:8:warning: Token id 'COL_3' defined implicitly.

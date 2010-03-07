@@ -8,7 +8,7 @@ extern quex::Token       global_token;
 
 using namespace quex;
 
-#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
 #   define ANALYZER_ANALYZE(TokenID)       \
             do {                           \
                 TokenID = global_qlex->receive(); \

@@ -26,7 +26,7 @@ main(int argc, char** argv)
     yyin = fh; yyrestart(yyin);
 #else
     QUEX_NAME(construct_FILE)(&qlex, fh, 0x0, false);
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
     qlex.token = &token;
 #   endif
 #endif
@@ -90,7 +90,7 @@ func_get_token_id()
 #ifdef  ANALYZER_GENERATOR_FLEX
     return yylex();
 #else
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
     // QUEX_NAME(receive_p)(&qlex, &token);
     QUEX_NAME(PROGRAM_analyzer_function)(&qlex);
 #   else

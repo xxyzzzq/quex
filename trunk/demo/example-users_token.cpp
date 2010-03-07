@@ -4,7 +4,7 @@
 // (*) include lexical analyser header
 #include "EasyLexer"
 
-#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#ifndef QUEX_OPTION_TOKEN_POLICY_SINGLE
 #   error "This example has been designed for token policy users_token."
 #endif
 

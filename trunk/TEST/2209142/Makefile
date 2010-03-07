@@ -23,13 +23,13 @@ error: lexer.cpp ERROR
 	$(CC) $< Simple.cpp -o $@ 
 
 ERROR:
-	@quex -i error.qx --engine Simple --token-policy users_token >& tmp.txt
+	@quex -i error.qx --engine Simple --token-policy single >& tmp.txt
 
 good: lexer.cpp GOOD
 	$(CC) $< Simple.cpp -o $@ 
 
 GOOD:
-	@quex -i good.qx --engine Simple --token-policy users_token >& tmp.txt
+	@quex -i good.qx --engine Simple --token-policy single >& tmp.txt
 
 
 # (*) HELPERS __________________________________________________________________

@@ -249,10 +249,10 @@ def check_for_event_specification(word, fh, new_mode):
         #       return from the analyzer. Do not allow CONTINUE.
         continue_f = False
 
-    if word == "on_indentation" and Setup.token_policy not in ["queue", "users_queue"]:
-        error_msg("Using 'on_indentation' event handler, while the token queue is disabled.\n" + \
-                  "Use '--token-policy queue' or '--token-policy users_queue', so then tokens can\n" + \
-                  "be sent from inside this event handler.", fh, DontExitF=True) 
+    if word in ["on_entry", "on_exit", "on_indentation"] and Setup.token_policy not in ["queue"]:
+        error_msg("Using '%s' event handler, while the token queue is disabled.\n" % word + \
+                  "Use '--token-policy queue', so then tokens can be sent safer\n" + \
+                  "from inside this event handler.", fh, DontExitF=True) 
 
     new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
                                                 ContinueF=continue_f)

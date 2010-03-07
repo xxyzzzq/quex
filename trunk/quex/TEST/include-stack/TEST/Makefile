@@ -25,7 +25,7 @@ queue.exe:       lexer.cpp simple.qx $(QUEX_CORE)
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -lefence -o $@
 
 users_token.exe: lexer.cpp simple.qx $(QUEX_CORE)
-	quex -i simple.qx -o ISLexer --token-policy users_token
+	quex -i simple.qx -o ISLexer --token-policy single
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 ## User's queue has been deprecated
