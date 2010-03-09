@@ -1,9 +1,30 @@
 
-        QUEX_NAME(Buffer)             buffer;
+        /*_________________________________________________________________________
+         *  ___  __        ___       __  
+         *   |  /  \ |__/ |__  |\ | /__` 
+         *   |  \__/ |  \ |___ | \| .__/ 
+         *                                                                        
+         *  Allow public access, for user's special tricks.                       */
+
+        /*  Tokens are placed directly before the buffer. They are one of the most
+         *  used variables. The most used variables shall be stored close to each
+         *  other, in order to prevent cache misses.                               
+         * 
+         *  Note, that the token queue is also implemented from higher addresses 
+         *  to lower addresses. It is assumed that it is most likely only filled
+         *  at the top, and thus the addresses close to the buffer shall be used
+         *  more often than the addresses far from it.                            */
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+        QUEX_NAME(TokenQueue)  _token_queue;  
+#       else
+        QUEX_TYPE_TOKEN*       token;         
+#       endif
+
+        QUEX_NAME(Buffer)      buffer;
 
         /* Each mode has a dedicated analyzer function.  The function pointer
          * to the currently active mode's function is stored redundantly in 
-         * 'current_analyzer_function' to accelerate the access to it.                    */
+         * 'current_analyzer_function' to accelerate the access to it.            */
         struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
         QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
 
@@ -12,7 +33,7 @@
         /* When a mode change happens and the user does not 'return' but 'CONTINUE'
          * an error must be logged, since the following characters are still swallowed
          * by the current function and not the new one. For this one needs to return and
-         * then continue further.                                                         */
+         * then continue further.                                                 */
         QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
 #       endif
 
@@ -29,18 +50,6 @@
             struct QUEX_NAME(Mode_tag)** end;
             struct QUEX_NAME(Mode_tag)** memory_end;
         }                                _mode_stack;
-
-        /*_________________________________________________________________________
-         *  ___  __        ___       __  
-         *   |  /  \ |__/ |__  |\ | /__` 
-         *   |  \__/ |  \ |___ | \| .__/ 
-         *                                                                        
-         *  Allow public access, for user's special tricks.                        */
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-        QUEX_NAME(TokenQueue)  _token_queue;  
-#       else
-        QUEX_TYPE_TOKEN*       token;         
-#       endif
 
         /*_________________________________________________________________________
          *   __   __            ___  ___  __  

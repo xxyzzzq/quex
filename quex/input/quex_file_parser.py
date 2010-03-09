@@ -101,7 +101,7 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode", "repeated_token_id", "token_type" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + lexer_mode.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
@@ -141,10 +141,8 @@ def parse_section(fh):
                                                        get_current_line_info_number(fh))
             return
 
-        elif word == "repeated_token_id":
-            token_id_str = parse_identifier_assignment(fh)
-            code_fragment.token_id_db_verify_or_enter_token_id(fh, token_id_str)
-            lexer_mode.token_repetition_token_id = token_id_str
+        elif word == "repeated_token":
+            lexer_mode.token_repetition_token_id_list = parse_token_id_definitions(fh, NamesOnlyF=True)
             return
             
         elif word == "define":
@@ -253,11 +251,12 @@ def parse_identifier_assignment(fh):
 
     return identifier.strip()
 
-def parse_token_id_definitions(fh):
+def parse_token_id_definitions(fh, NamesOnlyF=False):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
     token_prefix = Setup.token_id_prefix
-    db           = lexer_mode.token_id_db
+    if NamesOnlyF: db = {}
+    else:          db = lexer_mode.token_id_db
 
     if not check(fh, "{"):
         error_msg("missing opening '{' for after 'token' section identifier.\n", fh)
@@ -277,7 +276,13 @@ def parse_token_id_definitions(fh):
                       "code as '%s%s'." % (token_prefix, candidate), \
                       fh, DontExitF=True)
 
-        if not db.has_key(candidate): 
+        if NamesOnlyF:
+            db[token_prefix + candidate] = True
+        elif not db.has_key(candidate): 
             db[candidate] = TokenInfo(candidate, None, Filename=fh.name, LineN=get_current_line_info_number(fh))
 
+    if NamesOnlyF:
+        result = db.keys()
+        result.sort()
+        return result
 

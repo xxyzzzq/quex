@@ -64,7 +64,9 @@ token {
 
 /* Enables token repetition and defines the token to be
  * potentially repeated.                                */
-repeated_token_id = QUEX_TKN_BLOCK_CLOSE;
+repeated_token { 
+    BLOCK_CLOSE
+}
 
 body {
     std::vector<int>  indentation_stack;

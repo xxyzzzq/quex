@@ -596,11 +596,11 @@ token_id_db = {}
 #                           token before further analyzsis happens. For this,
 #                           the engine needs to know how to read and write the
 #                           repetition number in the token itself.
-# If the 'token_repetition_token_id' == None, then the token repetition feature
+# If the 'token_repetition_token_id_list' == None, then the token repetition feature
 # is disabled. Otherwise, token repetition in 'token-receiving.i' is enabled
 # and the token id that can be repeated is 'token_repetition_token_id'.
 #-----------------------------------------------------------------------------------------
-token_repetition_token_id = ""
+token_repetition_token_id_list = ""
 
 #-----------------------------------------------------------------------------------------
 # token_type_definition: Object that defines a (user defined) token class.

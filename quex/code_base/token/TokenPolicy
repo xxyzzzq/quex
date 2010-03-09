@@ -137,7 +137,7 @@
 #ifdef  QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 
 #   define __QUEX_REPEATED_TOKEN_PRESENT(TokenP) \
-           (    TokenP->_id == __QUEX_SETTING_TOKEN_ID_REPETITION \
+           (    __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(TokenP->_id) \
              && QUEX_NAME_TOKEN(repetition_n_get)(TokenP) > 0 )  
 
 #   define __QUEX_REPEATED_TOKEN_DECREMENT_N(TokenP) \

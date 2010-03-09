@@ -155,6 +155,9 @@ public:
     QUEX_TYPE_TOKEN*      token_p();
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
     void                  token_p_set(QUEX_TYPE_TOKEN*);
+#   else
+    QUEX_NAME(TokenQueue) token_queue_get();
+    QUEX_NAME(TokenQueue) token_queue_set(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* End);
 #   endif
 
     //

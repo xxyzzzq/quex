@@ -44,7 +44,11 @@ def write_configuration_header(Modes, IndentationSupportF):
         user_defined_converter_f = False
 
     # Token repetition support
-    repeated_token_id  = lexer_mode.token_repetition_token_id
+    token_repeat_test_txt = ""
+    for token_id_str in lexer_mode.token_repetition_token_id_list:
+        token_repeat_test_txt += "TokenID == %s || " % token_id_str
+    if token_repeat_test_txt != "":
+        token_repeat_test_txt = token_repeat_test_txt[:-3]
 
     namespace_main_str = make_safe_identifier(Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)[:-2])
 
@@ -66,7 +70,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_SINGLE",      Setup.token_policy == "single")
-    txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      repeated_token_id != "")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "")
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
     txt = __switch(txt, "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT", IndentationSupportF)     
@@ -108,7 +112,7 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
-             ["$$TOKEN_REPETITION_ID$$",        repeated_token_id],
+             ["$$TOKEN_REPEAT_TEST$$",          token_repeat_test_txt],
              ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_STR$$",         namespace_main_str],
              ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
