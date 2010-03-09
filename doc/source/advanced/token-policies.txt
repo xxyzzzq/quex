@@ -15,6 +15,8 @@ policies available in quex: ``queue`` and ``single``.
 Queue
 -----
 
+Command line option: ``--token-policy  queue``, or no ``--token-policy``. 
+
 Setting the command line parameter ``--token-policy`` followed by the string
 ``queue`` enables the 'queue' token passing policy. This is the default token
 passing policy. It has multiple advantages:
@@ -82,27 +84,19 @@ tokens. In other words, the safety-border corresponds to the maximum number of
 tokens send as reaction to a pattern match, including indentation events and
 mode transitions.  The default safety border is 16 tokens.
 
-Repetition of tokens can be achieved via the ``self_send_n`` macro. The token
-identifiers to be repeated must be defined in the ``repeated_token`` section, i.e.
+.. warning::
 
-   .. code-block:: cpp
-
-      repeated_token {
-          BLOCK_CLOSE
-          BRACKET_OPEN
-          BRACKET_CLOSE
-      }
-
-The ``self_send_n`` macro stores the repetition number inside the token itself.
-When the head of the queue contains a repeated token, then the call to the
-``.receive()`` function returns the same token ``N`` times before starting a
-new analyzis. As long as the default token classes are used this is implemented
-automatically.  Customized token classes need to prepare some information about
-how the repetition number is to be stored inside the token class (see :ref:`
-_sec-customized-token-class:`).
+   When using token queue: The state of the lexical analyzer
+   corresponds to the last token in the token queue! The ``.receive()``
+   functions only take one token from the queue which is not necessarily the
+   last one. If state elements, such as line numbers or indentation, need to be
+   associated with tokens, token stamping needs to be used
+   :ref:`sec-token-stamping`.
 
 Single
 ------
+
+Command line option: ``--token-policy  single``
 
 When a single token is used many advantages are lost queue are lost. The
 capability to send repeated tokens via a single token using ``self_send_n``
@@ -140,20 +134,15 @@ reset needs to happen at the entry of the analyzis step. A decision whether
 to take the risk and effort that comes with the single token policy
 needs to be well considered. It is always a good idea to run some benchmarks
 on a basic lexical analyzer implementation in order to see which policy
-is preferrable.
+is preferrable. The ability of sending repeated tokens remains.
 
-Thus, for the general case,
-there must be some type of container that allows to store information
-about the current token beyond his token identifier. Here comes a very
-important point about the passing of this information.
+Remarks
+-------
 
-.. quote::
-
-   The information contained in a token *is not* owned by the
-   token itself, in a sense that it is *not* responsible for 
-   de-allocating its content. A token only carries values and
-   pointers from the lexical analyzer to its caller and the
-   ownership remains then at the caller of the lexical analyzer.
+The information contained in a token *is not* owned by the token itself, in a
+sense that it is *not* responsible for de-allocating its content. A token only
+carries values and pointers from the lexical analyzer to its caller and the
+ownership remains then at the caller of the lexical analyzer.
 
 This means, that the lexical analyzer *sends* (possibly multiple) tokens
 :ref:`sec:usage-sending-tokens` without considering how they are received by
@@ -170,25 +159,10 @@ receives the token value. In the heart of it is the function call
       token_p = qlex.receive();      
       ...
 
-where a pointer to a token object is passed as a return value. 
-The lexical analyzer then fills
-it with the information for the current analysis step. The process behind the
-call to the receive function is called the *token passing policy*. They
-are subject of the subsequent sections.
-
-Let ``Token`` be a shorthand for ``QUEX_TYPE_TOKEN`` in the following 
-subsections.
-
-.. warning::
-
-   When using token queue: The state of the lexical analyzer
-   corresponds to the last token in the token queue! The ``.receive()``
-   functions only take one token from the queue which is not necessarily the
-   last one. If state elements, such as line numbers or indentation, need to be
-   associated with tokens, token stamping needs to be used
-   :ref:`sec-token-stamping`.
-
-.. _advanced-safety-border:
+where a pointer to a token object is passed as a return value.  The lexical
+analyzer then fills it with the information for the current analysis step. The
+process behind the call to the receive function is called the *token passing
+policy*. They are subject of the subsequent sections.
 
 Policy 'Queue'
 ----------------

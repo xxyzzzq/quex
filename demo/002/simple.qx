@@ -65,7 +65,7 @@ token {
 /* Enables token repetition and defines the token to be
  * potentially repeated.                                */
 repeated_token { 
-    BLOCK_CLOSE
+    CLOCK_CLOSE
 }
 
 body {
