@@ -32,7 +32,8 @@ passing policy. It has multiple advantages:
 All of this comes with the slight disadvantage that the token queue iterators
 need to be increased and reset for an analyzis step. Since this overhead is
 most likely outweight by the three advantages above, ``queue`` is the default
-token.
+token. The decision wether the analyzis shall continue or return can be
+made inside the pattern actions using ``RETURN`` and ``CONTINUE``.
 
 When 'queue' is used as token passing policy, then the interaction with 
 the lexical analyzer is simply to receive a pointer to the current
@@ -42,19 +43,104 @@ token, i.e.
 
       token_p = my_lexer.receive();
 
-All the management of the token queue is hidden inside the analyzer's engine.
+where the member function ``.receive()`` returns a pointer to the current token
+inside the pre-allocated token array.  The call to the receive function either
+reads remaining tokens in the token queue or triggers the next step of lexical
+analyzis. All the management of the token queue is hidden inside the analyzer's
+engine. If one desires to provide quex with a 'private' token queue one can
+pass it via
 
+   .. code-block:: cpp
+
+      my_lexer.token_queue_set(Begin, End);
+
+where both, ``Begin`` and ``End`` are pointer of type ``QUEY_TYPE_TOKEN``.
+``Begin`` points to the first token in the array. ``End`` points to the 
+first address behind the last token in the array, i.e. ``End`` is equal
+to ``Begin`` plus the size of the array. It is generally a good idea
+to check whether the token queue is empty before imposing a new queue. That is
+
+   .. code-block:: cpp
+
+      if( my_lexer.token_queue.is_empty() ) {
+          my_lexer.token_queue_set(Begin, End);
+      }
+
+otherwise, one might risk to drop tokens that are lost inside the old queue
+when the new queue came in.
+
+The size of the token queue is constant during run-time. Quex generates the size
+based on the the command line option ``--token-queue-size``. An overflow of the
+queue is prevented since the analyser returns as soon as the queue is full. The
+default size of the token queue is 64 tokens.
+
+Then the ``--token-queue-safety-border`` command line flag allows to define a
+safety region. Now, the analyzer returns as soon as the remaining free places
+in the queue are less then the specified number. This ensures that for each
+analyzis step there is a minimum of places in the queue to which it can write
+tokens. In other words, the safety-border corresponds to the maximum number of
+tokens send as reaction to a pattern match, including indentation events and
+mode transitions.  The default safety border is 16 tokens.
+
+Repetition of tokens can be achieved via the ``self_send_n`` macro. The token
+identifiers to be repeated must be defined in the ``repeated_token`` section, i.e.
+
+   .. code-block:: cpp
+
+      repeated_token {
+          BLOCK_CLOSE
+          BRACKET_OPEN
+          BRACKET_CLOSE
+      }
+
+The ``self_send_n`` macro stores the repetition number inside the token itself.
+When the head of the queue contains a repeated token, then the call to the
+``.receive()`` function returns the same token ``N`` times before starting a
+new analyzis. As long as the default token classes are used this is implemented
+automatically.  Customized token classes need to prepare some information about
+how the repetition number is to be stored inside the token class (see :ref:`
+_sec-customized-token-class:`).
 
 Single
 ------
 
-When a single token is used only all advantages of the token 
-queue are lost. The advantage that remains is the fact that
-no token queue needs to be reset and no iterator needs to be 
-incremented.
+When a single token is used many advantages are lost queue are lost. The
+capability to send repeated tokens via a single token using ``self_send_n``
+remains intact. However, only one distinct token can be sent as reaction to one
+pattern match. Also, it must be taken care that the pattern actions that appear
+around the events ``on_entry``, ``on_exit``, and ``on_indentation`` do not sent
+tokens if the event handler's do. Otherwise, token content is simply overwritten
+and lost. Also, if the content of a token is set by a pattern action, it is
+generally a bad idea to use ``CONTINUE`` after sending a token. The subsequent
+pattern action may corrupt the token content. 
 
+   .. code-block:: cpp
 
+      token_id = my_lexer.receive();
 
+where the member function ``.receive()`` returns the identifier of the current
+token. The current token can be accessed via
+
+   .. code-block:: cpp
+   
+       token_p = my_lexer.token_p();
+
+where the returned pointer always points to the same token object as long
+as one does not call 
+
+   .. code-block:: cpp
+   
+       my_lexer.token_p_set(&my_token);
+
+where the passed argument must point to an prepared token object.
+
+An advantage of the single token policy is that there is no increment 
+operation for the iteration over the token array. Also, no token queue
+reset needs to happen at the entry of the analyzis step. A decision whether
+to take the risk and effort that comes with the single token policy
+needs to be well considered. It is always a good idea to run some benchmarks
+on a basic lexical analyzer implementation in order to see which policy
+is preferrable.
 
 Thus, for the general case,
 there must be some type of container that allows to store information
@@ -150,24 +236,6 @@ latter call to ``receive()`` is faster, since no copying takes place.
 However, it forces to user to process and store the data contained in the
 token structure immediately. The next call to ``receive()`` may change
 content to what the pointer refers.
-
-The size of the token queue is constant during run-time. Quex generates the size
-based on the the command line option ``--token-queue-size``. An overflow of the
-queue is prevented since the analyser returns as soon as the queue is full. The
-default size of the token queue is 64 tokens.
-
-In case that multiple tokens are sent in an action, then the
-``--token-queue-safety-border`` command line flag allows to define a safety
-region. Now, the analyzer returns as soon as the remaining free places in the
-queue are less then the specified number. This ensures that any action find a
-minimum of places in the queue to which it can write tokens. In other words,
-the safety-border corresponds to the maximum number of tokens send as
-reaction to a pattern match, including indentation events and mode
-transitions.  The default safety border is 16 tokens.
-
-Note, the last token may be repeated ``N`` times, when the maximum number
-``N`` is limited by the definition of ``size_t`` of the operating system
-environment.
 
 Policy 'User's Token'
 -----------------------
