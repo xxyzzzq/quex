@@ -47,7 +47,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         result_p = me->_token_queue.read_iterator;
-        if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST ) {
+        if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(result_p->_id) ) {
             QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(result_p);
             /* First rep. is sent below. */
             if( QUEX_NAME_TOKEN(repetition_n_get)(result_p) == 1 ) {

@@ -46,7 +46,26 @@ The following send macros are available:
 
 .. cfunction:: self_send_n(N, TokenID)
 
-    Sends a token with the given TokenID ``N`` times.
+    Implicit repetition of tokens can be achieved via the ``self_send_n``
+    macro. The token identifiers to be repeated must be defined in the
+    ``repeated_token`` section, i.e.
+
+       .. code-block:: cpp
+
+          repeated_token {
+              BLOCK_CLOSE
+              BRACKET_OPEN
+              BRACKET_CLOSE
+          }
+
+    The ``self_send_n`` macro stores the repetition number inside the token
+    itself.  When the current token contains a repeated token identifier
+    ``TokenID``, then the call to the ``.receive()`` function returns the same
+    token ``N`` times repeatedly before starting a new analyzis. As long as the
+    default token classes are used this is implemented automatically.
+    Customized token classes need to prepare some information about how the
+    repetition number is to be stored inside the token class (see :ref:`
+    _sec-customized-token-class:`).
 
 .. cfunction:: self_send1(TokenID, Str)
 

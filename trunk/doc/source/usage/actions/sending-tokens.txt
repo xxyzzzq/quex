@@ -175,14 +175,14 @@ example is shown here:
 Analyzis Continuation
 ---------------------
 
-If the token policy ``users_token`` is applied the analyzer returns
-after each sending of a token. When the token policies ``queue`` or
-``users_queue`` are used the analyzer continues its analyzis until it hits the
-safety border in the queue. An exception to this is the reaction to the end of
-file event, i.e. ``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer
-returns. This is to prevent sending tokens after the
-``TERMINATION`` token.  Without an action defined for 'end of stream'
-or 'failure', the analyzer returns a ``TERMINATION`` token, by default.
+If the token policy ``users_token`` is applied the analyzer returns after each
+sending of a token. When the token policy ``queue`` is used the analyzer
+continues its analyzis until it hits the safety border in the queue. An
+exception to this is the reaction to the end of file event, i.e.
+``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer returns. This is
+to prevent sending tokens after the ``TERMINATION`` token.  Without an action
+defined for 'end of stream' or 'failure', the analyzer returns a
+``TERMINATION`` token, by default.
 
 .. note::
 

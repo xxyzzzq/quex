@@ -143,6 +143,11 @@ def parse_section(fh):
 
         elif word == "repeated_token":
             lexer_mode.token_repetition_token_id_list = parse_token_id_definitions(fh, NamesOnlyF=True)
+            for token_name in lexer_mode.token_repetition_token_id_list:
+                verify_word_in_list(token_name[len(Setup.token_id_prefix):],
+                                    lexer_mode.token_id_db.keys(),
+                                    "Token ID '%s' not yet defined." % token_name,
+                                    fh, ExitF=False)
             return
             
         elif word == "define":
