@@ -17,9 +17,8 @@ Queue
 
 Command line option: ``--token-policy  queue``, or no ``--token-policy``. 
 
-Setting the command line parameter ``--token-policy`` followed by the string
-``queue`` enables the 'queue' token passing policy. This is the default token
-passing policy. It has multiple advantages:
+This is the policy that is used if no other one is specified. It has multiple
+advantages:
   
    -- Using a token queue enables the sending of multiple
       tokens as response to a single pattern match. 
@@ -49,27 +48,7 @@ where the member function ``.receive()`` returns a pointer to the current token
 inside the pre-allocated token array.  The call to the receive function either
 reads remaining tokens in the token queue or triggers the next step of lexical
 analyzis. All the management of the token queue is hidden inside the analyzer's
-engine. If one desires to provide quex with a 'private' token queue one can
-pass it via
-
-   .. code-block:: cpp
-
-      my_lexer.token_queue_set(Begin, End);
-
-where both, ``Begin`` and ``End`` are pointer of type ``QUEY_TYPE_TOKEN``.
-``Begin`` points to the first token in the array. ``End`` points to the 
-first address behind the last token in the array, i.e. ``End`` is equal
-to ``Begin`` plus the size of the array. It is generally a good idea
-to check whether the token queue is empty before imposing a new queue. That is
-
-   .. code-block:: cpp
-
-      if( my_lexer.token_queue.is_empty() ) {
-          my_lexer.token_queue_set(Begin, End);
-      }
-
-otherwise, one might risk to drop tokens that are lost inside the old queue
-when the new queue came in.
+engine. 
 
 The size of the token queue is constant during run-time. Quex generates the size
 based on the the command line option ``--token-queue-size``. An overflow of the
@@ -84,14 +63,56 @@ tokens. In other words, the safety-border corresponds to the maximum number of
 tokens send as reaction to a pattern match, including indentation events and
 mode transitions.  The default safety border is 16 tokens.
 
+Additionally, there are three functions for low-level interaction
+with the token queue:
+
+   .. code-block:: cpp
+
+      bool   token_queue_is_empty();
+      void   token_queue_remainder_get(QUEX_TYPE_TOKEN**  begin, 
+                                       QUEX_TYPE_TOKEN**  end);
+      void   token_queue_memory_get(QUEX_TYPE_TOKEN** memory, size_t* n);
+      void   token_queue_memory_set(QUEX_TYPE_TOKEN*  Memory, size_t  N);
+
+The first function returns ``true`` if the queue is empty and ``false`` if
+not. The second function returns the remaining tokens. After a call to 
+this function ``*Begin`` will point to the begin of the remaining tokens
+and ``*End`` will point right behind the last token in the remainder. Thus,
+it is possible to iterate over the remaining tokens with
+
+   .. code-block:: cpp
+
+      for(QUEX_TYPE_TOKEN* p = *begin; p != *end; ++p) {
+          ...
+      }
+
+The function ``token_queue_memory_set(...)`` imposes a memory chunk that is to
+be used as a token queue. ``Memory`` points to the begin of the memory and
+``N`` indicates the number of tokens that the memory chunk can contain. This
+action is intrusive and analyzer automatically releases ownership over the
+token queue's memory. It is advisable to call ``token_queue_memory_get(...)``
+where ``*memory`` will point to the begin of the token queue's memory and
+``*n`` will contain the number of tokens that can be contained by it.
+
+It is generally a good idea to check whether the token queue is empty before
+imposing a new queue. That is
+
+   .. code-block:: cpp
+
+      if( my_lexer.token_queue_is_empty() ) {
+          my_lexer.token_queue_memory_set(MyMemory, N);
+      }
+
+otherwise, one might risk to drop tokens that are lost inside the old queue
+when the new queue came in. 
+
 .. warning::
 
-   When using token queue: The state of the lexical analyzer
-   corresponds to the last token in the token queue! The ``.receive()``
-   functions only take one token from the queue which is not necessarily the
-   last one. If state elements, such as line numbers or indentation, need to be
-   associated with tokens, token stamping needs to be used
-   :ref:`sec-token-stamping`.
+   The state of the lexical analyzer corresponds always to the last token in
+   the token queue! The ``.receive()`` functions only take one token from the
+   queue which is not necessarily the last one. If state elements, such as line
+   numbers or indentation, need to be associated with tokens, token stamping
+   needs to be used :ref:`sec-token-stamping`.
 
 Single
 ------
@@ -126,7 +147,7 @@ as one does not call
    
        my_lexer.token_p_set(&my_token);
 
-where the passed argument must point to an prepared token object.
+where the passed argument must point to a prepared token object.
 
 An advantage of the single token policy is that there is no increment 
 operation for the iteration over the token array. Also, no token queue
@@ -139,117 +160,18 @@ is preferrable. The ability of sending repeated tokens remains.
 Remarks
 -------
 
-The information contained in a token *is not* owned by the token itself, in a
-sense that it is *not* responsible for de-allocating its content. A token only
-carries values and pointers from the lexical analyzer to its caller and the
-ownership remains then at the caller of the lexical analyzer.
+The passing of tokens from the analyzer is a straight-forward one-way
+process. The life line of an object generated by the analyzer shall
+look like
 
-This means, that the lexical analyzer *sends* (possibly multiple) tokens
-:ref:`sec:usage-sending-tokens` without considering how they are received by
-the caller. This section discusses how the tokens are actually handled between
-the callee, the generated analyzer, and the caller.
+   #. Caller calls the lexical analyzer via ``.receive()``.
+   #. Analyzer generates object.
+   #. Object is stored inside the token.
+   #. Caller takes the object.
+   #. Caller deletes the object.
 
-Section :ref:`usage-minimalist-example` already depicted how a caller
-of the lexical analyzer initiates a lexical analysis step and how it
-receives the token value. In the heart of it is the function call
-
-.. code-block:: cpp
-
-      ...
-      token_p = qlex.receive();      
-      ...
-
-where a pointer to a token object is passed as a return value.  The lexical
-analyzer then fills it with the information for the current analysis step. The
-process behind the call to the receive function is called the *token passing
-policy*. They are subject of the subsequent sections.
-
-Policy 'Queue'
-----------------
-
-Command line option: ``--token-policy  queue``, or no ``--token-policy``. 
-
-This is the default token passing policy, i.e. the policy that is used if no
-other one is specified. It is the 'no brainer' since it does require much
-consideration. All features of token sending can be used. 
-
-Figure :ref:`Token Passing Policy Queue <fig-token-policy-queue>` shows what
-happens behind the scenes. The analyser contains a pointer to the current token
-object to be filled.  The ``send()`` functions fill the data into the token
-object and increment the pointer. This process continues until, either, the
-analyzer reaches a ``return`` statement, or the token queue is filled up.
-
-.. _fig-token-policy-queue:
-
-.. figure:: ../figures/token-policy-queue-2.*
-
-   Token passing policy ``queue`` with function ``receive(Token*)``.
-  
-The analysis steps are triggered with a call to the member function
-``receive(Token*)``.  The user owns a token token object and provides a pointer
-to it.  When the function returns, this object is filled with the content 
-of the first token in the queue, relying on the ``operator=()``. 
-In subsequent calls to ``receive(...)`` it is checked wether the token 
-queue contains more tokens and the copying happens directly from the 
-qeue. When the token queue is emptied a new analysis step is triggered.
-
-.. _fig-token-policy-queue-pp:
-
-.. figure:: ../figures/token-policy-queue-1.*
-
-   Token passing policy ``queue`` with function ``receive(Token**)``.
-
-The same policy can be applied when the user only wants to own a pointer to a
-token (figure :ref:`fig-token-policy-queue-pp`). In this case, a pointer to the
-pointer is passed. Where the ``receive(Token*)`` function copied content from
-the queue, the function ``receive(Token**)`` only bends the user's pointer.
-  
-The former call to ``receive()`` passes the ownership of the token to the user,
-by copying,  and the analyzer can process the token queue is safely. The
-latter call to ``receive()`` is faster, since no copying takes place.
-However, it forces to user to process and store the data contained in the
-token structure immediately. The next call to ``receive()`` may change
-content to what the pointer refers.
-
-Policy 'User's Token'
------------------------
-
-Command line option ``--token-policy  users_token``.
-
-In this case the user provides a single token. A call to ``receive()``
-triggers a single call to the analyzer. The analyzer can only write 
-one single token at a time. If it sends twice during a pattern match,
-the first content is overwritten.
-
-.. _fig-token-policy-users-token:
-
-.. figure:: ../figures/token-policy-queue-3.*
-
-   Token passing policy ``users_token`` with function ``receive(Token*)``.
-
-This token policy is fast, but requires some care to be taken, as follows:
-
-  #. A pattern action can only send one distinct token!
-
-  #. Event handlers (``on_entry``, ``on_indentation``, etc.) better 
-     do not send a token. The 'sending' might interfer with the 
-     pattern action that is currently active.
-
-     Any sending of two or more tokens as a reaction to a pattern 
-     match may interfere. Avoid those, when using the *user's token*
-     policy.
-
-  #. Each time ``receive()`` is called a new token object is to be provided,
-     or the content is to be processed immediately.
-
-.. note::
-
-    The policy *user's token* can also be applied with the function call
-    ``receive()``, i.e. without any argument. However, then you need to set the
-    analyser's member pointer
-
-    .. describe::   .token
-
-       to the token which you provide--either each time when ``receive()`` is
-       called, or once at the beginning of the experiment.
-
+If this policy is followed consequently, then the token object itself does not
+need any ownership management. As a consequence the token passing becomes both
+faster and less memory consuming. The default token class used in quex,
+however, implements a safe strategy. For example the ``text`` member
+relies on C++ Standard Library's ``basic_string`` for strings.
