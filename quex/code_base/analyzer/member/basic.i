@@ -36,10 +36,18 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
        
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        /* explict call of placement new for all tokens in the chunk */
-        QUEX_NAME(TokenQueue_construct)(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
+#           if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+            QUEX_NAME(TokenQueue_construct)(&me->_token_queue, 0, 0x0);
+#           else
+            QUEX_NAME(TokenQueue_construct)(&me->_token_queue, &me->__memory_token,
+                                            QUEX_SETTING_TOKEN_QUEUE_SIZE);
+#           endif
 #       else
-        me->token = 0x0;     /* User must provide pointer to memory. */
+#           if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+            me->token = 0x0;     
+#           else
+            me->token = &me->__memory_token;     
+#           endif
 #       endif
        
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
