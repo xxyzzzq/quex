@@ -37,6 +37,7 @@ SETUP_INFO = {
     "token_queue_size":               [["--token-queue-size"],               "64"],
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
+    "token_memory_management_by_user_f": [["--token-memory-management-by-user", "--tmmbu"], FLAG],
     "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
     "language":                       [["--language", "-l"],                 "C++"],
     "output_debug_f":                 [["--debug"],                          FLAG],
