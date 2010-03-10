@@ -152,12 +152,13 @@ public:
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
-    QUEX_TYPE_TOKEN*      token_p();
+    QUEX_TYPE_TOKEN*   token_p();
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
-    void                  token_p_set(QUEX_TYPE_TOKEN*);
+    void               token_p_set(QUEX_TYPE_TOKEN*);
 #   else
-    QUEX_NAME(TokenQueue) token_queue_get();
-    QUEX_NAME(TokenQueue) token_queue_set(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* End);
+    bool               token_queue_is_empty();
+    void               token_queue_get(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* QueueEnd);
+    void               token_queue_set(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* MemoryEnd);
 #   endif
 
     //
