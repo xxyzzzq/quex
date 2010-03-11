@@ -74,6 +74,22 @@ with the token queue:
       void   token_queue_memory_get(QUEX_TYPE_TOKEN** memory, size_t* n);
       void   token_queue_memory_set(QUEX_TYPE_TOKEN*  Memory, size_t  N);
 
+Analogously in C:
+
+   .. code-block:: cpp
+
+      bool   QUEX_NAME(token_queue_is_empty)(QUEX_TYPE_ANALYZER*);
+      void   QUEX_NAME(token_queue_remainder_get)(QUEX_TYPE_ANALYZER* me,
+                                                  QUEX_TYPE_TOKEN**   begin, 
+                                                  QUEX_TYPE_TOKEN**   end);
+      void   QUEX_NAME(token_queue_memory_get)(QUEX_TYPE_ANALYZER* me,
+                                               QUEX_TYPE_TOKEN**   memory, 
+                                               size_t*             n);
+      void   QUEX_NAME(token_queue_memory_set)(QUEX_TYPE_ANALYZER* me,
+                                               QUEX_TYPE_TOKEN*    Memory, 
+                                               size_t              N);
+
+
 The first function returns ``true`` if the queue is empty and ``false`` if
 not. The second function returns the remaining tokens. After a call to 
 this function ``*Begin`` will point to the begin of the remaining tokens

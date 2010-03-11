@@ -153,14 +153,17 @@ public:
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
     QUEX_TYPE_TOKEN*   token_p();
-#   if    defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-    void               token_p_set(QUEX_TYPE_TOKEN*);
+
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
+#      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+       void     token_p_set(QUEX_TYPE_TOKEN*);
+#      endif
 #   else
-    bool               token_queue_is_empty();
-    void               token_queue_get(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* QueueEnd);
-#   if    defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-    void               token_queue_set(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* MemoryEnd);
-#   endif
+       bool     token_queue_is_empty();
+       void     token_queue_get(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* QueueEnd);
+#      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+       void     token_queue_set(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* MemoryEnd);
+#      endif
 #   endif
 
     //

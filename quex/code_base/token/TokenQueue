@@ -35,6 +35,12 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                             const size_t           SafetyBorder);
     QUEX_INLINE void             QUEX_NAME(TokenQueue_construct)(QUEX_NAME(TokenQueue)* me, const size_t N);
     QUEX_INLINE void             QUEX_NAME(TokenQueue_destruct)(QUEX_NAME(TokenQueue)* me);
+    QUEX_INLINE void             QUEX_NAME(TokenQueue_remainder_get)(QUEX_NAME(TokenQueue)* me,
+                                                                     QUEX_TYPE_TOKEN**      begin,
+                                                                     QUEX_TYPE_TOKEN**      end);
+    QUEX_INLINE void             QUEX_NAME(TokenQueue_memory_get)(QUEX_NAME(TokenQueue)* me,
+                                                                  QUEX_TYPE_TOKEN**      memory,
+                                                                  size_t*                n);
     QUEX_INLINE bool             QUEX_NAME(TokenQueue_is_full)(QUEX_NAME(TokenQueue)* me);
     QUEX_INLINE bool             QUEX_NAME(TokenQueue_is_empty)(QUEX_NAME(TokenQueue)* me);
     QUEX_INLINE QUEX_TYPE_TOKEN* QUEX_NAME(TokenQueue_pop)(QUEX_NAME(TokenQueue)* me);
