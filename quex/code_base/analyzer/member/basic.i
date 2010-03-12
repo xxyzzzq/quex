@@ -37,13 +37,16 @@ QUEX_NAMESPACE_MAIN_OPEN
        
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #           if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-            QUEX_NAME(TokenQueue_construct)(&me->_token_queue, 0, 0x0);
+            /* Assume that the user will pass us a constructed token queue */
+            QUEX_NAME(TokenQueue_init)(&me->_token_queue, 0, 0x0);
 #           else
-            QUEX_NAME(TokenQueue_construct)(&me->_token_queue, &me->__memory_token,
+            QUEX_NAME(TokenQueue_construct)(&me->_token_queue, 
+                                            (QUEX_TYPE_TOKEN*)&me->__memory_token_queue,
                                             QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #           endif
 #       else
 #           if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+            /* Assume that the user will pass us a constructed token */
             me->token = 0x0;     
 #           else
             me->token = &me->__memory_token;     
