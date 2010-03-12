@@ -19,9 +19,15 @@ QUEX_NAMESPACE_MAIN_OPEN
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE QUEX_TYPE_TOKEN* 
-    QUEX_NAME(receive_p)(QUEX_TYPE_ANALYZER* me)
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me)
     { 
         register QUEX_TYPE_TOKEN* result_p = 0x0;
+#       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        if( QUEX_NAME(TokenQueue_begin)(&me->_token_queue) == 0x0 ) {
+            QUEX_ERROR_EXIT("Token queue has not been set before call to .receive().\n"
+                            "Please, consider function 'token_queue_memory_set()'.");
+        }
+#       endif
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
@@ -63,12 +69,19 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
     }
 
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#   else
 
     QUEX_INLINE  QUEX_TYPE_TOKEN_ID
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
     {
         register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+
+#       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        if( QUEX_NAME(TokenQueue_begin)(&me->token) == 0x0 ) {
+            QUEX_ERROR_EXIT("Token has not been set before call to .receive().\n"
+                            "Please, consider function 'token_p_set()'.");
+        }
+#       endif
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
@@ -98,27 +111,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         return __self_result_token_id;
     }
-#   else
-#      error "Token policy must be 'queue' or 'users_token'."
 #   endif
 
-#ifndef __QUEX_OPTION_PLAIN_C
-#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-
-    QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_MEMBER(receive)() 
-    { return QUEX_NAME(receive_p)(this); }
-
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
-
-    QUEX_INLINE QUEX_TYPE_TOKEN_ID
-    QUEX_MEMBER(receive)() 
-    { return QUEX_NAME(receive)(this); }
-
-#   else
-#      error "Token policy must be 'queue' or 'users_token'."
+#   ifndef __QUEX_OPTION_PLAIN_C
+#      ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+       QUEX_INLINE QUEX_TYPE_TOKEN*    QUEX_MEMBER(receive)() 
+#      else
+       QUEX_INLINE QUEX_TYPE_TOKEN_ID  QUEX_MEMBER(receive)() 
+#      endif
+       { return QUEX_NAME(receive)(this); }
 #   endif
-#endif
 
 #   undef self
 

@@ -131,7 +131,45 @@ imposing a new queue. That is
       }
 
 otherwise, one might risk to drop tokens that are lost inside the old queue
-when the new queue came in. 
+when the new queue came in. The memory passed as token queue memory must be
+allocated and initialized, i.e. the constructor must have been called for
+each token object in the memory chunk. In C++ this happens automatically
+when the ``new`` operator is used for arrays, e.g.
+
+   .. code-block:: cpp
+
+      QUEX_TYPE_TOKEN*  my_memory = new QUEX_TYPE_TOKEN[512];
+
+      my_lexer.token_queue_memory_set(my_memory, 512);
+
+does all that is required to setup a token queue memory. In C, though, 
+the constructor calls for the tokens must be triggered explicitly, e.g.
+
+   .. code-block:: cpp
+
+      QUEX_TYPE_TOKEN*   my_memory     = 0x0;
+      QUEX_TYPE_TOKEN*   my_memory_end = 0x0;
+
+      my_memory     = (QUEX_TYPE_TOKEN*)malloc(512 * sizeof(QUEX_TYPE_TOKEN));
+      my_memory_end = my_memory + 512;
+
+      for(p = my_memory; p != my_memory_end; ++p) {
+          QUEX_NAME_TOKEN(construct)(p);
+      }
+
+      my_lexer.token_queue_memory_set(my_memory, 512);
+
+is a C code fragment that corresponds to the C++ fragment above. Analogously,
+the destruction of a token queue array happens automatically C++. In C the destructors
+for the token objects must be called explicitly before the memory can be freed, e.g.
+
+   .. code-block:: cpp
+
+      for(p = my_memory; p != my_memory_end; ++p) {
+          QUEX_NAME_TOKEN(destruct)(p);
+      }
+      free(my_memory);
+
 
 .. warning::
 
@@ -180,7 +218,29 @@ token queue, this set funtion is only available if the macro::
         QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
 
 is defined, or the command line option ``--token-memory-management-by-user``
-or ``--tmmbu`` is passed to quex.
+or ``--tmmbu`` is passed to quex. As with the policy 'queue' the token memory
+needs to be constructed. In C++ this happens implicitly by a call to the 
+``new``-operator or by plain variable definition. In C the token object
+needs to be constructed explicitly, i.e. a fragment such as the following 
+is required
+
+   .. code-block:: cpp
+
+       QUEX_TYPE_TOKEN   my_token;
+       ...
+       QUEX_NAME_TOKEN(construct)(&my_token);
+       ...
+       my_lexer.token_p_set(&my_token);
+
+Again, the destruction of a token object happens implicitly in C++, but 
+in C the destructor must be called explicitly, i.e.
+
+   .. code-block:: cpp
+
+      QUEX_NAME_TOKEN(destruct)(&my_token);
+
+must be called befor the token object is deallocated or runs out of scope, i.e.
+before function return if it is defined as a local variable. 
 
 An advantage of the single token policy is that there is no increment 
 operation for the iteration over the token array. Also, no token queue
@@ -188,7 +248,7 @@ reset needs to happen at the entry of the analyzis step. A decision whether
 to take the risk and effort that comes with the single token policy
 needs to be well considered. It is always a good idea to run some benchmarks
 on a basic lexical analyzer implementation in order to see which policy
-is preferrable. The ability of sending repeated tokens remains.
+is preferrable. 
 
 Remarks
 -------
@@ -199,16 +259,21 @@ look like
 
    #. Caller calls the lexical analyzer via ``.receive()``.
    #. Analyzer generates an object based on the lexical 'event'. It does
-      not create the token that carries it.
+      *not* create the token that carries it.
    #. Object is stored inside the token.
    #. Caller takes the object.
-   #. Caller deletes the object, but not the token.
+   #. Caller deletes the object, but *not* the token.
 
-If this policy is followed consequently, then the token object itself does not
-need any ownership management. As a consequence the token passing becomes both
-faster and less memory consuming. The default token class used in quex,
-however, implements a safe strategy. For example the ``text`` member
-relies on C++ Standard Library's ``basic_string`` for strings.
+If this policy is followed consequently, then the token never needs to have
+ownership over the carried object. That means, it shall not be responsible for
+allocation or deallocation of the carried object.  As a consequence the token
+passing becomes both faster and less memory consuming. The default token class
+used in quex, however, implements a safe strategy. For example the ``text``
+member relies on C++ Standard Library's ``basic_string`` for strings. This
+ensures that the carried string object is deleted as soon as it is re-assigned
+or if the token is destructed at destruction time of the analyzer. A well
+designed token passing might cope with simple pointers to memory that is
+allocated by the analyzer and de-allocated by the caller of the analyzer.
 
 .. note:: 
 
@@ -218,3 +283,25 @@ relies on C++ Standard Library's ``basic_string`` for strings.
    deleted once when the analyzis is terminated. Tokens behave like ships
    that are kept ready to carry information from the analyzer to the caller
    of the analyzer.
+
+Summary
+-------
+
+Token policies enable a fine grain adaption of the lexical analyzer. They
+differ in their efficiency in terms of computation speed and memory
+consumption. Which particular policy is preferable depends on the particular
+application. Token queues are easier to handle since no care has to be 
+taken about tokens being sent from inside event handlers and multiple tokens
+can be sent from inside a single action without much worries. Token queues
+require a little more memory and a little more computation time than 
+single tokens. Token queue can reduce the number of function calls since
+the analyzis can continue without returning until the queue is filled.
+Nevertheless, only benchmark tests can produce quantitative statements
+about which policy is preferable for a particular application.
+
+.. note:: 
+
+   The implicit repetition of tokens is available for both policies.  That is,
+   ``self_send_n()`` is always available. The requirement that a multiple same
+   tokens may be sent repeatedly does *not* imply that a token queue policy must be
+   used.

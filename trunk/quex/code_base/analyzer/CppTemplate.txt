@@ -160,9 +160,10 @@ public:
 #      endif
 #   else
        bool     token_queue_is_empty();
-       void     token_queue_get(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* QueueEnd);
+       void     token_queue_memory_get(QUEX_TYPE_TOKEN** begin, size_t* n);
+       void     token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       void     token_queue_set(QUEX_TYPE_TOKEN* Begin, QUEX_TYPE_TOKEN* MemoryEnd);
+       void     token_queue_memory_set(QUEX_TYPE_TOKEN* Begin, size_t N);
 #      endif
 #   endif
 
