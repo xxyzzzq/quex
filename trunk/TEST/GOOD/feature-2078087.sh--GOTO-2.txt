@@ -58,4 +58,4 @@ FromMode: THREE ToMode: FOUR
 FOUR 'to4' 
 FromMode: FOUR ToMode: TWO
 ONE 'to1' 
-<TERMINATION> '' 
+<TERMINATION>

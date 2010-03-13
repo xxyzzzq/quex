@@ -27,4 +27,4 @@ g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp ../lexer-simply.cpp -ggdb -o
 (1, 1)  	1 '' 
 (4, 3)  	3 '' 
 (10, 4)  	4 '' 
-(11, 1)  	<TERMINATION> '' 
+(11, 1)  	<TERMINATION>

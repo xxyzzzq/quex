@@ -13,20 +13,20 @@ endif
 # -- FILES PRODUCED BY QUEX
 #
 # (*) COMPILER SETTINGS ________________________________________________________
-CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb
+CC = @g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb
 
 # (*) RULES ____________________________________________________________________
 all: error good
 
 # -- application
-error: ../lexer.cpp ERROR
-	$(CC) $< Simple.cpp -o $@ 
+error: ../lexer-simply.cpp ERROR
+	$(CC) $< Simple.cpp -DPRINT_LINE_COLUMN -o $@ 
 
 ERROR:
 	@quex -i error.qx --engine Simple --token-policy single >& tmp.txt
 
-good: lexer.cpp GOOD
-	$(CC) $< Simple.cpp -o $@ 
+good: ../lexer-simply.cpp GOOD
+	$(CC) $< Simple.cpp -DPRINT_LINE_COLUMN -o $@ 
 
 GOOD:
 	@quex -i good.qx --engine Simple --token-policy single >& tmp.txt

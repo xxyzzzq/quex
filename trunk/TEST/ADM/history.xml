@@ -1,4 +1,4 @@
-<history date="Sat Mar 13 12:13:11 2010" element-n="670">
+<history date="Sat Mar 13 16:28:02 2010" element-n="695">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1360,5 +1360,30 @@
     </day>
     <day year="2010" month="03" day="13">
         <crc-error time="11:11:15" application="bug-2161098.sh" choice="c_comments" database-crc="1207500596" real-crc="-1318920176"/>
+        <crc-error time="14:47:47" application="bug-2209142.sh" choice="error" database-crc="-345837213" real-crc="2100550299"/>
+        <crc-error time="14:57:52" application="bug-2209142.sh" choice="error" database-crc="2100550299" real-crc="-345837213"/>
+        <crc-error time="14:58:41" application="bug-2209142.sh" choice="error" database-crc="-345837213" real-crc="-329091836"/>
+        <crc-error time="14:59:00" application="bug-2209142.sh" choice="good" database-crc="-16339222" real-crc="-1387283693"/>
+        <crc-error time="15:05:37" application="bug-2349109.sh" choice="newline-skipper" database-crc="1823189381" real-crc="1020942195"/>
+        <crc-error time="15:06:44" application="bug-2349109.sh" choice="non-newline-skipper" database-crc="-1392445156" real-crc="-678107284"/>
+        <crc-error time="15:10:07" application="bug-2349109.sh" choice="newline-skipper-utf8" database-crc="-2033201796" real-crc="1170844959"/>
+        <crc-error time="15:21:38" application="feature-2078087.sh" choice="GOTO" database-crc="1024113534" real-crc="1277117499"/>
+        <crc-error time="15:21:55" application="feature-2078087.sh" choice="GOTO-2" database-crc="1237404641" real-crc="-379796549"/>
+        <crc-error time="15:22:18" application="bug-2161098.sh" choice="c_comments" database-crc="-924116793" real-crc="650655650"/>
+        <crc-error time="15:22:28" application="bug-2161098.sh" choice="shell_comments" database-crc="-802451363" real-crc="921117228"/>
+        <crc-error time="15:22:37" application="bug-2161098.sh" choice="funny_comments" database-crc="700817178" real-crc="1159308889"/>
+        <crc-error time="15:23:01" application="bug-2209142.sh" choice="error" database-crc="-329091836" real-crc="906739692"/>
+        <crc-error time="15:23:13" application="bug-2209142.sh" choice="good" database-crc="-1387283693" real-crc="-403344399"/>
+        <crc-error time="15:23:42" application="bug-2349109.sh" choice="newline-skipper" database-crc="-1984590273" real-crc="-2019518639"/>
+        <crc-error time="15:24:10" application="bug-2349109.sh" choice="newline-skipper-utf8" database-crc="1211240286" real-crc="1185823580"/>
+        <crc-error time="15:24:21" application="bug-2349109.sh" choice="non-newline-skipper" database-crc="1470005868" real-crc="-955676472"/>
+        <crc-error time="15:24:54" application="bug-2095970.sh" choice="Normal" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:25:09" application="bug-2095970.sh" choice="NormalNoAsserts" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:25:18" application="bug-2095970.sh" choice="NoModeDetection" database-crc="-435492385" real-crc="497399015"/>
+        <crc-error time="15:25:26" application="bug-2095970.sh" choice="NoModeDetectionNoAsserts" database-crc="-435492385" real-crc="497399015"/>
+        <crc-error time="15:26:28" application="bug-2095970-ntq.sh" choice="Normal" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:26:39" application="bug-2095970-ntq.sh" choice="NormalNoAsserts" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:27:07" application="bug-2095970-ntq.sh" choice="NoModeDetection" database-crc="1623301494" real-crc="-552687673"/>
+        <crc-error time="15:27:20" application="bug-2095970-ntq.sh" choice="NoModeDetectionNoAsserts" database-crc="1623301494" real-crc="-552687673"/>
     </day>
 </history>
