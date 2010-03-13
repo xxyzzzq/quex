@@ -4,19 +4,19 @@ mode X :
 <skip_range: "#" "\nNO\nNO\nNO"> 
 {
     [ \n\t] {}
-    1 => COL_1;
-    2 => COL_2;
-    3 => COL_3;
-    4 => COL_4;
-    5 => COL_5;
-    6 => COL_6;
-    7 => COL_7;
-    8 => COL_8;
-    9 => COL_9;
-    10 => COL_10;
-    11 => COL_11;
-    12 => COL_12;
-    13 => COL_13;
-    14 => COL_14;
-    15 => COL_15;
+    1 => QUEX_TKN_1;
+    2 => QUEX_TKN_2;
+    3 => QUEX_TKN_3;
+    4 => QUEX_TKN_4;
+    5 => QUEX_TKN_5;
+    6 => QUEX_TKN_6;
+    7 => QUEX_TKN_7;
+    8 => QUEX_TKN_8;
+    9 => QUEX_TKN_9;
+    10 => QUEX_TKN_10;
+    11 => QUEX_TKN_11;
+    12 => QUEX_TKN_12;
+    13 => QUEX_TKN_13;
+    14 => QUEX_TKN_14;
+    15 => QUEX_TKN_15;
 }

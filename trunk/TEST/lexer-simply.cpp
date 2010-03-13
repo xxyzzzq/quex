@@ -25,7 +25,10 @@ main(int argc, char** argv)
         if( token_p->type_id() == QUEX_TKN_TERMINATION ) {
             token_p->text = (QUEX_TYPE_CHARACTER*)"";
         }
-        cout << string(*token) << endl;
+#       ifdef PRINT_LINE_COLUMN
+        cout << "(" << qlex.line_number() << ", " << qlex.column_number() << ")  \t";
+#       endif
+        cout << string(*token_p) << endl;
     } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;

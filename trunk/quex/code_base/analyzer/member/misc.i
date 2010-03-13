@@ -43,10 +43,12 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 
 #ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-    QUEX_INLINE void
-    QUEX_NAME(token_p_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* UsersToken)
+    QUEX_INLINE QUEX_TYPE_TOKEN*
+    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** UsersToken)
     {
+        QUEX_TYPE_TOKEN* prev_token_p = me->token;
         me->token = UsersToken;
+        return prev_token_p;
     }
 #   endif
 #else
@@ -62,18 +64,17 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
                                          QUEX_TYPE_TOKEN**    end)
     { QUEX_NAME(TokenQueue_remainder_get)(&me->_token_queue, begin, end); }
 
-    QUEX_INLINE void
-    QUEX_NAME(token_queue_memory_get)(QUEX_TYPE_ANALYZER* me, 
-                                      QUEX_TYPE_TOKEN** memory, size_t* n)
-    { 
-        QUEX_NAME(TokenQueue_memory_get)(&me->_token_queue, memory, n); 
-    }
-
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE void
-    QUEX_NAME(token_queue_memory_set)(QUEX_TYPE_TOKEN* Memory, size_t N)
+    QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER* me, 
+                                         QUEX_TYPE_TOKEN**   memory, size_t* n)
     { 
-        QUEX_NAME(TokenQueue_init)(&this->_token_queue, Memory, N); 
+        QUEX_TYPE_TOKEN*  prev_memory = 0x0;
+        size_t            prev_n      = (size_t)-1;
+        QUEX_NAME(TokenQueue_memory_get)(&me->_token_queue, &prev_memory, &prev_n); 
+        QUEX_NAME(TokenQueue_init)(&this->_token_queue, *memory, *n); 
+        *memory = prev_memory;
+        *n      = prev_n;
     }
 #   endif
 
@@ -157,9 +158,9 @@ QUEX_MEMBER(token_p)()
 #if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-    QUEX_INLINE void
-    QUEX_MEMBER(token_p_set)(QUEX_TYPE_TOKEN* TokenP)
-    { QUEX_NAME(token_p_set)(this, TokenP); }
+    QUEX_INLINE QUEX_TYPE_TOKEN*
+    QUEX_MEMBER(token_p_switch)(QUEX_TYPE_TOKEN* TokenP)
+    { return QUEX_NAME(token_p_switch)(this, TokenP); }
 #   endif
 
 #else
@@ -168,18 +169,14 @@ QUEX_MEMBER(token_p)()
     { return QUEX_NAME(token_queue_is_empty)(this); }
 
     QUEX_INLINE void
-    QUEX_MEMBER(token_queue_memory_get)(QUEX_TYPE_TOKEN** memory, size_t* n)
-    { QUEX_NAME(token_queue_memory_get)(this, memory, n); }
-
-    QUEX_INLINE void
     QUEX_MEMBER(token_queue_remainder_get)(QUEX_TYPE_TOKEN**  begin, 
                                            QUEX_TYPE_TOKEN**  end)
     { QUEX_NAME(token_queue_remainder_get)(this, begin, end); }
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE void
-    QUEX_MEMBER(token_queue_memory_set)(QUEX_TYPE_TOKEN* Memory, size_t N)
-    { QUEX_NAME(token_queue_memory_set)(this, Memory, N); }
+    QUEX_MEMBER(token_queue_memory_switch)(QUEX_TYPE_TOKEN** memory, size_t* n)
+    { QUEX_NAME(token_queue_memory_switch)(this, memory, n); }
 #   endif
 
 #endif
