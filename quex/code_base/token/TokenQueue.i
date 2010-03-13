@@ -19,9 +19,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     {                                                    
         me->read_iterator  = (QUEX_TYPE_TOKEN*)me->begin; 
         me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; 
-#       ifdef QUEX_OPTION_ASSERTS
-        /* __QUEX_STD_memset(me->begin, 0xFF, sizeof(QUEX_TYPE_TOKEN)*(me->end - me->begin)); */
-#       endif 
     }
 
     QUEX_INLINE void
@@ -67,10 +64,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         for(iterator = me->begin; iterator != me->end; ++iterator) {
             QUEX_NAME_TOKEN(destruct)(iterator);
         }
-        if( me->begin != 0x0 ) {
-            QUEX_NAME(MemoryManager_TokenArray_free)((void*)me->begin);
-            me->begin = 0x0;
-        }
+        /* The memory chunk for the token queue itself is located 
+         * inside the analyzer object. Thus, no explicit free is
+         * necessary. In case of user managed token queue memory
+         * the user takes care of the deletion.                   */
 #       endif
     }
 
@@ -81,6 +78,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         *begin = me->read_iterator;
         *end   = me->write_iterator;
+        QUEX_NAME(TokenQueue_reset)(me);
     }
 
     QUEX_INLINE void 

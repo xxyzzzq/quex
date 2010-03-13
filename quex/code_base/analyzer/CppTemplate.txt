@@ -156,14 +156,13 @@ public:
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       void     token_p_set(QUEX_TYPE_TOKEN*);
+       QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
 #      endif
 #   else
        bool     token_queue_is_empty();
-       void     token_queue_memory_get(QUEX_TYPE_TOKEN** begin, size_t* n);
        void     token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       void     token_queue_memory_set(QUEX_TYPE_TOKEN* Begin, size_t N);
+       void     token_queue_memory_switch(QUEX_TYPE_TOKEN** begin, size_t* n);
 #      endif
 #   endif
 

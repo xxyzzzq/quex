@@ -10,30 +10,33 @@ using namespace quex;
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  pseudo_analysis(QUEX_TYPE_ANALYZER* me);
 QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
 
+#if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+#   define UMM_NAME "(User Memory Manag.)"
+#else
+#   define UMM_NAME ""
+#endif
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
 #   define NAME "Pseudo Analysis;\n"
 #else
 #   define NAME "Real Analysis;\n"
+#endif
+#if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
+#   define POLICY_NAME "queue"
+#else
+#   define POLICY_NAME "single"
 #endif
 
 int 
 main(int argc, char** argv) 
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-#       if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        printf("Token Policy Queue: " NAME ";\n");
-        printf("SAME;\n");
-#       elif defined( QUEX_OPTION_TOKEN_POLICY_SINGLE )
-        printf("Token Policy UsersToken: " NAME ";\n");
-        printf("SAME;\n");
-#       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
-        printf("Token Policy UsersQueue: " NAME ";\n");
-#       endif
+        printf("Token Policy '" POLICY_NAME "': " UMM_NAME NAME ";\n");
         return 0;
     }
     printf("NOTE: The production of an assertion error might be part of the test.\n");
     printf("---------------------------------------------------------------------\n");
     stderr = stdout;
+
 #   if defined(  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASE)
     if( argc < 2 ) return 0;
 #   endif
@@ -57,32 +60,36 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {
     QUEX_TYPE_TOKEN*  token_p;
 
-    token_p = qlex.receive();
-    printf("received: %s\n", token_p->type_id_name().c_str());
-    return token_p->type_id();
-}
+#   if QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
+    if( qlex.token_queue_is_empty() ) {
+        QUEX_TYPE_TOKEN*  begin new QUEX_TYPE_TOKEN[32];
+        size_t            n     = 32;
 
-#elif defined( QUEX_OPTION_TOKEN_POLICY_SINGLE )
-QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
-{        
-    QUEX_TYPE_TOKEN token;
-    qlex.token_p_set(&token);
-    (void)qlex.receive();
-    printf("received: %s\n", token.type_id_name().c_str());
-    return token.type_id();
-}
-
-#elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
-QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
-{        
-    QUEX_TYPE_TOKEN   MyArray[5];
-    QUEX_TYPE_TOKEN*  water_mark = qlex.receive(MyArray, MyArray + 5);
-
-    for(QUEX_TYPE_TOKEN* iterator = MyArray; iterator != water_mark; ++iterator) {
-        printf("    received: %s\n", iterator->type_id_name().c_str());
+        qley.token_queue_memory_switch(&begin, &n);
+        if( begin != 0x0 ) delete [] begin;
     }
-    printf("---- \n");
-    return (water_mark-1)->type_id();
+#   endif
+
+    token_p = qlex.receive();
+
+    printf("received: %s\n", token_p->type_id_name().c_str());
+    QUEX_TYPE_TOKEN_ID token_id = token_p->type_id();
+
+    return token_id;
+}
+#else 
+QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
+{        
+    QUEX_TYPE_TOKEN   token;
+    QUEX_TYPE_TOKEN*  token_p;
+    token_p = qlex.token_p();
+
+    (void)qlex.receive();
+
+    printf("received: %s\n", token_p->type_id_name().c_str());
+    QUEX_TYPE_TOKEN_ID token_id = token_p->type_id();
+
+    return token_id;
 }
 #endif
 

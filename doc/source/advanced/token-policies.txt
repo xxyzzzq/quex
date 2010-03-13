@@ -71,8 +71,7 @@ with the token queue:
       bool   token_queue_is_empty();
       void   token_queue_remainder_get(QUEX_TYPE_TOKEN**  begin, 
                                        QUEX_TYPE_TOKEN**  end);
-      void   token_queue_memory_get(QUEX_TYPE_TOKEN** memory, size_t* n);
-      void   token_queue_memory_set(QUEX_TYPE_TOKEN*  Memory, size_t  N);
+      void   token_queue_memory_switch(QUEX_TYPE_TOKEN** memory, size_t* n);
 
 Analogously in C:
 
@@ -82,12 +81,9 @@ Analogously in C:
       void   QUEX_NAME(token_queue_remainder_get)(QUEX_TYPE_ANALYZER* me,
                                                   QUEX_TYPE_TOKEN**   begin, 
                                                   QUEX_TYPE_TOKEN**   end);
-      void   QUEX_NAME(token_queue_memory_get)(QUEX_TYPE_ANALYZER* me,
-                                               QUEX_TYPE_TOKEN**   memory, 
-                                               size_t*             n);
-      void   QUEX_NAME(token_queue_memory_set)(QUEX_TYPE_ANALYZER* me,
-                                               QUEX_TYPE_TOKEN*    Memory, 
-                                               size_t              N);
+      void   QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER* me,
+                                                  QUEX_TYPE_TOKEN**   memory, 
+                                                  size_t*             n);
 
 
 The first function returns ``true`` if the queue is empty and ``false`` if
@@ -98,14 +94,33 @@ it is possible to iterate over the remaining tokens with
 
    .. code-block:: cpp
 
+      qlex.token_queue_remainder_get(&begin, &end);
       for(QUEX_TYPE_TOKEN* p = *begin; p != *end; ++p) {
           ...
       }
 
-The function ``token_queue_memory_set(...)`` imposes a memory chunk that is to
-be used as a token queue. ``Memory`` points to the begin of the memory and
-``N`` indicates the number of tokens that the memory chunk can contain. This function
-is only available if the macro::
+Note, that a call to this function empties the token queue. Thus, if one does
+not consider the reported remaining tokens, then tokens are definitely lost.
+The function ``token_queue_memory_switch(...)`` imposes a memory chunk that is
+to be used as a token queue. At the same time it returns the pointer to the
+previous memory. Its arguments are as follows:
+
+  .. describe:: ``QUEX_TYPE_TOKEN** memory``
+
+     At function entry ``*memory`` must point to the memory chunk to be used
+     for the token queue. At function exit ``*memory`` will point to the 
+     chunk that was used before. The ownership of the memory chunk is
+     now transferred to the caller, i.e. the user. He is now responsible
+     of deleting it. If ``*memory`` is zero at function exit then there
+     was not yet any memory associated.
+
+  .. describe:: ``size_t* n``
+
+     At function entry ``*n`` must contain the numbers of tokens that fit into
+     the provided chunk. At function exit ``*n`` will contain the number of
+     tokens carried by the previous memory chunk.
+     
+The ``token_queue_memory_switch(...)`` is only availabe if the macro::
 
         QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
 
@@ -127,37 +142,44 @@ imposing a new queue. That is
    .. code-block:: cpp
 
       if( my_lexer.token_queue_is_empty() ) {
-          my_lexer.token_queue_memory_set(MyMemory, N);
+          n      = 32;
+          memory = new QUEX_TYPE_TOKEN[n];
+
+          my_lexer.token_queue_memory_switch(&memory, &n);
+
+          if( memory != 0x0 ) delete [] memory;
       }
 
 otherwise, one might risk to drop tokens that are lost inside the old queue
-when the new queue came in. The memory passed as token queue memory must be
-allocated and initialized, i.e. the constructor must have been called for
-each token object in the memory chunk. In C++ this happens automatically
-when the ``new`` operator is used for arrays, e.g.
+when the new queue came in. As shown in the example it shall also be checked
+wether the memory was already set. If so the user is responsible for deleting
+it.  The memory passed as token queue memory must be allocated and initialized,
+i.e. the constructor must have been called for each token object in the
+memory chunk. In C++ this happens automatically when the ``new`` operator
+is used for arrays, e.g.
 
    .. code-block:: cpp
 
       QUEX_TYPE_TOKEN*  my_memory = new QUEX_TYPE_TOKEN[512];
-
-      my_lexer.token_queue_memory_set(my_memory, 512);
 
 does all that is required to setup a token queue memory. In C, though, 
 the constructor calls for the tokens must be triggered explicitly, e.g.
 
    .. code-block:: cpp
 
+      size_t             n             = 512;
       QUEX_TYPE_TOKEN*   my_memory     = 0x0;
       QUEX_TYPE_TOKEN*   my_memory_end = 0x0;
 
       my_memory     = (QUEX_TYPE_TOKEN*)malloc(512 * sizeof(QUEX_TYPE_TOKEN));
-      my_memory_end = my_memory + 512;
+      my_memory_end = my_memory + n;
 
       for(p = my_memory; p != my_memory_end; ++p) {
           QUEX_NAME_TOKEN(construct)(p);
       }
 
-      my_lexer.token_queue_memory_set(my_memory, 512);
+      QUEX_NAME(token_queue_memory_switch)(&my_memory, &n);
+      ...
 
 is a C code fragment that corresponds to the C++ fragment above. Analogously,
 the destruction of a token queue array happens automatically C++. In C the destructors
@@ -165,11 +187,12 @@ for the token objects must be called explicitly before the memory can be freed, 
 
    .. code-block:: cpp
 
-      for(p = my_memory; p != my_memory_end; ++p) {
-          QUEX_NAME_TOKEN(destruct)(p);
+      if( my_memory != 0x0 ) {
+          for(p = my_memory; p != my_memory_end; ++p) {
+              QUEX_NAME_TOKEN(destruct)(p);
+          }
+          free(my_memory);
       }
-      free(my_memory);
-
 
 .. warning::
 
@@ -210,10 +233,35 @@ as one does not call
 
    .. code-block:: cpp
    
-       my_lexer.token_p_set(&my_token);
+       prev_token_p = my_lexer.token_p_switch(&my_token);
 
-where the passed argument must point to a prepared token object. As with the
-token queue, this set funtion is only available if the macro::
+where the passed argument must point to a prepared token object. If the
+returned pointer is zero, then no token was previously set. Otherwise, the user
+takes over the ownership over the token and is responsible for destructing and 
+de-allocating it. That is, for example
+
+   .. code-block:: cpp
+
+       token_p = (QUEX_TYPE_TOKEN*)malloc(sizeof(QUEX_TYPE_TOKEN));
+       QUEX_NAME_TOKEN(construct)(token_p);
+
+       prev_token_p = QUEX_NAME(token_p_switch)(token_p);
+       if( prev_token_p != 0x0 ) {
+           QUEX_NAME_TOKEN(destruct)(prev_token_p);
+           free(prev_token_p);
+       }
+
+is an appropriate way to handle multiple tokens in plain C. In C++ things 
+are a lot easier. The above segment can be written in C++ as
+
+   .. code-block:: cpp
+
+       prev_token_p = QUEX_NAME(token_p_switch)(new QUEX_TYPE_TOKEN());
+       if( prev_token_p != 0x0 ) delete prev_token_p;
+
+This is so, since in C++ constructor and destructor calls happen implicitly
+when the operators ``new`` and ``delete`` are applied.  As with the token queue,
+this set funtion is only available if the macro::
 
         QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
 

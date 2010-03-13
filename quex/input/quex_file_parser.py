@@ -271,7 +271,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
 
         candidate = read_until_whitespace(fh)
 
-        if is_identifier(candidate) == False:
+        if not is_identifier(candidate, TolerantF=True): 
             error_msg("'%s' is not a valid token identifier." % candidate, fh)
 
         # -- check the name, if it starts with the token prefix paste a warning

@@ -19,7 +19,7 @@ CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb
 all: error good
 
 # -- application
-error: lexer.cpp ERROR
+error: ../lexer.cpp ERROR
 	$(CC) $< Simple.cpp -o $@ 
 
 ERROR:

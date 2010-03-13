@@ -1,20 +1,6 @@
-quex -i funny_comments.qx -o Simple --token-prefix COL_ --token-policy single
-funny_comments.qx:7:warning: Token id 'COL_1' defined implicitly.
-funny_comments.qx:8:warning: Token id 'COL_2' defined implicitly.
-funny_comments.qx:9:warning: Token id 'COL_3' defined implicitly.
-funny_comments.qx:10:warning: Token id 'COL_4' defined implicitly.
-funny_comments.qx:11:warning: Token id 'COL_5' defined implicitly.
-funny_comments.qx:12:warning: Token id 'COL_6' defined implicitly.
-funny_comments.qx:13:warning: Token id 'COL_7' defined implicitly.
-funny_comments.qx:14:warning: Token id 'COL_8' defined implicitly.
-funny_comments.qx:15:warning: Token id 'COL_9' defined implicitly.
-funny_comments.qx:16:warning: Token id 'COL_10' defined implicitly.
-funny_comments.qx:17:warning: Token id 'COL_11' defined implicitly.
-funny_comments.qx:18:warning: Token id 'COL_12' defined implicitly.
-funny_comments.qx:19:warning: Token id 'COL_13' defined implicitly.
-funny_comments.qx:20:warning: Token id 'COL_14' defined implicitly.
-funny_comments.qx:21:warning: Token id 'COL_15' defined implicitly.
-g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp lexer.cpp -ggdb -o lexer \
+quex -i token.qx funny_comments.qx -o Simple --token-policy single
+g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp ../lexer-simply.cpp -ggdb -o lexer \
+		-DPRINT_LINE_COLUMN \
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
 		-DQUEX_SETTING_BUFFER_SIZE=11
@@ -38,7 +24,7 @@ g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp lexer.cpp -ggdb -o lexer \
 ##
 ###############################################################################
 ## An Assert-Abortion might be an intended element of the experiment.
-1, 1: 1 '' 
-4, 3: 3 '' 
-10, 4: 4 '' 
-11, 1: <TERMINATION> '' 
+(1, 1)  	1 '' 
+(4, 3)  	3 '' 
+(10, 4)  	4 '' 
+(11, 1)  	<TERMINATION> '' 

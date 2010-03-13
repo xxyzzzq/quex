@@ -85,10 +85,14 @@ def is_identifier_continue(character):
     return    is_identifier_start(character) \
            or (char_value >= ord('0') and char_value <= ord('9'))
 
-def is_identifier(identifier):
+def is_identifier(identifier, TolerantF=False):
     if identifier == "": return False
 
-    if is_identifier_start(identifier[0]) == False: return False
+    if TolerantF:
+        if not is_identifier_continue(identifier[0]): return False
+    else:
+        if not is_identifier_start(identifier[0]): return False
+
     if len(identifier) == 1: return True
 
     for letter in identifier[1:]:

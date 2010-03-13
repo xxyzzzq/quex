@@ -107,6 +107,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
         QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
 #       endif
+
         if( me->__file_handle_allocated_by_constructor != 0x0 ) {
             __QUEX_STD_fclose(me->__file_handle_allocated_by_constructor); 
         }
