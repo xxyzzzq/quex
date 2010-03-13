@@ -10,7 +10,11 @@ main(int argc, char** argv)
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
     quex::Token*  token_p;
-#   ifdef CONVERTER_ENCODING
+#   ifdef STRANGE_STREAM
+    ifstream                       istr("example.txt");
+    quex::StrangeStream<ifstream>  strange_stream(&istr);
+    quex::Simple                   qlex(&strange_stream);
+#   elif defined(CONVERTER_ENCODING)
     quex::Simple  qlex(argc == 1 ? "example.txt" : argv[1], CONVERTER_ENCODING);
 #   else
     quex::Simple  qlex(argc == 1 ? "example.txt" : argv[1]);
