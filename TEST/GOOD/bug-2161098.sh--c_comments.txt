@@ -71,4 +71,4 @@ g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp ../lexer-simply.cpp -ggdb -o
 (77, 13)  	13 '' 
 (93, 14)  	14 '' 
 (114, 15)  	15 '' 
-(115, 1)  	<TERMINATION> '' 
+(115, 1)  	<TERMINATION>
