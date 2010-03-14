@@ -86,10 +86,10 @@ lexer: $(OBJS)
 
 tiny_lexer.c: $(MODE_FILES) $(QUEX_CORE)
 	@echo ":$(CONVERTER):" $(QUEX_FLAG)
-	quex -i                         $(MODE_FILES)          \
-		 --engine                   $(ENGINE_NAME)         \
-	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
-		 --language C                                      \
+	quex -i                  $(MODE_FILES)          \
+		 --engine            $(ENGINE_NAME)         \
+	     --bytes-per-trigger $(BYTES_PER_CHARACTER) \
+		 --language          C                      \
 	     $(QUEX_FLAG)
 
 # (*) HELPERS __________________________________________________________________

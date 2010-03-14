@@ -23,26 +23,26 @@ main(int argc, char** argv)
     // is always the same.                                                    
     printf("                Max:        Moritz:      Boeck:\n");
 
-    max_lex.token_p_set(&max_token);
-    moritz_lex.token_p_set(&moritz_token);
-    boeck_lex.token_p_set(&boeck_token);
+    max_token    = max_lex.token_p_get();
+    moritz_token = moritz_lex.token_p_get();
+    boeck_token  = boeck_lex.token_p_get();
     do {
         (void)max_lex.receive();
         (void)moritz_lex.receive();
         (void)boeck_lex.receive();
 
         /* Lexeme is same for all three. */
-        char* lexeme = (char*)max_token.utf8_text().c_str();
+        char* lexeme = (char*)max_token->utf8_text().c_str();
         int   L      = (int)std::strlen(lexeme);
         printf(lexeme);
         for(int i=0; i < 10 - L ; ++i) printf(" ");
         printf("\t");
         printf("%s   %s   %s\n", 
-               max_token.type_id_name().c_str(), 
-               moritz_token.type_id_name().c_str(), 
-               boeck_token.type_id_name().c_str());
+               max_token->type_id_name().c_str(), 
+               moritz_token->type_id_name().c_str(), 
+               boeck_token->type_id_name().c_str());
 
-    } while( boeck_token.type_id() != TKN_TERMINATION );
+    } while( boeck_token->type_id() != TKN_TERMINATION );
 
     return 0;
 }

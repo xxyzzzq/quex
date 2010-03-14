@@ -20,7 +20,7 @@ main(int argc, char** argv)
     //     2nd arg: input character encoding name, 0x0 --> no codec conversion
     quex::EasyLexer    qlex(argc == 1 ? "example.txt" : argv[1], ENCODING_NAME);
 
-    cout << ",------------------------------------------------------------------------------------\n";
+    cout << ",-----------------------------------------------------------------\n";
     cout << "| [START]\n";
 
     int number_of_tokens = 0;
@@ -46,7 +46,7 @@ main(int argc, char** argv)
     } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
-    cout << "`------------------------------------------------------------------------------------\n";
+    cout << "`-----------------------------------------------------------------\n";
 
     return 0;
 }

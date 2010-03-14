@@ -77,7 +77,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
 #       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-        if( QUEX_NAME(TokenQueue_begin)(&me->token) == 0x0 ) {
+        if( &me->token == 0x0 ) {
             QUEX_ERROR_EXIT("Token has not been set before call to .receive().\n"
                             "Please, consider function 'token_p_set()'.");
         }

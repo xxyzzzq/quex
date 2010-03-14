@@ -3,6 +3,7 @@ cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  COMPILER=icpc ##
 executing ...
 ,------------------------------------------------------------------------------------
+,-----------------------------------------------------------------
 | [START]
 STRUCT
 IDENTIFIER
@@ -33,6 +34,6 @@ SEMICOLON
 BRACKET_CLOSE
 <TERMINATION>
 | [END] number of token = 28
-`------------------------------------------------------------------------------------
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

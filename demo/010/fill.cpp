@@ -37,7 +37,7 @@ main(int argc, char** argv)
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
             swap(prev_token, current_token);
-            qlex.token_p_set(current_token);
+            (void)qlex.token_p_switch(current_token);
 
             const int TokenID = qlex.receive();
             if( TokenID == QUEX_TKN_TERMINATION || TokenID == QUEX_TKN_BYE )

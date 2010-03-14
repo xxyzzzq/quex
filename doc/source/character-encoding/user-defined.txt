@@ -267,8 +267,6 @@ needs to be implemented that creates a the converter. This needs to following:
       ...
       return me;
 
-
-
 Now, the only thing that remains is to tell quex about the user's artwork.
 Using the command line option ``--converter-new`` (respectively ``--cn``) the
 name of the converter creating function can be passed. If, for example, the

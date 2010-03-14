@@ -9,7 +9,7 @@ WORD 'with'
 FAILED '-' 
 WORD 'dashes' 
 FAILED '\n' 
-<TERMINATION> '' 
+<TERMINATION>
 rm -rf Simple-*
 rm -rf Simple.cpp
 rm -rf Simple

@@ -10,7 +10,7 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::Token        token;
+    quex::Token*       token;
     quex::tiny_lexer   qlex(MESSAGING_FRAMEWORK_BUFFER, MESSAGING_FRAMEWORK_BUFFER_SIZE); 
 
     // -- Call the low lever driver to fill the fill region
@@ -20,17 +20,17 @@ main(int argc, char** argv)
     qlex.buffer_fill_region_finish(receive_n-1);
 
     // -- Loop until the 'termination' token arrives
-    qlex.token_p_set(&token);
+    token = qlex.token_p();
     do {
         qlex.receive();
 
-        if( token.type_id() == QUEX_TKN_BYE ) 
+        if( token->type_id() == QUEX_TKN_BYE ) 
             cout << "## ";
 
-        if( token.type_id() != QUEX_TKN_TERMINATION )
-            cout << "Consider: " << string(token) << endl;
+        if( token->type_id() != QUEX_TKN_TERMINATION )
+            cout << "Consider: " << string(*token) << endl;
         
-    } while( token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;
 }

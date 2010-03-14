@@ -75,7 +75,7 @@ main(int argc, char** argv)
             
             // Let the previous token be the current token of the previous run.
             swap(&prev_token, &current_token);
-            qlex.token_p_set(current_token);
+            (void)qlex.token_p_switch(current_token);
 
             const int TokenID = qlex.receive();
 
