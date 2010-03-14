@@ -3,7 +3,7 @@ cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
 simple.qx:24:warning: Post context requires philosophical cut (handle with care).
 executing ...
-,------------------------------------------------------------------------------------
+,-----------------------------------------------------------------
 | [START]
 HEY_P___HEY_ETC____ 'hey' 
 LETTER_____________ 'h' 
@@ -32,6 +32,6 @@ HEY________________ 'hey'
 WHITESPACE '' 
 <TERMINATION> '' 
 | [END] number of token = 26
-`------------------------------------------------------------------------------------
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

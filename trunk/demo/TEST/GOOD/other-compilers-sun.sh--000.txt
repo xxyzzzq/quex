@@ -8,7 +8,7 @@ sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
 executing ...
-,------------------------------------------------------------------------------------
+,-----------------------------------------------------------------
 | [START]
 STRUCT
 IDENTIFIER
@@ -39,6 +39,6 @@ SEMICOLON
 BRACKET_CLOSE
 <TERMINATION>
 | [END] number of token = 28
-`------------------------------------------------------------------------------------
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

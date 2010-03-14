@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
-    echo "demo/010: Direct Buffer Access (Arbitrary Chunked)"
+    echo "demo/010: Direct Buffer Access;"
     echo "CHOICES:  copy, fill;"
     echo "SAME;"
     exit

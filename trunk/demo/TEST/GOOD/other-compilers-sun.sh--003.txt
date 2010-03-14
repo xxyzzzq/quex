@@ -10,7 +10,7 @@ sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
 executing ...
-,------------------------------------------------------------------------------------
+,-----------------------------------------------------------------
 | [START]
 PI 'π' 
 ALLMOST_EQUAL '≈' 
@@ -44,6 +44,6 @@ COPYRIGHT '©'
 LATIN_IDENTIFIER 'Schäfer' 
 <TERMINATION> '' 
 | [END] number of token = 31
-`------------------------------------------------------------------------------------
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...
