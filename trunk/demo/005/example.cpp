@@ -15,7 +15,7 @@ main(int argc, char** argv)
     using namespace quex;
 
     // (*) create token
-    Token      my_token;
+    Token*     token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     EasyLexer  qlex(argc == 1 ? "example.txt" : argv[1]);
@@ -26,25 +26,25 @@ main(int argc, char** argv)
     int  number_of_tokens = 0;
     bool continue_lexing_f = true;
     // (*) loop until the 'termination' token arrives
-    qlex.token_p_set(&my_token);
+    token = qlex.token_p();
     do {
         // (*) get next token from the token stream
         QUEX_TYPE_TOKEN_ID token_id = qlex.receive();
 
         // (*) print out token information
-        print(&qlex, &my_token, (const char*)my_token.get_text().c_str());
+        print(&qlex, token, (const char*)token->get_text().c_str());
 
         if( token_id == QUEX_TKN_INCLUDE ) { 
             token_id = qlex.receive();
-            print(&qlex, &my_token, (const char*)my_token.get_text().c_str());
+            print(&qlex, token, (const char*)token->get_text().c_str());
             if( token_id != QUEX_TKN_IDENTIFIER ) {
                 continue_lexing_f = false;
                 print(&qlex, "Found 'include' without a subsequent filename: '%s' hm?\n",
                       (char*)QUEX_NAME_TOKEN(map_id_to_name)(token_id));
                 break;
             }
-            print(&qlex, ">> including: ", (const char*)my_token.get_text().c_str());
-            QUEX_TYPE_CHARACTER* tmp = (QUEX_TYPE_CHARACTER*)my_token.get_text().c_str();
+            print(&qlex, ">> including: ", (const char*)token->get_text().c_str());
+            QUEX_TYPE_CHARACTER* tmp = (QUEX_TYPE_CHARACTER*)token->get_text().c_str();
             qlex.include_push<FILE>(tmp);
         }
         else if( token_id == QUEX_TKN_TERMINATION ) {

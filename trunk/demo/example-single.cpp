@@ -5,7 +5,7 @@
 #include "EasyLexer"
 
 #ifndef QUEX_OPTION_TOKEN_POLICY_SINGLE
-#   error "This example has been designed for token policy users_token."
+#   error "This example has been designed for token passing policy 'single'."
 #endif
 
 #ifndef     ENCODING_NAME
@@ -22,7 +22,7 @@ main(int argc, char** argv)
     //     2nd arg: input character encoding name, 0x0 --> no codec conversion
     quex::EasyLexer    qlex(argc == 1 ? "example.txt" : argv[1], ENCODING_NAME);
 
-    cout << ",------------------------------------------------------------------------------------\n";
+    cout << ",-----------------------------------------------------------------\n";
     cout << "| [START]\n";
 
     int number_of_tokens = 0;
@@ -49,8 +49,8 @@ main(int argc, char** argv)
         // (*) check against 'termination'
     } while( token_id != QUEX_TKN_TERMINATION );
 
-    cout << "| [END] number of token = " << number_of_tokens << "\n";
-    cout << "`------------------------------------------------------------------------------------\n";
+    cout << "| [END] number of tokens = " << number_of_tokens << "\n";
+    cout << "`-----------------------------------------------------------------\n";
 
     return 0;
 }

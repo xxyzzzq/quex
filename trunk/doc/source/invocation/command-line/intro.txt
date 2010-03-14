@@ -29,11 +29,22 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         
         DEFAULT = ``10000``
 
-.. cmdoption:: --token-policy, --tp [queue, users_token, users_queue]
+.. cmdoption:: --token-policy, --tp [queue, single]
 
         Determines the policy for passing tokens from the analyzer to the user.
 
         DEFAULT = ``queue``
+
+.. cmdoption:: --token-memory-management-by-user, --tmmbu
+
+        Enables the token memory management by the user. This command line
+        option is equivalent to the compile option::
+
+             QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
+
+        It provides the functions ``token_queue_memory_switch(...)`` for
+        token policy 'queue' and ``token_p_switch(...)`` for token policy
+        'single' (section :ref:`sec-token-policies`).
 
 .. cmdoption:: --token-queue-size number
 
@@ -249,17 +260,24 @@ options:
         to be linked. A typical list is '-lpthread -lm -L/usr/lib -licui18n -licuuc 
         -licudata'. DEFAULT = `<disabled>` 
 
-.. cmdoption:: -b, --bytes-per-ucs-code-point [1, 2, 4, wchar_t]
+.. cmdoption:: -b, --bytes-per-trigger [1, 2, 4, wchar_t]
 
-        With this option the internal representation of character is specified. It 
-        determines the bytes per character, which compose the lexeme strings
-        and on which the lexical analyzer engine internally operates. The byte number
-        should at least suffice to carry the desired input coding space. You can
-        only specify ``1`` byte, ``2`` byte or ``4`` byte per character. If ``wchar_t`` is specified
-        quex automatically adapts to the correspondent type of the operating
-        system environment where the target code is compiled. 
-        Use this, if option ``--iconv`` or ``--icu`` is used and you are in 
-        doubt. 
+        With this option the number of bytes are specified that carry a trigger
+        element of the generated state machine. As long fixed size encodings
+        are used, or as long as the used coding is converted (using ``--icu``
+        or ``--iconv``), the trigger elements are characters encoded in Unicode. 
+        Thus, the byte number should at least suffice to cover all characters of 
+        the desired input coding space. 
+
+        If ``--codec`` is used so that the internal engine runs on a different
+        codec then Unicode, then ``-b`` specifies the the number of bytes
+        occupied by a code element, e.g it should be '2' for UTF16. 
+
+        You can only specify ``1`` byte, ``2`` byte or ``4`` byte per
+        character. If ``wchar_t`` is specified quex automatically adapts to the
+        correspondent type of the operating system environment where the target
+        code is compiled.  Use this, if option ``--iconv`` or ``--icu`` is used
+        and you are in doubt. 
         
         DEFAULT = ``1``
 
@@ -275,7 +293,7 @@ options:
         For creating a lexical analyzer engine on the same CPU type as quex runs
         then this option is not required, since quex finds this out by its own.
         If you create an engine for a different plattform, you must know its byte ordering
-        scheme, i.e. little endian or big endian, and specify it after `--endian`'. 
+        scheme, i.e. little endian or big endian, and specify it after ``--endian``. 
 
         According to the setting of this option one of the three macros is defined 
         in the header files:
@@ -293,19 +311,39 @@ options:
 
 .. cmdoption:: --converter-new String
 
-        TODO. 
+        Section :ref:`sec-customized-converters` explains how to implement
+        customized converters. With the command line option above the
+        user may specify his own converter. The string that follows the
+        option is the name of the converter's ``_New`` function. When this
+        option is set, automatically customized user conversion is turned
+        on.
 
 .. cmdoption:: --codec String
 
-        TODO. 
+        Specifies a codec for the generated engine. By default the internal
+        engine runs on unicode code points, i.e. ASCII for characters below
+        0x7F. When ``--codec`` specifies a codec 'X', for example, is specified, 
+        the internal engine triggers on code elements of 'X'. It does not need
+        character conversion (neither ``--iconv`` nor ``--icu``). Codec
+        based analyzers are explained in section :ref:`sec-engine-codec`.
 
-For version information pass option `--version`' or `-v`'. The
-options `--help` and `-h`' are reserved for requesting a help text. Those
-are the options for using quex in the 'normal' mode where it creates
-lexical analyzers. However, quex provides some services to query and 
-test character sets. If one of those options is called, then quex does not
-create a lexical analyzer but responds with some information requested 
-by the user. Those options are the following.
+        .. note::
+
+        When ``--codec`` is specified the command line flag ``-b`` or
+        ``--bytes-per-trigger`` does not represent the number of bytes
+        per character, but *the number of bytes per code element*. The
+        codec UTF8, for example, is of dynamic length and its code elements
+        are bytes, thus only ``-b 1`` makes sense. UTF16 triggers on elements
+        of two bytes, while the length of an encoding for a character varries.
+        For UTF16, only ``-b 2`` makes sense.
+
+For version information pass option `--version`' or `-v`'. The options `--help`
+and `-h`' are reserved for requesting a help text. Those are the options for
+using quex in the 'normal' mode where it creates lexical analyzers. However,
+quex provides some services to query and test character sets. If one of
+those options is called, then quex does not create a lexical analyzer but
+responds with some information requested by the user. Those options are
+the following.
 
 .. cmdoption:: --codec-info [name]
 

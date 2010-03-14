@@ -44,10 +44,10 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 #ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** UsersToken)
+    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
     {
         QUEX_TYPE_TOKEN* prev_token_p = me->token;
-        me->token = UsersToken;
+        me->token = TokenP;
         return prev_token_p;
     }
 #   endif

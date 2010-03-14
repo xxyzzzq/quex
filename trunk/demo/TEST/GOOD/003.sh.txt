@@ -2,7 +2,7 @@ makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
 executing ...
-,------------------------------------------------------------------------------------
+,-----------------------------------------------------------------
 | [START]
 PI 'π' 
 ALLMOST_EQUAL '≈' 
@@ -36,6 +36,6 @@ COPYRIGHT '©'
 LATIN_IDENTIFIER 'Schäfer' 
 <TERMINATION> '' 
 | [END] number of token = 31
-`------------------------------------------------------------------------------------
+`-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 cleaning ...

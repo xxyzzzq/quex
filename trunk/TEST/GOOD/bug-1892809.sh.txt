@@ -28,7 +28,7 @@ error.qx:16:warning: Token id 'QUEX_TKN_F' defined implicitly.
 D '' 
 E '' 
 F '' 
-<TERMINATION> '' 
+<TERMINATION>
 (2)
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
@@ -50,4 +50,4 @@ F ''
 ##
 ###############################################################################
 ## An Assert-Abortion might be an intended element of the experiment.
-<TERMINATION> '' 
+<TERMINATION>

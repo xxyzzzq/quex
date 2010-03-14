@@ -15,7 +15,7 @@ SETUP_INFO = {
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     "0x0"],
-    "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"],   "1"],
+    "bytes_per_ucs_code_point":       [["--bytes-per-trigger", "-b"],          "1"],
     "byte_order":                     [["--endian"],                           "<system>"],
     "dos_carriage_return_newline_f":  [["--no-DOS"],                           NEGATED_FLAG],
     "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], NEGATED_FLAG],
@@ -57,6 +57,7 @@ SETUP_INFO = {
     "token_class_name_space":                    None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
+    "XX_bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
     "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
     "XX_flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
     "XX_input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
@@ -136,6 +137,10 @@ DEPRECATED = {
       ("Command line options --token-type-no-stringless-check and --ttnsc are deprecated. Please,\n"
        "use --token-type-no-take_text-check or --ttnttc", 
        "0.48.1"), 
+  "XX_bytes_per_ucs_code_point": 
+      ("The command line option '--bytes-per-ucs-code-point' has been renamed to\n"
+       "'--bytes-per-trigger'. The old name causes heavy confusion when it was\n"
+       "used in combination with dynamic length codecs (option --codec).", "0.49.1")
 }
  
 
