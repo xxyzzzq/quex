@@ -1,28 +1,28 @@
-<test-database execution-time-sec="1.15" date="Thu Mar 11 08:15:34 2010">
+<test-database execution-time-sec="0.76" date="Mon Mar 15 07:29:54 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.50"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.26"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.50" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.26" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.09"> 
+    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.07"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.09" crc="443378679"/>
+           <choice name="" result="OK" time_sec="0.07" crc="443378679"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.03"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.02"> 
         <application file-name="macro-check.py" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
+           <choice name="" result="FAIL" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.49"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.37"> 
         <application file-name="include_guard.py" info-request-time="1267963690L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="FAIL" time_sec="0.25" crc="-1609475582"/>
-           <choice name="undefinition" result="OK" time_sec="0.24" crc="-1546884230"/>
+           <choice name="convention" result="FAIL" time_sec="0.19" crc="-1609475582"/>
+           <choice name="undefinition" result="OK" time_sec="0.18" crc="-1546884230"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
