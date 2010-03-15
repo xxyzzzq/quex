@@ -13,10 +13,10 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::Token*      token;
+    quex::Token       token;
     quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0); /* No args to constructor --> raw memory */
 
-    token = qlex.token_p();
+    (void)qlex.token_p_switch(&token);
     while( 1 + 1 == 2 ) {
         // -- Initialize the filling of the fill region
         qlex.buffer_fill_region_prepare();
@@ -35,7 +35,7 @@ main(int argc, char** argv)
             if( TokenID == QUEX_TKN_TERMINATION ) break;
             if( TokenID == QUEX_TKN_BYE )         return 0;
 
-            cout << "Consider: " << string(*token) << endl;
+            cout << "Consider: " << string(token) << endl;
         }
     }
 

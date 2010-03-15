@@ -17,7 +17,7 @@ main(int argc, char** argv)
 
     // Zero pointer to constructor --> memory managed by user
     quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
-    quex::Token*          token;           
+    quex::Token           token;           
     QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
     MemoryChunk           chunk;
 
@@ -25,7 +25,7 @@ main(int argc, char** argv)
     chunk.begin = chunk.end;
 
     // -- LOOP until 'bye' token arrives
-    token = qlex.token_p_set();
+    (void)qlex.token_p_switch(&token);
     while( 1 + 1 == 2 ) {
         // -- Receive content from a messaging framework
         //    The function 'buffer_fill_region_append()' may possibly not
@@ -60,7 +60,7 @@ main(int argc, char** argv)
             if( TokenID == QUEX_TKN_TERMINATION ) break;
             if( TokenID == QUEX_TKN_BYE )         return 0;
 
-            cout << "Consider: " << string(*token) << endl;
+            cout << "Consider: " << string(token) << endl;
         }
     }
 

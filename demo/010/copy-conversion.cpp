@@ -10,9 +10,6 @@ typedef struct {
     uint8_t* end;
 } MemoryChunk;
 
-void swap(QUEX_TYPE_TOKEN** A, QUEX_TYPE_TOKEN** B)
-{ QUEX_TYPE_TOKEN* tmp = *A; *A = *B; *B = tmp; }
-
 int 
 main(int argc, char** argv) 
 {        
@@ -23,7 +20,6 @@ main(int argc, char** argv)
 
     quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
     quex::Token*   prev_token;        // Use pointers to swap quickly.
-    quex::Token*   current_token;     // 
 
     uint8_t*       rx_buffer = 0x0;   // A pointer to the receive buffer that
     //                                // the messaging framework provides.
@@ -36,10 +32,10 @@ main(int argc, char** argv)
     //                                               // backup.
 
     // -- initialize the token pointers
-    prev_token    = &(token_bank[1]);
-    current_token = &(token_bank[0]);
-    current_token->set(QUEX_TKN_TERMINATION);
-    //
+    prev_token = &(token_bank[1]);
+    token_bank[0].set(QUEX_TKN_TERMINATION);
+    qlex.token_p_switch(&token_bank[0]);
+
     // -- trigger reload of memory
     chunk.begin = chunk.end;
 
@@ -70,18 +66,18 @@ main(int argc, char** argv)
         chunk.begin = (uint8_t*)qlex.buffer_fill_region_append_conversion(chunk.begin, chunk.end);
 
         // -- Loop until the 'termination' token arrives
+        QUEX_TYPE_TOKEN_ID   token_id = 0;
         while( 1 + 1 == 2 ) {
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
             // Let the previous token be the current token of the previous run.
-            swap(&prev_token, &current_token);
-            (void)qlex.token_p_switch(current_token);
+            prev_token = qlex.token_p_switch(prev_token);
 
-            const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
+            token_id = qlex.receive();
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( TokenID == QUEX_TKN_TERMINATION )
+            if( token_id == QUEX_TKN_TERMINATION )
                 break;
 
             // If the previous token was not a TERMINATION, it can be considered
@@ -89,12 +85,12 @@ main(int argc, char** argv)
             if( prev_token->type_id() != QUEX_TKN_TERMINATION )
                 cout << "Consider: " << string(*prev_token) << endl;
 
-            if( TokenID == QUEX_TKN_BYE ) 
+            if( token_id == QUEX_TKN_BYE ) 
                 break;
         }
 
         // -- If the 'bye' token appeared, leave!
-        if( current_token->type_id() == QUEX_TKN_BYE ) break;
+        if( token_id == QUEX_TKN_BYE ) break;
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.
