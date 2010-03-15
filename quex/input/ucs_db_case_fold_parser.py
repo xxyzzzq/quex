@@ -1,3 +1,6 @@
+"""This implements the basic algorithm for caseless matching
+   as described in Unicode Standard Annex #21, Section 1.3.
+"""
 import quex.input.ucs_db_parser as ucs_db_parser
 
 class DB:
@@ -28,8 +31,6 @@ def __init():
         status = row[1]
         lower  = row[2]
 
-        if row[0] == ord('s') or row[2][0] == ord('s'): 
-            print "##", ord('s'), row
         db_set[status].upper_to_lower.setdefault(upper, []).append(lower)
 
         if status == "F": continue
@@ -38,6 +39,10 @@ def __init():
         # dot fold multi-value characters to single characters.
         db_set[status].lower_to_upper.setdefault(lower[0], []).append(upper)
 
+def __add_result(result, db, CharacterCode):
+    letter_list = db[CharacterCode]
+    for letter in letter_list:
+        if letter not in result: result.append(letter)
 
 def get_fold_set(CharacterCode, Flags="CSFT"):
     """Returns all characters to which the specified CharacterCode
@@ -61,21 +66,31 @@ def get_fold_set(CharacterCode, Flags="CSFT"):
     __init()
 
     # The character itself shall always be part of the fold
-    result = [ CharacterCode ]
+    worklist = [ CharacterCode ]
 
-    # Collect the 'pairing' characters
-    for status, db in db_set.items():
-        if status not in Flags: continue
+    while 1 + 1 == 2:
+        new_worklist = [ ]
+        for character_code in worklist:
+            if character_code not in new_worklist: 
+                new_worklist.append(character_code)
 
-        elif db.upper_to_lower.has_key(CharacterCode):
-            value = db.upper_to_lower[CharacterCode]
-            if value not in result: result.append(value)
+            if type(character_code) == list: continue
 
-        elif db.lower_to_upper.has_key(CharacterCode):
-            value = db.lower_to_upper[CharacterCode]
-            if value not in result: result.append(value)
+            # Collect the 'pairing' characters
+            for status, db in db_set.items():
+                if status not in Flags: continue
+
+                elif db.upper_to_lower.has_key(character_code):
+                    __add_result(new_worklist, db.upper_to_lower, character_code)
+
+                elif db.lower_to_upper.has_key(character_code):
+                    __add_result(new_worklist, db.lower_to_upper, character_code)
+
+        if worklist == new_worklist: break
+        worklist = new_worklist
        
-    return result
+    print worklist
+    return worklist
         
 def get_lower_fold_set(CharacterCode, Flags="CSFT"):
     """Collect the lower 'pairing' characters."""
@@ -90,8 +105,7 @@ def get_lower_fold_set(CharacterCode, Flags="CSFT"):
             result.append(CharacterCode)
 
         elif db.upper_to_lower.has_key(CharacterCode):
-            value = db.upper_to_lower[CharacterCode]
-            if value not in result: result.append(value)
+            __add_result(result, db.upper_to_lower, CharacterCode)
 
     return result
 
@@ -108,7 +122,6 @@ def get_upper_fold_set(CharacterCode, Flags="CSFT"):
             result.append(CharacterCode)
 
         elif db.lower_to_upper.has_key(CharacterCode):
-            value = db.lower_to_upper[CharacterCode]
-            if value not in result: result.append(value)
+            __add_result(result, db.lower_to_upper, CharacterCode)
 
     return result
