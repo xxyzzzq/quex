@@ -22,45 +22,45 @@ def open_data_base_file(Filename):
                   "Unicode Database Directory: '%s'" % unicode_db_directory)
     return fh
 
-def parse_table(Filename):
+def parse_table(Filename, IntervalColumnList=[], NumberColumnList=[], NumberListColumnList=[]):
+    """Columns in IntervalColumnList   --> converted to Interval() objects
+                  NumberColumnList     --> converted to integers (hex numbers)
+                  NumberListColumnList --> converted to integer list (hex numbers)
+    """
     fh = open_data_base_file(Filename)
 
     record_set = []
     for line in fh.readlines():
         if line.find("#") != -1: line = line[:line.find("#")]
         if line == "" or line.isspace(): continue
+
         # append content to record set
-        record_set.append(map(lambda x: x.strip(), line.split(";")))
+        cells = map(lambda x: x.strip(), line.split(";"))
+
+        for i in IntervalColumnList:
+            fields = cells[i].split("..")    # range: value0..value1
+            assert len(fields) in [1, 2]
+
+            if len(fields) == 2: 
+               begin = int("0x" + fields[0], 16)
+               end   = int("0x" + fields[1], 16) + 1
+            else:
+               begin = int("0x" + fields[0], 16)
+               end   = int("0x" + fields[0], 16) + 1
+            cells[i] = Interval(begin, end)
+
+        for i in NumberColumnList:
+            cells[i] = int("0x" + cells[i], 16)
+
+        for i in NumberListColumnList:
+            nl = []
+            for n in cells[i].split():
+                nl.append(int("0x" + n, 16))
+            cells[i] = nl
+
+        record_set.append(cells)
 
     return record_set
-
-def convert_column_to_number(table, CodeColumnIdx):
-    """ CodeColumnIdx: Column that contains the UCS character code or
-                       code range.
-        table:         table in which the content is changed.
-    """
-    for row in table:
-        cell = row[CodeColumnIdx]
-        row[CodeColumnIdx] = int("0x" + cell, 16)
-
-def convert_column_to_interval(table, CodeColumnIdx):
-    """ CodeColumnIdx: Column that contains the UCS character code or
-                       code range.
-        table:         table in which the content is changed.
-    """
-    for row in table:
-        cell = row[CodeColumnIdx]
-        fields = cell.split("..")         # range: value0..value1
-        assert len(fields) in [1, 2]
-
-        if len(fields) == 2: 
-           begin = int("0x" + fields[0], 16)
-           end   = int("0x" + fields[1], 16) + 1
-        else:
-           begin = int("0x" + fields[0], 16)
-           end   = int("0x" + fields[0], 16) + 1
-
-        row[CodeColumnIdx] = Interval(begin, end)
 
 def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumnIdx):
     """Produces a dictionary that maps from 'keys' to NumberSets. The 
@@ -112,10 +112,10 @@ def load_db(DB_Filename, ValueType, ValueColumnIdx, KeyColumnIdx):
              'value' is the number set it points to. This maybe
              confusing.
     """
-
-    table = parse_table(DB_Filename)
-    if   ValueType == "NumberSet": convert_column_to_interval(table, ValueColumnIdx)
-    elif ValueType == "number":    convert_column_to_number(table, ValueColumnIdx)
+    if   ValueType == "NumberSet": 
+        table = parse_table(DB_Filename, IntervalColumnList=[ValueColumnIdx])
+    elif ValueType == "number":    
+        table = parse_table(DB_Filename, NumberColumnList=[ValueColumnIdx])
 
     db = convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumnIdx)
 
@@ -434,11 +434,12 @@ class PropertyInfoDB:
             property.code_point_db = number_set
 
     def load_Composition_Exclusion(self):
-        table = parse_table("CompositionExclusions.txt")
+        # Column 0 contains what is interesting ...
+        table = parse_table("CompositionExclusions.txt", NumberColumnList=[0])
 
         number_set = NumberSet()
         for row in table:
-           begin = int("0x" + row[0], 16)
+           begin = row[0]
            number_set.quick_append_interval(Interval(begin, begin + 1))
         number_set.clean()    
 
