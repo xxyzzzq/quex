@@ -14,9 +14,8 @@ endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
-SOURCES   = tiny_lexer.cpp
-OBJS      = $(SOURCES:.cpp=.o)      messaging-framework.o
-UTF8_OBJS = $(SOURCES:.cpp=-utf8.o) messaging-framework-utf8.o
+OBJS      = tiny_lexer.o      messaging-framework.o
+UTF8_OBJS = tiny_lexer-utf8.o messaging-framework-utf8.o
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -38,22 +37,22 @@ all: $(FILES)
 %-conversion-direct.exe: %-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
 
-%-conversion.exe: %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+%-conversion.exe:        %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
           
-%.exe: %.cpp $(OBJS) $(QUEX_CORE) 
-	$(CC) -o $@ $< $(OBJS) 
+%.exe:                   %.cpp $(OBJS) $(QUEX_CORE) 
+	$(CC)      -o $@ $< $(OBJS) 
           
-%-utf8.o: %.cpp $(QUEX_CORE)
+%-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
 	$(CC_UTF8) -c $< -o $@  
           
-%.o: %.cpp $(QUEX_CORE)
-	$(CC) -c $< -o $@  
+%.o:                     %.cpp $(QUEX_CORE) tiny_lexer
+	$(CC)      -c $< -o $@  
           
-%.E: %.cpp $(QUEX_CORE)
-	$(CC) -E $< -o $@  
+%.E:                     %.cpp $(QUEX_CORE) tiny_lexer
+	$(CC)      -E $< -o $@  
           
-$(SOURCES): simple.qx $(QUEX_CORE)
+tiny_lexer tiny_lexer.cpp: simple.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_ENABLE_ICONV'
 	# does all what is required.
 	quex -i simple.qx --engine tiny_lexer \

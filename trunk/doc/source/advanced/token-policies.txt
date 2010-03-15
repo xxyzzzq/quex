@@ -101,7 +101,7 @@ it is possible to iterate over the remaining tokens with
 
 Note, that a call to this function empties the token queue. Thus, if one does
 not consider the reported remaining tokens, then tokens are definitely lost.
-The function ``token_queue_memory_switch(...)`` imposes a memory chunk that is
+The function ``token_queue_memory_switch(...)`` sets a memory chunk that is
 to be used as a token queue. At the same time it returns the pointer to the
 previous memory. Its arguments are as follows:
 
@@ -120,16 +120,22 @@ previous memory. Its arguments are as follows:
      the provided chunk. At function exit ``*n`` will contain the number of
      tokens carried by the previous memory chunk.
      
-The ``token_queue_memory_switch(...)`` is only availabe if the macro::
+The design choice of implementing a 'switch' function instead of a 'set' and a
+'get' function was made by purpose. It imposes on the user to have an idea
+about what to do with the memory chunk that is currently used. If only the new
+memory chunk was put in place and no one takes responsibility of the old one,
+then this is a source of memory leaks. By default the ability to set a
+customized memory chunk is turned of. It is only enabled via if the
+macro::
 
         QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
 
-is explicitly defined, e.g. witha a command line ``-D...`` definition, or the
+e.g. witha a command line ``-D...`` definition, or the
 command line flag ``--token-memory-management-by-user`` or ``--tmmbu`` being
 passed to quex. If user managed token memory is defined, no initial token queue
 is setup. The user is responsible for allocating the memory chunk and for
 calling the constructors for each token element. Vice versa, the analyzer's
-destruct will nor take care of the destruction of the token objects, neither it
+destructor will neither take care of the destruction of the token objects, nor it
 will deallocate the memory chunk where they reside. It is all the users task.
 
 It is advisable to call ``token_queue_memory_get(...)`` where ``*memory`` will
@@ -235,9 +241,11 @@ as one does not call
    
        prev_token_p = my_lexer.token_p_switch(&my_token);
 
-where the passed argument must point to a prepared token object. If the
+where the passed argument must point to a prepared token object. Again, the
+choice of implementing a 'switch' function was made to remind the user of the
+previous token inside the analyzer of which he needs to take care. If the
 returned pointer is zero, then no token was previously set. Otherwise, the user
-takes over the ownership over the token and is responsible for destructing and 
+takes over the ownership over the token and is responsible for destructing and
 de-allocating it. That is, for example
 
    .. code-block:: cpp

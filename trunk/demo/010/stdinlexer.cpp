@@ -9,7 +9,7 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::Token*      token;
+    quex::Token       token;
     // Zero pointer to constructor --> use raw memory
     quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
 
@@ -22,7 +22,7 @@ main(int argc, char** argv)
     cout << "Please, terminate each line with pressing [enter].\n";
 
     int number_of_tokens = 0;
-    token = qlex.token_p();
+    (void)qlex.token_p_switch(&token);
     while( cin ) {
         qlex.buffer_fill_region_prepare();
         
@@ -42,13 +42,13 @@ main(int argc, char** argv)
         // Loop until the 'termination' token arrives
         do {
             (void)qlex.receive();
-            cout << string(*token) << endl;
+            cout << string(token) << endl;
             ++number_of_tokens;
-        } while( token->type_id() != QUEX_TKN_TERMINATION && token->type_id() != QUEX_TKN_BYE );
+        } while( token.type_id() != QUEX_TKN_TERMINATION && token.type_id() != QUEX_TKN_BYE );
         
         cout << "[[End of Input]]\n";
 
-        if( token->type_id() == QUEX_TKN_BYE ) break;
+        if( token.type_id() == QUEX_TKN_BYE ) break;
     }
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
