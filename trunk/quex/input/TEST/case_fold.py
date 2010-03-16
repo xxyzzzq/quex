@@ -1,3 +1,4 @@
+# vim:fileencoding=utf8 
 """This implements the basic algorithm for caseless matching
    as described in Unicode Standard Annex #21, Section 1.3.
 """
@@ -13,7 +14,7 @@ from quex.core_engine.utf8                import map_unicode_to_utf8
 
 if "--hwut-info" in sys.argv:
     print "Case Folding based on Unicode Database;"
-    print "CHOICES: CommonUpper, CommonLower, Full, Simple, Turkish;"
+    print "CHOICES: Common, Full, Simple, Turkish;"
     sys.exit()
 
 
@@ -30,21 +31,18 @@ def pump(LetterList):
     if txt != "": txt = txt[:-2]
     return txt
 
-if sys.argv[1].find("Common") == 0:
-    if "CommonLower" in sys.argv: 
-        Letters = "abcdefghijklmnopqrstuvwxyz"
-    elif "CommonUpper" in sys.argv:
-        Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-    print "Origin:      All:       Lower:        Upper:"
-    for letter in Letters:
+if "Common" in sys.argv:
+    for letter in [u"A", u"J", u"K", u"L", u"Q", u"S", u"X", u"Y", u"Ċ", u"Ç", u"Ø", u"É", u"Ω", u"Π"]:
+        print "##", letter
         code = ord(letter)
         result  = letter
         result += " -->        " 
-        result += pump(parser.get_fold_set(code, "C"))
-        #result += " " * (24 - len(result)) 
-        #result += pump(parser.get_lower_fold_set(code, "C"))
-        #result += " " * (38 - len(result)) 
-        #result += pump(parser.get_upper_fold_set(code, "C"))
+        result += pump(parser.get_fold_set(code, "CSTF"))
         print result
 
+    for letter in [u"a", u"j", u"k", u"l", u"q", u"s", u"x", u"y", u"ċ", u"ç", u"ø", u"é", u"ω", u"π"]:
+        code = ord(letter)
+        result  = letter
+        result += " -->        " 
+        result += pump(parser.get_fold_set(code, "CSTF"))
+        print result
