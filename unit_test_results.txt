@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Sun Mar  7 14:39:12 2010
+Thu Mar 18 22:45:54 2010
 TEST
 -------------------------------------------------------------------------------
 
@@ -73,6 +73,11 @@ TEST
                        non-newline-skipper .....................[OK]
     2635012 0.36.4 Include Stack Disablement
         bug-2635012.sh .........................................[OK]
+
+ -- kromaks:
+
+    2971198 0.48.1 Parsing long REs
+        bug-2971198.sh .........................................[OK]
 
  -- marcoantonelli:
 
@@ -243,7 +248,7 @@ TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Demo-Applications
-Sun Mar  7 14:49:01 2010
+Thu Mar 18 22:49:24 2010
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -337,13 +342,13 @@ demo/TEST
 
  -- demo/010:
 
+    Direct Buffer Access
+        010.sh copy ............................................[OK]
+               fill ............................................[OK]
     Direct Buffer Access & Character Set Conversion
         010c.sh copy-conversion ................................[OK]
                 copy-conversion-direct .........................[OK]
                 fill-conversion-direct .........................[OK]
-    Direct Buffer Access (Arbitrary Chunked)
-        010.sh copy ............................................[OK]
-               fill ............................................[OK]
     Direct Buffer Access (Syntactically Chunked)
         010b.sh copy ...........................................[OK]
                 fill ...........................................[OK]
@@ -373,18 +378,18 @@ demo/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Miscellaneous Basic Tests
-Sun Mar  7 14:04:49 2010
+Thu Mar 18 22:49:25 2010
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
         test-exceptions-in-place.sh ..........................[FAIL]
  -- Include Guards for C/C++
-        include_guard.py convention ............................[OK]
+        include_guard.py convention ..........................[FAIL]
                          undefinition ..........................[OK]
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ......................[OK]
  -- Propper undefinition of configuration parameters.
-        macro-check.py .........................................[OK]
+        macro-check.py .......................................[FAIL]
 
  -- User defined token id file:
 
@@ -397,9 +402,11 @@ quex/TEST
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
     [FAIL] test-exceptions-in-place.sh
+    [FAIL] include_guard.py _ convention
+    [FAIL] macro-check.py
 ===============================================================================
 Check Applications of 'Did you mean'.
-Sun Mar  7 14:04:53 2010
+Thu Mar 18 22:49:29 2010
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -412,7 +419,7 @@ quex/TEST/did-you-mean/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Sun Mar  7 14:04:53 2010
+Thu Mar 18 22:49:29 2010
 quex/TEST/errors-warnings/TEST
 -------------------------------------------------------------------------------
  -- Token identifier definition and orthography.
@@ -423,7 +430,7 @@ quex/TEST/errors-warnings/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Event Handlers
-Sun Mar  7 14:04:57 2010
+Thu Mar 18 22:49:29 2010
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -445,7 +452,7 @@ quex/TEST/event-handling/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Include Stack Handling
-Sun Mar  7 14:05:02 2010
+Thu Mar 18 22:49:30 2010
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -473,7 +480,7 @@ quex/TEST/include-stack/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Sun Mar  7 14:05:06 2010
+Thu Mar 18 22:49:34 2010
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -494,7 +501,7 @@ quex/TEST/match-precedence/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 The 'Reset' Button
-Sun Mar  7 14:05:15 2010
+Thu Mar 18 22:49:35 2010
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -566,7 +573,7 @@ quex/TEST/reset/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Customized Token Class
-Sun Mar  7 14:50:06 2010
+Thu Mar 18 22:49:36 2010
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -576,7 +583,7 @@ quex/TEST/token-class/TEST
                 token ..........................................[OK]
  -- With token policy 'queue'.
         simple-queue.exe .......................................[OK]
- -- With token policy 'users_token'.
+ -- With token policy 'simple'.
         simple.exe .............................................[OK]
                                                                     ___  _  _
                                                                    / _ \| |/ )
@@ -584,34 +591,34 @@ quex/TEST/token-class/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Tests related to token queues
-Sun Mar  7 14:05:24 2010
+Thu Mar 18 22:49:36 2010
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
- -- Token Policy Queue:
+ -- Token Policy 'queue':
 
     Pseudo Analysis
-        queue.exe receive-1 ....................................[OK]
-                  receive-2 ....................................[OK]
+        queue.exe receive-1 ..........................[NO GOOD FILE]
+                  receive-2 ..........................[NO GOOD FILE]
     Real Analysis
-        queue-real.exe receive-1 ...............................[OK]
-                       receive-2 ...............................[OK]
+        queue-real.exe receive-1 .....................[NO GOOD FILE]
+                       receive-2 .....................[NO GOOD FILE]
 
- -- Token Policy UsersToken:
+ -- Token Policy 'single':
 
     Pseudo Analysis
-        users_token.exe receive-1 ..............................[OK]
-                        receive-2 ..............................[OK]
+        users_token.exe receive-1 ....................[NO GOOD FILE]
+                        receive-2 ....................[NO GOOD FILE]
     Real Analysis
-        users_token-real.exe receive-1 .........................[OK]
-                             receive-2 .........................[OK]
-                                                                    ___  _  _
-                                                                   / _ \| |/ )
-                                                                  ( (_) | _ <
-                                                                   \___/|_|\_) 
+        users_token-real.exe receive-1 ...............[NO GOOD FILE]
+                             receive-2 ...............[NO GOOD FILE]
+                                                                ___  _  _  __
+                                                               / _ \| |/ )(_ )
+                                                              ( (_) | _ <  //
+                                                               \___/|_|\_) O 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Sun Mar  7 14:05:25 2010
+Thu Mar 18 22:49:37 2010
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -633,7 +640,7 @@ quex/code_base/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Lexical Analyzer Class Template
-Sun Mar  7 14:05:31 2010
+Thu Mar 18 22:49:38 2010
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
  -- Accumulator
@@ -703,7 +710,7 @@ quex/code_base/analyzer/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Basic Buffer Functions
-Sun Mar  7 14:05:38 2010
+Thu Mar 18 22:49:41 2010
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -762,7 +769,7 @@ quex/code_base/buffer/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Sun Mar  7 14:05:45 2010
+Thu Mar 18 22:49:42 2010
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -833,7 +840,7 @@ quex/code_base/buffer/converter/iconv/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Testing the ICU Converter Adaption
-Sun Mar  7 14:05:54 2010
+Thu Mar 18 22:49:44 2010
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -904,7 +911,7 @@ quex/code_base/buffer/converter/icu/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Sun Mar  7 14:06:09 2010
+Thu Mar 18 22:49:47 2010
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -995,7 +1002,7 @@ quex/code_base/buffer/plain/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Core Functionalities
-Sun Mar  7 14:06:23 2010
+Thu Mar 18 22:50:02 2010
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1046,7 +1053,7 @@ quex/core_engine/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Sun Mar  7 14:08:05 2010
+Thu Mar 18 22:52:15 2010
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1225,7 +1232,7 @@ quex/core_engine/generator/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Regular Expression Parsing
-Sun Mar  7 14:08:08 2010
+Thu Mar 18 22:52:18 2010
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1254,7 +1261,7 @@ quex/core_engine/regular_expression/TEST
     Alternative Expressions
         test-set-expressions.py ................................[OK]
     Simple repeated expressions
-        test-repeated-expressions.py ...........................[OK]
+        test-repeated-expressions.py .........................[FAIL]
 
  -- Conditional Analysis:
 
@@ -1282,13 +1289,16 @@ quex/core_engine/regular_expression/TEST
         test-properties-2.py ...................................[OK]
     Simple
         test-properties.py .....................................[OK]
-                                                                    ___  _  _
-                                                                   / _ \| |/ )
-                                                                  ( (_) | _ <
-                                                                   \___/|_|\_) 
+                                                            ___   _    _   _
+                                                           |  _| / \  | | | |
+                                                           | |_|/ - \ | | | |_
+                                                           |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+    [FAIL] test-repeated-expressions.py
 ===============================================================================
 State Machine Operations
-Sun Mar  7 14:08:20 2010
+Thu Mar 18 22:52:36 2010
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1357,7 +1367,7 @@ quex/core_engine/state_machine/TEST
     Detection
         test-ambiguous_post_condition-detect.py ................[OK]
     Mounting
-        test-ambiguous_post_condition-mount_pseudo.py ..........[OK]
+        test-ambiguous_post_condition-mount_pseudo.py ........[FAIL]
     Replace Drop-Out with Adjacent Target
         test-StateInfo-replace_drop_out_with_adjacent_target.py [OK]
     The Philosophical Cut
@@ -1375,7 +1385,7 @@ quex/core_engine/state_machine/TEST
     Append Post Condition
         test-setup_border_conditions.py ........................[OK]
     Inverse
-        test-StateMachine-inverse.py ...........................[OK]
+        test-StateMachine-inverse.py .........................[FAIL]
     Paralell
         test-parallelize.py ....................................[OK]
     Repetition with min and max repetition numbers
@@ -1447,13 +1457,17 @@ quex/core_engine/state_machine/TEST
                                  4.2 ...........................[OK]
                                  4.3 ...........................[OK]
                                  4.4 ...........................[OK]
-                                                                    ___  _  _
-                                                                   / _ \| |/ )
-                                                                  ( (_) | _ <
-                                                                   \___/|_|\_) 
+                                                            ___   _    _   _
+                                                           |  _| / \  | | | |
+                                                           | |_|/ - \ | | | |_
+                                                           |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+    [FAIL] test-ambiguous_post_condition-mount_pseudo.py
+    [FAIL] test-StateMachine-inverse.py
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Sun Mar  7 14:08:20 2010
+Thu Mar 18 22:52:36 2010
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1476,9 +1490,14 @@ quex/frs_py/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Character Set Queries
-Sun Mar  7 14:08:31 2010
+Thu Mar 18 22:52:54 2010
 quex/input/TEST
 -------------------------------------------------------------------------------
+ -- Case Folding based on Unicode Database
+        case_fold.py Common ....................................[OK]
+                     Full ............................[NO GOOD FILE]
+                     Simple ..........................[NO GOOD FILE]
+                     Turkish .........................[NO GOOD FILE]
 
  -- Quex Queries:
 
@@ -1534,13 +1553,13 @@ quex/input/TEST
                         Error ..................................[OK]
                         Twice ..................................[OK]
                         Twice-2 ................................[OK]
-                                                                    ___  _  _
-                                                                   / _ \| |/ )
-                                                                  ( (_) | _ <
-                                                                   \___/|_|\_) 
+                                                                ___  _  _  __
+                                                               / _ \| |/ )(_ )
+                                                              ( (_) | _ <  //
+                                                               \___/|_|\_) O 
 ===============================================================================
 Basic Code Writing Functionality
-Sun Mar  7 14:08:33 2010
+Thu Mar 18 22:52:57 2010
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1567,7 +1586,7 @@ quex/output/cpp/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Testing Statemachine Plots
-Sun Mar  7 14:08:34 2010
+Thu Mar 18 22:52:58 2010
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1586,6 +1605,25 @@ quex/output/graphviz/TEST
                                                                   ( (_) | _ <
                                                                    \___/|_|\_) 
 -------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Missing GOOD files for:
+
+  quex/input/TEST:
+    case_fold.py Full
+                 Simple
+                 Turkish
+
+  quex/TEST/token-policies/TEST:
+    queue-real.exe receive-1
+                   receive-2
+    queue.exe receive-1
+              receive-2
+    users_token-real.exe receive-1
+                         receive-2
+    users_token.exe receive-1
+                    receive-2
+
+===============================================================================
 ===============================================================================
 SUMMARY:
 
@@ -1593,7 +1631,7 @@ SUMMARY:
 
            [OK]  TEST
            [OK]  demo/TEST
-     1   [FAIL]  quex/TEST
+     3   [FAIL]  quex/TEST
            [OK]  ..../TEST/did-you-mean/TEST
            [OK]  ........./errors-warnings/TEST
            [OK]  ........./event-handling/TEST
@@ -1601,7 +1639,7 @@ SUMMARY:
            [OK]  ........./match-precedence/TEST
            [OK]  ........./reset/TEST
            [OK]  ........./token-class/TEST
-           [OK]  ........./token-policies/TEST
+             ??  ........./token-policies/TEST
            [OK]  ..../code_base/TEST
            [OK]  ............../analyzer/TEST
            [OK]  ............../buffer/TEST
@@ -1610,17 +1648,17 @@ SUMMARY:
            [OK]  ...................../plain/TEST
            [OK]  ..../core_engine/TEST
            [OK]  ................/generator/TEST
-           [OK]  ................/regular_expression/TEST
-           [OK]  ................/state_machine/TEST
+     1   [FAIL]  ................/regular_expression/TEST
+     2   [FAIL]  ................/state_machine/TEST
            [OK]  ..../frs_py/TEST
-           [OK]  ..../input/TEST
+             ??  ..../input/TEST
            [OK]  ..../output/cpp/TEST
            [OK]  .........../graphviz/TEST
 -------------------------------------------------------------------------------
-     _____     _ _        ___                 
-    |  ___|_ _(_) |___   / _ \ _ __   ___ ___ 
-    | |_ / _` | | / __| | | | | '_ \ / __/ _ \
-    |  _| (_| | | \__ \ | |_| | | | | (_|  __/
-    |_|  \__,_|_|_|___/  \___/|_| |_|\___\___|
-    
+     _____     _ _           __             
+    |  ___|_ _(_) |___      / /_      __  __
+    | |_ / _` | | / __|    | '_ \     \ \/ /
+    |  _| (_| | | \__ \    | (_) |     >  < 
+    |_|  \__,_|_|_|___/     \___/     /_/\_\
+                   
 ===============================================================================
