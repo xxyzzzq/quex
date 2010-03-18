@@ -86,8 +86,7 @@ class State:
         result.__origin_list    = deepcopy(self.__origin_list)
         # if replacement of indices is desired, than do it
         if ReplacementDictionary != None:
-            for ti, replacement_ti in ReplacementDictionary.items():
-                result.transitions().replace_target_index(ti, replacement_ti)
+            result.transitions().replace_target_indices(ReplacementDictionary)
         return result
 
     def __repr__(self):

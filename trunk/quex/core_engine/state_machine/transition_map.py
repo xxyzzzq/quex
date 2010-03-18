@@ -5,6 +5,8 @@ import bisect
 from   quex.core_engine.interval_handling import NumberSet, Interval
 from   quex.frs_py.file_in                import error_msg
 
+from copy import deepcopy
+
 # definitions for 'history items':
 INTERVAL_BEGIN            = True
 INTERVAL_END              = False
@@ -361,6 +363,17 @@ class TransitionMap:
             msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
 
         return msg
+
+    def replace_target_indices(self, ReplacementDict):
+        new_db = {}
+        for target_idx, trigger_set in self.__db.items():
+            new_db[ReplacementDict[target_idx]] = trigger_set
+        self.__db = new_db
+
+        if len(self.__epsilon_target_index_list) != 0:
+            new_list = map(lambda old: ReplacementDict[old], 
+                           self.__epsilon_target_index_list)
+            self.__epsilon_target_index_list = new_list
 
     def replace_target_index(self, Before, After):
         """Replaces given target index 'Before' with the index 'After'. 
