@@ -12,7 +12,7 @@ main(int argc, char** argv)
 {        
     if( argc > 1 && strcmp("--hwut-info", argv[1]) == 0 ) {
 #       if   defined(TEST_simple)
-        printf("With token policy 'users_token'.\n");
+        printf("With token policy 'simple'.\n");
 #       elif defined(TEST_simple_queue)
         printf("With token policy 'queue'.\n");
 #       else
@@ -20,14 +20,8 @@ main(int argc, char** argv)
 #       endif
         return 0;
     }
-    // (*) create token
-    // ispringen::MeinToken*      token = new ispringen::MeinToken();
-    ispringen::MeinToken      token;
-    ispringen::MeinToken*     token_p = &token;
-    
-    // (*) create the lexical analyser
-    //     if no command line argument is specified user file 'example.txt'
-    quex::Simple     qlex(argc == 1 ? "example.txt" : argv[1]);
+    quex::Simple           qlex(argc == 1 ? "example.txt" : argv[1]);
+    ispringen::MeinToken*  token_p = qlex.token_p();
 
     // (*) Access the '__nonsense__' member to ensure it has been generated
     token_p->__nonsense__ = 0;
@@ -36,9 +30,6 @@ main(int argc, char** argv)
 
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
-#   if   defined(TEST_simple)
-    qlex.token_p_set(token_p);
-#   endif
     do {
 #       if   defined(TEST_simple)
         (void)qlex.receive();

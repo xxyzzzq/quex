@@ -62,21 +62,22 @@ test('A\n\n\nC("12\n\n\n"|("A\n\n\nC"|"X\n\n\nZ"))"12\n\n\n"("\n\n\nAA"|"\n\n\nB
 test('A\n\n\nC("12\n\n\n"|("A\n\n\nCD"|"X\n\n\nZ"))"12\n\n\n"("\n\n\nAA"|"\n\n\nBB"|"CC\n\n\n")X\n\n\nZ')
 test('"\n"{4}("a\n\ne"|"\n\n")')
 
-# with pre and post-conditions
-test('"12\n"/"Z"')
-test('"1\n3"/"Z"')
-test('"12\n"+/"Z"')
-test('"1\n3"+/"Z"')
-test('("1\n23"|"A\nC")/"Z"')
-test('"12\n"/"ABC"|"XYZ"')
-test('"12\n"/"ABC"|"X"*')
-test('"12\n"/"ABC"|"X"?')
-test('"12\n"/"ABC"|""')
-test('"12\n"/"X\nZ"+')
+# quex version >= 0.49.1: only treat core pattern; no pre and post-conditions
+if False:
+    test('"12\n"/"Z"')
+    test('"1\n3"/"Z"')
+    test('"12\n"+/"Z"')
+    test('"1\n3"+/"Z"')
+    test('("1\n23"|"A\nC")/"Z"')
+    test('"12\n"/"ABC"|"XYZ"')
+    test('"12\n"/"ABC"|"X"*')
+    test('"12\n"/"ABC"|"X"?')
+    test('"12\n"/"ABC"|""')
+    test('"12\n"/"X\nZ"+')
 
-test('"a"/"\n"/"b"')
-test('x/(y|\n)/z')
-test('"a"/b/c|\n')
-test('"a\n"/b\nc|\n+')
+    test('"a"/"\n"/"b"')
+    test('x/(y|\n)/z')
+    test('"a"/b/c|\n')
+    test('"a\n"/b\nc|\n+')
 
 
