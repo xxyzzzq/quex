@@ -20,17 +20,21 @@ void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const
 #ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
 #    define RECEIVE(TokenP)   TokenP = qlex.receive()
 #else
-#    define RECEIVE(TokenP)   qlex.token_p_set(TokenP); (void)qlex.receive()
+#    define RECEIVE(TokenP)   (void)qlex.receive()
 #endif
 
 int 
 main(int argc, char** argv) 
 {        
+    string         Directory("example/");
+    string         Filename(argv[1]);
+    ifstream       istr((Directory + Filename + ".txt").c_str());
+    quex::ISLexer  qlex(&istr);
+
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     quex::Token*  token_p = 0x0;
 #   else
-    quex::Token   MyToken;
-    quex::Token*  token_p = &MyToken;
+    quex::Token*  token_p = qlex.token_p();
 #   endif
 
     if( argc < 2 ) {
@@ -42,11 +46,6 @@ main(int argc, char** argv)
         printf("CHOICES: empty, 1, 2, 3, 4, 5, 20;");
         return 0;
     }
-
-    string         Directory("example/");
-    string         Filename(argv[1]);
-    ifstream       istr((Directory + Filename + ".txt").c_str());
-    quex::ISLexer  qlex(&istr);
 
     qlex.file_name = Directory + Filename + ".txt";
     cout << "[START]\n";

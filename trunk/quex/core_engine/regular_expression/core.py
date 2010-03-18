@@ -55,6 +55,7 @@ import quex.core_engine.state_machine.setup_pre_context       as setup_pre_conte
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
+import quex.core_engine.state_machine.character_counter       as character_counter
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
@@ -546,6 +547,16 @@ def __beautify(the_state_machine):
     return result
 
 def __construct(core_sm, pre_context=None, post_context=None, fh=-1):
+    # Determine newline and character count for matching lexemes
+    # of the core pattern.
+    newline_n    = character_counter.get_newline_n(core_sm)
+    character_n  = character_counter.get_character_n(core_sm)
+    only_space_f = character_counter.contains_only_spaces(core_sm)
+
+    core_sm.set_newline_n(newline_n)
+    core_sm.set_character_n(character_n)
+    core_sm.set_only_whitespace_f(only_space_f)
+
     if   pre_context == None and post_context == None:
         result = core_sm
         # -- can't get more beautiful ...

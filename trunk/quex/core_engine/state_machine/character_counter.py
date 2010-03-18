@@ -1,5 +1,9 @@
 from quex.core_engine.interval_handling import Interval, NumberSet
 
+# Distance Database: Store the distance from state (given by index)
+#                    to the acceptance state, i.e. map:
+# 
+#                       state_index --> distance to acceptance state
 __distance_db = {}
 
 def get_newline_n(state_machine):   
@@ -19,7 +23,9 @@ def get_newline_n(state_machine):
     """
     global __distance_db
     __distance_db.clear()
-    return __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
+    result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
+    if result == None: return -1
+    else:              return result
 
 def get_character_n(state_machine):
     """
@@ -38,7 +44,10 @@ def get_character_n(state_machine):
     """
     global __distance_db
     __distance_db.clear()
-    return __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
+    ##print "##", state_machine.get_string(NormalizeF=False)
+    result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
+    if result == None: return -1
+    else:              return result
 
 def contains_only_spaces(state_machine):
     """Determines wether there are only spaces on the way to the acceptance state.
@@ -77,11 +86,11 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
              They have to be computed after a match has happend.
     """
     assert TargetStateIdx in Path 
+    # If all characters are relevant (Character == -1), then any recursion is critical
+    if Character == -1: return True
 
     # -- recursion detected!
     #    did the critical character occur in the path?
-    if Character == -1: return True
-
     occurence_idx = Path.index(TargetStateIdx)
     prev_idx      = TargetStateIdx
     for idx in Path[occurence_idx+1:] + [TargetStateIdx]:
@@ -95,20 +104,6 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
     # -- state has been already handled, no further treatment required
     return False
 
-def __recursion_with_critical_character_ahead(state_machine, state, PassedStateList, Character):
-    """Does any of the following target states close a recursion loop which contains the 
-       character to be counted?
-    """
-
-    for follow_state_index in state.transitions().get_target_state_index_list():
-
-        if follow_state_index not in PassedStateList: continue
-
-        if __recursion_contains_critical_character(state_machine, PassedStateList, follow_state_index, Character):
-            return True
-
-    return False
-
 def __dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
     """Once the distance to the acceptance state is determined, we store it in a cache database.
        Note, that the distance is only stored after all possible pathes starting from the state
@@ -118,77 +113,109 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     """
     global __distance_db
     if __distance_db.has_key(state_index): 
+        # Total distance:   distance from current state to acceptance state
+        #                 + distance from start         to current state
         return __distance_db[state_index] + character_n
 
-    result = ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount)
-    if state_index not in passed_state_list:
-        __distance_db[state_index] = result - character_n
+    # Dive to determine total path length from start to acceptance state
+    total_path_length = ____dive(state_machine, state_index, character_n, 
+                                 passed_state_list, CharacterToCount)
 
-    return result
+    if total_path_length != None:
+        if state_index not in passed_state_list:
+            # Distance to acceptance:   total path length from start to acceptance state 
+            #                         - path length       from start to current state
+            __distance_db[state_index] = total_path_length - character_n
+
+    return total_path_length
 
 def ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
+    ##print "##>>", state_index, passed_state_list, character_n
     state = state_machine.states[state_index]
 
     new_passed_state_list = passed_state_list + [ state_index ]
 
-    # -- recursion?
-    if __recursion_with_critical_character_ahead(state_machine, state, new_passed_state_list, 
-                                                 CharacterToCount):
-        return -1
-
-    # -- if no recursion is detected and the state is the end of a core exression
-    #    of a post conditioned pattern, then this is it. No further investigation
-    #    from this point on. The post condition state machine is not considered 
-    #    for line number counting.
-    if state.core().post_context_id() != -1L: return character_n
+    prev_characters_found_n = None
+    if state.is_acceptance(): prev_characters_found_n = character_n
 
     # trigger_map[target_state_index] = set that triggers to target state index
     trigger_dict = state.transitions().get_map()
-    if trigger_dict == {}: return character_n
-        
-    if state.is_acceptance():  prev_characters_found_n = character_n
-    else:                      prev_characters_found_n = None
+
+    # Treat linear state transitions inside a loop, this is faster
+    # and less prone to blow the call stack of python for large patterns.
+    while len(trigger_dict) == 1:
+        follow_state_index, trigger_set = trigger_dict.items()[0]
+
+        # -- Recursion:
+        if follow_state_index in new_passed_state_list: 
+            if __recursion_contains_critical_character(state_machine, new_passed_state_list, 
+                                                       follow_state_index, CharacterToCount):
+                return -1
+            break
+
+        # -- Increment
+        increment = __get_increment(trigger_set, CharacterToCount)
+        if increment == -1: return -1
+
+        state = state_machine.states[follow_state_index]
+        new_passed_state_list.append(follow_state_index)
+        character_n += increment
+
+        if state.is_acceptance(): 
+            if prev_characters_found_n == None:          prev_characters_found_n = character_n
+            elif prev_characters_found_n != character_n: return -1
+
+        trigger_dict = state.transitions().get_map()
+
+    
+    if len(trigger_dict) == 0: return prev_characters_found_n
 
     for follow_state_index, trigger_set in trigger_dict.items():
 
-        # -- do not follow recursive paths. note: this is only relevant for specified
-        #    CharacterToCount != -1. Otherwise, recursions are broken up when detected ahead.
-        if follow_state_index in new_passed_state_list: continue
+        # -- Recursion:
+        if follow_state_index in new_passed_state_list: 
+            # Relevant character in recursive path => occurency number undetermined. 
+            if __recursion_contains_critical_character(state_machine, new_passed_state_list, 
+                                                       follow_state_index, CharacterToCount):
+                return -1
+            # If no influence of recursion to character count --> just ignore it.
+            continue
             
-        if CharacterToCount == -1:
-            # (1.1) We are counting all characters, so we increment always.
-            increment = 1
-        elif not trigger_set.contains(CharacterToCount):
-            # (2.1) The trigger set does not contain the character to be counted at all
-            #       Thus the number of occurences is deterministic and **no increment occurence counter**.
-            increment = 0
-        elif trigger_set.has_only_this_element(CharacterToCount):
-            # (2.2) The trigger set contains only the character to be counted.
-            #       Thus the number of occurences is deterministic and **increment occurence counter**.
-            increment = 1
-        else:
-            # (2.3) The trigger set contains the character to be counted and also others. This
-            #       means that for the transition the number of occurences (zero or one) is not
-            #       determined by the pattern. Thus the number of occurences not deterministic.
-            return -1
+        # -- Increment of character count
+        increment = __get_increment(trigger_set, CharacterToCount)
+        if increment == -1: return -1
 
-        characters_found_n = __dive(state_machine, follow_state_index, character_n + increment, 
+        # --diving deeper into the tree
+        characters_found_n = __dive(state_machine, follow_state_index, 
+                                    character_n + increment, 
                                     new_passed_state_list, CharacterToCount)
 
-        # -- if one path contains an undefined number of characters, then the whole pattern
-        #    has an undefined number of characters.
-        if characters_found_n == -1: 
-            return -1
-
-        # -- if one path contains a different number of characters than another path
-        #    then the number of characters is undefined.
-        if prev_characters_found_n != None and \
-           prev_characters_found_n != characters_found_n: 
-               return -1
-
-        prev_characters_found_n = characters_found_n
+        if   characters_found_n      == -1:                 return -1
+        elif prev_characters_found_n == None:               prev_characters_found_n = characters_found_n
+        elif prev_characters_found_n != characters_found_n: return -1
 
     if prev_characters_found_n == None: return -1
     else:                               return prev_characters_found_n
 
+def __get_increment(trigger_set, CharacterToCount):
+        
+    if CharacterToCount == -1:
+        # (1.1) We are counting all characters, so we increment always.
+        return 1
+
+    elif not trigger_set.contains(CharacterToCount):
+        # (2.1) The trigger set does not contain the character to be counted at all
+        #       Thus the number of occurences is deterministic and **no increment occurence counter**.
+        return 0
+
+    elif trigger_set.has_only_this_element(CharacterToCount):
+        # (2.2) The trigger set contains only the character to be counted.
+        #       Thus the number of occurences is deterministic and **increment occurence counter**.
+        return 1
+
+    else:
+        # (2.3) The trigger set contains the character to be counted and also others. This
+        #       means that for the transition the number of occurences (zero or one) is not
+        #       determined by the pattern. Thus the number of occurences not deterministic.
+        return -1
 

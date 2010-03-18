@@ -190,6 +190,12 @@ class StateMachine:
         else:            
             self.__core = StateMachineCoreInfo(id)
 
+        # By default the number of newlines / characters of 
+        # of matching lexemes is not deterministic.
+        self.__newline_n   = -1
+        self.__character_n = -1
+        self.__only_whitespace_f = False
+
     def core(self):
         return self.__core
             
@@ -516,6 +522,41 @@ class StateMachine:
         # -- for uniqueness of state ids, clone the result
         return result.clone()    
         
+    def set_newline_n(self, Value):
+        """This function is only to be called for core patterns before the
+           post condition is mounted.
+        """
+        self.__newline_n = Value
+
+    def get_newline_n(self):
+        """  -1    => number of newlines in matching lexemes is not deterministic
+             N > 0 => number of newlines in matching lexemes is always 'N'.
+        """
+        # Value is to be computed by 'character_counter.get_newline_n()'
+        # for the core pattern, not for pre-conditions and not for post-conditions.
+        return self.__newline_n
+
+    def set_character_n(self, Value):
+        """This function is only to be called for core patterns before the
+           post condition is mounted.
+        """
+        self.__character_n = Value
+
+    def get_character_n(self):
+        """  -1    => length of lexemes that match pattern is not deterministic
+             N > 0 => length of lexemes that match is always 'N'.
+        """
+        # Value is to be computed by 'character_counter.get_newline_n()'
+        # for the core pattern, not for pre-conditions and not for post-conditions.
+        return self.__character_n
+
+    def set_only_whitespace_f(self, Value):
+        assert type(Value) == bool
+        self.__only_whitespace_f = Value
+
+    def get_only_whitespace_f(self):
+        return self.__only_whitespace_f
+
     def is_empty(self):
         """If state machine only contains the initial state that points nowhere,
            then it is empty.
@@ -668,6 +709,16 @@ class StateMachine:
 
         def __dive(state):
             target_state_index_list = state.transitions().get_target_state_index_list()
+
+            # For linear state sequences we do not recurse,
+            # this is more stable in the recursion restricted python world.
+            while len(target_state_index_list) == 1:
+                state_index = target_state_index_list[0]
+                if state_index in state_index_sequence: break
+                state_index_sequence.append(state_index)
+                state = self.states[state_index]
+                target_state_index_list = state.transitions().get_target_state_index_list()
+
             # sort by 'lowest trigger'
             def cmp_by_trigger_set(A, B):
                 # In case of epsilon transitions, the 'other' dominates.

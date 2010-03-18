@@ -1,11 +1,11 @@
-<test-database execution-time-sec="0.06" date="Mon Mar 15 07:29:56 2010">
+<test-database execution-time-sec="1.32" date="Thu Mar 18 07:49:31 2010">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="1.06"> 
             <application file-name="queue.exe" info-request-time="1268633638L" vanished="False"/>
             <make-procedure success="True" time_sec="1.582417"/>
             <choice-list number="2" same_result="False">
-               <choice name="receive-1" result="NO GOOD FILE" time_sec="0.00" crc="721591502"/>
+               <choice name="receive-1" result="NO GOOD FILE" time_sec="1.06" crc="721591502"/>
                <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="721591502"/>
             </choice-list>
         </test>
@@ -14,16 +14,16 @@
             <make-procedure success="True" time_sec="1.456661"/>
             <choice-list number="2" same_result="False">
                <choice name="receive-1" result="NO GOOD FILE" time_sec="0.01" crc="1977572885"/>
-               <choice name="receive-2" result="NO GOOD FILE" time_sec="0.01" crc="1977572885"/>
+               <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="1977572885"/>
             </choice-list>
         </test>
     </group>
     <group name="Token Policy 'single'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.22"> 
             <application file-name="users_token.exe" info-request-time="1268633640L" vanished="False"/>
             <make-procedure success="True" time_sec="1.538018"/>
             <choice-list number="2" same_result="False">
-               <choice name="receive-1" result="NO GOOD FILE" time_sec="0.00" crc="-1396014048"/>
+               <choice name="receive-1" result="NO GOOD FILE" time_sec="0.21" crc="-1396014048"/>
                <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="-1396014048"/>
             </choice-list>
         </test>
@@ -31,7 +31,7 @@
             <application file-name="users_token-real.exe" info-request-time="1268633641L" vanished="False"/>
             <make-procedure success="True" time_sec="1.418880"/>
             <choice-list number="2" same_result="False">
-               <choice name="receive-1" result="NO GOOD FILE" time_sec="0.00" crc="1977572885"/>
+               <choice name="receive-1" result="NO GOOD FILE" time_sec="0.01" crc="1977572885"/>
                <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="1977572885"/>
             </choice-list>
         </test>

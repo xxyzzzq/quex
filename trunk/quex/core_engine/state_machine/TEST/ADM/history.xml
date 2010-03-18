@@ -1,4 +1,4 @@
-<history date="Mon Mar 15 07:29:56 2010" element-n="440">
+<history date="Thu Mar 18 07:51:52 2010" element-n="444">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1084,5 +1084,13 @@
     </day>
     <day year="2010" month="03" day="02">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:38:13"/>
+    </day>
+    <day year="2010" month="03" day="17">
+        <crc-error time="06:41:51" application="test-count_character_n.py" choice="" database-crc="-1399956878" real-crc="-1176709967"/>
+        <crc-error time="18:57:54" application="test-count_character_n.py" choice="" database-crc="-1176709967" real-crc="-2038061425"/>
+    </day>
+    <day year="2010" month="03" day="18">
+        <crc-error time="06:29:31" application="test-count_character_n.py" choice="" database-crc="-2038061425" real-crc="176871467"/>
+        <crc-error time="06:29:43" application="test-count_newline_n.py" choice="" database-crc="1843053355" real-crc="-901422866"/>
     </day>
 </history>

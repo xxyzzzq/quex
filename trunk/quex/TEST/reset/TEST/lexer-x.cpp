@@ -9,7 +9,6 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    quex::Token    token;
     FILE*          fh = fopen("example.txt", "r");
     quex::Simple   qlex(fh);
 
@@ -29,7 +28,6 @@ main(int argc, char** argv)
     qlex.push_mode(quex::QUEX_NAME(EXTRA));
 
     /* Read 'N' tokens before doing the reset. */
-    qlex.token_p_set(&token);
     for(int i=0; i < N; ++i) {
         (void)qlex.receive();
     } 

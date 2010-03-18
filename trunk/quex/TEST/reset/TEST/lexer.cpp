@@ -9,7 +9,7 @@ using namespace std;
 int 
 main(int argc, char** argv) 
 {        
-    quex::Token    token;
+    quex::Token*   token_p = 0x0;
 #   if   defined (__QUEX_SETTING_TEST_UTF8)
     FILE*          fh = fopen("example-hindi.utf8", "r");
 #   else
@@ -42,7 +42,7 @@ main(int argc, char** argv)
     int N = atoi(argv[1]);
 
     /* Read 'N' tokens before doing the reset. */
-    qlex.token_p_set(&token);
+    token_p = qlex.token_p();
     for(int i=0; i < N; ++i) {
         (void)qlex.receive();
     } 
@@ -59,13 +59,13 @@ main(int argc, char** argv)
 
 #       if defined (__QUEX_OPTION_CONVERTER_ENABLED)
         printf("(%2i, %2i)   \t%s '%s' \n", (int)qlex.line_number(), (int)qlex.column_number(),
-               token.type_id_name().c_str(), token.utf8_text().c_str());
+               token_p->type_id_name().c_str(), token_p->utf8_text().c_str());
 #       else
         printf("(%2i, %2i)   \t%s '%s' \n", (int)qlex.line_number(), (int)qlex.column_number(),
-               token.type_id_name().c_str(), (const char*)token.get_text().c_str());
+               token_p->type_id_name().c_str(), (const char*)token_p->get_text().c_str());
 #       endif
 
-    } while( token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;
 }
