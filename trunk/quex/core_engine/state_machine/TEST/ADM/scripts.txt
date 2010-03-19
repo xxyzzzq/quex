@@ -3,4 +3,5 @@
 --not OUTDATED-*.py 
 --not __init__.py 
 --not test_state_machines.py 
+--not debug.py
 

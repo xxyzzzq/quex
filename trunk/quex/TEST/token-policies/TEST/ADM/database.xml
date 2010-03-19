@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.07" date="Thu Mar 18 22:49:36 2010">
+<test-database execution-time-sec="0.10" date="Fri Mar 19 22:12:00 2010">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
         <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.02"> 
@@ -14,12 +14,12 @@
             <make-procedure success="True" time_sec="1.456661"/>
             <choice-list number="2" same_result="False">
                <choice name="receive-1" result="NO GOOD FILE" time_sec="0.01" crc="1977572885"/>
-               <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="1977572885"/>
+               <choice name="receive-2" result="NO GOOD FILE" time_sec="0.01" crc="1977572885"/>
             </choice-list>
         </test>
     </group>
     <group name="Token Policy 'single'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="users_token.exe" info-request-time="1268633640L" vanished="False"/>
             <make-procedure success="True" time_sec="1.538018"/>
             <choice-list number="2" same_result="False">
@@ -27,12 +27,12 @@
                <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="-1396014048"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.03"> 
             <application file-name="users_token-real.exe" info-request-time="1268633641L" vanished="False"/>
             <make-procedure success="True" time_sec="1.418880"/>
             <choice-list number="2" same_result="False">
                <choice name="receive-1" result="NO GOOD FILE" time_sec="0.01" crc="1977572885"/>
-               <choice name="receive-2" result="NO GOOD FILE" time_sec="0.00" crc="1977572885"/>
+               <choice name="receive-2" result="NO GOOD FILE" time_sec="0.03" crc="1977572885"/>
             </choice-list>
         </test>
     </group>

@@ -87,6 +87,7 @@ class State:
         # if replacement of indices is desired, than do it
         if ReplacementDictionary != None:
             result.transitions().replace_target_indices(ReplacementDictionary)
+
         return result
 
     def __repr__(self):
@@ -234,8 +235,13 @@ class StateMachine:
             new_state_idx = replacement[state_idx]
             # print "##", state_idx, "-->", new_state_idx
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
-
+        
         result.__core = deepcopy(self.__core)
+
+        ## DEBUG: Check that every transition target is part of state machine
+        ## for state in result.states.values():
+        ##    for target_idx in state.transitions().get_map().keys():
+        ##        assert result.states.has_key(target_idx)
             
         return result
 
@@ -725,7 +731,7 @@ class StateMachine:
                 except: return -1
                 try:    trigger_set_to_B = state.transitions().get_map()[B]
                 except: return 1
-                return cmp(trigger_set_to_A.minimum(), trigger_set_to_A.minimum())
+                return cmp(trigger_set_to_A.minimum(), trigger_set_to_B.minimum())
             target_state_index_list.sort(cmp_by_trigger_set)
                                          
             for state_index in target_state_index_list:

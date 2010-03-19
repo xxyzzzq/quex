@@ -565,17 +565,20 @@ class PatternShorthand:
         assert StateMachine.has_origins() == False
 
         self.name               = Name
-        self.state_machine      = StateMachine
+        self.__state_machine    = StateMachine
         self.filename           = Filename
         self.line_n             = LineN
         self.regular_expression = RE
 
+    def get_state_machine(self):
+        return self.__state_machine.clone()
+
     def get_character_set(self):
-        if len(self.state_machine.states) != 2: return None
-        t = self.state_machine.states[self.state_machine.init_state_index].transitions()
+        if len(self.__state_machine.states) != 2: return None
+        t = self.__state_machine.states[self.__state_machine.init_state_index].transitions()
         db = t.get_map()
-        assert len(db) == 1
-        return db[db.keys()[0]]
+        if len(db) != 1: return None
+        return deepcopy(db[db.keys()[0]])
         
 
 #-----------------------------------------------------------------------------------------

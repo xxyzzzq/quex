@@ -241,7 +241,7 @@ def adapt_state_machine(sm, StateSetList):
     
     # We know, that all states in a state set are equivalent. Thus, all but one
     # of each set can be thrown away.
-    replacement_list = []
+    replacement_dict = {}
     for state_set in StateSetList.state_set_list:
         if len(state_set) == 1: continue
 
@@ -254,13 +254,15 @@ def adapt_state_machine(sm, StateSetList):
         # Throw the meaningless states away. Transitions to them need to 
         # point to the prototype
         for state_index in state_set[1:]:
-            replacement_list.append([state_index, prototype_index])
+            replacement_dict[state_index] = prototype_index
             del sm.states[state_index]
 
     # Replace the indices of the thrown out states
-    for x, y in replacement_list:
-        for state in sm.states.values():
-            state.transitions().replace_target_index(x, y)
+    if replacement_dict.has_key(sm.init_state_index):
+       sm.init_state_index = replacement_dict[sm.init_state_index]
+    
+    for state in sm.states.values():
+       state.transitions().replace_target_indices(replacement_dict)
 
     return sm    
 
