@@ -236,6 +236,7 @@ def snap_conditional_expression(stream, PatternDict):
 
     """                     
     __debug_entry("conditional expression", stream)    
+    result = None
 
     # -- expression
     pattern_0 = snap_expression(stream, PatternDict) 
@@ -317,6 +318,8 @@ def snap_term(stream, PatternDict):
         stream.seek(position_1)
         return __debug_exit(result, stream)
     
+    ## print "##1:", result.get_string(NormalizeF=False)
+    ## print "##2:", result_2.get_string(NormalizeF=False)
     result = sequentialize.do([result, result_2], 
                               MountToFirstStateMachineF=True, 
                               CloneRemainingStateMachinesF=False)    
@@ -540,7 +543,7 @@ def __beautify(the_state_machine):
     result = nfa_to_dfa.do(the_state_machine)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
-    result = hopcroft.do(result)#, CreateNewStateMachineF=False)
+    result = hopcroft.do(result, CreateNewStateMachineF=False)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
 

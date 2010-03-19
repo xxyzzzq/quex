@@ -91,7 +91,8 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
 
     # The replacement may be a state machine or a number set
     if StateMachineF:
-        state_machine = reference.state_machine
+        # Get a cloned version of state machine
+        state_machine = reference.get_state_machine()
 
         # It is essential that state machines defined as patterns do not 
         # have origins. Otherwise, the optimization of patterns that
@@ -108,6 +109,7 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
         return state_machine
 
     else:
+        # Get a cloned version of character set
         character_set = reference.get_character_set()
         if character_set == None:
             error_msg("Replacement in character set expression must be a character set.\n"
