@@ -1,4 +1,4 @@
-<test-database execution-time-sec="9.50" date="Fri Mar 19 22:57:14 2010">
+<test-database execution-time-sec="9.50" date="Fri Mar 19 23:06:28 2010">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Subset Determination" time-sum-sec="1.11"> 
         <application file-name="test-subset_checker.py" info-request-time="1264886941L" vanished="False"/>
@@ -207,10 +207,10 @@
                <choice name="" result="OK" time_sec="0.06" crc="372081665"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.05"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1264886941L" vanished="False"/>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="658399412"/>
+               <choice name="" result="OK" time_sec="0.04" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="Cloning" time-sum-sec="0.04"> 
@@ -219,10 +219,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="-973496326"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1264886941L" vanished="False"/>
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.05"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-1604145748"/>
+               <choice name="" result="OK" time_sec="0.05" crc="658399412"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.05"> 

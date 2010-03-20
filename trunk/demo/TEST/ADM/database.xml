@@ -1,4 +1,4 @@
-<test-database execution-time-sec="235.11" date="Fri Mar 19 22:11:45 2010">
+<test-database execution-time-sec="231.39" date="Sat Mar 20 07:11:13 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" time-sum-sec="19.11"> 
@@ -25,7 +25,7 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="5.28"> 
+        <test title="Single Mode Example" time-sum-sec="5.27"> 
             <application file-name="000.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.50" crc="-372677157"/>
@@ -34,7 +34,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="5.13"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="5.12"> 
             <application file-name="001.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.44" crc="1389342228"/>
@@ -112,7 +112,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="5.86"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="5.85"> 
             <application file-name="008.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.90" crc="-106314939"/>
@@ -121,7 +121,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="5.05"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="5.06"> 
             <application file-name="009.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="2.46" crc="13704092"/>
@@ -130,11 +130,11 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="16.10"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="13.39"> 
             <application file-name="010b.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="copy" result="FAIL" time_sec="8.11" crc="-1187921631"/>
-               <choice name="fill" result="FAIL" time_sec="7.99" crc="-1187921631"/>
+               <choice name="copy" result="OK" time_sec="6.77" crc="-1213714542"/>
+               <choice name="fill" result="OK" time_sec="6.62" crc="-1213714542"/>
             </choice-list>
         </test>
         <test title="Standard Input" time-sum-sec="8.96"> 
@@ -143,14 +143,14 @@
                <choice name="" result="OK" time_sec="8.96" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access" time-sum-sec="15.27"> 
+        <test title="Direct Buffer Access" time-sum-sec="14.29"> 
             <application file-name="010.sh" info-request-time="1268588837L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="copy" result="FAIL" time_sec="7.87" crc="506919008"/>
-               <choice name="fill" result="FAIL" time_sec="7.40" crc="506919008"/>
+               <choice name="copy" result="OK" time_sec="6.59" crc="-1870066300"/>
+               <choice name="fill" result="OK" time_sec="7.70" crc="-1870066300"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="25.67"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="25.66"> 
             <application file-name="010c.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="12.70" crc="-470382527"/>
@@ -160,7 +160,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="6.53"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="6.52"> 
             <application file-name="011.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="3.21" crc="-1799363515"/>
