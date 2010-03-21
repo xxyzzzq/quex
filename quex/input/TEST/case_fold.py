@@ -15,9 +15,19 @@ from quex.core_engine.utf8                import map_unicode_to_utf8
 
 if "--hwut-info" in sys.argv:
     print "Case Folding based on Unicode Database;"
-    print "CHOICES: Common, Full, Simple, Turkish;"
+    print "CHOICES: s_simple, m_multi, sm, s_simple_turkish, m_multi_turkish, smt;"
     sys.exit()
 
+choice = sys.argv[1]
+
+flags = { 
+            "s_simple":         "s",
+            "m_multi":          "m",
+            "sm":               "sm",
+            "s_simple_turkish": "st",
+            "m_multi_turkish":  "mt",
+            "smt":              "smt",
+        }[choice]
 
 def pump(LetterList):
     txt = ""
@@ -32,15 +42,31 @@ def pump(LetterList):
                 txt += "(%04X)" % xe
         txt += ", "
 
-    if txt != "": txt = txt[:-2]
+    if len(txt) != 0: txt = txt[:-2]
     return txt
 
-if "Common" in sys.argv:
-    for letter in [u"A", u"J", u"K", u"L", u"Q", u"S", u"X", u"Y", u"Ċ", u"Ç", u"Ø", u"É", u"Ω", u"Π"]:
-        code = ord(letter)
-        print letter, " --> ", pump(parser.get_fold_set(code, "CSTF"))
+print "---------------------------------------------"
 
-    for letter in [u"a", u"j", u"k", u"l", u"q", u"s", u"x", u"y", u"ċ", u"ç", u"ø", u"é", u"ω", u"π"]:
-        code = ord(letter)
-        print letter, " --> ", pump(parser.get_fold_set(code, "CSTF"))
+for letter in [u"A", u"I", u"İ", u"J", u"K", u"S", u"Ċ", u"Ø", u"É", u"Ω", u"Π"]:
+    code = ord(letter)
+    # result = letter + u" --> " + pump(parser.get_fold_set(code, flags)) + u"\n"
+    print letter, " --> ", pump(parser.get_fold_set(code, flags))
 
+for letter in [u"a", u"ı", u"i", u"j", u"k", u"s", u"ċ", u"ø", u"é", u"ω", u"π"]:
+    code = ord(letter)
+    print letter, " --> ", pump(parser.get_fold_set(code, flags))
+
+print "---------------------------------------------"
+letter_list = [ 
+                u"a",
+                u"ß", # LATIN SMALL LETTER SHARP S
+                u"ΐ", # GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS
+                u"ŉ", # LATIN SMALL LETTER N PRECEDED BY APOSTROPHE
+                u"İ", # LATIN CAPITAL LETTER I WITH DOT ABOVE
+                u"ﬀ", # LATIN SMALL LIGATURE FF
+                u"ﬃ", # LATIN SMALL LIGATURE FFI
+                u"ﬗ",  # ARMENIAN SMALL LIGATURE MEN XEH
+                ]
+for letter in letter_list:
+    code = ord(letter)
+    print letter, " --> ", pump(parser.get_fold_set(code, flags))
