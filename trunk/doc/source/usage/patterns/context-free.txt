@@ -69,6 +69,59 @@ to combine them into powerful patterns.
      property expression ``\P`` that result in *character sets* are not dealt
      with inside strings.
 	  
+.. describe:: \\C{ R } or \\C(flags){ R }
+
+     Applies case folding for the given regular expression or character set 'R'.
+     This basically provides a shorthand for writing regular expressions that
+     need to map upper and lower case patterns, i.e.::
+
+           \C{select} 
+
+     matches for example:: 
+
+           "SELECT", "select", "sElEcT", ...
+
+     The algorithm for case folding is according to Unicode Standard Annex #21 
+     "CASE MAPPINGS", Section 1.3. That is for example, the character 'k'
+     is not only folded to 'k' (0x6B) and 'K' (0x4B) but also to 'K' (0x212A). 
+     Additionally, unicode defines case foldings to multi character sequences,
+     such as::
+
+            ΐ   (0390) --> ι(03B9)̈(0308)́(0301)
+            ŉ   (0149) --> ʼ(02BC)n(006E)
+            I   (0049) --> i(0069), İ(0130), ı(0131), i(0069)̇(0307)
+            ﬀ   (FB00) --> f(0066)f(0066)
+            ﬃ   (FB03) --> f(0066)f(0066)i(0069)
+            ﬗ   (FB17) --> մ(0574)խ(056D)
+
+     As a speciality of the turkish language, the 'i' with and without the dot
+     are not the same. That is, a dotless lowercase 'i' is folded to a dotless 
+     uppercase 'I' and a dotted 'i' is mapped to a dotted uppercase 'I'. This 
+     mapping, though, is mutually exclusive with the 'normal' case folding and 
+     is not active by default. The following flags can be set in order to
+     control the detailed case folding behavior:
+
+     .. describe:: s
+
+        This flag enables simple case folding *without* the multi-character
+
+     .. describe:: m
+
+        The *m* flag enables the case folding to multi-character sequences.
+
+     .. describe:: t
+
+        By setting the *t* flag, the turkish case mapping is enabled. Whenever
+        the turkish case folding is an alternative, it is preferred.
+    
+     The default behavior corresponds to the flags *s* and *f*, i.e.::
+      
+                \C{R}   is equivalent to \C(sm){R}
+    
+     Characters that are beyond the scope of the current codec or input
+     character byte width are cut out seeminglessly. 
+
+
 .. describe:: \\0 
 
      a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!

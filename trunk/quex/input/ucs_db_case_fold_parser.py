@@ -20,23 +20,31 @@ class DB:
 
         return result
 
-db_set = None
+db_CS = None
+db_F  = None
+db_T  = None
 
 def __init():
-    global db_set
+    global db_CS
+    global db_F
+    global db_T
 
-    if db_set != None: return
+    if db_CS != None: return
 
-    db_set = { 
-       "C": DB(),
-       "S": DB(),
-       "F": DB(),
-       "T": DB(),
-    }
+    db_CS = DB()
+    db_F  = DB()
+    db_T  = DB()
 
     table = ucs_db_parser.parse_table("CaseFolding.txt", 
                                       NumberColumnList=[0], 
                                       NumberListColumnList=[2])
+
+    db_set = { 
+       "C": db_CS, 
+       "S": db_CS,
+       "F": db_F,
+       "T": db_T,
+    }
 
     for row in table:
         upper  = row[0]
@@ -54,7 +62,7 @@ def __init():
         # dot fold multi-value characters to single characters.
         db_set[status].lower_to_upper.setdefault(lower[0], []).append(upper)
 
-def get_fold_set(CharacterCode, Flags="CSFT"):
+def get_fold_set(CharacterCode, Flags):
     """Returns all characters to which the specified CharacterCode
        folds. The flag list corresponds to the flags defined in the
        Unicode Database status field, i.e.
@@ -73,29 +81,42 @@ def get_fold_set(CharacterCode, Flags="CSFT"):
              processing. See the discussions of case mapping in the Unicode
              Standard for more information.
     """
+    s_flag = "s" in Flags   # simple case fold
+    m_flag = "m" in Flags   # multi character case fold
+    t_flag = "t" in Flags   # 'turkish' special case fold
     __init()
 
     # The character itself shall always be part of the fold
     worklist = [ CharacterCode ]
     result   = []
+
+    # Turkish case folding is different
+    forbidden_fold_db = {}
+    if t_flag: 
+        forbidden_fold_db = {}.fromkeys(db_T.upper_to_lower.keys() \
+                                        + db_T.lower_to_upper.keys())
+
     while len(worklist) != 0:
         character_code = worklist.pop()
 
         if type(character_code) == list: continue
 
-        for status, db in db_set.items():
-            if status not in Flags: continue
-
+        partner_list = []
+        if s_flag and not forbidden_fold_db.has_key(character_code):
             # Collect the 'pairing' characters
-            partner_list = db.get_upper_and_lower_partners(character_code)
+            partner_list += db_CS.get_upper_and_lower_partners(character_code)
+        if m_flag and not forbidden_fold_db.has_key(character_code):
+            partner_list += db_F.get_upper_and_lower_partners(character_code)
+        if t_flag:
+            partner_list += db_T.get_upper_and_lower_partners(character_code)
 
-            # All 'partners' that are not yet treated need to be added
-            # to the 'todo list'. All partners that are not yet in result
-            # need to be added.
-            for x in partner_list:
-                if x not in result: 
-                    worklist.append(x)
-                    result.append(x)
+        # All 'partners' that are not yet treated need to be added
+        # to the 'todo list'. All partners that are not yet in result
+        # need to be added.
+        for x in partner_list:
+            if x not in result: 
+                worklist.append(x)
+                result.append(x)
 
         if character_code not in result:
             result.append(character_code)
