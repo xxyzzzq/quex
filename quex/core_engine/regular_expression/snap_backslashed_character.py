@@ -2,7 +2,6 @@ from copy           import deepcopy
 from quex.exception import  RegularExpressionException
 from StringIO       import StringIO
 
-
 backslashed_character_db = { 
         # inside string "..." and outside 
         'a': ord('\a'),   'b': ord('\b'), 'f': ord('\f'),   'n': ord('\n'),

@@ -7,24 +7,24 @@
      * 
      *     PATTERN-ACTION PAIRS:
      *       (  1) ONE:  abc
-     *       (  4) ONE:  bcd
-     *       (  7) ONE:  cde
-     *       ( 10) ONE:  dfg
-     *       ( 15) TWO:  abcd?
-     *       ( 20) TWO:  bcde?
-     *       ( 25) TWO:  cdef?
-     *       ( 36) THREE:  abcd?e?
-     *       ( 47) THREE:  bcde?f?
-     *       ( 64) FOUR:  abcd?e?f?
+     *       (  3) ONE:  bcd
+     *       (  5) ONE:  cde
+     *       (  7) ONE:  dfg
+     *       ( 11) TWO:  abcd?
+     *       ( 15) TWO:  bcde?
+     *       ( 19) TWO:  cdef?
+     *       ( 27) THREE:  abcd?e?
+     *       ( 35) THREE:  bcde?f?
+     *       ( 47) FOUR:  abcd?e?f?
      * 
      * 
      * MODE: ONE
      * 
      *     PATTERN-ACTION PAIRS:
      *       (  1) ONE: abc
-     *       (  4) ONE: bcd
-     *       (  7) ONE: cde
-     *       ( 10) ONE: dfg
+     *       (  3) ONE: bcd
+     *       (  5) ONE: cde
+     *       (  7) ONE: dfg
      * 
      * 
      * MODE: THREE
@@ -35,14 +35,14 @@
      * 
      *     PATTERN-ACTION PAIRS:
      *       (  1) ONE: abc
-     *       (  4) ONE: bcd
-     *       (  7) ONE: cde
-     *       ( 10) ONE: dfg
-     *       ( 15) TWO: abcd?
-     *       ( 20) TWO: bcde?
-     *       ( 25) TWO: cdef?
-     *       ( 36) THREE: abcd?e?
-     *       ( 47) THREE: bcde?f?
+     *       (  3) ONE: bcd
+     *       (  5) ONE: cde
+     *       (  7) ONE: dfg
+     *       ( 11) TWO: abcd?
+     *       ( 15) TWO: bcde?
+     *       ( 19) TWO: cdef?
+     *       ( 27) THREE: abcd?e?
+     *       ( 35) THREE: bcde?f?
      * 
      * 
      * MODE: TWO
@@ -52,11 +52,11 @@
      * 
      *     PATTERN-ACTION PAIRS:
      *       (  1) ONE: abc
-     *       (  4) ONE: bcd
-     *       (  7) ONE: cde
-     *       ( 10) ONE: dfg
-     *       ( 15) TWO: abcd?
-     *       ( 20) TWO: bcde?
-     *       ( 25) TWO: cdef?
+     *       (  3) ONE: bcd
+     *       (  5) ONE: cde
+     *       (  7) ONE: dfg
+     *       ( 11) TWO: abcd?
+     *       ( 15) TWO: bcde?
+     *       ( 19) TWO: cdef?
      * 
      * 

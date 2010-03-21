@@ -106,82 +106,7 @@ def map_unicode_to_utf8(UCS_character_code):
     """Returns a utf8 string that correspond to the unicode character
        passed by UCS_character_code.
     """
-    
-    if UCS_character_code < 0x80:
-        return chr(UCS_character_code)
-    elif UCS_character_code <      0x800:    # anyway: UCS_character_code >= 0x80
-        byte_n = 1
-    elif UCS_character_code <    0x10000:    # anyway: UCS_character_code >= 0x800
-        byte_n = 2
-    elif UCS_character_code <   0x200000:    # anyway: UCS_character_code >= 0x10000 
-        byte_n = 3
-    elif UCS_character_code <  0x4000000:    # anyway: UCS_character_code >= 0x200000
-        byte_n = 4
-    elif UCS_character_code < 0x10000000:    # anyway: UCS_character_code >= 0x4000000
-        byte_n = 5
-    else:
-        return [ -1 ]
-
-    # as utf-8 specifies: number of ones at head + 1 = number of trailing bytes
-    leading_ones_str      = "1" * (byte_n + 1) + "0"
-    char_bits_in_header_n = 8 - (byte_n + 1 + 1)
-    
-    # number of bits reserved for the character:
-    #  remaining bits in the header byte = 8 - (byte_n + 1)
-    #                                      (+1 because of the trailing zero)
-    #  bits per byte that follows        = 6
-    bit_n = char_bits_in_header_n + 6 * byte_n 
-
-    # get bit representation of the original UCS character code
-    orig_bit_str = __int_to_bit_string(UCS_character_code, bit_n)
-    bytes = [0] * (byte_n + 1)
-    bytes[0] = __bit_string_to_int(leading_ones_str
-                                   + orig_bit_str[:char_bits_in_header_n])
-
-    for i in range((bit_n - char_bits_in_header_n)/6):
-        bit_0 = char_bits_in_header_n + i * 6
-        bytes[i+1] = __bit_string_to_int("10" + orig_bit_str[bit_0:bit_0+6])
-
-    result_str = ""
-    for byte in bytes:
-       result_str += chr(byte)    
-    return result_str
-
-def __int_to_bit_string(IntN, BitN):
-    """Receives an integer and constructs a string containing 0s and 1s that 
-       represent the integer binarily.
-    """
-    int_n = copy(IntN)
-
-    sum = ""
-    while int_n:
-        if int_n & 0x1: sum = "1" + sum
-        else:           sum = "0" + sum
-        int_n = int_n >> 1
-    
-    # NOTE: this should not occur in our case (head character > 0xC0)
-    if len(sum) < BitN: sum = "0" * (BitN - len(sum)) + sum
-    
-    return sum
-
-def __bit_string_to_int(BitStr):
-    """Transforms a string of the form '01001001' into an integer
-    which represents this byte.
-
-    TESTED <frs>
-    """
-
-    BitStr = BitStr.replace(".", "")
-    BitArray = map(lambda x: x, BitStr)
-    BitArray.reverse()
-
-    n = 0
-    sum = 0
-    for bit in BitArray:
-        if bit == "1": sum += 2**n
-        n += 1
-
-    return sum
+    return "".join(map(chr, unicode_to_utf8(UCS_character_code)))
 
 def __read_one_utf8_code_from_stream(char_stream):
     """Interprets the subsequent characters as a UTF-8 coded
@@ -203,52 +128,59 @@ def __read_one_utf8_code_from_stream(char_stream):
     #     consideration is required.
     if head_char < 0xC0 or head_char > 0xFD:
         return head_char
-
-
-    # (*) determine byte range and number of characters
-    #     that have to be decoded.
-    head = __int_to_bit_string(head_char, 8)
-
-    if   head[:3] == "110":
-        char_range = [0x80,      0x7FF]
-        char_n     = 1
-    elif head[:4] == "1110":
-        char_range = [0x800,     0xFFFF]
-        char_n     = 2
-    elif head[:5] == "11110":
-        char_range = [0x10000,   0x1FFFFF]
-        char_n     = 3
-    elif head[:6] == "111110":
-        char_range = [0x200000,  0x3FFFFFF]
-        char_n     = 4
-    elif head[:7] == "1111110":
-        char_range = [0x4000000, 0x7FFFFFFF]
-        char_n     = 5
-    else:
-        print "utf8.py: wrong utf-8 header byte %s" %  header
-        return 0xFF
+    elif  head_char > 0xFC:  # 1111.110..
+        char_n = 5
+    elif  head_char > 0xF8:  # 1111.10..
+        char_n = 4
+    elif  head_char > 0xF0:  # 1111.0..
+        char_n = 3
+    elif  head_char > 0xE0:  # 1110..
+        char_n = 2
+    elif  head_char > 0xC0:  # 110..
+        char_n = 1
     
     # (*) read the bytes from the char_stream that are needed
-    try:    bytes = map(lambda x: ord(x), char_stream.read(char_n))
+    try:    bytes = [head_char] + map(lambda x: ord(x), char_stream.read(char_n))
     except:
         print "utf8.py: could not read %i utf-follow bytes" % char_n
         return 0xFF
     
-    # -- take the remaining bits from the header
-    bits = head[char_n+2:]
-    # -- take from each following byte the 6 lowest bits 
-    for byte in bytes:
-        # utf-8 says that any follower byte has to be in range [0x80-0xBF]
-        if byte < 0x80 or byte > 0xBF: 
-            print "utf8.py: follow-byte out of range: %02x not in [0x80-0xBF]" % byte
-            return 0xFF
-        
-        byte_str = __int_to_bit_string(byte, 8)
-        # consider only the 6 lowest bits
-        bits += byte_str[2:]
+    return utf8_to_unicode(bytes)
 
-    return __bit_string_to_int(bits)
+def __bit_string_to_int(BitStr):
+    """Transforms a string of the form '01001001' into an integer
+    which represents this byte.
 
+    TESTED <frs>
+    """
 
- 
+    BitStr = BitStr.replace(".", "")
+    BitArray = map(lambda x: x, BitStr)
+    BitArray.reverse()
+
+    n = 0
+    sum = 0
+    for bit in BitArray:
+        if bit == "1": sum += 2**n
+        n += 1
+
+    return sum
+
+def __int_to_bit_string(IntN, BitN):
+    """Receives an integer and constructs a string containing 0s and 1s that 
+       represent the integer binarily.
+    """
+    int_n = copy(IntN)
+
+    sum = ""
+    while int_n:
+        if int_n & 0x1: sum = "1" + sum
+        else:           sum = "0" + sum
+        int_n = int_n >> 1
+    
+    # NOTE: this should not occur in our case (head character > 0xC0)
+    if len(sum) < BitN: sum = "0" * (BitN - len(sum)) + sum
+    
+    return sum
+
 
