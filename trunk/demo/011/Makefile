@@ -7,12 +7,13 @@ iso8859-7-lexer: iso8859-7-lexer.cpp
 		 --token-prefix TKN_ \
 		 -o ISO8859_7_Lex
 	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-Wall              \
 		-I$(QUEX_PATH) -I. \
 		$<                 \
 		ISO8859_7_Lex.cpp  \
 		-o $@
+	    # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 
 utf8-lexer: utf8-lexer.cpp 
 	quex -i greek.qx         \
@@ -20,12 +21,13 @@ utf8-lexer: utf8-lexer.cpp
 		 --token-prefix TKN_ \
 		 -o UTF8Lex 
 	g++ -ggdb \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		UTF8Lex.cpp             \
 		-o $@
+	    # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 
 utf16-lexer: utf16-lexer.cpp 
 	quex -i             greeky.qx  \
@@ -34,20 +36,22 @@ utf16-lexer: utf16-lexer.cpp
 		 -o             UTF16Lex  \
 	     -b             2
 	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		UTF16Lex.cpp             \
 		-o $@
+	    # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 
 			
 %.E: %.cpp
 	g++ -E -D__QUEX_TEST_OPTION_ISO8859_7 \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-Wall \
 		-I$(QUEX_PATH) -I. \
 		$< -o $@
+	    # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 
 clean:
 	rm -f ISO8859_7_Lex*
