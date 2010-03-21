@@ -22,7 +22,8 @@ UTF8_OBJS = tiny_lexer-utf8.o messaging-framework-utf8.o
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++ -ggdb -Wall -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+     # -DQUEX_OPTION_ASSERTS_DISABLED
+	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
 
 CC_UTF8 = $(CC) -D__QUEX_OPTION_MESSAGE_UTF8 \

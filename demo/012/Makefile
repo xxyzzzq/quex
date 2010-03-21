@@ -9,18 +9,21 @@ OBJS = $(ENGINE:.cpp=.o) lexer.o
 lexer: $(OBJS)
 	g++ $(OBJS) -ggdb -o  $@ \
 		-I$(QUEX_PATH) \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+        # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 %.o: %.cpp $(ENGINE_SOURCES)
 	g++ -c $< -ggdb -Wall -o $@ \
 		-I$(QUEX_PATH) \
 		$(NDEBUG_F) \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+        # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 %.E: %.cpp
 	g++ -E $< -o  $@ \
 		-I$(QUEX_PATH) \
-		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+        # -DQUEX_OPTION_ASSERTS_DISABLED
+		# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 max_Lexer.cpp: max.qx
 	quex -i token.qx $< -o max::Lexer --iconv -b 4 --token-prefix MAX_TKN_ --token-policy single
