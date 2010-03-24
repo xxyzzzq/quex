@@ -85,7 +85,9 @@ def snap_set_expression(stream, PatternDict):
     if result != None: return result
 
     x = stream.read(2)
-    if   x == "[:":
+    # if   x == "\\C":
+    #    result = snap_case_fold_expression(sh, PatternDict, snap_set_expression)
+    if x == "[:":
         result = snap_set_term(stream, PatternDict)
         skip_whitespace(stream)
         x = stream.read(2)
@@ -108,7 +110,7 @@ def snap_set_expression(stream, PatternDict):
 def snap_property_set(stream):
     position = stream.tell()
     x = stream.read(2)
-    if x == "\\P": 
+    if   x == "\\P": 
         stream.seek(position)
         return property.do(stream)
     elif x == "\\N": 

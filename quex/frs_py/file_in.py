@@ -612,6 +612,13 @@ def check(fh, Word):
     fh.seek(position)
     return False
 
+def check_letter_from_list(fh, LetterList):
+    position = fh.tell()
+    if fh.read(1) in LetterList: return True
+    fh.seek(position)
+    return False
+
+    
 def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
     """FH, and LineN work exactly the same as for error_msg(...)"""
     assert len(WordList) != 0
