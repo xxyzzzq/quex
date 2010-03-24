@@ -55,7 +55,7 @@ def __debug_exit(result, stream):
         pos = stream.tell()
         txt = stream.read()
         stream.seek(pos)    
-        __debug_print("##exit: [%s], remainder = \"%s\"" % (repr(result), txt))
+        __debug_print("##exit: [%s], remainder = \"%s\"" % (type(result), txt))
         
     return result
 
@@ -88,6 +88,7 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
                         stream)
 
     reference = PatternDict[pattern_name]
+    assert reference.__class__.__name__ == "PatternShorthand" 
 
     # The replacement may be a state machine or a number set
     if StateMachineF:

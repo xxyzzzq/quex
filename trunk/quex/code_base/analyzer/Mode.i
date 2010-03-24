@@ -7,9 +7,16 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void
+    QUEX_INLINE __QUEX_TYPE_ANALYZER_RETURN_VALUE
     QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER* me)
-    { __quex_assert(0); return; }
+    { 
+        __quex_assert(0); 
+#       if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        return; 
+#       else
+        return (__QUEX_TYPE_ANALYZER_RETURN_VALUE)0;
+#       endif
+    }
 
     QUEX_INLINE void
     QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER* me, 

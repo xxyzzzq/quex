@@ -335,7 +335,8 @@ def snap_primary(stream, PatternDict):
                  primary repetition_cmd
     """
     __debug_entry("primary", stream)    
-    x = stream.read(1)
+    x = stream.read(1); lookahead = stream.read(1); 
+    if x != "" and lookahead != "": stream.seek(-1, 1)
     if x == "": return __debug_exit(None, stream)
 
     # -- 'primary' primary
@@ -345,21 +346,7 @@ def snap_primary(stream, PatternDict):
         result = character_set_expression.do(stream, PatternDict)
     elif x == "{":  result = snap_replacement(stream, PatternDict)
     elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
-    elif x == "(": 
-        __start_position = stream.tell()
-        result = snap_expression(stream, PatternDict)
-        if not check(stream, ")"): 
-            stream.seek(__start_position)
-            remainder_txt = stream.readline().replace("\n", "").replace("\r", "")
-            raise RegularExpressionException("Missing closing ')' after expression; found '%s'.\n" % remainder_txt \
-                                             + "Note, that patterns end with the first non-quoted whitespace.\n" \
-                                             + "Also, closing brackets in quotes do not close a syntax block.")
-
-        if result == None:
-            __expression_length = stream.tell() - __start_position
-            stream.seek(__start_position)
-            raise RegularExpressionException("expression in brackets has invalid syntax '%s'" % \
-                                             stream.read(__expression_length))
+    elif x == "(":  result = snap_bracketed_expression(stream, PatternDict)
 
     elif x.isspace():
         # a lonestanding space ends the regular expression
@@ -369,11 +356,26 @@ def snap_primary(stream, PatternDict):
     elif x in ["*", "+", "?"]:
         raise RegularExpressionException("lonely operator '%s' without expression proceeding." % x) 
 
+    elif x == "\\":
+        if lookahead == "C":
+            result = snap_case_folded_pattern(stream, PatternDict)
+        else:
+            stream.seek(-1, 1)
+            trigger_set = character_set_expression.snap_property_set(stream)
+            if trigger_set == None:
+                stream.seek(1, 1)  # snap_property_set() leaves tream right before '\\'
+                char_code = snap_backslashed_character.do(stream)
+                if char_code == None:
+                    raise RegularExpressionException("Backslash followed by unrecognized character code.")
+                trigger_set = char_code
+            result = StateMachine()
+            result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True)
+
     elif x not in CONTROL_CHARACTERS:
         # NOTE: The '\' is not inside the control characters---for a reason.
         #       It is used to define for example character codes using '\x' etc.
         stream.seek(-1, 1)
-        result = snap_non_control_characters(stream)
+        result = snap_non_control_character(stream, PatternDict)
 
     else:
         # NOTE: This includes the '$' sign which means 'end of line'
@@ -390,76 +392,16 @@ def snap_primary(stream, PatternDict):
     if result_repeated != None: result = result_repeated
     return __debug_exit(__beautify(result), stream)
     
-def snap_non_control_characters(stream):
-    """Snaps any 'non_control_character' using UTF8 encoding from the given string. Note, that 
-       in UTF8 a character may consist of more than one byte. Creates a state machine 
-       that contains solely one trigger for each character to a acceptance state.
-
-       This function **concatinates** incoming characters, but **repetition** has preceedence
-       over concatination, so it checks after each character whether it is followed by
-       a repetition ('*', '+', '?', '{..}'). In such a case, the repetition of the character
-       is appended.
-    """
+def snap_non_control_character(stream, PatternDict):
     __debug_entry("non-control characters", stream)
 
-    result      = StateMachine()
-    state_index = result.init_state_index
     # (*) read first character
-    position  = stream.tell()
     char_code = utf8.__read_one_utf8_code_from_stream(stream)
-    while char_code != 0xFF:
-        # (1) check against occurence of control characters
-        #     this needs to come **before** the backslashed character interpretation.
-        #     NOTE: A backslashed character can be a whitespace (for example '\n'). 
-        #     (check against 0xFF to avoid overflow in function 'chr()') 
-        if char_code < 0xFF \
-           and (chr(char_code) in CONTROL_CHARACTERS or chr(char_code).isspace()):
-               stream.seek(-1, 1) 
-               break 
-
-        # (2) treat backslashed characters
-        if char_code == ord('\\'):
-            stream.seek(-1, 1)
-            trigger_set = character_set_expression.snap_property_set(stream)
-            if trigger_set == None:
-                stream.seek(1, 1)  # snap_property_set() leaves tream right before '\\'
-                char_code = snap_backslashed_character.do(stream)
-                if char_code == None:
-                    raise RegularExpressionException("Backslash followed by unrecognized character code.")
-                trigger_set = char_code
-        else:
-            trigger_set = char_code
-
-        # (3) read next character
-        position       = stream.tell()
-        next_char_code = utf8.__read_one_utf8_code_from_stream(stream)
-        #    -- check for repetition (repetition has preceedence over concatination)
-        if next_char_code in [ord("+"), ord("*"), ord("?"), ord("{")]:
-            # (*) create state machine that consist of a single transition 
-            tmp = StateMachine()
-            tmp.add_transition(tmp.init_state_index, trigger_set, AcceptanceF=True)
-            # -- repeat the single character state machine
-            stream.seek(position)
-            tmp_repeated = __snap_repetition_range(tmp, stream) 
-            # -- append it to the result (last state must be set to acceptance for concatenation)
-            result.states[state_index].set_acceptance()
-            result = sequentialize.do([result, tmp_repeated], MountToFirstStateMachineF=True)
-            # as soon as there is repetition there might be more than one acceptance
-            # state and thus simple concatination via 'add_transition' fails.
-            # let us return and check treat the remaining chars
-            # at the next call to this function.
-            return __debug_exit(result, stream)
-
-        else:
-            # (*) add new transition from current state to a new state triggering
-            #     on the given character.
-            state_index = result.add_transition(state_index, trigger_set)
-
-        char_code = next_char_code
-
-    # last character in the chain triggers an 'acceptance state'
-    result.states[state_index].set_acceptance()
-        
+    if char_code == 0xFF:
+        error_msg("Character could not be interpreted as UTF8 code or End of File reached prematurely.", 
+                  stream)
+    result = StateMachine()
+    result.add_transition(result.init_state_index, char_code, AcceptanceF=True)
     return __debug_exit(result, stream)
     
 def __snap_repetition_range(the_state_machine, stream):    
@@ -591,3 +533,29 @@ def create_ALL_BUT_NEWLINE_state_machine():
     result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
     return result
     
+def snap_bracketed_expression(stream, PatternDict):
+    position = stream.tell()
+    result = snap_expression(stream, PatternDict)
+    if not check(stream, ")"): 
+        stream.seek(position)
+        remainder_txt = stream.readline().replace("\n", "").replace("\r", "")
+        raise RegularExpressionException("Missing closing ')' after expression; found '%s'.\n" % remainder_txt \
+                                         + "Note, that patterns end with the first non-quoted whitespace.\n" \
+                                         + "Also, closing brackets in quotes do not close a syntax block.")
+
+    if result == None:
+        length = stream.tell() - position
+        stream.seek(position)
+        raise RegularExpressionException("expression in brackets has invalid syntax '%s'" % \
+                                         stream.read(length))
+    return result
+
+def snap_case_folded_pattern(sh, PatternDict, CharacterSetF=False):
+    """Parse a case fold expression of the form \C(..){ R } or \C{ R }.
+       Assume that '\C' has been snapped already from the stream.
+
+       See function ucs_case_fold_parser.get_fold_set() for details
+       about case folding.
+    """
+    return snap_case_fold_expression(sh, PatternDict, snap_expression)
+

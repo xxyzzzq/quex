@@ -2,7 +2,8 @@
    as described in Unicode Standard Annex #21 "CASE MAPPINGS", Section 1.3.
 
 """
-import quex.input.ucs_db_parser as ucs_db_parser
+import quex.input.ucs_db_parser           as     ucs_db_parser
+import quex.core_engine.interval_handling import NumberSet
 
 class DB:
     def __init__(self):
@@ -24,6 +25,10 @@ db_CS = None
 db_F  = None
 db_T  = None
 
+# A number set shall allow us to judge quickly what characters
+# or intervals are subject to case folding.
+# covering_set = None
+
 def __init():
     global db_CS
     global db_F
@@ -34,6 +39,8 @@ def __init():
     db_CS = DB()
     db_F  = DB()
     db_T  = DB()
+
+    # covering_set = NumberSet()
 
     table = ucs_db_parser.parse_table("CaseFolding.txt", 
                                       NumberColumnList=[0], 
