@@ -50,7 +50,7 @@ init-state = 0L
 00004() <~ 
       == 'o' ==> 00005
       <no epsilon>
-00005(A, S, pre=43) <~ 
+00005(A, S, pre=55) <~ 
       <no epsilon>
 pre-condition inverted = init-state = 0L
 00000() <~ 
