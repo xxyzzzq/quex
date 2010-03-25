@@ -81,7 +81,20 @@ to combine them into powerful patterns.
 
            "SELECT", "select", "sElEcT", ...
 
-     The algorithm for case folding is according to Unicode Standard Annex #21 
+     The expression ``R`` passed to the case folding operation needs to fit 
+     the environment in which it was called. If the case folding is applied
+     in a character set expression, then its content must be a character
+     set expression, i.e.::
+
+               [:\C{[:union([a-z], [ﬀİ]):]}:]   // correct
+               [:\C{[a-z]}:]                    // correct
+
+     and *not*
+
+               [:\C{union([a-z], [ﬀİ])}:]       // wrong
+               [:\C{a-z}:]                      // wrong
+
+     The algorithm for case folding follows Unicode Standard Annex #21 
      "CASE MAPPINGS", Section 1.3. That is for example, the character 'k'
      is not only folded to 'k' (0x6B) and 'K' (0x4B) but also to 'K' (0x212A). 
      Additionally, unicode defines case foldings to multi character sequences,
@@ -108,18 +121,19 @@ to combine them into powerful patterns.
      .. describe:: m
 
         The *m* flag enables the case folding to multi-character sequences.
+        This flag is not available in character set expressions. In this
+        case the result must be a set of characters and not a set of character
+        sequences.
 
      .. describe:: t
 
         By setting the *t* flag, the turkish case mapping is enabled. Whenever
         the turkish case folding is an alternative, it is preferred.
     
-     The default behavior corresponds to the flags *s* and *f*, i.e.::
-      
-                \C{R}   is equivalent to \C(sm){R}
-    
-     Characters that are beyond the scope of the current codec or input
-     character byte width are cut out seeminglessly. 
+     The default behavior corresponds to the flags *s* and *m* 
+     (``\C{R}`` ≡ ``\C(sm){R}``) for patterns and *s* (``\C{R}`` ≡ ``\C(s){R}``) 
+     for character sets. Characters that are beyond the scope of the current 
+     codec or input character byte width are cut out seeminglessly. 
 
 
 .. describe:: \\0 

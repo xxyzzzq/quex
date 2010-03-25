@@ -1,8 +1,8 @@
 (*) Core Engine
-        self_send(QUEX_TKN_UCS_0x000061);
-        self_send(QUEX_TKN_UCS_0x001000);
         self_send(QUEX_TKN_UCS_0x00012E);
+        self_send(QUEX_TKN_UCS_0x000061);
         self_send(QUEX_TKN_UCS_0x0086A5);
+        self_send(QUEX_TKN_UCS_0x001000);
         self_send(QUEX_TKN_UCS_0x000058);
         self_send(QUEX_TKN_UCS_0x00001B);
         self_send(QUEX_TKN_UCS_0x00062C);

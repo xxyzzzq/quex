@@ -15,13 +15,13 @@ ambigous post condition = init-state = 0L
 00003() <~ 
       == 'b' ==> 00004
       <no epsilon>
-00004(A, S, papc=23) <~ 
+00004(A, S, papc=29) <~ 
       == 'a' ==> 00003
       <no epsilon>
 00005() <~ 
       == 'y' ==> 00006
       <no epsilon>
-00006(A, S, papc=23) <~ 
+00006(A, S, papc=29) <~ 
       == 'a' ==> 00003
       == 'x' ==> 00005
       <no epsilon>
@@ -60,13 +60,13 @@ ambigous post condition = init-state = 0L
 00003() <~ 
       == ['a', 'z'] ==> 00004
       <no epsilon>
-00004(A, S, papc=41) <~ 
+00004(A, S, papc=47) <~ 
       <no epsilon>
 00005() <~ 
       == ['a', 'y'] ==> 00004
       == 'z' ==> 00006
       <no epsilon>
-00006(A, S, papc=41) <~ 
+00006(A, S, papc=47) <~ 
       == ['a', 'w'], ['y', 'z'] ==> 00003
       == 'x' ==> 00005
       <no epsilon>
@@ -103,7 +103,7 @@ ambigous post condition = init-state = 0L
 00005() <~ 
       == 'z' ==> 00006
       <no epsilon>
-00006(A, S, papc=57) <~ 
+00006(A, S, papc=63) <~ 
       == 'x' ==> 00004
       <no epsilon>
 
@@ -134,7 +134,7 @@ ambigous post condition = init-state = 0L
       == 'a' ==> 00002
       == 'b' ==> 00003
       <no epsilon>
-00003(A, S, papc=74) <~ 
+00003(A, S, papc=83) <~ 
       <no epsilon>
 
 backward detector = init-state = 0L
@@ -161,7 +161,7 @@ ambigous post condition = init-state = 0L
 00002() <~ 
       == [\0, '\t'], [\11, oo] ==> 00003
       <no epsilon>
-00003(A, S, papc=98) <~ 
+00003(A, S, papc=107) <~ 
       == [\0, '\t'], [\11, oo] ==> 00003
       <no epsilon>
 
