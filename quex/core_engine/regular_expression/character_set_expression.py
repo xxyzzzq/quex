@@ -29,6 +29,7 @@ import quex.input.codec_db as codec_db
 import quex.core_engine.regular_expression.traditional_character_set as traditional_character_set
 import quex.core_engine.regular_expression.property                  as property
 import quex.core_engine.regular_expression.auxiliary                 as aux
+import quex.core_engine.regular_expression.case_fold_expression      as case_fold_expression
 #
 from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
@@ -85,9 +86,10 @@ def snap_set_expression(stream, PatternDict):
     if result != None: return result
 
     x = stream.read(2)
-    # if   x == "\\C":
-    #    result = snap_case_fold_expression(sh, PatternDict, snap_set_expression)
-    if x == "[:":
+    if   x == "\\C":
+        return case_fold_expression.do(stream, PatternDict, snap_set_expression=snap_set_expression)
+
+    elif x == "[:":
         result = snap_set_term(stream, PatternDict)
         skip_whitespace(stream)
         x = stream.read(2)

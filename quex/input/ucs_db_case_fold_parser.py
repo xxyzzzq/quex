@@ -3,7 +3,7 @@
 
 """
 import quex.input.ucs_db_parser           as     ucs_db_parser
-import quex.core_engine.interval_handling import NumberSet
+# from quex.core_engine.interval_handling import NumberSet
 
 class DB:
     def __init__(self):

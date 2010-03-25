@@ -34,7 +34,9 @@ main(int argc, char** argv)
         /* Lexeme is same for all three. */
         char* lexeme = (char*)max_token->utf8_text().c_str();
         int   L      = (int)std::strlen(lexeme);
+
         printf(lexeme);
+
         for(int i=0; i < 10 - L ; ++i) printf(" ");
         printf("\t");
         printf("%s   %s   %s\n", 

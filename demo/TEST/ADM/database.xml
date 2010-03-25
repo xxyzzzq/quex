@@ -1,7 +1,7 @@
-<test-database execution-time-sec="209.85" date="Wed Mar 24 21:31:05 2010">
+<test-database execution-time-sec="209.45" date="Thu Mar 25 21:31:19 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" time-sum-sec="19.09"> 
+        <test title="Sun Microsystem's sunCC" time-sum-sec="19.08"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="3.35" crc="-240093176"/>
@@ -12,7 +12,7 @@
                <choice name="006" result="OK" time_sec="2.94" crc="293623846"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="21.02"> 
+        <test title="Intel's icpc" time-sum-sec="21.01"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1265833749L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="3.84" crc="-1285689249"/>
@@ -62,7 +62,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="3.83" crc="-354359547"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.82"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.83"> 
             <application file-name="003-icu.sh" info-request-time="1266707046L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.05" crc="667876392"/>
@@ -160,11 +160,11 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="5.37"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="4.98"> 
             <application file-name="011.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="2.63" crc="-1799363515"/>
-               <choice name="utf8" result="FAIL" time_sec="2.74" crc="-1799363515"/>
+               <choice name="iso8859-7" result="OK" time_sec="2.53" crc="-1097904062"/>
+               <choice name="utf8" result="OK" time_sec="2.45" crc="-1097904062"/>
             </choice-list>
         </test>
     </group>

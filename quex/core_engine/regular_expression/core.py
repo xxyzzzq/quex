@@ -47,6 +47,7 @@ import quex.core_engine.utf8                                  as utf8
 import quex.core_engine.regular_expression.character_set_expression   as character_set_expression
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 import quex.core_engine.regular_expression.snap_character_string      as snap_character_string
+import quex.core_engine.regular_expression.case_fold_expression       as case_fold_expression
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat
@@ -77,7 +78,6 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
     #     ARE THEN DELETED UNDER WARNING.
     orphan_state_list = sm.get_orphaned_state_index_list()
     if orphan_state_list != []:
-        print "##", sm.get_string(Option="hex")
         error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
                   "Orphan state(s) = " + repr(orphan_state_list), 
@@ -358,6 +358,7 @@ def snap_primary(stream, PatternDict):
 
     elif x == "\\":
         if lookahead == "C":
+            stream.read(1)
             result = snap_case_folded_pattern(stream, PatternDict)
         else:
             stream.seek(-1, 1)
@@ -557,5 +558,5 @@ def snap_case_folded_pattern(sh, PatternDict, CharacterSetF=False):
        See function ucs_case_fold_parser.get_fold_set() for details
        about case folding.
     """
-    return snap_case_fold_expression(sh, PatternDict, snap_expression)
+    return case_fold_expression.do(sh, PatternDict, snap_expression)
 

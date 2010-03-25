@@ -1,4 +1,4 @@
-<history date="Wed Mar 24 21:34:54 2010" element-n="449">
+<history date="Thu Mar 25 06:28:25 2010" element-n="452">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1099,5 +1099,10 @@
         <crc-error time="21:52:43" application="test-nfa-to-dfa-special.py" choice="" database-crc="-1130650808" real-crc="74950847"/>
         <crc-error time="21:56:51" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-1473877468" real-crc="-1611039387"/>
         <crc-error time="21:57:05" application="test-utf8_state_split-do-2.py" choice="" database-crc="918508571" real-crc="-713818589"/>
+    </day>
+    <day year="2010" month="03" day="25">
+        <crc-error time="05:26:03" application="test-nfa-to-dfa-special.py" choice="" database-crc="74950847" real-crc="-1042796353"/>
+        <crc-error time="05:27:03" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-445054721" real-crc="792982194"/>
+        <crc-error time="05:28:21" application="test-nfa-to-dfa-special.py" choice="" database-crc="-1042796353" real-crc="-562487828"/>
     </day>
 </history>
