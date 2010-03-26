@@ -1,0 +1,29 @@
+State Machine Plots
+===================
+
+Since version 0.21.11, quex provides the ability to produce transition
+graphs for the state machines that result from the regular expressions
+of its modes. This happens with help of the tool 'graphviz' from AT\&T
+Labs http://www.graphviz.org. Please install this package before
+any attempt to produce transition graphs. 
+
+The plot of transition graphs is initiated with the command line argument
+``--plot`` followed by a string that indicates the graphic format, e.g.
+
+.. code-block:: bash
+
+   > quex -i core.qx --plot svg
+
+will produce transition graphs of all state machines that would result from
+descriptions in ``core.qx``. As a result of this operation a set of files is
+created that carry the extension of the graphic format. The basenames of the
+files are related to the mode from which its content results. A list of
+supported graphic formats can be queried by passing the command line argument
+``--plot-format-list``. An example of a state machine plot can be viewed
+in :ref:`Sample plot <fig-sample-plot>`.
+
+.. _fig-sample-plot:
+
+.. figure:: ../../figures/ONE_AND_ONLY.*
+
+   Sample plot of a simple state machine.

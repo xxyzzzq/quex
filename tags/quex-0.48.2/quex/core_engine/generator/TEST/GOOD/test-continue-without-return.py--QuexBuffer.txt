@@ -1,0 +1,22 @@
+(*) test string: 
+'ABERHALLO: GUGU PRINT PRINT: PRINTERLEIN'
+(*) result:
+              LABEL  'ABERHALLO:'
+WHITESPACE CONTINUE  ' '
+IDENTIFIER CONTINUE  'GUGU'
+WHITESPACE CONTINUE  ' '
+   KEYWORD CONTINUE  'PRINT'
+WHITESPACE CONTINUE  ' '
+              LABEL  'PRINT:'
+WHITESPACE CONTINUE  ' '
+IDENTIFIER CONTINUE  'PRINTERLEIN'
+  ''
+(*) Lexical Analyser Patterns:
+           [A-Z]+":" --> LABEL
+             "PRINT" --> KEYWORD CONTINUE
+              [A-Z]+ --> IDENTIFIER CONTINUE
+              [ \t]+ --> WHITESPACE CONTINUE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up
