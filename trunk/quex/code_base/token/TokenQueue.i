@@ -87,7 +87,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      size_t*                n)
     {
         *memory = me->begin;
-        *n      = me->end - me->begin;
+        *n      = (size_t)(me->end - me->begin);
     }
 
     QUEX_INLINE bool QUEX_NAME(TokenQueue_is_full)(QUEX_NAME(TokenQueue)* me) 

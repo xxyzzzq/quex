@@ -47,15 +47,11 @@ mode PROGRAM :
     "{"         { self_send(QUEX_TKN_CURLY_BRACKET_O); RETURN; }
     "}"         => QUEX_TKN_CURLY_BRACKET_C;
     "="         => QUEX_TKN_OP_ASSIGNMENT;
-    "struct"    => QUEX_TKN_STRUCT;
+    struct      => QUEX_TKN_STRUCT;
     if          => QUEX_TKN_IF;
     ";"         => QUEX_TKN_SEMICOLON;
 
-    [a-z]+      { 
-        self_current_token_set_id(QUEX_TKN_IDENTIFIER);
-        self_current_token_take_text(Lexeme, LexemeEnd);
-        return; 
-    }
+    [a-z]+      { self_send1(QUEX_TKN_IDENTIFIER, Lexeme); }
     {P_NUMBER}  => QUEX_TKN_NUMBER(number=atoi((const char*)Lexeme));
 
     [ \t\n]     { }

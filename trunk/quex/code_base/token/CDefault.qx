@@ -62,9 +62,9 @@ token_type {
             QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
         }
         self.text = QUEX_NAME(MemoryManager_Text_allocate)(
-                              sizeof(QUEX_TYPE_CHARACTER) * (End - Begin + 1));
+                              sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
         __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
-                          sizeof(QUEX_TYPE_CHARACTER) * (End - Begin + 1));
+                          sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
         return false;
    }
 

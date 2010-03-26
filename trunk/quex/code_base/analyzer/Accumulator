@@ -33,6 +33,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_NAME(Accumulator);
 
     QUEX_INLINE void
+    QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me);
+
+    QUEX_INLINE void
     QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*, QUEX_TYPE_ANALYZER*);
 
     QUEX_INLINE void
