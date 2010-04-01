@@ -1,0 +1,12 @@
+<test-database execution-time-sec="0.00" date="Thu Apr  1 18:09:04 2010">
+    <last-used-diff-display-program name=""/>
+    <group name="Paths">
+        <test title="can_plug_to_equal" time-sum-sec="0.00"> 
+            <application file-name="paths-can_plug_to_equal.py" info-request-time="1270137948L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="1_interval" result="OK" time_sec="0.00" crc="2146992883"/>
+               <choice name="2_intervals" result="OK" time_sec="0.00" crc="-1958215376"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
