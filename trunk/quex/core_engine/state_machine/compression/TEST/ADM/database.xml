@@ -1,11 +1,18 @@
-<test-database execution-time-sec="0.00" date="Thu Apr  1 18:09:04 2010">
+<test-database execution-time-sec="0.21" date="Fri Apr  2 06:54:15 2010">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="can_plug_to_equal" time-sum-sec="0.00"> 
+        <test title="can_plug_to_equal" time-sum-sec="0.10"> 
             <application file-name="paths-can_plug_to_equal.py" info-request-time="1270137948L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="1_interval" result="OK" time_sec="0.00" crc="2146992883"/>
-               <choice name="2_intervals" result="OK" time_sec="0.00" crc="-1958215376"/>
+               <choice name="1_interval" result="OK" time_sec="0.04" crc="2146992883"/>
+               <choice name="2_intervals" result="OK" time_sec="0.06" crc="-1958215376"/>
+            </choice-list>
+        </test>
+        <test title="extract_admissible_single_transitions" time-sum-sec="0.11"> 
+            <application file-name="paths-extract_admissible_single_transitions.py" info-request-time="1270184001L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="more" result="OK" time_sec="0.06" crc="1639748366"/>
+               <choice name="single" result="OK" time_sec="0.05" crc="1687192096"/>
             </choice-list>
         </test>
     </group>
