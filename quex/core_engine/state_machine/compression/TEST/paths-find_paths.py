@@ -7,9 +7,22 @@ from   quex.core_engine.interval_handling import *
 import quex.core_engine.state_machine.compression.paths as paths 
 
 if "--hwut-info" in sys.argv:
-    print "Paths: find_skeleton;"
-    print "CHOICES: single, more;"
+    print "Paths: find_path;"
     sys.exit(0)
+
+
+def construct_path(sm, StartStateIdx, String, Skeleton, AcceptanceF=True):
+    state_idx = StartStateIdx
+    for letter in String:
+        for target_idx, trigger_set in Skeleton:
+            sm.add_transition(state_idx, trigger_set, target_idx)
+        state_idx = sm.add_transition(state_idx, ord(letter))
+
+    if AcceptanceF:
+        sm.states[state_idx].set_acceptance(True)
+
+    return state_idx # Return end of the string path
+
     
 def number_set(IntervalList):
     result = NumberSet(map(lambda x: Interval(x[0], x[1]), IntervalList))
@@ -62,7 +75,23 @@ def test(A, B):
     print_map(paths.find_skeleton(B, A))
     print "-" * 70
 
+sm = StateMachine()
+# def construct_path(sm, StartStateIdx, String, Skeleton):
+Skeleton = { 
+   6666: number_set([ord('a'), ord('z')+1]),
+}
+idx0 = sm.init_state_index
+idx = construct_path(sm, idx0, "if",    Skeleton)
+idx = construct_path(sm, idx0, "else",  Skeleton)
+idx = construct_path(sm, idx0, "while", Skeleton)
+
+sm     = nfa_to_dfa.do(sm)
+hopcroft_minimization.do(sm)
+result = paths.find_paths(sm)
+
+
 if "single" in sys.argv:
+    o
     A = get_map([0, [2, 3]])
     B = get_map([0, [1, 2]])
     test(A, B)

@@ -1,8 +1,11 @@
-<history date="Fri Apr  2 06:54:15 2010" element-n="2">
+<history date="Sat Apr  3 06:36:05 2010" element-n="3">
     <day year="2010" month="04" day="01">
         <history-init time="16:04:08"/>
     </day>
     <day year="2010" month="04" day="02">
         <crc-error time="04:52:46" application="paths-extract_admissible_single_transitions.py" choice="single" database-crc="1639748366" real-crc="1687192096"/>
+    </day>
+    <day year="2010" month="04" day="03">
+        <crc-error time="04:35:52" application="paths-find_skeleton.py" choice="more" database-crc="1895399711" real-crc="2145917462"/>
     </day>
 </history>
