@@ -579,6 +579,12 @@ class NumberSet:
         elif self.__intervals[0].end   != Number + 1: return False
         return True
 
+    def get_the_only_element(self):
+        if   len(self.__intervals) != 1: return None
+        x = self.__intervals[0]
+        if x.end - x.begin != 1: return None
+        else:                    return x.begin
+
     def intersect_with(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
