@@ -4,6 +4,9 @@ from   quex.core_engine.generator.action_info     import PatternActionInfo
 import quex.core_engine.state_machine.nfa_to_dfa  as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
+# DEBUG
+import quex.core_engine.state_machine.compression.table as compression_table
+
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName):
         assert type(PatternActionPair_List) == list
@@ -18,6 +21,10 @@ class GeneratorBase:
         # (*) create state (combined) state machines
         #     -- core state machine
         self.sm = self.__create_core_state_machine()
+
+        # DEBUG ONLY
+        ## compression_table.TEST_get_NAC_matrix(self.sm)
+
         #     -- pre conditions
         self.pre_context_sm = self.__create_pre_context_state_machine()
         #     -- backward detectors for state machines with forward ambiguous
