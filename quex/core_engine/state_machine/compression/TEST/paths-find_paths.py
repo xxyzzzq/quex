@@ -57,13 +57,20 @@ skeleton_1 = {
 }
 
 skeleton_2 = {} 
-for letter in range(ord("a"), ord("e") + 1) + range(ord("A"), ord("Z") + 1):
+for char in "abc":
+    letter = ord(char)
+    random = (letter % 15) + 1000
+    trigger = NumberSet(Interval(letter))
+    skeleton_2.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
+
+skeleton_3 = {} 
+for letter in range(ord("a"), ord("z") + 1) + range(ord("A"), ord("Z") + 1):
     random = (letter % 15) + 1000
     # Add intervals that have an extend of '2' so that they do not
     # add possible single paths.
     trigger = NumberSet(Interval((letter % 2) * 2, (letter % 2) * 2 + 2))
-    skeleton_2.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
+    skeleton_3.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
 
 if   "1" in sys.argv: test(skeleton_1, "ab", "cde")
-elif "2" in sys.argv: test(skeleton_2, "cde")
+elif "2" in sys.argv: test(skeleton_2, "cb")
 

@@ -1,4 +1,4 @@
-from quex.core_engine.interval_handling import NumberSet
+from quex.core_engine.interval_handling import NumberSet, Interval
 from copy import deepcopy, copy
 
 """Checks whether the transitions of state 0 and state 1
@@ -10,76 +10,129 @@ from copy import deepcopy, copy
 """
 
 class SingleCharacterPath:
-    def __init__(self, StartStateIdx, Skeleton, FirstWildCardChar, StartPath):
+    def __init__(self, StartStateIdx, Skeleton, StartCharacter):
         self.start_state_index = StartStateIdx
         self.end_state_index   = -1
-        self.character_sequence = [ StartPath ]
+        self.sequence          = [ (StartStateIdx, StartCharacter) ]
 
         self.skeleton          = Skeleton
-        self.skeleton_key_set  = Skeleton.keys()
+        self.skeleton_key_set  = set(Skeleton.keys())
         self.skeleton_key_n    = len(self.skeleton_key_set)
         # Character that may trigger to any state. This character is
         # adapted when the first character of the path is different
         # from the wildcard character. Then it must trigger to whatever
         # the correspondent state triggers.
-        self.first_wildcard    = FirstWildCardChar
+        self.wildcard          = StartCharacter
 
     def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
+        """A single character transition 
 
+                        TriggerCharToTarget --> TargetIdx
+
+           has been detected. The question is, if the remaining transitions
+           of the state match the skeleton of the current path. There might
+           be a wildcard, that is the character that is overlayed by the
+           first single character transition. As soon as a transition map
+           is differs only by this single character, the wildcard is 
+           plugged into the position.
+        """
         # The element of a path cannot be triggered by the skeleton!
         if self.skeleton.has_key(TargetIdx): return False
-        # All other target states must be the same, otherwise the 
-        # skeleton is not a skeleton for the transition.
-        # But, wait: The wildcard might be used to trigger to another
-        #            state. If it is still available, the state can
-        #            trigger to one more single character transition.
-        delta_n = len(TransitionMap) - self.skeleton_key_n
-        if self.first_wildcard != None:
-            if delta_n not in [1, 2]: return False
-        else:
-            if delta_n != 1:          return False
 
-        # Now: -- All target indices in skeleton *must* also in TransitionMap!
-        #      -- TransitionMap shall contain only one target index that is not
-        #         in skeleton: 'TargetIdx', plus maybe another that is then
-        #         to be handled by the wildcard.
-        for target_idx, skeleton_trigger_set in self.skeleton.items():
-            other_trigger_set = TransitionMap.get(target_idx)
-            if other_trigger_set != None:
-                if skeleton_trigger_set.is_equal(other_trigger_set): 
-                    continue
-                # Can be plug a wildcard into skeleton trigger set?
-                if self.wildcard != None \ 
-                   and can_plug_to_equal(skeleton_trigger_set, self.wildcard, 
-                                         other_trigger_set): 
-                    self.wildcard = None # wildcard is used now
-                    continue
+        if self.wildcard != None: wildcard_plug = None # unused
+        else:                     wildcard_plug = -1   # used before
 
-                # Maybe the current single transition intersects with a 
-                # skeleton domain => no problem.
-                if can_plug_to_equal(other_trigger_set, TriggerCharToTarget,
-                                     skeleton_trigger_set):
-                    continue
-                # Trigger sets differ and no wildcard or single transition
-                # can 'explain' that => skeleton does not fit.
-                return False
-            else:
-                # Skeleton *must* have the key otherwise it would not be there
-                candidate = self.skeleton[target_idx].get_the_only_element()
-                # If the additional target has a trigger set of size > 1
-                # => no single character transition can fix it.
-                if   candidate == None:                return False
-                elif candidate != TriggerCharToTarget: return False
+        transition_map_key_set = set(TransitionMap.keys())
+        # (1) Target States In TransitionMap and Not in Skeleton
+        #
+        #     All target states of TransitionMap must be in Skeleton,
+        #     except:
+        #
+        #      (1.1) The single char transition target TargetIdx.
+        #      (1.2) Maybe, one that is reached by a single char
+        #            transition of wildcard.
+        delta_set  = transition_map_key_set - self.skeleton_key_set
+        delta_size = len(delta_set)
+        if   delta_size > 2:                           return False
+        elif self.wildcard == None and delta_size > 1: return False
+
+        for target_idx in delta_set:
+            if   target_idx == TargetIdx:    continue # (1.1)
+            elif wildcard_plug != None:                                      return False
+            elif not TransitionMap[target_idx].contains_only(self.wildcard): return False
+            wildcard_plug = target_idx              # (1.2)
+
+        # (2) Target States In Skeleton and Not in TransitionMap
+        #
+        #     All target states of Skeleton must be in TransitionMap,
+        #     except:
+        #
+        #      (2.1) Transition to the target index in skeleton
+        #            is covered by single transition.
+        delta_set = self.skeleton_key_set - transition_map_key_set
+        delta_size = len(delta_set)
+        if delta_size > 1: return False
+        if delta_size == 1:
+            for target_idx in delta_set:
+                if not self.skeleton[target_idx].contains_only(TriggerCharToTarget): return False
+            # (2.1) OK, single char covers the transition in skeleton.
+
+        # (3) Target States in both, Skeleton and Transition Map
+        #
+        #     All correspondent trigger sets must be equal, except:
+        #
+        #      (3.1) trigger set in skeleton + wildcard == trigger set 
+        #            in transition map.
+        #      (3.2) single char transition covers the hole, i.e.
+        #            trigger set in transition map + single char ==
+        #            trigger set in skeleton.
+        #       
+        common_set = self.skeleton_key_set & transition_map_key_set
+        for target_idx in common_set:
+            sk_trigger_set = self.skeleton[target_idx]
+            tm_trigger_set = TransitionMap[target_idx]
+
+            if sk_trigger_set.is_equal(tm_trigger_set): continue
+
+            # (3.1) Can difference between trigger sets be plugged by the wildcard?
+            if     wildcard_plug == None \
+               and can_plug_to_equal(sk_trigger_set, self.wildcard, tm_trigger_set): 
+                wildcard_plug = target_idx
                 continue
+
+            # (2.3) Maybe the current single transition covers the 'hole'.
+            if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
+                continue
+
+            # Trigger sets differ and no wildcard or single transition
+            # can 'explain' that => skeleton does not fit.
+            return False
+
+        # Finally, if there is a plugging to be performed, then do it.
+        if wildcard_plug != -1 and wildcard_plug != None:
+            if self.skeleton.has_key(wildcard_plug):
+                self.skeleton[wildcard_plug].unite_with(NumberSet(self.wildcard))
+            else:
+                self.skeleton[wildcard_plug] = NumberSet(self.wildcard)
+            self.wildcard = None # There is no more wildcard now
+
         return True
 
-
-
     def __repr__(self):
+        skeleton_txt = ""
+        for target_idx, trigger_set in self.skeleton.items():
+            skeleton_txt += "(%i) by " % target_idx
+            skeleton_txt += trigger_set.get_utf8_string()
+            skeleton_txt += "; "
+
+        sequence_txt = ""
+        for state_idx, char in self.sequence:
+            sequence_txt += "(%i)--'%s'-->" % (state_idx, chr(char))
+        sequence_txt += "[%i]" % self.end_state_index
+
         return "".join(["start    = %i;\n" % self.start_state_index,
-                        "skeleton = %s;\n" % self.skeleton,
-                        "path     = '"] + map(chr, self.character_sequence) +
-                        ["';\n"])
+                        "path     = %s;\n" % sequence_txt,
+                        "skeleton = %s\n"  % skeleton_txt])
 
 def find_paths(SM):
     """SM = state machine of analyzer.
@@ -131,7 +184,7 @@ def __find_continuation(sm, StateIdx, the_path):
     global __find_continuation_done_state_idx_list 
     State       = sm.states[StateIdx]
     result_list = []
-    print "##fc:", the_path.character_sequence
+    print "##fc:", the_path.sequence
 
     transition_map = State.transitions().get_map()
 
@@ -144,62 +197,64 @@ def __find_continuation(sm, StateIdx, the_path):
         print "##", path_char
 
         # Does the rest of the transitions fit the 'skeleton'?
-        if not the_path.match_skeleton(transition_map, target_idx): continue 
-        print "##match"
+        if not the_path.match_skeleton(transition_map, target_idx, path_char): continue 
+        print "##match: from=%i, target=%i, char='%s'" % (StateIdx, target_idx, chr(path_char))
+        print "##path:  " + repr(the_path)
                                        
         single_char_transition_found_f = True
 
         path = deepcopy(the_path)
-        path.character_sequence.append(path_char)
+        path.sequence.append((StateIdx, path_char))
 
         if __find_continuation_done_state_idx_list.has_key(target_idx): 
             # End of path detected
-            path.end_state_index = StateIdx
+            path.end_state_index = target_idx
             result_list.append(path)
         else:
             # Find a continuation of the path
             result_list.extend(__find(sm, target_idx, path))
 
-    if not single_char_transition_found_f and len(the_path.character_sequence) != 1:
+    if not single_char_transition_found_f and len(the_path.sequence) != 1:
         the_path.end_state_index = StateIdx
         result_list.append(the_path)
 
     __find_continuation_done_state_idx_list[StateIdx] = True
     return result_list
 
-def is_difference_single_character(Set0, Set1, Char):
-    """If Set1 contains more characters than Set0, then can the
-       difference be described by 'Char'?
-    
-       IMPORTANT NOTE: This function talks about a **set difference**,
-       thus from 
-                       Set1 - Set0 == empty
+def can_plug_to_equal(Set0, Char, Set1):
+    """Determine whether the character 'Char' can be plugged
+       to Set0 to make both sets equal.
 
-       it cannot be concluded that 
+       (1) If Set0 contains elements that are not in Set1, then 
+           this is impossible.
+       (2) If Set1 contains elements that are not in Set0, then
+           it is possible, if the difference is a single character.
 
-                       Set0 - Set1 == empty.
-
-       RETURNS: None,  if Set0 covers Set1 completely and no 'plug' is needed.
-                False, if Set0 cannot cover Set1 just by adding the character 'Char'.
-                True,  if Set0 + Char covers Set1.
-    
+       NOTE:
+                Set subtraction: A - B != empty, 
+                                 A contains elements that are not in B.
     """
     # If interval number differs more than one, then no single
     # character can do the job.
     if Set1.interval_number() - Set0.interval_number() > 1: return False
+    if Set0.interval_number() > Set1.interval_number():     return False
 
-    # If the difference Set1 - Set0 == Char, then the Set0 can be
-    # fixed, so that the difference is empty.
+    # Does Set0 contain elements that are not in Set1?
+    if Set0.difference(Set1).is_empty(): return False
+
     delta = Set1.difference(Set0)
     # If there is no difference to make up for, then no plug needed.
-    if delta.is_empty(): return None
+    if delta.is_empty(): return True
 
     # Check wether the single character can plug
     if delta.interval_number() != 1: return False
     x = delta.get_intervals(PromiseToTreatWellF=True)
     if x[0].end - x[0].begin != 1:   return False
-
     return x[0].begin == Char
+
+    
+
+
         
 
 
