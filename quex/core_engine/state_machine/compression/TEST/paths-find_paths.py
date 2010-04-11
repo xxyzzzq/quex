@@ -11,6 +11,7 @@ import quex.core_engine.state_machine.compression.paths     as paths
 
 if "--hwut-info" in sys.argv:
     print "Paths: find_path;"
+    print "CHOICES: 1, 2, 3, 4;"
     sys.exit(0)
 
 
@@ -52,6 +53,9 @@ def test(Skeleton, *StringPaths):
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
+skeleton_0 = { 
+   66L: NumberSet(Interval(ord('a'))),
+}
 skeleton_1 = { 
    6666L: NumberSet(Interval(ord('a'), ord('z')+1)),
 }
@@ -71,6 +75,16 @@ for letter in range(ord("a"), ord("z") + 1) + range(ord("A"), ord("Z") + 1):
     trigger = NumberSet(Interval((letter % 2) * 2, (letter % 2) * 2 + 2))
     skeleton_3.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
 
-if   "1" in sys.argv: test(skeleton_1, "ab", "cde")
-elif "2" in sys.argv: test(skeleton_2, "cb")
+# Hint: Use 'dot' (graphviz utility) to print the graphs.
+# EXAMPLE:
+#          > ./paths-find_paths.py 2 > tmp.dot
+#          > dot tmp.dot -Tfig -o tmp.fig       # produce .fig graph file 
+#          > xfig tmp.fig                       # use xfig to view
+if   len(sys.argv) < 2:
+    print "Call this with: --hwut-info"
+elif "1" in sys.argv: test(skeleton_2, "cb")
+elif "2" in sys.argv: test(skeleton_0, "cc")
+elif "3" in sys.argv: test(skeleton_0, "ca")
+elif "4" in sys.argv: test(skeleton_2, "ccb")
+elif "5" in sys.argv: test(skeleton_1, "ab", "cde")
 
