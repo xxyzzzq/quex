@@ -36,8 +36,9 @@ class SingleCharacterPath:
            is differs only by this single character, the wildcard is 
            plugged into the position.
         """
-        # The element of a path cannot be triggered by the skeleton!
-        if self.skeleton.has_key(TargetIdx): return False
+        ## ?? The element of a path cannot be triggered by the skeleton! ??
+        ## ?? if self.skeleton.has_key(TargetIdx): return False          ?? 
+        ## ?? Why? (fschaef9: 10y04m11d)
 
         if self.wildcard != None: wildcard_plug = None # unused
         else:                     wildcard_plug = -1   # used before
@@ -68,7 +69,7 @@ class SingleCharacterPath:
         #     except:
         #
         #      (2.1) Transition to the target index in skeleton
-        #            is covered by single transition.
+        #            is covered by current single transition.
         delta_set = self.skeleton_key_set - transition_map_key_set
         delta_size = len(delta_set)
         if delta_size > 1: return False
@@ -81,11 +82,12 @@ class SingleCharacterPath:
         #
         #     All correspondent trigger sets must be equal, except:
         #
-        #      (3.1) trigger set in skeleton + wildcard == trigger set 
-        #            in transition map.
-        #      (3.2) single char transition covers the hole, i.e.
+        #      (3.1) single char transition covers the hole, i.e.
         #            trigger set in transition map + single char ==
-        #            trigger set in skeleton.
+        #            trigger set in skeleton. (check this first,
+        #            don't waste wildcard).
+        #      (3.2) trigger set in skeleton + wildcard == trigger set 
+        #            in transition map.
         #       
         common_set = self.skeleton_key_set & transition_map_key_set
         for target_idx in common_set:
@@ -94,14 +96,15 @@ class SingleCharacterPath:
 
             if sk_trigger_set.is_equal(tm_trigger_set): continue
 
-            # (3.1) Can difference between trigger sets be plugged by the wildcard?
-            if     wildcard_plug == None \
-               and can_plug_to_equal(sk_trigger_set, self.wildcard, tm_trigger_set): 
-                wildcard_plug = target_idx
+            # (3.1) Maybe the current single transition covers the 'hole'.
+            #       (check this first, we do not want to waste the wilcard)
+            if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
                 continue
 
-            # (2.3) Maybe the current single transition covers the 'hole'.
-            if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
+            # (3.2) Can difference between trigger sets be plugged by the wildcard?
+            elif   wildcard_plug == None \
+               and can_plug_to_equal(sk_trigger_set, self.wildcard, tm_trigger_set): 
+                wildcard_plug = target_idx
                 continue
 
             # Trigger sets differ and no wildcard or single transition
@@ -132,7 +135,8 @@ class SingleCharacterPath:
 
         return "".join(["start    = %i;\n" % self.start_state_index,
                         "path     = %s;\n" % sequence_txt,
-                        "skeleton = %s\n"  % skeleton_txt])
+                        "skeleton = %s\n"  % skeleton_txt, 
+                        "wildcard = %s;\n" % repr(self.wildcard != None)])
 
 def find_paths(SM):
     """SM = state machine of analyzer.
@@ -151,6 +155,7 @@ def find_paths(SM):
     return __find_begin(SM, SM.init_state_index)
 
 __find_begin_done_state_idx_list = {}
+__find_continuation_done_state_idx_list = {}
 def __find_begin(sm, StateIdx):
     global __find_begin_done_state_idx_list
 
@@ -174,17 +179,17 @@ def __find_begin(sm, StateIdx):
 
         path = SingleCharacterPath(StateIdx, skeleton, path_char)
             
+        __find_continuation_done_state_idx_list.clear()
         result_list.extend(__find_continuation(sm, target_idx, path))
+
 
     __find_begin_done_state_idx_list[StateIdx] = True
     return result_list
 
-__find_continuation_done_state_idx_list = {}
 def __find_continuation(sm, StateIdx, the_path):
     global __find_continuation_done_state_idx_list 
     State       = sm.states[StateIdx]
     result_list = []
-    print "##fc:", the_path.sequence
 
     transition_map = State.transitions().get_map()
 
@@ -194,13 +199,9 @@ def __find_continuation(sm, StateIdx, the_path):
         # Find a 'single character transition'
         path_char = trigger_set.get_the_only_element()
         if path_char == None: continue
-        print "##", path_char
 
         # Does the rest of the transitions fit the 'skeleton'?
         if not the_path.match_skeleton(transition_map, target_idx, path_char): continue 
-        print "##match: from=%i, target=%i, char='%s'" % (StateIdx, target_idx, chr(path_char))
-        print "##path:  " + repr(the_path)
-                                       
         single_char_transition_found_f = True
 
         path = deepcopy(the_path)
@@ -212,7 +213,7 @@ def __find_continuation(sm, StateIdx, the_path):
             result_list.append(path)
         else:
             # Find a continuation of the path
-            result_list.extend(__find(sm, target_idx, path))
+            result_list.extend(__find_continuation(sm, target_idx, path))
 
     if not single_char_transition_found_f and len(the_path.sequence) != 1:
         the_path.end_state_index = StateIdx
@@ -246,11 +247,7 @@ def can_plug_to_equal(Set0, Char, Set1):
     # If there is no difference to make up for, then no plug needed.
     if delta.is_empty(): return True
 
-    # Check wether the single character can plug
-    if delta.interval_number() != 1: return False
-    x = delta.get_intervals(PromiseToTreatWellF=True)
-    if x[0].end - x[0].begin != 1:   return False
-    return x[0].begin == Char
+    return delta.contains_only(Char)
 
     
 
