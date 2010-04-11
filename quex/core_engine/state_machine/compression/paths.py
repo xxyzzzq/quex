@@ -54,14 +54,13 @@ class SingleCharacterPath:
         #            transition of wildcard.
         delta_set  = transition_map_key_set - self.skeleton_key_set
         delta_size = len(delta_set)
-        if   delta_size > 2:                           return False
-        elif self.wildcard == None and delta_size > 1: return False
+        if delta_size > 2: return False
 
         for target_idx in delta_set:
             if   target_idx == TargetIdx:    continue # (1.1)
             elif wildcard_plug != None:                                      return False
             elif not TransitionMap[target_idx].contains_only(self.wildcard): return False
-            wildcard_plug = target_idx              # (1.2)
+            wildcard_plug = target_idx                # (1.2)
 
         # (2) Target States In Skeleton and Not in TransitionMap
         #
@@ -182,7 +181,6 @@ def __find_begin(sm, StateIdx):
         __find_continuation_done_state_idx_list.clear()
         result_list.extend(__find_continuation(sm, target_idx, path))
 
-
     __find_begin_done_state_idx_list[StateIdx] = True
     return result_list
 
@@ -214,6 +212,8 @@ def __find_continuation(sm, StateIdx, the_path):
         else:
             # Find a continuation of the path
             result_list.extend(__find_continuation(sm, target_idx, path))
+            print "##the_path:", the_path
+            print "##result_list:", result_list
 
     if not single_char_transition_found_f and len(the_path.sequence) != 1:
         the_path.end_state_index = StateIdx
