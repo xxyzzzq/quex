@@ -68,12 +68,19 @@ for char in "abc":
     skeleton_2.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
 
 skeleton_3 = {} 
+for char in "bc":
+    letter = ord(char)
+    random = (letter % 15) + 1000
+    trigger = NumberSet(Interval(letter))
+    skeleton_3.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
+
+X_skeleton_3 = {} 
 for letter in range(ord("a"), ord("z") + 1) + range(ord("A"), ord("Z") + 1):
     random = (letter % 15) + 1000
     # Add intervals that have an extend of '2' so that they do not
     # add possible single paths.
     trigger = NumberSet(Interval((letter % 2) * 2, (letter % 2) * 2 + 2))
-    skeleton_3.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
+    X_skeleton_3.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
 
 # Hint: Use 'dot' (graphviz utility) to print the graphs.
 # EXAMPLE:
@@ -85,6 +92,7 @@ if   len(sys.argv) < 2:
 elif "1" in sys.argv: test(skeleton_2, "cb")
 elif "2" in sys.argv: test(skeleton_0, "cc")
 elif "3" in sys.argv: test(skeleton_0, "ca")
-elif "4" in sys.argv: test(skeleton_2, "ccb")
+elif "4" in sys.argv: test(skeleton_3, "cc")
+elif "4" in sys.argv: test(skeleton_3, "ccb")
 elif "5" in sys.argv: test(skeleton_1, "ab", "cde")
 
