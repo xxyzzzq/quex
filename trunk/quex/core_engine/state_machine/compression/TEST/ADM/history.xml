@@ -1,4 +1,4 @@
-<history date="Mon Apr 12 06:23:58 2010" element-n="6">
+<history date="Mon Apr 12 06:40:25 2010" element-n="7">
     <day year="2010" month="04" day="01">
         <history-init time="16:04:08"/>
     </day>
@@ -14,5 +14,8 @@
     <day year="2010" month="04" day="05">
         <crc-error time="05:02:35" application="paths-can_plug_to_equal.py" choice="2_intervals" database-crc="1337704547" real-crc="1818477451"/>
         <crc-error time="05:03:17" application="paths-find_skeleton.py" choice="more" database-crc="2145917462" real-crc="321385342"/>
+    </day>
+    <day year="2010" month="04" day="12">
+        <crc-error time="04:29:47" application="paths-find_paths.py" choice="2" database-crc="-402134190" real-crc="1986232386"/>
     </day>
 </history>

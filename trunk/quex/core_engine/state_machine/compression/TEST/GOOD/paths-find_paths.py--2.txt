@@ -19,6 +19,7 @@
 # 
 # start    = 10;
 # path     = (10)--'c'-->(11)--'c'-->[13];
-# skeleton = (12) by 'a'; (13) by 'c'; 
-# wildcard = False;
+# skeleton = (12) by 'a'; 
+# wildcard = True;
 # 
+## String paths were = ('cc',)
