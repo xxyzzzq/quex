@@ -24,6 +24,11 @@ class SingleCharacterPath:
         # the correspondent state triggers.
         self.wildcard          = StartCharacter
 
+    def contains(self, StateIdx):
+        for state_idx, char in self.sequence:
+            if state_idx == StateIdx: return True
+        return False
+
     def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
         """A single character transition 
 
@@ -178,18 +183,23 @@ def __find_begin(sm, StateIdx):
 
         path = SingleCharacterPath(StateIdx, skeleton, path_char)
             
-        __find_continuation_done_state_idx_list.clear()
         result_list.extend(__find_continuation(sm, target_idx, path))
 
     __find_begin_done_state_idx_list[StateIdx] = True
     return result_list
 
+INDENT = 0
 def __find_continuation(sm, StateIdx, the_path):
-    global __find_continuation_done_state_idx_list 
+    global INDENT
+    INDENT += 4
+    print (" " * INDENT) + "##StateIdx=%i" % StateIdx 
+    print (" " * (INDENT)) + repr(the_path).replace("\n", "\n" + " " * (INDENT))
+
     State       = sm.states[StateIdx]
     result_list = []
 
     transition_map = State.transitions().get_map()
+
 
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.items():
@@ -199,27 +209,27 @@ def __find_continuation(sm, StateIdx, the_path):
         if path_char == None: continue
 
         # Does the rest of the transitions fit the 'skeleton'?
-        if not the_path.match_skeleton(transition_map, target_idx, path_char): continue 
+        path = deepcopy(the_path)
+        print (" " * INDENT) + "##try match %i, %s" % (target_idx, trigger_set.get_utf8_string()) 
+        if not path.match_skeleton(transition_map, target_idx, path_char): continue 
+        print (" " * INDENT) + "##matched"
         single_char_transition_found_f = True
 
-        path = deepcopy(the_path)
         path.sequence.append((StateIdx, path_char))
 
-        if __find_continuation_done_state_idx_list.has_key(target_idx): 
-            # End of path detected
+        if path.contains(target_idx): # End of path detected
             path.end_state_index = target_idx
             result_list.append(path)
-        else:
-            # Find a continuation of the path
+        else:                         # Find a continuation of the path
             result_list.extend(__find_continuation(sm, target_idx, path))
-            print "##the_path:", the_path
-            print "##result_list:", result_list
 
     if not single_char_transition_found_f and len(the_path.sequence) != 1:
         the_path.end_state_index = StateIdx
         result_list.append(the_path)
 
-    __find_continuation_done_state_idx_list[StateIdx] = True
+    print (" " * INDENT) + "##result_list" 
+    print (" " * (INDENT + 4)) + repr(result_list).replace("\n", "\n" + " " * (INDENT + 4))
+    INDENT -= 4
     return result_list
 
 def can_plug_to_equal(Set0, Char, Set1):
