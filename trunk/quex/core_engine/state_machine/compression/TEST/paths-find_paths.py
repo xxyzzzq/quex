@@ -11,7 +11,7 @@ import quex.core_engine.state_machine.compression.paths     as paths
 
 if "--hwut-info" in sys.argv:
     print "Paths: find_path;"
-    print "CHOICES: 1, 2, 3, 4;"
+    print "CHOICES: 1, 2, 3, 4, 5;"
     sys.exit(0)
 
 
@@ -53,6 +53,8 @@ def test(Skeleton, *StringPaths):
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
+    print "## String paths were = " + repr(StringPaths)
+
 skeleton_0 = { 
    66L: NumberSet(Interval(ord('a'))),
 }
@@ -92,7 +94,6 @@ if   len(sys.argv) < 2:
 elif "1" in sys.argv: test(skeleton_2, "cb")
 elif "2" in sys.argv: test(skeleton_0, "cc")
 elif "3" in sys.argv: test(skeleton_0, "ca")
-elif "4" in sys.argv: test(skeleton_3, "cc")
-elif "4" in sys.argv: test(skeleton_3, "ccb")
+elif "4" in sys.argv: test(skeleton_3, "ccccb")
 elif "5" in sys.argv: test(skeleton_1, "ab", "cde")
 

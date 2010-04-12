@@ -1,0 +1,25 @@
+
+        digraph state_machine_1 {
+	       rankdir=LR;
+	       size="8,5"
+	       node [shape = doublecircle]; 18; 20; 23; 19; 21; 22;
+           node [shape = circle];
+           17 -> 18 [label ="'a'"];
+17 -> 20 [label ="'b', ['d', 'z']"];
+17 -> 19 [label ="'c'"];
+18 -> 20 [label ="'a', ['c', 'z']"];
+18 -> 23 [label ="'b'"];
+19 -> 20 [label ="['a', 'c'], ['e', 'z']"];
+19 -> 21 [label ="'d'"];
+21 -> 20 [label ="['a', 'd'], ['f', 'z']"];
+21 -> 22 [label ="'e'"];
+
+        }
+        
+
+# start    = 19;
+# path     = (19)--'d'-->(21)--'e'-->[22];
+# skeleton = (20) by ['a', 'c'], ['e', 'z']; 
+# wildcard = True;
+# 
+## String paths were = ('ab', 'cde')
