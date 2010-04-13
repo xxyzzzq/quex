@@ -469,6 +469,12 @@ class NumberSet:
         # Number > last interval
         return False
 
+    def contains_only(self, Number):
+        if   len(self.__intervals) != 1: return False
+        x = self.__intervals[0]
+        if x.end - x.begin != 1:         return False
+        return x.begin == Number
+
     def minimum(self):
         if self.__intervals == []: return sys.maxint   # i.e. an absurd value
         else:                      return self.__intervals[0].begin
@@ -578,12 +584,6 @@ class NumberSet:
         elif self.__intervals[0].begin != Number:     return False
         elif self.__intervals[0].end   != Number + 1: return False
         return True
-
-    def get_the_only_element(self):
-        if   len(self.__intervals) != 1: return None
-        x = self.__intervals[0]
-        if x.end - x.begin != 1: return None
-        else:                    return x.begin
 
     def intersect_with(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
@@ -814,6 +814,12 @@ class NumberSet:
 
     def __repr__(self):
         return repr(self.__intervals)
+
+    def get_the_only_element(self):
+        if   len(self.__intervals) != 1: return None
+        x = self.__intervals[0]
+        if x.end - x.begin != 1: return None
+        else:                    return x.begin
 
     def get_string(self, Option="", Delimiter=", "):
         txt = ""
