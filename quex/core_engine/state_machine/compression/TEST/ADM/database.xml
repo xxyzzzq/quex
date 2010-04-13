@@ -1,35 +1,37 @@
-<test-database execution-time-sec="0.40" date="Tue Apr 13 07:13:03 2010">
+<test-database execution-time-sec="0.65" date="Tue Apr 13 18:40:49 2010">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_skeleton" time-sum-sec="0.06"> 
-            <application file-name="paths-find_skeleton.py" info-request-time="1270476375L" vanished="False"/>
-            <choice-list number="2" same_result="False">
-               <choice name="single" result="FAIL" time_sec="0.03" crc="934983060"/>
-               <choice name="more" result="FAIL" time_sec="0.03" crc="321385342"/>
-            </choice-list>
-        </test>
-        <test title="is_difference_single_character" time-sum-sec="0.06"> 
-            <application file-name="paths-can_plug_to_equal.py" info-request-time="1271134461L" vanished="False"/>
-            <choice-list number="2" same_result="False">
-               <choice name="1_interval" result="OK" time_sec="0.00" crc="2146992883"/>
-               <choice name="2_intervals" result="FAIL" time_sec="0.06" crc="212610594"/>
-            </choice-list>
-        </test>
-        <test title="find_path" time-sum-sec="0.22"> 
-            <application file-name="paths-find_paths.py" info-request-time="1271047796L" vanished="False"/>
-            <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.04" crc="351232406"/>
-               <choice name="2" result="OK" time_sec="0.04" crc="1986232386"/>
-               <choice name="3" result="OK" time_sec="0.04" crc="972923365"/>
-               <choice name="4" result="OK" time_sec="0.05" crc="640344761"/>
-               <choice name="5" result="FAIL" time_sec="0.05" crc="610892895"/>
-            </choice-list>
-        </test>
-        <test title="extract_admissible_single_transitions" time-sum-sec="0.06"> 
+        <test title="extract_admissible_single_transitions" time-sum-sec="0.09"> 
             <application file-name="paths-extract_admissible_single_transitions.py" info-request-time="1270184001L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="more" result="FAIL" time_sec="0.03" crc="1639748366"/>
-               <choice name="single" result="FAIL" time_sec="0.03" crc="1687192096"/>
+               <choice name="more" result="FAIL" time_sec="0.04" crc="1639748366"/>
+               <choice name="single" result="FAIL" time_sec="0.05" crc="1687192096"/>
+            </choice-list>
+        </test>
+        <test title="is_difference_single_character" time-sum-sec="0.09"> 
+            <application file-name="paths-can_plug_to_equal.py" info-request-time="1271134461L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="1_interval" result="OK" time_sec="0.04" crc="2146992883"/>
+               <choice name="2_intervals" result="OK" time_sec="0.05" crc="212610594"/>
+            </choice-list>
+        </test>
+        <test title="find_path" time-sum-sec="0.40"> 
+            <application file-name="paths-find_paths.py" info-request-time="1271176664L" vanished="False"/>
+            <choice-list number="7" same_result="False">
+               <choice name="1" result="OK" time_sec="0.08" crc="351232406"/>
+               <choice name="2" result="OK" time_sec="0.06" crc="1986232386"/>
+               <choice name="3" result="OK" time_sec="0.04" crc="972923365"/>
+               <choice name="4" result="OK" time_sec="0.07" crc="640344761"/>
+               <choice name="5" result="OK" time_sec="0.07" crc="-1164571765"/>
+               <choice name="6" result="OK" time_sec="0.05" crc="724300693"/>
+               <choice name="7" result="NO GOOD FILE" time_sec="0.03" crc="0"/>
+            </choice-list>
+        </test>
+        <test title="find_skeleton" time-sum-sec="0.07"> 
+            <application file-name="paths-find_skeleton.py" info-request-time="1270476375L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="single" result="FAIL" time_sec="0.04" crc="934983060"/>
+               <choice name="more" result="FAIL" time_sec="0.04" crc="321385342"/>
             </choice-list>
         </test>
     </group>
