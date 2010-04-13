@@ -94,7 +94,7 @@ class SingleCharacterPath:
         #            in transition map.
         #       
         common_set = self.skeleton_key_set & transition_map_key_set
-        print "##common", common_set
+        ##print "##common", common_set
         for target_idx in common_set:
             sk_trigger_set = self.skeleton[target_idx]
             tm_trigger_set = TransitionMap[target_idx]
@@ -201,8 +201,8 @@ INDENT = 0
 def __find_continuation(sm, StateIdx, the_path):
     global INDENT
     INDENT += 4
-    print (" " * INDENT) + "##StateIdx=%i" % StateIdx 
-    print (" " * (INDENT)) + repr(the_path).replace("\n", "\n" + " " * (INDENT))
+    ##print (" " * INDENT) + "##StateIdx=%i" % StateIdx 
+    ##print (" " * (INDENT)) + repr(the_path).replace("\n", "\n" + " " * (INDENT))
 
     State       = sm.states[StateIdx]
     result_list = []
@@ -219,9 +219,9 @@ def __find_continuation(sm, StateIdx, the_path):
 
         # Does the rest of the transitions fit the 'skeleton'?
         path = deepcopy(the_path)
-        print (" " * INDENT) + "##try match %i, %s" % (target_idx, trigger_set.get_utf8_string()) 
+        ##print (" " * INDENT) + "##try match %i, %s" % (target_idx, trigger_set.get_utf8_string()) 
         if not path.match_skeleton(transition_map, target_idx, path_char): continue 
-        print (" " * INDENT) + "##matched"
+        ##print (" " * INDENT) + "##matched"
         single_char_transition_found_f = True
 
         path.sequence.append((StateIdx, path_char))
@@ -236,8 +236,8 @@ def __find_continuation(sm, StateIdx, the_path):
         the_path.end_state_index = StateIdx
         result_list.append(the_path)
 
-    print (" " * INDENT) + "##result_list" 
-    print (" " * (INDENT + 4)) + repr(result_list).replace("\n", "\n" + " " * (INDENT + 4))
+    ##print (" " * INDENT) + "##result_list" 
+    ##print (" " * (INDENT + 4)) + repr(result_list).replace("\n", "\n" + " " * (INDENT + 4))
     INDENT -= 4
     return result_list
 
