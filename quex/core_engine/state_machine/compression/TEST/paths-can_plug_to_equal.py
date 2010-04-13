@@ -22,8 +22,8 @@ def test(List0, List1, TestPlugs):
     Set0 = number_set(List0)
     Set1 = number_set(List1)
     for char in TestPlugs:
-        forward  = paths.is_difference_single_character(Set0, Set1, char)
-        backward = paths.is_difference_single_character(Set1, Set0, char)
+        forward  = paths.can_plug_to_equal(Set0, char, Set1)
+        backward = paths.can_plug_to_equal(Set1, char, Set0)
         print "%02X, %s, %s;" % (char, repr(forward), repr(backward))
     print 
 

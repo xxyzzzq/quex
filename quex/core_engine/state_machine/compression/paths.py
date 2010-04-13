@@ -94,6 +94,7 @@ class SingleCharacterPath:
         #            in transition map.
         #       
         common_set = self.skeleton_key_set & transition_map_key_set
+        print "##common", common_set
         for target_idx in common_set:
             sk_trigger_set = self.skeleton[target_idx]
             tm_trigger_set = TransitionMap[target_idx]
@@ -105,11 +106,18 @@ class SingleCharacterPath:
             if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
                 continue
 
-            # (3.2) Can difference between trigger sets be plugged by the wildcard?
-            elif   wildcard_plug == None \
-               and can_plug_to_equal(sk_trigger_set, self.wildcard, tm_trigger_set): 
-                wildcard_plug = target_idx
-                continue
+            elif wildcard_plug == None:
+                # (3.2) Can difference between trigger sets be plugged by the wildcard?
+                if can_plug_to_equal(sk_trigger_set, self.wildcard, tm_trigger_set): 
+                    wildcard_plug = target_idx
+                    continue
+                # (3.3) A set extended by wilcard may have only a 'hole' of the
+                #       size of the single transition char.
+                if can_plug_to_equal(tm_trigger_set, 
+                                     TriggerCharToTarget,
+                                     sk_trigger_set.union(NumberSet(self.wildcard))): 
+                    wildcard_plug = target_idx
+                    continue
 
             # Trigger sets differ and no wildcard or single transition
             # can 'explain' that => skeleton does not fit.
@@ -121,6 +129,7 @@ class SingleCharacterPath:
                 self.skeleton[wildcard_plug].unite_with(NumberSet(self.wildcard))
             else:
                 self.skeleton[wildcard_plug] = NumberSet(self.wildcard)
+            self.skeleton_key_set.add(wildcard_plug)
             self.wildcard = None # There is no more wildcard now
 
         return True
@@ -248,14 +257,18 @@ def can_plug_to_equal(Set0, Char, Set1):
     # If interval number differs more than one, then no single
     # character can do the job.
     if Set1.interval_number() - Set0.interval_number() > 1: return False
-    if Set0.interval_number() > Set1.interval_number():     return False
+    # It is possible that Set0 has more intervals than Set1, e.g.
+    # Set0 = {[1,2], [4]}, and Set1={[1,4]}. In this example, '3'
+    # can plug Set0 to be equal to Set1. A difference > 1 is impossible,
+    # because, one character can plug at max. one 'hole'.
+    if Set0.interval_number() - Set1.interval_number() > 1: return False
 
     # Does Set0 contain elements that are not in Set1?
-    if Set0.difference(Set1).is_empty(): return False
+    if not Set0.difference(Set1).is_empty(): return False
 
     delta = Set1.difference(Set0)
-    # If there is no difference to make up for, then no plug needed.
-    if delta.is_empty(): return True
+    # If there is no difference to make up for, then no plugging possible.
+    if delta.is_empty(): return False
 
     return delta.contains_only(Char)
 
