@@ -19,7 +19,7 @@
 
 # start    = 19;
 # path     = (19)--'d'-->(21)--'e'-->[22];
-# skeleton = (20) by ['a', 'c'], ['e', 'z']; 
-# wildcard = True;
+# skeleton = (20) by ['a', 'z']; 
+# wildcard = False;
 # 
 ## String paths were = ('ab', 'cde')
