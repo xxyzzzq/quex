@@ -10,7 +10,7 @@ import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 import quex.core_engine.state_machine.compression.paths     as paths 
 
 if "--hwut-info" in sys.argv:
-    print "Paths: find_path;"
+    print "Paths: find_path (mean tests);"
     print "CHOICES: 1, 2, 3, 4, 5, 6;"
     sys.exit(0)
 
@@ -35,7 +35,7 @@ def number_set(IntervalList):
     result = NumberSet(map(lambda x: Interval(x[0], x[1]), IntervalList))
     return result
 
-def test(Skeleton, *StringPaths):
+def test(Skeleton, AddTransitionList, *StringPaths):
     sm = core.StateMachine()
 
     # def construct_path(sm, StartStateIdx, String, Skeleton):
@@ -45,6 +45,9 @@ def test(Skeleton, *StringPaths):
 
     sm = nfa_to_dfa.do(sm)
     sm = hopcroft.do(sm)
+
+    for start_idx, end_idx, trigger_set in AddTransitionList:
+        sm.add_transition(long(start_idx), trigger_set, long(end_idx))
 
     # print Skeleton
     print sm.get_graphviz_string(NormalizeF=False)
@@ -85,17 +88,32 @@ for char in "cd":
     trigger = NumberSet(Interval((letter % 2) * 2, (letter % 2) * 2 + 2))
     skeleton_4.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
 
+add_transition_list_0 = [
+        (18, 18, ord('b')),
+        (18, 19, ord('c')),
+        (18, 16, ord('a')),
+        ]
+
 # Hint: Use 'dot' (graphviz utility) to print the graphs.
 # EXAMPLE:
 #          > ./paths-find_paths.py 2 > tmp.dot
 #          > dot tmp.dot -Tfig -o tmp.fig       # produce .fig graph file 
 #          > xfig tmp.fig                       # use xfig to view
-if   len(sys.argv) < 2:
+if len(sys.argv) < 2:
     print "Call this with: --hwut-info"
-elif "1" in sys.argv: test(skeleton_2, "cb")
-elif "2" in sys.argv: test(skeleton_0, "cc")
-elif "3" in sys.argv: test(skeleton_0, "ca")
-elif "4" in sys.argv: test(skeleton_3, "ccccb")
-elif "5" in sys.argv: test(skeleton_1, "abc", "cde")
-elif "6" in sys.argv: test(skeleton_4, "cde")
+    sys.exit(0)
 
+if "1" in sys.argv: 
+    test(skeleton_0, [(8, 8, ord('b')), (8, 9, ord('a'))], "b")
+
+elif "2" in sys.argv: 
+    test(skeleton_2, add_transition_list_0, "cb")
+
+elif "3" in sys.argv: 
+    test(skeleton_0, 
+         [(11, 11, ord('c'))], #[(8, 8, ord('b')), (8, 9, ord('a'))], 
+         "bb")
+print "#"
+print "# Some recursions are possible, if the skeleton contains them."
+print "# In this case, the path cannot contain but the 'iterative' char"
+print "# plus some exit character."
