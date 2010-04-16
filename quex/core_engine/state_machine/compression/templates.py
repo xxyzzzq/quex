@@ -72,45 +72,26 @@ def get_metric(TriggerMap0, TriggerMap1):
     same_target_list       = {}
     equivalent_target_list = []
 
-    i = 0 # iterator over interval list 0
-    k = 0 # iterator over interval list 1
     assert TriggerMap0[0][0].begin == -sys.maxint
     assert TriggerMap1[0][0].begin == -sys.maxint
+    assert TriggerMap0[-1][0].end  == sys.maxint
+    assert TriggerMap1[-1][0].end  == sys.maxint
+    i = 0 # iterator over interval list 0
+    k = 0 # iterator over interval list 1
 
-    focus_line     = - sys.maxint
-    border_count_n = 0
 
     # -- intervals in trigger map are always adjacent, so the '.end'
     #    member is not required.
-    while i != Li and k != Lk:
+    border_count_n = 0
+    while not (i == Li-1 and k == Lk-1):
+        print "##", i, k
         i_trigger = TriggerMap0[i]
-        k_trigger = TriggerMap1[k]
-
-        i_begin   = i_trigger[0].begin
+        i_end     = i_trigger[0].end
         i_target  = i_trigger[1]
 
-        k_begin   = k_trigger[0].begin
+        k_trigger = TriggerMap1[k]
+        k_end     = k_trigger[0].end
         k_target  = k_trigger[1]
-
-        # Step to the next *lowest* border, i.e. increment the 
-        # interval line index with the lowest '.begin'. For example:
-        # 
-        #         0   1 2  3 4 5  6   7
-        #     i   |     |      |  |   |
-        #     k   |   |    | |        |
-        #         :   : :  : : :  :   :   (6 intervals, 6 borders)
-        #
-        #                         i_begin:     k_begin:
-        # Does:  (1) ++i, ++k -->    2            1
-        #        (2) ++k      -->    2            3
-        #        (3) ++i      -->    5            3
-        #        (4) ++k      -->    5            4
-        #        (5) ++k      -->    5            6
-        #        (6) ++i      -->    6            7
-        #        (6) ++i      -->    7            7
-        if   i_begin == k_begin:  i += 1; k += 1;
-        elif i_begin < k_begin:   i += 1;
-        else:                     k += 1;
 
         if i_target == k_target: 
             same_target_list[i_target] = True
@@ -120,13 +101,51 @@ def get_metric(TriggerMap0, TriggerMap1):
             if pair not in equivalent_target_list:
                 equivalent_target_list.append(pair)
 
+        # Step to the next *lowest* border, i.e. increment the 
+        # interval line index with the lowest '.end'. For example:
+        # 
+        #         0   1 2  3 4 5  6   7
+        #     i   |     |      |  |   |
+        #     k   |   |    | |        |
+        #         :   : :  : : :  :   :   (6 intervals, 6 borders)
+        #
+        #                         i_end:     k_end:
+        # Does:  (1) ++i, ++k -->    2            1
+        #        (2) ++k      -->    2            3
+        #        (3) ++i      -->    5            3
+        #        (4) ++k      -->    5            4
+        #        (5) ++k      -->    5            6
+        #        (6) ++i      -->    6            7
+        #        (6) ++i      -->    7            7
+        if   i_end == k_end:  i += 1; k += 1;
+        elif i_end < k_end:   i += 1;
+        else:                 k += 1;
+
         border_count_n += 1
+
+    # Treat the last trigger interval
+    i_trigger = TriggerMap0[-1]
+    i_end     = i_trigger[0].end
+    i_target  = i_trigger[1]
+
+    k_trigger = TriggerMap1[-1]
+    k_end     = k_trigger[0].end
+    k_target  = k_trigger[1]
+
+    if i_target == k_target: 
+        same_target_list[i_target] = True
+
+    else:
+        pair = (i_target, k_target)
+        if pair not in equivalent_target_list:
+            equivalent_target_list.append(pair)
+
 
     border_count_n += (Li - i) + (Lk - k)
 
     return border_count_n, \
-           len(same_target_list), \
-           len(equivalent_target_list)
+           same_target_list, \
+           equivalent_target_list
 
 
 def xxxx():
