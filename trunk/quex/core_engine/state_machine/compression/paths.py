@@ -167,10 +167,9 @@ def find_paths(SM):
     """
     return __find_begin(SM, SM.init_state_index)
 
-__find_begin_done_state_idx_list = {}
-__find_continuation_done_state_idx_list = {}
+__find_begin_touched_state_idx_list = {}
 def __find_begin(sm, StateIdx):
-    global __find_begin_done_state_idx_list
+    global __find_begin_touched_state_idx_list
 
     State       = sm.states[StateIdx]
     result_list = []
@@ -178,8 +177,9 @@ def __find_begin(sm, StateIdx):
     transition_map = State.transitions().get_map()
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.items():
-        if __find_begin_done_state_idx_list.has_key(target_idx): continue
+        if __find_begin_touched_state_idx_list.has_key(target_idx): continue
 
+        __find_begin_touched_state_idx_list[target_idx] = True
         result_list.extend(__find_begin(sm, target_idx))
 
         path_char = trigger_set.get_the_only_element()
@@ -194,7 +194,6 @@ def __find_begin(sm, StateIdx):
             
         result_list.extend(__find_continuation(sm, target_idx, path))
 
-    __find_begin_done_state_idx_list[StateIdx] = True
     return result_list
 
 INDENT = 0
@@ -222,15 +221,18 @@ def __find_continuation(sm, StateIdx, the_path):
         ##print (" " * INDENT) + "##try match %i, %s" % (target_idx, trigger_set.get_utf8_string()) 
         if not path.match_skeleton(transition_map, target_idx, path_char): continue 
         ##print (" " * INDENT) + "##matched"
+
+        ## print "##", target_idx, path
+
+        # A recursion cannot be covered by a 'path state'. We cannot 
+        # extract a state that contains recursions and replace it with
+        # a skeleton plus a 'character string position'. Omit this path!
+        if path.contains(target_idx): continue # Recursion ahead! Don't go!
+
+        # Find a continuation of the path
         single_char_transition_found_f = True
-
         path.sequence.append((StateIdx, path_char))
-
-        if path.contains(target_idx): # End of path detected
-            path.end_state_index = target_idx
-            result_list.append(path)
-        else:                         # Find a continuation of the path
-            result_list.extend(__find_continuation(sm, target_idx, path))
+        result_list.extend(__find_continuation(sm, target_idx, path))
 
     if not single_char_transition_found_f and len(the_path.sequence) != 1:
         the_path.end_state_index = StateIdx
