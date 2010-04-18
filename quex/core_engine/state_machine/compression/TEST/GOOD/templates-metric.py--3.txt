@@ -4,7 +4,7 @@
 |         |                            |    1, 2;
 |    |              |    |         |   |    2, 3, 4, 5, 1;
 
-BorderN     = 7
+BorderN     = 5
 SameTargetN = 
 TargetCombN = (1L, 2L), (1L, 3L), (2L, 3L), (2L, 4L), (2L, 5L), (2L, 1L)
 
@@ -13,7 +13,7 @@ TargetCombN = (1L, 2L), (1L, 3L), (2L, 3L), (2L, 4L), (2L, 5L), (2L, 1L)
 |    |              |    |         |   |    2, 3, 4, 5, 1;
 |         |                            |    1, 2;
 
-BorderN     = 7
+BorderN     = 5
 SameTargetN = 
 TargetCombN = (2L, 1L), (3L, 1L), (3L, 2L), (4L, 2L), (5L, 2L), (1L, 2L)
 

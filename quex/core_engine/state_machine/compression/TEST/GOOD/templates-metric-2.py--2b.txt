@@ -1,0 +1,19 @@
+
+(Straight)---------------------------------------
+
+|         |                            |    [10L, 11L], [20L, 21L];
+|         |                            |    [10L, 11L], [20L, 21L];
+
+BorderN     = 1
+SameTargetN = 
+TargetCombN = 
+
+(Vice Versa)-------------------------------------
+
+|         |                            |    [10L, 11L], [20L, 21L];
+|         |                            |    [10L, 11L], [20L, 21L];
+
+BorderN     = 1
+SameTargetN = 
+TargetCombN = 
+
