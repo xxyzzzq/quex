@@ -4,7 +4,7 @@
 |                                      |    2;
 |                   |                  |    2, 1;
 
-BorderN     = 3
+BorderN     = 1
 SameTargetN = 2L
 TargetCombN = (2L, 1L)
 
@@ -13,7 +13,7 @@ TargetCombN = (2L, 1L)
 |                   |                  |    2, 1;
 |                                      |    2;
 
-BorderN     = 3
+BorderN     = 1
 SameTargetN = 2L
 TargetCombN = (1L, 2L)
 
