@@ -1,0 +1,23 @@
+
+(Straight)---------------------------------------
+
+|         |                            |    1, 2;
+|                             |        |    1, 2;
+
+## 0 0
+## 1 0
+BorderN     = 4
+SameTargetN = 1L, 2L
+TargetCombN = (2L, 1L)
+
+(Vice Versa)-------------------------------------
+
+|                             |        |    1, 2;
+|         |                            |    1, 2;
+
+## 0 0
+## 0 1
+BorderN     = 4
+SameTargetN = 1L, 2L
+TargetCombN = (1L, 2L)
+

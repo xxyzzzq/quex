@@ -1,5 +1,5 @@
 from copy import deepcopy
-import quex.core_engine.state_machine.dead_end_analysis as dead_end_analysis
+import quex.core_engine.state_machine.dead_end_analyzis as dead_end_analyzis
 
 class StateMachineDecorator:
     def __init__(self, SM, Name, PostContextSM_ID_List, 
@@ -26,7 +26,7 @@ class StateMachineDecorator:
         # -- collect the 'dead end states' (states without further transitions)
         #    create a map from the 'dead end state
         self.__dead_end_state_db, self.__directly_reached_terminal_id_list = \
-                dead_end_analysis.do(SM)
+                dead_end_analyzis.do(SM)
 
         if BackwardLexingF:
             # During backward lexing (pre-condition, backward input position detection)
