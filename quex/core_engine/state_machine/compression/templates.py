@@ -22,6 +22,17 @@
 #    'a'-'z'      1                  0
 #    'A'-'Z'      1                  0
 import sys
+
+class Combination:
+    def __init__(self, A_State, B_State, DetermineTriggerMapF=False):
+        self.__trigger_map = []
+        self.__target_index_combination_set = set([])
+
+        self.__border_n, self.__target_index_combination_set = \
+                get_metric(A_State, B_State)
+
+
+
 # Parameters:
 #    NC_t = number of comparisons in the table
 #    NS_t = number of states in the table
@@ -30,29 +41,99 @@ import sys
 #
 #    NAC(state0, state1) = number of additional boundaries
 #                          if state0 is combined with state1
+def delta_cost(SizeA, SizeB, N, CombinedBorderN, TargetStateCombinationN):
+    """BEFORE: 
+                Cost0 = (SizeA + SizeB) * CI
+
+                where CI is the average 'identification cost', i.e. the
+                cose for branching through the 'if/else' statements of 
+                the transition map, plus the cost for a goto.
+
+       AFTER:
+                Cost1 =   CombinedBorderN * CI
+                        + TargetStateCombinationN * N * CR
+
+                where N is the number of combined states.
+                      CR is the cost for routing, i.e. jumping to
+                         the correct target state depending on template.
+
+       THUS:    
+                Delta = Cost0 - Cost1
+
+                      = ( SizeA + SizeB - CombinedBorderN ) * CI
+                         - TargetStateCombinationN * N * CR
+
+                Delta shall be a 'measure', so there is no loss of 
+                information if we devide by a constant, e.g. CR. Thus
+
+                Delta = CX * (SizeA + SizeB - CombinedBorderN)
+                        - TargetStateCombinationN * N
+
+                Where CX = CI/CR. The constants CI and CR where place-
+                holders anyway for something that can only be assumed.
+                Now, CI and CR can be replaced by a single heuristic
+                value CX.
+
+    """
+    return (SizeA + SizeB - CombinedBorderN) - TargetStateCombinationN * 2
+
+
+class TriggerMapDB:
+    def __init__(self, SM):
+        assert SM.__class__.__name__ == "StateMachine"
+
+        # (1) Get the trigger maps of all states of the state machine
+        self.__db = {}
+        for index, state in sm.states.items():
+            trigger_map = state.transitions().get_trigger_map()
+            # Dead ends, cannot be part of the code generation
+            if trigger_map == []: continue
+            self.__db[index] = trigger_map
+
+    def get_best_matching_pair(self):
+
+        best_i = None 
+        best_k = None
+
+        index_list = self.__db.keys()
+        L          = len(index_list)
+        for i in range(L):
+            TriggerMapA = index_list[i]
+            SizeA       = len(TriggerMapA)
+
+            max_gain = -1
+            for k in range(i + 1, L):
+                TriggerMapB = index_list[k]
+
+                bn, nst, net = get_metric(TriggerMapA, TriggerMapB)
+                delta_cost   = delta_cost(SizeA, len(TriggerMapB), 2, bn, len(net))
+
+                if delta_cost > max_gain: 
+                    max_gain  = delta_cost
+                    best_i = i; best_k = k;
+
+        return best_i,  best_k
+
+
+
+    def delete_pair(self, I, K):
+        del self.__db[I]
+        del self.__db[K]
+
 def TEST_get_NAC_matrix(sm):
-    trigger_map_db = {}
-    for index, state in sm.states.items():
-        trigger_map = state.transitions().get_trigger_map()
-        trigger_map_db[index] = trigger_map
 
-    fh = open("/tmp/nac.dat", "w")
-    state_index_list = sm.states.keys()
-    L                = len(state_index_list)
-    for i in range(L):
-        state_index_0 = state_index_list[i]
-        trigger_map_0 = trigger_map_db[state_index_0]
-        for k in range(i + 1, L):
-            state_index_1 = state_index_list[k]
-            trigger_map_1 = trigger_map_db[state_index_1]
-            bn, nst, net = get_metric(trigger_map_0, trigger_map_1)
-            sum    = len(trigger_map_0) + len(trigger_map_1)
-            saving = sum - bn
-            ratio  = 0.0
-            if sum != 0: ratio = 100.0 * saving / float(sum)
+    db = TriggerMapDB(sm)
 
-            fh.write("%i %.2f %i %i %i %i %i %i\n" % (abs(len(trigger_map_0) - len(trigger_map_1)), ratio, saving, sum, nst, net, i, k))
-    fh.close()
+    # (2) Build clusters by finding best pairs, until there 
+    #     is no meaningful way to build clusters. The elements
+    #     of the pair can also be clusters.
+    while 1 + 1 == 2:
+        i, k = get_best_matching_pair()
+        if i == None: break
+
+        # Add new element: The combined pair
+        trigger_map_db[new_sm_index()] = Combination(trigger_map[i], trigger_map[k])
+        trigger_map_db.delete_pair(i, k) 
 
 def get_metric(TriggerMap0, TriggerMap1):
     """Assume that interval list 0 and 1 are sorted."""
@@ -79,12 +160,10 @@ def get_metric(TriggerMap0, TriggerMap1):
     i = 0 # iterator over interval list 0
     k = 0 # iterator over interval list 1
 
-
-    # -- intervals in trigger map are always adjacent, so the '.end'
-    #    member is not required.
+    # Intervals in trigger map are always adjacent, so the '.end'
+    # member is not required.
     border_count_n = 0
     while not (i == Li-1 and k == Lk-1):
-        print "##", i, k
         i_trigger = TriggerMap0[i]
         i_end     = i_trigger[0].end
         i_target  = i_trigger[1]
@@ -124,13 +203,8 @@ def get_metric(TriggerMap0, TriggerMap1):
         border_count_n += 1
 
     # Treat the last trigger interval
-    i_trigger = TriggerMap0[-1]
-    i_end     = i_trigger[0].end
-    i_target  = i_trigger[1]
-
-    k_trigger = TriggerMap1[-1]
-    k_end     = k_trigger[0].end
-    k_target  = k_trigger[1]
+    i_target  = TriggerMap0[-1][1]
+    k_target  = TriggerMap1[-1][1]
 
     if i_target == k_target: 
         same_target_list[i_target] = True
@@ -148,33 +222,3 @@ def get_metric(TriggerMap0, TriggerMap1):
            equivalent_target_list
 
 
-def xxxx():
-    while 1 + 1 == 2:
-        # HERE: Intersection detected: 
-        #        i_begin == k_begin < i_end == k_end --> +/-0, break      (a)
-        #        i_begin == k_begin < i_end <  k_end --> +1,   break      (b)
-        #        i_begin == k_begin < k_end <  i_end --> +1,   continue   (c)
-        #        k_begin < i_begin  < i_end == k_end --> +1,   break      (d)
-        #        i_begin < k_begin  < i_end == k_end --> +1,   break      (e)
-        #        i_begin < k_begin  < k_end <  i_end --> +2,   continue   (f)
-        #        k_begin < i_begin  < k_end <  i_end --> +2,   continue   (g)
-        #        i_begin < k_begin  < i_end <  k_end --> +2,   break      (h)
-        #        k_begin < i_begin  < i_end <  k_end --> +2,   break      (i)
-        register(i_target, k_target)
-        if i_begin == k_begin:
-            if i_end == k_end: break # (a) 
-            additional_n += 1
-            if i_end < k_end:  break              # (b)
-            else:              k += 1; continue   # (c)
-        elif i_end == k_end:
-            additional_n += 1; break              # (d) (e)
-        elif k_end < i_end:
-            additional_n += 2; k += 1; continue   # (f) (g)
-        else:
-            additional_n += 2; break              # (h) (i)
-
-        if k == L1: break
-
-    return additional_n  
-        
-    
