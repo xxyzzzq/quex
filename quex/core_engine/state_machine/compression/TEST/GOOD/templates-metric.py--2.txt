@@ -5,7 +5,6 @@
 |         |                            |    2, 1;
 
 BorderN     = 1
-SameTargetN = 
 TargetCombN = (1L, 2L), (2L, 1L)
 
 (Vice Versa)-------------------------------------
@@ -14,6 +13,5 @@ TargetCombN = (1L, 2L), (2L, 1L)
 |         |                            |    1, 2;
 
 BorderN     = 1
-SameTargetN = 
 TargetCombN = (2L, 1L), (1L, 2L)
 

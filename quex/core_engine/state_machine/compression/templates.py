@@ -22,16 +22,18 @@
 #    'a'-'z'      1                  0
 #    'A'-'Z'      1                  0
 import sys
+from copy import copy
 
 class Combination:
-    def __init__(self, A_State, B_State, DetermineTriggerMapF=False):
-        self.__trigger_map = []
-        self.__target_index_combination_set = set([])
+    def __init__(self, TriggerMapA, TriggerMapB):
+        self.__trigger_map                 = {}
+        self.__target_index_combination_db = {}
 
-        self.__border_n, self.__target_index_combination_set = \
-                get_metric(A_State, B_State)
+    def __getitem__(self, Index):
+        return self.__trigger_map[Index]
 
-
+    def __len__(self):
+        return len(self.__trigger_map)
 
 # Parameters:
 #    NC_t = number of comparisons in the table
@@ -90,23 +92,34 @@ class TriggerMapDB:
             if trigger_map == []: continue
             self.__db[index] = trigger_map
 
+        self.__metric_cache = {}
+
     def get_best_matching_pair(self):
+        """Determines the two trigger maps that are closest to each
+           other. The consideration includes the trigger maps of
+           combined trigger maps. Thus this function supports the
+           clustering of the best trigger maps into combined trigger
+           maps.
+        """
 
         best_i = None 
         best_k = None
 
         index_list = self.__db.keys()
         L          = len(index_list)
+        max_gain   = -1
         for i in range(L):
             TriggerMapA = index_list[i]
             SizeA       = len(TriggerMapA)
 
-            max_gain = -1
             for k in range(i + 1, L):
                 TriggerMapB = index_list[k]
 
-                bn, nst, net = get_metric(TriggerMapA, TriggerMapB)
-                delta_cost   = delta_cost(SizeA, len(TriggerMapB), 2, bn, len(net))
+                delta_cost = self.metric_cache_get(i, k)
+                if delta_cost == None:
+                    bn, net    = get_metric(TriggerMapA, TriggerMapB)
+                    delta_cost = delta_cost(SizeA, len(TriggerMapB), 2, bn, len(net))
+                    self.metric_cache_set(i, k, delta_cost)
 
                 if delta_cost > max_gain: 
                     max_gain  = delta_cost
@@ -114,7 +127,13 @@ class TriggerMapDB:
 
         return best_i,  best_k
 
+    def metric_cache_get(self, I, K):
+        # Return 'None' if element '(I, K)' is not in cache
+        return self.__metric_cache.get(I, {}).get(K)
 
+    def metric_cache_set(self, I, K, Value):
+        # Set dictionary[I][K] = Value
+        self.__metric_cache.setdefault(I, {})[K] = Value
 
     def delete_pair(self, I, K):
         del self.__db[I]
@@ -149,14 +168,25 @@ def get_metric(TriggerMap0, TriggerMap1):
     #
     #          |----|-----------|---|
     #
-    # Thus, the additional_n += 2
-    same_target_list       = {}
-    equivalent_target_list = []
 
     assert TriggerMap0[0][0].begin == -sys.maxint
     assert TriggerMap1[0][0].begin == -sys.maxint
     assert TriggerMap0[-1][0].end  == sys.maxint
     assert TriggerMap1[-1][0].end  == sys.maxint
+
+    equivalent_target_list = []
+    def __check_targets(T0, T1):
+        if T0 == T1: return
+
+        # The 'trigger map' may as well be a combination of trigger maps,
+        # thus the 'target' may be a list of targets.
+        if type(T0) != list: combination = [T0]
+        else:                combination = copy(T0)
+        if type(T1) == list: combination.extend(T1)
+        else:                combination.append(T1)
+        if combination not in equivalent_target_list:
+            equivalent_target_list.append(combination)
+
     i = 0 # iterator over interval list 0
     k = 0 # iterator over interval list 1
 
@@ -172,13 +202,7 @@ def get_metric(TriggerMap0, TriggerMap1):
         k_end     = k_trigger[0].end
         k_target  = k_trigger[1]
 
-        if i_target == k_target: 
-            same_target_list[i_target] = True
-
-        else:
-            pair = (i_target, k_target)
-            if pair not in equivalent_target_list:
-                equivalent_target_list.append(pair)
+        __check_targets(i_target, k_target)
 
         # Step to the next *lowest* border, i.e. increment the 
         # interval line index with the lowest '.end'. For example:
@@ -203,22 +227,60 @@ def get_metric(TriggerMap0, TriggerMap1):
         border_count_n += 1
 
     # Treat the last trigger interval
-    i_target  = TriggerMap0[-1][1]
-    k_target  = TriggerMap1[-1][1]
-
-    if i_target == k_target: 
-        same_target_list[i_target] = True
-
-    else:
-        pair = (i_target, k_target)
-        if pair not in equivalent_target_list:
-            equivalent_target_list.append(pair)
-
-
-    border_count_n += (Li - i) + (Lk - k)
+    __check_targets(TriggerMap0[-1][1], TriggerMap1[-1][1])
 
     return border_count_n, \
-           same_target_list, \
            equivalent_target_list
 
+def get_combined_trigger_map(TriggerMap0, TriggerMap1):
+    Li = len(TriggerMap0)
+    Lk = len(TriggerMap1)
 
+    assert TriggerMap0[0][0].begin == -sys.maxint
+    assert TriggerMap1[0][0].begin == -sys.maxint
+    assert TriggerMap0[-1][0].end  == sys.maxint
+    assert TriggerMap1[-1][0].end  == sys.maxint
+
+    equivalent_target_list = []
+    def __get_target_index(T0, T1):
+        if T0 == T1: return
+
+        # The 'trigger map' may as well be a combination of trigger maps,
+        # thus the 'target' may be a list of targets.
+        if type(T0) != list: combination = [T0]
+        else:                combination = copy(T0)
+        if type(T1) == list: combination.extend(T1)
+        else:                combination.append(T1)
+        if combination not in equivalent_target_list:
+            equivalent_target_list.append(combination)
+
+    i = 0 # iterator over interval list 0
+    k = 0 # iterator over interval list 1
+
+    # Intervals in trigger map are always adjacent, so the '.end'
+    # member is not required.
+    trigger_map = []
+    while not (i == Li-1 and k == Lk-1):
+        i_trigger = TriggerMap0[i]
+        i_end     = i_trigger[0].end
+        i_target  = i_trigger[1]
+
+        k_trigger = TriggerMap1[k]
+        k_end     = k_trigger[0].end
+        k_target  = k_trigger[1]
+
+        target_idx = __get_target_index(i_target, k_target)
+
+        trigger_map.append(Interval(prev_end, min(i_end, k_end)), target_idx)
+
+        if   i_end == k_end:  i += 1; k += 1;
+        elif i_end < k_end:   i += 1;
+        else:                 k += 1;
+
+        border_count_n += 1
+
+    # Treat the last trigger interval
+    __check_targets(TriggerMap0[-1][1], TriggerMap1[-1][1])
+
+    return border_count_n, \
+           equivalent_target_list
