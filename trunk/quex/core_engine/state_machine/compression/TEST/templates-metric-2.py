@@ -33,8 +33,7 @@ def print_tm(TM):
 
 def print_metric(M):
     print "BorderN     = %i" % M[0]
-    print "SameTargetN = %s" % repr(M[1].keys())[1:-1]
-    print "TargetCombN = %s" % repr(M[2])[1:-1].replace("[", "(").replace("]", ")")
+    print "TargetCombN = %s" % repr(M[1])[1:-1].replace("[", "(").replace("]", ")")
 
 def test(TMa, TMb):
     print

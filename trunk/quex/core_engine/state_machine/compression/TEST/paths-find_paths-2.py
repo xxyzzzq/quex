@@ -11,7 +11,7 @@ import quex.core_engine.state_machine.compression.paths     as paths
 
 if "--hwut-info" in sys.argv:
     print "Paths: find_path (mean tests);"
-    print "CHOICES: 1, 2, 3, 4, 5, 6;"
+    print "CHOICES: 1, 2, 3;"
     sys.exit(0)
 
 
