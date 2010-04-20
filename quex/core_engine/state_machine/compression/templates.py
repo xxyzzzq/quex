@@ -23,17 +23,30 @@
 #    'A'-'Z'      1                  0
 import sys
 from copy import copy
+from quex.core_engine.interval_handling import Interval
 
 class Combination:
-    def __init__(self, TriggerMapA, TriggerMapB):
-        self.__trigger_map                 = {}
-        self.__target_index_combination_db = {}
+    def __init__(self):
+        self.__trigger_map                   = []
+        self.__target_index_combination_list = []
+
+    def append(self, Begin, End, TargetStateIdxList):
+        self.__trigger_map.append([Interval(Begin, End), TargetStateIdxList])
+        if TargetStateIdxList not in self.__target_index_combination_list:
+            self.__target_index_combination_list.append(TargetStateIdxList)
 
     def __getitem__(self, Index):
         return self.__trigger_map[Index]
 
     def __len__(self):
         return len(self.__trigger_map)
+
+    def __repr__(self):
+        txt = []
+        for trigger in self.__trigger_map:
+            txt.append("[%i, %i) --> %s\n" % \
+                       (trigger[0].begin, trigger[0].end, trigger[1]))
+        return "".join(txt)
 
 # Parameters:
 #    NC_t = number of comparisons in the table
@@ -242,24 +255,26 @@ def get_combined_trigger_map(TriggerMap0, TriggerMap1):
     assert TriggerMap1[-1][0].end  == sys.maxint
 
     equivalent_target_list = []
-    def __get_target_index(T0, T1):
-        if T0 == T1: return
+    def __get_target(T0, T1):
+        if T0 == T1: 
+            if type(T0) != list: return [T0, T0] # build list
+            else:                return T0 + T0  # concatination 
 
         # The 'trigger map' may as well be a combination of trigger maps,
         # thus the 'target' may be a list of targets.
-        if type(T0) != list: combination = [T0]
+        if type(T0) != list: combination = [T0] 
         else:                combination = copy(T0)
-        if type(T1) == list: combination.extend(T1)
-        else:                combination.append(T1)
-        if combination not in equivalent_target_list:
-            equivalent_target_list.append(combination)
+        if type(T1) != list: combination.append(T1)
+        else:                combination.extent(T1)
+        return combination
 
     i = 0 # iterator over interval list 0
     k = 0 # iterator over interval list 1
 
     # Intervals in trigger map are always adjacent, so the '.end'
     # member is not required.
-    trigger_map = []
+    result = Combination()
+    prev_end = - sys.maxint
     while not (i == Li-1 and k == Lk-1):
         i_trigger = TriggerMap0[i]
         i_end     = i_trigger[0].end
@@ -269,18 +284,17 @@ def get_combined_trigger_map(TriggerMap0, TriggerMap1):
         k_end     = k_trigger[0].end
         k_target  = k_trigger[1]
 
-        target_idx = __get_target_index(i_target, k_target)
-
-        trigger_map.append(Interval(prev_end, min(i_end, k_end)), target_idx)
+        target    = __get_target(i_target, k_target)
+        end = min(i_end, k_end)
+        result.append(prev_end, min(i_end, k_end), target)
+        prev_end = end
 
         if   i_end == k_end:  i += 1; k += 1;
         elif i_end < k_end:   i += 1;
         else:                 k += 1;
 
-        border_count_n += 1
-
     # Treat the last trigger interval
-    __check_targets(TriggerMap0[-1][1], TriggerMap1[-1][1])
+    target = __get_target(TriggerMap0[-1][1], TriggerMap1[-1][1])
+    result.append(prev_end, sys.maxint, target)
 
-    return border_count_n, \
-           equivalent_target_list
+    return result
