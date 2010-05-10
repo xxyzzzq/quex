@@ -14,7 +14,9 @@ def do(state, StateIdx, SMD, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
-    assert SMD.__class__.__name__ == "StateMachineDecorator"
+    assert state.__class__.__name__ == "State"
+    assert SMD.__class__.__name__   == "StateMachineDecorator"
+    assert type(InitStateF)         == bool
 
     LanguageDB = Setup.language_db
 
@@ -35,9 +37,9 @@ def do(state, StateIdx, SMD, InitStateF=False):
     #       increment the current pointer before referencing the character to be read. 
     #       However, when the init state is entered during analysis else, the current 
     #       pointer needs to be incremented.
-    # note down information about success, if state is an acceptance state
-    txt = [ 
-            input_block(StateIdx, InitStateF, SMD.backward_lexing_f()),
+    txt = \
+          input_block(StateIdx, InitStateF, SMD.backward_lexing_f()) +
+          [ 
             acceptance_info.do(state, StateIdx, SMD),
             transition_block.do(TriggerMap, StateIdx, InitStateF, SMD),
             drop_out.do(state, StateIdx, SMD, InitStateF)
@@ -73,5 +75,5 @@ def input_block(StateIdx, InitStateF, BackwardLexingF):
 
     txt.extend(["    ", LanguageDB["$input/get"], "\n"])
 
-    return "".join(txt)
+    return txt
 

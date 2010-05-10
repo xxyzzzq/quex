@@ -1,3 +1,5 @@
+# (C) 2010 Frank-Rene Schaefer
+
 from quex.core_engine.interval_handling import NumberSet, Interval
 from copy import deepcopy, copy
 

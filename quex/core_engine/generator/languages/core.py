@@ -164,8 +164,13 @@ db["C++"] = {
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
-    "$goto":                lambda Type, Argument=None:  "goto %s;" % label_db_get(Type, Argument, GotoTargetF=True),
-    "$label-pure":          lambda Label:                "%s:" % Label,
+    "$goto":                 lambda Type, Argument=None:  "goto %s;" % label_db_get(Type, Argument, GotoTargetF=True),
+    "$goto-template":        lambda TemplateStateIdx, StateKey: 
+                             "template_state_key = %i; " % StateKey + \
+                             "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
+    "$goto-template-target": lambda TemplateIdx, TargetStateIdx: 
+                             "QUEX_TEMPLATE_GOTO(%i, %i);" % (TemplateIdx, TargetStateIdx),
+    "$label-pure":           lambda Label:                "%s:" % Label,
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \
                                 __string_if_true("    ", Type == "$drop-out-direct") + \

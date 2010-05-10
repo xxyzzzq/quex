@@ -43,7 +43,6 @@ def do(ModeDB):
             error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
                       "Use for example 'start = %s;' in the quex source file to define an initial mode." \
                       % start_mode)
-
         # This Branch: start mode is applicable and present
 
     else: 
@@ -62,7 +61,7 @@ def do(ModeDB):
         for base_mode in mode.get_base_mode_sequence()[:-1]:
             if base_mode.options["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
-                          (mode.name, base_mode_name), mode.filename, mode.line_n)
+                          (mode.name, base_mode.name), mode.filename, mode.line_n)
 
     # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
     for mode in ModeDB.values():

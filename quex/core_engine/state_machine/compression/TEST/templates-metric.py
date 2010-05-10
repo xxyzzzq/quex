@@ -6,49 +6,29 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.core_engine.interval_handling import *
 import quex.core_engine.state_machine.compression.templates as templates 
+from   quex.core_engine.state_machine.compression.TEST.templates_aux import *
 
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Templates: Single Target Idx Metric"
-    print "CHOICES: 1, 2, 2b, 3, 4;"
+    print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
-def print_tm(TM):
-    cursor = 0
-    txt = [" "] * 40
-    for info in TM[1:]:
-        x = max(0, min(40, info[0].begin))
-        txt[x] = "|"
-
-    txt[0]  = "|"
-    txt[39] = "|"
-    print "".join(txt),
-
-    txt = ""
-    for info in TM:
-        txt += "%i, " % info[1]
-    txt = txt[:-2] + ";"
-    print "   " + txt
-
-def print_metric(M):
-    print "BorderN     = %i" % M[0]
-    print "TargetCombN = %s" % repr(M[1])[1:-1].replace("[", "(").replace("]", ")")
-
-def test(TMa, TMb):
+def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     print
     print "(Straight)---------------------------------------"
     print
     print_tm(TMa)
     print_tm(TMb)
     print
-    print_metric(templates.get_metric(TMa, TMb))
+    print_metric(templates.get_metric(TMa, InvolvedStateListA, TMb, InvolvedStateListB))
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(templates.get_metric(TMb, TMa))
+    print_metric(templates.get_metric(TMb, InvolvedStateListB, TMa, InvolvedStateListA))
     print
 
 tm0 = [ 
@@ -96,4 +76,16 @@ elif "4" in sys.argv:
             (Interval(20, sys.maxint),  1L),
           ]
     test(tm0, tm1)
+
+elif "recursive" in sys.argv:
+    print "Involved states in First = 1L"
+    print "Involved states in Second = 2L"
+    print "=> when First triggers to 1L and Second to 2L, then both"
+    print "   are recursive and no distinction needs to be made."
+    tm1 = [ 
+            (Interval(-sys.maxint, sys.maxint), 2L),
+          ]
+    test(tm0, tm1, [1L], [2L])
+    print "A target combination (1L, 2L) and vice versa has not to appear,"
+    print "because this would mean recursion and is thus an equivalence."
 
