@@ -23,7 +23,7 @@ class GeneratorBase:
         self.sm = self.__create_core_state_machine()
 
         # DEBUG ONLY
-        compression_table.TEST_get_NAC_matrix(self.sm)
+        compression_table.do(self.sm, 0.5)
 
         #     -- pre conditions
         self.pre_context_sm = self.__create_pre_context_state_machine()

@@ -8,9 +8,9 @@ class __info:
     def __init__(self, StateIdx, IsInitStateF, DSM):
         assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
 
-        self.state_index        = StateIdx
-        self.is_init_state_f    = IsInitStateF
-        self.dsm                = DSM
+        self.state_index     = StateIdx
+        self.is_init_state_f = IsInitStateF
+        self.dsm             = DSM
 
 def do(TriggerMap, StateIdx, InitStateF, DSM):
     assert type(TriggerMap) == list
@@ -36,7 +36,7 @@ def do(TriggerMap, StateIdx, InitStateF, DSM):
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        return  "    " + transition.do(StateIdx, TriggerMap[0][0], TriggerMap[0][1], DSM) + "\n"
+        return  "    " + transition.do(TriggerMap[0][1], StateIdx, TriggerMap[0][0], DSM) + "\n"
 
 def __get_code(TriggerMap, info):
     """Creates code for state transitions from this state. This function is very
@@ -109,7 +109,7 @@ def __create_transition_code(TriggerMapEntry, info):
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt =  "    " + transition.do(info.state_index, interval, target_state_index, info.dsm)
+    txt =  "    " + transition.do(target_state_index, info.state_index, interval, info.dsm)
     if interval != None:
         # if Setup.engine_character_encoding != "":
         txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"

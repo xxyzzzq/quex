@@ -46,11 +46,10 @@ def do():
 
     header_engine_txt,           \
     constructor_and_memento_txt, \
-    header_configuration_txt     = quex_class_out.do(mode_db, IndentationSupportF)
+    header_configuration_txt = quex_class_out.do(mode_db, IndentationSupportF)
     # NOTE: In C++, constructor_and_memento_txt == "" since the implementation of templates
     #       needs to happen inside the header files.
-
-    mode_implementation_txt     = mode_classes.do(mode_db)
+    mode_implementation_txt  = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
     token_id_maker.do(Setup) 
@@ -174,8 +173,6 @@ def implement_skippers(mode):
         action = get_action(mode, pattern_str)
         action.set_code(create_skip_range_code(closer_sequence))
 
-
-    
 def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function

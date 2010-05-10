@@ -337,8 +337,28 @@ options:
         of two bytes, while the length of an encoding for a character varries.
         For UTF16, only ``-b 2`` makes sense.
 
+Template and Path Compression can be controlled with the following command line options:
+
+.. cmdoption:: --template-compression
+
+   If this option is set, then template compression is activated.
+
+.. cmdoption:: --template-compression-coefficient 'number'
+
+   The number following this option specifies the template compression coefficient.
+   It indicates the relative cost of routing to a target state compared to a simple
+   'goto' statement. The optimal value may vary from processor platform to processor
+   platform, and from compiler to compiler.
+
+   DEFAULT = 1
+
+.. cmdoption:: --path-compression
+
+   This flag activates Path Compression.
+
+
 For version information pass option `--version`' or `-v`'. The options `--help`
-and `-h`' are reserved for requesting a help text. Those are the options for
+and `-h`' are reserved for requesting a help text.  Those are the options for
 using quex in the 'normal' mode where it creates lexical analyzers. However,
 quex provides some services to query and test character sets. If one of
 those options is called, then quex does not create a lexical analyzer but
@@ -418,4 +438,3 @@ this feature:
 
         Lists all possible graphic formats for which quex can produce transition
         graphs.
-

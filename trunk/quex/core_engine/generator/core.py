@@ -27,6 +27,13 @@ class Generator(GeneratorBase):
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
+        # (optional) State machines have been built, now do compressions
+        if Setup.compression_template_f:
+            self.compression_template_info = template_compression.do(self.sm,
+                                                 Setup.compression_template_cost_coefficient)
+        if Setup.compression_path_f:
+            self.compression_path_info = path_compression.do(self.sm)
+
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
 

@@ -21,8 +21,7 @@ class State:
     #
     # Objects of this class are to be used in class StateMachine, where a dictionary maps 
     # from a start state index to a State-object.
-    #
-    #####################################################################################    
+
     def __init__(self, AcceptanceF=False, StateMachineID=-1L, StateIndex=-1L):
         """Contructor of a State, i.e. a aggregation of transitions.
         """

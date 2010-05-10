@@ -79,6 +79,14 @@ class StateCoreInfo:
         #    of a post condition that is pseudo-ambiguous. 
         self.__pseudo_ambiguous_post_context_id = PseudoAmbiguousPostConditionID
 
+    def is_equivalent(self, Other):
+        return self.__acceptance_f                     == Other.__acceptance_f                     \
+               self.__store_input_position_f           == Other.__store_input_position_f           \
+               self.__post_context_id                  == Other.__post_context_id                  \
+               self.__pre_context_id                   == Other.__pre_context_id                   \
+               self.__pre_context_begin_of_line_f      == Other.__pre_context_begin_of_line_f      \
+               self.__pseudo_ambiguous_post_context_id == Other.__pseudo_ambiguous_post_context_id 
+
     def merge(self, Other):
         # It **does** make any sense to merge to state cores from different
         # state machines. This should not be an 'assert'. In the final state machine

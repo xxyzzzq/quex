@@ -1,4 +1,4 @@
-<history date="Tue Apr 20 06:02:21 2010" element-n="11">
+<history date="Thu May  6 07:07:06 2010" element-n="12">
     <day year="2010" month="04" day="01">
         <history-init time="16:04:08"/>
     </day>
@@ -25,5 +25,8 @@
     <day year="2010" month="04" day="18">
         <crc-error time="15:37:29" application="templates-metric.py" choice="1" database-crc="-1578734527" real-crc="-1863779026"/>
         <crc-error time="15:37:29" application="templates-metric.py" choice="2" database-crc="837096345" real-crc="-419042886"/>
+    </day>
+    <day year="2010" month="05" day="04">
+        <crc-error time="05:02:29" application="templates-combine-2.py" choice="recursive" database-crc="-1963475255" real-crc="-1772708121"/>
     </day>
 </history>

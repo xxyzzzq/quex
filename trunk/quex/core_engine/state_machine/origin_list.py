@@ -5,6 +5,24 @@ class StateOriginList:
     def __init__(self):
         self.__list = []
 
+    def is_equivalent(self, Other):
+        # Loop over all origins in list and search for counterparts in Other
+        for origin in self.__list:
+            # Is there an equivalent origin in Other?
+            for counterpart in Other.__list:
+                if origin.is_equivalent(counterpart): break
+            else:
+                return False 
+
+        # Vice versa ...
+        for origin in Other.__list:
+            for counterpart in self.__list:
+                if origin.is_equivalent(counterpart): break
+            else:
+                return False 
+
+        return True
+
     def get_list(self):
         return self.__list
 
