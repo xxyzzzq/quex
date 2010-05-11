@@ -1,5 +1,6 @@
 import quex.core_engine.generator.languages.core   as languages
 from   quex.core_engine.generator.languages.core   import __nice
+import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.transition       as transition
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
@@ -38,7 +39,7 @@ def do(state, StateIdx, SMD, InitStateF=False):
     #       However, when the init state is entered during analysis else, the current 
     #       pointer needs to be incremented.
     txt = \
-          input_block(StateIdx, InitStateF, SMD.backward_lexing_f()) +
+          input_block.do(StateIdx, InitStateF, SMD.backward_lexing_f()) + \
           [ 
             acceptance_info.do(state, StateIdx, SMD),
             transition_block.do(TriggerMap, StateIdx, InitStateF, SMD),
@@ -56,24 +57,4 @@ def do(state, StateIdx, SMD, InitStateF=False):
 
     
     return "".join(txt) # .replace("\n", "\n    ") + "\n"
-
-def input_block(StateIdx, InitStateF, BackwardLexingF):
-    # The initial state starts from the character to be read and is an exception.
-    # Any other state starts with an increment (forward) or decrement (backward).
-    # This is so, since the beginning of the state is considered to be the 
-    # transition action (setting the pointer to the next position to be read).
-    LanguageDB = Setup.language_db
-    if not BackwardLexingF:
-        if not InitStateF:
-            txt = [        LanguageDB["$label-def"]("$input", StateIdx), "\n",
-                   "    ", LanguageDB["$input/increment"], "\n"]
-        else:
-            txt = []
-    else:
-        txt = [         LanguageDB["$label-def"]("$input", StateIdx), "\n",
-               "    " + LanguageDB["$input/decrement"], "\n"]
-
-    txt.extend(["    ", LanguageDB["$input/get"], "\n"])
-
-    return txt
 

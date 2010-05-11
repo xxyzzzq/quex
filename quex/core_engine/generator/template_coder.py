@@ -42,8 +42,11 @@ class TemplateState(state_machine.State):
         # Internally, we adapt the trigger map from:  Interval -> Target State List
         # to:                                         Interval -> Index
         # where 'Index' represents the Target State List
-        self.trigger_map          = []
+        self.__trigger_map        = []
         self.target_state_list_db = []
+        self.__get_adapted_trigger_map(Combi)
+
+    def __get_adapted_trigger_map(self, Combi):
         i = 0
         for info in Combi.get_trigger_map():
             if type(info[1]) != list:
@@ -62,7 +65,7 @@ class TemplateState(state_machine.State):
 
                 target = TemplateTarget(self.state_index, target_state_index)
 
-            self.trigger_map.append([info[0], target])
+            self.__trigger_map.append([info[0], target])
 
     def involved_state_list(self):
         return self.__involved_state_list
@@ -81,6 +84,7 @@ class TemplateState(state_machine.State):
             result.append(target_state_list[key_index])
 
         return result
+
        
 def do(CombinationList, DSM):
     """-- Returns generated code for all templates.

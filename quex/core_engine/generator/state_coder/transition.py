@@ -71,6 +71,7 @@ def __transition_to_dead_end_state(TargetStateIdx, DSM):
        not necessary to go to that state and then drop out, and then goto the
        terminal. The transition to the terminal can be done directly.  
     """
+    LanguageDB = Setup.language_db
     assert DSM != None
 
     dead_end_target_state = DSM.dead_end_state_db()[TargetStateIdx]
@@ -100,7 +101,7 @@ def __transition_to_dead_end_state(TargetStateIdx, DSM):
     elif DSM.mode() == "BackwardLexing":
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
-        return acceptance_info.backward_lexing(dead_end_target_state)
+        return acceptance_info.backward_lexing(dead_end_target_state.origins().get_list())
 
     elif DSM.mode() == "BackwardInputPositionDetection":
         # When searching backwards for the end of the core pattern, and one reaches
