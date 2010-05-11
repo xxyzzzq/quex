@@ -3,11 +3,11 @@
 
     The result of this process is:
     
-       A list of objects of type 'Combination'. It provides
+       A list of objects of type 'TemplateCombination'. It provides
        the information to generate code for the transition
        template and the routers for the involved states.
 
-    An object of class Combination represents a state transition template
+    An object of class TemplateCombination represents a state transition template
     together with information about the involved states. It basically contains:
 
      -- a trigger map, i.e. a list of intervals together with target state
@@ -84,7 +84,7 @@
 
      Combined Trigger Maps ___________________________________________
 
-     Combined trigger maps are stored in objects of type 'Combination'.
+     Combined trigger maps are stored in objects of type 'TemplateCombination'.
      As normal trigger maps they are built of a list of tuples:
 
               (I0, TL0), (I1, TL1), .... (In, TLn)
@@ -98,7 +98,7 @@
               In.end   == sys.maxint
 
      In 'normal trigger maps' TL0 to TLn would be scalar values that 
-     indicate a target state. In a 'Combination' object, 
+     indicate a target state. In a 'TemplateCombination' object, 
 
             TLk is scalar, if Ik maps to the same target state
                               for all involved states.
@@ -139,7 +139,7 @@ def do(sm, CostCoefficient):
     trigger_map_db = TriggerMapDB(sm)
 
     # Build templated combinations by finding best pairs, until there is no meaningful way to
-    # build any clusters. Combinations of states also take part in the race.
+    # build any clusters. TemplateCombinations of states also take part in the race.
     while 1 + 1 == 2:
         i, k = trigger_map_db.get_best_matching_pair()
         if i == None: break
@@ -155,12 +155,12 @@ def do(sm, CostCoefficient):
 
     result = []
     for state_index, combination in trigger_map_db.items():
-        if combination.__class__ == Combination: result.append(combination)
+        if combination.__class__ == TemplateCombination: result.append(combination)
 
     return result
 
 TARGET_RECURSIVE = -2L # 'Normal' targets are greater than zero
-class Combination:
+class TemplateCombination:
     def __init__(self, InvolvedStateList0,  InvolvedStateList1):
         self.__trigger_map         = []
         self.__involved_state_list = InvolvedStateList0 + InvolvedStateList1
@@ -293,21 +293,21 @@ class TriggerMapDB:
             for k in range(i + 1, L):
                 StateIndexB = index_list[k]
 
-                delta_cost = self.get_delta_cost(StateIndexA, StateIndexB)
+                delta_cost = self.__get_delta_cost(StateIndexA, StateIndexB)
                 if delta_cost <= max_gain:  continue
                 max_gain = delta_cost
                 best_a = StateIndexA; best_b = StateIndexB;
 
         return best_a, best_b
 
-    def get_delta_cost(self, StateIndexA, StateIndexB):
+    def __get_delta_cost(self, StateIndexA, StateIndexB):
         delta_cost = self.__delta_cost_cache_get(StateIndexA, StateIndexB)
         if delta_cost != None: return delta_cost
 
         # If one state is acceptance, the other not, or one state stores
         # input positions and the other not, etc. then the states cannot
         # be combined into a template. Return -1 to indicate 'impossible'.
-        if self.state_attributes_mismatch(StateIndexA, StateIndexB): 
+        if self.__state_attributes_mismatch(StateIndexA, StateIndexB): 
             delta_cost = -1.0
 
         else:
@@ -331,7 +331,7 @@ class TriggerMapDB:
 
         return delta_cost
 
-    def state_attributes_mismatch(self, StateIndexA, StateIndexB):
+    def __state_attributes_mismatch(self, StateIndexA, StateIndexB):
         """Check whether the attributes of two states match. Non-acceptance
            states cannot be combined with acceptance states, etc.
         """
@@ -362,20 +362,20 @@ class TriggerMapDB:
 
     def __setitem__(self, Key, Value):
         assert type(Key) == long
-        assert Value.__class__ == Combination
+        assert Value.__class__ == TemplateCombination
         self.__db[Key] = Value
 
     def items(self):
         return self.__db.items()
 
 def involved_state_number(TM):
-    if TM.__class__ == Combination:
+    if TM.__class__ == TemplateCombination:
         return TM.involved_state_number()
     else:
         return 1
 
 def involved_state_list(TM, DefaultIfTriggerMapIsNotACombination):
-    if TM.__class__ == Combination:
+    if TM.__class__ == TemplateCombination:
         return TM.involved_state_list()
     else:
         return [ DefaultIfTriggerMapIsNotACombination ]
@@ -384,7 +384,7 @@ def is_recursive(TM, Target, InvolvedStateList):
     """Determine whether the target state indicates that the 
        state triggers to itself.
     """
-    if TM.__class__ != Combination:
+    if TM.__class__ != TemplateCombination:
         # In a 'normal trigger map' the target needs to be equal to the
         # state that it contains.
         assert len(InvolvedStateList) == 1
@@ -519,7 +519,7 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
     __asserts(TriggerMap1)
 
     def __get_target(T0, T1):
-        """In the 'Combination' trigger map, a transition to the same
+        """In the 'TemplateCombination' trigger map, a transition to the same
            target for all involved states is coded as a scalar value.
            Other combined transitions are coded as list while 
 
@@ -555,7 +555,7 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
 
     # Intervals in trigger map are always adjacent, so the '.end'
     # member is not required.
-    result = Combination(InvolvedStateList0, InvolvedStateList1)
+    result = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
     prev_end = - sys.maxint
     while not (i == Li-1 and k == Lk-1):
         i_trigger = TriggerMap0[i]

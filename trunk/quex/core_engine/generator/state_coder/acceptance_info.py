@@ -12,7 +12,7 @@ def do(State, StateIdx, SMD):
     
     mode = SMD.mode()
     if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD)
-    elif mode == "BackwardLexing":                 return backward_lexing(State)
+    elif mode == "BackwardLexing":                 return backward_lexing(State.origins().get_list)
     elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State)
     else:
         assert False, "This part of the code should never be reached"
@@ -117,16 +117,14 @@ def __handle_post_conditioned_core_patterns(OriginList, SMD):
 
     return txtl
 
-def backward_lexing(State):
+def backward_lexing(OriginList):
     """Backward Lexing:
        -- Using an inverse state machine from 'real' current start position backwards
           until a drop out occurs.
        -- During backward lexing, there is no 'winner' so all origins that indicate
           acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
     """
-    assert State.__class__.__name__ == "State"
     LanguageDB = Setup.language_db
-    OriginList = State.origins().get_list()
 
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
