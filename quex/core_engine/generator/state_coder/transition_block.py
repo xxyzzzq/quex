@@ -27,7 +27,7 @@ def do(TriggerMap, StateIdx, InitStateF, DSM):
     info = __info(StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
 
     if len(TriggerMap) > 1:
-        return __get_code(TriggerMap, info) + "\n"
+        return [__get_code(TriggerMap, info), "\n"]
     else:
         # We can actually be sure, that the Buffer Limit Code is filtered
         # out, since this is the task of the regular expression parser.
@@ -36,7 +36,7 @@ def do(TriggerMap, StateIdx, InitStateF, DSM):
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        return  "    " + transition.do(TriggerMap[0][1], StateIdx, TriggerMap[0][0], DSM) + "\n"
+        return ["    ", transition.do(TriggerMap[0][1], StateIdx, TriggerMap[0][0], DSM), "\n"]
 
 def __get_code(TriggerMap, info):
     """Creates code for state transitions from this state. This function is very
@@ -68,30 +68,31 @@ def __get_code(TriggerMap, info):
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
         #     If the input falls into this interval the target trigger is identified!
-        txt = __create_transition_code(TriggerMap[0], info)
+        txt = [ __create_transition_code(TriggerMap[0], info) ]
         
     else:    
         simple_txt = __try_very_simplest_case(TriggerMap, info)
         if simple_txt != None: 
-            txt = "".join(["    ", simple_txt])
+            txt = ["    ", simple_txt]
         else:
             # two or more intervals => cut in the middle
             MiddleTrigger_Idx = int(TriggerSetN / 2)
             middle = TriggerMap[MiddleTrigger_Idx]
 
             # input < 0 is impossible, since unicode codepoints start at 0!
-            if middle[0].begin == 0: txt = __get_code(TriggerMap[MiddleTrigger_Idx:], info) 
-            elif TriggerSetN == 2:   txt = __bracket_two_intervals(TriggerMap, info) 
-            elif TriggerSetN == 3:   txt = __bracket_three_intervals(TriggerMap, info)
-            else:                    txt = __bracket_normally(MiddleTrigger_Idx, TriggerMap, info)
-            txt = "".join(["    ", txt])
+            if middle[0].begin == 0: code = [ __get_code(TriggerMap[MiddleTrigger_Idx:], info) ]
+            elif TriggerSetN == 2:   code = __bracket_two_intervals(TriggerMap, info) 
+            elif TriggerSetN == 3:   code = __bracket_three_intervals(TriggerMap, info)
+            else:                    code = __bracket_normally(MiddleTrigger_Idx, TriggerMap, info)
+            txt = ["    "] + code
         
 
     # (*) indent by four spaces (nested blocks are correctly indented)
     #     delete the last newline, to prevent additional indentation
-    if txt[-1] == "\n": txt = txt[:-1]
-    txt = txt.replace("\n", "\n    ") + "\n"
-    return txt 
+    result = "".join(txt)
+    if result[-1] == "\n": result = result[:-1]
+    result = result.replace("\n", "\n    ") + "\n"
+    return result 
 
 def __create_transition_code(TriggerMapEntry, info):
     """Creates the transition code to a given target based on the information in
@@ -202,13 +203,13 @@ def __bracket_two_intervals(TriggerMap, info):
     elif second_interval.size() == 1: txt0 = LanguageDB["$if !="](repr(second_interval.begin))
     else:                             txt0 = LanguageDB["$if <"](repr(second_interval.begin))
 
-    return "".join([
-                    txt0,
-                    __create_transition_code(first, info),
-                    LanguageDB["$endif-else"],
-                    __create_transition_code(second, info),
-                    LanguageDB["$end-else"]
-                   ])
+    return [
+                txt0,
+                __create_transition_code(first, info),
+                LanguageDB["$endif-else"],
+                __create_transition_code(second, info),
+                LanguageDB["$end-else"]
+           ]
 
 def __bracket_three_intervals(TriggerMap, info):
     assert len(TriggerMap) == 3
@@ -237,16 +238,16 @@ def __bracket_three_intervals(TriggerMap, info):
             #     else:                           goto alternative target
             txt0  = LanguageDB["$if in-interval"](TriggerMap[1][0])
 
-        return "".join([
-                        txt0,
-                        __create_transition_code(TriggerMap[1], info),
-                        LanguageDB["$endif-else"],
-                        # TODO: Add somehow a mechanism to report that here the 
-                        #       intervals 0 **and** 1 are triggered
-                        #       (only for the comments in the generated code)
-                        __create_transition_code(TriggerMap[0], info),
-                        LanguageDB["$end-else"]
-                       ])
+        return [
+                    txt0,
+                    __create_transition_code(TriggerMap[1], info),
+                    LanguageDB["$endif-else"],
+                    # TODO: Add somehow a mechanism to report that here the 
+                    #       intervals 0 **and** 1 are triggered
+                    #       (only for the comments in the generated code)
+                    __create_transition_code(TriggerMap[0], info),
+                    LanguageDB["$end-else"]
+               ]
 
     # (*) Non special case --> bracket normally
     return __bracket_normally(1, TriggerMap, info)
@@ -258,11 +259,11 @@ def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
     assert middle[0].begin >= 0, \
            "code generation: error cannot split intervals at negative code points."
 
-    return "".join([
-                    LanguageDB["$if <"](repr(middle[0].begin)),
-                    __get_code(TriggerMap[:MiddleTrigger_Idx], info),
-                    LanguageDB["$endif-else"],
-                    __get_code(TriggerMap[MiddleTrigger_Idx:], info),
-                    LanguageDB["$end-else"]
-                   ])
+    return [ 
+                LanguageDB["$if <"](repr(middle[0].begin)),
+                __get_code(TriggerMap[:MiddleTrigger_Idx], info),
+                LanguageDB["$endif-else"],
+                __get_code(TriggerMap[MiddleTrigger_Idx:], info),
+                LanguageDB["$end-else"]
+           ]
 

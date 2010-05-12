@@ -36,7 +36,7 @@ def do(SMD):
     #       starts at furthest right before the EndOfFile and the init state transits
     #       into the TERMINAL_END_OF_FILE.
     txt.extend([LanguageDB["$label-def"]("$entry", state_machine.init_state_index), "\n"])
-    txt.append(state_coder.do(init_state, 
+    txt.extend(state_coder.do(init_state, 
                               state_machine.init_state_index, 
                               SMD, InitStateF = True))
 
@@ -50,10 +50,12 @@ def do(SMD):
         state_code = state_coder.do(state, state_index, SMD)
 
         # some states are not coded (some dead end states)
-        if state_code == "": continue
+        if len(state_code) == 0: continue
 
-        txt.extend([LanguageDB["$label-def"]("$entry", state_index), "\n",
-                    state_code, "\n"])
+        txt.append(LanguageDB["$label-def"]("$entry", state_index))
+        txt.append("\n")
+        txt.extend(state_code)
+        txt.append("\n")
     
     return "".join(txt)
 

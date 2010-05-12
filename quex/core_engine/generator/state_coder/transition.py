@@ -63,7 +63,6 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
         else:
             return LanguageDB["$goto"]("$drop-out-direct", CurrentStateIdx)
 
-
 def __transition_to_dead_end_state(TargetStateIdx, DSM):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that
        there is actually no 'transition block' in that state and it transits
@@ -101,17 +100,16 @@ def __transition_to_dead_end_state(TargetStateIdx, DSM):
     elif DSM.mode() == "BackwardLexing":
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
-        return acceptance_info.backward_lexing(dead_end_target_state.origins().get_list())
+        return "".join(acceptance_info.backward_lexing(dead_end_target_state.origins().get_list()))
 
     elif DSM.mode() == "BackwardInputPositionDetection":
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
-        txt  = LanguageDB["$input/decrement"] + "\n"
-        txt += acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state)
-
-        txt += LanguageDB["$goto"]("$terminal-general-bw", True)   # general terminal
-        return txt
+        txt  = [ LanguageDB["$input/decrement"], "\n"] + \
+               acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state.origins().get_list()) + \
+               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]  # general terminal
+        return "".join(txt)
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % DSM.mode()
