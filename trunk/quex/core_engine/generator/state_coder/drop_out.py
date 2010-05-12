@@ -128,7 +128,7 @@ def do(State, StateIdx, SMD, InitStateF):
         ]
 
     # -- in case of the init state, the end of file has to be checked.
-    return "".join(txt)
+    return txt
 
 def __reload_forward():
     # NOTE, extra four whitespace in second line by purpose.

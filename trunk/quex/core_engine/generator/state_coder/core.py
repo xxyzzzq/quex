@@ -9,8 +9,6 @@ from   quex.input.setup                                        import setup as S
 from copy import deepcopy
 
 
-__DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
-
 def do(state, StateIdx, SMD, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
@@ -18,43 +16,36 @@ def do(state, StateIdx, SMD, InitStateF=False):
     assert state.__class__.__name__ == "State"
     assert SMD.__class__.__name__   == "StateMachineDecorator"
     assert type(InitStateF)         == bool
+    assert len(state.transitions().get_epsilon_target_state_index_list()) == 0, \
+           "Epsilon transition contained target states: state machine was not made a DFA!\n" + \
+           "Epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
     LanguageDB = Setup.language_db
 
-    # (*) check that no epsilon transition triggers to a real state                   
-    if __DEBUG_CHECK_ACTIVE_F:
-        assert len(state.transitions().get_epsilon_target_state_index_list()) == 0, \
-               "epsilon transition contained target states: state machine was not made a DFA!\n" + \
-               "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
-
+    # Special handling of dead-end-states, i.e. states with no further transitions.
     if SMD.dead_end_state_db().has_key(StateIdx):
         return transition.do_dead_end_router(state, StateIdx, SMD.backward_lexing_f())
 
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
-    #                        # ==> here, the trigger map cannot be empty.
-    #_________________________________________________________________________________________    
-    # NOTE: The first entry into the init state is a little different. It does not 
-    #       increment the current pointer before referencing the character to be read. 
-    #       However, when the init state is entered during analysis else, the current 
-    #       pointer needs to be incremented.
+    #                        # => Here, the trigger map cannot be empty.
+
     txt = \
           input_block.do(StateIdx, InitStateF, SMD.backward_lexing_f()) + \
-          [ 
-            acceptance_info.do(state, StateIdx, SMD),
-            transition_block.do(TriggerMap, StateIdx, InitStateF, SMD),
-            drop_out.do(state, StateIdx, SMD, InitStateF)
-          ]
+          acceptance_info.do(state, StateIdx, SMD)                      + \
+          transition_block.do(TriggerMap, StateIdx, InitStateF, SMD)    + \
+          drop_out.do(state, StateIdx, SMD, InitStateF)
 
-    # Define the entry of the init state after the init state itself. This is so,
-    # since the init state does not require an increment on the first beat. Later on,
-    # when other states enter here, they need to increase/decrease the input pointer.
-    if not SMD.backward_lexing_f():
-        if InitStateF:
-            txt.extend([        LanguageDB["$label-def"]("$input", StateIdx),
-                        "    ", LanguageDB["$input/increment"],          "\n",
-                        "    ", LanguageDB["$goto"]("$entry", StateIdx), "\n"])
-
+    if InitStateF and not SMD.backward_lexing_f():
+        # Define the transition entry of the init state **after** the init state itself.
+        # It contains 'increment input pointer', which is not required at the begin of
+        # a lexical analyzis--in forward lexing. When other states transit to the init
+        # state, they need to increase the input pointer. 
+        # All this is not necessary in backward lexing, since there, the init state's
+        # original entry contains 'decrement input pointer' anyway.
+        txt.extend([        LanguageDB["$label-def"]("$input", StateIdx),
+                    "    ", LanguageDB["$input/increment"],          "\n",
+                    "    ", LanguageDB["$goto"]("$entry", StateIdx), "\n"])
     
-    return "".join(txt) # .replace("\n", "\n    ") + "\n"
+    return txt # .replace("\n", "\n    ") + "\n"
 

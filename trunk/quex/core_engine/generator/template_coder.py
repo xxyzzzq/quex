@@ -32,43 +32,35 @@ class TemplateTarget:
         self.template_index      = TemplateIndex
         self.target_state_index  = TargetStateKey
 
-class TemplateState(state_machine.State):
-    def __init__(self, Combi):
-        self.__involved_state_list  = Combi.involved_state_list()
-
-        # The template gets an index as if it was a normal state
-        self.state_index = index.get()
-
-        # Internally, we adapt the trigger map from:  Interval -> Target State List
-        # to:                                         Interval -> Index
-        # where 'Index' represents the Target State List
-        self.__trigger_map        = []
-        self.target_state_list_db = []
-        self.__get_adapted_trigger_map(Combi)
-
-    def __get_adapted_trigger_map(self, Combi):
+class TransitionMapMimiker:
+    # Class that mimiks the TransitionMap of quex.core_engine.state_machine.transition_map
+    # The goal is to enable 'TemplateState' to act as a normal state responging to 
+    # the member function .transitions()
+    def __init__(self, TriggerMap):
+        self.__trigger_map          = []
+        self.__target_state_list_db = []
         i = 0
-        for info in Combi.get_trigger_map():
+        for info in TriggerMap:
             if type(info[1]) != list:
                 # Target state is the same for all involved states
                 target = info[1]
             else:
-                if info[1] not in self.target_state_list_db: 
+                if info[1] not in self.__target_state_list_db: 
                     # Register a new target state combination
-                    self.target_state_list_db.append(info[1])
+                    self.__target_state_list_db.append(info[1])
                     target_state_index = i
                     i += 1
 
                 else:
                     # Target state combination has been registered before => get the index.
-                    target_state_index = self.target_state_list_db.index(info[1])
+                    target_state_index = self.__target_state_list_db.index(info[1])
 
                 target = TemplateTarget(self.state_index, target_state_index)
 
             self.__trigger_map.append([info[0], target])
 
-    def involved_state_list(self):
-        return self.__involved_state_list
+    def get_trigger_map(self):
+        return self.__trigger_map
 
     def get_target_state_list(self, StateIndex):
         # Get the 'key' for the state index
@@ -85,7 +77,21 @@ class TemplateState(state_machine.State):
 
         return result
 
-       
+class TemplateState(state_machine.State):
+    def __init__(self, Combi):
+        self.__involved_state_list  = Combi.involved_state_list()
+
+        # The template gets an index as if it was a normal state
+        self.state_index = index.get()
+
+        # Internally, we adapt the trigger map from:  Interval -> Target State List
+        # to:                                         Interval -> Index
+        # where 'Index' represents the Target State List
+        self.__transition_map = TransitionMapMimiker(Combi.get_trigger_map())
+
+    def involved_state_list(self):
+        return self.__involved_state_list
+
 def do(CombinationList, DSM):
     """-- Returns generated code for all templates.
        -- Sets the template_compression_db in DSM.

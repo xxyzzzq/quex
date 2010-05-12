@@ -12,8 +12,8 @@ def do(State, StateIdx, SMD):
     
     mode = SMD.mode()
     if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD)
-    elif mode == "BackwardLexing":                 return backward_lexing(State.origins().get_list)
-    elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State)
+    elif mode == "BackwardLexing":                 return backward_lexing(State.origins().get_list())
+    elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State.origins().get_list())
     else:
         assert False, "This part of the code should never be reached"
 
@@ -49,7 +49,7 @@ def forward_lexing(State, StateIdx, SMD):
     OriginList = State.origins().get_list()
 
     # (1) Set the post context registers (if appropriate)
-    txt = "".join(__handle_post_conditioned_core_patterns(OriginList, SMD))
+    txt = __handle_post_conditioned_core_patterns(OriginList, SMD)
 
     # -- If there is no 'real' acceptance, then we're done
     #    (Post conditioned core pattern end states are not in itself 
@@ -77,7 +77,7 @@ def forward_lexing(State, StateIdx, SMD):
 
         return info
 
-    txt += get_acceptance_detector(OriginList, __on_detection_code)
+    txt.append(get_acceptance_detector(OriginList, __on_detection_code))
 
     return txt
 
@@ -137,17 +137,17 @@ def backward_lexing(OriginList):
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
-    txt = ""
+    txt = []
     for origin in OriginList:
         if not origin.store_input_position_f(): continue
         assert origin.is_acceptance()
         variable = "pre_context_%s_fulfilled_f" % __nice(origin.state_machine_id)
-        txt += "    " + LanguageDB["$assignment"](variable, 1)
-    txt += "\n"    
+        txt.append("    " + LanguageDB["$assignment"](variable, 1))
+    txt.append("\n")
 
     return txt
 
-def backward_lexing_find_core_pattern(State):
+def backward_lexing_find_core_pattern(OriginList):
     """Backward Lexing:
        -- (see above)
        -- for the search of the end of the core pattern, the acceptance position
@@ -155,11 +155,7 @@ def backward_lexing_find_core_pattern(State):
        -- There is only one pattern involved, so no determination of 'who won'
           is important.
     """
-    assert State.__class__.__name__ == "State", \
-           "Received %s as argument." % repr(State)
     LanguageDB = Setup.language_db
-
-    OriginList = State.origins().get_list()
 
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
@@ -176,8 +172,8 @@ def backward_lexing_find_core_pattern(State):
     for origin in OriginList:
         if origin.store_input_position_f():
             assert origin.is_acceptance()
-            return "    " + LanguageDB["$input/tell_position"]("end_of_core_pattern_position") + "\n"
-    return "\n"
+            return ["    ", LanguageDB["$input/tell_position"]("end_of_core_pattern_position"), "\n"]
+    return ["\n"]
 
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         
@@ -187,7 +183,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         # do not replace the last '\n' with '\n    '
         return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
 
-    txt = ""
+    txt = []
     first_if_statement_f = True
     OriginList.sort()
     for origin in OriginList:
@@ -196,33 +192,36 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         info = get_on_detection_code_fragment(origin)
 
         if origin.pre_context_id() != -1L:
-            if first_if_statement_f: txt += LanguageDB["$if pre-context"](origin.pre_context_id())
-            else:                    txt += LanguageDB["$elseif pre-context"](origin.pre_context_id())
-            txt += indent_this(info)
-            txt += LanguageDB["$endif"]
+            if first_if_statement_f: txt.append(LanguageDB["$if pre-context"](origin.pre_context_id()))
+            else:                    txt.append(LanguageDB["$elseif pre-context"](origin.pre_context_id()))
+            txt.append(indent_this(info))
+            txt.append(LanguageDB["$endif"])
         
         elif origin.pre_context_begin_of_line_f():
-            if first_if_statement_f: txt += LanguageDB["$if begin-of-line"]
-            else:                    txt += LanguageDB["$elseif begin-of-line"]
-            txt += indent_this(info)
-            txt += LanguageDB["$endif"] 
+            if first_if_statement_f: txt.append(LanguageDB["$if begin-of-line"])
+            else:                    txt.append(LanguageDB["$elseif begin-of-line"])
+            txt.append(indent_this(info))
+            txt.append(LanguageDB["$endif"] )
         
         else:
             if first_if_statement_f: 
-                txt += info
+                txt.append(info)
             else:
                 # if an 'if' statements preceeded, the acceptance needs to appear in an else block
-                txt += LanguageDB["$else"] + "\n"; 
-                txt += indent_this(info)
-                txt += LanguageDB["$endif"]
+                txt.append(LanguageDB["$else"])
+                txt.append("\n")
+                txt.append(indent_this(info))
+                txt.append(LanguageDB["$endif"])
 
             break  # no need for further pre-condition consideration
 
         first_if_statement_f = False
 
     # (*) write code for the unconditional acceptance states
-    if txt == "": return ""
-    else:         return "    " + txt[:-1].replace("\n", "\n    ") + txt[-1]
+    if txt == []: return []
+
+    result = "".join(txt)
+    return "    " + result[:-1].replace("\n", "\n    ") + result[-1]
 
 def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     """For the 'longest match' approach it is generally necessary to store the last

@@ -291,7 +291,7 @@ def get_character_set_skipper(TriggerSet, LanguageDB):
     # That means: As long as characters of the trigger set appear, we go to the loop start.
     transition_map = TransitionMap()
     transition_map.add_transition(TriggerSet, skipper_index)
-    iteration_code = transition_block.do(transition_map.get_trigger_map(), skipper_index, InitStateF=False, DSM=None)
+    iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), skipper_index, InitStateF=False, DSM=None))
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 
