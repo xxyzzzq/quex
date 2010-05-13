@@ -249,6 +249,7 @@ def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
 
     for state_index in reachable_state_list:
         state = SM.states[state_index]
+
         if state.is_acceptance() == False: return True
         # Is there at least one origin that is unconditioned? If not,
         # the trailing last acceptance must be stored.
