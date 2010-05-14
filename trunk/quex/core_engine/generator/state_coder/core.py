@@ -1,3 +1,4 @@
+from   quex.core_engine.state_machine.core         import State 
 import quex.core_engine.generator.languages.core   as languages
 from   quex.core_engine.generator.languages.core   import __nice
 import quex.core_engine.generator.state_coder.input_block      as input_block
@@ -13,7 +14,7 @@ def do(state, StateIdx, SMD, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
-    assert state.__class__.__name__ == "State"
+    assert isinstance(state, State)
     assert SMD.__class__.__name__   == "StateMachineDecorator"
     assert type(InitStateF)         == bool
     assert len(state.transitions().get_epsilon_target_state_index_list()) == 0, \

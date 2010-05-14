@@ -15,6 +15,8 @@ import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.state_machine.index              as index
 import quex.core_engine.state_machine.core               as state_machine
 
+from copy import deepcopy
+
 class TemplateTarget:
     def __init__(self, TemplateIndex, TargetStateKey):
         """TemplateIndex     = integer that identifies the template.
@@ -78,27 +80,14 @@ class TransitionMapMimiker:
             result.update(target_state_list)
         return result
 
-    def get_target_state_index_list_for_state(self, StateIndex):
-        # Get the 'key' for the state index
-        try:    key_index = self.__involved_state_list.index(StateIndex)
-        except: assert False, \
-                "Required state index not included in template.\n" + \
-                "StateIndex %i not in involved state list.\n" % StateIndex + \
-                "Involved states are " + repr(self.__involved_state_list)[1:-1]
-
-        # List all target states that are there for the given key
-        result = []
-        for target_state_list in self.target_state_list_db:
-            if type(target_state_list) != list: continue
-            result.append(target_state_list[key_index])
-
-        return result
-
     def get_map(self):
         """We need to return something that is not empty, so that the reload
            procedure will be implemented. See module 'state_coder.acceptance_info'.
         """
         return { -1: None }
+
+    def target_state_list_db(self):
+        return self.__target_state_list_db
 
 
 class TemplateState(state_machine.State):
@@ -114,28 +103,53 @@ class TemplateState(state_machine.State):
        all state machine states.
     """
 
-    def __init__(self, Combi, StateIndex, StateMachineID, AcceptanceF):
+    def __init__(self, Combi, StateIndex, RepresentiveState):
+        """Combi contains all information about the states of a template
+                 and the template itself.
+           
+           StateIndex is the state index that is assigned to the template.
+
+           RepresentiveState is a state that can represent all states in
+                             the template. All states of a template must
+                             be equivalent, so any of them can do.
+        """
         assert Combi.__class__.__name__ == "TemplateCombination"
         assert type(StateIndex)         == long
-        assert type(StateMachineID)     == long
-        assert type(AcceptanceF)        == bool
+        assert RepresentiveState.__class__.__name__ == "State"
 
         # (0) Components required to be a 'State'
-        self.__core        = StateCoreInfo(StateMachineID, StateIndex, AcceptanceF=AcceptanceF)
-        self.__origin_list = StateOriginList()
-        #      Internally, we adapt the trigger map from:  Interval -> Target State List
-        #      to:                                         Interval -> Index
-        #      where 'Index' represents the Target State List
-        self.__transition_map = TransitionMapMimiker(Combi.get_trigger_map())
+        state_machine.State._set(self, 
+                deepcopy(RepresentiveState.core()),
+                RepresentiveState.origins(),
+                # Internally, we adapt the trigger map from:  Interval -> Target State List
+                # to:                                         Interval -> Index
+                # where 'Index' represents the Target State List
+                TransitionMapMimiker(Combi.get_trigger_map()))
+
+        state_machine.State.core(self).state_index = StateIndex
 
         # (1) Template related information
         self.__template_combination  = Combi
 
-    def transitions(self):
-        return self.__transition_map
-
     def template_combination(self):
         return self.__template_combination
+
+    def get_target_state_index_list_for_state(self, StateIndex):
+        # Get the 'key' for the state index
+        try:    key_index = self.__template_combination.involved_state_list().index(StateIndex)
+        except: assert False, \
+                "Required state index not included in template.\n" + \
+                "StateIndex %i not in involved state list.\n" % StateIndex + \
+                "Involved states are " + repr(self.__involved_state_list)[1:-1]
+
+        # List all target states that are there for the given key
+        result = []
+        for target_state_list in self.transitions().target_state_list_db():
+            if type(target_state_list) != list: continue
+            result.append(target_state_list[key_index])
+
+        return result
+
 
 def do(CombinationList, DSM):
     """-- Returns generated code for all templates.
@@ -157,17 +171,19 @@ def do(CombinationList, DSM):
         # to consider one single state in order to know whether it is
         # acceptance or not.
         prototype_index = combination.involved_state_list()[0]
-        acceptance_f = DSM.sm().states[prototype_index].is_acceptance()
-        the_template = TemplateState(combination, index.get(), DSM.sm().get_id(), acceptance_f)
+        prototype       = DSM.sm().states.get(prototype_index)
+        assert prototype != None
 
-        code.append(state_coder.do(the_template, the_template.state_index, DSM, InitStateF=False)
+        the_template = TemplateState(combination, index.get(), prototype)
+
+        code.extend(state_coder.do(the_template, the_template.core().state_index, DSM, InitStateF=False))
         
         key_definition.extend(__generate_key_definition(the_template))
 
         state_key = 0
         for state_index in combination.involved_state_list():
             state_index_list.append(state_index)
-            template_db[state_index] = [the_template.state_index, state_key]
+            template_db[state_index] = [the_template.core().state_index, state_key]
             state_key += 1
 
     DSM.set_template_compression_db(template_db)
@@ -178,10 +194,10 @@ def do(CombinationList, DSM):
 
 def __generate_key_definition(TheTemplate):
     txt = []
-    for represented_state_index in TheTemplate.involved_state_list():
+    for represented_state_index in TheTemplate.template_combination().involved_state_list():
         target_state_index_list = TheTemplate.get_target_state_index_list_for_state(represented_state_index)
         txt.append("QUEX_TYPE_GOTO_LABEL  transition_map_template_%i_state_%i[%i] = {" \
-                   % (TheTemplate.state_index, represented_state_index, len(target_state_index_list)))
+                   % (TheTemplate.core().state_index, represented_state_index, len(target_state_index_list)))
         for state_index in target_state_index_list:
             txt.append("%i, " % state_index)
         txt.append("};\n")

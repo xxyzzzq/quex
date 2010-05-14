@@ -1,3 +1,4 @@
+from   quex.core_engine.state_machine.core import State 
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
 
@@ -124,7 +125,7 @@ def __goto_distinct_terminal(Origin):
     else:
         return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
-def do_dead_end_router(State, StateIdx, BackwardLexingF):
+def do_dead_end_router(state, StateIdx, BackwardLexingF):
     # DeadEndType == -1:
     #    States, that do not contain any acceptance transit to the 'General Terminal'
     #    They do not have to be coded. Instead the 'jump' must be redirected immediately
@@ -136,13 +137,14 @@ def do_dead_end_router(State, StateIdx, BackwardLexingF):
     #    States, where the acceptance depends on the run-time pre-conditions being fulfilled
     #    or not. They are the only ones, that are 'implemented' as routers, that map to
     #    a terminal correspondent the pre-conditions.
-    assert State.is_acceptance()
+    assert isinstance(state, State)
+    assert state.is_acceptance()
     LanguageDB = Setup.language_db
 
-    if State.origins().contains_any_pre_context_dependency() == False: 
+    if state.origins().contains_any_pre_context_dependency() == False: 
         return "" # LanguageDB["$goto-last_acceptance"] + "\n"
 
-    txt = acceptance_info.get_acceptance_detector(State.origins().get_list(), 
+    txt = acceptance_info.get_acceptance_detector(state.origins().get_list(), 
                                                   __goto_distinct_terminal)
             
     #  Pre-conditions might not have their pre-condition fulfilled.

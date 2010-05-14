@@ -1,10 +1,11 @@
+import quex.core_engine.state_machine.core     as state_machine 
 from quex.core_engine.generator.languages.core import __nice
 from quex.input.setup import setup as Setup
 
 LanguageDB = None
 
 def do(State, StateIdx, SMD):
-    assert State.__class__.__name__ == "State"
+    assert isinstance(State, state_machine.State)
     assert SMD.__class__.__name__   == "StateMachineDecorator"
     global LanguageDB
 
@@ -240,7 +241,7 @@ def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
        Note, that this is equally true, if the acceptance state transits 
        on itself.
     """
-    assert State.__class__.__name__ == "State"
+    assert isinstance(State, state_machine.State)
     assert SM.__class__.__name__ == "StateMachine"
     assert State.is_acceptance()
 
