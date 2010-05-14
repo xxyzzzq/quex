@@ -34,6 +34,14 @@ class State:
     def core(self):
         return self.__core
 
+    def _set(self, Core, OriginList, TMap):
+        """This function allows a derived class to impose values on 
+           the core members of this class.
+        """
+        self.__core           = Core
+        self.__origin_list    = OriginList
+        self.__transition_map = TMap
+
     def origins(self):
         return self.__origin_list
 

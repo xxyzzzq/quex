@@ -1,4 +1,5 @@
-from   quex.input.setup import setup as Setup
+import quex.core_engine.state_machine.core as state_machine
+from   quex.input.setup                    import setup as Setup
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 
 LanguageDB = None
@@ -139,7 +140,7 @@ def __reload_backward():
     return "QUEX_NAME(buffer_reload_backward)(&me->buffer);\n"
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
-    assert state.__class__.__name__ == "State"
+    assert isinstance(state, state_machine.State)
     assert SM.__class__.__name__    == "StateMachine"
     global LanguageDB 
 
