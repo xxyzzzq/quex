@@ -19,21 +19,24 @@ sm = StateMachine()
 sm.states = {
         1L:   State(),
         2L:   State(),
+        3L:   State(),
         100L: State(),
         200L: State(),
         202L: State(),
         }
-print sm.states.keys()
+# print sm.states.keys()
 for state_index in sm.states.keys():
     sm.add_transition(state_index, 1L, 202L)
 
 DSM = StateMachineDecorator(sm, "Test", [], False, False)
-print DSM.sm().states.keys()
+# print DSM.sm().states.keys()
 
 combination = templates.TemplateCombination([100L], [200L, 202L])
 
-combination.append(-sys.maxint, 10, 1L)
-combination.append(10, sys.maxint,  2L)
+combination.append(-sys.maxint, 10, [1L, 3L])
+combination.append(10, 11,          100L)
+combination.append(11, 12,          -2)
+combination.append(10, sys.maxint,  [2L, 3L])
 
 print coder.do([combination], DSM)
 

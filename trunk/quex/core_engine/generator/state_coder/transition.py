@@ -25,29 +25,21 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
     assert    TriggerInterval                    == None       \
            or TriggerInterval.__class__.__name__ == "Interval" \
 
-    # (0) Transitions to 'special states'
-    if DSM != None:
-        if DSM.dead_end_state_db().has_key(TargetStateIdx):
-            # Transition to 'dead-end-state'
-            return __transition_to_dead_end_state(TargetStateIdx, DSM)
-
-        elif DSM.template_compression_db().has_key(TargetStateIdx):
-            # Transition to state of a 'template' (requires template compression)
-            template_index, state_key = DSM.template_compression_db()[TargetStateIdx]
-            return LanguageDB["$goto-template"](template_index, state_key)
-
-        elif DSM.path_compression_db().has_key(TargetStateIdx):
-            # Transition to state of a 'path' (requires path compression)
-            path_index, state_key = DSM.path_compression_db()[TargetStateIdx]
-            return LanguageDB["$goto-path"](path_index, state_key)
+    # (0) Transitions to 'dead-end-state'
+    if DSM != None and DSM.dead_end_state_db().has_key(TargetStateIdx):
+        return __transition_to_dead_end_state(TargetStateIdx, DSM)
 
     # (1) Template transition target states. 
     #     The target state is determined at run-time based on a 'state_key'
     #     for the template.
+    #     NOTE: This handles also the recursive case, if .target_index == -2
     if TargetStateIdx.__class__.__name__ == "TemplateTarget":
         info = TargetStateIdx
-        return LanguageDB["$goto-template-target"](info.template_index, 
-                                                   info.target_state_index)
+        if not info.recursive():
+            return LanguageDB["$goto-template-target"](info.template_index, 
+                                                       info.target_index)
+        else:
+            return LanguageDB["$goto"]("$entry", info.template_index)
 
     # (2) The very normal transition to another state
     elif TargetStateIdx != None:   

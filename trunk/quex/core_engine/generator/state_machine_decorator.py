@@ -25,33 +25,13 @@ class StateMachineDecorator:
 
         # -- collect the 'dead end states' (states without further transitions)
         #    create a map from the 'dead end state
-        print "##A", SM.states.keys()
         self.__dead_end_state_db, self.__directly_reached_terminal_id_list = \
                 dead_end_analyzis.do(SM)
-        print "##B", SM.states.keys()
 
         if BackwardLexingF:
             # During backward lexing (pre-condition, backward input position detection)
             # there are no dedicated terminal states in the first place.
             self.__directly_reached_terminal_id_list = []
-
-        # -- information about the states which are compressed into a 'path' or a 'template'
-        self.__template_compression_db = {}
-        self.__path_compression_db     = {}
-
-    def template_compression_db(self):
-        return self.__template_compression_db
-
-    def set_template_compression_db(self, Value):
-        assert type(Value) == dict
-        self.__template_compression_db = Value
-
-    def path_compression_db(self):
-        return self.__path_compression_db
-
-    def set_path_compression_db(self, Value):
-        assert type(Value) == dict
-        self.__path_compression_db = Value
 
     def name(self):
         return self.__name

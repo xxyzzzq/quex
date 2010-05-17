@@ -1,38 +1,120 @@
 """
-    key_list_for_state = [ StateIdx0, StateIdx1, ...]
+   A normal state is basically coded as a transition map that is labeled
+   with the state index. A templated state is implemented by a template
+   transition map together with a 'key' that tells what adaptions need
+   to be done to the template, thus there is a 1:1 mapping
 
-    QUEX_GOTO_STATE(key_list_for_state[0])
+            templated state <--> (template index, state key)
 
-    switch( Key ) {
-         case 0:  goto StateIdx;
-         case 1:  goto Y;
-         case 3:
-    }
+   The identity of a normal state is its index, the identity of a templated
+   state is its template index together with the state key.
 
+   A template state is a state where the transition targets are adaptable.
+   This way the same transition map can implement multiple states, only the
+   transition targets need to be switched. Consider the file
+   'core_engine/state_machine/compression/templates.py' for a further
+   explanations.
+
+   If there is a template consisting of a (adaptable) transition map such as 
+
+                    [0, 32)    -> drop 
+                    [32]       -> Target0  
+                    [33, 64)   -> 721
+                    [64, 103)  -> Target1
+                    [103, 255) -> Target2
+
+   where Target0, Target1, and Target2 are defined dependent on the involved
+   states 4711, 2123, and 8912 as
+
+                        4711   3123  8912
+              Target0:   891   drop   213   
+              Target1:   718   718    721
+              Target2:   718   drop   711
+
+   Then, the code generator need to create:
+
+     (1) Transition Target Data Structures: 
+
+             Target0 = { 891, 718, 718 };
+             Target1 = {  -1, 718,  -1 };
+             Target2 = { 213, 721, 711 };
+
+         There might be multiple templates, so actually 'Target0' must be
+         implemented as 'Template66_Target0' if the current template is '66'.
+         The above writing is chosen for simplicity.
+
+    (2) Templated State Entries:
+
+            STATE_4711: 
+               key = 0; goto TEMPLATE_STATE_111;
+            STATE_3123: 
+               key = 1; goto TEMPLATE_STATE_111;
+            STATE_8912: 
+               key = 2; goto TEMPLATE_STATE_111;
+
+        this way the 'gotos' to templated states remain identical to the gotos
+        of non-templated states. The 'key' lets the template behave according
+        to a particular state.
+
+    (3) Templated State (with its transition map, etc.):
+
+            STATE_111: 
+              input = get();
+
+              if input in [0, 32)    then drop 
+              if input in [32]       then Target0[key]  
+              if input in [33, 64)   then 721          
+              if input in [64, 103)  then Target1[key]
+              if input in [103, 255) then Target2[key]
+
+              ...
+
+         The key is basically the index in the involved state list, e.g. '0' is
+         the key for state '4711' above, '1' is the key for state '3123' and
+         '2' is the key for '8912'.
+
+    (4) State Router:
+    
+        A state router, all states in the target maps must be map-able if no
+        computed goto is used.
+        
+            switch( state_index ) {
+            case 4711: goto STATE_4711;
+            case 3214: goto STATE_3214;
+            ...
+            }
 """
+
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.state_machine.index              as index
 import quex.core_engine.state_machine.core               as state_machine
 
 from copy import deepcopy
+from quex.input.setup import setup as Setup
+
+LanguageDB = None # Set during call to 'do()', not earlier
 
 class TemplateTarget:
-    def __init__(self, TemplateIndex, TargetStateKey):
-        """TemplateIndex     = integer that identifies the template.
+    def __init__(self, TemplateIndex, TargetIndex=None):
+        """TemplateIndex identifies the template that 'hosts' the transition.
 
-           TemplatedStateKey = key of the state that is templated inside
-                               the template. This parameter is defined before
-                               entrance into the template.
+           TargetIndex identifies the target number (Target0, Target1, ... in
+                       the example on the top of this file).
 
-           TemplateIndex and TemplatedStateKey identify the array of target
-           indices of which the actual target state is to be chosen.
+           The transition code generator will later on generate code of the 
+           form 
+           
+                       goto Template$X$_Target$Y$[state_key];
 
-           TargetStateKey    = key of the target state. This allows to select
-                               the target state to which to go.
+           Where '$X$' is replaced with TemplateIndex and $Y$ is replaced
+           with TargetIndex.
         """
-        self.template_index      = TemplateIndex
-        self.target_state_index  = TargetStateKey
+        self.template_index = TemplateIndex
+        self.target_index   = TargetIndex
+
+    def recursive(self):
+        return self.target_index == None
 
 class TransitionMapMimiker:
     """Class that mimiks the TransitionMap of
@@ -40,30 +122,32 @@ class TransitionMapMimiker:
                    quex.core_engine.state_machine.transition_map 
                    
        The goal is to enable 'TemplateState' to act as a normal state
-       responging to the member function .transitions().
+       responding to the member function .transitions().
     """
-    def __init__(self, TriggerMap):
+    def __init__(self, TemplateIndex, TriggerMap):
         self.__trigger_map          = []
         self.__target_state_list_db = []
         i = 0
-        for info in TriggerMap:
-            if type(info[1]) != list:
-                # Target state is the same for all involved states
-                target = info[1]
-            else:
-                if info[1] not in self.__target_state_list_db: 
+        for interval, target in TriggerMap:
+
+            if target == -2L:
+                target = TemplateTarget(TemplateIndex) # No target index --> recursion   
+
+            elif type(target) == list:
+                if target not in self.__target_state_list_db: 
                     # Register a new target state combination
-                    self.__target_state_list_db.append(info[1])
-                    target_state_index = i
+                    self.__target_state_list_db.append(target)
+                    target_index = i
                     i += 1
 
                 else:
                     # Target state combination has been registered before => get the index.
-                    target_state_index = self.__target_state_list_db.index(info[1])
+                    target_index = self.__target_state_list_db.index(target)
 
-                target = TemplateTarget(self.state_index, target_state_index)
+                target = TemplateTarget(TemplateIndex, target_index)
 
-            self.__trigger_map.append([info[0], target])
+            self.__trigger_map.append([interval, target])
+
 
     def get_trigger_map(self):
         return self.__trigger_map
@@ -89,7 +173,6 @@ class TransitionMapMimiker:
     def target_state_list_db(self):
         return self.__target_state_list_db
 
-
 class TemplateState(state_machine.State):
     """Implementation of a Template that is able to play the role of a
        state machine state. It is constructed on the basis of a 
@@ -102,7 +185,6 @@ class TemplateState(state_machine.State):
        template can be generated through the same procedure as 
        all state machine states.
     """
-
     def __init__(self, Combi, StateIndex, RepresentiveState):
         """Combi contains all information about the states of a template
                  and the template itself.
@@ -124,7 +206,7 @@ class TemplateState(state_machine.State):
                 # Internally, we adapt the trigger map from:  Interval -> Target State List
                 # to:                                         Interval -> Index
                 # where 'Index' represents the Target State List
-                TransitionMapMimiker(Combi.get_trigger_map()))
+                TransitionMapMimiker(StateIndex, Combi.get_trigger_map()))
 
         state_machine.State.core(self).state_index = StateIndex
 
@@ -134,38 +216,19 @@ class TemplateState(state_machine.State):
     def template_combination(self):
         return self.__template_combination
 
-    def get_target_state_index_list_for_state(self, StateIndex):
-        # Get the 'key' for the state index
-        try:    key_index = self.__template_combination.involved_state_list().index(StateIndex)
-        except: assert False, \
-                "Required state index not included in template.\n" + \
-                "StateIndex %i not in involved state list.\n" % StateIndex + \
-                "Involved states are " + repr(self.__involved_state_list)[1:-1]
-
-        # List all target states that are there for the given key
-        result = []
-        for target_state_list in self.transitions().target_state_list_db():
-            if type(target_state_list) != list: continue
-            result.append(target_state_list[key_index])
-
-        return result
-
-
 def do(CombinationList, DSM):
     """-- Returns generated code for all templates.
        -- Sets the template_compression_db in DSM.
     """
     assert type(CombinationList) == list
     assert DSM.__class__.__name__ == "StateMachineDecorator"
+    global LanguageDB 
+    LanguageDB = Setup.language_db
 
-    # -- get code for the 'key' definitions
-    key_definition = []
-    # -- get code for each combination
-    code = []
-    # -- combine all indices of states involved in templates
-    state_index_list = []
-    # -- database that maps: state index --> template index, state_key
-    template_db = {}
+    # -- Collect all indices of states involved in templates
+    state_index_list = set([])
+    # -- Generate 'TemplatedState's for each TemplateCombination
+    template_list    = []
     for combination in CombinationList:
         # All states of a combination are equivalent, thus it is sufficient 
         # to consider one single state in order to know whether it is
@@ -175,39 +238,75 @@ def do(CombinationList, DSM):
         assert prototype != None
 
         the_template = TemplateState(combination, index.get(), prototype)
+        template_list.append(the_template)
 
-        code.extend(state_coder.do(the_template, the_template.core().state_index, DSM, InitStateF=False))
-        
-        key_definition.extend(__generate_key_definition(the_template))
-
-        state_key = 0
         for state_index in combination.involved_state_list():
-            state_index_list.append(state_index)
-            template_db[state_index] = [the_template.core().state_index, state_key]
-            state_key += 1
+            state_index_list.add(state_index)
 
-    DSM.set_template_compression_db(template_db)
+    # -- transition target definition for each templated state
+    transition_target_definition = []
+    for template in template_list:
+        __transition_target_data_structures(transition_target_definition, 
+                                            the_template)
 
-    router = __generate_state_index_router(state_index_list, DSM)
+    # -- template state entries
+    # -- template state
+    code = []
+    for template in template_list:
+        __template_state(code, template, DSM)
+        __templated_state_entries(code, template)
 
-    return "".join(key_definition + code + router)
 
-def __generate_key_definition(TheTemplate):
-    txt = []
-    for represented_state_index in TheTemplate.template_combination().involved_state_list():
-        target_state_index_list = TheTemplate.get_target_state_index_list_for_state(represented_state_index)
-        txt.append("QUEX_TYPE_GOTO_LABEL  transition_map_template_%i_state_%i[%i] = {" \
-                   % (TheTemplate.core().state_index, represented_state_index, len(target_state_index_list)))
-        for state_index in target_state_index_list:
-            txt.append("%i, " % state_index)
+    # -- state router
+    router = __state_router(state_index_list, DSM)
+
+    return "".join(transition_target_definition + code + router)
+
+
+def __transition_target_data_structures(txt, TheTemplate):
+    """Defines the transition targets for each involved state.
+    """
+    for target_index, target_state_index_list in enumerate(TheTemplate.transitions().target_state_list_db()):
+        txt.append("QUEX_TYPE_GOTO_LABEL  template_%i_target_%i[%i] = {" \
+                   % (TheTemplate.core().state_index, target_index, len(target_state_index_list)))
+        for index in target_state_index_list:
+            txt.append("%i, " % index)
         txt.append("};\n")
-    return txt
 
-def __generate_state_index_router(StateIndexList, DSM):
+def __templated_state_entries(txt, TheTemplate):
+    """Defines the entries of templated states, so that the state key
+       for the template is set, before the jump into the template. E.g.
+
+            STATE_4711: 
+               key = 0; goto TEMPLATE_STATE_111;
+            STATE_3123: 
+               key = 1; goto TEMPLATE_STATE_111;
+            STATE_8912: 
+               key = 2; goto TEMPLATE_STATE_111;
+    """
+    for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
+        txt.append(LanguageDB["$label-def"]("$entry", state_index))
+        txt.append("    ")
+        txt.append(LanguageDB["$assignment"]("key", "%i" % key))
+        txt.append("    ")
+        txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
+        txt.append("\n")
+
+def __template_state(txt, TheTemplate, DSM):
+    """Generate the template state that 'hosts' the templated states.
+    """
+    txt.extend(state_coder.do(TheTemplate, TheTemplate.core().state_index, DSM, InitStateF=False))
+
+def __state_router(StateIndexList, DSM):
+    """Create code that allows to jump to a state based on an integer value.
+    """
+
     txt = ["switch( target_state_index ) {\n"]
     for state_index in StateIndexList:
         txt.append("case %i: " % state_index)
         txt.append(transition.do(state_index, None, None, DSM))
+        txt.append("\n")
     txt.append("};\n")
+
     return txt
 
