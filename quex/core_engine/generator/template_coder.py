@@ -240,8 +240,12 @@ def do(CombinationList, DSM):
         the_template = TemplateState(combination, index.get(), prototype)
         template_list.append(the_template)
 
-        for state_index in combination.involved_state_list():
-            state_index_list.add(state_index)
+        for state_index in the_template.transitions().get_target_state_index_list():
+            if state_index != None: 
+                state_index_list.add(state_index)
+            else:
+                # 'goto drop-out' is coded in state index list as 'minus template index'
+                state_index_list.add(- the_template.core().state_index)
 
     # -- transition target definition for each templated state
     transition_target_definition = []
@@ -253,24 +257,28 @@ def do(CombinationList, DSM):
     # -- template state
     code = []
     for template in template_list:
-        __template_state(code, template, DSM)
         __templated_state_entries(code, template)
-
+        __template_state(code, template, DSM)
 
     # -- state router
     router = __state_router(state_index_list, DSM)
 
-    return "".join(transition_target_definition + code + router)
+    return transition_target_definition, code, router
 
 
 def __transition_target_data_structures(txt, TheTemplate):
     """Defines the transition targets for each involved state.
     """
+    involved_state_n = len(TheTemplate.template_combination().involved_state_list())
+    template_index   = TheTemplate.core().state_index
     for target_index, target_state_index_list in enumerate(TheTemplate.transitions().target_state_list_db()):
+        assert len(target_state_index_list) == involved_state_n
+
         txt.append("QUEX_TYPE_GOTO_LABEL  template_%i_target_%i[%i] = {" \
-                   % (TheTemplate.core().state_index, target_index, len(target_state_index_list)))
+                   % (template_index, target_index, len(target_state_index_list)))
         for index in target_state_index_list:
-            txt.append("%i, " % index)
+            if index != None: txt.append("%i, " % index)
+            else:             txt.append("-%i," % template_index)
         txt.append("};\n")
 
 def __templated_state_entries(txt, TheTemplate):
@@ -290,7 +298,7 @@ def __templated_state_entries(txt, TheTemplate):
         txt.append(LanguageDB["$assignment"]("key", "%i" % key))
         txt.append("    ")
         txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
-        txt.append("\n")
+        txt.append("\n\n")
 
 def __template_state(txt, TheTemplate, DSM):
     """Generate the template state that 'hosts' the templated states.
@@ -301,12 +309,24 @@ def __state_router(StateIndexList, DSM):
     """Create code that allows to jump to a state based on an integer value.
     """
 
-    txt = ["switch( target_state_index ) {\n"]
-    for state_index in StateIndexList:
-        txt.append("case %i: " % state_index)
-        txt.append(transition.do(state_index, None, None, DSM))
+    txt = [
+            "STATE_ROUTER:\n",
+            "    switch( target_state_index ) {\n"
+    ]
+    for index in StateIndexList:
+        txt.append("    case %i: " % index)
+        if index >= 0:
+            # Transition to state entry
+            state_index = index
+            code  = transition.do(state_index, None, None, DSM)
+        else:
+            # Transition to a templates 'drop-out'
+            template_index = - index
+            code = transition.do(None, template_index, None, DSM)
+        txt.append(code)
         txt.append("\n")
-    txt.append("};\n")
+
+    txt.append("    }\n")
 
     return txt
 
