@@ -1,19 +1,10 @@
-"""
-   A normal state is basically coded as a transition map that is labeled
-   with the state index. A templated state is implemented by a template
-   transition map together with a 'key' that tells what adaptions need
-   to be done to the template, thus there is a 1:1 mapping
+"""Template Compression _______________________________________________________
 
-            templated state <--> (template index, state key)
+   Consider the file 'core_engine/state_machine/compression/templates.py' for 
+   a detailed explanation of template compression
 
-   The identity of a normal state is its index, the identity of a templated
-   state is its template index together with the state key.
 
-   A template state is a state where the transition targets are adaptable.
-   This way the same transition map can implement multiple states, only the
-   transition targets need to be switched. Consider the file
-   'core_engine/state_machine/compression/templates.py' for a further
-   explanations.
+   Code Generation ____________________________________________________________
 
    If there is a template consisting of a (adaptable) transition map such as 
 
@@ -84,11 +75,12 @@
             ...
             }
 """
-
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.state_machine.index              as index
 import quex.core_engine.state_machine.core               as state_machine
+
+from   quex.core_engine.state_machine.compression.templates import TARGET_RECURSIVE
 
 from copy import deepcopy
 from quex.input.setup import setup as Setup
@@ -130,7 +122,7 @@ class TransitionMapMimiker:
         i = 0
         for interval, target in TriggerMap:
 
-            if target == -2L:
+            if target == TARGET_RECURSIVE:
                 target = TemplateTarget(TemplateIndex) # No target index --> recursion   
 
             elif type(target) == list:
