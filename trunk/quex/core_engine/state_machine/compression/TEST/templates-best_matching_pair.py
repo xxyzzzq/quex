@@ -12,12 +12,15 @@ from   quex.core_engine.state_machine.compression.TEST.templates_aux import *
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Templates: Get Best Matching Pair"
-    print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
+    print "CHOICES: 0, 1, 2, 3, recursive;"
     sys.exit(0)
 
 def test(TriggerMapList):
     sm = StateMachine()
-    state_index = sm.init_state_index
+
+    # The init state cannot be combined, create some dummy after init
+    state_index = sm.add_transition(sm.init_state_index, Interval(32))
+
     for trigger_map in TriggerMapList:
         for info in trigger_map:
             if len(info) == 3:
@@ -35,12 +38,17 @@ if "0" in sys.argv:
     trigger_map_list = [
             [ 
                 (10, 10L),
-                (11, 30L),
+                (11, 20L),
+                (12, 30L),
+                (13, 40L),
             ], [
                 (10, 11L),
                 (11, 21L),
+                (12, 31L),
+                (13, 41L),
             ]
     ]
+
 elif "1" in sys.argv:
     trigger_map_list = [
             [ 
@@ -82,6 +90,17 @@ elif "3" in sys.argv:
                 (20, 10L),
             ], [
                 (30, 10L),
+            ]
+    ]
+
+elif "recursive" in sys.argv:
+    trigger_map_list = [
+            [ 
+                (10, 1L),  # State 1 --> State 1
+            ], [
+                (10, 2L),  # State 2 --> State 2
+            ], [
+                (10, 1L),
             ]
     ]
 

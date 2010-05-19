@@ -80,12 +80,81 @@ import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.state_machine.index              as index
 import quex.core_engine.state_machine.core               as state_machine
 
-from   quex.core_engine.state_machine.compression.templates import TARGET_RECURSIVE
+import quex.core_engine.state_machine.compression.templates as templates 
+
 
 from copy import deepcopy
 from quex.input.setup import setup as Setup
 
+
 LanguageDB = None # Set during call to 'do()', not earlier
+
+def do(sm, CostCoefficient):
+    # (1) Find possible state combinations
+    combination_list = templates.do(sm, CostCoefficient)
+
+    # (2) Implement code for template combinations
+    return _do(combination_list, DSM)
+
+def _do(CombinationList, DSM):
+    """-- Returns generated code for all templates.
+       -- Sets the template_compression_db in DSM.
+    """
+    global LanguageDB 
+
+    assert type(CombinationList) == list
+    assert DSM.__class__.__name__ == "StateMachineDecorator"
+
+    LanguageDB = Setup.language_db
+
+    # -- Collect all indices of states involved in templates
+    involved_state_index_list = set([])
+    # -- Collect all indices of targets states in the 'adaption table'
+    target_state_index_list   = set([])
+    # -- Generate 'TemplatedState's for each TemplateCombination
+    template_list             = []
+    for combination in CombinationList:
+        assert isinstance(combination, templates.TemplateCombination)
+
+        # All states of a combination are equivalent, thus it is sufficient 
+        # to consider one single state in order to know whether it is
+        # acceptance or not.
+        prototype_index = combination.involved_state_list()[0]
+        prototype       = DSM.sm().states.get(prototype_index)
+        assert prototype != None
+
+        # -- create template state for combination object
+        the_template = TemplateState(combination, index.get(), prototype)
+        template_list.append(the_template)
+
+        # -- collect indices of involved states
+        involved_state_index_list.update(combination.involved_state_list())
+
+        # -- collect indices of target states
+        for state_index in the_template.transitions().get_target_state_index_list():
+            if state_index != None: 
+                target_state_index_list.add(state_index)
+            else:
+                # 'goto drop-out' is coded in state index list as 'minus template index'
+                target_state_index_list.add(- the_template.core().state_index)
+
+    # -- transition target definition for each templated state
+    transition_target_definition = []
+    for template in template_list:
+        __transition_target_data_structures(transition_target_definition, 
+                                            the_template)
+
+    # -- template state entries
+    # -- template state
+    code = []
+    for template in template_list:
+        __templated_state_entries(code, template)
+        __template_state(code, template, DSM)
+
+    # -- state router
+    router = __state_router(target_state_index_list, DSM)
+
+    return transition_target_definition, code, router, involved_state_list
 
 class TemplateTarget:
     def __init__(self, TemplateIndex, TargetIndex=None):
@@ -122,7 +191,7 @@ class TransitionMapMimiker:
         i = 0
         for interval, target in TriggerMap:
 
-            if target == TARGET_RECURSIVE:
+            if target == templates.TARGET_RECURSIVE:
                 target = TemplateTarget(TemplateIndex) # No target index --> recursion   
 
             elif type(target) == list:
@@ -187,9 +256,9 @@ class TemplateState(state_machine.State):
                              the template. All states of a template must
                              be equivalent, so any of them can do.
         """
-        assert Combi.__class__.__name__ == "TemplateCombination"
-        assert type(StateIndex)         == long
-        assert RepresentiveState.__class__.__name__ == "State"
+        assert isinstance(Combi, templates.TemplateCombination)
+        assert isinstance(RepresentiveState, state_machine.State)
+        assert type(StateIndex) == long
 
         # (0) Components required to be a 'State'
         state_machine.State._set(self, 
@@ -207,56 +276,6 @@ class TemplateState(state_machine.State):
 
     def template_combination(self):
         return self.__template_combination
-
-def do(CombinationList, DSM):
-    """-- Returns generated code for all templates.
-       -- Sets the template_compression_db in DSM.
-    """
-    assert type(CombinationList) == list
-    assert DSM.__class__.__name__ == "StateMachineDecorator"
-    global LanguageDB 
-    LanguageDB = Setup.language_db
-
-    # -- Collect all indices of states involved in templates
-    state_index_list = set([])
-    # -- Generate 'TemplatedState's for each TemplateCombination
-    template_list    = []
-    for combination in CombinationList:
-        # All states of a combination are equivalent, thus it is sufficient 
-        # to consider one single state in order to know whether it is
-        # acceptance or not.
-        prototype_index = combination.involved_state_list()[0]
-        prototype       = DSM.sm().states.get(prototype_index)
-        assert prototype != None
-
-        the_template = TemplateState(combination, index.get(), prototype)
-        template_list.append(the_template)
-
-        for state_index in the_template.transitions().get_target_state_index_list():
-            if state_index != None: 
-                state_index_list.add(state_index)
-            else:
-                # 'goto drop-out' is coded in state index list as 'minus template index'
-                state_index_list.add(- the_template.core().state_index)
-
-    # -- transition target definition for each templated state
-    transition_target_definition = []
-    for template in template_list:
-        __transition_target_data_structures(transition_target_definition, 
-                                            the_template)
-
-    # -- template state entries
-    # -- template state
-    code = []
-    for template in template_list:
-        __templated_state_entries(code, template)
-        __template_state(code, template, DSM)
-
-    # -- state router
-    router = __state_router(state_index_list, DSM)
-
-    return transition_target_definition, code, router
-
 
 def __transition_target_data_structures(txt, TheTemplate):
     """Defines the transition targets for each involved state.
