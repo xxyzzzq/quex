@@ -3,6 +3,7 @@ from copy import deepcopy
 import quex.core_engine.generator.languages.core   as languages
 from   quex.core_engine.generator.languages.core   import __nice
 import quex.core_engine.generator.state_coder.core as state_coder
+import quex.core_engine.generator.template_coder   as template_coder
 from   quex.input.setup import setup as Setup
 
 
@@ -22,6 +23,11 @@ def do(SMD):
     LanguageDB = Setup.language_db
 
     state_machine = SMD.sm()
+
+    if Setup.compression_template_f:
+        transition_target_definition, code, router, involved_state_list = \
+                template_coder.do(SMD, Setup.compression_template_coef)
+        
 
     txt = []
     # -- treat initial state separately 

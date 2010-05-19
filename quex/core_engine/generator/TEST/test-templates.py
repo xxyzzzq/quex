@@ -52,7 +52,7 @@ else:
     combination.append(-sys.maxint, 10, [1L, None, 1L, 2L,   2L, 2L])
     combination.append(10,  sys.maxint, [2L, 3L,   1L, None, 2L, 2L])
 
-x = coder.do([combination], DSM)
+x = coder._do([combination], DSM)
 
 print "--(Transition Targets)--------------------------------------------------"
 print

@@ -149,10 +149,14 @@ def do(sm, CostCoefficient):
     """
        sm:              StateMachine object containing all states
 
+                        NOTE: The init state is **never** part of a template 
+                              combination.
+
        CostCoefficient: Coefficient that indicates how 'costy' it is differentiate
                         between target states when it is different in states that
                         are combined into a template. Meaningful range: 0 to 3.
 
+       RETURNS: List of template combinations.
     """
     trigger_map_db = TriggerMapDB(sm)
 
@@ -173,7 +177,7 @@ def do(sm, CostCoefficient):
 
     result = []
     for state_index, combination in trigger_map_db.items():
-        if combination.__class__ == TemplateCombination: result.append(combination)
+        if isinstance(combination, TemplateCombination): result.append(combination)
 
     return result
 
@@ -285,7 +289,8 @@ class TriggerMapDB:
         self.__delta_cost_cache = {}
         self.__cost_coefficient = CostCoefficient
 
-        self.__states = SM.states
+        self.__states           = SM.states
+        self.__init_state_index = SM.init_state_index
 
     def get_best_matching_pair(self):
         """Determines the two trigger maps that are closest to each
@@ -304,13 +309,18 @@ class TriggerMapDB:
         index_list = self.__db.keys()
         L          = len(index_list)
         max_gain   = 0                 # No negative cost allowed
+        ## print "##", index_list
         for i in range(L):
             StateIndexA = index_list[i]
+            if StateIndexA == self.__init_state_index: continue
 
             for k in range(i + 1, L):
                 StateIndexB = index_list[k]
+                if StateIndexB == self.__init_state_index: continue
 
                 delta_cost = self.__get_delta_cost(StateIndexA, StateIndexB)
+                print "##", delta_cost, StateIndexA, StateIndexB
+
                 if delta_cost <= max_gain:  continue
                 max_gain = delta_cost
                 best_a = StateIndexA; best_b = StateIndexB;
