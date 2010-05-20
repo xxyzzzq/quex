@@ -14,7 +14,7 @@ SETUP_INFO = {
     "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "quex::lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
-    "buffer_limit_code":              [["--buffer-limit"],                     "0x0"],
+    "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "bytes_per_ucs_code_point":       [["--bytes-per-trigger", "-b"],          "1"],
     "byte_order":                     [["--endian"],                           "<system>"],
     "compression_template_f":         [["--template-compression"],             FLAG],

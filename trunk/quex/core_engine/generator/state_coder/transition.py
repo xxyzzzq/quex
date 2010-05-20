@@ -50,6 +50,7 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
         # The normal drop out contains a check against the buffer limit code.
         # This check can be avoided, if one is sure that the current interval
         # does not contain a buffer limit code.
+        assert isinstance(Setup.buffer_limit_code, int)
         if    TriggerInterval == None \
            or TriggerInterval.contains(Setup.buffer_limit_code):
             return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)

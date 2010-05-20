@@ -141,7 +141,7 @@ def __reload_backward():
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
-    assert SM.__class__.__name__    == "StateMachine"
+    assert isinstance(SM, state_machine.StateMachine)
     global LanguageDB 
 
     # (1) non-acceptance state drop-outs

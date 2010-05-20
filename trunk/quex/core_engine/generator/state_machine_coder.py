@@ -23,12 +23,14 @@ def do(SMD):
     LanguageDB = Setup.language_db
 
     state_machine = SMD.sm()
-
+    
+    # -- Code for templated states [Optional]
+    #    (those states do not have to be coded later)
+    templated_state_index_list = set([])
     if Setup.compression_template_f:
-        transition_target_definition, code, router, involved_state_list = \
+        code, templated_state_index_list = \
                 template_coder.do(SMD, Setup.compression_template_coef)
         
-
     txt = []
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
@@ -51,6 +53,7 @@ def do(SMD):
 
         # the init state has been coded already
         if state_index == state_machine.init_state_index: continue
+        elif state_index in templated_state_index_list:   continue
 
         txt.append("    __quex_assert(false); /* No drop-through between states */\n")
         state_code = state_coder.do(state, state_index, SMD)
