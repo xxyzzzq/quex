@@ -90,11 +90,25 @@ from quex.input.setup import setup as Setup
 LanguageDB = None # Set during call to 'do()', not earlier
 
 def do(sm, CostCoefficient):
+    """RETURNS: Array 'x'
+
+       x[0] transition target definitions 
+       x[1] code for templates and state entries
+       x[2] state router for template targets
+       x[3] involved_state_index_list
+    """
+          
     # (1) Find possible state combinations
     combination_list = templates.do(sm, CostCoefficient)
 
     # (2) Implement code for template combinations
-    return _do(combination_list, DSM)
+    transition_target_definition, \
+    code,                         \
+    router,                       \
+    involved_state_index_list     =  _do(combination_list, DSM)
+
+    return "".join(["{\n"] + transition_target_definition + code + router + ["\n}\n"]), \
+           involved_state_index_list
 
 def _do(CombinationList, DSM):
     """-- Returns generated code for all templates.
@@ -154,7 +168,7 @@ def _do(CombinationList, DSM):
     # -- state router
     router = __state_router(target_state_index_list, DSM)
 
-    return transition_target_definition, code, router, involved_state_list
+    return transition_target_definition, code, router, involved_state_index_list
 
 class TemplateTarget:
     def __init__(self, TemplateIndex, TargetIndex=None):

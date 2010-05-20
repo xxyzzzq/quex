@@ -309,7 +309,6 @@ class TriggerMapDB:
         index_list = self.__db.keys()
         L          = len(index_list)
         max_gain   = 0                 # No negative cost allowed
-        ## print "##", index_list
         for i in range(L):
             StateIndexA = index_list[i]
             if StateIndexA == self.__init_state_index: continue
@@ -319,7 +318,6 @@ class TriggerMapDB:
                 if StateIndexB == self.__init_state_index: continue
 
                 delta_cost = self.__get_delta_cost(StateIndexA, StateIndexB)
-                print "##", delta_cost, StateIndexA, StateIndexB
 
                 if delta_cost <= max_gain:  continue
                 max_gain = delta_cost
