@@ -98,9 +98,9 @@ elif "recursive" in sys.argv:
             [ 
                 (10, 1L),  # State 1 --> State 1
             ], [
-                (10, 2L),  # State 2 --> State 2
+                (10, 4L),
             ], [
-                (10, 1L),
+                (10, 3L),  # State 3 --> State 3
             ]
     ]
 
