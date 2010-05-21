@@ -5,7 +5,7 @@ from generator_test import action
 
 if "--hwut-info" in sys.argv:
     print "Simple: Tiny Expressions"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
     print "SAME;"
     sys.exit(0)
 
@@ -14,10 +14,9 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 choice = sys.argv[1]
-if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream"]): 
+if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"]): 
     print "choice argument not acceptable"
     sys.exit(0)
-
 
 pattern_action_pair_list = [
     # pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,
@@ -30,4 +29,9 @@ pattern_action_pair_list = [
 ]
 test_str = "ABERHALLO: GUGU PRINT PRINT: PRINTERLEIN"
 
-generator_test.do(pattern_action_pair_list, test_str, {}, choice)    
+if choice != "Cpp-Template":
+    generator_test.do(pattern_action_pair_list, test_str, {}, choice)    
+else:
+    choice = "Cpp"
+    generator_test.do(pattern_action_pair_list, test_str, {}, choice, 
+                      TemplateCompressionF=True, TemplateCompressionCoef=0.1)    

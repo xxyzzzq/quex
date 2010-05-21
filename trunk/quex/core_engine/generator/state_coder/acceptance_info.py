@@ -1,12 +1,14 @@
-import quex.core_engine.state_machine.core     as state_machine 
-from quex.core_engine.generator.languages.core import __nice
-from quex.input.setup import setup as Setup
+from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+import quex.core_engine.state_machine.core                as     state_machine 
+#
+from   quex.core_engine.generator.languages.core import __nice
+from   quex.input.setup                          import setup as Setup
 
 LanguageDB = None
 
 def do(State, StateIdx, SMD):
     assert isinstance(State, state_machine.State)
-    assert SMD.__class__.__name__   == "StateMachineDecorator"
+    assert isinstance(SMD,   StateMachineDecorator)
     global LanguageDB
 
     LanguageDB = Setup.language_db

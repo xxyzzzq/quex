@@ -75,8 +75,11 @@
             ...
             }
 """
-import quex.core_engine.generator.state_coder.core       as state_coder
-import quex.core_engine.generator.state_coder.transition as transition
+from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+
+import quex.core_engine.generator.state_coder.core            as state_coder
+import quex.core_engine.generator.state_coder.transition      as transition
+import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 import quex.core_engine.state_machine.index              as index
 import quex.core_engine.state_machine.core               as state_machine
 
@@ -89,7 +92,7 @@ from quex.input.setup import setup as Setup
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(sm, CostCoefficient):
+def do(DSM, CostCoefficient):
     """RETURNS: Array 'x'
 
        x[0] transition target definitions 
@@ -97,9 +100,10 @@ def do(sm, CostCoefficient):
        x[2] state router for template targets
        x[3] involved_state_index_list
     """
+    assert isinstance(DSM, StateMachineDecorator)
           
     # (1) Find possible state combinations
-    combination_list = templates.do(sm, CostCoefficient)
+    combination_list = templates.do(DSM.sm(), CostCoefficient)
 
     # (2) Implement code for template combinations
     transition_target_definition, \
@@ -107,7 +111,11 @@ def do(sm, CostCoefficient):
     router,                       \
     involved_state_index_list     =  _do(combination_list, DSM)
 
-    return "".join(["{\n"] + transition_target_definition + code + router + ["\n}\n"]), \
+    prolog = transition_target_definition \
+             + ["QUEX_TYPE_GOTO_LABEL target_state_index;\n", \
+                "int                  template_state_key;\n"]
+
+    return "".join(code + router), "".join(prolog), \
            involved_state_index_list
 
 def _do(CombinationList, DSM):
@@ -117,7 +125,7 @@ def _do(CombinationList, DSM):
     global LanguageDB 
 
     assert type(CombinationList) == list
-    assert DSM.__class__.__name__ == "StateMachineDecorator"
+    assert isinstance(DSM, StateMachineDecorator)
 
     LanguageDB = Setup.language_db
 
@@ -138,31 +146,31 @@ def _do(CombinationList, DSM):
         assert prototype != None
 
         # -- create template state for combination object
-        the_template = TemplateState(combination, index.get(), prototype)
-        template_list.append(the_template)
+        template = TemplateState(combination, index.get(), prototype)
+        template_list.append(template)
 
         # -- collect indices of involved states
         involved_state_index_list.update(combination.involved_state_list())
 
         # -- collect indices of target states
-        for state_index in the_template.transitions().get_target_state_index_list():
+        for state_index in template.transitions().get_target_state_index_list():
             if state_index != None: 
                 target_state_index_list.add(state_index)
             else:
                 # 'goto drop-out' is coded in state index list as 'minus template index'
-                target_state_index_list.add(- the_template.core().state_index)
+                target_state_index_list.add(- template.core().state_index)
 
     # -- transition target definition for each templated state
     transition_target_definition = []
     for template in template_list:
         __transition_target_data_structures(transition_target_definition, 
-                                            the_template)
+                                            template)
 
     # -- template state entries
     # -- template state
     code = []
     for template in template_list:
-        __templated_state_entries(code, template)
+        __templated_state_entries(code, template, DSM)
         __template_state(code, template, DSM)
 
     # -- state router
@@ -306,7 +314,7 @@ def __transition_target_data_structures(txt, TheTemplate):
             else:             txt.append("-%i," % template_index)
         txt.append("};\n")
 
-def __templated_state_entries(txt, TheTemplate):
+def __templated_state_entries(txt, TheTemplate, DSM):
     """Defines the entries of templated states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
@@ -319,8 +327,10 @@ def __templated_state_entries(txt, TheTemplate):
     """
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
         txt.append(LanguageDB["$label-def"]("$entry", state_index))
+        state = DSM.sm().states[state_index]
+        txt.extend(acceptance_info.do(state, state_index, DSM))
         txt.append("    ")
-        txt.append(LanguageDB["$assignment"]("key", "%i" % key))
+        txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key))
         txt.append("    ")
         txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
         txt.append("\n\n")

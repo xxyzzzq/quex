@@ -1,5 +1,7 @@
 from copy import deepcopy
 
+from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+
 import quex.core_engine.generator.languages.core   as languages
 from   quex.core_engine.generator.languages.core   import __nice
 import quex.core_engine.generator.state_coder.core as state_coder
@@ -19,19 +21,23 @@ def do(SMD):
             ii) state transition code (include marking of last success state
                 and last success stream position).                  
     """
-    assert SMD.__class__.__name__ == "StateMachineDecorator"
+    assert isinstance(SMD, StateMachineDecorator)
     LanguageDB = Setup.language_db
 
     state_machine = SMD.sm()
     
+    txt = []
+    prolog = ""
+
     # -- Code for templated states [Optional]
     #    (those states do not have to be coded later)
     templated_state_index_list = set([])
     if Setup.compression_template_f:
-        code, templated_state_index_list = \
+        code, template_prolog, templated_state_index_list = \
                 template_coder.do(SMD, Setup.compression_template_coef)
+        txt.append(code)
+        prolog += template_prolog
         
-    txt = []
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
         # (only define the init state label, if it is really needed)
@@ -66,7 +72,7 @@ def do(SMD):
         txt.extend(state_code)
         txt.append("\n")
     
-    return "".join(txt)
+    return "".join(txt), prolog
 
 
 

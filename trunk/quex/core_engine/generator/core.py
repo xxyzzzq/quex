@@ -27,13 +27,6 @@ class Generator(GeneratorBase):
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
-        # (optional) State machines have been built, now do compressions
-        if Setup.compression_template_f:
-            self.compression_template_info = template_compression.do(self.sm,
-                                                 Setup.compression_template_cost_coefficient)
-        if Setup.compression_path_f:
-            self.compression_path_info = path_compression.do(self.sm)
-
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
 
@@ -50,8 +43,8 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=False, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg = state_machine_coder.do(decorated_state_machine)
-        txt += msg
+        msg, prolog = state_machine_coder.do(decorated_state_machine)
+        txt += prolog + msg
 
         
         #  -- terminal states: execution of pattern actions  
@@ -80,9 +73,9 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=True, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg = state_machine_coder.do(decorated_state_machine)
+        msg, prolog = state_machine_coder.do(decorated_state_machine)
 
-        txt += msg
+        txt += prolog + msg
 
         txt += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"
         # -- set the input stream back to the real current position.

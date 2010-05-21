@@ -144,6 +144,7 @@ import sys
 from copy import copy
 from quex.core_engine.interval_handling import Interval
 import quex.core_engine.state_machine.index as index
+import quex.core_engine.state_machine.core  as state_machine
 
 def do(sm, CostCoefficient):
     """
@@ -276,7 +277,7 @@ def get_delta_cost(SizeA, SizeB, N, CombinedBorderN, TargetCombinationN, CX=1):
 
 class TriggerMapDB:
     def __init__(self, SM, CostCoefficient=1.0):
-        assert SM.__class__.__name__ == "StateMachine"
+        assert isinstance(SM, state_machine.StateMachine)
 
         # (1) Get the trigger maps of all states of the state machine
         self.__db = {}
@@ -302,7 +303,6 @@ class TriggerMapDB:
            If no pair can be found with a gain > 0, then this function
            returns 'None, None'.
         """
-
         best_a = None 
         best_b = None
 
@@ -329,42 +329,25 @@ class TriggerMapDB:
         delta_cost = self.__delta_cost_cache_get(StateIndexA, StateIndexB)
         if delta_cost != None: return delta_cost
 
-        # If one state is acceptance, the other not, or one state stores
-        # input positions and the other not, etc. then the states cannot
-        # be combined into a template. Return -1 to indicate 'impossible'.
-        if self.__state_attributes_mismatch(StateIndexA, StateIndexB): 
-            delta_cost = -1.0
+        TriggerMapA = self.__db[StateIndexA]
+        SizeA       = len(TriggerMapA)
+        TriggerMapB = self.__db[StateIndexB]
+        # Get border_n    = number of borders of combined map
+        #     eq_target_n = number of equivalent targets, i.e. number of 
+        #                   target combinations that need to be routed.
+        InvolvedStateListA = involved_state_list(TriggerMapA, StateIndexA)
+        InvolvedStateListB = involved_state_list(TriggerMapB, StateIndexB)
+        border_n, eq_target_n = get_metric(TriggerMapA, InvolvedStateListA, 
+                                           TriggerMapB, InvolvedStateListB)
+        combined_state_n      = len(InvolvedStateListA) + len(InvolvedStateListB)
 
-        else:
-            TriggerMapA = self.__db[StateIndexA]
-            SizeA       = len(TriggerMapA)
-            TriggerMapB = self.__db[StateIndexB]
-            # Get border_n    = number of borders of combined map
-            #     eq_target_n = number of equivalent targets, i.e. number of 
-            #                   target combinations that need to be routed.
-            InvolvedStateListA = involved_state_list(TriggerMapA, StateIndexA)
-            InvolvedStateListB = involved_state_list(TriggerMapB, StateIndexB)
-            border_n, eq_target_n = get_metric(TriggerMapA, InvolvedStateListA, 
-                                               TriggerMapB, InvolvedStateListB)
-            combined_state_n      = len(InvolvedStateListA) + len(InvolvedStateListB)
-
-            delta_cost = get_delta_cost(SizeA, len(TriggerMapB), combined_state_n, 
-                                        border_n, len(eq_target_n), 
-                                        CX=self.__cost_coefficient)
+        delta_cost = get_delta_cost(SizeA, len(TriggerMapB), combined_state_n, 
+                                    border_n, len(eq_target_n), 
+                                    CX=self.__cost_coefficient)
 
         self.__delta_cost_cache_set(StateIndexA, StateIndexB, delta_cost)
 
         return delta_cost
-
-    def __state_attributes_mismatch(self, StateIndexA, StateIndexB):
-        """Check whether the attributes of two states match. Non-acceptance
-           states cannot be combined with acceptance states, etc.
-        """
-        if   not self.__states[StateIndexA].core().is_equivalent(self.__states[StateIndexB].core()):
-            return True
-        elif not self.__states[StateIndexA].origins().is_equivalent(self.__states[StateIndexB].origins()):
-            return True
-        return False
 
     def __delta_cost_cache_get(self, I, K):
         # Return 'None' if element '(I, K)' is not in cache
