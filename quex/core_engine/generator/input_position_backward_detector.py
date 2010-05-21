@@ -18,6 +18,7 @@ QUEX_INLINE void
 PAPC_input_postion_backward_detector_$$ID$$(QUEX_TYPE_ANALYZER* me) 
 {
 $$LOCAL_VARIABLES$$
+$$PROLOG$$
 $$STATE_MACHINE$$
 $$FUNCTION_BODY$$ 
 }
@@ -26,14 +27,13 @@ $$FUNCTION_BODY$$
 
 def do(sm, LanguageDB, PrintStateMachineF):
 
-
     decorated_state_machine = StateMachineDecorator(sm, 
                                                     "BACKWARD_DETECTOR_" + repr(sm.get_id()),
                                                     PostContextSM_ID_List = [], 
                                                     BackwardLexingF=True, 
                                                     BackwardInputPositionDetectionF=True)
 
-    function_body = state_machine_coder.do(decorated_state_machine)
+    function_body, prolog = state_machine_coder.do(decorated_state_machine)
 
     sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if PrintStateMachineF: 
@@ -52,6 +52,7 @@ def do(sm, LanguageDB, PrintStateMachineF):
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
                        ["$$FUNCTION_BODY$$",   function_body],
                        ["$$LOCAL_VARIABLES$$", variables_txt],
+                       ["$$PROLOG$$",          prolog],
                        ["$$STATE_MACHINE$$",   sm_str],
                       ])
 

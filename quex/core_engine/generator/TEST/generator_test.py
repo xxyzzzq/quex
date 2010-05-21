@@ -15,6 +15,8 @@ from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeF
 import quex.core_engine.generator.core                     as generator
 import quex.core_engine.generator.state_coder.skipper_core as skipper
 import quex.core_engine.regular_expression.core            as regex
+#
+from   quex.input.setup import setup as Setup
 
 SHOW_TRANSITIONS_STR  = ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
 SHOW_BUFFER_LOADS_STR = ""# "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
@@ -22,9 +24,15 @@ SHOW_BUFFER_LOADS_STR = ""# "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS "
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
-       AssertsActionvation_str="-DQUEX_OPTION_ASSERTS"):    
+       AssertsActionvation_str="-DQUEX_OPTION_ASSERTS",
+       TemplateCompressionF=False, 
+       TemplateCompressionCoef=0.1):    
 
     BufferLimitCode = 0
+
+    # Shall template compression be used?
+    Setup.compression_template_f    = TemplateCompressionF
+    Setup.compression_template_coef = TemplateCompressionCoef
 
     try:
         adapted_dict = {}
