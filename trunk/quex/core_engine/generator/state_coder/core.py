@@ -23,9 +23,13 @@ def do(state, StateIdx, SMD, InitStateF=False):
 
     LanguageDB = Setup.language_db
 
+    label_str = LanguageDB["$label-def"]("$entry", StateIdx)
+
     # Special handling of dead-end-states, i.e. states with no further transitions.
     if SMD.dead_end_state_db().has_key(StateIdx):
-        return transition.do_dead_end_router(state, StateIdx, SMD.backward_lexing_f())
+        txt = transition.do_dead_end_router(state, StateIdx, SMD.backward_lexing_f())
+        if len(txt) != 0: txt.insert(0, label_str)
+        return txt
 
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -48,5 +52,6 @@ def do(state, StateIdx, SMD, InitStateF=False):
                     "    ", LanguageDB["$input/increment"],          "\n",
                     "    ", LanguageDB["$goto"]("$entry", StateIdx), "\n"])
     
+    if len(txt) != 0: txt.insert(0, label_str)
     return txt # .replace("\n", "\n    ") + "\n"
 

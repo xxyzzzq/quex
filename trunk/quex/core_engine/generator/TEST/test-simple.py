@@ -5,7 +5,7 @@ from generator_test import action
 
 if "--hwut-info" in sys.argv:
     print "Simple: Tiny Expressions"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"#, Cpp-Template;"
     print "SAME;"
     sys.exit(0)
 

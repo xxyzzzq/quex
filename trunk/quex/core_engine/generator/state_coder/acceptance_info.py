@@ -6,7 +6,7 @@ from   quex.input.setup                          import setup as Setup
 
 LanguageDB = None
 
-def do(State, StateIdx, SMD):
+def do(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
     assert isinstance(State, state_machine.State)
     assert isinstance(SMD,   StateMachineDecorator)
     global LanguageDB
@@ -14,13 +14,13 @@ def do(State, StateIdx, SMD):
     LanguageDB = Setup.language_db
     
     mode = SMD.mode()
-    if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD)
+    if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF)
     elif mode == "BackwardLexing":                 return backward_lexing(State.origins().get_list())
     elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State.origins().get_list())
     else:
         assert False, "This part of the code should never be reached"
 
-def forward_lexing(State, StateIdx, SMD):
+def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
     """Forward Lexing:
 
        (1) Pure 'Store-Input-Position' States
@@ -62,7 +62,8 @@ def forward_lexing(State, StateIdx, SMD):
         return txt 
 
     # -- If the current acceptance does not need to be stored, then do not do it
-    if not subsequent_states_require_save_last_acceptance(StateIdx, State, SMD.sm()): 
+    if     not ForceSaveLastAcceptanceF \
+       and not subsequent_states_require_save_last_acceptance(StateIdx, State, SMD.sm()): 
         return txt
    
     # (2) Create detector for normal and pre-conditioned acceptances
@@ -247,7 +248,6 @@ def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     assert SM.__class__.__name__ == "StateMachine"
     assert State.is_acceptance()
 
-    # return True
     reachable_state_list = State.transitions().get_target_state_index_list()
 
     for state_index in reachable_state_list:

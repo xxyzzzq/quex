@@ -135,15 +135,14 @@ def do_dead_end_router(state, StateIdx, BackwardLexingF):
     LanguageDB = Setup.language_db
 
     if state.origins().contains_any_pre_context_dependency() == False: 
-        return "" # LanguageDB["$goto-last_acceptance"] + "\n"
+        return [] # LanguageDB["$goto-last_acceptance"] + "\n"
 
-    txt = acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                  __goto_distinct_terminal)
-            
-    #  Pre-conditions might not have their pre-condition fulfilled.
-    txt += LanguageDB["$goto-last_acceptance"] + "\n"
-
-    # -- double check for consistency
-    assert txt != "", "Acceptance state without acceptance origins!"        
+    txt = [ 
+            acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+                                                    __goto_distinct_terminal),
+            # Pre-conditions might not have their pre-condition fulfilled.
+            LanguageDB["$goto-last_acceptance"],
+            "\n"
+          ]
 
     return txt
