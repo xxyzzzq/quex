@@ -328,7 +328,7 @@ def __templated_state_entries(txt, TheTemplate, DSM):
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
         txt.append(LanguageDB["$label-def"]("$entry", state_index))
         state = DSM.sm().states[state_index]
-        txt.extend(acceptance_info.do(state, state_index, DSM))
+        txt.extend(acceptance_info.do(state, state_index, DSM, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key))
         txt.append("    ")

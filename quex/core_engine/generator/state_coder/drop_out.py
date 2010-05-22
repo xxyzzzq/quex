@@ -1,6 +1,7 @@
-import quex.core_engine.state_machine.core as state_machine
-from   quex.input.setup                    import setup as Setup
-import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
+import quex.core_engine.state_machine.core                    as state_machine
+import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
+
+from   quex.input.setup import setup as Setup
 
 LanguageDB = None
 
@@ -92,9 +93,8 @@ def do(State, StateIdx, SMD, InitStateF):
     else:
         reload_str           = __reload_backward()
         load_impossible_str  = LanguageDB["$BOF"]
-        load_impossible_str  = LanguageDB["$BOF"]
-        goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
         goto_terminal_str    = LanguageDB["$goto"]("$terminal-general-bw")
+        goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
 
     if len(State.transitions().get_map()) == 0 or SMD.backward_input_position_detection_f():
         reload_str = ""
@@ -122,7 +122,7 @@ def do(State, StateIdx, SMD, InitStateF):
                     " ", load_impossible_str, " ", 
                     LanguageDB["$then"],                            
             LanguageDB["$label-def"]("$drop-out-direct", StateIdx), 
-            "        ", goto_terminal_str,
+            "        ", goto_terminal_str,                            "\n",
             "    ",     LanguageDB["$endif"],                         "\n",
             "    ", reload_str,                                       "\n",
             "    ", goto_state_input_str,                             "\n",
@@ -146,7 +146,9 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
 
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
-    if not state.is_acceptance(): return LanguageDB["$goto-last_acceptance"]
+    if not state.is_acceptance() \
+       or  state.__class__.__name__ == "TemplateState": 
+        return LanguageDB["$goto-last_acceptance"]
 
     def __goto_terminal(Origin):
         assert Origin.is_acceptance()
