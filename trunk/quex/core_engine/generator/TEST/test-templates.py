@@ -28,6 +28,9 @@ sm.states = {
         100L: State(),
         200L: State(),
         202L: State(),
+        300L: State(),
+        400L: State(),
+        500L: State(),
         }
 # print sm.states.keys()
 for state_index in sm.states.keys():
