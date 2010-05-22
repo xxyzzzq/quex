@@ -9,22 +9,24 @@ QUEX_TYPE_GOTO_LABEL  template_1_target_2[3] = {2, 3, 1, };
 
 STATE_100:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_100");
-    QUEX_DEBUG_PRINT2(&me->buffer, "key = %s", "0");
-key = 0;
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "0");
+template_state_key = 0;
     goto STATE_1;
 
 STATE_200:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_200");
-    QUEX_DEBUG_PRINT2(&me->buffer, "key = %s", "1");
-key = 1;
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "1");
+template_state_key = 1;
     goto STATE_1;
 
 STATE_202:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_202");
-    QUEX_DEBUG_PRINT2(&me->buffer, "key = %s", "2");
-key = 2;
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "2");
+template_state_key = 2;
     goto STATE_1;
 
+STATE_1:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1");
 STATE_1_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_INPUT");
 
