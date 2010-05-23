@@ -547,13 +547,8 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
             recursion_n += 1
 
         # If both transitions are recursive, then the template will
-        # contain only a 'recursion flag'. Note, that if one state is
-        # acceptance than, recursion actually needs to pass the 'set acceptance'
-        # part at the state entry. It cannot be recursive.
-        if recursion_n == 2 \
-           and __no_acceptance(InvolvedStateList0) \
-           and __no_acceptance(InvolvedStateList1): 
-               return TARGET_RECURSIVE
+        # contain only a 'recursion flag'. 
+        if recursion_n == 2: return TARGET_RECURSIVE
 
         if type(T0) == list:
             if type(T1) == list: return T0 + T1
