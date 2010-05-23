@@ -141,25 +141,26 @@ def _do(CombinationList, DSM):
 
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
-        #   (i) All state entries are the same: 
+        #   (i) All state entries are uniform: 
         #       -- Then, a representive state entry can be implemented at the 
         #          template entry. 
         #       -- Recursion happens to the template entry.
         #
-        #   (ii) One or more state entry are different:
+        #   (ii) One or more state entry are different (non-uniform):
         #       -- The particularities of each state entry need to be implemented
         #          at state entry.
         #       -- Recursion is routed to entries of involved states.
         #      
-        involved_state_list      = combination.involved_state_list()
-        prototype                = state_db.get(involved_state_list[0])
-        prev_state               = prototype
+        involved_state_list = combination.involved_state_list()
+        prototype           = state_db.get(involved_state_list[0])
+        prev_state          = prototype
         for state_index in involved_state_list[1:]:
             state = state_db.get(state_index)
             assert state != None
-            if prev_state.core().is_equivalent(state.core())          == False \
+            if    prev_state.core().is_equivalent(state.core())       == False \
                or prev_state.origins().is_equivalent(state.origins()) == False:
-                prototype                = None
+                print "##NE:", prev_state, state
+                prototype = None
                 break
 
         # -- create template state for combination object
@@ -169,7 +170,7 @@ def _do(CombinationList, DSM):
         template_list.append(template)
 
         # -- collect indices of involved states
-        involved_state_index_list.update(combination.involved_state_list())
+        involved_state_index_list.update(involved_state_list)
 
         # -- collect indices of target states
         for state_index in template.transitions().get_target_state_index_list():
@@ -178,6 +179,11 @@ def _do(CombinationList, DSM):
             else:
                 # 'goto drop-out' is coded in state index list as 'minus template index'
                 target_state_index_list.add(- template.core().state_index)
+
+        # -- if the template is non-uniform, then we need a router that maps to
+        #    each state entry of involved states (e.g. for recursion and after reload).
+        if not template.uniform_state_entries_f():
+            target_state_index_list.update(involved_state_list)
 
     # -- transition target definition for each templated state
     transition_target_definition = []
@@ -198,7 +204,7 @@ def _do(CombinationList, DSM):
     return transition_target_definition, code, router, involved_state_index_list
 
 class TemplateTarget:
-    def __init__(self, TemplateIndex, TargetIndex=None, RecursionToStateEntry=False):
+    def __init__(self, TemplateIndex, TargetIndex=None, UniformStateEntriesF=False):
         """TemplateIndex identifies the template that 'hosts' the transition.
 
            TargetIndex identifies the target number (Target0, Target1, ... in
@@ -214,23 +220,26 @@ class TemplateTarget:
         """
         self.template_index = TemplateIndex
         self.target_index   = TargetIndex
-        self.__recursion_to_state_entry = RecursionToStateEntry
+        self.__uniform_state_entries_f = UniformStateEntriesF
 
     def recursive(self):
         return self.target_index == None
 
-    def recursiion_to_state_entry(self):
-        return self.__recursion_to_state_entry
+    def uniform_state_entries_f(self):
+        """If the state entries are not uniform, then recursion must
+           jump to state entries, rather the template entry.
+        """
+        return self.__uniform_state_entries_f
 
 class TransitionMapMimiker:
-    """Class that mimiks the TransitionMap of
+    """Class that mimiks the TransitionMap of module
 
                    quex.core_engine.state_machine.transition_map 
                    
        The goal is to enable 'TemplateState' to act as a normal state
        responding to the member function .transitions().
     """
-    def __init__(self, TemplateIndex, TriggerMap, AllStateEntriesEmptyF):
+    def __init__(self, TemplateIndex, TriggerMap, UniformStateEntriesF):
         self.__trigger_map          = []
         self.__target_state_list_db = []
         i = 0
@@ -244,8 +253,8 @@ class TransitionMapMimiker:
                 #   at state entry (e.g. last_acceptance = ..). Then, the recursion 
                 #   needs to happen to the state entries.
                 target = TemplateTarget(TemplateIndex,  
-                                        TargetIndex=None, # indicates recursion
-                                        RecursionToStateEntry=AllStateEntriesEmptyF) 
+                                        TargetIndex          = None, # says recursion!
+                                        UniformStateEntriesF = UniformStateEntriesF) 
 
             elif type(target) == list:
                 if target not in self.__target_state_list_db: 
@@ -261,7 +270,6 @@ class TransitionMapMimiker:
                 target = TemplateTarget(TemplateIndex, target_index)
 
             self.__trigger_map.append([interval, target])
-
 
     def get_trigger_map(self):
         return self.__trigger_map
@@ -318,26 +326,27 @@ class TemplateState(state_machine.State):
 
         # (0) Components required to be a 'State'
         if RepresentiveState != None:
-            state_machine.State._set(self, 
-                    deepcopy(RepresentiveState.core()),
-                    RepresentiveState.origins(),
-                    # Internally, we adapt the trigger map from:  Interval -> Target State List
-                    # to:                                         Interval -> Index
-                    # where 'Index' represents the Target State List
-                    TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), AllStateEntriesEmptyF=False))
+            self.__uniform_state_entries_f = True
+            core        = deepcopy(RepresentiveState.core())
+            origin_list = deepcopy(RepresentiveState.origins())
         else:
-            state_machine.State._set(self, 
-                    state_machine.StateCore(),
-                    state_machine.OriginList(),
-                    # Internally, we adapt the trigger map from:  Interval -> Target State List
-                    # to:                                         Interval -> Index
-                    # where 'Index' represents the Target State List
-                    TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), AllStateEntriesEmptyF=True))
+            self.__uniform_state_entries_f = False
+            core        = state_machine.StateCoreInfo()   # Empty core and origins, since the particularities
+            origin_list = state_machine.StateOriginList() # are handled at individual state entries.
+
+        state_machine.State._set(self, core, origin_list,
+                # Internally, we adapt the trigger map from:  Interval -> Target State List
+                # to:                                         Interval -> Index
+                # where 'Index' represents the Target State List
+                TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), self.__uniform_state_entries_f))
 
         state_machine.State.core(self).state_index = StateIndex
 
         # (1) Template related information
-        self.__template_combination  = Combi
+        self.__template_combination    = Combi
+
+    def uniform_state_entries_f(self):
+        return self.__uniform_state_entries_f
 
     def template_combination(self):
         return self.__template_combination
@@ -345,16 +354,28 @@ class TemplateState(state_machine.State):
 def __transition_target_data_structures(txt, TheTemplate):
     """Defines the transition targets for each involved state.
     """
-    involved_state_n = len(TheTemplate.template_combination().involved_state_list())
-    template_index   = TheTemplate.core().state_index
+    involved_state_list = TheTemplate.template_combination().involved_state_list()
+    involved_state_n    = len(involved_state_list)
+    template_index      = TheTemplate.core().state_index
     for target_index, target_state_index_list in enumerate(TheTemplate.transitions().target_state_list_db()):
         assert len(target_state_index_list) == involved_state_n
 
         txt.append("QUEX_TYPE_GOTO_LABEL  template_%i_target_%i[%i] = {" \
-                   % (template_index, target_index, len(target_state_index_list)))
+                   % (template_index, target_index, involved_state_n))
         for index in target_state_index_list:
             if index != None: txt.append("%i, " % index)
             else:             txt.append("-%i," % template_index)
+        txt.append("};\n")
+
+    # If the template does not have uniform state entries, the entries
+    # need to be routed on recursion, for example. Thus we need to map 
+    # from state-key to state.
+    if not TheTemplate.uniform_state_entries_f():
+        txt.append("QUEX_TYPE_GOTO_LABEL  template_%i_map_state_key_to_state_index[%i] = {" \
+                   % (template_index, involved_state_n))
+        for state_index in involved_state_list:
+            assert isinstance(state_index, (int, long))
+            txt.append("%i, " % state_index)
         txt.append("};\n")
 
 def __templated_state_entries(txt, TheTemplate, DSM):
@@ -371,7 +392,10 @@ def __templated_state_entries(txt, TheTemplate, DSM):
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
         txt.append(LanguageDB["$label-def"]("$entry", state_index))
         state = DSM.sm().states[state_index]
-        txt.extend(acceptance_info.do(state, state_index, DSM, ForceSaveLastAcceptanceF=True))
+        # If all state entries are uniform, the entry handling happens uniformly at
+        # the entrance of the template, not each state.
+        if not TheTemplate.uniform_state_entries_f():
+            txt.extend(acceptance_info.do(state, state_index, DSM, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key))
         txt.append("    ")

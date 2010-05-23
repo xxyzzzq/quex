@@ -170,8 +170,10 @@ db["C++"] = {
                              "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
     "$goto-template-target": lambda TemplateIdx, TargetIdx: 
                              "QUEX_TEMPLATE_GOTO(%i, %i);" % (TemplateIdx, TargetIdx),
+    "$goto-template-state-key": lambda TemplateIdx: 
+                                "QUEX_TEMPLATE_GOTO_STATE_KEY(%i);" % TemplateIdx,
     "$label-pure":           lambda Label:                "%s:" % Label,
-    "$label-def":           lambda Type, Argument=None:  
+    "$label-def":            lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \
                                 __string_if_true("    ", Type == "$drop-out-direct") + \
                                 "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
