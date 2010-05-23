@@ -128,6 +128,7 @@ def _do(CombinationList, DSM):
     assert isinstance(DSM, StateMachineDecorator)
 
     LanguageDB = Setup.language_db
+    state_db   = DSM.sm().states
 
     # -- Collect all indices of states involved in templates
     involved_state_index_list = set([])
@@ -138,14 +139,32 @@ def _do(CombinationList, DSM):
     for combination in CombinationList:
         assert isinstance(combination, templates.TemplateCombination)
 
-        # All states of a combination are equivalent, thus it is sufficient 
-        # to consider one single state in order to know whether it is
-        # acceptance or not.
-        prototype_index = combination.involved_state_list()[0]
-        prototype       = DSM.sm().states.get(prototype_index)
-        assert prototype != None
+        # Two Scenarios for settings at state entry (last_acceptance_position, ...)
+        # 
+        #   (i) All state entries are the same: 
+        #       -- Then, a representive state entry can be implemented at the 
+        #          template entry. 
+        #       -- Recursion happens to the template entry.
+        #
+        #   (ii) One or more state entry are different:
+        #       -- The particularities of each state entry need to be implemented
+        #          at state entry.
+        #       -- Recursion is routed to entries of involved states.
+        #      
+        involved_state_list      = combination.involved_state_list()
+        prototype                = state_db.get(involved_state_list[0])
+        prev_state               = prototype
+        for state_index in involved_state_list[1:]:
+            state = state_db.get(state_index)
+            assert state != None
+            if prev_state.core().is_equivalent(state.core())          == False \
+               or prev_state.origins().is_equivalent(state.origins()) == False:
+                prototype                = None
+                break
 
         # -- create template state for combination object
+        #    prototype == None, tells that there state entries differ and there
+        #                       is no representive state.
         template = TemplateState(combination, index.get(), prototype)
         template_list.append(template)
 
@@ -179,7 +198,7 @@ def _do(CombinationList, DSM):
     return transition_target_definition, code, router, involved_state_index_list
 
 class TemplateTarget:
-    def __init__(self, TemplateIndex, TargetIndex=None):
+    def __init__(self, TemplateIndex, TargetIndex=None, RecursionToStateEntry=False):
         """TemplateIndex identifies the template that 'hosts' the transition.
 
            TargetIndex identifies the target number (Target0, Target1, ... in
@@ -195,9 +214,13 @@ class TemplateTarget:
         """
         self.template_index = TemplateIndex
         self.target_index   = TargetIndex
+        self.__recursion_to_state_entry = RecursionToStateEntry
 
     def recursive(self):
         return self.target_index == None
+
+    def recursiion_to_state_entry(self):
+        return self.__recursion_to_state_entry
 
 class TransitionMapMimiker:
     """Class that mimiks the TransitionMap of
@@ -207,14 +230,22 @@ class TransitionMapMimiker:
        The goal is to enable 'TemplateState' to act as a normal state
        responding to the member function .transitions().
     """
-    def __init__(self, TemplateIndex, TriggerMap):
+    def __init__(self, TemplateIndex, TriggerMap, AllStateEntriesEmptyF):
         self.__trigger_map          = []
         self.__target_state_list_db = []
         i = 0
         for interval, target in TriggerMap:
 
             if target == templates.TARGET_RECURSIVE:
-                target = TemplateTarget(TemplateIndex) # No target index --> recursion   
+                # Normal Recursion: 
+                #   Return to the entry of the template
+                # Dedicated Recursion: 
+                #   This holds if one or more involved states require things to be set
+                #   at state entry (e.g. last_acceptance = ..). Then, the recursion 
+                #   needs to happen to the state entries.
+                target = TemplateTarget(TemplateIndex,  
+                                        TargetIndex=None, # indicates recursion
+                                        RecursionToStateEntry=AllStateEntriesEmptyF) 
 
             elif type(target) == list:
                 if target not in self.__target_state_list_db: 
@@ -277,19 +308,31 @@ class TemplateState(state_machine.State):
            RepresentiveState is a state that can represent all states in
                              the template. All states of a template must
                              be equivalent, so any of them can do.
+
+                             If == None, then it means that state entries
+                             differ and there is no representive state.
         """
         assert isinstance(Combi, templates.TemplateCombination)
-        assert isinstance(RepresentiveState, state_machine.State)
+        assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState == None
         assert type(StateIndex) == long
 
         # (0) Components required to be a 'State'
-        state_machine.State._set(self, 
-                deepcopy(RepresentiveState.core()),
-                RepresentiveState.origins(),
-                # Internally, we adapt the trigger map from:  Interval -> Target State List
-                # to:                                         Interval -> Index
-                # where 'Index' represents the Target State List
-                TransitionMapMimiker(StateIndex, Combi.get_trigger_map()))
+        if RepresentiveState != None:
+            state_machine.State._set(self, 
+                    deepcopy(RepresentiveState.core()),
+                    RepresentiveState.origins(),
+                    # Internally, we adapt the trigger map from:  Interval -> Target State List
+                    # to:                                         Interval -> Index
+                    # where 'Index' represents the Target State List
+                    TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), AllStateEntriesEmptyF=False))
+        else:
+            state_machine.State._set(self, 
+                    state_machine.StateCore(),
+                    state_machine.OriginList(),
+                    # Internally, we adapt the trigger map from:  Interval -> Target State List
+                    # to:                                         Interval -> Index
+                    # where 'Index' represents the Target State List
+                    TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), AllStateEntriesEmptyF=True))
 
         state_machine.State.core(self).state_index = StateIndex
 
