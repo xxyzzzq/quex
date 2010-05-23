@@ -38,6 +38,8 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
         if not info.recursive():
             return LanguageDB["$goto-template-target"](info.template_index, 
                                                        info.target_index)
+        elif not info.uniform_state_entries_f():
+            return LanguageDB["$goto-template-state-key"](info.template_index) 
         else:
             return LanguageDB["$goto"]("$entry", info.template_index)
 

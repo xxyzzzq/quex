@@ -70,7 +70,9 @@
 #   define QUEX_GOTO_last_acceptance()                goto *last_acceptance;
 
 #   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx) \
-#          goto template_ ##TemplateIdx## _target_##TargetIdx[template_state_key];
+           goto template_ ##TemplateIdx## _target_##TargetIdx[template_state_key];
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx) \
+           goto template_ ##TemplateIdx## _map_state_key_to_state_index[template_state_key];
 
 #else
     typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
@@ -84,6 +86,10 @@
 #   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx) \
            target_state_index = template_ ##TemplateIdx## _target_ ##TargetIdx[template_state_key]; \
            goto STATE_ROUTER;
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx) \
+           target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[template_state_key]; \
+           goto STATE_ROUTER;
+
 #endif
 
 
