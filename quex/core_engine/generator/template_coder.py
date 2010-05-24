@@ -159,14 +159,13 @@ def _do(CombinationList, DSM):
             assert state != None
             if    prev_state.core().is_equivalent(state.core())       == False \
                or prev_state.origins().is_equivalent(state.origins()) == False:
-                print "##NE:", prev_state, state
                 prototype = None
                 break
 
         # -- create template state for combination object
         #    prototype == None, tells that there state entries differ and there
         #                       is no representive state.
-        template = TemplateState(combination, index.get(), prototype)
+        template = TemplateState(combination, DSM.sm().get_id(), index.get(), prototype)
         template_list.append(template)
 
         # -- collect indices of involved states
@@ -307,7 +306,7 @@ class TemplateState(state_machine.State):
        template can be generated through the same procedure as 
        all state machine states.
     """
-    def __init__(self, Combi, StateIndex, RepresentiveState):
+    def __init__(self, Combi, StateMachineID, StateIndex, RepresentiveState):
         """Combi contains all information about the states of a template
                  and the template itself.
            
@@ -331,8 +330,11 @@ class TemplateState(state_machine.State):
             origin_list = deepcopy(RepresentiveState.origins())
         else:
             self.__uniform_state_entries_f = False
-            core        = state_machine.StateCoreInfo()   # Empty core and origins, since the particularities
-            origin_list = state_machine.StateOriginList() # are handled at individual state entries.
+            # Empty core and origins, since the particularities are handled at individual 
+            # state entries.
+            core        = state_machine.StateCoreInfo(StateMachineID, StateIndex, 
+                                                      AcceptanceF=False)   
+            origin_list = state_machine.StateOriginList()          
 
         state_machine.State._set(self, core, origin_list,
                 # Internally, we adapt the trigger map from:  Interval -> Target State List
@@ -397,15 +399,17 @@ def __templated_state_entries(txt, TheTemplate, DSM):
         if not TheTemplate.uniform_state_entries_f():
             txt.extend(acceptance_info.do(state, state_index, DSM, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
-        txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key))
-        txt.append("    ")
+        txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
         txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
         txt.append("\n\n")
 
 def __template_state(txt, TheTemplate, DSM):
     """Generate the template state that 'hosts' the templated states.
     """
-    txt.extend(state_coder.do(TheTemplate, TheTemplate.core().state_index, DSM, InitStateF=False))
+    result = state_coder.do(TheTemplate, TheTemplate.core().state_index, DSM, 
+                            InitStateF=False, 
+                            ForceSaveLastAcceptanceF=True)
+    txt.extend(result)
 
 def __state_router(StateIndexList, DSM):
     """Create code that allows to jump to a state based on an integer value.

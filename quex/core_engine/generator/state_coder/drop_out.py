@@ -89,11 +89,18 @@ def do(State, StateIdx, SMD, InitStateF):
         load_impossible_str  = "(me->buffer._memory._end_of_file_p != 0x0)"
         ## load_impossible_str  = LanguageDB["$EOF"]
         goto_terminal_str    = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
-        goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
     else:
         reload_str           = __reload_backward()
         load_impossible_str  = LanguageDB["$BOF"]
         goto_terminal_str    = LanguageDB["$goto"]("$terminal-general-bw")
+
+    if State.__class__.__name__ == "TemplateState" and not State.uniform_state_entries_f():
+        # Templated states, i.e. code fragments that implement more than one
+        # state, need to return to dedicated state entries, if the state entries
+        # are not uniform.
+        goto_state_input_str = LanguageDB["$goto-template-state-key"](StateIdx) 
+    else:
+        # Normal return to place where the next input is read
         goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
 
     if len(State.transitions().get_map()) == 0 or SMD.backward_input_position_detection_f():
@@ -109,7 +116,7 @@ def do(State, StateIdx, SMD, InitStateF):
             "    ", LanguageDB["$elseif"], load_impossible_str, LanguageDB["$then"], 
             "        ", LanguageDB["$goto"]("$terminal-EOF"),                       "\n",
             "    ", LanguageDB["$endif"],                                           "\n",
-            "    ", reload_str,
+            "    ", reload_str,                                                     "\n",
             "    ", goto_state_input_str,                                           "\n",
         ]
 
