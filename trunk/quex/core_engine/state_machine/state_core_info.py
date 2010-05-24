@@ -80,8 +80,11 @@ class StateCoreInfo:
         self.__pseudo_ambiguous_post_context_id = PseudoAmbiguousPostConditionID
 
     def is_equivalent(self, Other):
-        return     self.__acceptance_f                     == Other.__acceptance_f                     \
-               and self.__store_input_position_f           == Other.__store_input_position_f           \
+        if self.__acceptance_f != Other.__acceptance_f:         return False
+        elif self.__acceptance_f:
+            if self.state_machine_id != Other.state_machine_id: return False
+
+        return     self.__store_input_position_f           == Other.__store_input_position_f           \
                and self.__post_context_id                  == Other.__post_context_id                  \
                and self.__pre_context_id                   == Other.__pre_context_id                   \
                and self.__pre_context_begin_of_line_f      == Other.__pre_context_begin_of_line_f      \

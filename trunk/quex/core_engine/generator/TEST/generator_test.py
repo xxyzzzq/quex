@@ -18,8 +18,8 @@ import quex.core_engine.regular_expression.core            as regex
 #
 from   quex.input.setup import setup as Setup
 
-SHOW_TRANSITIONS_STR  = ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
-SHOW_BUFFER_LOADS_STR = ""# "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+SHOW_TRANSITIONS_STR  = "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
+SHOW_BUFFER_LOADS_STR = "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!
