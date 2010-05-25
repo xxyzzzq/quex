@@ -79,7 +79,10 @@ from   quex.core_engine.generator.state_machine_decorator import StateMachineDec
 
 import quex.core_engine.generator.state_coder.core            as state_coder
 import quex.core_engine.generator.state_coder.transition      as transition
-import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
+import quex.core_engine.generator.state_coder.input_block      as input_block
+import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
+import quex.core_engine.generator.state_coder.transition_block as transition_block
+import quex.core_engine.generator.state_coder.drop_out         as drop_out
 import quex.core_engine.state_machine.index              as index
 import quex.core_engine.state_machine.core               as state_machine
 
@@ -92,7 +95,7 @@ from quex.input.setup import setup as Setup
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(DSM, CostCoefficient):
+def do(SMD, CostCoefficient):
     """RETURNS: Array 'x'
 
        x[0] transition target definitions 
@@ -100,16 +103,16 @@ def do(DSM, CostCoefficient):
        x[2] state router for template targets
        x[3] involved_state_index_list
     """
-    assert isinstance(DSM, StateMachineDecorator)
+    assert isinstance(SMD, StateMachineDecorator)
           
     # (1) Find possible state combinations
-    combination_list = templates.do(DSM.sm(), CostCoefficient)
+    combination_list = templates.do(SMD.sm(), CostCoefficient)
 
     # (2) Implement code for template combinations
     transition_target_definition, \
     code,                         \
     router,                       \
-    involved_state_index_list     =  _do(combination_list, DSM)
+    involved_state_index_list     =  _do(combination_list, SMD)
 
     prolog = transition_target_definition \
              + ["QUEX_TYPE_GOTO_LABEL target_state_index;\n", \
@@ -118,17 +121,17 @@ def do(DSM, CostCoefficient):
     return "".join(code + router), "".join(prolog), \
            involved_state_index_list
 
-def _do(CombinationList, DSM):
+def _do(CombinationList, SMD):
     """-- Returns generated code for all templates.
-       -- Sets the template_compression_db in DSM.
+       -- Sets the template_compression_db in SMD.
     """
     global LanguageDB 
 
     assert type(CombinationList) == list
-    assert isinstance(DSM, StateMachineDecorator)
+    assert isinstance(SMD, StateMachineDecorator)
 
     LanguageDB = Setup.language_db
-    state_db   = DSM.sm().states
+    state_db   = SMD.sm().states
 
     # -- Collect all indices of states involved in templates
     involved_state_index_list = set([])
@@ -165,7 +168,7 @@ def _do(CombinationList, DSM):
         # -- create template state for combination object
         #    prototype == None, tells that there state entries differ and there
         #                       is no representive state.
-        template = TemplateState(combination, DSM.sm().get_id(), index.get(), prototype)
+        template = TemplateState(combination, SMD.sm().get_id(), index.get(), prototype)
         template_list.append(template)
 
         # -- collect indices of involved states
@@ -194,11 +197,11 @@ def _do(CombinationList, DSM):
     # -- template state
     code = []
     for template in template_list:
-        __templated_state_entries(code, template, DSM)
-        __template_state(code, template, DSM)
+        __templated_state_entries(code, template, SMD)
+        __template_state(code, template, SMD)
 
     # -- state router
-    router = __state_router(target_state_index_list, DSM)
+    router = __state_router(target_state_index_list, SMD)
 
     return transition_target_definition, code, router, involved_state_index_list
 
@@ -380,7 +383,7 @@ def __transition_target_data_structures(txt, TheTemplate):
             txt.append("%i, " % state_index)
         txt.append("};\n")
 
-def __templated_state_entries(txt, TheTemplate, DSM):
+def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
@@ -393,25 +396,32 @@ def __templated_state_entries(txt, TheTemplate, DSM):
     """
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
         txt.append(LanguageDB["$label-def"]("$entry", state_index))
-        state = DSM.sm().states[state_index]
+        state = SMD.sm().states[state_index]
         # If all state entries are uniform, the entry handling happens uniformly at
         # the entrance of the template, not each state.
         if not TheTemplate.uniform_state_entries_f():
-            txt.extend(acceptance_info.do(state, state_index, DSM, ForceSaveLastAcceptanceF=True))
+            txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
+            txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
-        txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
+        txt.append(LanguageDB["$goto"]("$template", TheTemplate.core().state_index))
         txt.append("\n\n")
 
-def __template_state(txt, TheTemplate, DSM):
+def __template_state(txt, TheTemplate, SMD):
     """Generate the template state that 'hosts' the templated states.
     """
-    result = state_coder.do(TheTemplate, TheTemplate.core().state_index, DSM, 
-                            InitStateF=False, 
-                            ForceSaveLastAcceptanceF=True)
-    txt.extend(result)
+    state       = TheTemplate
+    state_index = TheTemplate.core().state_index
+    TriggerMap  = state.transitions().get_trigger_map()
 
-def __state_router(StateIndexList, DSM):
+    txt.extend(LanguageDB["$label-def"]("$template", state_index))
+    if TheTemplate.uniform_state_entries_f():
+        txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
+        txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
+    txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
+    txt.extend(drop_out.do(state, state_index, SMD, False))
+
+def __state_router(StateIndexList, SMD):
     """Create code that allows to jump to a state based on an integer value.
     """
 
@@ -424,11 +434,11 @@ def __state_router(StateIndexList, DSM):
         if index >= 0:
             # Transition to state entry
             state_index = index
-            code  = transition.do(state_index, None, None, DSM)
+            code  = transition.do(state_index, None, None, SMD)
         else:
             # Transition to a templates 'drop-out'
             template_index = - index
-            code = transition.do(None, template_index, None, DSM)
+            code = transition.do(None, template_index, None, SMD)
         txt.append(code)
         txt.append("\n")
 

@@ -151,19 +151,23 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(SM, state_machine.StateMachine)
     global LanguageDB 
 
-    # (1) non-acceptance state drop-outs
-    #     (winner is determined by variable 'last_acceptance', then goto terminal router)
-    if not state.is_acceptance() \
-       or  state.__class__.__name__ == "TemplateState": 
-        return LanguageDB["$goto-last_acceptance"]
-
     def __goto_terminal(Origin):
         assert Origin.is_acceptance()
         global LanguageDB 
         return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
-    # -- acceptance state drop outs
-    return acceptance_info.get_acceptance_detector(state.origins().get_list(), __goto_terminal)
+    # (1) non-acceptance state drop-outs
+    #     (winner is determined by variable 'last_acceptance', then goto terminal router)
+    if state.__class__.__name__ == "TemplateState": 
+        return LanguageDB["$goto-last_acceptance"]
+
+    elif not state.is_acceptance():
+        return LanguageDB["$goto-last_acceptance"]
+
+    else:
+        # -- acceptance state drop outs
+        return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+                                                       __goto_terminal)
 
 
 

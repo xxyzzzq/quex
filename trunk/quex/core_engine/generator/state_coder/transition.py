@@ -41,7 +41,7 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
         elif not info.uniform_state_entries_f():
             return LanguageDB["$goto-template-state-key"](info.template_index) 
         else:
-            return LanguageDB["$goto"]("$entry", info.template_index)
+            return LanguageDB["$goto"]("$template", info.template_index)
 
     # (2) The very normal transition to another state
     elif TargetStateIdx != None:   

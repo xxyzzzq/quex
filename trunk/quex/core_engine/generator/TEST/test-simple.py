@@ -29,9 +29,4 @@ pattern_action_pair_list = [
 ]
 test_str = "ABERHALLO: GUGU PRINT PRINT: PRINTERLEIN"
 
-if choice != "Cpp-Template":
-    generator_test.do(pattern_action_pair_list, test_str, {}, choice)    
-else:
-    choice = "Cpp"
-    generator_test.do(pattern_action_pair_list, test_str, {}, choice, 
-                      TemplateCompressionF=True, TemplateCompressionCoef=0.1)    
+generator_test.do(pattern_action_pair_list, test_str, {}, choice)    
