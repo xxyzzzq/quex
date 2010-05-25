@@ -10,7 +10,7 @@ from   quex.input.setup                                        import setup as S
 from copy import deepcopy
 
 
-def do(state, StateIdx, SMD, InitStateF=False, ForceSaveLastAcceptanceF=False):
+def do(state, StateIdx, SMD, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -36,9 +36,9 @@ def do(state, StateIdx, SMD, InitStateF=False, ForceSaveLastAcceptanceF=False):
     #                        # => Here, the trigger map cannot be empty.
 
     txt = \
-          input_block.do(StateIdx, InitStateF, SMD.backward_lexing_f())      + \
-          acceptance_info.do(state, StateIdx, SMD, ForceSaveLastAcceptanceF) + \
-          transition_block.do(TriggerMap, StateIdx, InitStateF, SMD)         + \
+          input_block.do(StateIdx, InitStateF, SMD.backward_lexing_f())  + \
+          acceptance_info.do(state, StateIdx, SMD)                       + \
+          transition_block.do(TriggerMap, StateIdx, InitStateF, SMD)     + \
           drop_out.do(state, StateIdx, SMD, InitStateF)
 
     if InitStateF and not SMD.backward_lexing_f():

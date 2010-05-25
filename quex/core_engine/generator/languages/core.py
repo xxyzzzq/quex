@@ -29,6 +29,7 @@ __label_db = \
     "$terminal-general-bw":   lambda NoThing:     "TERMINAL_GENERAL_BACKWARD",
     "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
     "$terminal-FAILURE":      lambda NoThing:     "TERMINAL_FAILURE",
+    "$template":              lambda StateIdx:    "TEMPLATE_%s"          % __nice(StateIdx),
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
     "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
     "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),
