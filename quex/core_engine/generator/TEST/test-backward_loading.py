@@ -6,7 +6,7 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Buffer Reload: Backwards;"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
     print "SAME;"
     sys.exit(0)
 

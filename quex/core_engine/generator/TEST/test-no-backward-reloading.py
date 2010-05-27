@@ -6,7 +6,7 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Buffer Reload: No Backward Reload -- Precondition at Border"
-    print "CHOICES: Cpp_ASSERTS, Cpp, ANSI-C-ASSERTS, ANSI-C, Cpp_StrangeStream;"
+    print "CHOICES: Cpp_ASSERTS, Cpp, ANSI-C-ASSERTS, ANSI-C, Cpp_StrangeStream, Cpp-Template;"
     print "SAME;"
     sys.exit(0)
 

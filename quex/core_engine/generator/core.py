@@ -43,8 +43,8 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=False, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg, prolog = state_machine_coder.do(decorated_state_machine)
-        txt += prolog + msg
+        msg, variable_db = state_machine_coder.do(decorated_state_machine)
+        txt += msg
 
         
         #  -- terminal states: execution of pattern actions  
@@ -56,7 +56,7 @@ class Generator(GeneratorBase):
                                             self.pre_context_sm_id_list,
                                             self.language_db) 
 
-        return txt
+        return txt, variable_db
 
     def __get_combined_pre_context_state_machine(self):
         LanguageDB = self.language_db
@@ -73,16 +73,16 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=True, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg, prolog = state_machine_coder.do(decorated_state_machine)
+        msg, variable_db = state_machine_coder.do(decorated_state_machine)
 
-        txt += prolog + msg
+        txt += msg
 
         txt += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt += "    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n"
 
-        return txt
+        return txt, variable_db
 
     def do(self):
         LanguageDB = self.language_db
@@ -94,13 +94,17 @@ class Generator(GeneratorBase):
             papc_input_postion_backward_detector_functions +=  \
                   backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
 
-        function_body = ""
+        pre_context_sm_code = ""
+        local_variable_db   = {}
         # -- write the combined pre-condition state machine
         if self.pre_context_sm_list != []:
-            function_body += self.__get_combined_pre_context_state_machine()
+            pre_context_sm_code, local_variable_db = self.__get_combined_pre_context_state_machine()
             
         # -- write the state machine of the 'core' patterns (i.e. no pre-conditions)
-        function_body += self.__get_core_state_machine()
+        main_sm_code, variable_db = self.__get_core_state_machine()
+        local_variable_db.update(variable_db)
+
+        function_body = pre_context_sm_code + main_sm_code
 
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
@@ -111,7 +115,8 @@ class Generator(GeneratorBase):
                                                          self.pre_context_sm_id_list,
                                                          self.mode_name_list, 
                                                          InitialStateIndex=self.sm.init_state_index,
-                                                         LanguageDB=LanguageDB) 
+                                                         LanguageDB=LanguageDB,
+                                                         LocalVariableDB=local_variable_db) 
 
         option_str = ""
         if self.begin_of_line_condition_f: 

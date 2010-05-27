@@ -46,25 +46,28 @@ def __header_definitions(LanguageDB):
     txt = txt.replace("$$GOTO_START_PREPARATION$$", LanguageDB["$goto"]("$re-start"))
     return txt
 
-def __local_variable_definitions(VariableInfoList):
-    txt = ""
-    L = max(map(lambda info: len(info[0]), VariableInfoList))
-    for info in VariableInfoList:
+def __local_variable_definitions(VariableDB):
+    variable_list = map(lambda x: ([x[0]] + x[1]), VariableDB.items())
+    variable_list.sort()
+    L = max(map(lambda info: len(info[0]), variable_list))
+    txt = []
+    for info in variable_list:
         if len(info) > 3: 
             if info[3] != 0:
-                type = info[0]
-                name = info[1] + "[%s]" % repr(info[3])
-                value = "/* uninitialized */"
+                type  = info[1]
+                name  = info[0] + "[%s]" % repr(info[3])
+                if info[2] != None: value = " = " + info[2]
+                else:               value = "/* un-initilized */"
             else:
-                type = info[0] + "*"
-                name = info[1] 
+                type = info[1] + "*"
+                name = info[0] 
                 value = " = 0x0"
         else:
-            type  = info[0]
-            name  = info[1] 
+            type  = info[1]
+            name  = info[0] 
             value = " = " + info[2]
-        txt += "    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value)
-    return txt
+        txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
+    return "".join(txt)
          
 __function_signature = """
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  
@@ -103,7 +106,8 @@ comment_on_post_context_position_init_str = """
 
 def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
                         function_body, PostConditionedStateMachineID_List, PreConditionIDList,
-                        ModeNameList=[], InitialStateIndex=-1, LanguageDB=None):   
+                        ModeNameList=[], InitialStateIndex=-1, LanguageDB=None,
+                        LocalVariableDB={}):   
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
@@ -127,7 +131,6 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     """              
     txt = ""
 
-    local_variable_list = []
     signature = __function_signature
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
@@ -137,25 +140,26 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyzer") + "\n"
 
     PostContextN = len(PostConditionedStateMachineID_List)
-    local_variable_list.extend(
-            [ ["QUEX_TYPE_GOTO_LABEL",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
-              ["QUEX_TYPE_CHARACTER_POSITION", "last_acceptance_input_position", "(QUEX_TYPE_CHARACTER*)(0x00)"],
-              ["QUEX_TYPE_CHARACTER_POSITION", "post_context_start_position",    "(QUEX_TYPE_CHARACTER*)(0x00)", 
-                                                                                 PostContextN],
-              ["const size_t",                 "PostContextStartPositionN",      "(size_t)" + repr(PostContextN)],
-              ["QUEX_TYPE_CHARACTER",          "input",                          "(QUEX_TYPE_CHARACTER)(0x00)"]
-            ])
+
+    local_variable_list = LocalVariableDB
+    local_variable_list.update(
+        { "last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",         "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
+          "last_acceptance_input_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x00)"],
+          "post_context_start_position":    ["QUEX_TYPE_CHARACTER_POSITION", None, PostContextN],
+          "PostContextStartPositionN":      ["const size_t",                 "(size_t)" + repr(PostContextN)],
+          "input":                          ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x00)"]
+         })
               
     # -- pre-condition fulfillment flags                
     for pre_context_sm_id in PreConditionIDList:
-        local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
+        local_variable_list["pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id)] = ["int", "0"]
 
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             txt += "#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name) 
 
-    txt += __local_variable_definitions(local_variable_list)
+    txt += LanguageDB["$local-variable-defs"](local_variable_list)
     txt += comment_on_post_context_position_init_str
     txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
     txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
@@ -232,6 +236,7 @@ $$FAILURE_ACTION$$
 #undef LexemeEnd
 #undef LexemeNull
 #undef LexemeL
+
 #ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
 __TERMINAL_ROUTER: {
         /*  if last_acceptance => goto correspondent acceptance terminal state*/
@@ -239,7 +244,16 @@ __TERMINAL_ROUTER: {
         if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
             goto TERMINAL_FAILURE;
         }
-        $$RESTORE_LAST_ACCEPTANCE_POS$$
+        /* When a terminal router is used, the terminal is determined dynamically,
+         * thus the last_acceptance_input_position **must** be set. 
+         * Exception: Template States, where acceptance states of post conditions
+         *            do not set the acceptance position (because its retrieved
+         *            anyway from post_context_start_position[i]).               */
+        if(last_acceptance_input_position != 0x0) {
+$$RESTORE_LAST_ACCEPTANCE_POS$$
+        }
+
+        /* Route according variable 'last_acceptance'. */
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_FAILURE-GOTO$$; /* nothing matched */

@@ -69,10 +69,18 @@
 #   define QUEX_GOTO_drop_out_state_index()           goto *drop_out_state_index;
 #   define QUEX_GOTO_last_acceptance()                goto *last_acceptance;
 
+    /* If no computed gotos are used, then there are two state routers, one for forward
+     * state routing and another for backward state routing. Thus, two macros for the same
+     * thing are required.                                                                 */
 #   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx) \
            goto template_ ##TemplateIdx## _target_##TargetIdx[template_state_key];
+#   define QUEX_TEMPLATE_GOTO_BACKWARD(TemplateIdx, TargetIdx) \
+           QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx) 
+
 #   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx) \
            goto template_ ##TemplateIdx## _map_state_key_to_state_index[template_state_key];
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(TemplateIdx) \
+           QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx) 
 
 #else
     typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
@@ -89,6 +97,12 @@
 #   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx) \
            target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[template_state_key]; \
            goto STATE_ROUTER;
+#   define QUEX_TEMPLATE_GOTO_BACKWARD(TemplateIdx, TargetIdx) \
+           target_state_index = template_ ##TemplateIdx## _target_ ##TargetIdx[template_state_key]; \
+           goto STATE_ROUTER_BACKWARD;
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(TemplateIdx) \
+           target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[template_state_key]; \
+           goto STATE_ROUTER_BACKWARD;
 
 #endif
 
@@ -128,9 +142,9 @@
         "## Disable this message by compile option\n"                               \
         "##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'\n"              \
         "##\n"                                                                      \
-        "## Asserts art activated; Lexical analyzer is 'paranoid'.\n"               \
+        "## Asserts activated! Lexical analyzer is 'paranoid'!\n"                   \
         "## => Even smallest misbehavior causes program exit.\n"                    \
-        "##    This helps to find subtle errors.\n"                                 \
+        "##    This helps to find subtile errors.\n"                                \
         "##\n"                                                                      \
         "## Note however: the paranoia is a heavy load on performance!\n"           \
         "##\n"                                                                      \

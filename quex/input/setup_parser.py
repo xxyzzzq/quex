@@ -121,6 +121,7 @@ def do(argv):
     else:
         setup.byte_order_is_that_of_current_system_f = False
 
+    setup.compression_template_coef  = __get_float("compression_template_coef")
     setup.buffer_limit_code          = __get_integer("buffer_limit_code")
     setup.control_character_code_list = [setup.buffer_limit_code]
 
@@ -343,17 +344,26 @@ def __check_identifier(setup, Candidate, Name):
     error_msg("%s must be a valid identifier (%s).\n" % (Name, repr(CommandLineOption)[1:-1]) + \
               "Received: '%s'" % value)
 
-def __get_integer(MemberName):
-    code = setup.__dict__[MemberName]
+def __get_float(MemberName):
+    ValueStr = setup.__dict__[MemberName]
+    if type(ValueStr) == float: return ValueStr
     try:
-        if   type(code) == int: return code
-        elif len(code) > 2:
-            if   code[:2] == "0x": return int(code, 16)
-            elif code[:2] == "0o": return int(code, 8)
-        return int(code)
+        return float(ValueStr)
     except:
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
-        error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
+        error_msg("Cannot convert '%s' into an floating point number for '%s'" % (ValueStr, option_name))
+
+def __get_integer(MemberName):
+    ValueStr = setup.__dict__[MemberName]
+    if type(ValueStr) == int: return ValueStr
+    try:
+        if len(ValueStr) > 2:
+            if   ValueStr[:2] == "0x": return int(ValueStr, 16)
+            elif ValueStr[:2] == "0o": return int(ValueStr, 8)
+        return int(ValueStr)
+    except:
+        option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
+        error_msg("Cannot convert '%s' into an integer for '%s'" % (ValueStr, option_name))
 
 def __prepare_file_name(Suffix, FileStemIncludedF=False):
     global setup

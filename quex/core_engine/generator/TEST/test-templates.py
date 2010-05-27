@@ -3,8 +3,9 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.state_machine.compression.templates as templates
-import quex.core_engine.generator.template_coder            as coder
 from   quex.core_engine.state_machine.core                  import StateMachine, State
+import quex.core_engine.generator.template_coder            as coder
+import quex.core_engine.generator.languages.cpp             as cpp
 from   quex.core_engine.generator.state_machine_decorator   import StateMachineDecorator
 from   quex.input.setup import setup as Setup
 
@@ -59,7 +60,7 @@ x = coder._do([combination], DSM)
 
 print "--(Transition Targets)--------------------------------------------------"
 print
-print "".join(x[0])
+print cpp.__local_variable_definitions(x[0])
 print
 print "--(Template Code)-------------------------------------------------------"
 print
