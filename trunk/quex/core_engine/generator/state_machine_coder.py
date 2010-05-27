@@ -9,7 +9,7 @@ import quex.core_engine.generator.template_coder   as template_coder
 from   quex.input.setup import setup as Setup
 
 
-def do(SMD):
+def do(SMD, TemplateHasBeenCodedBeforeF=False):
     """Returns the program code implementing the StateMachine's behavior.
        NOTE: This function should only be called on a DFA after the call
              to 'filter_dominated_origins'. The latter is important
@@ -27,7 +27,7 @@ def do(SMD):
     state_machine = SMD.sm()
     
     txt = []
-    prolog = ""
+    local_variable_db = {}
 
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
@@ -48,10 +48,10 @@ def do(SMD):
     #    (those states do not have to be coded later)
     templated_state_index_list = set([])
     if Setup.compression_template_f:
-        code, template_prolog, templated_state_index_list = \
+        code, variable_db, templated_state_index_list = \
                 template_coder.do(SMD, Setup.compression_template_coef)
         txt.append(code)
-        prolog += template_prolog
+        local_variable_db.update(variable_db)
         
     # -- all other states
     for state_index, state in state_machine.states.items():
@@ -71,7 +71,7 @@ def do(SMD):
         txt.extend(state_code)
         txt.append("\n")
     
-    return "".join(txt), prolog
+    return "".join(txt), local_variable_db
 
 
 

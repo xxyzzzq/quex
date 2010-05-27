@@ -29,7 +29,7 @@ def test(TriggerMapList):
                 sm.add_transition(state_index, Interval(info[0]), info[1])
         state_index += 1
 
-    db = templates.TriggerMapDB(sm)
+    db = templates.TriggerMapDB(sm, 1.0)
 
     print "Best matching pair: ", db.get_best_matching_pair()
 

@@ -73,9 +73,9 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
         """
         assert Origin.is_acceptance()
         info = LanguageDB["$set-last_acceptance"](__nice(Origin.state_machine_id))
-        # NOTE: When a post conditioned pattern ends it does not store the input position.
-        #       Rather, the acceptance position of the core pattern is considered in the
-        #       terminal state.
+        # NOTE: When a post conditioned pattern ends it does not need to store the input 
+        #       position. Rather, the acceptance position of the core pattern is retrieved
+        #       in the terminal state.
         if Origin.post_context_id() == -1:
              info += LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n"
 

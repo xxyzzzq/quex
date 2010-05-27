@@ -192,7 +192,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const size_t                  LoadedCharacterN,
                                                              QUEX_TYPE_CHARACTER_POSITION* pos)
-    { *pos -= LoadedCharacterN; }
+    { 
+        /* -- In general, there would be no harm if the last_acceptance_input_position
+         *    underflows, since it is set anyway. 
+         * -- With template states, though, the value == 0 is used as a signal that 
+         *    indicates that is has not been set, and thus, no seek has to happen.      
+         * -- Thus, we better do not underflow.*/
+        if( *pos != 0x0 ) *pos -= LoadedCharacterN; 
+    }
 
     QUEX_INLINE void
     QUEX_NAME(__buffer_adapt_post_context_start_positions)(const size_t                  LoadedCharacterN,

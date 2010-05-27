@@ -98,7 +98,8 @@ LanguageDB = None # Set during call to 'do()', not earlier
 def do(SMD, CostCoefficient):
     """RETURNS: Array 'x'
 
-       x[0] transition target definitions 
+       x[0] transition target definitions in terms of a 
+            local variable database
        x[1] code for templates and state entries
        x[2] state router for template targets
        x[3] involved_state_index_list
@@ -114,11 +115,15 @@ def do(SMD, CostCoefficient):
     router,                       \
     involved_state_index_list     =  _do(combination_list, SMD)
 
-    prolog = transition_target_definition \
-             + ["QUEX_TYPE_GOTO_LABEL target_state_index;\n", \
-                "int                  template_state_key;\n"]
+    local_variable_db = transition_target_definition 
+    if len(local_variable_db) != 0:
+        local_variable_db.update({
+          "target_state_index": [ "QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_GOTO_LABEL)0x0"],
+          "template_state_key": [ "int",                  "(int)0"],
+        })
 
-    return "".join(code + router), "".join(prolog), \
+    return "".join(code + router), \
+           local_variable_db, \
            involved_state_index_list
 
 def _do(CombinationList, SMD):
@@ -155,20 +160,27 @@ def _do(CombinationList, SMD):
         #       -- Recursion is routed to entries of involved states.
         #      
         involved_state_list = combination.involved_state_list()
-        prototype           = state_db.get(involved_state_list[0])
-        prev_state          = prototype
-        for state_index in involved_state_list[1:]:
-            state = state_db.get(state_index)
-            assert state != None
-            if    prev_state.core().is_equivalent(state.core())       == False \
-               or prev_state.origins().is_equivalent(state.origins()) == False:
-                prototype = None
-                break
+        if SMD.sm().init_state_index in involved_state_list:
+            # It is conceivable, that even the init state is part of 
+            # a template. In this case, the template **must** be non-uniform.
+            # The unit state requires a special entry.
+            prototype = None
+        else:
+            prototype           = state_db.get(involved_state_list[0])
+            prev_state          = prototype
+            for state_index in involved_state_list[1:]:
+                state = state_db.get(state_index)
+                assert state != None
+                if    prev_state.core().is_equivalent(state.core())       == False \
+                   or prev_state.origins().is_equivalent(state.origins()) == False:
+                    prototype = None
+                    break
 
         # -- create template state for combination object
         #    prototype == None, tells that there state entries differ and there
         #                       is no representive state.
-        template = TemplateState(combination, SMD.sm().get_id(), index.get(), prototype)
+        template = TemplateState(combination, SMD.sm().get_id(), index.get(), 
+                                 prototype)
         template_list.append(template)
 
         # -- collect indices of involved states
@@ -188,10 +200,9 @@ def _do(CombinationList, SMD):
             target_state_index_list.update(involved_state_list)
 
     # -- transition target definition for each templated state
-    transition_target_definition = []
+    transition_target_definition = {}
     for template in template_list:
-        __transition_target_data_structures(transition_target_definition, 
-                                            template)
+        __transition_target_data_structures(transition_target_definition, template)
 
     # -- template state entries
     # -- template state
@@ -201,7 +212,10 @@ def _do(CombinationList, SMD):
         __template_state(code, template, SMD)
 
     # -- state router
-    router = __state_router(target_state_index_list, SMD)
+    if len(template_list) != 0:
+        router = __state_router(target_state_index_list, SMD)
+    else:
+        router = []
 
     return transition_target_definition, code, router, involved_state_index_list
 
@@ -343,7 +357,8 @@ class TemplateState(state_machine.State):
                 # Internally, we adapt the trigger map from:  Interval -> Target State List
                 # to:                                         Interval -> Index
                 # where 'Index' represents the Target State List
-                TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), self.__uniform_state_entries_f))
+                TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), 
+                                     self.__uniform_state_entries_f))
 
         state_machine.State.core(self).state_index = StateIndex
 
@@ -356,32 +371,42 @@ class TemplateState(state_machine.State):
     def template_combination(self):
         return self.__template_combination
 
-def __transition_target_data_structures(txt, TheTemplate):
+def __transition_target_data_structures(variable_db, TheTemplate):
     """Defines the transition targets for each involved state.
     """
+    template_index      = TheTemplate.core().state_index
+
+    def __array_to_code(Array):
+        txt = ["{ "]
+        for index in Array:
+            if index != None: txt.append("%i, " % index)
+            else:             txt.append("-%i," % template_index)
+        txt.append("}")
+        return "".join(txt)
+
     involved_state_list = TheTemplate.template_combination().involved_state_list()
     involved_state_n    = len(involved_state_list)
-    template_index      = TheTemplate.core().state_index
+    # Type and dimension of the involved arrays is always the same
+    variable_type  = "const QUEX_TYPE_GOTO_LABEL"
+    dimension      = involved_state_n 
+
     for target_index, target_state_index_list in enumerate(TheTemplate.transitions().target_state_list_db()):
         assert len(target_state_index_list) == involved_state_n
 
-        txt.append("QUEX_TYPE_GOTO_LABEL  template_%i_target_%i[%i] = {" \
-                   % (template_index, target_index, involved_state_n))
-        for index in target_state_index_list:
-            if index != None: txt.append("%i, " % index)
-            else:             txt.append("-%i," % template_index)
-        txt.append("};\n")
+        variable_name  = "template_%i_target_%i" % (template_index, target_index)
+        variable_value = __array_to_code(target_state_index_list)
+
+        variable_db[variable_name] = [ variable_type, variable_value, dimension ]
 
     # If the template does not have uniform state entries, the entries
     # need to be routed on recursion, for example. Thus we need to map 
     # from state-key to state.
     if not TheTemplate.uniform_state_entries_f():
-        txt.append("QUEX_TYPE_GOTO_LABEL  template_%i_map_state_key_to_state_index[%i] = {" \
-                   % (template_index, involved_state_n))
-        for state_index in involved_state_list:
-            assert isinstance(state_index, (int, long))
-            txt.append("%i, " % state_index)
-        txt.append("};\n")
+        variable_name  = "template_%i_map_state_key_to_state_index" % template_index
+        variable_value = __array_to_code(involved_state_list)
+
+        variable_db[variable_name] = [ variable_type, variable_value, dimension ]
+
 
 def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key
@@ -425,8 +450,10 @@ def __state_router(StateIndexList, SMD):
     """Create code that allows to jump to a state based on an integer value.
     """
 
+    if SMD.backward_lexing_f(): state_router_label = "STATE_ROUTER_BACKWARD:\n"
+    else:                       state_router_label = "STATE_ROUTER:\n"
     txt = [
-            "STATE_ROUTER:\n",
+            state_router_label,
             "    switch( target_state_index ) {\n"
     ]
     for index in StateIndexList:

@@ -159,7 +159,10 @@ def do(sm, CostCoefficient):
 
        RETURNS: List of template combinations.
     """
-    trigger_map_db = TriggerMapDB(sm)
+    assert isinstance(sm, state_machine.StateMachine)
+    assert isinstance(CostCoefficient, (int, long, float))
+
+    trigger_map_db = TriggerMapDB(sm, CostCoefficient)
 
     # Build templated combinations by finding best pairs, until there is no meaningful way to
     # build any clusters. TemplateCombinations of states also take part in the race.
@@ -276,7 +279,7 @@ def get_delta_cost(SizeA, SizeB, N, CombinedBorderN, TargetCombinationN, CX=1):
     return (SizeA + SizeB - CombinedBorderN + TargetCombinationN) - CX * TargetCombinationN * N
 
 class TriggerMapDB:
-    def __init__(self, SM, CostCoefficient=1.0):
+    def __init__(self, SM, CostCoefficient):
         assert isinstance(SM, state_machine.StateMachine)
 
         # (1) Get the trigger maps of all states of the state machine
@@ -288,7 +291,7 @@ class TriggerMapDB:
             self.__db[index] = trigger_map
 
         self.__delta_cost_cache = {}
-        self.__cost_coefficient = CostCoefficient
+        self.__cost_coefficient = float(CostCoefficient)
 
         self.__states           = SM.states
         self.__init_state_index = SM.init_state_index

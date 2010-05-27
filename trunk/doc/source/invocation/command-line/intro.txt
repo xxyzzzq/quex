@@ -356,7 +356,6 @@ Template and Path Compression can be controlled with the following command line 
 
    This flag activates Path Compression.
 
-
 For version information pass option `--version`' or `-v`'. The options `--help`
 and `-h`' are reserved for requesting a help text.  Those are the options for
 using quex in the 'normal' mode where it creates lexical analyzers. However,

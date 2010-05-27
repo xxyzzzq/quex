@@ -5,7 +5,7 @@ from generator_test import action
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambgiguous Post Condition: Part II"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
     print "SAME;"
     sys.exit(0)
 
@@ -14,7 +14,7 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 choice = sys.argv[1]
-if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream"]): 
+if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"]): 
     print "choice argument not acceptable"
     sys.exit(0)
 

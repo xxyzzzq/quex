@@ -1,3 +1,30 @@
+"""
+   Path Compression ___________________________________________________________
+
+   For path compression it is necessary to identify traits of single character
+   transitions while the remaining transitions of the involved states are the
+   same (or covered by what is trigger by the current path element). This
+   type of compression is useful in languages that contain keywords. Consider
+   for example a state machine, containing the key-word 'for':
+
+
+  (0)-----( 'f' )---->(1)----( 'o' )----->(2)----( 'r' )-------->(( 3 ))--( [a-z] )-.
+    \                   \                   \                                       |
+     `--([a-z] w/o 'f')--`--([a-z] w/o 'o')--`--([a-z] w/o 'o')--(( 4 ))<-----------'
+
+   With a skeleton:
+
+     ENTRY:
+        if input == p: ++p; goto ENTRY;
+
+        if   x < 'a': drop out
+        elif x > 'z': drop out
+        else:         goto 4
+
+   states 0 to 2 can be described.
+
+"""
+
 # (C) 2010 Frank-Rene Schaefer
 
 from quex.core_engine.interval_handling import NumberSet, Interval

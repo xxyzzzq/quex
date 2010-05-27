@@ -5,7 +5,7 @@ from generator_test import action
 
 if "--hwut-info" in sys.argv:
     print "Pre- and Post- Conditions: Priorities"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
     sys.exit(0)
 
 if len(sys.argv) < 2:
@@ -13,7 +13,7 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 choice = sys.argv[1]
-if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream"]): 
+if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"]): 
     print "Argument '%s' not acceptable. Call with option --hwut-info." % choice
     sys.exit(0)
 

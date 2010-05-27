@@ -18,7 +18,6 @@ QUEX_INLINE void
 PAPC_input_postion_backward_detector_$$ID$$(QUEX_TYPE_ANALYZER* me) 
 {
 $$LOCAL_VARIABLES$$
-$$PROLOG$$
 $$STATE_MACHINE$$
 $$FUNCTION_BODY$$ 
 }
@@ -33,7 +32,7 @@ def do(sm, LanguageDB, PrintStateMachineF):
                                                     BackwardLexingF=True, 
                                                     BackwardInputPositionDetectionF=True)
 
-    function_body, prolog = state_machine_coder.do(decorated_state_machine)
+    function_body, variable_db = state_machine_coder.do(decorated_state_machine)
 
     sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if PrintStateMachineF: 
@@ -44,15 +43,16 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body += LanguageDB["$input/seek_position"]("end_of_core_pattern_position") + "\n"
     function_body += LanguageDB["$input/increment"] + "\n"
 
-    variables_txt = LanguageDB["$local-variable-defs"](
-            [["QUEX_TYPE_CHARACTER",          "input",                        "(QUEX_TYPE_CHARACTER)(0x0)"],
-             ["QUEX_TYPE_CHARACTER_POSITION", "end_of_core_pattern_position", "(QUEX_TYPE_CHARACTER*)(0x0)"]])
+    variable_db.update({
+         "input":                        ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x0)"],
+         "end_of_core_pattern_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x0)"],
+    })
+    variables_txt = LanguageDB["$local-variable-defs"](variable_db)
 
     return blue_print(function_str, 
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
                        ["$$FUNCTION_BODY$$",   function_body],
                        ["$$LOCAL_VARIABLES$$", variables_txt],
-                       ["$$PROLOG$$",          prolog],
                        ["$$STATE_MACHINE$$",   sm_str],
                       ])
 
