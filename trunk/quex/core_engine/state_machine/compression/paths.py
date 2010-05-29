@@ -81,10 +81,87 @@
 from quex.core_engine.interval_handling import NumberSet, Interval
 from copy import deepcopy, copy
 
+
+def do(SM):
+
+    path_list = find_paths(SM)
+
+    __filter_redundant_paths(path_list)
+
+    __select_longest_paths(path_list)
+
+    return path_list
+
+def __filter_redundant_paths(path_list):
+    """Due to the search algorithm, it is not safe to assume that there are
+       no paths which are sub-pathes of others. Those pathes are identified.
+       Pathes that are sub-pathes of others are deleted.
+
+       Function modifies 'path_list'.
+    """
+    size = len(path_list)
+    i    = 0
+    while i < size: 
+        i_path = path_list[i]
+        # k = i, does not make sense; a path covers itself, so what!?
+        k = i + 1
+        while k < size: 
+            k_path = path_list[i]
+
+            if i_path.covers(k_path):
+                # if 'i' is a subpath of something => delete, no further considerations
+                del path_list[i]
+                size -= 1
+                # No change to 'i' since the elements are shifted
+                break
+
+            elif k_path.covers(i_path):
+                del path_list[k]
+                size = -1
+                # No break, 'i' is greater than 'k' so just continue analyzis.
+
+            else:
+                k += 1
+        else:
+            # If the loop is not left by break (element 'i' was deleted), then ...
+            i += 1
+
+    # Content of path_list is changed
+    return
+
+def __select_longest_paths(path_list):
+    """The desribed paths may have intersections, but a state can only
+       appear in one single path. From each set of intersecting pathes 
+       choose only the longest one.
+
+       Function modifies 'path_list'.
+    """
+
+    # The intersection db maps: intersection state --> involved path indices
+    intersection_db = {}
+    for i, path_i in enumerate(path_list):
+        for path_k in path_list[i + 1:]:
+            intersection_state_list = path_i.get_intersections(path_k)
+            for state_index in intersection_state_list:
+                intersection_db.setdefault(state_index, []).extend([i, k])
+
+    # Determine the list of states to be deleted
+    delete_list = set([])
+    for intersection_state, path_index_list in intersection_db.items():
+        i = __longest_path(path_index_list)
+        delete_list.update(filter(lambda index: index != i, path_index_list))
+
+    # Now, delete
+    offset = 0
+    for i in delete_list:
+        del path_list[i - offset]
+        offset += 1
+
+    return
+
 class CharacterPath:
     def __init__(self, StartStateIdx, Skeleton, StartCharacter):
         self.__start_state_index = StartStateIdx
-        self.__end_state_index   = -1
         self.__sequence          = [ (StartStateIdx, StartCharacter) ]
 
         self.__skeleton          = Skeleton
@@ -102,10 +179,11 @@ class CharacterPath:
         return self.__skeleton
 
     def end_state_index(self):
-        return self.__end_state_index
+        if len(self.__sequence) == 0: return -1
+        return self.__sequence[-1][0]
 
-    def set_end_state_index(self, Value):
-        self.__end_state_index = Value
+    def set_end_state_index(self, StateIdx):
+        self.__sequence.append((StateIdx, None))
 
     def append(self, StateIdx, Char):
         self.__sequence.append((StateIdx, Char))
@@ -115,17 +193,51 @@ class CharacterPath:
             if state_idx == StateIdx: return True
         return False
 
+    def covers(self, Other):
+        assert isinstance(Other, CharacterPath)
+
+        def __find(StateIndex):
+            for i, x in enumerate(self.__sequence):
+                if x[0] == StateIndex: return i
+            return -1
+
+        # Sequences should not be empty, but if (for some weird reason) it happens
+        # make sure it is deleted by __filter_redundant_paths()
+        if len(Other.__sequence) == 0: return False
+
+        state_state_index = Other.__sequence[0][0]
+        i = __find(start_state_index)
+        if i == -1: return False
+
+        # Do the remaining indices fit?
+        for state_index, char in Other.__sequence[1:]:
+            i += 1
+            if i > L: return False
+            if self.__sequence[i] != state_index: return False
+
+        return True
+
     def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
         """A single character transition 
 
                         TriggerCharToTarget --> TargetIdx
 
-           has been detected. The question is, if the remaining transitions
-           of the state match the skeleton of the current path. There might
-           be a wildcard, that is the character that is overlayed by the
-           first single character transition. As soon as a transition map
-           is differs only by this single character, the wildcard is 
-           plugged into the position.
+           has been detected. The question is, if the remaining transitions of
+           the state match the skeleton of the current path. There might be a
+           wildcard, that is the character that is overlayed by the first
+           single character transition.  As long as a transition map is differs
+           only by this single character, the wildcard is plugged into the
+           position.
+
+           RETURNS: 
+                    int > 0, the character that the wildcard shall take so
+                             that the skeleton matches the TransitionMap.
+
+                        - 1, if skeleton and TransitionMap match anyway and
+                             no wildcard plug is necessary.
+
+                       None, if there is no way that the skeleton and the
+                             TransitionMap could match.
         """
         ## ?? The element of a path cannot be triggered by the skeleton! ??
         ## ?? if self.__skeleton.has_key(TargetIdx): return False          ?? 
@@ -145,12 +257,12 @@ class CharacterPath:
         #            transition of wildcard.
         delta_set  = transition_map_key_set - self.__skeleton_key_set
         delta_size = len(delta_set)
-        if delta_size > 2: return False
+        if delta_size > 2: return None
 
         for target_idx in delta_set:
             if   target_idx == TargetIdx:    continue # (1.1)
-            elif wildcard_plug != None:                                        return False
-            elif not TransitionMap[target_idx].contains_only(self.__wildcard): return False
+            elif wildcard_plug != None:                                        return None
+            elif not TransitionMap[target_idx].contains_only(self.__wildcard): return None
             wildcard_plug = target_idx                # (1.2)
 
         # (2) Target States In Skeleton and Not in TransitionMap
@@ -162,10 +274,10 @@ class CharacterPath:
         #            is covered by current single transition.
         delta_set  = self.__skeleton_key_set - transition_map_key_set
         delta_size = len(delta_set)
-        if delta_size > 1: return False
+        if delta_size > 1: return None
         if delta_size == 1:
             for target_idx in delta_set:
-                if not self.__skeleton[target_idx].contains_only(TriggerCharToTarget): return False
+                if not self.__skeleton[target_idx].contains_only(TriggerCharToTarget): return None
             # (2.1) OK, single char covers the transition in skeleton.
 
         # (3) Target States in both, Skeleton and Transition Map
@@ -207,18 +319,25 @@ class CharacterPath:
 
             # Trigger sets differ and no wildcard or single transition can
             # 'explain' that => skeleton does not fit.
-            return False
+            return None
+
+        if wildcard_plug == None: return -1 # No plugging necessary
+        return wildcard_plug
+
+    def plug_wildcard(self, WildcardPlug):
+        assert isinstance(WildcardPlug, (int, long))
 
         # Finally, if there is a plugging to be performed, then do it.
-        if wildcard_plug != -1 and wildcard_plug != None:
-            if self.__skeleton.has_key(wildcard_plug):
-                self.__skeleton[wildcard_plug].unite_with(NumberSet(self.__wildcard))
-            else:
-                self.__skeleton[wildcard_plug] = NumberSet(self.__wildcard)
-            self.__skeleton_key_set.add(wildcard_plug)
-            self.__wildcard = None # There is no more wildcard now
-
-        return True
+        if WildcardPlug == -1: return
+        
+        if self.__skeleton.has_key(WildcardPlug):
+            self.__skeleton[WildcardPlug].unite_with(NumberSet(self.__wildcard))
+        else:
+            self.__skeleton[WildcardPlug] = NumberSet(self.__wildcard)
+        self.__skeleton_key_set.add(WildcardPlug)
+        self.__wildcard = None # There is no more wildcard now
+        
+        return 
 
     def __repr__(self):
         skeleton_txt = ""
@@ -228,9 +347,9 @@ class CharacterPath:
             skeleton_txt += "; "
 
         sequence_txt = ""
-        for state_idx, char in self.__sequence:
+        for state_idx, char in self.__sequence[:-1]:
             sequence_txt += "(%i)--'%s'-->" % (state_idx, chr(char))
-        sequence_txt += "[%i]" % self.__end_state_index
+        sequence_txt += "[%i]" % self.__sequence[-1][0]
 
         return "".join(["start    = %i;\n" % self.__start_state_index,
                         "path     = %s;\n" % sequence_txt,
@@ -293,6 +412,8 @@ def __find_begin(sm, StateIdx):
         # A new path begins, find the 'skeleton'.
         # The 'skeleton' is the transition map without the single transition
         skeleton = copy(transition_map) # Shallow copy, i.e. copy references
+        # The skeleton is possibly changed in __find_continuation(), but then
+        # a 'deepcopy' is applied to disconnect it, see __find_continuation().
         del skeleton[target_idx]        # Delete reference to 'target_idx->trigger_set'
 
         path = CharacterPath(StateIdx, skeleton, path_char)
@@ -301,21 +422,14 @@ def __find_begin(sm, StateIdx):
 
     return result_list
 
-INDENT = 0
 def __find_continuation(sm, StateIdx, the_path):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
     """
-    global INDENT
-    INDENT += 4
-    ##print (" " * INDENT) + "##StateIdx=%i" % StateIdx 
-    ##print (" " * (INDENT)) + repr(the_path).replace("\n", "\n" + " " * (INDENT))
-
     State       = sm.states[StateIdx]
     result_list = []
 
     transition_map = State.transitions().get_map()
-
 
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.items():
@@ -330,13 +444,13 @@ def __find_continuation(sm, StateIdx, the_path):
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
         # Does the rest of the transitions fit the 'skeleton'?
-        # 'match_skeleton()' changes content, so make a backup of the path
-        path = deepcopy(the_path)
-        ##print (" " * INDENT) + "##try match %i, %s" % (target_idx, trigger_set.get_utf8_string()) 
-        if not path.match_skeleton(transition_map, target_idx, path_char): continue 
-        ##print (" " * INDENT) + "##matched"
+        plug = the_path.match_skeleton(transition_map, target_idx, path_char)
+        if plug == None: continue # No possible match
 
-        ## print "##", target_idx, path
+        # Deepcopy is required to completely isolate the transition map that
+        # may now be changed by the wildcard plug.
+        path = deepcopy(the_path)
+        if plug != -1: path.plug_wildcard(plug)
 
         # Find a continuation of the path
         single_char_transition_found_f = True
@@ -347,9 +461,6 @@ def __find_continuation(sm, StateIdx, the_path):
         the_path.set_end_state_index(StateIdx)
         result_list.append(the_path)
 
-    ##print (" " * INDENT) + "##result_list" 
-    ##print (" " * (INDENT + 4)) + repr(result_list).replace("\n", "\n" + " " * (INDENT + 4))
-    INDENT -= 4
     return result_list
 
 def can_plug_to_equal(Set0, Char, Set1):
