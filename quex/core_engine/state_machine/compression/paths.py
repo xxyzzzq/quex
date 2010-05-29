@@ -106,16 +106,16 @@ def __filter_redundant_paths(path_list):
         # k = i, does not make sense; a path covers itself, so what!?
         k = i + 1
         while k < size: 
-            k_path = path_list[i]
+            k_path = path_list[k]
 
-            if i_path.covers(k_path):
+            if k_path.covers(i_path):
                 # if 'i' is a subpath of something => delete, no further considerations
                 del path_list[i]
                 size -= 1
                 # No change to 'i' since the elements are shifted
                 break
 
-            elif k_path.covers(i_path):
+            elif i_path.covers(k_path):
                 del path_list[k]
                 size = -1
                 # No break, 'i' is greater than 'k' so just continue analyzis.
@@ -157,6 +157,7 @@ def __select_longest_paths(path_list):
         del path_list[i - offset]
         offset += 1
 
+    # Content of path_list is changed
     return
 
 class CharacterPath:
@@ -195,6 +196,7 @@ class CharacterPath:
 
     def covers(self, Other):
         assert isinstance(Other, CharacterPath)
+        print "##covers:", self.__sequence, Other.__sequence
 
         def __find(StateIndex):
             for i, x in enumerate(self.__sequence):
@@ -205,15 +207,17 @@ class CharacterPath:
         # make sure it is deleted by __filter_redundant_paths()
         if len(Other.__sequence) == 0: return False
 
-        state_state_index = Other.__sequence[0][0]
+        start_state_index = Other.__sequence[0][0]
         i = __find(start_state_index)
+        print "##i", start_state_index, i
         if i == -1: return False
 
         # Do the remaining indices fit?
+        L = len(self.__sequence)
         for state_index, char in Other.__sequence[1:]:
             i += 1
-            if i > L: return False
-            if self.__sequence[i] != state_index: return False
+            if i >= L: print "##out on ", self.__sequence, state_index; return False
+            if self.__sequence[i][0] != state_index: return False
 
         return True
 
@@ -292,7 +296,6 @@ class CharacterPath:
         #            in transition map.
         #       
         common_set = self.__skeleton_key_set & transition_map_key_set
-        ##print "##common", common_set
         for target_idx in common_set:
             sk_trigger_set = self.__skeleton[target_idx]
             tm_trigger_set = TransitionMap[target_idx]
