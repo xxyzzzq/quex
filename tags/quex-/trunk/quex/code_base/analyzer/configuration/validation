@@ -1,0 +1,24 @@
+/* -*- c++ -*- vim:set syntax=cpp: 
+ *
+ * NO INCLUDE GUARDS HERE.
+ *
+ * THIS FILE ONLY CHECKS AND DOES NOT DEFINE ANYTHING.
+ *                                                                    
+ * (C) 2009 Frank-Rene Schaefer                                         */
+/* Validate */
+#if defined(__QUEX_OPTION_BIG_ENDIAN) && defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#   error "Cannot define little endian and big endian at the same time."
+#endif
+#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#   error "Either little endian or big endian must be defined."
+#endif
+
+#if defined(QUEX_OPTION_ASSERTS) && defined (QUEX_OPTION_ASSERTS_DISABLED)
+#   error "Ambiguous configuration options."
+#endif
+
+#if   ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)       \
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#   error "No token policy specified."
+#endif
+
