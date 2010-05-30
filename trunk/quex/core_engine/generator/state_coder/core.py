@@ -10,20 +10,23 @@ from   quex.input.setup                                        import setup as S
 from copy import deepcopy
 
 
-def do(state, StateIdx, SMD, InitStateF=False):
+def do(state, StateIdx, SMD=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
     assert isinstance(state, State)
     assert SMD.__class__.__name__   == "StateMachineDecorator"
-    assert type(InitStateF)         == bool
     assert len(state.transitions().get_epsilon_target_state_index_list()) == 0, \
            "Epsilon transition contained target states: state machine was not made a DFA!\n" + \
            "Epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
+    InitStateF = StateIdx == SMD.sm().init_state_index
 
     LanguageDB = Setup.language_db
 
     label_str = LanguageDB["$label-def"]("$entry", StateIdx)
+    if not InitStateF:
+        label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+                    label_str
 
     # Special handling of dead-end-states, i.e. states with no further transitions.
     if SMD.dead_end_state_db().has_key(StateIdx):

@@ -10,16 +10,17 @@ from quex.core_engine.state_machine.compression.paths import __filter_redundant_
 
 if "--hwut-info" in sys.argv:
     print "Paths: filter_redundant_paths;"
-    print "CHOICES: 0, 1;"
+    print "CHOICES: 0, 1, 2, 3 , 4, 5a, 5b, 6;"
     sys.exit(0)
     
 
 def get_path_list(PlainLists):
+    dummy_char = ord("a")
     result = []
     for sequence in PlainLists:
-        path = CharacterPath(sequence[0], {}, None)
+        path = CharacterPath(sequence[0], {}, dummy_char)
         for state_index in sequence[1:-1]:
-            path.append(state_index, 1)     # any character works, choose '1'
+            path.append(state_index, dummy_char) 
         path.set_end_state_index(sequence[-1])
         result.append(path)
     return result
@@ -58,4 +59,21 @@ elif "1" in sys.argv:
 elif "2" in sys.argv:
     test([1L, 2L, 3L],
          [1L, 2L],
+         [2L, 3L])
+elif "3" in sys.argv:
+    test([1L, 2L, 3L],
+         [1L, 2L, 3L])
+elif "4" in sys.argv:
+    test([1L, 2L, 3L],
+         [2L, 3L, 4L])
+elif "5a" in sys.argv:
+    test([1L, 2L, 3L],
+         [1L, 2L],
+         [2L, 3L, 4L])
+elif "5b" in sys.argv:
+    test([1L, 2L, 3L],
+         [2L, 3L, 4L],
+         [1L, 2L])
+elif "6" in sys.argv:
+    test([1L, 2L, 3L, 4L],
          [2L, 3L])

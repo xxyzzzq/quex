@@ -40,9 +40,8 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     #       case, end of file needs to cause a drop out! After the drop out, lexing
     #       starts at furthest right before the EndOfFile and the init state transits
     #       into the TERMINAL_END_OF_FILE.
-    txt.extend(state_coder.do(init_state, 
-                              state_machine.init_state_index, 
-                              SMD, InitStateF = True))
+    #       (state_coder identifies the 'init_state' by its own, no need mentioning)
+    txt.extend(state_coder.do(init_state, state_machine.init_state_index, SMD))
 
     # -- Code for templated states [Optional]
     #    (those states do not have to be coded later)
@@ -61,7 +60,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         elif state_index in templated_state_index_list:   
             continue
 
-        txt.append("    __quex_assert(false); /* No drop-through between states */\n")
         state_code = state_coder.do(state, state_index, SMD)
 
         # some states are not coded (some dead end states)
