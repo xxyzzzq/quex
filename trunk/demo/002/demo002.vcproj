@@ -136,39 +136,22 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine indy_lex
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine EasyLexer
 "
-						Outputs="indy_lex.cpp;indy_lex-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine indy_lex
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine EasyLexer
 "
-						Outputs="indy_lex.cpp;indy_lex-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\indy_lex-core-engine.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						WarningLevel="0"
-						Detect64BitPortabilityProblems="FALSE"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						WarningLevel="0"
-						Detect64BitPortabilityProblems="FALSE"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\indy_lex.cpp">
+				RelativePath=".\EasyLexer.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
