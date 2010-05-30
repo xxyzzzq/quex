@@ -196,8 +196,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="&quot;$(QUEX_PATH)\\quex.bat&quot; -i simple.qx --engine tiny_lexer&#x0D;&#x0A;"
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"
+						CommandLine="$(QUEX_PATH)\\quex.bat -i simple.qx --engine EasyLexer"
+						Outputs="EasyLexer.cpp"
 					/>
 				</FileConfiguration>
 			</File>
@@ -214,11 +214,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\tiny_lexer-core-engine.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tiny_lexer.cpp"
+				RelativePath=".\EasyLexer.cpp"
 				>
 			</File>
 		</Filter>
@@ -228,11 +224,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\tiny_lexer"
+				RelativePath=".\EasyLexer"
 				>
 			</File>
 			<File
-				RelativePath=".\tiny_lexer-token_ids"
+				RelativePath=".\EasyLexer-token_ids"
 				>
 			</File>
 		</Filter>

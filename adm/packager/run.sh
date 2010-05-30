@@ -21,20 +21,20 @@ output=/tmp/file-list-out.txt
 function update_version_information()
 {
     # (*) Update the version information inside the application
-    cd $QUEX_PATH
+    cd $QUEX_PATH;
 
     echo "-- Update Version Information"
     awk -v version="'$1'" ' ! /^QUEX_VERSION/ { print; } /^QUEX_VERSION/ { print "QUEX_VERSION =",version; }' \
         ./quex/DEFINITIONS.py > tmp-DEFINITIONS.txt
-    mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py
+    mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py;
 
-    hwut i > unit_test_results.txt
+    hwut i > unit_test_results.txt;
 }
 
 function collect_distribution_file_list()
 {
-    cd $QUEX_PATH
-    cd ..
+    cd $QUEX_PATH;
+    cd ..;
 
     # (*) Collect the list of files under concern
     echo "-- Collect files for distribution"
@@ -70,7 +70,7 @@ function collect_distribution_file_list()
 
     # -- create tar file for ./trunk
     echo "-- Snapshot"
-    cp $output TO-BE-DELETED.txt
+    cp $output /tmp/packages/file-list.txt
     tar cf /tmp/quex-$1.tar `cat $output`
     echo `ls -lh /tmp/quex-$1.tar`
 
@@ -160,7 +160,7 @@ EOF
 }
 
 function repository_update() {
-    cd $QUEX_PATH
+    cd $QUEX_PATH;
 
     hwut i > unit_test_results.txt
 

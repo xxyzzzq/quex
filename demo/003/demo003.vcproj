@@ -123,20 +123,20 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2 --icu
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine EasyLexer -b 2 --icu
 "
 						AdditionalDependencies=""
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine EasyLexer -b 2
  --icu"
 						AdditionalDependencies=""
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -146,20 +146,20 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2  --icu
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine EasyLexer -b 2  --icu
 "
 						AdditionalDependencies=""
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine EasyLexer -b 2
  --icu"
 						AdditionalDependencies=""
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -184,41 +184,24 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2 --icu
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine EasyLexer -b 2 --icu
 "
 						AdditionalDependencies=""
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine EasyLexer -b 2
  --icu"
 						AdditionalDependencies=""
-						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
+						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\tiny_lexer-core-engine.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						WarningLevel="0"
-						Detect64BitPortabilityProblems="FALSE"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						WarningLevel="0"
-						Detect64BitPortabilityProblems="FALSE"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\tiny_lexer.cpp">
+				RelativePath=".\EasyLexer.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
