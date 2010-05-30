@@ -1,8 +1,5 @@
 --(Transition Targets)--------------------------------------------------
 
-## const QUEX_TYPE_GOTO_LABEL
-## const QUEX_TYPE_GOTO_LABEL
-## const QUEX_TYPE_GOTO_LABEL
     const QUEX_TYPE_GOTO_LABEL template_1_target_0[3] = { 1, -1,2, };
     const QUEX_TYPE_GOTO_LABEL template_1_target_1[3] = { 1, 3, 2, };
     const QUEX_TYPE_GOTO_LABEL template_1_target_2[3] = { 2, 3, 1, };
@@ -10,24 +7,28 @@
 
 --(Template Code)-------------------------------------------------------
 
+    __quex_assert(false); /* No drop-through between states */
 STATE_100:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_100");
     QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "0");
     template_state_key = 0;
     goto TEMPLATE_1;
 
+    __quex_assert(false); /* No drop-through between states */
 STATE_200:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_200");
     QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "1");
     template_state_key = 1;
     goto TEMPLATE_1;
 
+    __quex_assert(false); /* No drop-through between states */
 STATE_202:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_202");
     QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "2");
     template_state_key = 2;
     goto TEMPLATE_1;
 
+    __quex_assert(false); /* No drop-through between states */
 TEMPLATE_1:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TEMPLATE_1");
 STATE_1_INPUT:

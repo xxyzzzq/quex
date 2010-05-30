@@ -77,14 +77,14 @@
 """
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.core_engine.generator.state_coder.core            as state_coder
-import quex.core_engine.generator.state_coder.transition      as transition
+import quex.core_engine.generator.state_coder.core             as state_coder
+import quex.core_engine.generator.state_coder.transition       as transition
 import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
-import quex.core_engine.state_machine.index              as index
-import quex.core_engine.state_machine.core               as state_machine
+import quex.core_engine.state_machine.index                    as index
+import quex.core_engine.state_machine.core                     as state_machine
 
 import quex.core_engine.state_machine.compression.templates as templates 
 
@@ -420,7 +420,14 @@ def __templated_state_entries(txt, TheTemplate, SMD):
                key = 2; goto TEMPLATE_STATE_111;
     """
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
-        txt.append(LanguageDB["$label-def"]("$entry", state_index))
+
+        # Print the state label
+        label_str = LanguageDB["$label-def"]("$entry", state_index)
+        if state_index != SMD.sm().init_state_index:
+            label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+                        label_str
+        txt.append(label_str)
+
         state = SMD.sm().states[state_index]
         # If all state entries are uniform, the entry handling happens uniformly at
         # the entrance of the template, not each state.
@@ -439,7 +446,10 @@ def __template_state(txt, TheTemplate, SMD):
     state_index = TheTemplate.core().state_index
     TriggerMap  = state.transitions().get_trigger_map()
 
-    txt.extend(LanguageDB["$label-def"]("$template", state_index))
+    label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+                LanguageDB["$label-def"]("$template", state_index)
+    txt.append(label_str)
+
     if TheTemplate.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))

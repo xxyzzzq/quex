@@ -19,9 +19,9 @@
    The single character check changes along a fixed path: the sequence of
    characters 'f', 'o', 'r'. This is shown in the following pseudo-code:
 
-     PATH_1:
+     PATH_WALKER_1:
         /* Single Character Check */
-        if   input == p: ++p; goto PATH_1;
+        if   input == p: ++p; goto PATH_WALKER_1;
         elif *p == 0:         goto STATE_3;
 
         /* Common Transition Map */
@@ -39,16 +39,16 @@
 
             path state <--> (path index, path iterator position)
 
-   Assume that in the above example the path is the 'PATH_1' and the character
+   Assume that in the above example the path is the 'PATH_WALKER_1' and the character
    sequence is given by an array:
 
             path_1_sequence = { 'f', 'o', 'r', 0x0 };
             
     then the three states 0, 1, 2 are identified as follows
 
-            STATE_0  <--> (PATH_1, path_1_sequence)
-            STATE_1  <--> (PATH_1, path_1_sequence + 1)
-            STATE_2  <--> (PATH_1, path_1_sequence + 2)
+            STATE_0  <--> (PATH_WALKER_1, path_1_sequence)
+            STATE_1  <--> (PATH_WALKER_1, path_1_sequence + 1)
+            STATE_2  <--> (PATH_WALKER_1, path_1_sequence + 2)
 
    Result ______________________________________________________________________
 
@@ -83,13 +83,19 @@ from copy import deepcopy, copy
 
 
 def do(SM):
-
     path_list = find_paths(SM)
 
     __filter_redundant_paths(path_list)
 
-    __select_longest_paths(path_list)
+    # A state can only appear in one path, so make sure that intersecting
+    # paths are avoided. Always choose the longest alternative.
+    __select_longest_intersecting_paths(path_list)
 
+    # The filtering of intersecting paths implies that there are no pathes
+    # that have the same initial state. Thus, at this point we are done.
+    # 
+    #    -- no paths appear twice.
+    #    -- no state appears in two paths.
     return path_list
 
 def __filter_redundant_paths(path_list):
@@ -117,7 +123,7 @@ def __filter_redundant_paths(path_list):
 
             elif i_path.covers(k_path):
                 del path_list[k]
-                size = -1
+                size -= 1
                 # No break, 'i' is greater than 'k' so just continue analyzis.
 
             else:
@@ -129,25 +135,40 @@ def __filter_redundant_paths(path_list):
     # Content of path_list is changed
     return
 
-def __select_longest_paths(path_list):
+def __select_longest_intersecting_paths(path_list):
     """The desribed paths may have intersections, but a state can only
        appear in one single path. From each set of intersecting pathes 
        choose only the longest one.
 
        Function modifies 'path_list'.
     """
-
     # The intersection db maps: intersection state --> involved path indices
     intersection_db = {}
     for i, path_i in enumerate(path_list):
+        k = i # is incremented to 'i+1' in the first iteration
         for path_k in path_list[i + 1:]:
+            k += 1
             intersection_state_list = path_i.get_intersections(path_k)
             for state_index in intersection_state_list:
                 intersection_db.setdefault(state_index, []).extend([i, k])
 
+    return filter_longest_options(path_list, intersection_db)
+
+
+def filter_longest_options(path_list, equivalence_db):
+    def __longest_path(PathIndexList):
+        max_i      = -1
+        max_length = -1
+        for path_index in PathIndexList:
+            length = len(path_list[path_index])
+            if length > max_length: 
+                max_i      = path_index
+                max_length = length
+        return max_i
+
     # Determine the list of states to be deleted
     delete_list = set([])
-    for intersection_state, path_index_list in intersection_db.items():
+    for intersection_state, path_index_list in equivalence_db.items():
         i = __longest_path(path_index_list)
         delete_list.update(filter(lambda index: index != i, path_index_list))
 
@@ -196,7 +217,9 @@ class CharacterPath:
 
     def covers(self, Other):
         assert isinstance(Other, CharacterPath)
-        print "##covers:", self.__sequence, Other.__sequence
+        assert len(self.__sequence) >= 2
+        assert len(Other.__sequence) >= 2
+        ## print "##covers:", self.__sequence, Other.__sequence
 
         def __find(StateIndex):
             for i, x in enumerate(self.__sequence):
@@ -209,17 +232,33 @@ class CharacterPath:
 
         start_state_index = Other.__sequence[0][0]
         i = __find(start_state_index)
-        print "##i", start_state_index, i
+        ## print "##i", start_state_index, i
         if i == -1: return False
 
         # Do the remaining indices fit?
         L = len(self.__sequence)
         for state_index, char in Other.__sequence[1:]:
             i += 1
-            if i >= L: print "##out on ", self.__sequence, state_index; return False
-            if self.__sequence[i][0] != state_index: return False
+            if i >= L: 
+                ##print "##out on ", self.__sequence, state_index; 
+                return False
+            if self.__sequence[i][0] != state_index: 
+                return False
 
         return True
+
+    def get_intersections(self, Other):
+        """Determines the state at which the sequences intersect. This
+           is mathematically simple the 'intersection' of both sets.
+        """
+
+        # The end states are not considered 'intersections'. They are the target
+        # states that are transitted after the path is terminated. There is no
+        # harm in entering a path after exiting another.
+        set_a = set(map(lambda x: x[0], self.__sequence[:-1]))
+        set_b = set(map(lambda x: x[0], Other.__sequence[:-1]))
+
+        return set_a.intersection(set_b)
 
     def match_skeleton(self, TransitionMap, TargetIdx, TriggerCharToTarget):
         """A single character transition 
