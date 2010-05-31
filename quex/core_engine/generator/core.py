@@ -118,14 +118,8 @@ class Generator(GeneratorBase):
                                                          LanguageDB=LanguageDB,
                                                          LocalVariableDB=local_variable_db) 
 
-        option_str = ""
-        if self.begin_of_line_condition_f: 
-            option_str = LanguageDB["$compile-option"]("__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
-
         #  -- paste the papc functions (if there are some) in front of the analyzer functions
-        header_str = LanguageDB["$header-definitions"](LanguageDB)
-        txt =   option_str                                     \
-              + header_str                                     \
+        txt =   LanguageDB["$header-definitions"](LanguageDB)  \
               + papc_input_postion_backward_detector_functions \
               + analyzer_function
 
