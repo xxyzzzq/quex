@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 # PURPOSE: Creating a release of Quex
 #   $1  version of the quex release
 #
@@ -16,6 +17,11 @@ INSTALLBUILDER_OUT=/opt/installbuilder-5.4.11/output
 # Temporary file for building a distribution file list
 input=/tmp/file-list-in.txt
 output=/tmp/file-list-out.txt
+
+if [[ -z $1 ]]; then
+    echo "Version must be defined as first argument."
+    exit
+fi
 
 
 function update_version_information()
@@ -107,10 +113,10 @@ function create_packages()
     cd /tmp
     tar cf quex-$1.tar ./quex-$1
     zip -r quex-$1.zip ./quex-$1
+    7z   a quex-$1.7z  ./quex-$1
 
     # -- compress the tar file
     echo "-- Further compress .tar --> 7z and gzip"
-    7z   a  quex-$1.tar.7z quex-$1.tar
     gzip -9 quex-$1.tar
 }
 
@@ -119,7 +125,7 @@ function collect_packages()
     rm -rf /tmp/quex-packages
     mkdir /tmp/quex-packages
 
-    mv /tmp/quex-$1.tar.7z \
+    mv /tmp/quex-$1.7z \
        /tmp/quex-$1.tar.gz \
        /tmp/quex-$1.zip    \
        $INSTALLBUILDER_OUT/quex_$1*.deb                         \
@@ -146,6 +152,7 @@ put quex-$1-linux-installer.bin          /home/frs/project/q/qu/quex/Current
 put quex-$1-osx-installer.app.zip        /home/frs/project/q/qu/quex/Current
 put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/Current
 put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/Current
+mkdir ../HISTORY/OLD
 cd /home/frs/project/q/qu/quex/Current
 rename quex-OLD.tar.7z                       ../HISTORY/OLD/quex-OLD.tar.7z
 rename quex-OLD.tar.gz                       ../HISTORY/OLD/quex-OLD.tar.gz

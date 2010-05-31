@@ -43,10 +43,11 @@ def do():
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
     IndentationSupportF = __requires_indentation_count(mode_db)
+    BeginOfLineSupportF = __requires_begin_of_line_condition_support(mode_db)
 
     header_engine_txt,           \
     constructor_and_memento_txt, \
-    header_configuration_txt = quex_class_out.do(mode_db, IndentationSupportF)
+    header_configuration_txt = quex_class_out.do(mode_db, IndentationSupportF, BeginOfLineSupportF)
     # NOTE: In C++, constructor_and_memento_txt == "" since the implementation of templates
     #       needs to happen inside the header files.
     mode_implementation_txt  = mode_classes.do(mode_db)
@@ -258,6 +259,18 @@ def __requires_indentation_count(ModeDB):
     for mode in ModeDB.values():
         if mode.has_code_fragment_list("on_indentation"):
             return True
+    return False
+
+def __requires_begin_of_line_condition_support(ModeDB):
+    """If one single pattern in one mode depends on begin of line, then
+       the begin of line condition must be supported. Otherwise not.
+    """
+    for mode in ModeDB.values():
+        pattern_action_pair_list = mode.get_pattern_action_pair_list()
+        for info in pattern_action_pair_list:
+            state_machine = info.pattern_state_machine()
+            if state_machine.core().pre_context_begin_of_line_f():
+                return True
     return False
 
 #########################################################################################

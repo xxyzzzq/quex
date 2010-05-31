@@ -11,15 +11,17 @@ from quex.frs_py.file_in  import get_file_content_or_die, \
 import quex.lexer_mode  as lexer_mode
 from   quex.input.setup import setup as Setup
 
-def do(Modes, IndentationSupportF):
+def do(Modes, IndentationSupportF, BeginOfLineSupportF):
     assert lexer_mode.token_type_definition != None
 
     header_engine_txt, code_engine_txt = write_engine_header(Modes)
-    header_configuration_txt           = write_configuration_header(Modes, IndentationSupportF)
+    header_configuration_txt           = write_configuration_header(Modes, 
+                                                                    IndentationSupportF, 
+                                                                    BeginOfLineSupportF)
 
     return header_engine_txt, code_engine_txt, header_configuration_txt
 
-def write_configuration_header(Modes, IndentationSupportF):
+def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     LexerClassName            = Setup.analyzer_class_name
     ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
                                    + Setup.language_db["$code_base"] 
@@ -78,7 +80,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
-    txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION",  True)
+    txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION", BeginOfLineSupportF)
     txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
     txt = __switch(txt, "__QUEX_OPTION_PLAIN_C",                    Setup.language.upper() == "C")
 
