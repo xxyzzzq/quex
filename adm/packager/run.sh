@@ -70,7 +70,7 @@ function collect_distribution_file_list()
 
     # -- create tar file for ./trunk
     echo "-- Snapshot"
-    cp $output /tmp/packages/file-list.txt
+    cp $output $QUEX_PATH/tmp-file-list.txt
     tar cf /tmp/quex-$1.tar `cat $output`
     echo `ls -lh /tmp/quex-$1.tar`
 
@@ -129,6 +129,7 @@ function collect_packages()
        $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip        \
        $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin        \
        $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin  \
+       $QUEX_PATH/tmp-file-list.txt                             \
        /tmp/quex-packages
 
     # -- create the batch file for sftp
