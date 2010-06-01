@@ -1,0 +1,3 @@
+   Accumulator = 'AsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu Alaikum'
+Lexical Analyzer Receives:
+   'AsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu AlaikumAsSalaamu Alaikum'
