@@ -16,7 +16,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      * The memento_pack/unpack functions are implemented per analyzer.
      * Their implementation happens inside the generated source file.  */
 #   ifndef __QUEX_OPTION_PLAIN_C
-    TEMPLATE_IN(InputHandleT)
+    TEMPLATE_IN(InputHandleT) 
 #   endif
     /* not inline in 'C' */ struct QUEX_NAME(Memento_tag)*
     QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
