@@ -139,11 +139,22 @@ def _do(PathList, SMD):
     involved_state_index_list   = set([])
 
     variable_db = {}
-    for path in PathList:
-        __add_path_definition(variable_db, path) 
+    # -- hold a list that contains also a 'path_id' for each path
+    path_list = []
 
+    # (1) The pathes, i.e. array containing identified sequences, e.g.
     for path in PathList:
-        assert isinstance(combination, paths.CharacterPath)
+        assert isinstance(path, paths.CharacterPath)
+
+        path_id = index.get()
+        __add_path_definition(variable_db, path, path_id) 
+        path_list.append((path, path_id))
+
+    # (2) The path walker.
+    code = []
+    for path, path_id in path_list:
+        __path_walker(path, path_id)
+
 
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
@@ -415,16 +426,24 @@ def __templated_state_entries(txt, TheTemplate, SMD):
         txt.append(LanguageDB["$goto"]("$template", TheTemplate.core().state_index))
         txt.append("\n\n")
 
-def __template_state(txt, TheTemplate, SMD):
-    """Generate the template state that 'hosts' the templated states.
+def __path_walker(txt, Path, PathID):
+    """Generates the path walker, that walks along the character sequence.
     """
-    state       = TheTemplate
-    state_index = TheTemplate.core().state_index
-    TriggerMap  = state.transitions().get_trigger_map()
-
     label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
-                LanguageDB["$label-def"]("$template", state_index)
+                LanguageDB["$label-def"]("$path", PathID)
     txt.append(label_str)
+
+    # -- The comparison with the path's current character
+    #    If terminating zero is reached, the path's end state is entered.
+    txt.append(LanguageDB["$if =="]("*path_iterator"))
+    txt.append(LanguageDB["$goto"]("$path", PathID)
+    txt.append(LanguageDB["$elseif"] 
+               + LanguageDB["$=="]("path_iterator == (QUEX_TYPE_CHARACTER)(0)")
+               + LanguageDB["$then"])
+    txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
+
+    # -- Transition map of the 'skeleton'        
+    trigger_map = Path.skeleton()
 
     if TheTemplate.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
