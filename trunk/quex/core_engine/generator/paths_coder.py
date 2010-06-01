@@ -136,11 +136,12 @@ def _do(PathList, SMD):
     state_db   = SMD.sm().states
 
     # -- Collect all indices of states involved in templates
-    involved_state_index_list = set([])
-    # -- Collect all indices of targets states in the 'adaption table'
-    target_state_index_list   = set([])
-    # -- Generate 'TemplatedState's for each TemplateCombination
-    template_list             = []
+    involved_state_index_list   = set([])
+
+    variable_db = {}
+    for path in PathList:
+        __add_path_definition(variable_db, path) 
+
     for path in PathList:
         assert isinstance(combination, paths.CharacterPath)
 
@@ -368,42 +369,20 @@ class TemplateState(state_machine.State):
     def template_combination(self):
         return self.__template_combination
 
-def __transition_target_data_structures(variable_db, TheTemplate):
+def __add_path_definition(variable_db, Path, PathID):
     """Defines the transition targets for each involved state.
     """
-    template_index      = TheTemplate.core().state_index
+    txt = []
+    for character in Path.sequence():
+        txt.append("%i," % character)
+    txt.append("0x0")
 
-    def __array_to_code(Array):
-        txt = ["{ "]
-        for index in Array:
-            if index != None: txt.append("%i, " % index)
-            else:             txt.append("-%i," % template_index)
-        txt.append("}")
-        return "".join(txt)
+    variable_name  = "path_%i" % PathID
+    variable_type  = "QUEX_TYPE_CHARACTER"
+    dimension      = len(Path.sequence() + 1)
+    variable_value = "{ " + "".join(txt) + "}"
 
-    involved_state_list = TheTemplate.template_combination().involved_state_list()
-    involved_state_n    = len(involved_state_list)
-    # Type and dimension of the involved arrays is always the same
-    variable_type  = "const QUEX_TYPE_GOTO_LABEL"
-    dimension      = involved_state_n 
-
-    for target_index, target_state_index_list in enumerate(TheTemplate.transitions().target_state_list_db()):
-        assert len(target_state_index_list) == involved_state_n
-
-        variable_name  = "template_%i_target_%i" % (template_index, target_index)
-        variable_value = __array_to_code(target_state_index_list)
-
-        variable_db[variable_name] = [ variable_type, variable_value, dimension ]
-
-    # If the template does not have uniform state entries, the entries
-    # need to be routed on recursion, for example. Thus we need to map 
-    # from state-key to state.
-    if not TheTemplate.uniform_state_entries_f():
-        variable_name  = "template_%i_map_state_key_to_state_index" % template_index
-        variable_value = __array_to_code(involved_state_list)
-
-        variable_db[variable_name] = [ variable_type, variable_value, dimension ]
-
+    variable_db[variable_name] = [ variable_type, variable_value, dimension ]
 
 def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key
