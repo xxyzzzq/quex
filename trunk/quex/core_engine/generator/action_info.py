@@ -102,7 +102,8 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
                 if line.find(info[0]) == -1: continue
                 line = info[1]
                 line = line.replace("NUMBER", repr(int(line_n + 1)))
-                norm_filename = os.path.normpath(filename).replace("\\", "\\\\")
+                # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
+                norm_filename = filename.replace("\\", "/")
                 line = line.replace("FILENAME", norm_filename)
                 line = line + "\n"
         new_content += line
