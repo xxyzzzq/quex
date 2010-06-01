@@ -1,0 +1,15 @@
+.
+./x
+./x/y
+./x/y/z
+./simple.qx
+./a
+./a/b
+./a/b/d
+./a/b/c
+./a/b/c/d
+./a/b/c/d/lexer-token_ids
+./a/b/c/d/lexer
+./a/b/c/d/lexer-token
+./a/b/c/d/lexer.cpp
+./a/b/c/d/lexer-configuration

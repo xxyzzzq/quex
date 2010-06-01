@@ -1,0 +1,40 @@
+---------------------------
+Pattern0 = A/B
+Pattern1 = A/B
+claim =  True
+
+Pattern0 = A/B
+Pattern1 = A/B
+claim =  True
+---------------------------
+Pattern0 = A/B/
+Pattern1 = A/B/
+claim =  True
+
+Pattern0 = A/B/
+Pattern1 = A/B/
+claim =  True
+---------------------------
+Pattern0 = A/B/C
+Pattern1 = A/B/C
+claim =  True
+
+Pattern0 = A/B/C
+Pattern1 = A/B/C
+claim =  True
+---------------------------
+Pattern0 = B$
+Pattern1 = B$
+claim =  True
+
+Pattern0 = B$
+Pattern1 = B$
+claim =  True
+---------------------------
+Pattern0 = ^B
+Pattern1 = ^B
+claim =  True
+
+Pattern0 = ^B
+Pattern1 = ^B
+claim =  True
