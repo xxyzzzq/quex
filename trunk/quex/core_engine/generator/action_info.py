@@ -75,7 +75,9 @@ class UserCodeFragment(CodeFragment):
     def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
         if Code.strip() == "": return Code
 
-        txt  = '\n#line %i "%s"\n' % (self.line_n, os.path.normpath(self.filename))
+        # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
+        norm_filename = self.filename.replace("\\", "/")
+        txt  = '\n#line %i "%s"\n' % (self.line_n, norm_filename)
         txt += Code
         if ReturnToSourceF:
             if txt[-1] != "\n": txt = txt + "\n"

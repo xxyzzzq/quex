@@ -446,5 +446,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 QUEX_NAMESPACE_MAIN_CLOSE
 
+#ifdef _MSC_VER
+    /* Forget about the 'CRT security enhancements'. */
+#   pragma warning(disabled::wqa)
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */
