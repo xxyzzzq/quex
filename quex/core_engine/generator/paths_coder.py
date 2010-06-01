@@ -321,31 +321,32 @@ class TransitionMapMimiker:
         return self.__target_state_list_db
 
 class PathWalkerState(state_machine.State):
-    """Implementation of a Path Walker that is able to play the role of a
-       state machine state. It is constructed on the basis of a 
-       CharacterPath object that is create by module
+
+    """Implementation of a Path Walker that is able to play the role of a state
+       machine state. It is constructed on the basis of a CharacterPath object
+       that is create by module
        
                 state_machine.compression.paths
 
-       Goal of this definition is to have a state that is able to 
-       comply the requirements of 'state_coder.core'. Thus, the
-       template can be generated through the same procedure as 
-       all state machine states.
+       Goal of this definition is to have a state that is able to comply the
+       requirements of 'state_coder.core'. Thus, the path walker generation can
+       rely on the same procedure as all state machine states.  
     """
+
     def __init__(self, Path, StateMachineID, StateIndex, RepresentiveState):
-        """Combi contains all information about the states of a template
-                 and the template itself.
+        """Path contains all information about the states of a path and the
+                path walker.
            
-           StateIndex is the state index that is assigned to the template.
+           StateIndex is the state index that is assigned to the path walker.
 
            RepresentiveState is a state that can represent all states in
-                             the template. All states of a template must
-                             be equivalent, so any of them can do.
+                             the path. If all states of a path are
+                             equivalent, so any of them can do.
 
                              If == None, then it means that state entries
                              differ and there is no representive state.
         """
-        assert isinstance(Combi, templates.TemplateCombination)
+        assert isinstance(Path, paths.CharacterPath)
         assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState == None
         assert type(StateIndex) == long
 
@@ -366,19 +367,19 @@ class PathWalkerState(state_machine.State):
                 # Internally, we adapt the trigger map from:  Interval -> Target State List
                 # to:                                         Interval -> Index
                 # where 'Index' represents the Target State List
-                TransitionMapMimiker(StateIndex, Combi.get_trigger_map(), 
+                TransitionMapMimiker(StateIndex, Path.skeleton(), 
                                      self.__uniform_state_entries_f))
 
         state_machine.State.core(self).state_index = StateIndex
 
         # (1) Template related information
-        self.__template_combination    = Combi
+        self.__path = Path
 
     def uniform_state_entries_f(self):
         return self.__uniform_state_entries_f
 
-    def template_combination(self):
-        return self.__template_combination
+    def path(self):
+        return self.__path
 
 def __add_path_definition(variable_db, Path, PathID):
     """Defines the transition targets for each involved state.
