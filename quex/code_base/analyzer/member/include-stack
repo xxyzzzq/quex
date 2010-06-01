@@ -17,8 +17,10 @@ QUEX_NAMESPACE_MAIN_OPEN
      * Their implementation happens inside the generated source file.  */
 #   ifndef __QUEX_OPTION_PLAIN_C
     TEMPLATE_IN(InputHandleT) 
+#   else
+    /* not inline in 'C' */ struct 
 #   endif
-    /* not inline in 'C' */ struct QUEX_NAME(Memento_tag)*
+    QUEX_NAME(Memento_tag)*
     QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
                             QUEX_TYPE_CHARACTER*  InputName, 
                             InputHandleT**        input_handle);
