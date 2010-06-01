@@ -12,6 +12,7 @@ cd ~/prj/quex/trunk
 orig_directory=`pwd`
 directory=`basename $orig_directory`
 
+INSTALLBUILDER=/opt/installbuilder-6.3.1/bin/builder
 INSTALLBUILDER_OUT=/opt/installbuilder-6.3.1/output
 
 # Temporary file for building a distribution file list
@@ -95,16 +96,16 @@ function create_packages()
     echo "Create installers for $1"
 
     ## We do the debian packages on our own-- thanks to Joaquin Duo.
-    ## /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
+    ## $INSTALLBUILDER build ./install-builder.xml deb
     sudo $QUEX_PATH/adm/packager/debian/run.sh $1 0
     # -- create xml file for the install builder
     $QUEX_PATH/adm/packager/make_install_builder_script.py `pwd`/quex-$1 $1
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml freebsd
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml solaris-intel
+    $INSTALLBUILDER build ./install-builder.xml windows
+    $INSTALLBUILDER build ./install-builder.xml linux
+    $INSTALLBUILDER build ./install-builder.xml rpm
+    $INSTALLBUILDER build ./install-builder.xml osx
+    $INSTALLBUILDER build ./install-builder.xml freebsd
+    $INSTALLBUILDER build ./install-builder.xml solaris-intel
 
     cd $INSTALLBUILDER_OUT
     zip -r quex-$1-osx-installer.app.zip quex-$1-osx-installer.app
