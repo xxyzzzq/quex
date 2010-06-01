@@ -320,19 +320,19 @@ class TransitionMapMimiker:
     def target_state_list_db(self):
         return self.__target_state_list_db
 
-class TemplateState(state_machine.State):
-    """Implementation of a Template that is able to play the role of a
+class PathWalkerState(state_machine.State):
+    """Implementation of a Path Walker that is able to play the role of a
        state machine state. It is constructed on the basis of a 
-       TemplateCombination object that is create by module
+       CharacterPath object that is create by module
        
-                state_machine.compression.templates
+                state_machine.compression.paths
 
        Goal of this definition is to have a state that is able to 
        comply the requirements of 'state_coder.core'. Thus, the
        template can be generated through the same procedure as 
        all state machine states.
     """
-    def __init__(self, Combi, StateMachineID, StateIndex, RepresentiveState):
+    def __init__(self, Path, StateMachineID, StateIndex, RepresentiveState):
         """Combi contains all information about the states of a template
                  and the template itself.
            
