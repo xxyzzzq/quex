@@ -1,0 +1,27 @@
+mode PROGRAM :
+     END_OF_FILE
+{
+    "✓"                 => QUEX_TKN_OK(take_text);
+    "©"                 => QUEX_TKN_COPYRIGHT(take_text);
+    "ليمج"              => QUEX_TKN_DJAMEEL(take_text);
+    "α"                 => QUEX_TKN_ALPHA(take_text);
+    "π"                 => QUEX_TKN_PI(take_text);
+    "∞"                 => QUEX_TKN_INFINITY(take_text);
+    "»"                 => QUEX_TKN_CLOSE_FRENCH_QUOTE(take_text);
+    "«"                 => QUEX_TKN_OPEN_FRENCH_QUOTE(take_text);
+    "→"                 => QUEX_TKN_ARROW(take_text);
+    "("                 => QUEX_TKN_L_BRACKET(take_text);
+    ")"                 => QUEX_TKN_R_BRACKET(take_text);
+    "≈"                 => QUEX_TKN_ALLMOST_EQUAL(take_text);
+    "°"[ \t]*"C"        => QUEX_TKN_DEGREE_CELSIUS(take_text);
+
+    {LATIN_NUMBER}      => QUEX_TKN_LATIN_NUMBER(take_text); 
+    {ARABIC_NUMBER}     => QUEX_TKN_ARABIC_NUMBER(take_text);
+    {DEVANGARI_NUMBER}  => QUEX_TKN_DEVANGARI_NUMBER(take_text);
+    {THAI_NUMBER}       => QUEX_TKN_THAI_NUMBER(take_text);
+
+    {LATIN_IDENTIFIER}  => QUEX_TKN_LATIN_IDENTIFIER(take_text);
+    {GREEK_IDENTIFIER}  => QUEX_TKN_GREEK_IDENTIFIER(take_text);
+
+    [ \t\n]+            { }
+}
