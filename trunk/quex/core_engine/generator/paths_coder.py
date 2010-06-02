@@ -80,10 +80,10 @@ import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
+from   quex.core_engine.generator.template_coder               import TransitionMapMimiker
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
-
-import quex.core_engine.state_machine.compression.paths as paths 
+import quex.core_engine.state_machine.compression.paths        as paths 
 
 
 from copy import deepcopy
