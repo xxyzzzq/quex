@@ -8,6 +8,12 @@
 #include<quex/code_base/compatibility/inttypes.h>
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
+#ifdef _MSC_VER
+    /* Microsoft VisualStudio(tm): Forget about the 'CRT security enhancements'
+     *                             for sprintf, fopen, and setbuf.               */
+#   pragma warning(disabled: 4996)
+#endif
+
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #   include <cstddef>  /* gets: size_t, ptrdiff_t */
 #   include <cstring>  /* gets: memmove, memcpy   */
