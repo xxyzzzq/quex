@@ -5,7 +5,7 @@ from   quex.input.setup import setup as Setup
 
 LanguageDB = None
 
-def do(State, StateIdx, SMD, InitStateF):
+def do(State, StateIdx, SMD):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -78,6 +78,7 @@ def do(State, StateIdx, SMD, InitStateF):
     global LanguageDB 
     assert SMD.__class__.__name__ == "StateMachineDecorator"
     LanguageDB = Setup.language_db
+    InitStateF = (StateIdx == SMD.sm().init_state_index)
 
 
     if SMD.backward_lexing_f() == False: 

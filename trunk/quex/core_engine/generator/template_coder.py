@@ -136,7 +136,6 @@ def _do(CombinationList, SMD):
     assert isinstance(SMD, StateMachineDecorator)
 
     LanguageDB = Setup.language_db
-    state_db   = SMD.sm().states
 
     # -- Collect all indices of states involved in templates
     involved_state_index_list = set([])
@@ -439,8 +438,8 @@ def __template_state(txt, TheTemplate, SMD):
     if TheTemplate.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
-    txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
-    txt.extend(drop_out.do(state, state_index, SMD, False))
+    txt.extend(transition_block.do(TriggerMap, state_index, SMD))
+    txt.extend(drop_out.do(state, state_index, SMD))
 
 def __state_router(StateIndexList, SMD):
     """Create code that allows to jump to a state based on an integer value.
@@ -469,13 +468,14 @@ def __state_router(StateIndexList, SMD):
 
     return txt
 
-def get_uniform_prototype(SMD, state, InvolvedStateIndexList):
+def get_uniform_prototype(SMD, InvolvedStateIndexList):
     if SMD.sm().init_state_index in InvolvedStateIndexList:
         # It is conceivable, that even the init state is part of 
         # a template. In this case, the template **must** be non-uniform.
         # The unit state requires a special entry.
         return None
 
+    state_db   = SMD.sm().states
     prototype  = state_db.get(InvolvedStateIndexList[0])
     prev_state = prototype
     for state_index in InvolvedStateIndexList[1:]:

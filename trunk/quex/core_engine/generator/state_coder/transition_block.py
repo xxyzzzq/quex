@@ -12,7 +12,7 @@ class __info:
         self.is_init_state_f = IsInitStateF
         self.dsm             = DSM
 
-def do(TriggerMap, StateIdx, InitStateF, DSM):
+def do(TriggerMap, StateIdx, DSM):
     assert type(TriggerMap) == list
     assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
     # If a state has no transitions, no new input needs to be eaten => no reload.
@@ -23,6 +23,8 @@ def do(TriggerMap, StateIdx, InitStateF, DSM):
     #       essential though for pseudo ambiguous post contexts.
     assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
     #                       # are not to be coded at this place.
+    if DSM == None: InitStateF = False
+    else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 
     info = __info(StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
 

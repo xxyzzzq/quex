@@ -251,18 +251,23 @@ def __path_definition(variable_db, PathWalker):
 
     variable_db[variable_name] = [ variable_type, variable_value, dimension ]
 
-def __templated_state_entries(txt, TheTemplate, SMD):
-    """Defines the entries of templated states, so that the state key
+def __state_entries(code, PathWalker, SMD):
+    """Defines the entries of the path's states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
             STATE_4711: 
-               key = 0; goto TEMPLATE_STATE_111;
+               path_iterator = path_23 + 0; goto PATHWALKER_23;
             STATE_3123: 
-               key = 1; goto TEMPLATE_STATE_111;
+               path_iterator = path_23 + 1; goto PATHWALKER_23;
             STATE_8912: 
-               key = 2; goto TEMPLATE_STATE_111;
+               path_iterator = path_23 + 2; goto PATHWALKER_23;
     """
-    for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
+    targeted_state_list = SMD.targeted_state_list()
+
+    # Last state of sequence is not in the path, it is the first state after.
+    for info in PathWalker.path.sequence()[:-1]:
+        state_index = info[0]
+        if state_index not in targeted_state_list: continue
 
         # Print the state label
         label_str = LanguageDB["$label-def"]("$entry", state_index)
@@ -274,17 +279,20 @@ def __templated_state_entries(txt, TheTemplate, SMD):
         state = SMD.sm().states[state_index]
         # If all state entries are uniform, the entry handling happens uniformly at
         # the entrance of the template, not each state.
-        if not TheTemplate.uniform_state_entries_f():
+        if not PathWalker.uniform_state_entries_f():
             txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
             txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
-        txt.append("    ")
-        txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
-        txt.append(LanguageDB["$goto"]("$template", TheTemplate.core().state_index))
+            txt.append("    ")
+            txt.append(LanguageDB["$assignment"]("state_index", "%i" % key).replace("\n", "\n    "))
+        txt.append(LanguageDB["$goto"]("$path", PathWalker.core().state_index))
         txt.append("\n\n")
 
-def __path_walker(txt, Path, PathID):
+def __path_walker(txt, PathWalker):
     """Generates the path walker, that walks along the character sequence.
     """
+    Path   = PathWalker.path()
+    PathID = PathWalker.core().state_index
+
     label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
                 LanguageDB["$label-def"]("$path", PathID)
     txt.append(label_str)
@@ -301,11 +309,11 @@ def __path_walker(txt, Path, PathID):
     # -- Transition map of the 'skeleton'        
     trigger_map = Path.skeleton()
 
-    if TheTemplate.uniform_state_entries_f():
+    if PathWalker.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
     txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
-    txt.extend(drop_out.do(state, state_index, SMD, False))
+    txt.extend(drop_out.do(state, state_index, SMD))
 
 def __state_router(StateIndexList, SMD):
     """Create code that allows to jump to a state based on an integer value.
