@@ -160,21 +160,7 @@ def _do(CombinationList, SMD):
         #       -- Recursion is routed to entries of involved states.
         #      
         involved_state_list = combination.involved_state_list()
-        if SMD.sm().init_state_index in involved_state_list:
-            # It is conceivable, that even the init state is part of 
-            # a template. In this case, the template **must** be non-uniform.
-            # The unit state requires a special entry.
-            prototype = None
-        else:
-            prototype           = state_db.get(involved_state_list[0])
-            prev_state          = prototype
-            for state_index in involved_state_list[1:]:
-                state = state_db.get(state_index)
-                assert state != None
-                if    prev_state.core().is_equivalent(state.core())       == False \
-                   or prev_state.origins().is_equivalent(state.origins()) == False:
-                    prototype = None
-                    break
+        prototype = get_uniform_prototype(SMD, involved_state_list)
 
         # -- create template state for combination object
         #    prototype == None, tells that there state entries differ and there
@@ -482,4 +468,21 @@ def __state_router(StateIndexList, SMD):
     txt.append("    }\n")
 
     return txt
+
+def get_uniform_prototype(SMD, state, InvolvedStateIndexList):
+    if SMD.sm().init_state_index in InvolvedStateIndexList:
+        # It is conceivable, that even the init state is part of 
+        # a template. In this case, the template **must** be non-uniform.
+        # The unit state requires a special entry.
+        return None
+
+    prototype  = state_db.get(InvolvedStateIndexList[0])
+    prev_state = prototype
+    for state_index in InvolvedStateIndexList[1:]:
+        state = state_db.get(state_index)
+        assert state != None
+        if    prev_state.core().is_equivalent(state.core())       == False \
+           or prev_state.origins().is_equivalent(state.origins()) == False:
+            return None
+    return prototype
 
