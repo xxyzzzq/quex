@@ -22,8 +22,15 @@ class TransitionMap:
         ## requires that all possible changes to the database need to annulate the cache value.
         ## self.__DEBUG_trigger_map = None
 
-    def clear(self):
-        self.__db = {}
+    def clear(self, TriggerMap=-1):
+        if TriggerMap != -1: 
+            assert isinstance(TriggerMap, dict)
+            self.__db = TriggerMap
+        else:
+            # Do not set default value 'TriggerMap={}' since this creates the same
+            # default object for all calls of this function.
+            self.__db = {}
+
         self.__epsilon_target_index_list = [] # array.array("l", [])
 
     def is_empty(self):

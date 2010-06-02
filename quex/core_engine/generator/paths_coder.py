@@ -80,7 +80,7 @@ import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
-from   quex.core_engine.generator.template_coder               import TransitionMapMimiker
+import quex.core_engine.generator.template_coder               as template_coder
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 import quex.core_engine.state_machine.compression.paths        as paths 
@@ -134,28 +134,17 @@ def _do(PathList, SMD):
 
     LanguageDB = Setup.language_db
     state_db   = SMD.sm().states
+    sm_id      = SMD.sm().get_id()
 
     # -- Collect all indices of states involved in templates
-    involved_state_index_list   = set([])
+    involved_state_index_list = set([])
 
-    variable_db = {}
     # -- hold a list that contains also a 'path_id' for each path
-    path_list = []
 
     # (1) The pathes, i.e. array containing identified sequences, e.g.
+    pathwalker_list = []
     for path in PathList:
         assert isinstance(path, paths.CharacterPath)
-
-        path_id = index.get()
-        __add_path_definition(variable_db, path, path_id) 
-        path_list.append((path, path_id))
-
-    # (2) The path walker.
-    code = []
-    for path, path_id in path_list:
-        __path_walker(path, path_id)
-
-
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
         #   (i) All state entries are uniform: 
@@ -168,157 +157,28 @@ def _do(PathList, SMD):
         #          at state entry.
         #       -- Recursion is routed to entries of involved states.
         #      
-        involved_state_list = combination.involved_state_list()
-        if SMD.sm().init_state_index in involved_state_list:
-            # It is conceivable, that even the init state is part of 
-            # a template. In this case, the template **must** be non-uniform.
-            # The unit state requires a special entry.
-            prototype = None
-        else:
-            prototype           = state_db.get(involved_state_list[0])
-            prev_state          = prototype
-            for state_index in involved_state_list[1:]:
-                state = state_db.get(state_index)
-                assert state != None
-                if    prev_state.core().is_equivalent(state.core())       == False \
-                   or prev_state.origins().is_equivalent(state.origins()) == False:
-                    prototype = None
-                    break
-
-        # -- create template state for combination object
-        #    prototype == None, tells that there state entries differ and there
-        #                       is no representive state.
-        template = TemplateState(combination, SMD.sm().get_id(), index.get(), 
-                                 prototype)
-        template_list.append(template)
-
-        # -- collect indices of involved states
+        # The last state in sequence is the end target state, which cannot be 
+        # addressed inside the pathwalker. It is the first state after the path.
+        involved_state_list = map(lambda info: info[0], path.sequence()[:-1])
         involved_state_index_list.update(involved_state_list)
 
-        # -- collect indices of target states
-        for state_index in template.transitions().get_target_state_index_list():
-            if state_index != None: 
-                target_state_index_list.add(state_index)
-            else:
-                # 'goto drop-out' is coded in state index list as 'minus template index'
-                target_state_index_list.add(- template.core().state_index)
+        # -- Determine if all involved states are uniform
+        prototype = template_coder.get_uniform_prototype(SMD, involved_state_list)
 
-        # -- if the template is non-uniform, then we need a router that maps to
-        #    each state entry of involved states (e.g. for recursion and after reload).
-        if not template.uniform_state_entries_f():
-            target_state_index_list.update(involved_state_list)
+        pathwalker_list.append(PathWalkerState(path, sm_id, index.get(), None))
 
-    # -- transition target definition for each templated state
-    transition_target_definition = {}
-    for template in template_list:
-        __transition_target_data_structures(transition_target_definition, template)
+        __add_path_definition(variable_db, path, path_id) 
+        path_list.append((path, path_id))
 
-    # -- template state entries
-    # -- template state
-    code = []
-    for template in template_list:
-        __templated_state_entries(code, template, SMD)
-        __template_state(code, template, SMD)
-
-    # -- state router
-    if len(template_list) != 0:
-        router = __state_router(target_state_index_list, SMD)
-    else:
-        router = []
+    variable_db = {}
+    code        = []
+    for pathwalker in pathwalker_list:
+        __path_definition(variable_db, pathwalker)
+        __state_entries(core, pathwalker)
+        __path_walker(code, pathwalker)
+        __state_router(code, pathwalker)
 
     return transition_target_definition, code, router, involved_state_index_list
-
-class TemplateTarget:
-    def __init__(self, TemplateIndex, TargetIndex=None, UniformStateEntriesF=False):
-        """TemplateIndex identifies the template that 'hosts' the transition.
-
-           TargetIndex identifies the target number (Target0, Target1, ... in
-                       the example on the top of this file).
-
-           The transition code generator will later on generate code of the 
-           form 
-           
-                       goto Template$X$_Target$Y$[state_key];
-
-           Where '$X$' is replaced with TemplateIndex and $Y$ is replaced
-           with TargetIndex.
-        """
-        self.template_index = TemplateIndex
-        self.target_index   = TargetIndex
-        self.__uniform_state_entries_f = UniformStateEntriesF
-
-    def recursive(self):
-        return self.target_index == None
-
-    def uniform_state_entries_f(self):
-        """If the state entries are not uniform, then recursion must
-           jump to state entries, rather the template entry.
-        """
-        return self.__uniform_state_entries_f
-
-class TransitionMapMimiker:
-    """Class that mimiks the TransitionMap of module
-
-                   quex.core_engine.state_machine.transition_map 
-                   
-       The goal is to enable 'TemplateState' to act as a normal state
-       responding to the member function .transitions().
-    """
-    def __init__(self, TemplateIndex, TriggerMap, UniformStateEntriesF):
-        self.__trigger_map          = []
-        self.__target_state_list_db = []
-        i = 0
-        for interval, target in TriggerMap:
-
-            if target == templates.TARGET_RECURSIVE:
-                # Normal Recursion: 
-                #   Return to the entry of the template
-                # Dedicated Recursion: 
-                #   This holds if one or more involved states require things to be set
-                #   at state entry (e.g. last_acceptance = ..). Then, the recursion 
-                #   needs to happen to the state entries.
-                target = TemplateTarget(TemplateIndex,  
-                                        TargetIndex          = None, # says recursion!
-                                        UniformStateEntriesF = UniformStateEntriesF) 
-
-            elif type(target) == list:
-                if target not in self.__target_state_list_db: 
-                    # Register a new target state combination
-                    self.__target_state_list_db.append(target)
-                    target_index = i
-                    i += 1
-
-                else:
-                    # Target state combination has been registered before => get the index.
-                    target_index = self.__target_state_list_db.index(target)
-
-                target = TemplateTarget(TemplateIndex, target_index)
-
-            self.__trigger_map.append([interval, target])
-
-    def get_trigger_map(self):
-        return self.__trigger_map
-
-    def get_epsilon_target_state_index_list(self):
-        return []
-
-    def get_target_state_index_list(self):
-        """Return list of all target states that are possibly entered from 
-           the templated states.
-        """
-        result = set([])
-        for target_state_list in self.__target_state_list_db:
-            result.update(target_state_list)
-        return result
-
-    def get_map(self):
-        """We need to return something that is not empty, so that the reload
-           procedure will be implemented. See module 'state_coder.acceptance_info'.
-        """
-        return { -1: None }
-
-    def target_state_list_db(self):
-        return self.__target_state_list_db
 
 class PathWalkerState(state_machine.State):
 
@@ -363,12 +223,7 @@ class PathWalkerState(state_machine.State):
                                                       AcceptanceF=False)   
             origin_list = state_machine.StateOriginList()          
 
-        state_machine.State._set(self, core, origin_list,
-                # Internally, we adapt the trigger map from:  Interval -> Target State List
-                # to:                                         Interval -> Index
-                # where 'Index' represents the Target State List
-                TransitionMapMimiker(StateIndex, Path.skeleton(), 
-                                     self.__uniform_state_entries_f))
+        state_machine.State._set(self, core, origin_list, Path.skeleton()) 
 
         state_machine.State.core(self).state_index = StateIndex
 
@@ -381,17 +236,17 @@ class PathWalkerState(state_machine.State):
     def path(self):
         return self.__path
 
-def __add_path_definition(variable_db, Path, PathID):
+def __path_definition(variable_db, PathWalker):
     """Defines the transition targets for each involved state.
     """
     txt = []
-    for character in Path.sequence():
+    for character in PathWalker.path().sequence():
         txt.append("%i," % character)
     txt.append("0x0")
 
-    variable_name  = "path_%i" % PathID
+    variable_name  = "path_%i" % PathWalker.core().state_index
     variable_type  = "QUEX_TYPE_CHARACTER"
-    dimension      = len(Path.sequence() + 1)
+    dimension      = len(PathWalker.path().sequence()) + 1  # 1 space for terminating zero
     variable_value = "{ " + "".join(txt) + "}"
 
     variable_db[variable_name] = [ variable_type, variable_value, dimension ]

@@ -38,9 +38,10 @@ class State:
         """This function allows a derived class to impose values on 
            the core members of this class.
         """
-        self.__core           = Core
-        self.__origin_list    = OriginList
-        self.__transition_map = TMap
+        self.__core        = Core
+        self.__origin_list = OriginList
+        if isinstance(TMap, dict): self.__transition_map = TransitionMap(TMap)
+        else:                      self.__transition_map = TMap
 
     def origins(self):
         return self.__origin_list
