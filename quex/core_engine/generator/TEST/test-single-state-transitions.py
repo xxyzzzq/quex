@@ -86,7 +86,7 @@ languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
 function  = "def example_func(input):\n"
 function += "".join(transition_block.do(state.transitions().get_trigger_map(), 
-                                        None, False, dsm))
+                                        None, dsm))
 function  = function.replace("_-1_", "_MINUS_1_")
 
 # line_n = 0

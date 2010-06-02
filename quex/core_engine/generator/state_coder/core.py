@@ -41,8 +41,8 @@ def do(state, StateIdx, SMD=False):
     txt = \
           input_block.do(StateIdx, InitStateF, SMD.backward_lexing_f())  + \
           acceptance_info.do(state, StateIdx, SMD)                       + \
-          transition_block.do(TriggerMap, StateIdx, InitStateF, SMD)     + \
-          drop_out.do(state, StateIdx, SMD, InitStateF)
+          transition_block.do(TriggerMap, StateIdx, SMD)                 + \
+          drop_out.do(state, StateIdx, SMD)
 
     if InitStateF and not SMD.backward_lexing_f():
         # Define the transition entry of the init state **after** the init state itself.
