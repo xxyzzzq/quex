@@ -132,6 +132,22 @@ def _do(PathList, SMD):
     assert type(PathList) == list
     assert isinstance(SMD, StateMachineDecorator)
 
+    def __equal(SkeletonA, SkeletonB):
+        if len(SkeletonA) != len(SkeletonB): return False
+
+        for key, trigger_set in SkeletonA:
+            if SkeletonB.has_key(key) == False: return False
+            if trigger_set != SkeletonB[key]:   return False
+        return True
+
+    def __add_to_equivalent_path(path, path_db):
+        for index, equivalent_path_list in path_db.items():
+            for path in equivalent_path_list:
+                if __same(path.skeleton(), candidate.skeleton()):
+                    equivalent_path_list.append(path)
+                    return True
+        return False
+
     LanguageDB = Setup.language_db
     state_db   = SMD.sm().states
     sm_id      = SMD.sm().get_id()
@@ -142,9 +158,14 @@ def _do(PathList, SMD):
     # -- hold a list that contains also a 'path_id' for each path
 
     # (1) The pathes, i.e. array containing identified sequences, e.g.
-    pathwalker_list = []
-    for path in PathList:
+    path_db = {}
+    for candidate in PathList:
         assert isinstance(path, paths.CharacterPath)
+        # Is there a path with the same skeleton?
+        if __add_to_equivalent_path(candidate, path_db): continue
+        path_db[index.get()] = [ candidate ]
+
+    for state_index, path_list in path_db.items():
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
         #   (i) All state entries are uniform: 
@@ -159,21 +180,21 @@ def _do(PathList, SMD):
         #      
         # The last state in sequence is the end target state, which cannot be 
         # addressed inside the pathwalker. It is the first state after the path.
-        involved_state_list = map(lambda info: info[0], path.sequence()[:-1])
-        involved_state_index_list.update(involved_state_list)
+        for path in path_list:
+            involved_state_list = map(lambda info: info[0], path.sequence()[:-1])
+            involved_state_index_list.update(involved_state_list)
 
         # -- Determine if all involved states are uniform
         prototype = template_coder.get_uniform_prototype(SMD, involved_state_list)
 
-        pathwalker_list.append(PathWalkerState(path, sm_id, index.get(), None))
+        pathwalker_list.append(PathWalkerState(path, sm_id, state_index, prototype))
 
-        __add_path_definition(variable_db, path, path_id) 
-        path_list.append((path, path_id))
 
     variable_db = {}
     code        = []
     for pathwalker in pathwalker_list:
-        __path_definition(variable_db, pathwalker)
+        for path in pathwalker.path_list():
+            __add_path_definition(variable_db, path, path_id) 
         __state_entries(core, pathwalker)
         __path_walker(code, pathwalker)
         __state_router(code, pathwalker)
