@@ -326,7 +326,7 @@ def __path_walker(txt, PathWalker):
     txt.append(LanguageDB["$if =="]("*path_iterator"))
     txt.append(LanguageDB["$goto"]("$path", PathID)
     txt.append(LanguageDB["$elseif"] 
-               + LanguageDB["$=="]("path_iterator == (QUEX_TYPE_CHARACTER)(0)")
+               + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)")
                + LanguageDB["$then"])
     txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
 
@@ -339,30 +339,50 @@ def __path_walker(txt, PathWalker):
     txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
     txt.extend(drop_out.do(state, state_index, SMD))
 
-def __state_router(StateIndexList, SMD):
-    """Create code that allows to jump to a state based on an integer value.
+def __pathwalker_state_router(PathWalker, SMD):
+    """Create code that allows to jump to a state based on the path_iterator.
+
+       NOTE: Paths cannot be recursive. Also, path transitions are linear, i.e.
+             target states are either subsequent path states or the path
+             is left. 
+
+             State routing is only required at reload. There, the current state
+             is identified by the 'path_iterator':
+
+             (1) determine to what path the path_iterator belongs.
+             (2) 'path_iterator - path_begin' gives an integer that identifies
+                 the particular state of the path.
     """
+    assert PathWalker.uniform_state_entries_f() == False
 
-    if SMD.backward_lexing_f(): state_router_label = "STATE_ROUTER_BACKWARD:\n"
-    else:                       state_router_label = "STATE_ROUTER:\n"
-    txt = [
-            state_router_label,
-            "    switch( target_state_index ) {\n"
-    ]
-    for index in StateIndexList:
-        txt.append("    case %i: " % index)
-        if index >= 0:
-            # Transition to state entry
-            state_index = index
-            code  = transition.do(state_index, None, None, SMD)
+    first_f = True
+    for path_index, path in PathWalker.path_list():
+        # if path_iterator >= path[i].begin and path_iterator < path[i].end:
+        #    switch( path_iterator - path[i].begin ) {
+        #         case 0:  STATE_341;
+        #         case 1:  STATE_345;
+        #         case 3:  STATE_346;
+        #    }
+        if first_f: 
+            first_f = False
+            txt.append(LanguageDB["$if"])
         else:
-            # Transition to a templates 'drop-out'
-            template_index = - index
-            code = transition.do(None, template_index, None, SMD)
-        txt.append(code)
-        txt.append("\n")
+            txt.append(LanguageDB["$elsif"])
+        txt.extend([
+            LanguageDB["$>="]("path_iterator", "path_%i" % path_index),
+            LanguageDB["$&&"],
+            LanguageDB["$<"]("(size_t)(path_iterator - path_%i)"    % path_index, 
+                             "(size_t)(QUEX_NAME(strlen)(path_%i))" % path_index),
+            LanguageDB["$then"]
+        ])
+        txt.append(LanguageDB["$switch"]("(int)(path_iterator - path_%i)"  % path_index))
+            for i, info in enumarate(path.sequence()[:-1]):
+                txt.append(LanguageDB["$case"](i))
+                txt.append(LanguageDB["$goto"]("$entry", info[0]))
+        txt.append(LanguageDB["$switchend"])
+        txt.append(LanguageDB["$endif"])
+    
 
-    txt.append("    }\n")
 
     return txt
 
