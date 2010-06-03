@@ -374,7 +374,7 @@ def __pathwalker_state_router(txt, PathWalker):
     """
     assert PathWalker.uniform_state_entries_f() == False
 
-    def __get_action(Path):
+    def __get_action(txt, Path):
         #    switch( path_iterator - path[i].begin ) {
         #         case 0:  STATE_341;
         #         case 1:  STATE_345;
@@ -386,9 +386,16 @@ def __pathwalker_state_router(txt, PathWalker):
             txt.append(LanguageDB["$goto"]("$entry", info[0]))
         txt.append(LanguageDB["$switchend"])
 
+    def __cmp(txt, PathIndex):
+        txt.extend([
+            LanguageDB["$>="]("path_iterator", "path_%i" % path_index),
+            LanguageDB["$&&"],
+            LanguageDB["$<"]("path_iterator", "path_%i_end" % path_index)
+        ])
+
     __path_specific_action(txt, PathWalker.path_list(), __get_action)
 
-def __path_specific_action(txt, PathList, get_action):
+def __path_specific_action(txt, PathList, get_comparison, get_action):
     first_f = True
     for path in PathList:
         # if path_iterator >= path[i].begin and path_iterator < path[i].end:
@@ -401,15 +408,14 @@ def __path_specific_action(txt, PathList, get_action):
             txt.append(LanguageDB["$if"])
         else:
             txt.append(LanguageDB["$elsif"])
-        txt.extend([
-            LanguageDB["$>="]("path_iterator", "path_%i" % path_index),
-            LanguageDB["$&&"],
-            LanguageDB["$<"]("path_iterator", "path_%i_end" % path_index),
-            LanguageDB["$then"]
-        ])
+
+        # The comparison to identify the path 
+        get_comparison(txt, PathIndex)
+
+        txt.append(LanguageDB["$then"])
         
         # Enter the path specific action
-        txt.append(get_action(path))
+        get_action(txt, path)
 
         txt.append(LanguageDB["$endif"])
     return
