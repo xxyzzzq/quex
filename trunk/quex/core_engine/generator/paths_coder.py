@@ -150,14 +150,10 @@ def _do(PathList, SMD):
 
     LanguageDB = Setup.language_db
     state_db   = SMD.sm().states
-    sm_id      = SMD.sm().get_id()
+    SM_ID      = SMD.sm().get_id()
 
-    # -- Collect all indices of states involved in templates
-    involved_state_index_list = set([])
-
-    # -- hold a list that contains also a 'path_id' for each path
-
-    # (1) The pathes, i.e. array containing identified sequences, e.g.
+    # -- Sort the paths according their skeleton. Paths with the 
+    #    same skeleton will use the same pathwalker.
     path_db = {}
     for candidate in PathList:
         assert isinstance(path, paths.CharacterPath)
@@ -165,6 +161,9 @@ def _do(PathList, SMD):
         if __add_to_equivalent_path(candidate, path_db): continue
         path_db[index.get()] = [ candidate ]
 
+    # -- Create 'PathWalkerState' objects that can mimik state machine states.
+    # -- Collect all indices of states involved in paths
+    involved_state_index_list = set([])
     for state_index, path_list in path_db.items():
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
@@ -187,9 +186,14 @@ def _do(PathList, SMD):
         # -- Determine if all involved states are uniform
         prototype = template_coder.get_uniform_prototype(SMD, involved_state_list)
 
-        pathwalker_list.append(PathWalkerState(path, sm_id, state_index, prototype))
+        pathwalker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
 
 
+    # -- Generate code for:
+    #        -- related variables: paths for pathwalkers
+    #        -- state entries
+    #        -- the pathwalkers
+    #        -- state routes, required for example after reload.
     variable_db = {}
     code        = []
     for pathwalker in pathwalker_list:
@@ -199,10 +203,9 @@ def _do(PathList, SMD):
         __path_walker(code, pathwalker)
         __state_router(code, pathwalker)
 
-    return transition_target_definition, code, router, involved_state_index_list
+    return variable_db, code, involved_state_index_list
 
 class PathWalkerState(state_machine.State):
-
     """Implementation of a Path Walker that is able to play the role of a state
        machine state. It is constructed on the basis of a CharacterPath object
        that is create by module
