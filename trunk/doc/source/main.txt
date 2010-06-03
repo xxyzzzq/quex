@@ -15,6 +15,7 @@ Contents:
    character-encoding/intro.txt
    buffer-access/intro.txt
    advanced/intro.txt
+   tuning/intro.txt
    invocation/intro.txt
 
 
