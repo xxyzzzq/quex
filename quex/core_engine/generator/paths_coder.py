@@ -347,9 +347,13 @@ def __path_walker(txt, PathWalker):
     else:
         # (ii) There are multiple paths for the pathwalker, then the terminal
         #      must be determined at run time.
+        #   -- At the end of the path, path_iterator == path_end, thus we can identify
+        #      the path by comparing simply against all path_ends.
+        def __cmp(txt, PathIndex):
+            txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % path_index))
         def __get_action(txt, Path): 
             txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
-        __path_specific_action(txt, PathList, __get_action)
+        __path_specific_action(txt, PathList, __cmp, __get_action)
 
     # -- Transition map of the 'skeleton'        
     if PathWalker.uniform_state_entries_f():
@@ -393,7 +397,7 @@ def __pathwalker_state_router(txt, PathWalker):
             LanguageDB["$<"]("path_iterator", "path_%i_end" % path_index)
         ])
 
-    __path_specific_action(txt, PathWalker.path_list(), __get_action)
+    __path_specific_action(txt, PathWalker.path_list(), __cmp, __get_action)
 
 def __path_specific_action(txt, PathList, get_comparison, get_action):
     first_f = True
