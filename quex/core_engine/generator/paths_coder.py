@@ -262,20 +262,26 @@ class PathWalkerState(state_machine.State):
     def path(self):
         return self.__path
 
-def __path_definition(variable_db, PathWalker):
+def __path_definition(variable_db, Path):
     """Defines the transition targets for each involved state.
     """
+    L = len(Path.sequence())
     txt = []
-    for character in PathWalker.path().sequence():
+    for character in Path.sequence():
         txt.append("%i," % character)
     txt.append("0x0")
 
-    variable_name  = "path_%i" % PathWalker.core().state_index
+    variable_name  = "path_%i" % Path.index()
     variable_type  = "QUEX_TYPE_CHARACTER"
-    dimension      = len(PathWalker.path().sequence()) + 1  # 1 space for terminating zero
+    dimension      = L + 1  # 1 space for terminating zero
     variable_value = "{ " + "".join(txt) + "}"
 
     variable_db[variable_name] = [ variable_type, variable_value, dimension ]
+
+    variable_name  = "path_end_%i" % Path.index()
+    variable_type  = "QUEX_TYPE_CHARACTER*"
+    variable_value = "path_%i + %i" % (Path.index(), L + 1)
+    variable_db[variable_name] = [ variable_type, variable_value ]
 
 def __state_entries(code, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key
@@ -316,8 +322,10 @@ def __state_entries(code, PathWalker, SMD):
 def __path_walker(txt, PathWalker):
     """Generates the path walker, that walks along the character sequence.
     """
-    Path   = PathWalker.path()
-    PathID = PathWalker.core().state_index
+    PathList     = PathWalker.path_list
+    PathN        = len(PathList)
+    Skeleton     = PathList[0].skeleton()
+    PathWalkerID = PathWalker.core().state_index
 
     label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
                 LanguageDB["$label-def"]("$path", PathID)
@@ -326,22 +334,31 @@ def __path_walker(txt, PathWalker):
     # -- The comparison with the path's current character
     #    If terminating zero is reached, the path's end state is entered.
     txt.append(LanguageDB["$if =="]("*path_iterator"))
-    txt.append(LanguageDB["$goto"]("$path", PathID)
+    txt.append(LanguageDB["$goto"]("$path", PathWalkerID)
     txt.append(LanguageDB["$elseif"] 
                + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)")
                + LanguageDB["$then"])
-    txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
+
+    # -- Transition to the first state after the path:
+    if PathN == 1:
+        # (i) There is only one path for the pathwalker, then there is only
+        #     one terminal and it is determined at compilation time.
+        txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
+    else:
+        # (ii) There are multiple paths for the pathwalker, then the terminal
+        #      must be determined at run time.
+        def __get_action(txt, Path): 
+            txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
+        __path_specific_action(txt, PathList, __get_action)
 
     # -- Transition map of the 'skeleton'        
-    trigger_map = Path.skeleton()
-
     if PathWalker.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
     txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
     txt.extend(drop_out.do(state, state_index, SMD))
 
-def __pathwalker_state_router(txt, PathWalker, SMD):
+def __pathwalker_state_router(txt, PathWalker):
     """Create code that allows to jump to a state based on the path_iterator.
 
        NOTE: Paths cannot be recursive. Also, path transitions are linear, i.e.
@@ -357,14 +374,28 @@ def __pathwalker_state_router(txt, PathWalker, SMD):
     """
     assert PathWalker.uniform_state_entries_f() == False
 
-    first_f = True
-    for path_index, path in PathWalker.path_list():
-        # if path_iterator >= path[i].begin and path_iterator < path[i].end:
+    def __get_action(Path):
         #    switch( path_iterator - path[i].begin ) {
         #         case 0:  STATE_341;
         #         case 1:  STATE_345;
         #         case 3:  STATE_346;
         #    }
+        txt.append(LanguageDB["$switch"]("(int)(path_iterator - path_%i)"  % Path.index()))
+        for i, info in enumarate(Path.sequence()[:-1]):
+            txt.append(LanguageDB["$case"](i))
+            txt.append(LanguageDB["$goto"]("$entry", info[0]))
+        txt.append(LanguageDB["$switchend"])
+
+    __path_specific_action(txt, PathWalker.path_list(), __get_action)
+
+def __path_specific_action(txt, PathList, get_action):
+    first_f = True
+    for path in PathList:
+        # if path_iterator >= path[i].begin and path_iterator < path[i].end:
+        #      action of action_list[i]
+        #    }
+        sequence   = path.sequence()
+        path_index = path.index()
         if first_f: 
             first_f = False
             txt.append(LanguageDB["$if"])
@@ -373,16 +404,13 @@ def __pathwalker_state_router(txt, PathWalker, SMD):
         txt.extend([
             LanguageDB["$>="]("path_iterator", "path_%i" % path_index),
             LanguageDB["$&&"],
-            LanguageDB["$<"]("(size_t)(path_iterator - path_%i)"    % path_index, 
-                             "(size_t)(QUEX_NAME(strlen)(path_%i))" % path_index),
+            LanguageDB["$<"]("path_iterator", "path_%i_end" % path_index),
             LanguageDB["$then"]
         ])
-        txt.append(LanguageDB["$switch"]("(int)(path_iterator - path_%i)"  % path_index))
-            for i, info in enumarate(path.sequence()[:-1]):
-                txt.append(LanguageDB["$case"](i))
-                txt.append(LanguageDB["$goto"]("$entry", info[0]))
-        txt.append(LanguageDB["$switchend"])
-        txt.append(LanguageDB["$endif"])
+        
+        # Enter the path specific action
+        txt.append(get_action(path))
 
-    return txt
+        txt.append(LanguageDB["$endif"])
+    return
 
