@@ -196,12 +196,14 @@ def _do(PathList, SMD):
     #        -- state routes, required for example after reload.
     variable_db = {}
     code        = []
+    router_code = []
     for pathwalker in pathwalker_list:
         for path in pathwalker.path_list():
             __add_path_definition(variable_db, path, path_id) 
         __state_entries(core, pathwalker)
         __path_walker(code, pathwalker)
-        __state_router(code, pathwalker)
+        if not pathwalker.uniform_state_entries_f(): 
+            __pathwalker_state_router(router_code, pathwalker)
 
     return variable_db, code, involved_state_index_list
 
@@ -339,7 +341,7 @@ def __path_walker(txt, PathWalker):
     txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
     txt.extend(drop_out.do(state, state_index, SMD))
 
-def __pathwalker_state_router(PathWalker, SMD):
+def __pathwalker_state_router(txt, PathWalker, SMD):
     """Create code that allows to jump to a state based on the path_iterator.
 
        NOTE: Paths cannot be recursive. Also, path transitions are linear, i.e.
@@ -381,8 +383,6 @@ def __pathwalker_state_router(PathWalker, SMD):
                 txt.append(LanguageDB["$goto"]("$entry", info[0]))
         txt.append(LanguageDB["$switchend"])
         txt.append(LanguageDB["$endif"])
-    
-
 
     return txt
 
