@@ -200,7 +200,7 @@ class CharacterPath:
     def index(self):
         # Path index = index of the first state in the path
         try:    
-            self.__sequence[0][0]
+            return self.__sequence[0][0]
         except: 
             assert False, \
                    "Character with either no sequence or wrong setup sequence element."

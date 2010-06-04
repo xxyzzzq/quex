@@ -115,8 +115,8 @@ def do(SMD):
     local_variable_db = path_array_definitions
     if len(local_variable_db) != 0:
         local_variable_db.update({
-          "path_iterator"   [ "QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_GOTO_LABEL)0x0"],
-          "path_state_key": [ "int",                  "(int)0"],
+            "path_iterator":  [ "QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_GOTO_LABEL)0x0"],
+            "path_state_key": [ "int",                  "(int)0"],
         })
 
     return "".join(code + router), \
@@ -156,7 +156,7 @@ def _do(PathList, SMD):
     #    same skeleton will use the same pathwalker.
     path_db = {}
     for candidate in PathList:
-        assert isinstance(path, paths.CharacterPath)
+        assert isinstance(candidate, paths.CharacterPath)
         # Is there a path with the same skeleton?
         if __add_to_equivalent_path(candidate, path_db): continue
         path_db[index.get()] = [ candidate ]
@@ -164,6 +164,7 @@ def _do(PathList, SMD):
     # -- Create 'PathWalkerState' objects that can mimik state machine states.
     # -- Collect all indices of states involved in paths
     involved_state_index_list = set([])
+    pathwalker_list = []
     for state_index, path_list in path_db.items():
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
@@ -199,9 +200,9 @@ def _do(PathList, SMD):
     router_code = []
     for pathwalker in pathwalker_list:
         for path in pathwalker.path_list():
-            __add_path_definition(variable_db, path, path_id) 
-        __state_entries(core, pathwalker)
-        __path_walker(code, pathwalker)
+             __path_definition(variable_db, path) 
+        __state_entries(code, pathwalker, SMD)
+        __path_walker(code, pathwalker, SMD)
         if not pathwalker.uniform_state_entries_f(): 
             __pathwalker_state_router(router_code, pathwalker)
 
@@ -219,10 +220,13 @@ class PathWalkerState(state_machine.State):
        rely on the same procedure as all state machine states.  
     """
 
-    def __init__(self, Path, StateMachineID, StateIndex, RepresentiveState):
+    def __init__(self, PathList, StateMachineID, StateIndex, RepresentiveState):
         """Path contains all information about the states of a path and the
                 path walker.
            
+           PathList is the list of paths that use the same 'pathwalker', i.e.
+                    they have the same skeleton trigger map.
+
            StateIndex is the state index that is assigned to the path walker.
 
            RepresentiveState is a state that can represent all states in
@@ -232,7 +236,7 @@ class PathWalkerState(state_machine.State):
                              If == None, then it means that state entries
                              differ and there is no representive state.
         """
-        assert isinstance(Path, paths.CharacterPath)
+        assert type(PathList) == list
         assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState == None
         assert type(StateIndex) == long
 
@@ -249,25 +253,31 @@ class PathWalkerState(state_machine.State):
                                                       AcceptanceF=False)   
             origin_list = state_machine.StateOriginList()          
 
-        state_machine.State._set(self, core, origin_list, Path.skeleton()) 
+        # All paths must have the same skeleton, so just use the first best: PathList[0]
+        state_machine.State._set(self, core, origin_list, PathList[0].skeleton()) 
 
         state_machine.State.core(self).state_index = StateIndex
 
         # (1) Template related information
-        self.__path = Path
+        self.__path_list = PathList
 
     def uniform_state_entries_f(self):
         return self.__uniform_state_entries_f
 
-    def path(self):
-        return self.__path
+    def path_list(self):
+        return self.__path_list
+
+    def skeleton(self):
+        # All skeletons must be the same, so the first one can do the job.
+        return self.__path_list[0].skeleton()
 
 def __path_definition(variable_db, Path):
     """Defines the transition targets for each involved state.
     """
     L = len(Path.sequence())
     txt = []
-    for character in Path.sequence():
+    # Last element of sequence contains only the 'end state'.
+    for state_index, character in Path.sequence()[:-1]:
         txt.append("%i," % character)
     txt.append("0x0")
 
@@ -283,7 +293,7 @@ def __path_definition(variable_db, Path):
     variable_value = "path_%i + %i" % (Path.index(), L + 1)
     variable_db[variable_name] = [ variable_type, variable_value ]
 
-def __state_entries(code, PathWalker, SMD):
+def __state_entries(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
@@ -294,56 +304,70 @@ def __state_entries(code, PathWalker, SMD):
             STATE_8912: 
                path_iterator = path_23 + 2; goto PATHWALKER_23;
     """
-    targeted_state_list = SMD.targeted_state_list()
+    sm = SMD.sm()
 
-    # Last state of sequence is not in the path, it is the first state after.
-    for info in PathWalker.path.sequence()[:-1]:
-        state_index = info[0]
-        if state_index not in targeted_state_list: continue
+    for path in PathWalker.path_list():
+        prev_state_index = None
+        # Last state of sequence is not in the path, it is the first state after.
+        for info in path.sequence()[:-1]:
+            state_index = info[0]
+            # No need for state router if:
+            #   (i) PathWalker is uniform, because then even after reload no dedicated
+            #       state entry is required.
+            #   (ii) The state is not entered from any other state except the predecessor
+            #        on the path.
+            #   (iii) The first state always needs an entry.
+            if     PathWalker.uniform_state_entries_f() \
+               and not prev_state_index == None \
+               and prev_state_index == sm.get_the_only_entry_to_state(state_index): 
+                   continue
 
-        # Print the state label
-        label_str = LanguageDB["$label-def"]("$entry", state_index)
-        if state_index != SMD.sm().init_state_index:
-            label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
-                        label_str
-        txt.append(label_str)
+            # Print the state label
+            label_str = LanguageDB["$label-def"]("$entry", state_index)
+            if state_index != SMD.sm().init_state_index:
+                label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+                            label_str
+            txt.append(label_str)
 
-        state = SMD.sm().states[state_index]
-        # If all state entries are uniform, the entry handling happens uniformly at
-        # the entrance of the template, not each state.
-        if not PathWalker.uniform_state_entries_f():
-            txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
-            txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
-            txt.append("    ")
-            txt.append(LanguageDB["$assignment"]("state_index", "%i" % key).replace("\n", "\n    "))
-        txt.append(LanguageDB["$goto"]("$path", PathWalker.core().state_index))
-        txt.append("\n\n")
+            state = SMD.sm().states[state_index]
+            # If all state entries are uniform, the entry handling happens uniformly at
+            # the entrance of the template, not each state.
+            if not PathWalker.uniform_state_entries_f():
+                txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
+                txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
+                txt.append("    ")
+                txt.append(LanguageDB["$assignment"]("state_index", "%i" % key).replace("\n", "\n    "))
+            txt.append(LanguageDB["$goto"]("$pathwalker", PathWalker.core().state_index))
+            txt.append("\n\n")
 
-def __path_walker(txt, PathWalker):
+            prev_state_index = state_index
+
+def __path_walker(txt, PathWalker, SMD):
     """Generates the path walker, that walks along the character sequence.
     """
-    PathList     = PathWalker.path_list
+    PathList     = PathWalker.path_list()
     PathN        = len(PathList)
     Skeleton     = PathList[0].skeleton()
     PathWalkerID = PathWalker.core().state_index
 
     label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
-                LanguageDB["$label-def"]("$path", PathID)
+                LanguageDB["$label-def"]("$pathwalker", PathWalkerID)
     txt.append(label_str)
 
     # -- The comparison with the path's current character
     #    If terminating zero is reached, the path's end state is entered.
     txt.append(LanguageDB["$if =="]("*path_iterator"))
-    txt.append(LanguageDB["$goto"]("$path", PathWalkerID)
-    txt.append(LanguageDB["$elseif"] 
-               + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)")
+    txt.append(LanguageDB["$increment"]("path_iterator"))
+    txt.append(LanguageDB["$goto"]("$pathwalker", PathWalkerID))
+    txt.append(LanguageDB["$elseif"] \
+               + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)") \
                + LanguageDB["$then"])
 
     # -- Transition to the first state after the path:
     if PathN == 1:
         # (i) There is only one path for the pathwalker, then there is only
         #     one terminal and it is determined at compilation time.
-        txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
+        txt.append(LanguageDB["$goto"]("$entry", PathList[0].end_state_index()))
     else:
         # (ii) There are multiple paths for the pathwalker, then the terminal
         #      must be determined at run time.
@@ -357,10 +381,10 @@ def __path_walker(txt, PathWalker):
 
     # -- Transition map of the 'skeleton'        
     if PathWalker.uniform_state_entries_f():
-        txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
-        txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
-    txt.extend(transition_block.do(TriggerMap, state_index, False, SMD))
-    txt.extend(drop_out.do(state, state_index, SMD))
+        txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
+        txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
+    txt.extend(transition_block.do(PathWalker.transitions().get_trigger_map(), PathWalkerID, SMD))
+    txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
 
 def __pathwalker_state_router(txt, PathWalker):
     """Create code that allows to jump to a state based on the path_iterator.
