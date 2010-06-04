@@ -15,8 +15,16 @@ INTERVAL_END              = False
 INTERVAL_UNDEFINED_BORDER = -7777
 
 class TransitionMap:
-    def __init__(self):
-        self.__db = {}               # [target index] --> [trigger set that triggers to target]
+    """Members:
+
+       __db:   map [target index] --> [trigger set that triggers to target]
+
+       __epsilon_target_index_list: list of target states that are entered via epsilon 
+                                    transition.
+    """
+    def __init__(self, DB=-1):
+        if DB == -1: self.__db = {}   
+        else:        self.__db = DB
         self.__epsilon_target_index_list = [] # array.array("l", [])
         ## OPTIMIZATION OPTION: Store the trigger map in a 'cache' variable. This, however,
         ## requires that all possible changes to the database need to annulate the cache value.
@@ -126,9 +134,8 @@ class TransitionMap:
         """Union of target states that can be reached either via epsilon transition
            or 'real' transition via character.
         """
-        result = self.__db.keys()
-        for index in self.__epsilon_target_index_list:
-            if index not in result: result.append(index)
+        result = set(self.__db.keys())
+        result.update(self.__epsilon_target_index_list)
         return result
 
     def get_resulting_target_state_index(self, Trigger):
@@ -465,4 +472,9 @@ class TransitionMap:
         assert type(CharCode) == int
         if self.get_resulting_target_state_index(CharCode) == None: return False
         else:                                                       return True
+
+    def has_target(self, TargetState):
+        if self.__db.has_key(TargetState):                    return True
+        elif TargetState in self.__epsilon_target_index_list: return True
+        else:                                                 return False
 
