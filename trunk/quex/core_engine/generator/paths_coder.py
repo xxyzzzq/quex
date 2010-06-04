@@ -135,15 +135,18 @@ def _do(PathList, SMD):
     def __equal(SkeletonA, SkeletonB):
         if len(SkeletonA) != len(SkeletonB): return False
 
-        for key, trigger_set in SkeletonA:
+        for key, trigger_set in SkeletonA.items():
             if SkeletonB.has_key(key) == False: return False
             if trigger_set != SkeletonB[key]:   return False
         return True
 
     def __add_to_equivalent_path(path, path_db):
+        assert isinstance(path, paths.CharacterPath)
+        assert isinstance(path_db, dict)
+
         for index, equivalent_path_list in path_db.items():
             for path in equivalent_path_list:
-                if __same(path.skeleton(), candidate.skeleton()):
+                if __equal(path.skeleton(), candidate.skeleton()):
                     equivalent_path_list.append(path)
                     return True
         return False
@@ -374,7 +377,7 @@ def __path_walker(txt, PathWalker, SMD):
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
         def __cmp(txt, PathIndex):
-            txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % path_index))
+            txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % PathIndex))
         def __get_action(txt, Path): 
             txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
         __path_specific_action(txt, PathList, __cmp, __get_action)
@@ -435,10 +438,10 @@ def __path_specific_action(txt, PathList, get_comparison, get_action):
             first_f = False
             txt.append(LanguageDB["$if"])
         else:
-            txt.append(LanguageDB["$elsif"])
+            txt.append(LanguageDB["$elseif"])
 
         # The comparison to identify the path 
-        get_comparison(txt, PathIndex)
+        get_comparison(txt, path.index())
 
         txt.append(LanguageDB["$then"])
         
