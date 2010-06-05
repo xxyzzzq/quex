@@ -1,5 +1,10 @@
-all: iso8859-7-lexer utf8-lexer 
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
 
+all: iso8859-7-lexer utf8-lexer 
 
 iso8859-7-lexer: iso8859-7-lexer.cpp
 	quex -i greek.qx         \
@@ -10,6 +15,7 @@ iso8859-7-lexer: iso8859-7-lexer.cpp
 		-Wall              \
 		-I$(QUEX_PATH) -I. \
 		$<                 \
+		$(CCFLAG_ASSERTS)  \
 		ISO8859_7_Lex.cpp  \
 		-o $@
 
@@ -25,6 +31,7 @@ utf8-lexer: utf8-lexer.cpp
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
+		$(CCFLAG_ASSERTS)       \
 		UTF8Lex.cpp             \
 		-o $@
 	
@@ -41,6 +48,7 @@ utf16-lexer: utf16-lexer.cpp
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
+		$(CCFLAG_ASSERTS)       \
 		UTF16Lex.cpp            \
 		-o $@
 

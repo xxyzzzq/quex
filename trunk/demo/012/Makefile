@@ -5,6 +5,11 @@ ENGINE = \
 
 OBJS = $(ENGINE:.cpp=.o) lexer.o
 
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
 
 lexer: $(OBJS)
 	g++ $(OBJS) -ggdb -o  $@ \
@@ -16,7 +21,7 @@ lexer: $(OBJS)
 %.o: %.cpp $(ENGINE_SOURCES)
 	g++ -c $< -ggdb -Wall -o $@ \
 		-I$(QUEX_PATH) \
-		$(NDEBUG_F) 
+		$(CCFLAG_ASSERTS) 
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

@@ -11,9 +11,9 @@
 #______________________________________________________________________
 cd $QUEX_PATH/demo/$1 
 if [[ $2 == "NDEBUG" ]]; then
-    arg1="DSWITCH_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED"
+    arg1=""
 else
-    arg1="DSWITCH_ASSERTS=-DQUEX_OPTION_ASSERTS "
+    arg1="ASSERTS_ENABLED_F=YES"
 fi
 echo "makefile =" Makefile
 echo "cleaning ..."

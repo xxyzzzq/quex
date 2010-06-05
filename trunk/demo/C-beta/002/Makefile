@@ -26,13 +26,19 @@ ENGINE_SOURCES   = $(ENGINE_NAME)                     \
 LIBRARY_OBJS     = $(ENGINE_NAME).o
 
 
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
+
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
 # -- compiler
 CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)      \
+	 -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS)      \
 	 -DINDENTATION_STACK_SIZE=64
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
      # -DQUEX_OPTION_ASSERTS_DISABLED

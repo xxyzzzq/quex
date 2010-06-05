@@ -30,8 +30,14 @@ endif
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = gcc
 
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
+
 CC = $(COMPILER) -c -fPIC -Wall -Wimplicit -pedantic\
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+	 -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 	 -ggdb \
      # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED

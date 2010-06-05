@@ -136,7 +136,7 @@ class TransitionMap:
         """
         result = set(self.__db.keys())
         result.update(self.__epsilon_target_index_list)
-        return result
+        return list(result)
 
     def get_resulting_target_state_index(self, Trigger):
         """This function makes sense for DFA's"""

@@ -1,6 +1,7 @@
 #include<fstream>    
 #include<iostream> 
 #include<sstream> 
+#include<cassert>
 
 // (*) include lexical analyser header
 #include <./tiny_lexer>
