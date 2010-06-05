@@ -26,7 +26,11 @@ endif
 
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-DSWITCH_ASSERTS=# By default asserts are active
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
 
 # (*) Determining the Converter Lib (IConv or ICU) ____________________________
 #
@@ -60,7 +64,7 @@ COMPILER = g++ -std=c++0x -ggdb
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
-	 $(DSWITCH_ASSERTS)                              \
+	 $(CCFLAG_ASSERTS)                               \
 	 -DENCODING_NAME='"UTF8"'                        \
 	 -DPRINT_TOKEN         
 	 # -DQUEX_OPTION_ASSERTS_DISABLED

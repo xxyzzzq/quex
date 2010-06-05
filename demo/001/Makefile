@@ -10,17 +10,21 @@ endif
 
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-DSWITCH_ASSERTS=# By default asserts are active
-
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
+
 COMPILER = g++ -std=c++0x -ggdb 
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
-	 $(DSWITCH_ASSERTS)                              \
+	 $(CCFLAG_ASSERTS)                               \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS

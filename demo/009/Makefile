@@ -18,8 +18,13 @@ WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
 COMPILER = g++ -ggdb -Wall -pedantic 
-CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		 

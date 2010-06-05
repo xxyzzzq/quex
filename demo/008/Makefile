@@ -39,7 +39,13 @@ else
 	LIBICONV=#
 endif
 
-CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+ifdef ASSERTS_ENABLED_F
+	CCFLAG_ASSERTS=# By default asserts are enabled
+else 
+	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
+endif
+
+CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
        -Wall -Wconversion
        # -DQUEX_OPTION_ASSERTS_DISABLED
        # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
