@@ -563,13 +563,15 @@ class StateMachine:
         # for the core pattern, not for pre-conditions and not for post-conditions.
         return self.__character_n
 
-    def get_the_only_entry_to_state(self, TargetStateIndex):
+    def get_only_entry_to_state(self, TargetStateIndex):
         """Checks if the given state has only one entry from another state 
            and if so it returns the state index. Otherwise, it returns None.
         """
+        print "##TS:", TargetStateIndex
         result = None
         for state_index, state in self.states.items():
             if state.transitions().has_target(TargetStateIndex):
+                print "## from: ", state_index
                 if result == None: result = state_index
                 else:              return None           # More than one state trigger to target
         return result
