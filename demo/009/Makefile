@@ -18,7 +18,7 @@ WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS 
+COMPILER = g++ -ggdb -Wall -pedantic 
 CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \

@@ -25,7 +25,7 @@ APPLICATION      = lexer
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS
+COMPILER = g++ -ggdb -Wall -pedantic
 CC = $(COMPILER) \
 	 -I./ -I$(QUEX_PATH)  \
      -DQUEX_OPTION_ASSERTS_DISABLED 

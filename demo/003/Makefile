@@ -61,7 +61,6 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(DSWITCH_ASSERTS)                              \
-	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 \
 	 -DENCODING_NAME='"UTF8"'                        \
 	 -DPRINT_TOKEN         
 	 # -DQUEX_OPTION_ASSERTS_DISABLED

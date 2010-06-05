@@ -22,7 +22,6 @@ CC = $(COMPILER) -c \
 	 -Wall -Wconversion -pedantic     \
 	 $(DSWITCH_ASSERTS)               \
 	 -DPRINT_TOKEN                    \
-	 -DQUEX_OPTION_NO_COMPUTED_GOTOS                 
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
