@@ -475,8 +475,14 @@ def get_uniform_prototype(SMD, InvolvedStateIndexList):
         # The unit state requires a special entry.
         return None
 
+    if type(InvolvedStateIndexList) == set:
+        InvolvedStateIndexList = list(InvolvedStateIndexList)
+
     state_db   = SMD.sm().states
     prototype  = state_db.get(InvolvedStateIndexList[0])
+    print "##", InvolvedStateIndexList
+    print "##", SMD.sm().states.keys()
+    assert prototype != None
     prev_state = prototype
     for state_index in InvolvedStateIndexList[1:]:
         state = state_db.get(state_index)
