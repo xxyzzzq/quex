@@ -183,6 +183,8 @@ def filter_longest_options(path_list, equivalence_db):
 
 class CharacterPath:
     def __init__(self, StartStateIdx, Skeleton, StartCharacter):
+        assert isinstance(StartStateIdx, long)
+        assert isinstance(Skeleton, dict)
         self.__start_state_index = StartStateIdx
         self.__sequence          = [ (StartStateIdx, StartCharacter) ]
 
@@ -206,6 +208,7 @@ class CharacterPath:
                    "Character with either no sequence or wrong setup sequence element."
 
     def skeleton(self):
+        assert isinstance(self.__skeleton, dict)
         return self.__skeleton
 
     def end_state_index(self):
