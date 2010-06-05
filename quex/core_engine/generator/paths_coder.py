@@ -188,7 +188,7 @@ def _do(PathList, SMD):
             involved_state_index_list.update(involved_state_list)
 
         # -- Determine if all involved states are uniform
-        prototype = template_coder.get_uniform_prototype(SMD, involved_state_list)
+        prototype = template_coder.get_uniform_prototype(SMD, involved_state_index_list)
 
         pathwalker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
 
@@ -281,7 +281,7 @@ def __path_definition(variable_db, Path):
     txt = []
     # Last element of sequence contains only the 'end state'.
     for state_index, character in Path.sequence()[:-1]:
-        txt.append("%i," % character)
+        txt.append("%i, " % character)
     txt.append("0x0")
 
     variable_name  = "path_%i" % Path.index()
@@ -311,18 +311,20 @@ def __state_entries(txt, PathWalker, SMD):
 
     for path in PathWalker.path_list():
         prev_state_index = None
+        print "##", path.sequence()
         # Last state of sequence is not in the path, it is the first state after.
-        for info in path.sequence()[:-1]:
+        for i, info in enumerate(path.sequence()[:-1]):
             state_index = info[0]
             # No need for state router if:
             #   (i) PathWalker is uniform, because then even after reload no dedicated
             #       state entry is required.
             #   (ii) The state is not entered from any other state except the predecessor
             #        on the path.
+            # But:
             #   (iii) The first state always needs an entry.
             if     PathWalker.uniform_state_entries_f() \
-               and not prev_state_index == None \
-               and prev_state_index == sm.get_the_only_entry_to_state(state_index): 
+               and prev_state_index == sm.get_the_only_entry_to_state(state_index) \
+               and prev_state_index != None:
                    continue
 
             # Print the state label
@@ -338,8 +340,10 @@ def __state_entries(txt, PathWalker, SMD):
             if not PathWalker.uniform_state_entries_f():
                 txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
                 txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
-                txt.append("    ")
-                txt.append(LanguageDB["$assignment"]("state_index", "%i" % key).replace("\n", "\n    "))
+
+            txt.append("    ")
+            txt.append(LanguageDB["$assignment"]("path_iterator", 
+                                                 "path_%i + %i" % (path.index(), i)).replace("\n", "\n    "))
             txt.append(LanguageDB["$goto"]("$pathwalker", PathWalker.core().state_index))
             txt.append("\n\n")
 
@@ -357,14 +361,27 @@ def __path_walker(txt, PathWalker, SMD):
                 LanguageDB["$label-def"]("$pathwalker", PathWalkerID)
     txt.append(label_str)
 
-    # -- The comparison with the path's current character
-    #    If terminating zero is reached, the path's end state is entered.
+    # (1) Input Block (get the new character)
+    txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
+
+    # (2) Acceptance information/Store Input positions
+    if PathWalker.uniform_state_entries_f():
+        txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
+
+    # (3) Transition Map
+    # (3.1) The comparison with the path's current character
+    #       If terminating zero is reached, the path's end state is entered.
+    txt.append("\n    ")
     txt.append(LanguageDB["$if =="]("*path_iterator"))
+    txt.append("        ")
     txt.append(LanguageDB["$increment"]("path_iterator"))
+    txt.append("\n        ")
     txt.append(LanguageDB["$goto"]("$pathwalker", PathWalkerID))
+    txt.append("\n    ")
     txt.append(LanguageDB["$elseif"] \
                + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)") \
                + LanguageDB["$then"])
+    txt.append("        ")
 
     # -- Transition to the first state after the path:
     if PathN == 1:
@@ -379,13 +396,12 @@ def __path_walker(txt, PathWalker, SMD):
         def __cmp(txt, PathIndex):
             txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % PathIndex))
         def __get_action(txt, Path): 
-            txt.append(LanguageDB["$goto"]("$entry", Path.end_state_index()))
+            txt.append("        " + LanguageDB["$goto"]("$entry", Path.end_state_index()))
         __path_specific_action(txt, PathList, __cmp, __get_action)
+    txt.append("\n    ")
+    txt.append(LanguageDB["$endif"])
 
-    # -- Transition map of the 'skeleton'        
-    if PathWalker.uniform_state_entries_f():
-        txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
-        txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
+    # (3.2) Transition map of the 'skeleton'        
     txt.extend(transition_block.do(PathWalker.transitions().get_trigger_map(), PathWalkerID, SMD))
     txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
 
@@ -444,10 +460,12 @@ def __path_specific_action(txt, PathList, get_comparison, get_action):
         get_comparison(txt, path.index())
 
         txt.append(LanguageDB["$then"])
+        txt.append("\n        ")
         
         # Enter the path specific action
         get_action(txt, path)
 
         txt.append(LanguageDB["$endif"])
+        txt.append("\n")
     return
 
