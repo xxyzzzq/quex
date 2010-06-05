@@ -291,9 +291,9 @@ def __path_definition(variable_db, Path):
 
     variable_db[variable_name] = [ variable_type, variable_value, dimension ]
 
-    variable_name  = "path_end_%i" % Path.index()
+    variable_name  = "path_%i_end" % Path.index()
     variable_type  = "QUEX_TYPE_CHARACTER*"
-    variable_value = "path_%i + %i" % (Path.index(), L + 1)
+    variable_value = "path_%i + %i" % (Path.index(), L)
     variable_db[variable_name] = [ variable_type, variable_value ]
 
 def __state_entries(txt, PathWalker, SMD):
@@ -321,11 +321,12 @@ def __state_entries(txt, PathWalker, SMD):
             #   (ii) The state is not entered from any other state except the predecessor
             #        on the path.
             # But:
-            #   (iii) The first state always needs an entry.
-            if     PathWalker.uniform_state_entries_f() \
-               and prev_state_index == sm.get_the_only_entry_to_state(state_index) \
-               and prev_state_index != None:
-                   continue
+            #   The first state always needs an entry.
+            if prev_state_index != None:
+                candidate = sm.get_only_entry_to_state(state_index)
+                if PathWalker.uniform_state_entries_f() and prev_state_index == candidate:
+                    prev_state_index = state_index
+                    continue
 
             # Print the state label
             label_str = LanguageDB["$label-def"]("$entry", state_index)
@@ -387,16 +388,18 @@ def __path_walker(txt, PathWalker, SMD):
     if PathN == 1:
         # (i) There is only one path for the pathwalker, then there is only
         #     one terminal and it is determined at compilation time.
-        txt.append(LanguageDB["$goto"]("$entry", PathList[0].end_state_index()))
+        txt.append(LanguageDB["$input/decrement"])
+        txt.append("\n        " + LanguageDB["$goto"]("$entry", PathList[0].end_state_index()))
     else:
         # (ii) There are multiple paths for the pathwalker, then the terminal
         #      must be determined at run time.
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
+        txt.append("    " + LanguageDB["$input/decrement"] + "\n")
         def __cmp(txt, PathIndex):
             txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % PathIndex))
         def __get_action(txt, Path): 
-            txt.append("        " + LanguageDB["$goto"]("$entry", Path.end_state_index()))
+            txt.append("        " + transition.do(Path.end_state_index(), None, None, DSM))
         __path_specific_action(txt, PathList, __cmp, __get_action)
     txt.append("\n    ")
     txt.append(LanguageDB["$endif"])
