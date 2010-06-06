@@ -1,5 +1,13 @@
-<test-database execution-time-sec="205.27" date="Wed Jun  2 07:48:51 2010">
+<test-database execution-time-sec="205.37" date="Sun Jun  6 08:03:01 2010">
     <last-used-diff-display-program name=""/>
+    <test title="Basic Path Compression Test" time-sum-sec="0.10"> 
+        <application file-name="test-paths.py" info-request-time="1275804179L" vanished="False"/>
+        <choice-list number="3" same_result="False">
+           <choice name="Single" result="FAIL" time_sec="0.06" crc="-319412406"/>
+           <choice name="Multiple" result="FAIL" time_sec="0.04" crc="1235177531"/>
+           <choice name="NonUniform" result="OK" time_sec="0.00" crc="595233840"/>
+        </choice-list>
+    </test>
     <test title="Basic Template Compression Test" time-sum-sec="0.15"> 
         <application file-name="test-templates.py" info-request-time="1274933640L" vanished="False"/>
         <choice-list number="2" same_result="False">
