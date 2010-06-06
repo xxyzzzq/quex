@@ -1,0 +1,58 @@
+X = Simple
+
+LIB_CONV  = `icu-config --ldflags`
+
+lex_iconv: 
+	@echo "Call to quex"
+	@quex -i simple.qx -o $(X) -b 2 --iconv 
+	@echo "Compiling"
+	g++ -I./ -I$(QUEX_PATH) \
+		$(X).cpp                      \
+		-Wall                         \
+		../lexer.cpp                     \
+		-ggdb \
+	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-o $@
+
+#-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+#-D__QUEX_OPTION_UNIT_TEST \
+#-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
+#-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
+
+lex_icu: 
+	@echo "Call to quex"
+	@quex -i simple.qx -o $(X) -b 2 --icu 
+	@echo "Compiling"
+	g++ -I./ -I$(QUEX_PATH) \
+		$(LIB_CONV) \
+		$(X).cpp                      \
+		-Wall                         \
+		../lexer.cpp                     \
+		-ggdb \
+	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-o $@
+
+lex_codec: 
+	@echo "Call to quex"
+	@quex -i simple.qx -o $(X) --codec utf8 
+	@echo "Compiling"
+	g++ -I./ -I$(QUEX_PATH) \
+		$(X).cpp                      \
+		-Wall                         \
+		../lexer.cpp                     \
+		-ggdb \
+	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-o $@
+
+clean:
+	rm -rf $(X)-*
+	rm -rf $(X).cpp
+	rm -rf $(X)
+	rm -rf a.out
+	rm -rf lex_icu lex_iconv lex_codec

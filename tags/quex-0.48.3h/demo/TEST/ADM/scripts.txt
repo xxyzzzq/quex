@@ -1,0 +1,3 @@
+*.sh
+--not core.sh
+--not show-valgrind.py
