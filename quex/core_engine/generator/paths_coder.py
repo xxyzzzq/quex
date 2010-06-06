@@ -98,8 +98,7 @@ def do(SMD):
        x[0] transition target definitions in terms of a 
             local variable database
        x[1] code for templates and state entries
-       x[2] state router for template targets
-       x[3] involved_state_index_list
+       x[2] involved_state_index_list
     """
     assert isinstance(SMD, StateMachineDecorator)
           
@@ -109,17 +108,15 @@ def do(SMD):
     # (2) Implement code for template combinations
     path_array_definitions,   \
     code,                     \
-    router,                   \
     involved_state_index_list =  _do(path_list, SMD)
 
     local_variable_db = path_array_definitions
     if len(local_variable_db) != 0:
         local_variable_db.update({
-            "path_iterator":  [ "QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_GOTO_LABEL)0x0"],
-            "path_state_key": [ "int",                  "(int)0"],
+            "path_iterator":  [ "QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0"],
         })
 
-    return "".join(code + router), \
+    return "".join(code), \
            local_variable_db, \
            involved_state_index_list
 
@@ -137,7 +134,7 @@ def _do(PathList, SMD):
 
         for key, trigger_set in SkeletonA.items():
             if SkeletonB.has_key(key) == False: return False
-            if trigger_set != SkeletonB[key]:   return False
+            if not trigger_set.is_equal(SkeletonB[key]): return False
         return True
 
     def __add_to_equivalent_path(path, path_db):
@@ -145,7 +142,7 @@ def _do(PathList, SMD):
         assert isinstance(path_db, dict)
 
         for index, equivalent_path_list in path_db.items():
-            for path in equivalent_path_list:
+            for candidate in equivalent_path_list:
                 if __equal(path.skeleton(), candidate.skeleton()):
                     equivalent_path_list.append(path)
                     return True
@@ -162,6 +159,7 @@ def _do(PathList, SMD):
         assert isinstance(candidate, paths.CharacterPath)
         # Is there a path with the same skeleton?
         if __add_to_equivalent_path(candidate, path_db): continue
+        # If there is no equivalent path, then add a new 'prototype'
         path_db[index.get()] = [ candidate ]
 
     # -- Create 'PathWalkerState' objects that can mimik state machine states.
@@ -192,22 +190,18 @@ def _do(PathList, SMD):
 
         pathwalker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
 
-
     # -- Generate code for:
     #        -- related variables: paths for pathwalkers
     #        -- state entries
     #        -- the pathwalkers
-    #        -- state routes, required for example after reload.
     variable_db = {}
     code        = []
     router_code = []
     for pathwalker in pathwalker_list:
         for path in pathwalker.path_list():
-             __path_definition(variable_db, path) 
+            __path_definition(variable_db, path) 
         __state_entries(code, pathwalker, SMD)
         __path_walker(code, pathwalker, SMD)
-        if not pathwalker.uniform_state_entries_f(): 
-            __pathwalker_state_router(router_code, pathwalker)
 
     return variable_db, code, involved_state_index_list
 
@@ -285,14 +279,14 @@ def __path_definition(variable_db, Path):
     txt.append("0x0")
 
     variable_name  = "path_%i" % Path.index()
-    variable_type  = "QUEX_TYPE_CHARACTER"
-    dimension      = L + 1  # 1 space for terminating zero
+    variable_type  = "const QUEX_TYPE_CHARACTER "
+    dimension      = L # 1 space for terminating zero included since last in sequence is 'None' char
     variable_value = "{ " + "".join(txt) + "}"
 
     variable_db[variable_name] = [ variable_type, variable_value, dimension ]
 
     variable_name  = "path_%i_end" % Path.index()
-    variable_type  = "QUEX_TYPE_CHARACTER*"
+    variable_type  = "const QUEX_TYPE_CHARACTER*"
     variable_value = "path_%i + %i" % (Path.index(), L)
     variable_db[variable_name] = [ variable_type, variable_value ]
 
@@ -311,7 +305,6 @@ def __state_entries(txt, PathWalker, SMD):
 
     for path in PathWalker.path_list():
         prev_state_index = None
-        print "##", path.sequence()
         # Last state of sequence is not in the path, it is the first state after.
         for i, info in enumerate(path.sequence()[:-1]):
             state_index = info[0]
@@ -362,11 +355,11 @@ def __path_walker(txt, PathWalker, SMD):
                 LanguageDB["$label-def"]("$pathwalker", PathWalkerID)
     txt.append(label_str)
 
-    # (1) Input Block (get the new character)
-    txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
 
-    # (2) Acceptance information/Store Input positions
     if PathWalker.uniform_state_entries_f():
+        # (1) Input Block (get the new character)
+        txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
+        # (2) Acceptance information/Store Input positions
         txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
 
     # (3) Transition Map
@@ -389,26 +382,30 @@ def __path_walker(txt, PathWalker, SMD):
         # (i) There is only one path for the pathwalker, then there is only
         #     one terminal and it is determined at compilation time.
         txt.append(LanguageDB["$input/decrement"])
-        txt.append("\n        " + LanguageDB["$goto"]("$entry", PathList[0].end_state_index()))
+        txt.append("\n        " + transition.do(PathList[0].end_state_index(), None, None, SMD))
+        txt.append("\n")
     else:
         # (ii) There are multiple paths for the pathwalker, then the terminal
         #      must be determined at run time.
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
-        txt.append("    " + LanguageDB["$input/decrement"] + "\n")
+        txt.append(LanguageDB["$input/decrement"] + "\n")
         def __cmp(txt, PathIndex):
+            txt.append("        ")
             txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % PathIndex))
         def __get_action(txt, Path): 
-            txt.append("        " + transition.do(Path.end_state_index(), None, None, DSM))
+            txt.append("        " + transition.do(Path.end_state_index(), None, None, SMD))
+            txt.append("\n")
         __path_specific_action(txt, PathList, __cmp, __get_action)
-    txt.append("\n    ")
+    txt.append("    ")
     txt.append(LanguageDB["$endif"])
 
     # (3.2) Transition map of the 'skeleton'        
     txt.extend(transition_block.do(PathWalker.transitions().get_trigger_map(), PathWalkerID, SMD))
-    txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
+    txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, 
+                           StateRouterStr=__state_router(PathWalker)))
 
-def __pathwalker_state_router(txt, PathWalker):
+def __state_router(PathWalker):
     """Create code that allows to jump to a state based on the path_iterator.
 
        NOTE: Paths cannot be recursive. Also, path transitions are linear, i.e.
@@ -422,28 +419,34 @@ def __pathwalker_state_router(txt, PathWalker):
              (2) 'path_iterator - path_begin' gives an integer that identifies
                  the particular state of the path.
     """
-    assert PathWalker.uniform_state_entries_f() == False
+    # No state router required after 'drop-out'.
+    if PathWalker.uniform_state_entries_f(): return None
 
+    txt = []
     def __get_action(txt, Path):
         #    switch( path_iterator - path[i].begin ) {
         #         case 0:  STATE_341;
         #         case 1:  STATE_345;
         #         case 3:  STATE_346;
         #    }
+        txt.append("            ")
         txt.append(LanguageDB["$switch"]("(int)(path_iterator - path_%i)"  % Path.index()))
-        for i, info in enumarate(Path.sequence()[:-1]):
-            txt.append(LanguageDB["$case"](i))
-            txt.append(LanguageDB["$goto"]("$entry", info[0]))
+        for i, info in enumerate(Path.sequence()[:-1]):
+            txt.append("            " + LanguageDB["$case"](repr(i)))
+            txt.append(LanguageDB["$goto"]("$entry", info[0]) + "\n")
+        txt.append("            ")
         txt.append(LanguageDB["$switchend"])
 
     def __cmp(txt, PathIndex):
         txt.extend([
-            LanguageDB["$>="]("path_iterator", "path_%i" % path_index),
-            LanguageDB["$&&"],
-            LanguageDB["$<"]("path_iterator", "path_%i_end" % path_index)
+            LanguageDB["$>="]("path_iterator", "path_%i" % PathIndex),
+            LanguageDB["$and"],
+            LanguageDB["$<"]("path_iterator", "path_%i_end" % PathIndex)
         ])
 
     __path_specific_action(txt, PathWalker.path_list(), __cmp, __get_action)
+
+    return "".join(txt)
 
 def __path_specific_action(txt, PathList, get_comparison, get_action):
     first_f = True
@@ -453,6 +456,7 @@ def __path_specific_action(txt, PathList, get_comparison, get_action):
         #    }
         sequence   = path.sequence()
         path_index = path.index()
+        txt.append("        ")
         if first_f: 
             first_f = False
             txt.append(LanguageDB["$if"])
@@ -463,12 +467,11 @@ def __path_specific_action(txt, PathList, get_comparison, get_action):
         get_comparison(txt, path.index())
 
         txt.append(LanguageDB["$then"])
-        txt.append("\n        ")
         
         # Enter the path specific action
         get_action(txt, path)
 
-        txt.append(LanguageDB["$endif"])
-        txt.append("\n")
+    txt.append("        ")
+    txt.append(LanguageDB["$endif"])
     return
 

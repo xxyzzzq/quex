@@ -18,6 +18,28 @@ import quex.core_engine.regular_expression.core            as regex
 #
 from   quex.input.setup import setup as Setup
 
+choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"] 
+choices_str  = "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
+
+def hwut_input(Title, Extra=""):
+    global choices_list
+
+    if "--hwut-info" in sys.argv:
+        print Title + ";"
+        print choices_str
+        print "SAME;"
+        sys.exit(0)
+
+    if len(sys.argv) < 2:
+        print "Choice argument requested. Run --hwut-info"
+        sys.exit(0)
+
+    if sys.argv[1] not in choices_list: 
+        print "Choice '%s' not acceptable." % Choice
+        sys.exit(0)
+
+    return sys.argv[1]
+
 # Switch manually for debug output: 'False' --> DEBUG output.
 if True:
     SHOW_TRANSITIONS_STR  = ""

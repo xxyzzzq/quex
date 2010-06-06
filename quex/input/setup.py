@@ -20,6 +20,7 @@ SETUP_INFO = {
     "compression_template_f":         [["--template-compression"],             FLAG],
     "compression_template_coef":      [["--template-compression-coefficient"], 1.0],
     "compression_path_f":             [["--path-compression"],                 FLAG],
+    "compression_path_uniform_f":     [["--path-compression-uniform"],         FLAG],
     "dos_carriage_return_newline_f":  [["--no-DOS"],                           NEGATED_FLAG],
     "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], NEGATED_FLAG],
     "engine_character_encoding":      [["--codec"],                            ""],

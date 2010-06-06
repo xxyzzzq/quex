@@ -11,7 +11,7 @@
 #ifdef _MSC_VER
     /* Microsoft VisualStudio(tm): Forget about the 'CRT security enhancements'
      *                             for sprintf, fopen, and setbuf.               */
-#   pragma warning(disabled: 4996)
+#   pragma warning(disable: 4996)
 #endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)

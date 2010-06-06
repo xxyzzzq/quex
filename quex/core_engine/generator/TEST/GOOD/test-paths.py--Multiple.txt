@@ -45,12 +45,12 @@ STATE_23_INPUT:
         goto PATH_WALKER_23;
     } else if(path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
         QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
-        if(path_iterator == path_1_end) {
-                goto STATE_5;
-        } else if(path_iterator == path_6_end) {
-                goto STATE_16;
-        } else if(path_iterator == path_17_end) {
-                goto STATE_22;
+        if(        path_iterator == path_1_end) {
+        goto STATE_5;
+        } else if(        path_iterator == path_6_end) {
+        goto STATE_16;
+        } else if(        path_iterator == path_17_end) {
+        goto STATE_22;
         }
     }
     if( input < 20) {
@@ -78,7 +78,7 @@ STATE_23_INPUT:
 STATE_23_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT");
     if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-       || (me->buffer._memory._end_of_file_p != 0x0) ) {
+        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_23_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
         QUEX_GOTO_last_acceptance();

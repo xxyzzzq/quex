@@ -1,25 +1,25 @@
-<test-database execution-time-sec="4.87" date="Tue Jun  1 07:09:05 2010">
+<test-database execution-time-sec="7.57" date="Mon Jun  7 00:05:17 2010">
     <last-used-diff-display-program name=""/>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.71"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.40"> 
         <application file-name="unvalid-marks.sh" info-request-time="1264886931L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="PRIORITY-good" result="OK" time_sec="0.23" crc="1735324169"/>
-           <choice name="PRIORITY-fail" result="OK" time_sec="0.14" crc="-1755387854"/>
-           <choice name="DELETION-good" result="OK" time_sec="0.19" crc="851887329"/>
-           <choice name="DELETION-fail" result="OK" time_sec="0.15" crc="-1866089342"/>
+           <choice name="PRIORITY-good" result="OK" time_sec="0.34" crc="1735324169"/>
+           <choice name="PRIORITY-fail" result="OK" time_sec="0.32" crc="-1755387854"/>
+           <choice name="DELETION-good" result="OK" time_sec="0.36" crc="851887329"/>
+           <choice name="DELETION-fail" result="OK" time_sec="0.38" crc="-1866089342"/>
         </choice-list>
     </test>
     <group name="Precedence">
-        <test title="Larger Inheritance Tree" time-sum-sec="2.71"> 
+        <test title="Larger Inheritance Tree" time-sum-sec="3.73"> 
             <application file-name="large-tree.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="2.71" crc="-1542010050"/>
+               <choice name="" result="OK" time_sec="3.73" crc="-1542010050"/>
             </choice-list>
         </test>
-        <test title="Derived before Base" time-sum-sec="1.45"> 
+        <test title="Derived before Base" time-sum-sec="2.44"> 
             <application file-name="derived-before-base.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.45" crc="-944360231"/>
+               <choice name="" result="OK" time_sec="2.44" crc="-944360231"/>
             </choice-list>
         </test>
     </group>

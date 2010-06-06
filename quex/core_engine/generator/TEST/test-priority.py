@@ -3,20 +3,7 @@ import sys
 import generator_test
 from generator_test import action
 
-if "--hwut-info" in sys.argv:
-    print "Pre- and Post- Conditions: Priorities"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
-    sys.exit(0)
-
-if len(sys.argv) < 2:
-    print "Choice argument requested. Run --hwut-info"
-    sys.exit(0)
-
-choice = sys.argv[1]
-if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"]): 
-    print "Argument '%s' not acceptable. Call with option --hwut-info." % choice
-    sys.exit(0)
-
+choice = generator_test.hwut_input("Pre- and Post- Conditions: Priorities", "SAME;")
 
 def test(Info, PatternActionPairList, TestStr, Choice):
     print "=========================================================================="

@@ -43,12 +43,21 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     #       (state_coder identifies the 'init_state' by its own, no need mentioning)
     txt.extend(state_coder.do(init_state, state_machine.init_state_index, SMD))
 
-    # -- Code for templated states [Optional]
+    done_state_index_set = set([])
+    # -- Coding path states [Optional]
+    if Setup.compression_path_f or Setup.compression_path_uniform_f:
+        code, variable_db, state_index_set = \
+                paths_coder.do(SMD, Setup.compression_path_uniform_f)
+        done_state_index_set.update(state_index_set)
+        txt.append(code)
+        local_variable_db.update(variable_db)
+    
+    # -- Coding templated states [Optional]
     #    (those states do not have to be coded later)
-    templated_state_index_list = set([])
     if Setup.compression_template_f:
-        code, variable_db, templated_state_index_list = \
+        code, variable_db, state_index_set = \
                 template_coder.do(SMD, Setup.compression_template_coef)
+        done_state_index_set.update(state_index_set)
         txt.append(code)
         local_variable_db.update(variable_db)
         
@@ -57,7 +66,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
         # the init state has been coded already
         if state_index == state_machine.init_state_index: continue
-        elif state_index in templated_state_index_list:   
+        elif state_index in done_state_index_set:   
             continue
 
         state_code = state_coder.do(state, state_index, SMD)

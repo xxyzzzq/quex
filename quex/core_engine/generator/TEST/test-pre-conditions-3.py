@@ -2,20 +2,7 @@
 import sys
 import generator_test
 
-if "--hwut-info" in sys.argv:
-    print "Pre Conditions: Multiple Identical Pre-Conditions"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
-    print "SAME;"
-    sys.exit(0)
-
-if len(sys.argv) < 2:
-    print "Choice argument requested. Run --hwut-info"
-    sys.exit(0)
-
-choice = sys.argv[1]
-if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"]): 
-    print "choice argument not acceptable"
-    sys.exit(0)
+choice = generator_test.hwut_input("Pre Conditions: Multiple Identical Pre-Conditions", "SAME;")
 
 pattern_list = [
     # -- pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,
