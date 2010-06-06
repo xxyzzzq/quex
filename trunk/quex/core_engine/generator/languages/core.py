@@ -123,8 +123,11 @@ db["C++"] = {
     "$endif-else":    "} else {\n",
     "$end-else":      "}\n",
     "$else":          "else {",                                                     
-    "$and":           "&&",
-    "$or":            "||",
+    "$and":           " && ",
+    "$or":            " || ",
+    "$switch":        lambda txt: "switch(" + txt + ") {\n",
+    "$case":          lambda txt: "case " + txt + ": ",
+    "$switchend":     "}\n",
     "$increment":     lambda variable: "++" + variable + ";",
     "$loop-start-endless":    "while( 1 + 1 == 2 ) {\n",
     "$loop-end":              "}\n",
@@ -145,6 +148,7 @@ db["C++"] = {
     #
     "$if >=":             lambda value: "if( input >= " + value + ") {\n",
     "$<":                 lambda left, right: left + " < " + right,
+    "$>=":                lambda left, right: left + " >= " + right,
     "$==":                lambda left, right: left + " == " + right,
     "$!=":                lambda left, right: left + " != " + right,
     #

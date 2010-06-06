@@ -3,19 +3,7 @@ import sys
 import generator_test
 from generator_test import action
 
-if "--hwut-info" in sys.argv:
-    print "Pseudo Ambgiguous Post Condition: The Philosophical Cut"
-    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
-    sys.exit(0)
-
-if len(sys.argv) < 2:
-    print "Choice argument requested. Run --hwut-info"
-    sys.exit(0)
-
-choice = sys.argv[1]
-if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"]): 
-    print "choice argument not acceptable"
-    sys.exit(0)
+choice = generator_test.hwut_input("Pseudo Ambgiguous Post Condition: The Philosophical Cut", "SAME;")
 
 pattern_list = [
     # -- pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,

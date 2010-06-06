@@ -222,7 +222,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         first_if_statement_f = False
 
     # (*) write code for the unconditional acceptance states
-    if txt == []: return []
+    if len(txt) == 0: return ""
 
     result = "".join(txt)
     return "    " + result[:-1].replace("\n", "\n    ") + result[-1]

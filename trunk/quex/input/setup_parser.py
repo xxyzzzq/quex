@@ -307,6 +307,11 @@ def validate(setup, command_line, argv):
         else:
             setup.engine_character_encoding_transformation_info = \
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)
+
+    # Path Compression
+    if setup.compression_path_uniform_f and setup.compression_path_f:
+        error_msg("Both flags for path compression were set: '--path-compression' and\n" 
+                  "'--path-compression-uniform'. Please, choose only one!")
                 
 def __check_file_name(setup, Candidate, Name):
     value             = setup.__dict__[Candidate]

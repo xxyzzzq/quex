@@ -5,7 +5,7 @@ from   quex.input.setup import setup as Setup
 
 LanguageDB = None
 
-def do(State, StateIdx, SMD):
+def do(State, StateIdx, SMD, StateRouterStr=None):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -80,7 +80,6 @@ def do(State, StateIdx, SMD):
     LanguageDB = Setup.language_db
     InitStateF = (StateIdx == SMD.sm().init_state_index)
 
-
     if SMD.backward_lexing_f() == False: 
         reload_str           = __reload_forward()
         ## If input == buffer limit code, then the input_p stands on either 
@@ -100,6 +99,10 @@ def do(State, StateIdx, SMD):
         # state, need to return to dedicated state entries, if the state entries
         # are not uniform.
         goto_state_input_str = LanguageDB["$goto-template-state-key"](StateIdx) 
+
+    elif State.__class__.__name__ == "PathWalkerState" and not State.uniform_state_entries_f():
+        goto_state_input_str = StateRouterStr
+
     else:
         # Normal return to place where the next input is read
         goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)

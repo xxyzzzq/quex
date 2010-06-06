@@ -134,8 +134,9 @@ class TransitionMap:
         """Union of target states that can be reached either via epsilon transition
            or 'real' transition via character.
         """
-        result = set(self.__db.keys())
-        result.update(self.__epsilon_target_index_list)
+        result = self.__db.keys()
+        for index in self.__epsilon_target_index_list:
+            result.append(index)
         return list(result)
 
     def get_resulting_target_state_index(self, Trigger):

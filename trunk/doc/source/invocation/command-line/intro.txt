@@ -354,7 +354,16 @@ Template and Path Compression can be controlled with the following command line 
 
 .. cmdoption:: --path-compression
 
-   This flag activates Path Compression.
+   This flag activates path compression. By default, it compresses any sequence
+   of states that allow to be lined up as a 'path'. This includes states of 
+   different acceptance values, store input positions, etc.
+
+.. cmdoption:: --path-compression-uniform
+
+   This flag enables path compression. In contrast to the previous flag it 
+   compresses such states into a path which are uniform. This simplifies
+   the structure of the correspondent pathwalkers. In some cases this might
+   result in smaller code size and faster execution speed.
 
 For version information pass option `--version`' or `-v`'. The options `--help`
 and `-h`' are reserved for requesting a help text.  Those are the options for
