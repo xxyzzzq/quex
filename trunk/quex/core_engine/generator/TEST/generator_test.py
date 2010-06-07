@@ -18,8 +18,8 @@ import quex.core_engine.regular_expression.core            as regex
 #
 from   quex.input.setup import setup as Setup
 
-choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template"] 
-choices_str  = "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template;"
+choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path"] 
+choices_str  = "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template, Cpp-Path;"
 
 def hwut_input(Title, Extra=""):
     global choices_list
@@ -54,17 +54,17 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
        AssertsActionvation_str="-DQUEX_OPTION_ASSERTS"):
 
-    TemplateCompressionF    = False
-    TemplateCompressionCoef = 0.1
-    if Language == "Cpp-Template":
-        Language = "Cpp"
-        TemplateCompressionF = True 
-
     BufferLimitCode = 0
 
-    # Shall template compression be used?
-    Setup.compression_template_f    = TemplateCompressionF
-    Setup.compression_template_coef = TemplateCompressionCoef
+    if Language == "Cpp-Template":
+        Language = "Cpp"
+        # Shall template compression be used?
+        Setup.compression_template_f    = True
+        Setup.compression_template_coef = 0.1
+
+    if Language == "Cpp-Path":
+        Language = "Cpp"
+        Setup.compression_path_f = True
 
     try:
         adapted_dict = {}
@@ -124,6 +124,7 @@ def run_this(Str):
         for line in txt.split("\n"):
             if    line.find("defined but not used") != -1 \
                or line.find("but never defined") != -1 \
+               or (line.find("warning: unused variable") != -1 and line.find("path_") != -1) \
                or (line.find("In function") != -1 and line.lower().find("error") == -1):
                 postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
             else:
