@@ -92,8 +92,10 @@ from quex.input.setup import setup as Setup
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(SMD):
-    """RETURNS: Array 'x'
+def do(SMD, UniformOnlyF):
+    """UniformOnlyF --> Accept only uniform states in path.
+    
+       RETURNS: Array 'x'
 
        x[0] transition target definitions in terms of a 
             local variable database
@@ -113,7 +115,7 @@ def do(SMD):
     local_variable_db = path_array_definitions
     if len(local_variable_db) != 0:
         local_variable_db.update({
-            "path_iterator":  [ "QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0"],
+            "path_iterator":  [ "const QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0"],
         })
 
     return "".join(code), \
@@ -370,7 +372,10 @@ def __path_walker(txt, PathWalker, SMD):
     txt.append("        ")
     txt.append(LanguageDB["$increment"]("path_iterator"))
     txt.append("\n        ")
-    txt.append(LanguageDB["$goto"]("$pathwalker", PathWalkerID))
+    if PathWalker.uniform_state_entries_f():
+        txt.append(LanguageDB["$goto"]("$pathwalker", PathWalkerID))
+    else:
+        txt.append(__state_router(PathWalker))
     txt.append("\n    ")
     txt.append(LanguageDB["$elseif"] \
                + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)") \
@@ -401,7 +406,13 @@ def __path_walker(txt, PathWalker, SMD):
     txt.append(LanguageDB["$endif"])
 
     # (3.2) Transition map of the 'skeleton'        
-    txt.extend(transition_block.do(PathWalker.transitions().get_trigger_map(), PathWalkerID, SMD))
+    
+    trigger_map = PathWalker.transitions().get_trigger_map()
+    if len(trigger_map) != 0:
+        # If the skeleton of all related states is 'empty' then no
+        # transition block is required. This happens, for example, if
+        # there are only keywords and no 'overlaying' identifier pattern.
+        txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD))
     txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, 
                            StateRouterStr=__state_router(PathWalker)))
 
@@ -437,18 +448,23 @@ def __state_router(PathWalker):
         txt.append("            ")
         txt.append(LanguageDB["$switchend"])
 
-    def __cmp(txt, PathIndex):
+    def __cmp_multi_path(txt, PathIndex):
         txt.extend([
             LanguageDB["$>="]("path_iterator", "path_%i" % PathIndex),
             LanguageDB["$and"],
             LanguageDB["$<"]("path_iterator", "path_%i_end" % PathIndex)
         ])
 
+    if len(PathWalker.path_list()) == 1: __cmp = None
+    else:                                __cmp = __cmp_multi_path
+
     __path_specific_action(txt, PathWalker.path_list(), __cmp, __get_action)
 
     return "".join(txt)
 
 def __path_specific_action(txt, PathList, get_comparison, get_action):
+    PathN = len(PathList)
+
     first_f = True
     for path in PathList:
         # if path_iterator >= path[i].begin and path_iterator < path[i].end:
@@ -457,21 +473,23 @@ def __path_specific_action(txt, PathList, get_comparison, get_action):
         sequence   = path.sequence()
         path_index = path.index()
         txt.append("        ")
-        if first_f: 
-            first_f = False
-            txt.append(LanguageDB["$if"])
-        else:
-            txt.append(LanguageDB["$elseif"])
+        if PathN != 1:
+            if first_f: 
+                first_f = False
+                txt.append(LanguageDB["$if"])
+            else:
+                txt.append(LanguageDB["$elseif"])
 
-        # The comparison to identify the path 
-        get_comparison(txt, path.index())
+            # The comparison to identify the path 
+            get_comparison(txt, path.index())
 
-        txt.append(LanguageDB["$then"])
+            txt.append(LanguageDB["$then"])
         
         # Enter the path specific action
         get_action(txt, path)
 
-    txt.append("        ")
-    txt.append(LanguageDB["$endif"])
+    if PathN != 1:
+        txt.append("        ")
+        txt.append(LanguageDB["$endif"])
     return
 

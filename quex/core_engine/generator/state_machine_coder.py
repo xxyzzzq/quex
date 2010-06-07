@@ -6,6 +6,7 @@ import quex.core_engine.generator.languages.core   as languages
 from   quex.core_engine.generator.languages.core   import __nice
 import quex.core_engine.generator.state_coder.core as state_coder
 import quex.core_engine.generator.template_coder   as template_coder
+import quex.core_engine.generator.paths_coder      as paths_coder
 from   quex.input.setup import setup as Setup
 
 
