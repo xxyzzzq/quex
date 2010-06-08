@@ -244,17 +244,39 @@ PATH_WALKER_23:
 
     if( input == *path_iterator) {
         ++path_iterator;
-        goto PATH_WALKER_23;
-    } else if(path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
-        QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
-        if(        path_iterator == path_1_end) {
-        goto STATE_5;
-        } else if(        path_iterator == path_6_end) {
-        goto STATE_16;
-        } else if(        path_iterator == path_17_end) {
-        goto STATE_22;
+PATH_WALKER_23_STATE_ROUTER:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23_STATE_ROUTER");
+
+        if(path_iterator >= path_1 && path_iterator < path_1_end) {
+            switch((int)(path_iterator - path_1)) {
+            case 0: goto STATE_1;
+            case 1: goto STATE_2;
+            case 2: goto STATE_3;
+            case 3: goto STATE_4;
+            case 4: goto STATE_5;            }
+        } else if(path_iterator >= path_6 && path_iterator < path_6_end) {
+            switch((int)(path_iterator - path_6)) {
+            case 0: goto STATE_6;
+            case 1: goto STATE_7;
+            case 2: goto STATE_8;
+            case 3: goto STATE_9;
+            case 4: goto STATE_10;
+            case 5: goto STATE_11;
+            case 6: goto STATE_12;
+            case 7: goto STATE_13;
+            case 8: goto STATE_14;
+            case 9: goto STATE_15;
+            case 10: goto STATE_16;            }
+        } else if(path_iterator >= path_17 && path_iterator < path_17_end) {
+            switch((int)(path_iterator - path_17)) {
+            case 0: goto STATE_17;
+            case 1: goto STATE_18;
+            case 2: goto STATE_19;
+            case 3: goto STATE_20;
+            case 4: goto STATE_21;
+            case 5: goto STATE_22;            }
         }
-    }
+}
     if( input < 20) {
         if( input == 10) {
             goto STATE_1;    /* '\n' */
@@ -289,36 +311,7 @@ STATE_23_DROP_OUT_DIRECT:
 
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
-            if(path_iterator >= path_1 && path_iterator < path_1_end) {
-            switch((int)(path_iterator - path_1)) {
-            case 0: goto STATE_1;
-            case 1: goto STATE_2;
-            case 2: goto STATE_3;
-            case 3: goto STATE_4;
-            }
-        } else if(path_iterator >= path_6 && path_iterator < path_6_end) {
-            switch((int)(path_iterator - path_6)) {
-            case 0: goto STATE_6;
-            case 1: goto STATE_7;
-            case 2: goto STATE_8;
-            case 3: goto STATE_9;
-            case 4: goto STATE_10;
-            case 5: goto STATE_11;
-            case 6: goto STATE_12;
-            case 7: goto STATE_13;
-            case 8: goto STATE_14;
-            case 9: goto STATE_15;
-            }
-        } else if(path_iterator >= path_17 && path_iterator < path_17_end) {
-            switch((int)(path_iterator - path_17)) {
-            case 0: goto STATE_17;
-            case 1: goto STATE_18;
-            case 2: goto STATE_19;
-            case 3: goto STATE_20;
-            case 4: goto STATE_21;
-            }
-        }
-
+        goto PATH_WALKER_23_STATE_ROUTER;
 
 
 --(Involved State Indices)----------------------------------------------

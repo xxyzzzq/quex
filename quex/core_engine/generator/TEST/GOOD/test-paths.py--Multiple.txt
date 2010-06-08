@@ -43,7 +43,7 @@ STATE_23_INPUT:
     if( input == *path_iterator) {
         ++path_iterator;
         goto PATH_WALKER_23;
-    } else if(path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
+    } else if(*path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
         QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
         if(        path_iterator == path_1_end) {
         goto STATE_5;

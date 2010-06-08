@@ -25,7 +25,7 @@ STATE_7_INPUT:
     if( input == *path_iterator) {
         ++path_iterator;
         goto PATH_WALKER_7;
-    } else if(path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
+    } else if(*path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
         QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
         goto STATE_6;
     }
@@ -54,7 +54,7 @@ STATE_7_INPUT:
 STATE_7_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT");
     if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-       || (me->buffer._memory._end_of_file_p != 0x0) ) {
+        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_7_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT_DIRECT");
         QUEX_GOTO_last_acceptance();
