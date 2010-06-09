@@ -17,7 +17,7 @@ if "--hwut-info" in sys.argv:
     print "UTF8 State Split: Larger Number Sets"
 
 
-sm1 = regex.do("[ΆΈΉΊΌΎ-Ϋ]+", {}, 0)
-sm2 = regex.do("[ \\t\\n]", {}, 0)
+sm1 = regex.do("[ΆΈΉΊΌΎ-Ϋ]+", {})
+sm2 = regex.do("[ \\t\\n]", {})
 result = trafo.do(get_combined_state_machine([sm1, sm2]))
 print result.get_graphviz_string(NormalizeF=True, Option="hex")

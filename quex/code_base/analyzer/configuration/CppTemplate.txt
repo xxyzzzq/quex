@@ -172,8 +172,28 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
 #   undef QUEX_OPTION_INCLUDE_STACK
 #endif
 
+/* BLC -- Buffer Limit Code:
+ *
+ * This code is used as a delimiter for buffer borders. When the analyzer
+ * hits a character with such a code, it knows that a border or the
+ * end of file has been reached. 
+ *
+ * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.           */
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
-#   define QUEX_SETTING_BUFFER_LIMIT_CODE     ($$BUFFER_LIMIT_CODE$$)
+#   define QUEX_SETTING_BUFFER_LIMIT_CODE  ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+#endif
+
+/* PTC -- Path Termination code:
+ * 
+ * Only required for path compression (see option '--path-compression' and 
+ * '--path-compression-uniform' for quex on the command line). PTC must be 
+ * different from the BLC so that the pathwalker does not get confuses if
+ * the input pointer stands on a buffer border and at the same time the
+ * path iterator stands at the end of the path. 
+ *
+ * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.           */
+#ifndef    QUEX_SETTING_PATH_TERMINATION_CODE
+#   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_CHARACTER)$$PATH_TERMINATION_CODE$$)
 #endif
 
 /* NOTE: A cast to 'size_t' would it make impossible to use the macro in 

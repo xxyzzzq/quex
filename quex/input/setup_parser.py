@@ -121,9 +121,9 @@ def do(argv):
     else:
         setup.byte_order_is_that_of_current_system_f = False
 
-    setup.compression_template_coef  = __get_float("compression_template_coef")
-    setup.buffer_limit_code          = __get_integer("buffer_limit_code")
-    setup.control_character_code_list = [setup.buffer_limit_code]
+    setup.compression_template_coef   = __get_float("compression_template_coef")
+    setup.buffer_limit_code           = __get_integer("buffer_limit_code")
+    setup.path_limit_code             = __get_integer("path_limit_code")
 
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_id_termination       = __get_integer("token_id_termination")

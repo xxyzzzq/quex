@@ -16,7 +16,6 @@ def parse(fh, AllowNothingIsFineF=False):
     try:
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
-                                         BufferLimitCode            = Setup.buffer_limit_code,
                                          DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f,
                                          AllowNothingIsFineF        = AllowNothingIsFineF)
 
@@ -38,9 +37,7 @@ def parse_character_string(Txt_or_File, PatternStringF=False):
     try:
         # -- parse regular expression, build state machine
         state_machine = snap_character_string.do(sh)
-        state_machine = regex.__clean_and_validate(state_machine, 
-                                                   Setup.buffer_limit_code, 
-                                                   AllowNothingIsFineF=False)
+        state_machine = regex.__clean_and_validate(state_machine, AllowNothingIsFineF=False, fh=sh)
 
         if state_machine == None:
             error_msg("No valid regular character string expression detected.", sh_ref)
@@ -67,7 +64,9 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
 
         # -- character set is not supposed to contain buffer limit code
         if character_set.contains(Setup.buffer_limit_code):
-            character_set.cut_interval(Interval(Setup.buffer_limit_code, Setup.buffer_limit_code))
+            character_set.cut_interval(Interval(Setup.buffer_limit_code))
+        if character_set.contains(Setup.path_limit_code):
+            character_set.cut_interval(Interval(Setup.path_limit_code))
 
     except RegularExpressionException, x:
         error_msg("Regular expression parsing:\n" + x.message, sh_ref)

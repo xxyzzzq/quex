@@ -5,6 +5,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as re2sm
 import quex.core_engine.utf8                    as utf8
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "State Machine Pattern Matching"
@@ -30,7 +33,7 @@ def test(the_state_machine, string_to_match):
 print "_____________________________________________________________________________"    
 regex_str = "h[alowe ]+t"
 print "regular expression = '%s'" % regex_str
-sm = re2sm.do(regex_str, {}, -1)
+sm = re2sm.do(regex_str, {})
 print sm
 test(sm, "hallo welt")    
 test(sm, "haaawwwolellewat")    
@@ -38,7 +41,7 @@ test(sm, "haaawwwolellewat")
 print "_____________________________________________________________________________"    
 regex_str = "a+(b|c)*t"
 print "regular expression = '%s'" % regex_str
-sm = re2sm.do(regex_str, {}, 0, 0, -1)
+sm = re2sm.do(regex_str, {})
 print sm
 test(sm, "aaaacccbbt")    
 test(sm, "abcbcbct")    

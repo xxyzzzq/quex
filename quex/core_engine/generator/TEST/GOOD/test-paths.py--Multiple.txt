@@ -1,8 +1,8 @@
 --(Path Definitions)----------------------------------------------------
 
-    const QUEX_TYPE_CHARACTER  path_6[11] = { 103, 114, 117, 110, 105, 98, 97, 108, 100, 105, 0x0};
-    const QUEX_TYPE_CHARACTER  path_17[6] = { 102, 114, 105, 116, 122, 0x0};
-    const QUEX_TYPE_CHARACTER  path_1[5] = { 111, 116, 116, 111, 0x0};
+    const QUEX_TYPE_CHARACTER  path_6[11] = { 103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE};
+    const QUEX_TYPE_CHARACTER  path_17[6] = { 102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE};
+    const QUEX_TYPE_CHARACTER  path_1[5] = { 111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE};
     const QUEX_TYPE_CHARACTER* path_6_end = path_6 + 11;
     const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 5;
     const QUEX_TYPE_CHARACTER* path_17_end = path_17 + 6;
@@ -43,7 +43,7 @@ STATE_23_INPUT:
     if( input == *path_iterator) {
         ++path_iterator;
         goto PATH_WALKER_23;
-    } else if(*path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
+    } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
         QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
         if(        path_iterator == path_1_end) {
         goto STATE_5;

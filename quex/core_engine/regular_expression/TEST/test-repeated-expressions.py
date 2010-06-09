@@ -4,6 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as core
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Combination: Simple repeated expressions"
@@ -12,7 +15,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString.replace("\n", "\\n") + "\""
-    print "state machine\n", core.do(TestString, {}, -1, AllowNothingIsFineF=True)
+    print "state machine\n", core.do(TestString, {}, AllowNothingIsFineF=True)
 
 
 test("[a-z]")

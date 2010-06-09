@@ -6,6 +6,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as core
 from   quex.exception import RegularExpressionException
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Case Folding;"
@@ -16,7 +19,7 @@ def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
     try: 
-        sm = core.do(TestString, {}, -1, )
+        sm = core.do(TestString, {})
         print "state machine\n", sm 
 
     except RegularExpressionException, x:

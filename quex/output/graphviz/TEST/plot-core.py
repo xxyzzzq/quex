@@ -16,7 +16,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 
-sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {}, 0)
+sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {})
 pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
 
 # HWUT consideres '##' as comment

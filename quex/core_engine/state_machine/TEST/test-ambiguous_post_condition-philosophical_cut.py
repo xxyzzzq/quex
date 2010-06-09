@@ -8,6 +8,9 @@ from quex.exception                                          import RegularExpre
 from quex.core_engine.state_machine.core                     import *
 import quex.core_engine.regular_expression.core              as regex
 import quex.core_engine.state_machine.ambiguous_post_context as apc
+from   quex.input.setup import setup
+setup.buffer_limit_code = -1
+setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: The Philosophical Cut"
@@ -21,13 +24,13 @@ def __test(RE_Core, RE_PostCondition):
     string_stream_PostCondition = StringIO(RE_PostCondition)
 
     try:
-        core_sm           = regex.do(string_stream_Core, {}, -1)
+        core_sm           = regex.do(string_stream_Core, {})
     except RegularExpressionException, x:
         print "Core Pattern:\n" + repr(x)
         return
 
     try:
-        post_context_sm = regex.do(string_stream_PostCondition, {}, -1)
+        post_context_sm = regex.do(string_stream_PostCondition, {})
         print "post condition sm = ", post_context_sm
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)

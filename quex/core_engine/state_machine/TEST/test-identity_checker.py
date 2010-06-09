@@ -15,8 +15,8 @@ def test(A, B):
     def __core(Pattern0, Pattern1):
         print ("Pattern0 = " + Pattern0).replace("\n", "\\n").replace("\t", "\\t")
         print ("Pattern1 = " + Pattern1).replace("\n", "\\n").replace("\t", "\\t")
-        sm0 = regex.do(Pattern0, {}, -1)
-        sm1 = regex.do(Pattern1, {}, -1)
+        sm0 = regex.do(Pattern0, {})
+        sm1 = regex.do(Pattern1, {})
         print "claim = ", identity_checker.do(sm0, sm1)
     print "---------------------------"
     __core(A, B)

@@ -4,6 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as core
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Conditional Analysis: pre- and post-conditions"
@@ -12,7 +15,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString, {}, -1)
+    sm = core.do(TestString, {})
     print "state machine\n", sm 
 
 test('"a"/";"/"b"')

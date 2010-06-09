@@ -12,7 +12,7 @@ if "--hwut-info" in sys.argv:
     
 def test(TestString):
     print ("expr.  = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
-    sm = core.do(TestString, {}, -1)
+    sm = core.do(TestString, {})
     print "result = ", counter.contains_only_spaces(sm)
 
 test('" "+')

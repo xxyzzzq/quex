@@ -9,6 +9,9 @@ import quex.core_engine.regular_expression.core as core
 from quex.core_engine.regular_expression.character_set_expression import snap_set_expression
 from quex.exception import *
 from quex.lexer_mode import PatternShorthand
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = 0
+Setup.path_limit_code   = 0
 
 if "--hwut-info" in sys.argv:
     print "Replacement: Character Sets"
@@ -35,7 +38,7 @@ try:
     for key, regular_expression in pattern_dict.items():
         string_stream = StringIO(regular_expression)
 
-        state_machine = core.do(string_stream, adapted_dict, 0, 0, -1)
+        state_machine = core.do(string_stream, adapted_dict)
 
         adapted_dict[key] = PatternShorthand(key, state_machine)
 

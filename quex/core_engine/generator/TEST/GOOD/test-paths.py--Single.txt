@@ -1,6 +1,6 @@
 --(Path Definitions)----------------------------------------------------
 
-    const QUEX_TYPE_CHARACTER  path_1[6] = { 99, 111, 110, 103, 111, 0x0};
+    const QUEX_TYPE_CHARACTER  path_1[6] = { 99, 111, 110, 103, 111, QUEX_SETTING_PATH_TERMINATION_CODE};
     const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 6;
 
 
@@ -25,7 +25,7 @@ STATE_7_INPUT:
     if( input == *path_iterator) {
         ++path_iterator;
         goto PATH_WALKER_7;
-    } else if(*path_iterator == (QUEX_TYPE_CHARACTER)(0)) {
+    } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
         QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
         goto STATE_6;
     }

@@ -17,6 +17,7 @@ if "--hwut-info" in sys.argv:
 # Buffer limit code is required in order to choose between
 # 'direct drop out' and 'drop out' in state transition map.
 Setup.buffer_limit_code = 0
+Setup.path_limit_code   = 1
 
 # A state machine decorator is required for the code generation.
 # Create a default one
