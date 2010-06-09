@@ -5,7 +5,10 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as core
 import quex.core_engine.state_machine.index     as state_machine_index
-
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = 0
+Setup.path_limit_code   = 0
+ 
 if "--hwut-info" in sys.argv:
     print "Basics: Lonestanding characters"
     sys.exit(0)
@@ -13,7 +16,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     # state_machine_index.clear()
     print "expression    = \"" + TestString + "\""
-    print "state machine\n", core.do(TestString, {}, 0)
+    print "state machine\n", core.do(TestString, {})
 
 test('you(a|b)you')
 test('[fb]oo-a')

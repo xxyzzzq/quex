@@ -365,6 +365,18 @@ Template and Path Compression can be controlled with the following command line 
    the structure of the correspondent pathwalkers. In some cases this might
    result in smaller code size and faster execution speed.
 
+.. cmdoption:: --path-termination 'number'
+
+   Path compression requires a 'pathwalker' to determine quickly the end of 
+   a path. For this, each path internally ends with a signal character, the
+   'path termination code'. It must be different from the buffer limit code
+   in order to avoid ambiguities. 
+   
+   Modification of the 'path termination code' makes only sense if the input
+   stream to be analyzed contains the default value.
+
+   DEFAULT = ``0x1``.
+
 For version information pass option `--version`' or `-v`'. The options `--help`
 and `-h`' are reserved for requesting a help text.  Those are the options for
 using quex in the 'normal' mode where it creates lexical analyzers. However,

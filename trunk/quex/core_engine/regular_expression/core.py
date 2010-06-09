@@ -61,7 +61,7 @@ import quex.core_engine.state_machine.character_counter       as character_count
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
-def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
+def __clean_and_validate(sm, AllowNothingIsFineF, fh):
     """This function is to be used by the outer shell to the user. It ensures that 
        the state machine which is returned is conform to some assumptions.
 
@@ -84,8 +84,10 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
                   fh, DontExitF=True)
 
     # (*) The buffer limit code has to appear absolutely nowhere!
-    if BufferLimitCode != -1:
-        __delete_BLC_except_at_end_of_post_context(sm, BufferLimitCode)
+    if Setup.buffer_limit_code != -1:
+        __delete_critical_char_except_at_end_of_post_context(sm, Setup.buffer_limit_code)
+    if Setup.path_limit_code != -1:
+        __delete_critical_char_except_at_end_of_post_context(sm, Setup.path_limit_code)
 
     # (*) Delete transitions that make practically no sense
     #     !! Let the orphaned state check happen before this, because states
@@ -134,7 +136,7 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
         
     return sm
 
-def __delete_BLC_except_at_end_of_post_context(sm, BLC):
+def __delete_critical_char_except_at_end_of_post_context(sm, BLC):
     """The buffer limit code is something that **needs** to cause a drop out.
        In the drop out handling, the buffer is reloaded.
 
@@ -178,9 +180,12 @@ def __delete_transitions_on_forbidden_code_points(sm, fh):
                 state.transitions().delete_transitions_to_target(target_state_index)
 
 
-def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
+def do(UTF8_String_or_Stream, PatternDict, 
        DOS_CarriageReturnNewlineF   = False, 
        AllowNothingIsFineF          = False): 
+    assert type(DOS_CarriageReturnNewlineF) == bool
+    assert type(AllowNothingIsFineF) == bool
+    assert type(PatternDict) == dict
 
     def __ensure_whitespace_follows(InitialPos, stream):
         tmp = stream.read(1)
@@ -224,7 +229,7 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
 
-    return __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, stream)
+    return __clean_and_validate(sm, AllowNothingIsFineF, stream)
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression

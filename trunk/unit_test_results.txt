@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Mon Jun  7 00:04:51 2010
+Wed Jun  9 07:42:27 2010
 TEST
 -------------------------------------------------------------------------------
 
@@ -258,7 +258,7 @@ TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Demo-Applications
-Sun Jun  6 23:56:01 2010
+Wed Jun  9 07:45:50 2010
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -388,7 +388,7 @@ demo/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Miscellaneous Basic Tests
-Mon Jun  7 00:05:18 2010
+Wed Jun  9 07:45:51 2010
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
@@ -411,7 +411,7 @@ quex/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Check Applications of 'Did you mean'.
-Mon Jun  7 00:05:16 2010
+Wed Jun  9 07:45:55 2010
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -424,7 +424,7 @@ quex/TEST/did-you-mean/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:45:55 2010
 quex/TEST/errors-warnings/TEST
 -------------------------------------------------------------------------------
  -- Token identifier definition and orthography.
@@ -435,7 +435,7 @@ quex/TEST/errors-warnings/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Event Handlers
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:45:59 2010
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -457,7 +457,7 @@ quex/TEST/event-handling/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Include Stack Handling
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:46:03 2010
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -485,7 +485,7 @@ quex/TEST/include-stack/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:46:08 2010
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -506,7 +506,7 @@ quex/TEST/match-precedence/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 The 'Reset' Button
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:46:08 2010
 quex/TEST/reset/TEST
 -------------------------------------------------------------------------------
  -- Normal Reset
@@ -578,7 +578,7 @@ quex/TEST/reset/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Customized Token Class
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:46:14 2010
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -596,7 +596,7 @@ quex/TEST/token-class/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Tests related to token queues
-Mon Jun  7 00:05:17 2010
+Wed Jun  9 07:46:20 2010
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -619,7 +619,7 @@ quex/TEST/token-policies/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Sun Jun  6 08:13:07 2010
+Wed Jun  9 07:46:21 2010
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -641,7 +641,7 @@ quex/code_base/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Lexical Analyzer Class Template
-Sun Jun  6 08:13:21 2010
+Wed Jun  9 07:46:29 2010
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
  -- Accumulator
@@ -711,7 +711,7 @@ quex/code_base/analyzer/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Basic Buffer Functions
-Sun Jun  6 08:13:35 2010
+Wed Jun  9 07:46:38 2010
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -770,7 +770,7 @@ quex/code_base/buffer/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Sun Jun  6 08:13:47 2010
+Wed Jun  9 07:46:46 2010
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -841,7 +841,7 @@ quex/code_base/buffer/converter/iconv/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Testing the ICU Converter Adaption
-Sun Jun  6 08:14:01 2010
+Wed Jun  9 07:46:55 2010
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -912,7 +912,7 @@ quex/code_base/buffer/converter/icu/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Sun Jun  6 08:14:27 2010
+Wed Jun  9 07:47:10 2010
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -1003,7 +1003,7 @@ quex/code_base/buffer/plain/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Core Functionalities
-Sun Jun  6 08:14:46 2010
+Wed Jun  9 07:47:24 2010
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -1054,7 +1054,7 @@ quex/core_engine/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Mon Jun  7 00:00:11 2010
+Wed Jun  9 07:49:37 2010
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
  -- Basic Path Compression Test
@@ -1096,18 +1096,21 @@ quex/core_engine/generator/TEST
                                           Cpp ..................[OK]
                                           Cpp_StrangeStream ....[OK]
                                           Cpp-Template .........[OK]
+                                          Cpp-Path .............[OK]
     Mode Changes
         test-mode-changes.py ANSI-C-PlainMemory ................[OK]
                              ANSI-C ............................[OK]
                              Cpp ...............................[OK]
                              Cpp_StrangeStream .................[OK]
                              Cpp-Template ......................[OK]
+                             Cpp-Path ..........................[OK]
     Reentry analysis without return from function
         test-continue-without-return.py ANSI-C-PlainMemory .....[OK]
                                         ANSI-C .................[OK]
                                         Cpp ....................[OK]
                                         Cpp_StrangeStream ......[OK]
                                         Cpp-Template ...........[OK]
+                                        Cpp-Path ...............[OK]
 
  -- Post Conditions:
 
@@ -1117,18 +1120,21 @@ quex/core_engine/generator/TEST
                                 Cpp ............................[OK]
                                 Cpp_StrangeStream ..............[OK]
                                 Cpp-Template ...................[OK]
+                                Cpp-Path .......................[OK]
     Part 2
         test-post-conditions-2.py ANSI-C-PlainMemory ...........[OK]
                                   ANSI-C .......................[OK]
                                   Cpp ..........................[OK]
                                   Cpp_StrangeStream ............[OK]
                                   Cpp-Template .................[OK]
+                                  Cpp-Path .....................[OK]
     Part 3
         test-post-conditions-3.py ANSI-C-PlainMemory ...........[OK]
                                   ANSI-C .......................[OK]
                                   Cpp ..........................[OK]
                                   Cpp_StrangeStream ............[OK]
                                   Cpp-Template .................[OK]
+                                  Cpp-Path .....................[OK]
 
  -- Pre Conditions:
 
@@ -1138,18 +1144,21 @@ quex/core_engine/generator/TEST
                                  Cpp ...........................[OK]
                                  Cpp_StrangeStream .............[OK]
                                  Cpp-Template ..................[OK]
+                                 Cpp-Path ......................[OK]
     Part 1
         test-pre-conditions.py ANSI-C-PlainMemory ..............[OK]
                                ANSI-C ..........................[OK]
                                Cpp .............................[OK]
                                Cpp_StrangeStream ...............[OK]
                                Cpp-Template ....................[OK]
+                               Cpp-Path ........................[OK]
     Part 2
         test-pre-conditions-2.py ANSI-C-PlainMemory ............[OK]
                                  ANSI-C ........................[OK]
                                  Cpp ...........................[OK]
                                  Cpp_StrangeStream .............[OK]
                                  Cpp-Template ..................[OK]
+                                 Cpp-Path ......................[OK]
 
  -- Pre- and Post- Conditions:
 
@@ -1159,6 +1168,7 @@ quex/core_engine/generator/TEST
                                    Cpp .........................[OK]
                                    Cpp_StrangeStream ...........[OK]
                                    Cpp-Template ................[OK]
+                                   Cpp-Path ....................[OK]
 
  -- Pseudo Ambgiguous Post Condition:
 
@@ -1168,12 +1178,14 @@ quex/core_engine/generator/TEST
                                                  Cpp ...........[OK]
                                                  Cpp_StrangeStream [OK]
                                                  Cpp-Template ..[OK]
+                                                 Cpp-Path ......[OK]
     Part II
         test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory [OK]
                                                    ANSI-C ......[OK]
                                                    Cpp .........[OK]
                                                    Cpp_StrangeStream [OK]
                                                    Cpp-Template [OK]
+                                                   Cpp-Path ....[OK]
 
  -- Simple:
 
@@ -1183,30 +1195,35 @@ quex/core_engine/generator/TEST
                         Cpp ....................................[OK]
                         Cpp_StrangeStream ......................[OK]
                         Cpp-Template ...........................[OK]
+                        Cpp-Path ...............................[OK]
     Keywords 'for', 'forest', 'forester', and 'formidable'
         test-simple-5.py ANSI-C-PlainMemory ....................[OK]
                          ANSI-C ................................[OK]
                          Cpp ...................................[OK]
                          Cpp_StrangeStream .....................[OK]
                          Cpp-Template ..........................[OK]
+                         Cpp-Path ..............................[OK]
     Maximum Length Match
         test-simple-2.py ANSI-C-PlainMemory ....................[OK]
                          ANSI-C ................................[OK]
                          Cpp ...................................[OK]
                          Cpp_StrangeStream .....................[OK]
                          Cpp-Template ..........................[OK]
+                         Cpp-Path ..............................[OK]
     Special Case '.' (drop out on valid target state)
         test-simple-3.py ANSI-C-PlainMemory ....................[OK]
                          ANSI-C ................................[OK]
                          Cpp ...................................[OK]
                          Cpp_StrangeStream .....................[OK]
                          Cpp-Template ..........................[OK]
+                         Cpp-Path ..............................[OK]
     Tiny Expressions
         test-simple.py ANSI-C-PlainMemory ......................[OK]
                        ANSI-C ..................................[OK]
                        Cpp .....................................[OK]
                        Cpp_StrangeStream .......................[OK]
                        Cpp-Template ............................[OK]
+                       Cpp-Path ................................[OK]
 
  -- Single State:
 
@@ -1258,7 +1275,7 @@ quex/core_engine/generator/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Regular Expression Parsing
-Sun Jun  6 08:17:42 2010
+Wed Jun  9 07:49:40 2010
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- Case Folding
@@ -1324,7 +1341,7 @@ quex/core_engine/regular_expression/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 State Machine Operations
-Sun Jun  6 23:55:48 2010
+Wed Jun  9 07:49:51 2010
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1489,7 +1506,7 @@ quex/core_engine/state_machine/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Compression: Path and Table
-Sun Jun  6 08:18:00 2010
+Wed Jun  9 07:49:53 2010
 quex/core_engine/state_machine/compression/TEST
 -------------------------------------------------------------------------------
 
@@ -1567,7 +1584,7 @@ quex/core_engine/state_machine/compression/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Sun Jun  6 08:18:00 2010
+Wed Jun  9 07:49:53 2010
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1590,7 +1607,7 @@ quex/frs_py/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Character Set Queries
-Sun Jun  6 08:18:17 2010
+Wed Jun  9 07:50:05 2010
 quex/input/TEST
 -------------------------------------------------------------------------------
  -- Case Folding based on Unicode Database
@@ -1661,7 +1678,7 @@ quex/input/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Basic Code Writing Functionality
-Sun Jun  6 08:18:20 2010
+Wed Jun  9 07:50:08 2010
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1688,7 +1705,7 @@ quex/output/cpp/TEST
                                                                    \___/|_|\_) 
 ===============================================================================
 Testing Statemachine Plots
-Sun Jun  6 08:18:21 2010
+Wed Jun  9 07:50:09 2010
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.

@@ -35,6 +35,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_printf(__QUEX_MESSAGE_ASSERTS_INFO);
 #       endif
        
+#       if      defined(QUEX_OPTION_ASSERTS) 
+        if( QUEX_SETTING_BUFFER_LIMIT_CODE == QUEX_SETTING_PATH_TERMINATION_CODE ) {
+            QUEX_ERROR_EXIT("Path termination code (PTC) and buffer limit code (BLC) must be different.\n");
+        }
+#       endif
+
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #           if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
             /* Assume that the user will pass us a constructed token queue */

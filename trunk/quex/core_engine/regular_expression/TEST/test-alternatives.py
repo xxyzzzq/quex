@@ -4,6 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as core
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Combination: Alternative Expressions"
@@ -11,7 +14,7 @@ if "--hwut-info" in sys.argv:
     
 def test(TestString):
     print "expression    = \"" + TestString + "\""
-    print "state machine\n", core.do(TestString, {}, -1)
+    print "state machine\n", core.do(TestString, {})
 
 test('"a"|"c"|"e"|"g"')
 test('"ac"|"bd"')

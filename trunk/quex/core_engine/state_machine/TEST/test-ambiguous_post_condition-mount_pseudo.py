@@ -5,6 +5,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
 from quex.exception import *
+from quex.input.setup import setup
+setup.buffer_limit_code = -1
+setup.path_limit_code   = -1
 
 import quex.core_engine.state_machine.index as sm_index
 import quex.core_engine.regular_expression.core as regex
@@ -22,13 +25,13 @@ def test(RE_Core, RE_PostCondition):
 
     # reset the index, so that things get a litter less 'historic'
     try:
-        core_sm           = regex.do(string_stream_Core, {}, -1)
+        core_sm           = regex.do(string_stream_Core, {})
     except RegularExpressionException, x:
         print "Core Pattern:\n" + repr(x)
         return
 
     try:
-        post_context_sm = regex.do(string_stream_PostCondition, {}, -1)
+        post_context_sm = regex.do(string_stream_PostCondition, {})
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)
         return

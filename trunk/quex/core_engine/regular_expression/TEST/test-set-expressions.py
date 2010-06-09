@@ -5,9 +5,6 @@ import StringIO
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.exception as exception
-
-sys.path.insert(0, os.environ["QUEX_PATH"])
-
 import quex.core_engine.regular_expression.character_set_expression as character_set_expression
 
 if "--hwut-info" in sys.argv:

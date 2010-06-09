@@ -14,9 +14,12 @@
 
    (1) The pathes, i.e. array containing identified sequences, e.g.
 
-        QUEX_CHARACTER_TYPE   path_0 = { 'o', 'r' }; 
-        QUEX_CHARACTER_TYPE   path_1 = { 'h', 'i', 'l', 'e' }; 
-        QUEX_CHARACTER_TYPE   path_2 = { 'e', 't', 'u', 'r', 'n' }; 
+        QUEX_CHARACTER_TYPE   path_0 = { 'o', 'r', PTC }; 
+        QUEX_CHARACTER_TYPE   path_1 = { 'h', 'i', 'l', 'e', PTC }; 
+        QUEX_CHARACTER_TYPE   path_2 = { 'e', 't', 'u', 'r', 'n', PTC }; 
+
+       where PTC is the path terminating code that must be 
+       different from the buffer limit code BLC.
 
        The init state shall usually not be a path state. It rather routes
        to paths. This is why identified pathes usually do not contain the
@@ -32,7 +35,7 @@
          PATH_WALKER_1:
             /* Single Character Check */
             if   input == *path_iterator: ++path_iterator; goto PATH_WALKER_1
-            elif *path_iterator == 0:     goto STATE_3
+            elif *path_iterator == PTC:     goto STATE_3
 
             /* Common Transition Map */
             if   x < 'a': drop out
@@ -278,7 +281,7 @@ def __path_definition(variable_db, Path):
     # Last element of sequence contains only the 'end state'.
     for state_index, character in Path.sequence()[:-1]:
         txt.append("%i, " % character)
-    txt.append("0x0")
+    txt.append("QUEX_SETTING_PATH_TERMINATION_CODE")
 
     variable_name  = "path_%i" % Path.index()
     variable_type  = "const QUEX_TYPE_CHARACTER "
@@ -345,42 +348,9 @@ def __state_entries(txt, PathWalker, SMD):
 
             prev_state_index = state_index
 
-def __path_walker(txt, PathWalker, SMD):
-    """Generates the path walker, that walks along the character sequence.
-    """
-    PathList     = PathWalker.path_list()
-    PathN        = len(PathList)
-    Skeleton     = PathList[0].skeleton()
-    PathWalkerID = PathWalker.core().state_index
-
-    label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
-                LanguageDB["$label-def"]("$pathwalker", PathWalkerID)
-    txt.append(label_str)
-
-
-    if PathWalker.uniform_state_entries_f():
-        # (1) Input Block (get the new character)
-        txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
-        # (2) Acceptance information/Store Input positions
-        txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
-
-    # (3) Transition Map
-    # (3.1) The comparison with the path's current character
-    #       If terminating zero is reached, the path's end state is entered.
-    txt.append("\n    ")
-    txt.append(LanguageDB["$if =="]("*path_iterator"))
-    txt.append("        ")
-    txt.append(LanguageDB["$increment"]("path_iterator"))
-    txt.append("\n        ")
-    if PathWalker.uniform_state_entries_f():
-        txt.append(LanguageDB["$goto"]("$pathwalker", PathWalkerID))
-    else:
-        txt.append(__state_router(PathWalker))
-    txt.append("\n    ")
-    txt.append(LanguageDB["$elseif"] \
-               + LanguageDB["$=="]("path_iterator", "(QUEX_TYPE_CHARACTER)(0)") \
-               + LanguageDB["$then"])
-    txt.append("        ")
+def __route_to_end_of_path(txt, PathWalker, SMD):
+    PathList = PathWalker.path_list()
+    PathN    = len(PathList)
 
     # -- Transition to the first state after the path:
     if PathN == 1:
@@ -403,32 +373,84 @@ def __path_walker(txt, PathWalker, SMD):
             txt.append("\n")
         __path_specific_action(txt, PathList, __cmp, __get_action)
     txt.append("    ")
+
+def __path_walker(txt, PathWalker, SMD):
+    """Generates the path walker, that walks along the character sequence.
+    """
+    PathList     = PathWalker.path_list()
+    Skeleton     = PathList[0].skeleton()
+    PathWalkerID = PathWalker.core().state_index
+
+    label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+                LanguageDB["$label-def"]("$pathwalker", PathWalkerID)
+    txt.append(label_str)
+
+
+    if PathWalker.uniform_state_entries_f():
+        # (1) Input Block (get the new character)
+        txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
+        # (2) Acceptance information/Store Input positions
+        txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
+
+    # (3) Transition Map
+    # (3.1) The comparison with the path's current character
+    #       If terminating zero is reached, the path's end state is entered.
+    txt.append("\n    ")
+    txt.append(LanguageDB["$if =="]("*path_iterator"))
+    txt.append("        ")
+    txt.append(LanguageDB["$increment"]("path_iterator"))
+    if PathWalker.uniform_state_entries_f():
+        txt.append("\n        ")
+        txt.append(LanguageDB["$goto"]("$pathwalker", PathWalkerID))
+        txt.append("\n    ")
+        # else if ( *path_iterator == PTC ) { ... /* reached terminating zero */
+        txt.append(LanguageDB["$elseif"] \
+                   + LanguageDB["$=="]("*path_iterator", "QUEX_SETTING_PATH_TERMINATION_CODE") \
+                   + LanguageDB["$then"])
+        txt.append("        ")
+        __route_to_end_of_path(txt, PathWalker, SMD)
+    else:
+        # -- Non-uniform path routers do the route-to-end state inside the
+        #    state routing.
+        #    No need for the '*path_iterator == 0' section
+        txt.append("\n")
+        txt.append(LanguageDB["$label-def"]("$pathwalker-router", PathWalkerID) + "\n")
+        txt.append(__state_router(PathWalker, SMD))
+
     txt.append(LanguageDB["$endif"])
 
     # (3.2) Transition map of the 'skeleton'        
-    
     trigger_map = PathWalker.transitions().get_trigger_map()
     if len(trigger_map) != 0:
         # If the skeleton of all related states is 'empty' then no
         # transition block is required. This happens, for example, if
         # there are only keywords and no 'overlaying' identifier pattern.
         txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD))
-    txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, 
-                           StateRouterStr=__state_router(PathWalker)))
 
-def __state_router(PathWalker):
+    # (4) The drop out (nothing matched)
+    #     (Path iterator has not been increased yet)
+    if PathWalker.uniform_state_entries_f():
+        txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
+    else:
+        router_str = "    " + LanguageDB["$goto"]("$pathwalker-router", PathWalkerID)
+        txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, StateRouterStr=router_str))
+
+def __state_router(PathWalker, SMD):
     """Create code that allows to jump to a state based on the path_iterator.
 
        NOTE: Paths cannot be recursive. Also, path transitions are linear, i.e.
              target states are either subsequent path states or the path
              is left. 
 
-             State routing is only required at reload. There, the current state
-             is identified by the 'path_iterator':
+             The current state is identified by the 'path_iterator'
 
              (1) determine to what path the path_iterator belongs.
              (2) 'path_iterator - path_begin' gives an integer that identifies
                  the particular state of the path.
+
+       NOTE: In the case of non-uniform path state elements, the state router
+             takes care of the detection of the end-state, thus it has not
+             to be determined in the '*path_iterator == PTC' section.
     """
     # No state router required after 'drop-out'.
     if PathWalker.uniform_state_entries_f(): return None
@@ -445,6 +467,9 @@ def __state_router(PathWalker):
         for i, info in enumerate(Path.sequence()[:-1]):
             txt.append("            " + LanguageDB["$case"](repr(i)))
             txt.append(LanguageDB["$goto"]("$entry", info[0]) + "\n")
+
+        txt.append("            " + LanguageDB["$case"](repr(i+1)))
+        txt.append(transition.do(Path.end_state_index(), None, None, SMD))
         txt.append("            ")
         txt.append(LanguageDB["$switchend"])
 

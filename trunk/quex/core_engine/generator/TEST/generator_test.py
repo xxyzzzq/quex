@@ -55,6 +55,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
        AssertsActionvation_str="-DQUEX_OPTION_ASSERTS"):
 
     BufferLimitCode = 0
+    Setup.buffer_limit_code = BufferLimitCode
 
     if Language == "Cpp-Template":
         Language = "Cpp"
@@ -70,8 +71,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
         adapted_dict = {}
         for key, regular_expression in PatternDictionary.items():
             string_stream = StringIO(regular_expression)
-            state_machine = regex.do(string_stream, adapted_dict, 
-                                     BufferLimitCode  = BufferLimitCode)
+            state_machine = regex.do(string_stream, adapted_dict)
             # It is ESSENTIAL that the state machines of defined patterns do not 
             # have origins! Actually, there are not more than patterns waiting
             # to be applied in regular expressions. The regular expressions 
@@ -220,7 +220,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     # -- create default action that prints the name and the content of the token
     try:
         PatternActionPairList = map(lambda x: 
-                                    PatternActionInfo(regex.do(x[0], PatternDictionary, BufferLimitCode), 
+                                    PatternActionInfo(regex.do(x[0], PatternDictionary), 
                                                       CodeFragment(action(x[1]), RequireTerminatingZeroF=True)),
                                     PatternActionPairList)
     except RegularExpressionException, x:

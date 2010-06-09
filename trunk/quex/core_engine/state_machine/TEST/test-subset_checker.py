@@ -15,8 +15,8 @@ def test(A, B):
     def __core(SuperPattern, SubPattern):
         print ("super = " + SuperPattern).replace("\n", "\\n").replace("\t", "\\t")
         print ("sub   = " + SubPattern).replace("\n", "\\n").replace("\t", "\\t")
-        super_sm = regex.do(SuperPattern, {}, -1)
-        sub_sm   = regex.do(SubPattern, {}, -1)
+        super_sm = regex.do(SuperPattern, {})
+        sub_sm   = regex.do(SubPattern, {})
         print "claim = ", subset_checker.do(super_sm, sub_sm)
     print "---------------------------"
     __core(A, B)

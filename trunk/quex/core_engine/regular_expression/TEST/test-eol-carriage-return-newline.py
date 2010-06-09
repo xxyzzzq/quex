@@ -4,6 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.regular_expression.core as core
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Conditional Analysis: End of Line '$' (with DOS/Windows '\\r\\n')"
@@ -17,7 +20,7 @@ def test(TestString):
 def test_core(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString, {}, -1, DOS_CarriageReturnNewlineF=True)
+    sm = core.do(TestString, {}, DOS_CarriageReturnNewlineF=True)
     if sm == None: 
         print "pattern syntax error"
     else:

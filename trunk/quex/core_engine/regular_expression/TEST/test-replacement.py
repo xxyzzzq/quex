@@ -7,6 +7,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.core as core
 from quex.exception import *
 from quex.lexer_mode import PatternShorthand
+from quex.input.setup import setup as Setup
+Setup.buffer_limit_code = -1
+Setup.path_limit_code   = -1
 
 if "--hwut-info" in sys.argv:
     print "Replacement: Regular Expression State Machines"
@@ -15,7 +18,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString, PatternDict):
     try:
         print "expression    = " + TestString 
-        print "state machine\n", core.do(TestString, PatternDict, -1)
+        print "state machine\n", core.do(TestString, PatternDict)
     except RegularExpressionException, x:
         print "Expression Expansion:\n" + repr(x)
 
@@ -30,7 +33,7 @@ try:
     adapted_dict = {}
     for key, regular_expression in pattern_dict.items():
         string_stream = StringIO(regular_expression)
-        state_machine = core.do(string_stream, adapted_dict, 0, 0, -1)
+        state_machine = core.do(string_stream, adapted_dict)
         # It is ESSENTIAL that the state machines of defined patterns do not 
         # have origins! Actually, there are not more than patterns waiting
         # to be applied in regular expressions. The regular expressions 
