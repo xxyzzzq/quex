@@ -1,0 +1,234 @@
+// -*- C++ -*-
+start = PROGRAM;
+
+header {
+#include <cstdlib>  // C++ adapted 'stdlib.h'
+//                  // gets:  atoi(const char*) 
+#include <vector>
+}
+
+define {
+    // -*- C -*-
+    // Pattern definitions for example application
+    P_WHITESPACE          [ \t\n]
+    P_CURLY_BRACKET_O     "{"
+    P_CURLY_BRACKET_C     "}"
+    P_BRACKET_O           "("
+    P_BRACKET_C           ")"
+    P_EQUAL               "=="
+    P_KEY_STRUCT          "struct"
+    P_KEY_IF              "if"
+    P_KEY_IN              "in"
+    P_KEY_ELSE            "else:"
+    P_KEY_AND             "and"
+    P_KEY_OR              "or"
+    P_KEY_FOR             "for"
+    P_KEY_DEF             "def"
+    P_COLON               ":"
+    P_IDENTIFIER          [a-zA-Z]+
+    P_PRINT               "print"
+    P_NUMBER              [0-9]+
+    //
+    P_STRING_DELIMITER               "\""
+    P_BACKSLASHED_STRING_DELIMITER   "\\\""
+    P_BACKSLASHED_BACKSLASH          "\\\\"
+    P_BACKSLASHED_NEWLINE            "\\\n"
+}
+
+token {
+    BRACKET_O
+    BRACKET_C
+    BLOCK_OPEN
+    BLOCK_CLOSE
+    CURLY_BRACKET_O
+    CURLY_BRACKET_C
+    OP_EQUAL
+    IF
+    ELSE
+    AND
+    OR
+    COLON
+    FOR
+    IN
+    PRINT
+    FUNCTION_DEF
+    INDENTATION
+    STRUCT
+    SEMICOLON
+    IDENTIFIER
+    NUMBER
+    STRING
+    ERROR_MISALIGNED_INDENTATION
+    EVENT_MODE_CHANGE
+}
+
+/* Enables token repetition and defines the token to be
+ * potentially repeated.                                */
+repeated_token { 
+    BLOCK_CLOSE
+}
+
+body {
+    std::vector<int>  indentation_stack;
+    bool              allow_opening_indentation_f;
+}
+
+init {
+    // first indentation at column = 0
+    self.indentation_stack.push_back(0);
+    // default: do not allow to open a sub-block.
+    // only function definitions, if statements, and for loops
+    // shoul allow to open a new indentation block in the next line.
+    self.allow_opening_indentation_f = false;
+}
+
+
+mode END_OF_FILE :
+<inheritable: only>  
+{    
+    <<EOF>> {
+        if( 0 ) {
+            /* End of File closes any open indentation */
+            if( self.indentation_stack.size() > 1 ) {
+                self_send_n(self.indentation_stack.size()-1, QUEX_TKN_BLOCK_CLOSE);
+            }
+        }
+        self_send(QUEX_TKN_TERMINATION);
+    }
+}
+
+
+mode PROGRAM :
+     END_OF_FILE
+<entry: STRING_READER>
+<exit:  STRING_READER>
+{
+    on_indentation {
+
+        if( Indentation > self.indentation_stack.back() ) {
+            if( self.allow_opening_indentation_f ) {
+                self_send(QUEX_TKN_BLOCK_OPEN);
+                self.indentation_stack.push_back(Indentation);
+                self.allow_opening_indentation_f = false;
+            }
+            else {
+                // -- higher indentation where it was not allowed to indent higher
+                //    => misaligned indentation
+                self.token_p()->set_number(self.line_number_at_end());
+                self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION); 
+            }
+            return;
+        }
+        else /* Indentation <= self.indentation_stack.back() */ {
+            
+            int i = 0;
+            while( Indentation < self.indentation_stack.back() ) {
+                ++i;
+                self.indentation_stack.pop_back();
+            }
+
+            /* 'landing' indentation has to fit an indentation border
+             * if not send an error                                  */
+            if( Indentation != self.indentation_stack.back() ) {
+                self.token_p()->set_number(self.line_number_at_end());
+                self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION); 
+            }
+            else if( i != 0 ) {
+                self_send_n(i, QUEX_TKN_BLOCK_CLOSE);     
+            }
+
+        }
+    }
+
+    {P_BACKSLASHED_NEWLINE} {
+        self.disable_next_indentation_event();
+    }
+    
+    {P_WHITESPACE} {
+    }
+
+    {P_CURLY_BRACKET_O} => QUEX_TKN_CURLY_BRACKET_O; 
+    {P_CURLY_BRACKET_C} => QUEX_TKN_CURLY_BRACKET_C; 
+    {P_BRACKET_O}       => QUEX_TKN_BRACKET_O;
+    {P_BRACKET_C}       => QUEX_TKN_BRACKET_C;
+    {P_EQUAL}           => QUEX_TKN_OP_EQUAL;
+    {P_KEY_AND}         => QUEX_TKN_AND;
+    {P_PRINT}           => QUEX_TKN_PRINT;
+    {P_KEY_OR}          => QUEX_TKN_OR;
+    {P_COLON}           => QUEX_TKN_COLON;
+    {P_KEY_IN}          => QUEX_TKN_IN;
+
+    {P_KEY_STRUCT} {
+        self_send(QUEX_TKN_STRUCT);
+        self.allow_opening_indentation_f = true;
+        RETURN;
+    }
+
+    {P_KEY_IF} {
+        self_send(QUEX_TKN_IF);
+        self.allow_opening_indentation_f = true;
+        RETURN;
+    }
+    {P_KEY_ELSE} {
+        self_send(QUEX_TKN_ELSE);
+        self.allow_opening_indentation_f = true;
+        RETURN;
+    }
+    {P_KEY_FOR} {
+        self_send(QUEX_TKN_FOR);
+        self.allow_opening_indentation_f = true;
+        RETURN;
+    }
+    {P_KEY_DEF} {
+        self_send(QUEX_TKN_FUNCTION_DEF);
+        self.allow_opening_indentation_f = true;
+        RETURN;
+    }
+    {P_IDENTIFIER} {
+        self_send1(QUEX_TKN_IDENTIFIER, Lexeme);
+        RETURN;
+    }
+    {P_NUMBER} {
+        self_token_p()->set_number(atoi((const char*)Lexeme));
+        self_send(QUEX_TKN_NUMBER);
+        RETURN;
+    }
+
+    {P_STRING_DELIMITER} {
+        self << STRING_READER; 
+        self_send(QUEX_TKN_EVENT_MODE_CHANGE);
+        return;
+    }
+}
+
+mode STRING_READER :
+     END_OF_FILE
+    <entry: PROGRAM>
+    <exit:  PROGRAM>
+{
+    on_entry {
+        self_accumulator_clear();
+    }
+
+    on_exit {
+        self_accumulator_flush(QUEX_TKN_STRING);
+    }
+
+    {P_BACKSLASHED_STRING_DELIMITER} {
+        self_accumulator_add(Lexeme, LexemeEnd);
+    }
+
+    {P_BACKSLASHED_BACKSLASH} {
+        self_accumulator_add(Lexeme, LexemeEnd);
+    }
+
+    {P_STRING_DELIMITER} {
+        /*........................................*/ self << PROGRAM;
+        self_send(QUEX_TKN_EVENT_MODE_CHANGE);
+        return;
+    }
+
+    . {
+        self_accumulator_add(Lexeme, LexemeEnd);
+    }
+}

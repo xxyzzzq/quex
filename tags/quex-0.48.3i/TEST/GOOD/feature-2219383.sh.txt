@@ -1,0 +1,1 @@
+simple.qx:3:warning: Token id 'TKN_2' defined implicitly.

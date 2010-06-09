@@ -1,0 +1,1 @@
+error.qx:6:warning: Token id 'QUEX_TKN_WS' defined implicitly.
