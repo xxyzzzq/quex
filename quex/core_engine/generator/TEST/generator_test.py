@@ -28,7 +28,7 @@ else:
 
 
 choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path"] 
-choices_str  = "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream, Cpp-Template, Cpp-Path;"
+choices_str  = "CHOICES: " + repr(choices_list)[1:-1].replace("'", "") + ";"
 
 def hwut_input(Title, Extra=""):
     global choices_list
@@ -63,9 +63,13 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
         Setup.compression_template_f    = True
         Setup.compression_template_coef = 0.1
 
-    if Language == "Cpp-Path":
+    elif Language == "Cpp-Path":
         Language = "Cpp"
         Setup.compression_path_f = True
+
+    elif Language == "Cpp-PathUniform":
+        Language = "Cpp"
+        Setup.compression_path_uniform_f = True
 
     try:
         adapted_dict = {}
