@@ -113,7 +113,7 @@ def do(SMD, UniformOnlyF):
     # (2) Implement code for template combinations
     path_array_definitions,   \
     code,                     \
-    involved_state_index_list =  _do(path_list, SMD)
+    involved_state_index_list =  _do(path_list, SMD, UniformOnlyF)
 
     local_variable_db = path_array_definitions
     if len(local_variable_db) != 0:
@@ -125,7 +125,7 @@ def do(SMD, UniformOnlyF):
            local_variable_db, \
            involved_state_index_list
 
-def _do(PathList, SMD):
+def _do(PathList, SMD, UniformOnlyF):
     """-- Returns generated code for all templates.
        -- Sets the template_compression_db in SMD.
     """
@@ -133,6 +133,10 @@ def _do(PathList, SMD):
 
     assert type(PathList) == list
     assert isinstance(SMD, StateMachineDecorator)
+
+    LanguageDB = Setup.language_db
+    state_db   = SMD.sm().states
+    SM_ID      = SMD.sm().get_id()
 
     def __equal(SkeletonA, SkeletonB):
         if len(SkeletonA) != len(SkeletonB): return False
@@ -142,20 +146,26 @@ def _do(PathList, SMD):
             if not trigger_set.is_equal(SkeletonB[key]): return False
         return True
 
-    def __add_to_equivalent_path(path, path_db):
+    def __add_to_matching_path(path, path_db):
         assert isinstance(path, paths.CharacterPath)
         assert isinstance(path_db, dict)
 
-        for index, equivalent_path_list in path_db.items():
-            for candidate in equivalent_path_list:
+        prototype_state = state_db[path.sequence()[0][0]]
+        for index, path_list in path_db.items():
+            # If uniformity is required, only such paths can be combined
+            # where the states are uniform with each other. Assume that 
+            # the states inside a path are 'uniform', so only one state
+            # of each as to be checked.
+            path_list_prototype_state = state_db[path_list[0].sequence()[0][0]] 
+            if UniformOnlyF and not prototype_state.is_equivalent(path_list_prototype_state): 
+                continue
+                
+            for candidate in path_list:
+                # Compare the skeletons (remaining trigger maps)
                 if __equal(path.skeleton(), candidate.skeleton()):
-                    equivalent_path_list.append(path)
+                    path_list.append(path)
                     return True
         return False
-
-    LanguageDB = Setup.language_db
-    state_db   = SMD.sm().states
-    SM_ID      = SMD.sm().get_id()
 
     # -- Sort the paths according their skeleton. Paths with the 
     #    same skeleton will use the same pathwalker.
@@ -163,7 +173,7 @@ def _do(PathList, SMD):
     for candidate in PathList:
         assert isinstance(candidate, paths.CharacterPath)
         # Is there a path with the same skeleton?
-        if __add_to_equivalent_path(candidate, path_db): continue
+        if __add_to_matching_path(candidate, path_db): continue
         # If there is no equivalent path, then add a new 'prototype'
         path_db[index.get()] = [ candidate ]
 
