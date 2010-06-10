@@ -463,7 +463,7 @@ def __find_begin(sm, StateIdx, UniformityF):
         if path_char == None: continue
 
         # If uniformity is required, check the related states
-        if UniformityF and not State.is_equivalent(sm[target_idx]): continue
+        if UniformityF and not State.is_equivalent(sm.states[target_idx]): continue
 
         # A new path begins, find the 'skeleton'.
         # The 'skeleton' is the transition map without the single transition
@@ -500,7 +500,7 @@ def __find_continuation(sm, StateIdx, the_path, UniformityF):
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
         # If uniformity is required, check the related states
-        if UniformityF and not State.is_equivalent(sm[target_idx]): continue
+        if UniformityF and not State.is_equivalent(sm.states[target_idx]): continue
 
         # Does the rest of the transitions fit the 'skeleton'?
         plug = the_path.match_skeleton(transition_map, target_idx, path_char)
