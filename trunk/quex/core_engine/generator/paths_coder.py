@@ -108,7 +108,7 @@ def do(SMD, UniformOnlyF):
     assert isinstance(SMD, StateMachineDecorator)
           
     # (1) Find possible state combinations
-    path_list = paths.do(SMD.sm())
+    path_list = paths.do(SMD.sm(), UniformOnlyF)
 
     # (2) Implement code for template combinations
     path_array_definitions,   \
@@ -206,9 +206,9 @@ def _do(PathList, SMD, UniformOnlyF):
         pathwalker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
 
     # -- Generate code for:
-    #        -- related variables: paths for pathwalkers
-    #        -- state entries
-    #        -- the pathwalkers
+    #      -- related variables: paths for pathwalkers
+    #      -- state entries
+    #      -- the pathwalkers
     variable_db = {}
     code        = []
     router_code = []

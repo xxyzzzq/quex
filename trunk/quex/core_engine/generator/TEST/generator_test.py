@@ -19,7 +19,7 @@ import quex.core_engine.regular_expression.core            as regex
 from   quex.input.setup import setup as Setup
 
 # Switch manually for debug output: 'False' --> DEBUG output.
-if True:
+if False:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
 else:
@@ -27,7 +27,7 @@ else:
     SHOW_BUFFER_LOADS_STR = "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
 
-choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path"] 
+choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path", "Cpp-PathUniform"] 
 choices_str  = "CHOICES: " + repr(choices_list)[1:-1].replace("'", "") + ";"
 
 def hwut_input(Title, Extra=""):
