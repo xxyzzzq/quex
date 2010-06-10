@@ -62,6 +62,14 @@ class State:
 
     def is_acceptance(self):
         return self.core().is_acceptance()
+
+    def is_equivalent(self, Other):
+        """Determines whether two states are 'equivalent' in the sense that 
+           they have the same acceptance, store input positions, pre-context, etc.
+           attributes.
+        """
+        return     self.core().is_equivalent(Other.core())       == True \
+               and self.origins().is_equivalent(Other.origins()) == True
         
     def set_acceptance(self, Value=True, LeaveStoreInputPositionF=False):
         self.core().set_acceptance_f(Value, LeaveStoreInputPositionF)

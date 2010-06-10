@@ -82,8 +82,8 @@ from quex.core_engine.interval_handling import NumberSet, Interval
 from copy import deepcopy, copy
 
 
-def do(SM):
-    path_list = find_paths(SM)
+def do(SM, UniformityF):
+    path_list = find_paths(SM, UniformityF)
 
     __filter_redundant_paths(path_list)
 
@@ -413,7 +413,7 @@ class CharacterPath:
         return len(self.__sequence)
 
 
-def find_paths(SM):
+def find_paths(SM, UniformityF):
     """SM = state machine of analyzer.
 
        Try to identify 'pathes' that is state transitions in the state
@@ -427,10 +427,10 @@ def find_paths(SM):
            }
            /* Skeleton (transitions that are common for all elements of path) */
     """
-    return __find_begin(SM, SM.init_state_index)
+    return __find_begin(SM, SM.init_state_index, UniformityF)
 
 __find_begin_touched_state_idx_list = {}
-def __find_begin(sm, StateIdx):
+def __find_begin(sm, StateIdx, UniformityF):
     """Searches for the beginning of a path, i.e. a single character 
        transition to a subsequent state. If such a transition is found,
        a 'skeleton' is computed in the 'CharacterPath' object. With this
@@ -456,11 +456,14 @@ def __find_begin(sm, StateIdx):
         __find_begin_touched_state_idx_list[target_idx] = True
 
         # IN ANY CASE: Check for paths in the subsequent state
-        result_list.extend(__find_begin(sm, target_idx))
+        result_list.extend(__find_begin(sm, target_idx, UniformityF))
 
         # Only consider single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
         if path_char == None: continue
+
+        # If uniformity is required, check the related states
+        if UniformityF and not State.is_equivalent(sm[target_idx]): continue
 
         # A new path begins, find the 'skeleton'.
         # The 'skeleton' is the transition map without the single transition
@@ -471,11 +474,11 @@ def __find_begin(sm, StateIdx):
 
         path = CharacterPath(StateIdx, skeleton, path_char)
             
-        result_list.extend(__find_continuation(sm, target_idx, path))
+        result_list.extend(__find_continuation(sm, target_idx, path, UniformityF))
 
     return result_list
 
-def __find_continuation(sm, StateIdx, the_path):
+def __find_continuation(sm, StateIdx, the_path, UniformityF):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
     """
@@ -496,6 +499,9 @@ def __find_continuation(sm, StateIdx, the_path):
         # 'character string position'. Omit this path!
         if the_path.contains(target_idx): continue # Recursion ahead! Don't go!
 
+        # If uniformity is required, check the related states
+        if UniformityF and not State.is_equivalent(sm[target_idx]): continue
+
         # Does the rest of the transitions fit the 'skeleton'?
         plug = the_path.match_skeleton(transition_map, target_idx, path_char)
         if plug == None: continue # No possible match
@@ -508,7 +514,7 @@ def __find_continuation(sm, StateIdx, the_path):
         # Find a continuation of the path
         single_char_transition_found_f = True
         path.append(StateIdx, path_char)
-        result_list.extend(__find_continuation(sm, target_idx, path))
+        result_list.extend(__find_continuation(sm, target_idx, path, UniformityF))
 
     if not single_char_transition_found_f and len(the_path) != 1:
         the_path.set_end_state_index(StateIdx)

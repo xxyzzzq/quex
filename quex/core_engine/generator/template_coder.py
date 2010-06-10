@@ -485,8 +485,7 @@ def get_uniform_prototype(SMD, InvolvedStateIndexList):
     for state_index in InvolvedStateIndexList[1:]:
         state = state_db.get(state_index)
         assert state != None
-        if    prev_state.core().is_equivalent(state.core())       == False \
-           or prev_state.origins().is_equivalent(state.origins()) == False:
+        if not prev_state.is_equivalent(state):
             return None
     return prototype
 
