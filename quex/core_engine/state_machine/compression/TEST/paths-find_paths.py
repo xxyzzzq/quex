@@ -49,7 +49,7 @@ def test(Skeleton, *StringPaths):
     # print Skeleton
     print sm.get_graphviz_string(NormalizeF=False)
     print
-    result = paths.find_paths(sm)
+    result = paths.find_paths(sm, UniformityF=False)
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
