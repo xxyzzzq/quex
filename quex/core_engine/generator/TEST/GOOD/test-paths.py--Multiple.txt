@@ -3,9 +3,9 @@
     const QUEX_TYPE_CHARACTER  path_6[11] = { 103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE};
     const QUEX_TYPE_CHARACTER  path_17[6] = { 102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE};
     const QUEX_TYPE_CHARACTER  path_1[5] = { 111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE};
-    const QUEX_TYPE_CHARACTER* path_6_end = path_6 + 11;
-    const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 5;
-    const QUEX_TYPE_CHARACTER* path_17_end = path_17 + 6;
+    const QUEX_TYPE_CHARACTER* path_6_end = path_6 + 10;
+    const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 4;
+    const QUEX_TYPE_CHARACTER* path_17_end = path_17 + 5;
 
 
 --(Pathwalker Code)-----------------------------------------------------
@@ -45,12 +45,14 @@ STATE_23_INPUT:
         goto PATH_WALKER_23;
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
         QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
-        if(        path_iterator == path_1_end) {
+        if(path_iterator == path_1_end) {
         goto STATE_5;
-        } else if(        path_iterator == path_6_end) {
+        } else if(path_iterator == path_6_end) {
         goto STATE_16;
-        } else if(        path_iterator == path_17_end) {
+        } else if(path_iterator == path_17_end) {
         goto STATE_22;
+        } else {
+        QUEX_ERROR_EXIT("Pathwalker: path_iterator on in admissible position.");
         }
     }
     if( input < 20) {

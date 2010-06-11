@@ -3,9 +3,9 @@
     const QUEX_TYPE_CHARACTER  path_6[11] = { 103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE};
     const QUEX_TYPE_CHARACTER  path_17[6] = { 102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE};
     const QUEX_TYPE_CHARACTER  path_1[5] = { 111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE};
-    const QUEX_TYPE_CHARACTER* path_6_end = path_6 + 11;
-    const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 5;
-    const QUEX_TYPE_CHARACTER* path_17_end = path_17 + 6;
+    const QUEX_TYPE_CHARACTER* path_6_end = path_6 + 10;
+    const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 4;
+    const QUEX_TYPE_CHARACTER* path_17_end = path_17 + 5;
 
 
 --(Pathwalker Code)-----------------------------------------------------
@@ -247,14 +247,14 @@ PATH_WALKER_23:
 PATH_WALKER_23_STATE_ROUTER:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23_STATE_ROUTER");
 
-        if(path_iterator >= path_1 && path_iterator < path_1_end) {
+        if(path_iterator >= path_1 && path_iterator <= path_1_end) {
             switch((int)(path_iterator - path_1)) {
             case 0: goto STATE_1;
             case 1: goto STATE_2;
             case 2: goto STATE_3;
             case 3: goto STATE_4;
             case 4: goto STATE_5;            }
-        } else if(path_iterator >= path_6 && path_iterator < path_6_end) {
+        } else if(path_iterator >= path_6 && path_iterator <= path_6_end) {
             switch((int)(path_iterator - path_6)) {
             case 0: goto STATE_6;
             case 1: goto STATE_7;
@@ -267,7 +267,7 @@ PATH_WALKER_23_STATE_ROUTER:
             case 8: goto STATE_14;
             case 9: goto STATE_15;
             case 10: goto STATE_16;            }
-        } else if(path_iterator >= path_17 && path_iterator < path_17_end) {
+        } else if(path_iterator >= path_17 && path_iterator <= path_17_end) {
             switch((int)(path_iterator - path_17)) {
             case 0: goto STATE_17;
             case 1: goto STATE_18;
@@ -275,7 +275,11 @@ PATH_WALKER_23_STATE_ROUTER:
             case 3: goto STATE_20;
             case 4: goto STATE_21;
             case 5: goto STATE_22;            }
+        } else {
+        QUEX_ERROR_EXIT("Pathwalker: path_iterator on in admissible position.");
         }
+    } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
+        goto PATH_WALKER_23_STATE_ROUTER;
 }
     if( input < 20) {
         if( input == 10) {

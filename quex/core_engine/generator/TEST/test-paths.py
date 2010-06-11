@@ -13,7 +13,7 @@ from   quex.input.setup import setup as Setup
 
 if "--hwut-info" in sys.argv:
     print "Basic Path Compression Test;"
-    print "CHOICES: Single, Multiple, NonUniform;"
+    print "CHOICES: Single, Multiple, NonUniform, NonUniform2;"
     sys.exit(0)
 
 # Buffer limit code is required in order to choose between
@@ -59,6 +59,8 @@ skeleton = {
         1: [Interval(10, 11), Interval(64, 65)],
         2: [Interval(20, 21)],
 }
+
+uniformity_f = True
 if "Single" in sys.argv:
     path_list = [ get_path("congo", skeleton) ]
 
@@ -71,9 +73,16 @@ elif "NonUniform" in sys.argv:
     path_list = [ get_path("otto", skeleton),
                   get_path("grunibaldi", skeleton, UniformF=False),
                   get_path("fritz", skeleton) ]
+    uniformity_f = False
+
+elif "NonUniform2" in sys.argv:
+    # Consider only uniform path's were there is a non-uniform path
+    path_list = [ get_path("otto", skeleton),
+                  get_path("grunibaldi", skeleton, UniformF=False),
+                  get_path("fritz", skeleton) ]
 
 
-x = coder._do(path_list, SMD)
+x = coder._do(path_list, SMD, uniformity_f)
 
 print "--(Path Definitions)----------------------------------------------------"
 print
