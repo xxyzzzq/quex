@@ -596,6 +596,20 @@ class StateMachine:
         if len(self.states) != 1: return False
         return self.states[self.init_state_index].transitions().is_empty()
 
+    def check_uniformity(self, StateIndexList):
+        """Checks whether all states in the state index list have the same 
+           state attributes.
+        """
+        assert len(StateIndexList) != 0
+        prototype = self.states.get(StateIndexList[0])
+        assert prototype != None
+        for state_index in StateIndexList[1:]:
+            state = self.states.get(state_index)
+            assert state != None
+            if not prototype.is_equivalent(state):
+                return False
+        return True
+
     def has_origins(self):
         for state in self.states.values():
             if not state.origins().is_empty(): return True

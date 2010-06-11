@@ -52,7 +52,7 @@ def test(Skeleton, AddTransitionList, *StringPaths):
     # print Skeleton
     print sm.get_graphviz_string(NormalizeF=False)
     print
-    result = paths.find_paths(sm, UniformityF=False)
+    result = paths.find_paths(sm)
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 

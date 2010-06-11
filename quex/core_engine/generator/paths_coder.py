@@ -286,10 +286,12 @@ class PathWalkerState(state_machine.State):
 def __path_definition(variable_db, Path):
     """Defines the transition targets for each involved state.
     """
-    L = len(Path.sequence())
+    Sequence = Path.sequence()
+    L        = len(Sequence)
+
     txt = []
     # Last element of sequence contains only the 'end state'.
-    for state_index, character in Path.sequence()[:-1]:
+    for state_index, character in Sequence[:-1]:
         txt.append("%i, " % character)
     txt.append("QUEX_SETTING_PATH_TERMINATION_CODE")
 
@@ -302,7 +304,7 @@ def __path_definition(variable_db, Path):
 
     variable_name  = "path_%i_end" % Path.index()
     variable_type  = "const QUEX_TYPE_CHARACTER*"
-    variable_value = "path_%i + %i" % (Path.index(), L)
+    variable_value = "path_%i + %i" % (Path.index(), L-1)
     variable_db[variable_name] = [ variable_type, variable_value ]
 
 def __state_entries(txt, PathWalker, SMD):
@@ -376,7 +378,6 @@ def __route_to_end_of_path(txt, PathWalker, SMD):
         #      the path by comparing simply against all path_ends.
         txt.append(LanguageDB["$input/decrement"] + "\n")
         def __cmp(txt, PathIndex):
-            txt.append("        ")
             txt.append(LanguageDB["$=="]("path_iterator", "path_%i_end" % PathIndex))
         def __get_action(txt, Path): 
             txt.append("        " + transition.do(Path.end_state_index(), None, None, SMD))
@@ -420,12 +421,15 @@ def __path_walker(txt, PathWalker, SMD):
         txt.append("        ")
         __route_to_end_of_path(txt, PathWalker, SMD)
     else:
-        # -- Non-uniform path routers do the route-to-end state inside the
-        #    state routing.
-        #    No need for the '*path_iterator == 0' section
         txt.append("\n")
         txt.append(LanguageDB["$label-def"]("$pathwalker-router", PathWalkerID) + "\n")
         txt.append(__state_router(PathWalker, SMD))
+        # -- Non-uniform path routers do the route-to-end state inside the
+        #    state routing (see above).
+        txt.append(LanguageDB["$elseif"] \
+                   + LanguageDB["$=="]("*path_iterator", "QUEX_SETTING_PATH_TERMINATION_CODE") \
+                   + LanguageDB["$then"])
+        txt.append("    " + LanguageDB["$goto"]("$pathwalker-router", PathWalkerID) + "\n    ")
 
     txt.append(LanguageDB["$endif"])
 
@@ -487,7 +491,7 @@ def __state_router(PathWalker, SMD):
         txt.extend([
             LanguageDB["$>="]("path_iterator", "path_%i" % PathIndex),
             LanguageDB["$and"],
-            LanguageDB["$<"]("path_iterator", "path_%i_end" % PathIndex)
+            LanguageDB["$<="]("path_iterator", "path_%i_end" % PathIndex)
         ])
 
     if len(PathWalker.path_list()) == 1: __cmp = None
@@ -524,6 +528,9 @@ def __path_specific_action(txt, PathList, get_comparison, get_action):
         get_action(txt, path)
 
     if PathN != 1:
+        txt.append("        ")
+        txt.append(LanguageDB["$endif-else"])
+        txt.append("        QUEX_ERROR_EXIT(\"Pathwalker: path_iterator on in admissible position.\");\n")
         txt.append("        ")
         txt.append(LanguageDB["$endif"])
     return
