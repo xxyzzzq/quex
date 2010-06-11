@@ -279,8 +279,8 @@ PATH_WALKER_23_STATE_ROUTER:
         QUEX_ERROR_EXIT("Pathwalker: path_iterator on in admissible position.");
         }
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
-        goto PATH_WALKER_23_STATE_ROUTER;
-}
+    goto PATH_WALKER_23_STATE_ROUTER;
+    }
     if( input < 20) {
         if( input == 10) {
             goto STATE_1;    /* '\n' */

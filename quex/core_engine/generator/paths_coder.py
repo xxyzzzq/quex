@@ -426,6 +426,7 @@ def __path_walker(txt, PathWalker, SMD):
         txt.append(__state_router(PathWalker, SMD))
         # -- Non-uniform path routers do the route-to-end state inside the
         #    state routing (see above).
+        txt.append("    ")
         txt.append(LanguageDB["$elseif"] \
                    + LanguageDB["$=="]("*path_iterator", "QUEX_SETTING_PATH_TERMINATION_CODE") \
                    + LanguageDB["$then"])
