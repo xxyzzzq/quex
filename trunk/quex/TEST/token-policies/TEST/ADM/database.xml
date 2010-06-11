@@ -1,27 +1,27 @@
-<test-database execution-time-sec="0.07" date="Thu Jun 10 07:54:59 2010">
+<test-database execution-time-sec="0.55" date="Fri Jun 11 07:58:21 2010">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.22"> 
             <application file-name="queue.exe" info-request-time="1276062375L" vanished="False"/>
             <make-procedure success="True" time_sec="1.527226"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="721591502"/>
+               <choice name="" result="OK" time_sec="0.22" crc="721591502"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.30"> 
             <application file-name="queue-real.exe" info-request-time="1276062380L" vanished="False"/>
             <make-procedure success="True" time_sec="1.477977"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="1977572885"/>
+               <choice name="" result="OK" time_sec="0.30" crc="1977572885"/>
             </choice-list>
         </test>
     </group>
     <group name="Token Policy 'single'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="users_token.exe" info-request-time="1276062377L" vanished="False"/>
             <make-procedure success="True" time_sec="1.458447"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.03" crc="-1396014048"/>
+               <choice name="" result="OK" time_sec="0.01" crc="-1396014048"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 

@@ -478,14 +478,8 @@ def get_uniform_prototype(SMD, InvolvedStateIndexList):
     if type(InvolvedStateIndexList) == set:
         InvolvedStateIndexList = list(InvolvedStateIndexList)
 
-    state_db   = SMD.sm().states
-    prototype  = state_db.get(InvolvedStateIndexList[0])
-    assert prototype != None
-    prev_state = prototype
-    for state_index in InvolvedStateIndexList[1:]:
-        state = state_db.get(state_index)
-        assert state != None
-        if not prev_state.is_equivalent(state):
-            return None
-    return prototype
+    if SMD.sm().check_uniformity(InvolvedStateIndexList):
+        return SMD.sm().states.get(InvolvedStateIndexList[0])
+    else:
+        return None
 
