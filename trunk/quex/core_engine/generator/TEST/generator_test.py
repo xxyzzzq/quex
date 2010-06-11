@@ -19,7 +19,7 @@ import quex.core_engine.regular_expression.core            as regex
 from   quex.input.setup import setup as Setup
 
 # Switch manually for debug output: 'False' --> DEBUG output.
-if False:
+if True:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
 else:

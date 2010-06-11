@@ -1,4 +1,4 @@
-<history date="Thu Jun 10 21:22:30 2010" element-n="860">
+<history date="Fri Jun 11 07:48:44 2010" element-n="879">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1612,5 +1612,26 @@
         <crc-error time="04:56:32" application="test-paths.py" choice="Single" database-crc="1564795417" real-crc="-184749549"/>
         <crc-error time="04:56:48" application="test-paths.py" choice="Multiple" database-crc="-243834025" real-crc="-1658729624"/>
         <crc-error time="04:57:01" application="test-paths.py" choice="NonUniform" database-crc="35624229" real-crc="1983927855"/>
+    </day>
+    <day year="2010" month="06" day="11">
+        <crc-error time="05:34:44" application="test-continue-without-return-2.py" choice="Cpp-PathUniform" database-crc="504987588" real-crc="-759134064"/>
+        <crc-error time="05:34:48" application="test-mode-changes.py" choice="Cpp-PathUniform" database-crc="61934392" real-crc="270103911"/>
+        <crc-error time="05:34:53" application="test-continue-without-return.py" choice="Cpp-PathUniform" database-crc="1063600690" real-crc="-1324080938"/>
+        <crc-error time="05:34:58" application="test-post-conditions.py" choice="Cpp-PathUniform" database-crc="-684939125" real-crc="1338437579"/>
+        <crc-error time="05:35:04" application="test-post-conditions-2.py" choice="Cpp-PathUniform" database-crc="1556721679" real-crc="-1069020887"/>
+        <crc-error time="05:35:08" application="test-post-conditions-3.py" choice="Cpp-PathUniform" database-crc="366997465" real-crc="-423588249"/>
+        <crc-error time="05:35:15" application="test-pre-conditions-3.py" choice="Cpp-PathUniform" database-crc="-2044714054" real-crc="-1449812084"/>
+        <crc-error time="05:35:20" application="test-pre-conditions.py" choice="Cpp-PathUniform" database-crc="-41471432" real-crc="-524887799"/>
+        <crc-error time="05:35:35" application="test-pseudo_ambiguous_post_conditions.py" choice="Cpp-PathUniform" database-crc="1812411551" real-crc="1455270"/>
+        <crc-error time="05:35:42" application="test-pseudo_ambiguous_post_conditions-2.py" choice="Cpp-PathUniform" database-crc="-1727333379" real-crc="1614045300"/>
+        <crc-error time="05:35:47" application="test-bol-eol.py" choice="Cpp-PathUniform" database-crc="-911096307" real-crc="-1565444249"/>
+        <crc-error time="05:35:52" application="test-simple-5.py" choice="Cpp-PathUniform" database-crc="147547667" real-crc="-680455951"/>
+        <crc-error time="05:35:59" application="test-simple-2.py" choice="Cpp-PathUniform" database-crc="-201159570" real-crc="-270685933"/>
+        <crc-error time="05:36:03" application="test-simple-3.py" choice="Cpp-PathUniform" database-crc="1930648853" real-crc="-1792493362"/>
+        <crc-error time="05:36:08" application="test-simple.py" choice="Cpp-PathUniform" database-crc="-959511549" real-crc="-771053764"/>
+        <crc-error time="05:43:42" application="test-paths.py" choice="Multiple" database-crc="-1658729624" real-crc="1821995836"/>
+        <crc-error time="05:47:08" application="test-paths.py" choice="NonUniform" database-crc="1983927855" real-crc="1884050428"/>
+        <crc-error time="05:47:56" application="test-paths.py" choice="Single" database-crc="-184749549" real-crc="-1306327330"/>
+        <crc-error time="05:48:43" application="test-paths.py" choice="NonUniform" database-crc="1884050428" real-crc="781980628"/>
     </day>
 </history>
