@@ -128,6 +128,7 @@ db["C++"] = {
     "$or":            " || ",
     "$switch":        lambda txt: "switch(" + txt + ") {\n",
     "$case":          lambda txt: "case " + txt + ": ",
+    "$default":       "default: ",
     "$switchend":     "}\n",
     "$increment":     lambda variable: "++" + variable + ";",
     "$decrement":     lambda variable: "--" + variable + ";",

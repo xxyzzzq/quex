@@ -1,11 +1,16 @@
 --(Path Definitions)----------------------------------------------------
 
-    const QUEX_TYPE_CHARACTER  path_6[11] = { 103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE};
-    const QUEX_TYPE_CHARACTER  path_17[6] = { 102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE};
-    const QUEX_TYPE_CHARACTER  path_1[5] = { 111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE};
-    const QUEX_TYPE_CHARACTER* path_6_end = path_6 + 10;
-    const QUEX_TYPE_CHARACTER* path_1_end = path_1 + 4;
-    const QUEX_TYPE_CHARACTER* path_17_end = path_17 + 5;
+    const QUEX_TYPE_CHARACTER pathwalker_23_base[23] = {
+    111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE,
+    103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE,
+    102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE,
+    };
+    const QUEX_TYPE_CHARACTER* path_6 = pathwalker_23_base + 5;
+    const QUEX_TYPE_CHARACTER* path_17 = pathwalker_23_base + 16;
+    const QUEX_TYPE_CHARACTER* path_6_end = pathwalker_23_base + 15;
+    const QUEX_TYPE_CHARACTER* path_1 = pathwalker_23_base + 0;
+    const QUEX_TYPE_CHARACTER* path_1_end = pathwalker_23_base + 4;
+    const QUEX_TYPE_CHARACTER* path_17_end = pathwalker_23_base + 21;
 
 
 --(Pathwalker Code)-----------------------------------------------------
@@ -13,25 +18,33 @@
     __quex_assert(false); /* No drop-through between states */
 STATE_1:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1");
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
+    #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "0");
+    path_index = 0;
+    #endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
+QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
     path_iterator = path_1 + 0;
     goto PATH_WALKER_23;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_6:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_6");
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 0");
+    #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "0");
+    path_index = 0;
+    #endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
+QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 0");
     path_iterator = path_6 + 0;
     goto PATH_WALKER_23;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_17:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_17");
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 0");
-    path_iterator = path_17 + 0;
-    goto PATH_WALKER_23;
-
-    __quex_assert(false); /* No drop-through between states */
+    #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "0");
+    path_index = 0;
+    #endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
+QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 0");
 PATH_WALKER_23:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23");
 STATE_23_INPUT:
