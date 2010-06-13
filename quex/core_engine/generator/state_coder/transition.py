@@ -143,7 +143,8 @@ def do_dead_end_state_stub(DeadEndStateInfo, Mode):
     elif Mode == "BackwardLexing":
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
-        return acceptance_info.backward_lexing(state.origins().get_list())
+        return acceptance_info.backward_lexing(state.origins().get_list()) + \
+               [ LanguageDB["$goto"]("$terminal-general-bw", True) ] 
 
 
     elif Mode == "BackwardInputPositionDetection":
@@ -152,7 +153,7 @@ def do_dead_end_state_stub(DeadEndStateInfo, Mode):
         # stored at the entry of the state.
         return [ LanguageDB["$input/decrement"], "\n"] + \
                acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]  # general terminal
+               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]
 
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode

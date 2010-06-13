@@ -32,8 +32,12 @@ for state_index in sm.states.keys():
 SMD = StateMachineDecorator(sm, "Test", [], False, False)
 # print SMD.sm().states.keys()
 
+dummy_char = ord('a') - 1
 def get_path(Sequence, Skeleton, UniformF=True):
+    global dummy_char
     global sm
+    
+    dummy_char += 1
 
     state_index = index.get()
 
@@ -44,6 +48,7 @@ def get_path(Sequence, Skeleton, UniformF=True):
     sm.states[state_index] = State()
     char = Sequence[0]
     path = paths.CharacterPath(state_index, trigger_map, ord(char))
+    sm.add_transition(sm.init_state_index, dummy_char, state_index)
     state_index = sm.add_transition(state_index, ord(char))
 
     for i, char in enumerate(Sequence[1:]):
@@ -60,20 +65,21 @@ skeleton = {
         2: [Interval(20, 21)],
 }
 
-uniformity_f = True
 if "Single" in sys.argv:
     path_list = [ get_path("congo", skeleton) ]
+    x = coder._do(path_list, SMD, UniformOnlyF=True)
 
 elif "Multiple" in sys.argv:
     path_list = [ get_path("otto", skeleton),
                   get_path("grunibaldi", skeleton),
                   get_path("fritz", skeleton) ]
+    x = coder._do(path_list, SMD, UniformOnlyF=True)
 
 elif "NonUniform" in sys.argv:
     path_list = [ get_path("otto", skeleton),
                   get_path("grunibaldi", skeleton, UniformF=False),
                   get_path("fritz", skeleton) ]
-    uniformity_f = False
+    x = coder._do(path_list, SMD, UniformOnlyF=False)
 
 elif "NonUniform2" in sys.argv:
     # Consider only uniform path's were there is a non-uniform path
@@ -81,8 +87,9 @@ elif "NonUniform2" in sys.argv:
                   get_path("grunibaldi", skeleton, UniformF=False),
                   get_path("fritz", skeleton) ]
 
-
-x = coder._do(path_list, SMD, uniformity_f)
+    # The state machine has been setup during 'get_path()'
+    code, variable_db, state_list = coder.do(SMD, UniformOnlyF=True)
+    x = [variable_db, code, state_list]
 
 print "--(Path Definitions)----------------------------------------------------"
 print
