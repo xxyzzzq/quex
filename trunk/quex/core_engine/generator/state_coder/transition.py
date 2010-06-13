@@ -73,7 +73,10 @@ def __transition_to_dead_end_state(TargetStateIdx, DSM):
     LanguageDB = Setup.language_db
     assert DSM != None
 
-    dead_end_target_state = DSM.dead_end_state_db()[TargetStateIdx]
+    pre_context_dependency_f, \
+    winner_origin_list,       \
+    dead_end_target_state     = DSM.dead_end_state_db()[TargetStateIdx]
+
     assert dead_end_target_state.is_acceptance(), \
            "NON-ACCEPTANCE dead end detected during code generation!\n" + \
            "A dead end that is not deleted must be an ACCEPTANCE dead end. See\n" + \
@@ -81,39 +84,79 @@ def __transition_to_dead_end_state(TargetStateIdx, DSM):
            "If this is not the case, then something serious went wrong. A transition\n" + \
            "to a non-acceptance dead end is to be translated into a drop-out."
 
-    if dead_end_target_state.origins().contains_any_pre_context_dependency(): 
-        # Backward lexing (pre-condition or backward input position detection) cannot
-        # depend on pre-conditions, since it is not part of the 'main' lexical analyser
-        # process.
-        assert DSM.mode() == "ForwardLexing"
-        return LanguageDB["$goto"]("$entry", TargetStateIdx)   # router to terminal
+    if DSM.mode() == "ForwardLexing":
+        if not pre_context_dependency_f:
+            assert len(winner_origin_list) == 1
+            # During forward lexing (main lexer process) there are dedicated terminal states.
+            return __goto_distinct_terminal(winner_origin_list[0])
 
-    elif DSM.mode() == "ForwardLexing":
-        winner_origin = dead_end_target_state.origins().find_first_acceptance_origin()
-        assert type(winner_origin) != type(None)               # see first assert in this block
-
-        terminal_id = winner_origin.state_machine_id
-
-        # During forward lexing (main lexer process) there are dedicated terminal states.
-        return __goto_distinct_terminal(winner_origin)
+        else:
+            # Pre-context dependency can only appear in forward lexing which is the analyzis
+            # that determines the winning pattern. BackwardInputPositionDetection and 
+            # BackwardLexing can never depend on pre-conditions.
+            return LanguageDB["$goto"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     elif DSM.mode() == "BackwardLexing":
-        # When checking a pre-condition no dedicated terminal exists. However, when
-        # we check for pre-conditions, a pre-condition flag needs to be set.
-        return "".join(acceptance_info.backward_lexing(dead_end_target_state.origins().get_list()))
+        return LanguageDB["$goto"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     elif DSM.mode() == "BackwardInputPositionDetection":
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
-        txt  = [ LanguageDB["$input/decrement"], "\n"] + \
-               acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]  # general terminal
-        return "".join(txt)
+        return LanguageDB["$goto"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % DSM.mode()
     
+def do_dead_end_state_stub(DeadEndStateInfo, Mode):
+    """Dead end states are states which are void of any transitions. They 
+       all drop out to some terminal (or drop out totally). Many transitions 
+       to goto states can be replaced by direct transitions to the correspondent
+       terminal. Some dead end states, though, need to be replaced by 'stubs'
+       where some basic handling is necessary. The implementation of such 
+       stubs is handled inside this function.
+    """
+    LanguageDB = Setup.language_db
+
+    pre_context_dependency_f, \
+    winner_origin_list,       \
+    state                     = DeadEndStateInfo
+
+    assert isinstance(state, State)
+    assert state.is_acceptance()
+
+    if Mode == "ForwardLexing":
+        if not pre_context_dependency_f:
+            assert len(winner_origin_list) == 1
+            # Direct transition to terminal possible, no stub required.
+            return [] 
+
+        else:
+            return [ 
+                    acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+                                                            __goto_distinct_terminal),
+                    # Pre-conditions might not have their pre-condition fulfilled.
+                    LanguageDB["$goto-last_acceptance"],
+                    "\n"
+                   ]
+
+    elif Mode == "BackwardLexing":
+        # When checking a pre-condition no dedicated terminal exists. However, when
+        # we check for pre-conditions, a pre-condition flag needs to be set.
+        return acceptance_info.backward_lexing(state.origins().get_list())
+
+
+    elif Mode == "BackwardInputPositionDetection":
+        # When searching backwards for the end of the core pattern, and one reaches
+        # a dead end state, then no position needs to be stored extra since it was
+        # stored at the entry of the state.
+        return [ LanguageDB["$input/decrement"], "\n"] + \
+               acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
+               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]  # general terminal
+
+    assert False, \
+           "Unknown mode '%s' in terminal stub code generation." % Mode
+
 def __goto_distinct_terminal(Origin):
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
@@ -124,31 +167,3 @@ def __goto_distinct_terminal(Origin):
     else:
         return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
-def do_dead_end_router(state, StateIdx, BackwardLexingF):
-    # DeadEndType == -1:
-    #    States, that do not contain any acceptance transit to the 'General Terminal'
-    #    They do not have to be coded. Instead the 'jump' must be redirected immediately
-    #    to the general terminal.
-    # DeadEndType == some integer:
-    #    States, where the acceptance is clear must be redirected to the correspondent
-    #    terminal given by the integer.
-    # DeadEndType == None:
-    #    States, where the acceptance depends on the run-time pre-conditions being fulfilled
-    #    or not. They are the only ones, that are 'implemented' as routers, that map to
-    #    a terminal correspondent the pre-conditions.
-    assert isinstance(state, State)
-    assert state.is_acceptance()
-    LanguageDB = Setup.language_db
-
-    if state.origins().contains_any_pre_context_dependency() == False: 
-        return [] # LanguageDB["$goto-last_acceptance"] + "\n"
-
-    txt = [ 
-            acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                    __goto_distinct_terminal),
-            # Pre-conditions might not have their pre-condition fulfilled.
-            LanguageDB["$goto-last_acceptance"],
-            "\n"
-          ]
-
-    return txt

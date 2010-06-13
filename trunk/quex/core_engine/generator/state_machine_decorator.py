@@ -25,8 +25,7 @@ class StateMachineDecorator:
 
         # -- collect the 'dead end states' (states without further transitions)
         #    create a map from the 'dead end state
-        self.__dead_end_state_db, self.__directly_reached_terminal_id_list = \
-                dead_end_analyzis.do(SM)
+        self.__dead_end_state_db = dead_end_analyzis.do(SM)
 
         if BackwardLexingF:
             # During backward lexing (pre-condition, backward input position detection)
@@ -69,7 +68,10 @@ class StateMachineDecorator:
         return self.__dead_end_state_db
 
     def directly_reached_terminal_id_list(self):
-        self.__directly_reached_terminal_id_list
+        result = []
+        for info in self.__dead_end_state_db.values():
+            result.extend(info[1])
+        return result
 
 
 

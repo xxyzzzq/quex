@@ -33,6 +33,7 @@ __label_db = \
     "$pathwalker":            lambda StateIdx:    "PATH_WALKER_%s"    % __nice(StateIdx),
     "$pathwalker-router":     lambda StateIdx:    "PATH_WALKER_%s_STATE_ROUTER" % __nice(StateIdx),
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
+    "$entry-stub":            lambda StateIdx:    "STATE_%s_STUB"     % __nice(StateIdx),
     "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
     "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),
     "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),

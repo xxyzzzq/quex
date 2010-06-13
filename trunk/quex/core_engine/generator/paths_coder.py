@@ -87,6 +87,9 @@ import quex.core_engine.generator.template_coder               as template_coder
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 import quex.core_engine.state_machine.compression.paths        as paths 
+from   quex.core_engine.interval_handling                      import Interval
+import quex.core_engine.utf8                                   as utf8  
+
 
 
 from copy import deepcopy
@@ -108,7 +111,11 @@ def do(SMD, UniformOnlyF):
     assert isinstance(SMD, StateMachineDecorator)
           
     # (1) Find possible state combinations
+    print "##", UniformOnlyF
     path_list = paths.do(SMD.sm(), UniformOnlyF)
+    for path in path_list:
+        involved_state_index_list = map(lambda info: info[0], path.sequence())
+        print "## uniform:", SMD.sm().check_uniformity(involved_state_index_list)
 
     # (2) Implement code for template combinations
     path_array_definitions,   \
@@ -180,7 +187,7 @@ def _do(PathList, SMD, UniformOnlyF):
     # -- Create 'PathWalkerState' objects that can mimik state machine states.
     # -- Collect all indices of states involved in paths
     involved_state_index_list = set([])
-    pathwalker_list = []
+    path_walker_list = []
     for state_index, path_list in path_db.items():
         # Two Scenarios for settings at state entry (last_acceptance_position, ...)
         # 
@@ -203,7 +210,7 @@ def _do(PathList, SMD, UniformOnlyF):
         # -- Determine if all involved states are uniform
         prototype = template_coder.get_uniform_prototype(SMD, involved_state_index_list)
 
-        pathwalker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
+        path_walker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
 
     # -- Generate code for:
     #      -- related variables: paths for pathwalkers
@@ -212,10 +219,10 @@ def _do(PathList, SMD, UniformOnlyF):
     variable_db = {}
     code        = []
     router_code = []
-    __path_definition(variable_db, pathwalker_list) 
-    for pathwalker in pathwalker_list:
-        __state_entries(code, pathwalker, SMD)
-        __path_walker(code, pathwalker, SMD)
+    for path_walker in path_walker_list:
+        __path_definition(variable_db, path_walker) 
+        __state_entries(code, path_walker, SMD)
+        __path_walker(code, path_walker, SMD)
 
     return variable_db, code, involved_state_index_list
 
@@ -282,40 +289,42 @@ class PathWalkerState(state_machine.State):
         # All skeletons must be the same, so the first one can do the job.
         return self.__path_list[0].skeleton()
 
-def __path_definition(variable_db, PathWalkerList):
+def __path_definition(variable_db, PathWalker):
     """Defines the transition targets for each involved state.
     """
-    for path_walker in  PathWalkerList:
-        memory = ["\n"]
-        memory_index = 0
-        PathWalkerID = path_walker.core().state_index
-        for path in path_walker.path_list():
-            Sequence = path.sequence()
-            L        = len(Sequence)
+    memory = ["\n"]
+    memory_index = 0
+    PathWalkerID = PathWalker.core().state_index
+    for path in PathWalker.path_list():
+        Sequence = path.sequence()
+        L        = len(Sequence)
 
-            # Last element of sequence contains only the 'end state'.
-            memory.append("    ")
-            for state_index, character in Sequence[:-1]:
-                memory.append("%i, " % character)
-            memory.append("QUEX_SETTING_PATH_TERMINATION_CODE,\n")
+        # Last element of sequence contains only the 'end state'.
+        memory.append("    ")
+        sequence_str = []
+        for state_index, character in Sequence[:-1]:
+            memory.append("%i, " % character)
+            sequence_str.append(Interval(character).get_utf8_string())
+        memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
+        memory.append(LanguageDB["$comment"]("".join(sequence_str)))
 
-            variable_name  = "path_%i" % path.index()
-            variable_type  = "const QUEX_TYPE_CHARACTER*"
-            variable_value = "pathwalker_%i_base + %i" % (PathWalkerID, memory_index)
+        variable_name  = "path_%i" % path.index()
+        variable_type  = "const QUEX_TYPE_CHARACTER*"
+        variable_value = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
 
-            variable_db[variable_name] = [ variable_type, variable_value ]
+        variable_db[variable_name] = [ variable_type, variable_value ]
 
-            variable_name  = "path_%i_end" % path.index()
-            variable_type  = "const QUEX_TYPE_CHARACTER*"
-            variable_value = "pathwalker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
-            variable_db[variable_name] = [ variable_type, variable_value ]
-            memory_index += L
+        variable_name  = "path_%i_end" % path.index()
+        variable_type  = "const QUEX_TYPE_CHARACTER*"
+        variable_value = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
+        variable_db[variable_name] = [ variable_type, variable_value ]
+        memory_index += L
 
-        variable_name  = "pathwalker_%i_base" % PathWalkerID
-        variable_type  = "const QUEX_TYPE_CHARACTER"
-        variable_value = "{" + "".join(memory) + "    }"
-        variable_dim   = memory_index + 1
-        variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
+    variable_name  = "path_walker_%i_base" % PathWalkerID
+    variable_type  = "const QUEX_TYPE_CHARACTER"
+    variable_value = "{" + "".join(memory) + "\n    }"
+    variable_dim   = memory_index + 1
+    variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
     
 
 def __state_entries(txt, PathWalker, SMD):
@@ -368,6 +377,7 @@ def __state_entries(txt, PathWalker, SMD):
                 txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
                 txt.append("    " + LanguageDB["$assignment"]("path_index", "%i" % i).replace("\n", "\n    ") + "\n")
                 txt.append("#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+            txt.append("   ")
             txt.append(LanguageDB["$assignment"]("path_iterator", 
                                                  "path_%i + %i" % (path.index(), i)).replace("\n", "\n    "))
             txt.append(LanguageDB["$goto"]("$pathwalker", PathWalker.core().state_index))
@@ -464,7 +474,7 @@ def __state_router(PathWalker, SMD):
 
     # (1) 'Pure C Implementation' State Routing
     txt = [ "#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n" ]
-    #    switch( path_iterator - pathwalker_base ) {
+    #    switch( path_iterator - path_walker_base ) {
     #         case 0:  STATE_341;
     #         case 1:  STATE_345;
     #         case 3:  STATE_346;
@@ -473,7 +483,7 @@ def __state_router(PathWalker, SMD):
 
     # (2) 'Computed Goto Implementation'
     txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
-    txt.append("        goto pathwalker_%i_state[path_iterator - pathwalker_%i_base];\n" % (PathWalkerID, PathWalkerID))
+    txt.append("        goto path_walker_%i_state[path_iterator - path_walker_%i_base];\n" % (PathWalkerID, PathWalkerID))
     txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
 
     return "".join(txt)
@@ -503,7 +513,7 @@ def __end_state_router(txt, PathWalker, SMD):
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
         txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
-        txt.append("        goto pathwalker_%i_end_state[path_index];\n" % PathWalkerID)
+        txt.append("        goto path_walker_%i_end_state[path_index];\n" % PathWalkerID)
         txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
         txt.append("        ")
         txt.append(LanguageDB["$input/decrement"] + "\n")
@@ -517,7 +527,7 @@ def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):
     PathWalkerID = PathWalker.core().state_index
     
     txt.append("            ")
-    txt.append(LanguageDB["$switch"]("(int)(path_iterator - pathwalker_%i_base)" % PathWalkerID))
+    txt.append(LanguageDB["$switch"]("(int)(path_iterator - path_walker_%i_base)" % PathWalkerID))
     memory_index = 0
     for path in PathWalker.path_list():
         for info in path.sequence():
