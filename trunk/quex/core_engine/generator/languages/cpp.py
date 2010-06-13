@@ -47,6 +47,8 @@ def __header_definitions(LanguageDB):
     return txt
 
 def __local_variable_definitions(VariableDB):
+    if len(VariableDB) == 0: return ""
+
     variable_list = map(lambda x: ([x[0]] + x[1]), VariableDB.items())
     variable_list.sort(lambda a, b: cmp(a[1], b[1]))
     L = max(map(lambda info: len(info[0]), variable_list))

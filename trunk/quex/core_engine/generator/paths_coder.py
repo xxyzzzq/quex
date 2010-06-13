@@ -111,11 +111,9 @@ def do(SMD, UniformOnlyF):
     assert isinstance(SMD, StateMachineDecorator)
           
     # (1) Find possible state combinations
-    print "##", UniformOnlyF
     path_list = paths.do(SMD.sm(), UniformOnlyF)
     for path in path_list:
         involved_state_index_list = map(lambda info: info[0], path.sequence())
-        print "## uniform:", SMD.sm().check_uniformity(involved_state_index_list)
 
     # (2) Implement code for template combinations
     path_array_definitions,   \
@@ -306,7 +304,7 @@ def __path_definition(variable_db, PathWalker):
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
-        memory.append(LanguageDB["$comment"]("".join(sequence_str)))
+        memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
         variable_name  = "path_%i" % path.index()
         variable_type  = "const QUEX_TYPE_CHARACTER*"
