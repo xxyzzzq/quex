@@ -178,6 +178,7 @@ db["C++"] = {
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$goto":                 lambda Type, Argument=None:  "goto %s;" % label_db_get(Type, Argument, GotoTargetF=True),
+    "$goto-pure":            lambda Argument:             "goto %s;" % Argument,
     "$goto-template":        lambda TemplateStateIdx, StateKey: 
                              "template_state_key = %i; " % StateKey + \
                              "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
@@ -189,6 +190,7 @@ db["C++"] = {
                                    "QUEX_TEMPLATE_GOTO_BACKWARD(%i, %i);" % (TemplateIdx, TargetIdx),
     "$goto-template-state-key-bw": lambda TemplateIdx: 
                                    "QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(%i);" % TemplateIdx,
+    "$label":                lambda Type, Argument: label_db_get(Type, Argument, GotoTargetF=True),
     "$label-pure":           lambda Label:                "%s:" % Label,
     "$label-def":            lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \

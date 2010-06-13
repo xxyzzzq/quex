@@ -3,6 +3,36 @@ import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
 
 def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
+    LanguageDB = Setup.language_db
+
+    # Template Transition Targets are a little different ...
+    result = __template_transition_target(TargetStateIdx, DSM)
+    if result != None: return result
+
+    # All normal transitions can be handled by 'goto' plus 'label'
+    return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM))
+
+def __template_transition_target(Info, DSM):
+    """Template transition target states. The target state is determined at 
+       run-time based on a 'state_key' for the template.
+       NOTE: This handles also the recursive case.
+    """
+    LanguageDB = Setup.language_db
+    if Info.__class__.__name__ != "TemplateTarget": return None
+
+    if not Info.recursive():
+        if DSM.backward_lexing_f(): cmd = "$goto-template-target-bw"
+        else:                       cmd = "$goto-template-target"
+        return LanguageDB[cmd](Info.template_index, Info.target_index)
+
+    elif not Info.uniform_state_entries_f():
+        if DSM.backward_lexing_f(): cmd = "$goto-template-state-key-bw"
+        else:                       cmd = "$goto-template-state-key"
+        return LanguageDB[cmd](Info.template_index) 
+    else:
+        return LanguageDB["$goto"]("$template", Info.template_index)
+
+def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
     """
         TargetStateIdx: != None: Index of the state to which 'goto' has to go.
                         == None: Drop Out. Goto a terminal state.
@@ -12,9 +42,9 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
     """
     LanguageDB = Setup.language_db
 
-    assert    TargetStateIdx                    == None             \
-           or TargetStateIdx.__class__.__name__ == "TemplateTarget" \
-           or TargetStateIdx                    >= 0
+    assert TargetStateIdx.__class__.__name__ != "TemplateTarget" 
+    assert    TargetStateIdx                 == None \
+           or TargetStateIdx                 >= 0
 
     assert    CurrentStateIdx == None \
            or CurrentStateIdx >= 0
@@ -27,51 +57,32 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
 
     # (0) Transitions to 'dead-end-state'
     if DSM != None and DSM.dead_end_state_db().has_key(TargetStateIdx):
-        return __transition_to_dead_end_state(TargetStateIdx, DSM)
+        return __dead_end_state_label(TargetStateIdx, DSM)
 
-    # (1) Template transition target states. 
-    #     The target state is determined at run-time based on a 'state_key'
-    #     for the template.
-    #     NOTE: This handles also the recursive case, if .target_index == -2
-    if TargetStateIdx.__class__.__name__ == "TemplateTarget":
-        info = TargetStateIdx
-        if not info.recursive():
-            if DSM.backward_lexing_f(): cmd = "$goto-template-target-bw"
-            else:                       cmd = "$goto-template-target"
-            return LanguageDB[cmd](info.template_index, info.target_index)
-
-        elif not info.uniform_state_entries_f():
-            if DSM.backward_lexing_f(): cmd = "$goto-template-state-key-bw"
-            else:                       cmd = "$goto-template-state-key"
-            return LanguageDB[cmd](info.template_index) 
-        else:
-            return LanguageDB["$goto"]("$template", info.template_index)
-
-    # (2) The very normal transition to another state
+    # (1) The very normal transition to another state
     elif TargetStateIdx != None:   
-        return LanguageDB["$goto"]("$entry", TargetStateIdx)
+        return LanguageDB["$label"]("$entry", TargetStateIdx)
 
-    # (3) Drop Out
+    # (2) Drop Out
+    #     The normal drop out contains a check against the buffer limit code.
+    #     This check can be avoided, if one is sure that the current interval
+    #     does not contain a buffer limit code.
+    assert isinstance(Setup.buffer_limit_code, int)
+    if    TriggerInterval == None \
+       or TriggerInterval.contains(Setup.buffer_limit_code):
+        return LanguageDB["$label"]("$drop-out", CurrentStateIdx)
     else:
-        # The normal drop out contains a check against the buffer limit code.
-        # This check can be avoided, if one is sure that the current interval
-        # does not contain a buffer limit code.
-        assert isinstance(Setup.buffer_limit_code, int)
-        if    TriggerInterval == None \
-           or TriggerInterval.contains(Setup.buffer_limit_code):
-            return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)
-        else:
-            return LanguageDB["$goto"]("$drop-out-direct", CurrentStateIdx)
+        return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
 
-def __transition_to_dead_end_state(TargetStateIdx, DSM):
+def __dead_end_state_label(TargetStateIdx, DSM):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that
        there is actually no 'transition block' in that state and it transits
        directly to a terminal.  The jump to those states can be shortcut. It is
        not necessary to go to that state and then drop out, and then goto the
        terminal. The transition to the terminal can be done directly.  
     """
-    LanguageDB = Setup.language_db
     assert DSM != None
+    LanguageDB = Setup.language_db
 
     pre_context_dependency_f, \
     winner_origin_list,       \
@@ -88,22 +99,22 @@ def __transition_to_dead_end_state(TargetStateIdx, DSM):
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
             # During forward lexing (main lexer process) there are dedicated terminal states.
-            return __goto_distinct_terminal(winner_origin_list[0])
+            return __label_distinct_terminal(winner_origin_list[0])
 
         else:
             # Pre-context dependency can only appear in forward lexing which is the analyzis
             # that determines the winning pattern. BackwardInputPositionDetection and 
             # BackwardLexing can never depend on pre-conditions.
-            return LanguageDB["$goto"]("$entry-stub", TargetStateIdx)   # router to terminal
+            return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     elif DSM.mode() == "BackwardLexing":
-        return LanguageDB["$goto"]("$entry-stub", TargetStateIdx)   # router to terminal
+        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     elif DSM.mode() == "BackwardInputPositionDetection":
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
-        return LanguageDB["$goto"]("$entry-stub", TargetStateIdx)   # router to terminal
+        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % DSM.mode()
@@ -158,13 +169,18 @@ def do_dead_end_state_stub(DeadEndStateInfo, Mode):
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode
 
-def __goto_distinct_terminal(Origin):
+def __label_distinct_terminal(Origin):
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
     if Origin.post_context_id() == -1:
-        return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
+        return LanguageDB["$label"]("$terminal", Origin.state_machine_id)
     else:
-        return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+        return LanguageDB["$label"]("$terminal-direct", Origin.state_machine_id)
+
+def __goto_distinct_terminal(Origin):
+    assert Origin.is_acceptance()
+    LanguageDB = Setup.language_db
+    return LanguageDB["$goto-pure"](__label_distinct_terminal(Origin))
 
