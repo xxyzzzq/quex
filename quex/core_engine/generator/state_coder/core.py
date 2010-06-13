@@ -23,16 +23,22 @@ def do(state, StateIdx, SMD=False):
 
     LanguageDB = Setup.language_db
 
-    label_str = LanguageDB["$label-def"]("$entry", StateIdx)
-    if not InitStateF:
-        label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
-                    label_str
+    entry_str = ""
+    if not InitStateF: 
+        entry_str += "    __quex_assert(false); /* No drop-through between states */\n"
 
     # Special handling of dead-end-states, i.e. states with no further transitions.
-    if SMD.dead_end_state_db().has_key(StateIdx):
-        txt = transition.do_dead_end_router(state, StateIdx, SMD.backward_lexing_f())
-        if len(txt) != 0: txt.insert(0, label_str)
+    dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
+    if dead_end_state_info != None:
+        txt = transition.do_dead_end_state_stub(dead_end_state_info, SMD.mode())
+        # Some states do not need 'stubs' to terminal since they are straight
+        # forward transitions to the terminal.
+        if len(txt) == 0: return []
+        entry_str += LanguageDB["$label-def"]("$entry-stub", StateIdx)
+        txt.insert(0, entry_str)
         return txt
+
+    entry_str += LanguageDB["$label-def"]("$entry", StateIdx)
 
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -55,6 +61,6 @@ def do(state, StateIdx, SMD=False):
                     "    ", LanguageDB["$input/increment"],          "\n",
                     "    ", LanguageDB["$goto"]("$entry", StateIdx), "\n"])
     
-    if len(txt) != 0: txt.insert(0, label_str)
+    if len(txt) != 0: txt.insert(0, entry_str)
     return txt # .replace("\n", "\n    ") + "\n"
 
