@@ -218,7 +218,7 @@ def _do(PathList, SMD, UniformOnlyF):
     code        = []
     router_code = []
     for path_walker in path_walker_list:
-        __path_definition(variable_db, path_walker) 
+        __path_definition(variable_db, path_walker, SMD) 
         __state_entries(code, path_walker, SMD)
         __path_walker(code, path_walker, SMD)
 
@@ -287,13 +287,18 @@ class PathWalkerState(state_machine.State):
         # All skeletons must be the same, so the first one can do the job.
         return self.__path_list[0].skeleton()
 
-def __path_definition(variable_db, PathWalker):
+def __path_definition(variable_db, PathWalker, SMD):
     """Defines the transition targets for each involved state.
     """
-    memory = ["\n"]
-    memory_index = 0
     PathWalkerID = PathWalker.core().state_index
-    for path in PathWalker.path_list():
+    PathList     = PathWalker.path_list()
+    PathN        = len(PathList)
+
+    state_list     = []
+    end_state_list = []
+    memory         = ["\n"]
+    memory_index   = 0
+    for path in PathList:
         Sequence = path.sequence()
         L        = len(Sequence)
 
@@ -303,13 +308,16 @@ def __path_definition(variable_db, PathWalker):
         for state_index, character in Sequence[:-1]:
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
+            state_list.append("%s, " % transition.get_label(state_index, None, None, SMD))
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
+
+        end_state_list.append("%s, " % transition.get_label(Sequence[-1], None, None, SMD))
+        state_list.append("%s, " % transition.get_label(Sequence[-1], None, None, SMD))
 
         variable_name  = "path_%i" % path.index()
         variable_type  = "const QUEX_TYPE_CHARACTER*"
         variable_value = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
-
         variable_db[variable_name] = [ variable_type, variable_value ]
 
         variable_name  = "path_%i_end" % path.index()
@@ -324,6 +332,19 @@ def __path_definition(variable_db, PathWalker):
     variable_dim   = memory_index + 1
     variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
     
+    if PathWalker.uniform_state_entries_f() and PathN != 1:
+        variable_name  = "path_walker_%i_end_state" % PathWalkerID
+        variable_type  = "const QUEX_TYPE_GOTO_LABEL"
+        variable_value = "{" + "".join(end_state_list) + "}"
+        variable_dim   = PathN
+        variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
+
+    if not PathWalker.uniform_state_entries_f() and PathN != 1:
+        variable_name  = "path_walker_%i_state" % PathWalkerID
+        variable_type  = "const QUEX_TYPE_GOTO_LABEL"
+        variable_value = "{" + "".join(state_list) + "}"
+        variable_dim   = len(state_list)
+        variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
 
 def __state_entries(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key
