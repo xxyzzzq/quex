@@ -25,7 +25,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_TYPE_ANALYZER*   _the_lexer;
 
-        int     _indentation;                 /* number of columns to first non-whitespace  */
+        size_t  _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
         bool    _indentation_count_enabled_f; /* count whitespace for indentation?          */
         bool    _indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
@@ -63,16 +63,16 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void    
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
                                             QUEX_TYPE_CHARACTER*     Lexeme,
-                                            const int                LexemeL);
+                                            const size_t             LexemeL);
     QUEX_INLINE void  
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(
                                                  QUEX_NAME(CounterLineColumnIndentation)*  me, 
-                                                 const int                                 ColumnNIncrement); 
+                                                 const size_t                              ColumnNIncrement); 
 
     QUEX_INLINE void  
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpace)(
                                                      QUEX_NAME(CounterLineColumnIndentation)*  me, 
-                                                     const int                                 ColumnNIncrement);
+                                                     const size_t                              ColumnNIncrement);
 
     QUEX_INLINE void
     QUEX_NAME(CounterLineColumnIndentation_count_indentation_aux)(

@@ -15,7 +15,7 @@ token_type {
    }
    distinct {
        text   :  std::basic_string<QUEX_TYPE_CHARACTER>;
-       number :  int;
+       number :  size_t;
    }
 
    inheritable;

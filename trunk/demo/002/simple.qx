@@ -69,8 +69,8 @@ repeated_token {
 }
 
 body {
-    std::vector<int>  indentation_stack;
-    bool              allow_opening_indentation_f;
+    std::vector<size_t>  indentation_stack;
+    bool                 allow_opening_indentation_f;
 }
 
 init {

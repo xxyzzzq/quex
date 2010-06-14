@@ -64,7 +64,7 @@ $$EXIT-PROCEDURE$$
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER* me, const int Indentation) {
+    QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER* me, const size_t Indentation) {
 $$INDENTATION-PROCEDURE$$
     }
 #endif
