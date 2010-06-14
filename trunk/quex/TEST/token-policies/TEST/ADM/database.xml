@@ -1,16 +1,16 @@
-<test-database execution-time-sec="2.60" date="Mon Jun 14 08:02:59 2010">
+<test-database execution-time-sec="2.60" date="Mon Jun 14 21:04:48 2010">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
         <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="2.13"> 
             <application file-name="queue.exe" info-request-time="1276062375L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.527226"/>
+            <make-procedure success="False" time_sec="1.527226"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="2.13" crc="721591502"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.43"> 
             <application file-name="queue-real.exe" info-request-time="1276062380L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.477977"/>
+            <make-procedure success="False" time_sec="1.477977"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.43" crc="1977572885"/>
             </choice-list>
@@ -19,14 +19,14 @@
     <group name="Token Policy 'single'">
         <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="users_token.exe" info-request-time="1276062377L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.458447"/>
+            <make-procedure success="False" time_sec="1.458447"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.01" crc="-1396014048"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="users_token-real.exe" info-request-time="1276062378L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.435731"/>
+            <make-procedure success="False" time_sec="1.435731"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.01" crc="1977572885"/>
             </choice-list>
