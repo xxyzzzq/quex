@@ -196,7 +196,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void    
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
                                             QUEX_TYPE_CHARACTER*     Lexeme,
-                                            const int                LexemeL)
+                                            const size_t             LexemeL)
     /* Lexeme:    Pointer to first character of Lexeme.
      * LexemeEnd: Pointer to first character after Lexeme. */
     {
@@ -231,7 +231,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(QUEX_NAME(CounterLineColumnIndentation)* me, 
-                                                                   const int ColumnNIncrement) 
+                    const size_t ColumnNIncrement) 
     /* This is the fastest way to count: simply add the constant integer that represents 
      * the constant length of the lexeme (for patterns with fixed length, e.g. keywords). */
     {
@@ -248,7 +248,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpace)(QUEX_NAME(CounterLineColumnIndentation)*  me, 
-                                                              const int                ColumnNIncrement) 
+                                                              const size_t                ColumnNIncrement) 
     {
         __quex_assert(ColumnNIncrement > 0);  /* lexeme length >= 1 */
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING

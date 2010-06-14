@@ -20,7 +20,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER* me, 
-                                                 const int  Indentation) 
+                                                 const size_t  Indentation) 
     { }
 
     QUEX_INLINE void

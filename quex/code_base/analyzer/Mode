@@ -28,12 +28,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
 
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indentation)(QUEX_TYPE_ANALYZER*, const int Indentation);
+        void (*on_indentation)(QUEX_TYPE_ANALYZER*, const size_t Indentation);
 #       endif
         void (*on_entry)(QUEX_TYPE_ANALYZER*, const struct QUEX_NAME(Mode_tag)* FromMode);
         void (*on_exit)(QUEX_TYPE_ANALYZER*, const struct QUEX_NAME(Mode_tag)* ToMode);
 #       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
-
         bool (*has_base)(const struct QUEX_NAME(Mode_tag)* Mode);
         bool (*has_entry_from)(const struct QUEX_NAME(Mode_tag)* Mode);
         bool (*has_exit_to)(const struct QUEX_NAME(Mode_tag)* Mode);
@@ -44,7 +43,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Mode_uncallable_analyzer_function)(QUEX_TYPE_ANALYZER* me);
 
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER* me, const int Indentation); 
+    QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER* me, const size_t Indentation); 
 
     QUEX_INLINE void
     QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* TheMode);

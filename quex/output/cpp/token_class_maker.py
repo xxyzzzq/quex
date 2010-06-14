@@ -157,7 +157,8 @@ def get_setter_getter(Descr):
                             "int", "unsigned int", "singed int",
                             "long", "unsigned long", "singed long",
                             "float", "unsigned float", "singed float",
-                            "double", "unsigned double", "singed double"]:
+                            "double", "unsigned double", "singed double",
+                            "size_t", "uintptr_t", "ptrdiff_t"]:
             type_str += "&"
 
         my_def = "    void%s set_%s(%s Value) %s{ %s = Value; }" \

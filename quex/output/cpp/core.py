@@ -307,7 +307,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
-                                    "QUEX_TYPE_ANALYZER*, const int")
+                                    "QUEX_TYPE_ANALYZER*, const size_t")
 
     for mode in Modes:
         for event_name in ["on_exit", "on_entry"]:
