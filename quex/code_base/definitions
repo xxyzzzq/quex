@@ -8,9 +8,10 @@
 #include<quex/code_base/compatibility/inttypes.h>
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
-#ifdef _MSC_VER
-    /* Microsoft VisualStudio(tm): Forget about the 'CRT security enhancements'
-     *                             for sprintf, fopen, and setbuf.               */
+#if defined(_MSC_VER) && _MSC_VER >= 1600
+    /* Microsoft VisualStudio(tm) 2010, i.e. Version 1600:
+     *     Forget about the 'CRT security enhancements'
+     *     for sprintf, fopen, and setbuf.               */
 #   pragma warning(disable: 4996)
 #endif
 

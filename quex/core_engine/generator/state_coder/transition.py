@@ -61,6 +61,7 @@ def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
 
     # (1) The very normal transition to another state
     elif TargetStateIdx != None:   
+        assert type(TargetStateIdx) in [int, long]
         return LanguageDB["$label"]("$entry", TargetStateIdx)
 
     # (2) Drop Out
@@ -96,6 +97,7 @@ def __dead_end_state_label(TargetStateIdx, DSM):
            "to a non-acceptance dead end is to be translated into a drop-out."
 
     if DSM.mode() == "ForwardLexing":
+        if TargetStateIdx == 353: print "##ENTER01"
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
             # During forward lexing (main lexer process) there are dedicated terminal states.
