@@ -18,7 +18,13 @@ import quex.core_engine.regular_expression.core            as regex
 #
 from   quex.input.setup import setup as Setup
 
-# Switch manually for debug output: 'False' --> DEBUG output.
+# Switch: Removal of source and executable file
+#         'False' --> No removal.
+if True: REMOVE_FILES = True
+else:    REMOVE_FILES = False
+
+# Switch: Verbose debug output: 
+#         'False' --> Verbose debug output
 if True:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
@@ -30,7 +36,7 @@ else:
 choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path", "Cpp-PathUniform"] 
 choices_str  = "CHOICES: " + repr(choices_list)[1:-1].replace("'", "") + ";"
 
-def hwut_input(Title, Extra=""):
+def hwut_input(Title, Extra="", AddChoices=[]):
     global choices_list
 
     if "--hwut-info" in sys.argv:
@@ -43,7 +49,7 @@ def hwut_input(Title, Extra=""):
         print "Choice argument requested. Run --hwut-info"
         sys.exit(0)
 
-    if sys.argv[1] not in choices_list: 
+    if sys.argv[1] not in choices_list + AddChoices: 
         print "Choice '%s' not acceptable." % Choice
         sys.exit(0)
 
@@ -160,7 +166,8 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     os.write(fd, SourceCode) 
     os.close(fd)    
     
-    os.system("mv -f %s tmp%s" % (filename_tmp, extension)); filename_tmp = "./tmp%s" % extension # DEBUG
+    os.system("mv -f %s tmp%s" % (filename_tmp, extension)); 
+    filename_tmp = "./tmp%s" % extension # DEBUG
 
     # NOTE: QUEX_OPTION_ASSERTS is defined by AssertsActionvation_str (or not)
     compile_str = compiler + " %s %s " % (AssertsActionvation_str, filename_tmp) + \
@@ -176,8 +183,9 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
 
     print "## (*) running the test"
     run_this("./%s.exe" % filename_tmp)
-    os.remove("%s.exe" % filename_tmp)
-    #os.remove(filename_tmp)
+    if REMOVE_FILES:
+        os.remove("%s.exe" % filename_tmp)
+        os.remove(filename_tmp)
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
     global plain_memory_based_test_program

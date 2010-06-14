@@ -69,7 +69,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         if state_index == state_machine.init_state_index: continue
         elif state_index in done_state_index_set:   
             continue
-
         state_code = state_coder.do(state, state_index, SMD)
 
         # some states are not coded (some dead end states)
