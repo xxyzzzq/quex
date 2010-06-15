@@ -154,7 +154,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             tmp[(int)(buffer->_lexeme_start_p - ContentFront) + 2] = 'S';
         /**/
         if ( buffer->_input_p == ContentFront - 2 ) {
-            __QUEX_STD_printf(tmp); 
+            __QUEX_STD_printf("%s", tmp); 
             __QUEX_STD_printf(" <out>");
         } else {
             __QUEX_STD_printf(" ");
