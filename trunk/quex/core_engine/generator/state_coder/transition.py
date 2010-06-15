@@ -2,17 +2,17 @@ from   quex.core_engine.state_machine.core import State
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
 
-def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
+def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     LanguageDB = Setup.language_db
 
     # Template Transition Targets are a little different ...
-    result = __template_transition_target(TargetStateIdx, DSM)
+    result = __template_transition_target(TargetStateIdx, SMD)
     if result != None: return result
 
     # All normal transitions can be handled by 'goto' plus 'label'
-    return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM))
+    return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD))
 
-def __template_transition_target(Info, DSM):
+def __template_transition_target(Info, SMD):
     """Template transition target states. The target state is determined at 
        run-time based on a 'state_key' for the template.
        NOTE: This handles also the recursive case.
@@ -21,23 +21,24 @@ def __template_transition_target(Info, DSM):
     if Info.__class__.__name__ != "TemplateTarget": return None
 
     if not Info.recursive():
-        if DSM.backward_lexing_f(): cmd = "$goto-template-target-bw"
-        else:                       cmd = "$goto-template-target"
+        if SMD.forward_lexing_f(): cmd = "$goto-template-target"
+        else:                      cmd = "$goto-template-target-bw" 
         return LanguageDB[cmd](Info.template_index, Info.target_index)
 
     elif not Info.uniform_state_entries_f():
-        if DSM.backward_lexing_f(): cmd = "$goto-template-state-key-bw"
-        else:                       cmd = "$goto-template-state-key"
+        if SMD.forward_lexing_f(): cmd = "$goto-template-state-key"
+        else:                      cmd = "$goto-template-state-key-bw"
         return LanguageDB[cmd](Info.template_index) 
+
     else:
         return LanguageDB["$goto"]("$template", Info.template_index)
 
-def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
+def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     """
         TargetStateIdx: != None: Index of the state to which 'goto' has to go.
                         == None: Drop Out. Goto a terminal state.
 
-        DSM == None: We are not concerned with the whole state machine and just want to
+        SMD == None: We are not concerned with the whole state machine and just want to
                      create a nice binary-bracketing transition (e.g. for range skippers).
     """
     LanguageDB = Setup.language_db
@@ -49,15 +50,15 @@ def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
     assert    CurrentStateIdx == None \
            or CurrentStateIdx >= 0
 
-    assert    DSM                    == None \
-           or DSM.__class__.__name__ == "StateMachineDecorator"
+    assert    SMD                    == None \
+           or SMD.__class__.__name__ == "StateMachineDecorator"
 
     assert    TriggerInterval                    == None       \
            or TriggerInterval.__class__.__name__ == "Interval" \
 
     # (0) Transitions to 'dead-end-state'
-    if DSM != None and DSM.dead_end_state_db().has_key(TargetStateIdx):
-        return __dead_end_state_label(TargetStateIdx, DSM)
+    if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
+        return __dead_end_state_label(TargetStateIdx, SMD)
 
     # (1) The very normal transition to another state
     elif TargetStateIdx != None:   
@@ -75,19 +76,19 @@ def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, DSM):
     else:
         return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
 
-def __dead_end_state_label(TargetStateIdx, DSM):
+def __dead_end_state_label(TargetStateIdx, SMD):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that
        there is actually no 'transition block' in that state and it transits
        directly to a terminal.  The jump to those states can be shortcut. It is
        not necessary to go to that state and then drop out, and then goto the
        terminal. The transition to the terminal can be done directly.  
     """
-    assert DSM != None
+    assert SMD != None
     LanguageDB = Setup.language_db
 
     pre_context_dependency_f, \
     winner_origin_list,       \
-    dead_end_target_state     = DSM.dead_end_state_db()[TargetStateIdx]
+    dead_end_target_state     = SMD.dead_end_state_db()[TargetStateIdx]
 
     assert dead_end_target_state.is_acceptance(), \
            "NON-ACCEPTANCE dead end detected during code generation!\n" + \
@@ -96,8 +97,7 @@ def __dead_end_state_label(TargetStateIdx, DSM):
            "If this is not the case, then something serious went wrong. A transition\n" + \
            "to a non-acceptance dead end is to be translated into a drop-out."
 
-    if DSM.mode() == "ForwardLexing":
-        if TargetStateIdx == 353: print "##ENTER01"
+    if SMD.forward_lexing_f():
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
             # During forward lexing (main lexer process) there are dedicated terminal states.
@@ -109,19 +109,19 @@ def __dead_end_state_label(TargetStateIdx, DSM):
             # BackwardLexing can never depend on pre-conditions.
             return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
-    elif DSM.mode() == "BackwardLexing":
+    elif SMD.backward_lexing_f():
         return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
-    elif DSM.mode() == "BackwardInputPositionDetection":
+    elif SMD. backward_input_position_detection_f():
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
         return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     else:
-        assert False, "Impossible engine generation mode: '%s'" % DSM.mode()
+        assert False, "Impossible engine generation mode: '%s'" % SMD.mode()
     
-def do_dead_end_state_stub(DeadEndStateInfo, Mode):
+def do_dead_end_state_stub(DeadEndStateInfo, SMD):
     """Dead end states are states which are void of any transitions. They 
        all drop out to some terminal (or drop out totally). Many transitions 
        to goto states can be replaced by direct transitions to the correspondent
@@ -138,29 +138,27 @@ def do_dead_end_state_stub(DeadEndStateInfo, Mode):
     assert isinstance(state, State)
     assert state.is_acceptance()
 
-    if Mode == "ForwardLexing":
+    if SMD.forward_lexing_f():
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
             # Direct transition to terminal possible, no stub required.
             return [] 
 
         else:
-            return [ 
-                    acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+            return [ acceptance_info.get_acceptance_detector(state.origins().get_list(), 
                                                             __goto_distinct_terminal),
                     # Pre-conditions might not have their pre-condition fulfilled.
                     LanguageDB["$goto-last_acceptance"],
-                    "\n"
-                   ]
+                    "\n" ]
 
-    elif Mode == "BackwardLexing":
+    elif SMD.backward_lexing_f():
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
         return acceptance_info.backward_lexing(state.origins().get_list()) + \
                [ LanguageDB["$goto"]("$terminal-general-bw", True) ] 
 
 
-    elif Mode == "BackwardInputPositionDetection":
+    elif SMD.backward_input_position_detection_f():
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.

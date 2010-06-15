@@ -33,6 +33,7 @@ if "--hwut-info" in sys.argv:
 
 state = State()
 
+target_state_index_list = []
 if "A" in sys.argv:
     state.add_transition(NumberSet([Interval(10,20),    Interval(195,196)]),  1L)
     state.add_transition(NumberSet([Interval(51,70),    Interval(261,280)]),  2L)
@@ -43,6 +44,7 @@ if "A" in sys.argv:
     state.add_transition(NumberSet([Interval(200,230),  Interval(231,240)]),  7L)
     state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71,71)]),  8L)
     
+    target_state_index_list = map(long, [1, 2, 3, 4, 5, 6, 7, 8])
     interval_end = 300
 
 elif "B" in sys.argv:
@@ -55,6 +57,8 @@ elif "B" in sys.argv:
     for i in range(4000):
         interval_size      = int(random.random() * 4) + 1
         target_state_index = long(random.random() * 10)
+        target_state_index_list.append(target_state_index)
+
         interval_end = interval_start + interval_size
         state.add_transition(Interval(interval_start, interval_end), target_state_index)
         interval_start = interval_end
@@ -70,12 +74,15 @@ elif "C" in sys.argv:
         if random.random() > 0.75:
             interval_size      = int(random.random() * 3) + 1
             target_state_index = long(random.random() * 5)
+            target_state_index_list.append(target_state_index)
 
             interval_end = interval_start + interval_size
             state.add_transition(Interval(interval_start, interval_end), target_state_index)
             interval_start = interval_end
         else:
             target_state_index = long(random.random() * 5)
+            target_state_index_list.append(target_state_index)
+
             for i in range(0, int(random.random() * 5) + 2):
                 state.add_transition(Interval(interval_start, interval_start + 1), target_state_index)
                 interval_start += 1 + int(random.random() * 2)
@@ -93,8 +100,14 @@ function  = function.replace("_-1_", "_MINUS_1_")
 # for line in function.split("\n"):
 #     print "##%i" % line_n, line
 #     line_n += 1
+states = []
+for state_index in target_state_index_list:
+    states.append("STATE_%i = %iL\n" % (state_index, state_index))
+states.append("STATE_None_DROP_OUT = -1\n")
+states.append("STATE_None_DROP_OUT_DIRECT = -1\n")
+state_txt = "".join(states)
 
-exec(function)
+exec(state_txt + function)
 differences = []    
 for number in range(interval_end):
     expected_state_index = state.transitions().get_resulting_target_state_index(number)

@@ -203,11 +203,11 @@ def filter_longest_options(path_list, equivalence_db):
     return
 
 class CharacterPath:
-    def __init__(self, StartStateIdx, Skeleton, StartCharacter):
-        assert isinstance(StartStateIdx, long)
+    def __init__(self, StartStateIndex, Skeleton, StartCharacter):
+        assert isinstance(StartStateIndex, long)
         assert isinstance(Skeleton, dict)
-        self.__start_state_index = StartStateIdx
-        self.__sequence          = [ (StartStateIdx, StartCharacter) ]
+        self.__start_state_index = StartStateIndex
+        self.__sequence          = [ (StartStateIndex, StartCharacter) ]
 
         self.__skeleton          = Skeleton
         self.__skeleton_key_set  = set(Skeleton.keys())
@@ -236,15 +236,15 @@ class CharacterPath:
         if len(self.__sequence) == 0: return -1
         return self.__sequence[-1][0]
 
-    def set_end_state_index(self, StateIdx):
-        self.__sequence.append((StateIdx, None))
+    def set_end_state_index(self, StateIndex):
+        self.__sequence.append((StateIndex, None))
 
-    def append(self, StateIdx, Char):
-        self.__sequence.append((StateIdx, Char))
+    def append(self, StateIndex, Char):
+        self.__sequence.append((StateIndex, Char))
 
-    def contains(self, StateIdx):
+    def contains(self, StateIndex):
         for state_idx, char in self.__sequence:
-            if state_idx == StateIdx: return True
+            if state_idx == StateIndex: return True
         return False
 
     def covers(self, Other):
@@ -448,10 +448,10 @@ def find_paths(SM):
            }
            /* Skeleton (transitions that are common for all elements of path) */
     """
-    return __find_begin(SM, SM.init_state_index)
+    return __find_begin(SM, SM.init_state_index, SM.init_state_index)
 
 __find_begin_touched_state_idx_list = {}
-def __find_begin(sm, StateIdx):
+def __find_begin(sm, StateIndex, InitStateIndex):
     """Searches for the beginning of a path, i.e. a single character 
        transition to a subsequent state. If such a transition is found,
        a 'skeleton' is computed in the 'CharacterPath' object. With this
@@ -467,7 +467,7 @@ def __find_begin(sm, StateIdx):
     """
     global __find_begin_touched_state_idx_list
 
-    State       = sm.states[StateIdx]
+    State       = sm.states[StateIndex]
     result_list = []
 
     transition_map = State.transitions().get_map()
@@ -477,7 +477,10 @@ def __find_begin(sm, StateIdx):
         __find_begin_touched_state_idx_list[target_idx] = True
 
         # IN ANY CASE: Check for paths in the subsequent state
-        result_list.extend(__find_begin(sm, target_idx))
+        result_list.extend(__find_begin(sm, target_idx, InitStateIndex))
+
+        # Never allow the init state to be part of the path
+        if StateIndex == InitStateIndex: continue
 
         # Only consider single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
@@ -490,17 +493,17 @@ def __find_begin(sm, StateIdx):
         # a 'deepcopy' is applied to disconnect it, see __find_continuation().
         del skeleton[target_idx]        # Delete reference to 'target_idx->trigger_set'
 
-        path = CharacterPath(StateIdx, skeleton, path_char)
+        path = CharacterPath(StateIndex, skeleton, path_char)
             
         result_list.extend(__find_continuation(sm, target_idx, path))
 
     return result_list
 
-def __find_continuation(sm, StateIdx, the_path):
+def __find_continuation(sm, StateIndex, the_path):
     """A basic skeleton of the path and the remaining trigger map is given. Now,
        try to find a subsequent path step.
     """
-    State       = sm.states[StateIdx]
+    State       = sm.states[StateIndex]
     result_list = []
 
     transition_map = State.transitions().get_map()
@@ -528,11 +531,11 @@ def __find_continuation(sm, StateIdx, the_path):
 
         # Find a continuation of the path
         single_char_transition_found_f = True
-        path.append(StateIdx, path_char)
+        path.append(StateIndex, path_char)
         result_list.extend(__find_continuation(sm, target_idx, path))
 
     if not single_char_transition_found_f and len(the_path) != 1:
-        the_path.set_end_state_index(StateIdx)
+        the_path.set_end_state_index(StateIndex)
         result_list.append(the_path)
 
     return result_list

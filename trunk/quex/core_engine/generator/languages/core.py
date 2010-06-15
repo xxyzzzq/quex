@@ -275,14 +275,15 @@ db["Python"] = {
     "$acceptance-info-fw":   lambda x, y: "",
     "$acceptance-info-bw":   lambda x, y: "",
     "$acceptance-info-bwfc": lambda x, y: "",
-    "$label":             "",   
-    "$include":           lambda include_file: "#include <%s>" % include_file,
+    "$label":                lambda Type, Argument: label_db_get(Type, Argument, GotoTargetF=True),
+    "$include":              lambda include_file: "#include <%s>" % include_file,
     "$debug-info-input":  "",
     "$header-definitions": "",
     "$goto-last_acceptance": "# QUEX_GOTO_last_acceptance();\n",
     "$drop-out": "# drop out\n",
     #
     "$goto":                lambda Type, Argument=None:  "return %s;" % Argument,
+    "$goto-pure":           lambda Argument:             "return %s;" % Argument,
     "$label-def":           lambda Type, Argument=None:  
                                 "#%s:\n"                                % label_db[Type](Argument) + \
                                 "#    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),

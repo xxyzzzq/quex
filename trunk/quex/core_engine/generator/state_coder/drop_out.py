@@ -80,7 +80,7 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
     LanguageDB = Setup.language_db
     InitStateF = (StateIdx == SMD.sm().init_state_index)
 
-    if SMD.backward_lexing_f() == False: 
+    if SMD.forward_lexing_f(): 
         reload_str           = __reload_forward()
         ## If input == buffer limit code, then the input_p stands on either 
         ## the end of file pointer or the buffer limit. If the end of file
@@ -112,7 +112,7 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
        or SMD.backward_input_position_detection_f():
         reload_str = ""
 
-    if InitStateF and SMD.backward_lexing_f() == False:
+    if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
         txt = [ 
             LanguageDB["$label-def"]("$drop-out", StateIdx),

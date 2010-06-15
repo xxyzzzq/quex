@@ -40,11 +40,11 @@ class StateMachineDecorator:
 
     def backward_lexing_f(self):
         assert self.__mode in ["ForwardLexing", "BackwardLexing", "BackwardInputPositionDetection"]
-        return self.__mode in ["BackwardLexing", "BackwardInputPositionDetection"] 
+        return self.__mode == "BackwardLexing"
 
     def forward_lexing_f(self):
         assert self.__mode in ["ForwardLexing", "BackwardLexing", "BackwardInputPositionDetection"]
-        return not backward_lexing_f()
+        return self.__mode == "ForwardLexing"
 
     def backward_input_position_detection_f(self):
         assert self.__mode in ["ForwardLexing", "BackwardLexing", "BackwardInputPositionDetection"]

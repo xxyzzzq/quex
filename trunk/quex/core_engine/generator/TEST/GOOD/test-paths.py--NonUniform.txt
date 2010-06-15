@@ -12,6 +12,9 @@
     const QUEX_TYPE_CHARACTER* path_1 = path_walker_23_base + 0;
     const QUEX_TYPE_CHARACTER* path_1_end = path_walker_23_base + 4;
     const QUEX_TYPE_CHARACTER* path_17_end = path_walker_23_base + 21;
+#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL path_walker_23_state[22] = {STATE_1, STATE_2, STATE_3, STATE_4, STATE_5, STATE_6, STATE_7, STATE_8, STATE_9, STATE_10, STATE_11, STATE_12, STATE_13, STATE_14, STATE_15, STATE_16, STATE_17, STATE_18, STATE_19, STATE_20, STATE_21, STATE_22, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
 
 --(Pathwalker Code)-----------------------------------------------------
