@@ -33,7 +33,7 @@ public:
 };
 
 inline void 
-mini_mode_on_indentation(my_tester* x, int Indentation) 
+mini_mode_on_indentation(my_tester* x, size_t Indentation) 
 {
     indentation[((my_tester*)x)->counter->base._line_number_at_end-1] = Indentation;
     printf("indentation = %i\n", Indentation);

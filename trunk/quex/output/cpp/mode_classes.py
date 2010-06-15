@@ -109,7 +109,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
         on_exit_str += code_info.get_code()
 
     # (*) on indentation
-    on_indentation_str = "__quex_assert(Indentation >= 0);" 
+    on_indentation_str = "__quex_assert((long)Indentation >= 0);" 
     for code_info in mode.get_code_fragment_list("on_indentation"):
         on_indentation_str += code_info.get_code()
         

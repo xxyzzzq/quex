@@ -1,4 +1,4 @@
-<test-database execution-time-sec="354.25" date="Tue Jun 15 23:18:29 2010">
+<test-database execution-time-sec="354.13" date="Wed Jun 16 00:09:46 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" time-sum-sec="32.57"> 
@@ -12,12 +12,12 @@
                <choice name="006" result="OK" time_sec="5.14" crc="293623846"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="36.24"> 
+        <test title="Intel's icpc" time-sum-sec="36.11"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1265833749L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="5.63" crc="-1285689249"/>
                <choice name="001" result="OK" time_sec="5.36" crc="-1111306024"/>
-               <choice name="002" result="FAIL" time_sec="6.20" crc="20097970"/>
+               <choice name="002" result="OK" time_sec="6.08" crc="20097970"/>
                <choice name="003" result="OK" time_sec="8.01" crc="-1464201274"/>
                <choice name="005" result="OK" time_sec="5.51" crc="-740077430"/>
                <choice name="006" result="OK" time_sec="5.52" crc="672021507"/>
@@ -74,7 +74,7 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="16.32"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="16.33"> 
             <application file-name="004.sh" info-request-time="1267952470L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="7.81" crc="-1832538778"/>
@@ -83,7 +83,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="18.10"> 
+        <test title="Including Files" time-sum-sec="18.09"> 
             <application file-name="005.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="4.65" crc="-65032981"/>
@@ -130,7 +130,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="23.22"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="23.21"> 
             <application file-name="010b.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="11.62" crc="-1213714542"/>
@@ -143,7 +143,7 @@
                <choice name="" result="OK" time_sec="12.83" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access" time-sum-sec="23.38"> 
+        <test title="Direct Buffer Access" time-sum-sec="23.39"> 
             <application file-name="010.sh" info-request-time="1268588837L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="11.74" crc="-1870066300"/>
