@@ -69,7 +69,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_character_index = 0;
 #       endif
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-       std::printf("##cmp init: %i, %i\n", (int)me->_last_stream_position, (int)QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -92,7 +91,6 @@ QUEX_NAMESPACE_MAIN_OPEN
        /* Ensure, that the stream position is only influenced by
         *    __read_characters(...) 
         *    __seek_character_index(...)                                                          */
-       std::printf("##cmp %i, %i\n", (int)me->_last_stream_position, (int)QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
        __quex_assert(me->_last_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
@@ -120,7 +118,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                         + (long)(me->start_position); 
 
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
-        std::printf("##cmp before: %i, %i\n", (int)me->_last_stream_position, (int)QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
 #   else
@@ -135,11 +132,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me->ih != 0x0); 
 
         if     ( me->_character_index == CharacterIndex ) {
-#           ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
             return;
-#           else
-            ; /* _last_stream_position must be set for reference */
-#           endif
         }
         else if( me->_character_index < CharacterIndex ) {
             QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex - me->_character_index);
@@ -151,7 +144,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           endif
             QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex);
         }
-        std::printf("##cmp before2: %i, %i\n", (int)me->_last_stream_position, (int)QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
 #   endif
@@ -185,7 +177,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_character_index += CharacterN;
 #       endif
 
-       std::printf("##cmp before3: %i, %i\n", (int)me->_last_stream_position, (int)QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         return CharacterN;
     }
