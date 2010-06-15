@@ -6,7 +6,8 @@ import generator_test
 
 choice = generator_test.hwut_input("Buffer Reload: Backwards",
                                    "SAME;",
-                                   ["Cpp-ASSERTS", "ANSI-C-ASSERTS"])
+                                   ["Cpp-ASSERTS", "ANSI-C-ASSERTS"], 
+                                   ["Cpp_StrangeStream"])
 
 if choice.find("-ASSERTS") != -1: 
     choice     = choice.replace("-ASSERTS", "")

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="152.09" date="Tue Jun 15 07:35:20 2010">
+<test-database execution-time-sec="156.25" date="Tue Jun 15 23:05:23 2010">
     <last-used-diff-display-program name=""/>
     <test title="Basic Path Compression Test" time-sum-sec="0.21"> 
         <application file-name="test-paths.py" info-request-time="1276436498L" vanished="False"/>
@@ -17,16 +17,17 @@
         </choice-list>
     </test>
     <group name="Buffer Reload">
-        <test title="Backwards" time-sum-sec="4.69"> 
-            <application file-name="test-backward_loading.py" info-request-time="1276494340L" vanished="False"/>
-            <choice-list number="7" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.48" crc="-1584767564"/>
-               <choice name="ANSI-C" result="OK" time_sec="0.45" crc="-1584767564"/>
-               <choice name="Cpp" result="OK" time_sec="0.74" crc="-1584767564"/>
-               <choice name="Cpp_StrangeStream" result="FAIL" time_sec="0.77" crc="-1584767564"/>
-               <choice name="Cpp-Template" result="OK" time_sec="0.76" crc="-1584767564"/>
-               <choice name="Cpp-Path" result="OK" time_sec="0.74" crc="521078314"/>
-               <choice name="Cpp-PathUniform" result="OK" time_sec="0.75" crc="521078314"/>
+        <test title="Backwards" time-sum-sec="8.85"> 
+            <application file-name="test-backward_loading.py" info-request-time="1276635637L" vanished="False"/>
+            <choice-list number="8" same_result="True">
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.78" crc="-1584767564"/>
+               <choice name="ANSI-C" result="OK" time_sec="0.78" crc="-1584767564"/>
+               <choice name="Cpp" result="OK" time_sec="1.30" crc="-1584767564"/>
+               <choice name="Cpp-Template" result="OK" time_sec="1.29" crc="-1584767564"/>
+               <choice name="Cpp-Path" result="OK" time_sec="1.31" crc="-1584767564"/>
+               <choice name="Cpp-PathUniform" result="OK" time_sec="1.32" crc="-1584767564"/>
+               <choice name="Cpp-ASSERTS" result="OK" time_sec="1.29" crc="-1584767564"/>
+               <choice name="ANSI-C-ASSERTS" result="OK" time_sec="0.77" crc="538130544"/>
             </choice-list>
         </test>
         <test title="No Backward Reload -- Precondition at Border" time-sum-sec="4.62"> 

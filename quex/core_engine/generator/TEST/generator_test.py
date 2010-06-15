@@ -34,10 +34,16 @@ else:
 
 
 choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path", "Cpp-PathUniform"] 
-choices_str  = "CHOICES: " + repr(choices_list)[1:-1].replace("'", "") + ";"
 
-def hwut_input(Title, Extra="", AddChoices=[]):
+def hwut_input(Title, Extra="", AddChoices=[], DeleteChoices=[]):
     global choices_list
+
+    choices = choices_list + AddChoices
+    for choice in DeleteChoices:
+        if choice in choices: 
+            del choices[choices.index(choice)]
+
+    choices_str  = "CHOICES: " + repr(choices)[1:-1].replace("'", "") + ";"
 
     if "--hwut-info" in sys.argv:
         print Title + ";"
@@ -49,8 +55,8 @@ def hwut_input(Title, Extra="", AddChoices=[]):
         print "Choice argument requested. Run --hwut-info"
         sys.exit(0)
 
-    if sys.argv[1] not in choices_list + AddChoices: 
-        print "Choice '%s' not acceptable." % Choice
+    if sys.argv[1] not in choices:
+        print "Choice '%s' not acceptable." % sys.argv[1]
         sys.exit(0)
 
     return sys.argv[1]

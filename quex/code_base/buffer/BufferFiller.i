@@ -129,7 +129,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         buffer->_content_character_index_end   = (size_t)(me->tell_character_index(buffer->filler));
 
         if( me->tell_character_index(me) != LoadedN ) 
-            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
 
         /* If end of file has been reached, then the 'end of file' pointer needs to be set. */
         if( LoadedN != ContentSize ) QUEX_NAME(Buffer_end_of_file_set)(buffer, ContentFront + LoadedN);
@@ -240,8 +240,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* If the character index in the stream is different from 'old index + LoadedN'
          * then this indicates a 'strange stream' where the stream position increment is
          * not proportional to the number of loaded characters.                              */
-        if( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) - FallBackN != LoadedN ) 
-            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
+        if( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) - FallBackN 
+                       != LoadedN ) 
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -356,6 +357,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t                   NewContentCharacterIndexBegin = (size_t)-1;
         size_t                   LoadedN = (size_t)-1;
 
+#       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD);
+#       endif
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
@@ -451,8 +455,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* If the character index in the stream is different from 'old index + LoadedN'
          * then this indicates a 'strange stream' where the stream position increment is
          * not proportional to the number of loaded characters.                              */
-        if( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) != LoadedN ) 
-            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
+        __quex_assert( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) == LoadedN );
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
