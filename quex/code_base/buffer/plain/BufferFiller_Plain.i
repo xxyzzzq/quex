@@ -94,8 +94,9 @@ QUEX_NAMESPACE_MAIN_OPEN
        __quex_assert(me->_last_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
-#      endif
+#      else
        return (size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_TYPE_CHARACTER);
+#      endif
     }
 
 #   if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)

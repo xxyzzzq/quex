@@ -20,7 +20,7 @@ from   quex.input.setup import setup as Setup
 
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
-if True: REMOVE_FILES = True
+if False: REMOVE_FILES = True
 else:    REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
@@ -77,6 +77,12 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
         Language = "Cpp"
         Setup.compression_path_uniform_f = True
 
+    StrangeStream_str = ""
+    if Language.find("StrangeStream") != -1:
+        StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
+
+
+
     try:
         adapted_dict = {}
         for key, regular_expression in PatternDictionary.items():
@@ -116,7 +122,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                   + state_machine_code \
                   + test_program
 
-    compile_and_run(Language, source_code, AssertsActionvation_str)
+    compile_and_run(Language, source_code, AssertsActionvation_str, StrangeStream_str)
 
 def run_this(Str):
     try:
@@ -147,7 +153,7 @@ def run_this(Str):
     except:
         print "<<execution failed>>"
 
-def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
+def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=""):
     print "## (*) compiling generated engine code and test"    
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
         extension = ".c"
@@ -158,10 +164,6 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
         extension = ".cpp"
         compiler  = "g++ -Wall"
 
-    if Language.find("StrangeStream") != -1:
-        compiler += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
-
-
     fd, filename_tmp = mkstemp(extension, "tmp-", dir=os.getcwd())
     os.write(fd, SourceCode) 
     os.close(fd)    
@@ -170,11 +172,14 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     filename_tmp = "./tmp%s" % extension # DEBUG
 
     # NOTE: QUEX_OPTION_ASSERTS is defined by AssertsActionvation_str (or not)
-    compile_str = compiler + " %s %s " % (AssertsActionvation_str, filename_tmp) + \
+    compile_str = compiler                + " " + \
+                  StrangeStream_str       + " " + \
+                  AssertsActionvation_str + " " + \
+                  filename_tmp            + " " + \
                   "-I./. -I%s " % os.environ["QUEX_PATH"] + \
-                  "-o %s.exe " % filename_tmp + \
-                  "-ggdb " + \
-                  SHOW_TRANSITIONS_STR + " " + \
+                  "-o %s.exe " % filename_tmp             + \
+                  "-ggdb"                 + " " + \
+                  SHOW_TRANSITIONS_STR    + " " + \
                   SHOW_BUFFER_LOADS_STR
 
     print compile_str + "##" # DEBUG

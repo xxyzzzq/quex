@@ -27,8 +27,9 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     state_machine = SMD.sm()
     
-    txt = []
-    local_variable_db = {}
+    txt                  = []
+    done_state_index_set = set([])
+    local_variable_db    = {}
 
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
@@ -36,7 +37,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend([LanguageDB["$label-def"]("$entry", state_machine.init_state_index), "\n"])
 
     init_state = state_machine.states[state_machine.init_state_index]
-    #
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
     #       case, end of file needs to cause a drop out! After the drop out, lexing
     #       starts at furthest right before the EndOfFile and the init state transits
@@ -44,7 +44,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     #       (state_coder identifies the 'init_state' by its own, no need mentioning)
     txt.extend(state_coder.do(init_state, state_machine.init_state_index, SMD))
 
-    done_state_index_set = set([])
     # -- Coding path states [Optional]
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
         code, variable_db, state_index_set = \

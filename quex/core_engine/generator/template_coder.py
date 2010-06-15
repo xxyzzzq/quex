@@ -417,7 +417,7 @@ def __templated_state_entries(txt, TheTemplate, SMD):
         # If all state entries are uniform, the entry handling happens uniformly at
         # the entrance of the template, not each state.
         if not TheTemplate.uniform_state_entries_f():
-            txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
+            txt.extend(input_block.do(state_index, False, SMD))
             txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
@@ -436,7 +436,7 @@ def __template_state(txt, TheTemplate, SMD):
     txt.append(label_str)
 
     if TheTemplate.uniform_state_entries_f():
-        txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
+        txt.extend(input_block.do(state_index, False, SMD))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
     txt.extend(transition_block.do(TriggerMap, state_index, SMD))
     txt.extend(drop_out.do(state, state_index, SMD))
@@ -445,8 +445,8 @@ def __state_router(StateIndexList, SMD):
     """Create code that allows to jump to a state based on an integer value.
     """
 
-    if SMD.backward_lexing_f(): state_router_label = "STATE_ROUTER_BACKWARD:\n"
-    else:                       state_router_label = "STATE_ROUTER:\n"
+    if SMD.forward_lexing_f(): state_router_label = "STATE_ROUTER:\n"
+    else:                      state_router_label = "STATE_ROUTER_BACKWARD:\n" 
     txt = [
             state_router_label,
             "    switch( target_state_index ) {\n"

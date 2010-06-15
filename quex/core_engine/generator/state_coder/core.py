@@ -30,7 +30,7 @@ def do(state, StateIdx, SMD=False):
     # Special handling of dead-end-states, i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
     if dead_end_state_info != None:
-        txt = transition.do_dead_end_state_stub(dead_end_state_info, SMD.mode())
+        txt = transition.do_dead_end_state_stub(dead_end_state_info, SMD)
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
         if len(txt) == 0: return []
@@ -45,22 +45,15 @@ def do(state, StateIdx, SMD=False):
     #                        # => Here, the trigger map cannot be empty.
 
     txt = \
-          input_block.do(StateIdx, InitStateF, SMD.backward_lexing_f())  + \
-          acceptance_info.do(state, StateIdx, SMD)                       + \
-          transition_block.do(TriggerMap, StateIdx, SMD)                 + \
+          input_block.do(StateIdx, InitStateF, SMD)      + \
+          acceptance_info.do(state, StateIdx, SMD)       + \
+          transition_block.do(TriggerMap, StateIdx, SMD) + \
           drop_out.do(state, StateIdx, SMD)
 
-    if InitStateF and not SMD.backward_lexing_f():
-        # Define the transition entry of the init state **after** the init state itself.
-        # It contains 'increment input pointer', which is not required at the begin of
-        # a lexical analyzis--in forward lexing. When other states transit to the init
-        # state, they need to increase the input pointer. 
-        # All this is not necessary in backward lexing, since there, the init state's
-        # original entry contains 'decrement input pointer' anyway.
-        txt.extend([        LanguageDB["$label-def"]("$input", StateIdx),
-                    "    ", LanguageDB["$input/increment"],          "\n",
-                    "    ", LanguageDB["$goto"]("$entry", StateIdx), "\n"])
+    if InitStateF and SMD.forward_lexing_f():
+        # Comment see: do_init_state_input_epilog() function
+        input_block.do_init_state_input_epilog(txt, SMD)
     
     if len(txt) != 0: txt.insert(0, entry_str)
-    return txt # .replace("\n", "\n    ") + "\n"
+    return txt 
 

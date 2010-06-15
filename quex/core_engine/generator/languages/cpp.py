@@ -68,7 +68,13 @@ def __local_variable_definitions(VariableDB):
             type  = info[1]
             name  = info[0] 
             value = " = " + info[2]
+
+        if "ComputedGoto" in info:
+            txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
         txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
+        if "ComputedGoto" in info:
+            txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+            
     return "".join(txt)
          
 __function_signature = """

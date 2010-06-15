@@ -312,8 +312,10 @@ def __path_definition(variable_db, PathWalker, SMD):
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
-        end_state_list.append("%s, " % transition.get_label(Sequence[-1], None, None, SMD))
-        state_list.append("%s, " % transition.get_label(Sequence[-1], None, None, SMD))
+        end_state_index = Sequence[-1][0]
+        end_state_label = "%s, " % transition.get_label(end_state_index, None, None, SMD)
+        end_state_list.append(end_state_label)
+        state_list.append(end_state_label)
 
         variable_name  = "path_%i" % path.index()
         variable_type  = "const QUEX_TYPE_CHARACTER*"
@@ -337,14 +339,14 @@ def __path_definition(variable_db, PathWalker, SMD):
         variable_type  = "const QUEX_TYPE_GOTO_LABEL"
         variable_value = "{" + "".join(end_state_list) + "}"
         variable_dim   = PathN
-        variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
+        variable_db[variable_name] = [ variable_type, variable_value, variable_dim, "ComputedGoto" ]
 
     if not PathWalker.uniform_state_entries_f() and PathN != 1:
         variable_name  = "path_walker_%i_state" % PathWalkerID
         variable_type  = "const QUEX_TYPE_GOTO_LABEL"
         variable_value = "{" + "".join(state_list) + "}"
         variable_dim   = len(state_list)
-        variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
+        variable_db[variable_name] = [ variable_type, variable_value, variable_dim, "ComputedGoto" ]
 
 def __state_entries(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key
@@ -389,7 +391,7 @@ def __state_entries(txt, PathWalker, SMD):
             # If all state entries are uniform, the entry handling happens uniformly at
             # the entrance of the template, not each state.
             if not PathWalker.uniform_state_entries_f():
-                txt.extend(input_block.do(state_index, False, SMD.backward_lexing_f()))
+                txt.extend(input_block.do(state_index, False, SMD))
                 txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
 
             if PathN != 1:
@@ -415,10 +417,9 @@ def __path_walker(txt, PathWalker, SMD):
                 LanguageDB["$label-def"]("$pathwalker", PathWalkerID)
     txt.append(label_str)
 
-
     if PathWalker.uniform_state_entries_f():
         # (1) Input Block (get the new character)
-        txt.extend(input_block.do(PathWalkerID, False, SMD.backward_lexing_f()))
+        txt.extend(input_block.do(PathWalkerID, False, SMD))
         # (2) Acceptance information/Store Input positions
         txt.extend(acceptance_info.do(PathWalker, PathWalkerID, SMD, ForceSaveLastAcceptanceF=True))
 

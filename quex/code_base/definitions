@@ -139,7 +139,7 @@
 #else
 #    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
         "\nThe macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \
-        "Nevertheless, The quex engine detected that the number of characters\n"   \
+        "Nevertheless, the quex engine detected that the number of characters\n"   \
         "is not proportional to the character position increase. The buffer\n"     \
         "filler type which you are using **is not able** to deal with those\n"     \
         "cases. You **must** use a binary mode of your input stream!\n"            
