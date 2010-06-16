@@ -503,7 +503,7 @@ def __state_router(PathWalker, SMD):
 
     # (2) 'Computed Goto Implementation'
     txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
-    txt.append("        goto path_walker_%i_state[path_iterator - path_walker_%i_base];\n" % (PathWalkerID, PathWalkerID))
+    txt.append("        goto *path_walker_%i_state[path_iterator - path_walker_%i_base];\n" % (PathWalkerID, PathWalkerID))
     txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
 
     return "".join(txt)
@@ -533,7 +533,7 @@ def __end_state_router(txt, PathWalker, SMD):
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
         txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
-        txt.append("        goto path_walker_%i_end_state[path_index];\n" % PathWalkerID)
+        txt.append("        goto *path_walker_%i_end_state[path_index];\n" % PathWalkerID)
         txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
         txt.append("        ")
         txt.append(LanguageDB["$input/decrement"] + "\n")
