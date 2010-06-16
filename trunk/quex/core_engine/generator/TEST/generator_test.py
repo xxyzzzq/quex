@@ -33,7 +33,7 @@ else:
     SHOW_BUFFER_LOADS_STR = "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
 
-choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path", "Cpp-PathUniform"] 
+choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path", "Cpp-PathUniform", "Cpp-Path-CG"] 
 
 def hwut_input(Title, Extra="", AddChoices=[], DeleteChoices=[]):
     global choices_list
@@ -69,6 +69,14 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     BufferLimitCode = 0
     Setup.buffer_limit_code = BufferLimitCode
 
+    CompileOptionStr = ""
+    if Language.find("StrangeStream") != -1:
+        CompileOptionStr += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
+
+    if Language.find("-CG") != -1:
+        Language = Language.replace("-CG", "")
+        CompileOptionStr += " -D__QUEX_OPTION_USE_COMPUTED_GOTOS "
+
     if Language == "Cpp-Template":
         Language = "Cpp"
         # Shall template compression be used?
@@ -82,10 +90,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     elif Language == "Cpp-PathUniform":
         Language = "Cpp"
         Setup.compression_path_uniform_f = True
-
-    StrangeStream_str = ""
-    if Language.find("StrangeStream") != -1:
-        StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
     try:
         adapted_dict = {}
@@ -126,7 +130,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                   + state_machine_code \
                   + test_program
 
-    compile_and_run(Language, source_code, AssertsActionvation_str, StrangeStream_str)
+    compile_and_run(Language, source_code, AssertsActionvation_str, CompileOptionStr)
 
 def run_this(Str):
     try:

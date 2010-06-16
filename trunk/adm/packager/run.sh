@@ -73,7 +73,7 @@ function collect_distribution_file_list()
     awk ' ! /\.swp$/ { print; }'   $input > $output; cp $output $input
     awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
 
-    # (*) create packages: .tar.7z, .tar.gz
+    # (*) create packages: .7z, .tar.gz
 
     # -- create tar file for ./trunk
     echo "-- Snapshot"
@@ -143,7 +143,7 @@ function collect_packages()
     scriptfile=
     cat > /tmp/quex-packages/sftp-frs.sourceforge.net.sh << EOF
 cd uploads
-put quex-$1.tar.7z                       /home/frs/project/q/qu/quex/Current
+put quex-$1.7z                       /home/frs/project/q/qu/quex/Current
 put quex-$1.tar.gz                       /home/frs/project/q/qu/quex/Current
 put quex-$1.zip                          /home/frs/project/q/qu/quex/Current
 put quex_$1-0_i386.deb                   /home/frs/project/q/qu/quex/Current
@@ -155,7 +155,7 @@ put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/Current
 put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/Current
 mkdir ../HISTORY/OLD
 cd /home/frs/project/q/qu/quex/Current
-rename quex-OLD.tar.7z                       ../HISTORY/OLD/quex-OLD.tar.7z
+rename quex-OLD.7z                           ../HISTORY/OLD/quex-OLD.tar.7z
 rename quex-OLD.tar.gz                       ../HISTORY/OLD/quex-OLD.tar.gz
 rename quex-OLD.zip                          ../HISTORY/OLD/quex-OLD.zip   
 rename quex_OLD-0_i386.deb                   ../HISTORY/OLD/quex_OLD-0_i386.deb
