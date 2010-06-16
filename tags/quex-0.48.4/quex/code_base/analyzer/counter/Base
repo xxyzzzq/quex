@@ -1,0 +1,42 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * (C) Frank-Rene Schaefer                               */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#include <cstddef> 
+#else
+#include <stddef.h>
+#endif
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    typedef struct {
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        size_t  _line_number_at_begin;    /* line where current pattern starts   */
+        size_t  _line_number_at_end;      /* line after current pattern          */
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        size_t  _column_number_at_begin;  /* column where current pattern starts */
+        size_t  _column_number_at_end;    /* column after current pattern        */
+#       endif
+    } __CounterBase;
+
+    QUEX_INLINE void  CounterBase_init(__CounterBase* me);
+    QUEX_INLINE void  CounterBase_shift_end_values_to_start_values(__CounterBase* me);
+    QUEX_INLINE void  CounterBase_count_newline_n_backwards(__CounterBase*       me, 
+                                                            QUEX_TYPE_CHARACTER* it,
+                                                            QUEX_TYPE_CHARACTER* Begin);
+    QUEX_INLINE void  CounterBase_print_this(__CounterBase* me);
+
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   include <quex/code_base/analyzer/counter/LineColumn>
+#   else
+#   include <quex/code_base/analyzer/counter/LineColumnIndentation>
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE */
+
