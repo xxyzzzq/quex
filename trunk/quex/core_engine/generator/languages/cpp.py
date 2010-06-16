@@ -58,6 +58,7 @@ def __local_variable_definitions(VariableDB):
             if info[3] != 0:
                 type  = info[1]
                 name  = info[0] + "[%s]" % repr(info[3])
+                if type.find("QUEX_TYPE_GOTO_LABEL"): name = "(" + name + ")"
                 if info[2] != None: value = " = " + info[2]
                 else:               value = "/* un-initilized */"
             else:
@@ -188,7 +189,9 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
+    txt += "#       ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n"
     txt += "        goto __TERMINAL_ROUTER;\n"
+    txt += "#       endif\n"
     for mode_name in ModeNameList:
         txt += "        unused += (int)%s.id;\n" % mode_name
     txt += "        unused += (int)__QuexLexemeNullObject;\n"
