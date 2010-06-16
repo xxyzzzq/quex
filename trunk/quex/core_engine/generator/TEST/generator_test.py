@@ -87,8 +87,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     if Language.find("StrangeStream") != -1:
         StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
-
-
     try:
         adapted_dict = {}
         for key, regular_expression in PatternDictionary.items():

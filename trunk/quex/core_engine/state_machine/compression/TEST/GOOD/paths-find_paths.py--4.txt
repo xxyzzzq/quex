@@ -4,7 +4,8 @@
 	       size="8,5"
 	       node [shape = doublecircle]; 23; 22; 24; 25; 26; 27; 28;
            node [shape = circle];
-           21 -> 23 [label ="'b'"];
+           7777 -> 21 [label ="'0'"];
+21 -> 23 [label ="'b'"];
 21 -> 22 [label ="'c'"];
 22 -> 23 [label ="'b'"];
 22 -> 24 [label ="'c'"];
@@ -68,4 +69,3 @@
 # skeleton = (24) by 'c'; (23) by 'b'; 
 # wildcard = False;
 # 
-## String paths were = ('ccccb',)
