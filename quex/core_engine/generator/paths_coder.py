@@ -308,45 +308,45 @@ def __path_definition(variable_db, PathWalker, SMD):
         for state_index, character in Sequence[:-1]:
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
-            state_list.append("%s, " % transition.get_label(state_index, None, None, SMD))
+            state_list.append("&&%s, " % transition.get_label(state_index, None, None, SMD))
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
         end_state_index = Sequence[-1][0]
-        end_state_label = "%s, " % transition.get_label(end_state_index, None, None, SMD)
+        end_state_label = "&&%s, " % transition.get_label(end_state_index, None, None, SMD)
         end_state_list.append(end_state_label)
         state_list.append(end_state_label)
 
-        variable_name  = "path_%i" % path.index()
-        variable_type  = "const QUEX_TYPE_CHARACTER*"
-        variable_value = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
-        variable_db[variable_name] = [ variable_type, variable_value ]
+        name  = "path_%i" % path.index()
+        type  = "const QUEX_TYPE_CHARACTER*"
+        value = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
+        variable_db[name] = [ type, value ]
 
-        variable_name  = "path_%i_end" % path.index()
-        variable_type  = "const QUEX_TYPE_CHARACTER*"
-        variable_value = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
-        variable_db[variable_name] = [ variable_type, variable_value ]
+        name  = "path_%i_end" % path.index()
+        type  = "const QUEX_TYPE_CHARACTER*"
+        value = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
+        variable_db[name] = [ type, value ]
         memory_index += L
 
-    variable_name  = "path_walker_%i_base" % PathWalkerID
-    variable_type  = "const QUEX_TYPE_CHARACTER"
-    variable_value = "{" + "".join(memory) + "\n    }"
-    variable_dim   = memory_index + 1
-    variable_db[variable_name] = [ variable_type, variable_value, variable_dim ]
+    name  = "path_walker_%i_base" % PathWalkerID
+    type  = "const QUEX_TYPE_CHARACTER"
+    value = "{" + "".join(memory) + "\n    }"
+    dim   = memory_index + 1
+    variable_db[name] = [ type, value, dim ]
     
     if PathWalker.uniform_state_entries_f() and PathN != 1:
-        variable_name  = "path_walker_%i_end_state" % PathWalkerID
-        variable_type  = "const QUEX_TYPE_GOTO_LABEL"
-        variable_value = "{" + "".join(end_state_list) + "}"
-        variable_dim   = PathN
-        variable_db[variable_name] = [ variable_type, variable_value, variable_dim, "ComputedGoto" ]
+        name  = "path_walker_%i_end_state" % PathWalkerID
+        type  = "const QUEX_TYPE_GOTO_LABEL"
+        value = "{" + "".join(end_state_list) + "}"
+        dim   = PathN
+        variable_db[name] = [ type, value, dim, "ComputedGoto" ]
 
-    if not PathWalker.uniform_state_entries_f() and PathN != 1:
-        variable_name  = "path_walker_%i_state" % PathWalkerID
-        variable_type  = "const QUEX_TYPE_GOTO_LABEL"
-        variable_value = "{" + "".join(state_list) + "}"
-        variable_dim   = len(state_list)
-        variable_db[variable_name] = [ variable_type, variable_value, variable_dim, "ComputedGoto" ]
+    if not PathWalker.uniform_state_entries_f():
+        name  = "path_walker_%i_state" % PathWalkerID
+        type  = "const QUEX_TYPE_GOTO_LABEL"
+        value = "{" + "".join(state_list) + "}"
+        dim   = len(state_list)
+        variable_db[name] = [ type, value, dim, "ComputedGoto" ]
 
 def __state_entries(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key
