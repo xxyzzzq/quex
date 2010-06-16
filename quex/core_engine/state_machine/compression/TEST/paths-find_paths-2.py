@@ -49,6 +49,11 @@ def test(Skeleton, AddTransitionList, *StringPaths):
     for start_idx, end_idx, trigger_set in AddTransitionList:
         sm.add_transition(long(start_idx), trigger_set, long(end_idx))
 
+    # Path analyzis may not consider the init state, so mount 
+    # an init state before everything.
+    sm.add_transition(7777L, ord('0'), sm.init_state_index)
+    sm.init_state_index = 7777L
+
     # print Skeleton
     print sm.get_graphviz_string(NormalizeF=False)
     print

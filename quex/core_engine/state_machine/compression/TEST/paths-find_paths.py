@@ -38,13 +38,17 @@ def number_set(IntervalList):
 def test(Skeleton, *StringPaths):
     sm = core.StateMachine()
 
-    # def construct_path(sm, StartStateIdx, String, Skeleton):
     idx0 = sm.init_state_index
     for character_sequence in StringPaths:
         idx = construct_path(sm, idx0, character_sequence, Skeleton)
 
     sm = nfa_to_dfa.do(sm)
     sm = hopcroft.do(sm)
+
+    # Path analyzis may not consider the init state, so mount 
+    # an init state before everything.
+    sm.add_transition(7777L, ord('0'), sm.init_state_index)
+    sm.init_state_index = 7777L
 
     # print Skeleton
     print sm.get_graphviz_string(NormalizeF=False)
@@ -53,7 +57,7 @@ def test(Skeleton, *StringPaths):
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
-    print "## String paths were = " + repr(StringPaths)
+    # print "## String paths were = " + repr(StringPaths)
 
 skeleton_0 = { 
    66L: NumberSet(Interval(ord('a'))),

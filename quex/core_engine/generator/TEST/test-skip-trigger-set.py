@@ -18,21 +18,28 @@ if len(sys.argv) < 2 or not (sys.argv[1] in ["ANSI-C-PlainMemory", "ANSI-C", "Cp
     print "Language argument not acceptable, use --hwut-info"
     sys.exit(0)
 
-Language = sys.argv[1]
+Language          = sys.argv[1]
+StrangeStream_str = ""
+if Language.find("StrangeStream") != -1:
+    StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
+
 trigger_set = NumberSet([Interval(ord('a'), ord('z') + 1), 
                          Interval(ord('A'), ord('Z') + 1)])
 
 
 TestStr  = "abcdefg_HIJKLMNOP-qrstuvw'XYZ12ok3"
 
-compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set))
+compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set),
+                StrangeStream_str=StrangeStream_str)
 
 TestStr  = "-hijklmnop_qrstuvw#xyz9"
 
-compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set))
+compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set),
+                StrangeStream_str=StrangeStream_str)
 
 TestStr  = "aBcD8"
 
-compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set))
+compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set),
+                StrangeStream_str=StrangeStream_str)
 
 

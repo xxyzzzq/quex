@@ -1,4 +1,4 @@
-<history date="Wed Jun 16 00:10:56 2010" element-n="13">
+<history date="Wed Jun 16 09:42:47 2010" element-n="14">
     <day year="2010" month="04" day="01">
         <history-init time="16:04:08"/>
     </day>
@@ -31,5 +31,8 @@
     </day>
     <day year="2010" month="05" day="19">
         <crc-error time="05:56:21" application="templates-best_matching_pair.py" choice="0" database-crc="769148517" real-crc="765364563"/>
+    </day>
+    <day year="2010" month="06" day="16">
+        <crc-error time="07:13:02" application="paths-find_paths.py" choice="5" database-crc="-1164571765" real-crc="1404149728"/>
     </day>
 </history>
