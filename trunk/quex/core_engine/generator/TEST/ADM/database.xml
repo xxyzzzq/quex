@@ -1,23 +1,23 @@
-<test-database execution-time-sec="287.78" date="Thu Jun 17 11:16:37 2010">
+<test-database execution-time-sec="282.76" date="Fri Jun 18 01:18:14 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Basic Path Compression Test" time-sum-sec="0.32"> 
+    <test title="Basic Path Compression Test" time-sum-sec="0.19"> 
         <application file-name="test-paths.py" info-request-time="1276677301L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="Single" result="FAIL" time_sec="0.07" crc="-1763114968"/>
-           <choice name="Multiple" result="FAIL" time_sec="0.08" crc="-278785321"/>
-           <choice name="NonUniform" result="FAIL" time_sec="0.08" crc="983611176"/>
-           <choice name="NonUniform2" result="FAIL" time_sec="0.10" crc="784627897"/>
+           <choice name="Single" result="FAIL" time_sec="0.04" crc="-1763114968"/>
+           <choice name="Multiple" result="FAIL" time_sec="0.05" crc="-278785321"/>
+           <choice name="NonUniform" result="FAIL" time_sec="0.05" crc="983611176"/>
+           <choice name="NonUniform2" result="FAIL" time_sec="0.05" crc="784627897"/>
         </choice-list>
     </test>
-    <test title="Basic Template Compression Test" time-sum-sec="0.16"> 
+    <test title="Basic Template Compression Test" time-sum-sec="0.08"> 
         <application file-name="test-templates.py" info-request-time="1276677301L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="1" result="FAIL" time_sec="0.08" crc="198682570"/>
-           <choice name="2" result="FAIL" time_sec="0.07" crc="983617892"/>
+           <choice name="1" result="FAIL" time_sec="0.04" crc="198682570"/>
+           <choice name="2" result="FAIL" time_sec="0.04" crc="983617892"/>
         </choice-list>
     </test>
     <group name="Buffer Reload">
-        <test title="Backwards" time-sum-sec="10.52"> 
+        <test title="Backwards" time-sum-sec="10.51"> 
             <application file-name="test-backward_loading.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="9" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.83" crc="-1584767564"/>
@@ -46,7 +46,7 @@
                <choice name="ANSI-C-ASSERTS" result="OK" time_sec="0.80" crc="-887225006"/>
             </choice-list>
         </test>
-        <test title="Forward Position Adaption" time-sum-sec="12.65"> 
+        <test title="Forward Position Adaption" time-sum-sec="12.66"> 
             <application file-name="test-position_adaption.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="10" same_result="True">
                <choice name="Cpp" result="OK" time_sec="1.40" crc="1319922986"/>
@@ -63,7 +63,7 @@
         </test>
     </group>
     <group name="CONTINUE">
-        <test title="Reentry analysis without return from function" time-sum-sec="9.30"> 
+        <test title="Reentry analysis without return from function" time-sum-sec="8.77"> 
             <application file-name="test-continue-without-return.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.79" crc="-1324080938"/>
@@ -73,10 +73,10 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.25" crc="-1324080938"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.30" crc="-1324080938"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.35" crc="-1324080938"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.26" crc="None"/>
+               <choice name="Cpp-Path-CG" result="OK" time_sec="0.74" crc="627447398"/>
             </choice-list>
         </test>
-        <test title="Mode Changes" time-sum-sec="8.83"> 
+        <test title="Mode Changes" time-sum-sec="8.84"> 
             <application file-name="test-mode-changes.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.73" crc="270103911"/>
@@ -89,7 +89,7 @@
                <choice name="Cpp-Path-CG" result="OK" time_sec="1.25" crc="-823981903"/>
             </choice-list>
         </test>
-        <test title="(special use case)" time-sum-sec="8.54"> 
+        <test title="(special use case)" time-sum-sec="8.53"> 
             <application file-name="test-continue-without-return-2.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.74" crc="-759134064"/>
@@ -117,7 +117,7 @@
                <choice name="Cpp-Path-CG" result="OK" time_sec="1.24" crc="-486841527"/>
             </choice-list>
         </test>
-        <test title="Part 2" time-sum-sec="9.40"> 
+        <test title="Part 2" time-sum-sec="8.85"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.84" crc="-1069020887"/>
@@ -127,7 +127,7 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.31" crc="-1069020887"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.28" crc="-1069020887"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.29" crc="-1069020887"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.27" crc="None"/>
+               <choice name="Cpp-Path-CG" result="OK" time_sec="0.72" crc="-1382989221"/>
             </choice-list>
         </test>
         <test title="Part 3" time-sum-sec="9.03"> 
@@ -158,7 +158,7 @@
                <choice name="Cpp-Path-CG" result="OK" time_sec="1.33" crc="1778497211"/>
             </choice-list>
         </test>
-        <test title="Multiple Identical Pre-Conditions" time-sum-sec="12.88"> 
+        <test title="Multiple Identical Pre-Conditions" time-sum-sec="12.31"> 
             <application file-name="test-pre-conditions-3.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.29" crc="-1449812084"/>
@@ -168,10 +168,10 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.84" crc="-1449812084"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.83" crc="-1449812084"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.80" crc="-1449812084"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.25" crc="None"/>
+               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.69" crc="None"/>
             </choice-list>
         </test>
-        <test title="Part 1" time-sum-sec="9.50"> 
+        <test title="Part 1" time-sum-sec="9.51"> 
             <application file-name="test-pre-conditions.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.92" crc="-524887799"/>
@@ -186,7 +186,7 @@
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" time-sum-sec="10.53"> 
+        <test title="Simple" time-sum-sec="9.91"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.92" crc="-347610264"/>
@@ -196,12 +196,12 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.45" crc="-347610264"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.43" crc="-347610264"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.44" crc="-347610264"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.44" crc="None"/>
+               <choice name="Cpp-Path-CG" result="OK" time_sec="0.81" crc="-1114701205"/>
             </choice-list>
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="9.80"> 
+        <test title="Part II" time-sum-sec="9.22"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.84" crc="1614045300"/>
@@ -211,10 +211,10 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.34" crc="1614045300"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.36" crc="1614045300"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.36" crc="1614045300"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.34" crc="None"/>
+               <choice name="Cpp-Path-CG" result="OK" time_sec="0.76" crc="322566836"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="9.12"> 
+        <test title="Part I" time-sum-sec="8.59"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.79" crc="1455270"/>
@@ -224,12 +224,12 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.26" crc="1455270"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.29" crc="1455270"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.25" crc="1455270"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.24" crc="None"/>
+               <choice name="Cpp-Path-CG" result="OK" time_sec="0.70" crc="1153430408"/>
             </choice-list>
         </test>
     </group>
     <group name="Simple">
-        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" time-sum-sec="9.41"> 
+        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" time-sum-sec="9.02"> 
             <application file-name="test-simple-5.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.88" crc="-680455951"/>
@@ -239,10 +239,10 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.35" crc="-680455951"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.38" crc="-680455951"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.34" crc="-680455951"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.88" crc="None"/>
+               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.50" crc="None"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" time-sum-sec="9.13"> 
+        <test title="Tiny Expressions" time-sum-sec="8.60"> 
             <application file-name="test-simple.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.79" crc="-771053764"/>
@@ -252,10 +252,10 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.26" crc="-771053764"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.26" crc="-771053764"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.26" crc="-771053764"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.25" crc="None"/>
+               <choice name="Cpp-Path-CG" result="OK" time_sec="0.72" crc="1090776369"/>
             </choice-list>
         </test>
-        <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="8.44"> 
+        <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="8.45"> 
             <application file-name="test-simple-3.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.70" crc="-1792493362"/>
@@ -268,7 +268,7 @@
                <choice name="Cpp-Path-CG" result="OK" time_sec="1.20" crc="-2107622876"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="9.54"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="9.55"> 
             <application file-name="test-bol-eol.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.82" crc="-1565444249"/>
@@ -281,7 +281,7 @@
                <choice name="Cpp-Path-CG" result="OK" time_sec="1.31" crc="-870878557"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" time-sum-sec="12.54"> 
+        <test title="Maximum Length Match" time-sum-sec="12.00"> 
             <application file-name="test-simple-2.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="8" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.24" crc="-270685933"/>
@@ -291,7 +291,7 @@
                <choice name="Cpp-Template" result="OK" time_sec="1.94" crc="-270685933"/>
                <choice name="Cpp-Path" result="OK" time_sec="1.78" crc="-270685933"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="1.76" crc="-270685933"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="1.20" crc="None"/>
+               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.66" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -346,7 +346,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="3.35" crc="-1090631127"/>
             </choice-list>
         </test>
-        <test title="Semi-Complete Delimiters, BufferSize = DelimiterLength + 2" time-sum-sec="13.20"> 
+        <test title="Semi-Complete Delimiters, BufferSize = DelimiterLength + 2" time-sum-sec="13.19"> 
             <application file-name="test-skip-simple-4.py" info-request-time="1276677301L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="2" result="OK" time_sec="3.31" crc="890859637"/>

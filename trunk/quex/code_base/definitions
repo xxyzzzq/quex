@@ -72,9 +72,9 @@
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE        (&&TERMINAL_FAILURE)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE           (QUEX_TYPE_GOTO_LABEL)(0x0)
 #   define QUEX_SET_drop_out_state_index(StateIndex)  drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
-#   define QUEX_SET_last_acceptance(TerminalIndex)    last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
+#   define QUEX_SET_last_acceptance(TerminalIndex)    last_acceptance      = &&TERMINAL_ ##TerminalIndex## _DIRECT; 
 #   define QUEX_GOTO_drop_out_state_index()           goto *drop_out_state_index;
-#   define QUEX_GOTO_last_acceptance()                goto *last_acceptance;
+#   define QUEX_GOTO_last_acceptance()                goto __TERMINAL_ROUTER;
 
     /* If no computed gotos are used, then there are two state routers, one for forward
      * state routing and another for backward state routing. Thus, two macros for the same

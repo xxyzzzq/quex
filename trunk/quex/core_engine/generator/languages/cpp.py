@@ -189,9 +189,9 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
-    txt += "#       ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n"
-    txt += "        goto __TERMINAL_ROUTER;\n"
-    txt += "#       endif\n"
+    # txt += "#       ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n"
+    # txt += "        goto __TERMINAL_ROUTER;\n"
+    # txt += "#       endif\n"
     for mode_name in ModeNameList:
         txt += "        unused += (int)%s.id;\n" % mode_name
     txt += "        unused += (int)__QuexLexemeNullObject;\n"
@@ -247,11 +247,13 @@ $$FAILURE_ACTION$$
 #undef LexemeEnd
 #undef LexemeNull
 #undef LexemeL
+"""
 
-#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
+__terminal_router_str = """
+    __quex_assert(false); /* No drop-into __TERMINAL_ROUTER */
 __TERMINAL_ROUTER: {
         /*  if last_acceptance => goto correspondent acceptance terminal state*/
-        /*  else               => execute defaul action*/
+        /*  else               => execute defaul action                       */
         if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
             goto TERMINAL_FAILURE;
         }
@@ -263,14 +265,16 @@ __TERMINAL_ROUTER: {
         if(last_acceptance_input_position != 0x0) {
 $$RESTORE_LAST_ACCEPTANCE_POS$$
         }
-
+#ifdef  __QUEX_OPTION_USE_COMPUTED_GOTOS
+        goto *last_acceptance;
+#else
         /* Route according variable 'last_acceptance'. */
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_FAILURE-GOTO$$; /* nothing matched */
         }
-    }
 #endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+    }
 """
 
 __on_continue_reentry_preparation_str = """
@@ -486,19 +490,22 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     if PreConditionIDList == []: precondition_involved_f = "0"
     else:                        precondition_involved_f = "1"
 
-    txt = blue_print(__terminal_state_str, 
-                     [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
-                      ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
-                      ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"](
-                                                              "last_acceptance_input_position")],
-                      ["$$FAILURE_ACTION$$",               on_failure_str],
-                      ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
-                      ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
-                      ["$$TERMINAL_FAILURE-DEF$$",         LanguageDB["$label-def"]("$terminal-FAILURE")],
-                      ["$$TERMINAL_FAILURE-GOTO$$",        LanguageDB["$goto"]("$terminal-FAILURE")],
-                      ["$$STATE_MACHINE_NAME$$",           SMD.name()],
-                      ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],
-                      ])
+    txt = blue_print(__terminal_router_str,
+            [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
+             ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"](
+                    "last_acceptance_input_position")],
+             ["$$TERMINAL_FAILURE-GOTO$$",        LanguageDB["$goto"]("$terminal-FAILURE")],
+            ])
+                     
+    txt += blue_print(__terminal_state_str, 
+            [["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
+                ["$$FAILURE_ACTION$$",               on_failure_str],
+                ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
+                ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
+                ["$$TERMINAL_FAILURE-DEF$$",         LanguageDB["$label-def"]("$terminal-FAILURE")],
+                ["$$STATE_MACHINE_NAME$$",           SMD.name()],
+                ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],
+                ])
 
     txt += blue_print(__on_continue_reentry_preparation_str,
                       [["$$REENTRY_PREPARATION$$",                    LanguageDB["$label-def"]("$re-start")],

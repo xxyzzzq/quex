@@ -20,7 +20,7 @@ from   quex.input.setup import setup as Setup
 
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
-if False: REMOVE_FILES = True
+if True: REMOVE_FILES = True
 else:    REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
@@ -197,8 +197,10 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
     print "## (*) running the test"
     run_this("./%s.exe" % filename_tmp)
     if REMOVE_FILES:
-        os.remove("%s.exe" % filename_tmp)
-        os.remove(filename_tmp)
+        try:    os.remove(filename_tmp)
+        except: pass
+        try:    os.remove("%s.exe" % filename_tmp)
+        except: pass
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
     global plain_memory_based_test_program
