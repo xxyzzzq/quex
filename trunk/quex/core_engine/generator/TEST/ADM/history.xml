@@ -1,4 +1,4 @@
-<history date="Wed Jun 16 10:45:40 2010" element-n="902">
+<history date="Thu Jun 17 11:16:37 2010" element-n="906">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1664,5 +1664,11 @@
         <crc-error time="21:21:27" application="test-backward_loading.py" choice="ANSI-C-ASSERTS" database-crc="538130544" real-crc="-1584767564"/>
         <crc-error time="21:21:42" application="test-no-backward-reloading.py" choice="Cpp-Path" database-crc="-1946906801" real-crc="-887225006"/>
         <crc-error time="21:21:44" application="test-no-backward-reloading.py" choice="Cpp-PathUniform" database-crc="-1946906801" real-crc="-887225006"/>
+    </day>
+    <day year="2010" month="06" day="17">
+        <crc-error time="09:12:12" application="test-position_adaption.py" choice="Cpp-ASSERTS" database-crc="1209843086" real-crc="1319922986"/>
+        <crc-error time="09:12:13" application="test-position_adaption.py" choice="ANSI-C-ASSERTS" database-crc="-924893373" real-crc="1319922986"/>
+        <crc-error time="09:12:23" application="test-no-backward-reloading.py" choice="Cpp-ASSERTS" database-crc="-293063187" real-crc="-887225006"/>
+        <crc-error time="09:12:24" application="test-no-backward-reloading.py" choice="ANSI-C-ASSERTS" database-crc="-612050052" real-crc="-887225006"/>
     </day>
 </history>

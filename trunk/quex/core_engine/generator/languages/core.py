@@ -44,6 +44,7 @@ __label_db = \
 ## 
 __label_printed_list_unique = {}
 __label_used_list_unique    = {}
+__label_used_in_computed_goto_list_unique = {}
 
 def label_db_marker_init():
     global __label_printed_list_unique
@@ -74,14 +75,21 @@ def label_db_marker_get_unused_label_list():
     global __label_printed_list_unique
     global __label_db
     
-    result = []
+    nothing_label_set       = []
+    computed_goto_label_set = []
 
     # print "##0", __label_used_list_unique.keys()
     # print "##1", __label_printed_list_unique.keys()
-    for label in __label_printed_list_unique:
-        if label not in __label_used_list_unique:
-            result.append(label)
-    return result
+    printed       = __label_printed_list_unique.keys()
+    used          = __label_used_list_unique.keys()
+    computed_goto = __label_used_in_computed_goto_list_unique.keys()
+    for label in printed:
+        if label not in used:
+            if label in computed_goto:
+                computed_goto_label_set.append(label)
+            else:
+                nothing_label_set.append(label)
+    return nothing_label_set, computed_goto_label_set
 
 
 #________________________________________________________________________________
@@ -202,9 +210,8 @@ db["C++"] = {
     "$assignment":           lambda variable, value:
                              "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
                              "%s = %s;\n" % (variable, value),
-    "$set-last_acceptance":  lambda value:
-                             "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
-                             "QUEX_SET_last_acceptance(%s);\n" % value,
+    "$set-last_acceptance":  lambda PatternIndex: \
+                             cpp.__set_last_acceptance(PatternIndex, __label_used_in_computed_goto_list_unique),
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #
     "$header-definitions":   cpp.__header_definitions,

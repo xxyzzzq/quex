@@ -175,29 +175,40 @@ def delete_unused_labels(Code):
     """
     ## print "##delete,", languages.label_db_marker_get_unused_label_list()
     LanguageDB = Setup.language_db
-    label_list = languages.label_db_marker_get_unused_label_list()
+    replacement_db = {}
 
-    # If the fast function was successful we are done
-    result = delete_unused_labels_FAST(Code, label_list)
-    if result != "": return result
+    def fill_replacement_db(LabelList, format_func):
+        for label in LabelList:
+            original    = LanguageDB["$label-pure"](label)
+            replacement = format_func(LanguageDB["$comment"](original))
+            first_letter = original[0]
+            if replacement_db.has_key(first_letter) == False:
+                replacement_db[first_letter] = [ [original, replacement] ]
+            else:
+                replacement_db[first_letter].append([original, replacement])
 
-    replacement_list_db = {}
-    for label in label_list:
-        original    = LanguageDB["$label-pure"](label)
-        replacement = LanguageDB["$comment"](original)
-        first_letter = original[0]
-        if replacement_list_db.has_key(first_letter) == False:
-            replacement_list_db[first_letter] = [ [original, replacement] ]
-        else:
-            replacement_list_db[first_letter].append([original, replacement])
 
+    # Distinguish between:
+    #   'nothing_labels' -- labels that can be replaced by nothing.
+    #   'computed_goto_labels' -- labels that must be replaced by conditional compilation
+    nothing_label_list, computed_goto_label_list = languages.label_db_marker_get_unused_label_list()
+
+    # (1) Replace labels that are not used at all.
+    result = delete_unused_labels_FAST(Code, nothing_label_list)
+    if result == "": 
+        # -- Fast replacement failed, add them to replacement db
+        fill_replacement_db(nothing_label_list, lambda x: x)
+
+    # (2) Replace labels that only appear in computed gotos
+    fill_replacement_db(computed_goto_label_list, 
+                        lambda x: "#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n" + x + "#endif\n")
+    
     code = Code
-    for first_letter, replacement_list in replacement_list_db.items():
+    for first_letter, replacement_list in replacement_db.items():
         code = blue_print(code, replacement_list, first_letter)
 
     return code
         
-
 import array
 def delete_unused_labels_FAST(Code, LabelList):
     LanguageDB = Setup.language_db
