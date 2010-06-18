@@ -118,7 +118,7 @@ def do(SMD, CostCoefficient):
     local_variable_db = transition_target_definition 
     if len(local_variable_db) != 0:
         local_variable_db.update({
-          "target_state_index": [ "QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_GOTO_LABEL)0x0"],
+          "target_state_index": [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE"],
           "template_state_key": [ "int",                  "(int)0"],
         })
 
@@ -448,8 +448,9 @@ def __state_router(StateIndexList, SMD):
     if SMD.forward_lexing_f(): state_router_label = "STATE_ROUTER:\n"
     else:                      state_router_label = "STATE_ROUTER_BACKWARD:\n" 
     txt = [
+            "#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n",
             state_router_label,
-            "    switch( target_state_index ) {\n"
+            "    switch( target_state_index ) {\n",
     ]
     for index in StateIndexList:
         txt.append("    case %i: " % index)
@@ -465,6 +466,7 @@ def __state_router(StateIndexList, SMD):
         txt.append("\n")
 
     txt.append("    }\n")
+    txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
 
     return txt
 

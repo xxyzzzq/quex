@@ -193,9 +193,9 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
-    # txt += "#       ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n"
-    # txt += "        goto __TERMINAL_ROUTER;\n"
-    # txt += "#       endif\n"
+    txt += "        /* In some scenarios, the __TERMINAL_ROUTER is never required.\n"
+    txt += "         * Still, avoid the warning of 'label never used'.             */\n"
+    txt += "        goto __TERMINAL_ROUTER;\n"
     for mode_name in ModeNameList:
         txt += "        unused += (int)%s.id;\n" % mode_name
     txt += "        unused += (int)__QuexLexemeNullObject;\n"

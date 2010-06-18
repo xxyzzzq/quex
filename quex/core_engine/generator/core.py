@@ -174,8 +174,9 @@ def delete_unused_labels(Code):
        in case that the new method has doubts about being able to perform well.
     """
     ## print "##delete,", languages.label_db_marker_get_unused_label_list()
-    LanguageDB = Setup.language_db
+    LanguageDB     = Setup.language_db
     replacement_db = {}
+    code           = Code
 
     def fill_replacement_db(LabelList, format_func):
         for label in LabelList:
@@ -194,16 +195,17 @@ def delete_unused_labels(Code):
     nothing_label_list, computed_goto_label_list = languages.label_db_marker_get_unused_label_list()
 
     # (1) Replace labels that are not used at all.
-    result = delete_unused_labels_FAST(Code, nothing_label_list)
+    result = delete_unused_labels_FAST(code, nothing_label_list)
     if result == "": 
         # -- Fast replacement failed, add them to replacement db
         fill_replacement_db(nothing_label_list, lambda x: x)
+    else:
+        code = result
 
     # (2) Replace labels that only appear in computed gotos
     fill_replacement_db(computed_goto_label_list, 
                         lambda x: "#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n" + x + "#endif\n")
     
-    code = Code
     for first_letter, replacement_list in replacement_db.items():
         code = blue_print(code, replacement_list, first_letter)
 
