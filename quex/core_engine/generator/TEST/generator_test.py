@@ -20,7 +20,7 @@ from   quex.input.setup import setup as Setup
 
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
-if True: REMOVE_FILES = True
+if False: REMOVE_FILES = True
 else:    REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
