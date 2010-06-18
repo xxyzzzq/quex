@@ -10,10 +10,10 @@ specific id TKN_STRING. The accumulator provides the following functions:
 
 .. code-block:: cpp
 
-  void   add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
-  void   add_chararacter(const QUEX_TYPE_CHARACTER);
-  void   flush(const token::id\_type TokenID);
-  void   clear();
+  void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+  void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
+  void   self_accumulator_flush(const token::id_type TokenID);
+  void   self_accumulator_clear();
 
 The add-functions add a string or a character to the accumulated string.
 ``Begin`` must point to the first character of the string, and ``End`` must

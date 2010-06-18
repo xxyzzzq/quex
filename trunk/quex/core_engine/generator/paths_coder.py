@@ -326,20 +326,20 @@ def __path_definition(variable_db, PathWalker, SMD):
         type  = "const QUEX_TYPE_CHARACTER*"
         value = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
         variable_db[name] = [ type, value ]
+
         memory_index += L
 
     name  = "path_walker_%i_base" % PathWalkerID
     type  = "const QUEX_TYPE_CHARACTER"
     value = "{" + "".join(memory) + "\n    }"
     dim   = memory_index + 1
-    variable_db[name] = [ type, value, dim ]
+    variable_db[name] = [ type, value, dim, "First" ]
     
     if PathWalker.uniform_state_entries_f() and PathN != 1:
-        print "##HERESAS"
         name  = "path_end_state" % path
-        type  = "const QUEX_TYPE_GOTO_LABEL"
-        value = "(QUEX_TYPE_GOTO_LABEL)0x0"
-        variable_db[name] = [ type, value, 0, "ComputedGoto" ]
+        type  = "QUEX_TYPE_GOTO_LABEL"
+        value = "QUEX_GOTO_STATE_LABEL_INIT_VALUE"
+        variable_db[name] = [ type, value, None, "ComputedGoto" ]
 
     if not PathWalker.uniform_state_entries_f():
         name  = "path_walker_%i_state" % PathWalkerID
@@ -535,11 +535,12 @@ def __end_state_router(txt, PathWalker, SMD):
         #      must be determined at run time.
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
-        txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
-        txt.append("        goto *path_walker_%i_end_state[path_index];\n" % PathWalkerID)
-        txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
         txt.append("        ")
         txt.append(LanguageDB["$input/decrement"] + "\n")
+
+        txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
+        txt.append("        goto *path_end_state;\n")
+        txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
 
         state_index_list = map(lambda path: path.end_state_index(), PathList)
         __switch_case_state_router(txt, SMD, PathWalker, state_index_list)
