@@ -1,4 +1,4 @@
-<history date="Fri Jun 18 09:24:45 2010" element-n="926">
+<history date="Fri Jun 18 09:37:17 2010" element-n="966">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1692,5 +1692,45 @@
         <crc-error time="06:26:38" application="test-simple-2.py" choice="Cpp-Path-CG" database-crc="1673556320" real-crc="-270685933"/>
         <crc-error time="06:26:46" application="test-simple-3.py" choice="Cpp-Path-CG" database-crc="-2107622876" real-crc="-1792493362"/>
         <crc-error time="06:26:56" application="test-simple.py" choice="Cpp-Path-CG" database-crc="1090776369" real-crc="-771053764"/>
+        <crc-error time="07:34:02" application="test-backward_loading.py" choice="ANSI-C-CG" database-crc="1998831863" real-crc="-1584767564"/>
+        <crc-error time="07:34:03" application="test-backward_loading.py" choice="Cpp-PathUniform-CG" database-crc="867443918" real-crc="-1584767564"/>
+        <crc-error time="07:34:12" application="test-position_adaption.py" choice="ANSI-C-CG" database-crc="-1176206115" real-crc="1319922986"/>
+        <crc-error time="07:34:13" application="test-position_adaption.py" choice="Cpp-PathUniform-CG" database-crc="1339925894" real-crc="1319922986"/>
+        <crc-error time="07:34:20" application="test-no-backward-reloading.py" choice="ANSI-C-CG" database-crc="1718978442" real-crc="-887225006"/>
+        <crc-error time="07:34:21" application="test-no-backward-reloading.py" choice="Cpp-PathUniform-CG" database-crc="1467483256" real-crc="-887225006"/>
+        <crc-error time="07:34:26" application="test-continue-without-return-2.py" choice="ANSI-C-CG" database-crc="753512623" real-crc="-759134064"/>
+        <crc-error time="07:34:27" application="test-continue-without-return-2.py" choice="Cpp-PathUniform-CG" database-crc="-1886931642" real-crc="-759134064"/>
+        <crc-error time="07:34:33" application="test-mode-changes.py" choice="ANSI-C-CG" database-crc="761655096" real-crc="270103911"/>
+        <crc-error time="07:34:33" application="test-mode-changes.py" choice="Cpp-PathUniform-CG" database-crc="2068648160" real-crc="270103911"/>
+        <crc-error time="07:34:39" application="test-continue-without-return.py" choice="ANSI-C-CG" database-crc="-107647862" real-crc="-1324080938"/>
+        <crc-error time="07:34:40" application="test-continue-without-return.py" choice="Cpp-PathUniform-CG" database-crc="-1508197346" real-crc="-1324080938"/>
+        <crc-error time="07:34:46" application="test-post-conditions.py" choice="ANSI-C-CG" database-crc="1794580134" real-crc="1338437579"/>
+        <crc-error time="07:34:46" application="test-post-conditions.py" choice="Cpp-PathUniform-CG" database-crc="-1626582850" real-crc="1338437579"/>
+        <crc-error time="07:34:53" application="test-post-conditions-2.py" choice="ANSI-C-CG" database-crc="-1068687699" real-crc="-1069020887"/>
+        <crc-error time="07:34:54" application="test-post-conditions-2.py" choice="Cpp-PathUniform-CG" database-crc="-1382989221" real-crc="-1069020887"/>
+        <crc-error time="07:35:00" application="test-post-conditions-3.py" choice="ANSI-C-CG" database-crc="307370956" real-crc="-423588249"/>
+        <crc-error time="07:35:01" application="test-post-conditions-3.py" choice="Cpp-PathUniform-CG" database-crc="1457496310" real-crc="-423588249"/>
+        <crc-error time="07:35:10" application="test-pre-conditions-3.py" choice="ANSI-C-CG" database-crc="-609963976" real-crc="-1449812084"/>
+        <crc-error time="07:35:11" application="test-pre-conditions-3.py" choice="Cpp-PathUniform-CG" database-crc="1974273191" real-crc="-1449812084"/>
+        <crc-error time="07:35:17" application="test-pre-conditions.py" choice="ANSI-C-CG" database-crc="542888961" real-crc="-524887799"/>
+        <crc-error time="07:35:18" application="test-pre-conditions.py" choice="Cpp-PathUniform-CG" database-crc="-1475557635" real-crc="-524887799"/>
+        <crc-error time="07:35:24" application="test-pre-conditions-2.py" choice="ANSI-C-CG" database-crc="-1573636925" real-crc="-2081003305"/>
+        <crc-error time="07:35:25" application="test-pre-conditions-2.py" choice="Cpp-PathUniform-CG" database-crc="-409618411" real-crc="-2081003305"/>
+        <crc-error time="07:35:32" application="test-pre-post-condition.py" choice="ANSI-C-CG" database-crc="-918967478" real-crc="-347610264"/>
+        <crc-error time="07:35:33" application="test-pre-post-condition.py" choice="Cpp-PathUniform-CG" database-crc="-1114701205" real-crc="-347610264"/>
+        <crc-error time="07:35:39" application="test-pseudo_ambiguous_post_conditions.py" choice="ANSI-C-CG" database-crc="-951266780" real-crc="1455270"/>
+        <crc-error time="07:35:40" application="test-pseudo_ambiguous_post_conditions.py" choice="Cpp-PathUniform-CG" database-crc="1959186367" real-crc="1455270"/>
+        <crc-error time="07:35:46" application="test-pseudo_ambiguous_post_conditions-2.py" choice="ANSI-C-CG" database-crc="-1872632263" real-crc="1614045300"/>
+        <crc-error time="07:35:46" application="test-pseudo_ambiguous_post_conditions-2.py" choice="Cpp-PathUniform-CG" database-crc="-1336398249" real-crc="1614045300"/>
+        <crc-error time="07:35:52" application="test-bol-eol.py" choice="ANSI-C-CG" database-crc="-175794057" real-crc="-1565444249"/>
+        <crc-error time="07:35:53" application="test-bol-eol.py" choice="Cpp-PathUniform-CG" database-crc="1738913358" real-crc="-1565444249"/>
+        <crc-error time="07:36:00" application="test-simple-5.py" choice="ANSI-C-CG" database-crc="1202328646" real-crc="-680455951"/>
+        <crc-error time="07:36:01" application="test-simple-5.py" choice="Cpp-PathUniform-CG" database-crc="-202663749" real-crc="-680455951"/>
+        <crc-error time="07:36:10" application="test-simple-2.py" choice="ANSI-C-CG" database-crc="-1630457310" real-crc="-270685933"/>
+        <crc-error time="07:36:11" application="test-simple-2.py" choice="Cpp-PathUniform-CG" database-crc="2132626087" real-crc="-270685933"/>
+        <crc-error time="07:36:16" application="test-simple-3.py" choice="ANSI-C-CG" database-crc="18713488" real-crc="-1792493362"/>
+        <crc-error time="07:36:17" application="test-simple-3.py" choice="Cpp-PathUniform-CG" database-crc="-1283235094" real-crc="-1792493362"/>
+        <crc-error time="07:36:22" application="test-simple.py" choice="ANSI-C-CG" database-crc="-1179939680" real-crc="-771053764"/>
+        <crc-error time="07:36:23" application="test-simple.py" choice="Cpp-PathUniform-CG" database-crc="-1752606090" real-crc="-771053764"/>
     </day>
 </history>
