@@ -32,6 +32,23 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
+# (*) COMPILER SETTINGS ________________________________________________________
+#     (change COMPILER to whatever you use as compiler on the command line,
+#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = g++ -ggdb 
+
+CC = $(COMPILER) -c \
+	 -I./ -I$(QUEX_PATH)                             \
+	 -Wall -Wconversion -pedantic                    \
+	 $(CCFLAG_ASSERTS)                               \
+	 -DENCODING_NAME='"UTF8"'                        \
+	 -DPRINT_TOKEN         
+	 # -DQUEX_OPTION_ASSERTS_DISABLED
+	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+   
+LD = $(COMPILER) $(LIB_CONV) 
+
 # (*) Determining the Converter Lib (IConv or ICU) ____________________________
 #
 # Some compiler distributions have iconv in a separate lib:
@@ -55,23 +72,6 @@ else
 	QUEX_FLAG = --iconv
 endif
 
-
-# (*) COMPILER SETTINGS ________________________________________________________
-#     (change COMPILER to whatever you use as compiler on the command line,
-#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -std=c++0x -ggdb 
-
-CC = $(COMPILER) -c \
-	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Wconversion -pedantic                    \
-	 $(CCFLAG_ASSERTS)                               \
-	 -DENCODING_NAME='"UTF8"'                        \
-	 -DPRINT_TOKEN         
-	 # -DQUEX_OPTION_ASSERTS_DISABLED
-	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
-   
-LD = $(COMPILER) $(LIB_CONV) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
