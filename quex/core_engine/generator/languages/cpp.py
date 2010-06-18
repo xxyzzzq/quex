@@ -49,32 +49,36 @@ def __header_definitions(LanguageDB):
 def __local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
-    variable_list = map(lambda x: ([x[0]] + x[1]), VariableDB.items())
-    variable_list.sort(lambda a, b: cmp(a[1], b[1]))
-    L = max(map(lambda info: len(info[0]), variable_list))
-    txt = []
-    for info in variable_list:
-        if len(info) > 3: 
-            if info[3] != 0:
-                type  = info[1]
-                name  = info[0] + "[%s]" % repr(info[3])
+    def __code(txt, name, info):
+        type = info[0]
+        if len(info) > 2 and info[2] != None: 
+            if info[2] != 0:
+                name  += "[%s]" % repr(info[2])
                 if type.find("QUEX_TYPE_GOTO_LABEL"): name = "(" + name + ")"
-                if info[2] != None: value = " = " + info[2]
+                if info[1] != None: value = " = " + info[1]
                 else:               value = "/* un-initilized */"
             else:
-                type = info[1] + "*"
-                name = info[0] 
-                value = " = 0x0"
+                type  += "*"
+                value  = " = 0x0"
         else:
-            type  = info[1]
-            name  = info[0] 
-            value = " = " + info[2]
+            value = " = " + info[1]
 
         if "ComputedGoto" in info:
             txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
         txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
         if "ComputedGoto" in info:
             txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+
+    L = max(map(lambda info: len(info[0]), VariableDB.keys()))
+    txt = []
+    # Some variables need to be defined before others, use 'First' to indicate that
+    for name, info in sorted(VariableDB.items()):
+        if "First" not in info: continue
+        __code(txt, name, info)
+
+    for name, info in sorted(VariableDB.items()):
+        if "First" in info: continue
+        __code(txt, name, info)
             
     return "".join(txt)
          
