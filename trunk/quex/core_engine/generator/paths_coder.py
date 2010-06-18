@@ -335,11 +335,11 @@ def __path_definition(variable_db, PathWalker, SMD):
     variable_db[name] = [ type, value, dim ]
     
     if PathWalker.uniform_state_entries_f() and PathN != 1:
-        name  = "path_walker_%i_end_state" % PathWalkerID
+        print "##HERESAS"
+        name  = "path_end_state" % path
         type  = "const QUEX_TYPE_GOTO_LABEL"
-        value = "{" + "".join(end_state_list) + "}"
-        dim   = PathN
-        variable_db[name] = [ type, value, dim, "ComputedGoto" ]
+        value = "(QUEX_TYPE_GOTO_LABEL)0x0"
+        variable_db[name] = [ type, value, 0, "ComputedGoto" ]
 
     if not PathWalker.uniform_state_entries_f():
         name  = "path_walker_%i_state" % PathWalkerID
@@ -394,9 +394,12 @@ def __state_entries(txt, PathWalker, SMD):
                 txt.extend(input_block.do(state_index, False, SMD))
                 txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
 
-            if PathN != 1:
+            if PathWalker.uniform_state_entries_f() and PathN != 1:
                 txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
-                txt.append("    " + LanguageDB["$assignment"]("path_index", "%i" % i).replace("\n", "\n    ") + "\n")
+                end_state_index = path.sequence()[-1][0]
+                end_state_label = "&&%s" % transition.get_label(end_state_index, None, None, SMD)
+                txt.append("    " + LanguageDB["$assignment"]("path_end_state", 
+                                                              end_state_label).replace("\n", "\n    ") + "\n")
                 txt.append("#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
             txt.append("   ")
             txt.append(LanguageDB["$assignment"]("path_iterator", 
