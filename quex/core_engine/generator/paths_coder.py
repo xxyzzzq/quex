@@ -317,36 +317,36 @@ def __path_definition(variable_db, PathWalker, SMD):
         end_state_list.append(end_state_label)
         state_list.append(end_state_label)
 
-        name  = "path_%i" % path.index()
-        type  = "const QUEX_TYPE_CHARACTER*"
-        value = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
-        variable_db[name] = [ type, value ]
+        name     = "path_%i" % path.index()
+        var_type = "const QUEX_TYPE_CHARACTER*"
+        value    = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
+        variable_db[name] = [ var_type, value ]
 
-        name  = "path_%i_end" % path.index()
-        type  = "const QUEX_TYPE_CHARACTER*"
-        value = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
-        variable_db[name] = [ type, value ]
+        name     = "path_%i_end" % path.index()
+        var_type = "const QUEX_TYPE_CHARACTER*"
+        value    = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
+        variable_db[name] = [ var_type, value ]
 
         memory_index += L
 
-    name  = "path_walker_%i_base" % PathWalkerID
-    type  = "const QUEX_TYPE_CHARACTER"
-    value = "{" + "".join(memory) + "\n    }"
-    dim   = memory_index + 1
-    variable_db[name] = [ type, value, dim, "First" ]
+    name     = "path_walker_%i_base" % PathWalkerID
+    var_type = "const QUEX_TYPE_CHARACTER"
+    value    = "{" + "".join(memory) + "\n    }"
+    dim      = memory_index + 1
+    variable_db[name] = [ var_type, value, dim, "First" ]
     
     if PathWalker.uniform_state_entries_f() and PathN != 1:
-        name  = "path_end_state" % path
-        type  = "QUEX_TYPE_GOTO_LABEL"
-        value = "QUEX_GOTO_STATE_LABEL_INIT_VALUE"
-        variable_db[name] = [ type, value, None, "ComputedGoto" ]
+        name     = "path_end_state" % path
+        var_type = "QUEX_TYPE_GOTO_LABEL"
+        value    = "QUEX_GOTO_STATE_LABEL_INIT_VALUE"
+        variable_db[name] = [ var_type, value, None, "ComputedGoto" ]
 
     if not PathWalker.uniform_state_entries_f():
-        name  = "path_walker_%i_state" % PathWalkerID
-        type  = "const QUEX_TYPE_GOTO_LABEL"
-        value = "{" + "".join(state_list) + "}"
-        dim   = len(state_list)
-        variable_db[name] = [ type, value, dim, "ComputedGoto" ]
+        name     = "path_walker_%i_state" % PathWalkerID
+        var_type = "const QUEX_TYPE_GOTO_LABEL"
+        value    = "{" + "".join(state_list) + "}"
+        dim      = len(state_list)
+        variable_db[name] = [ var_type, value, dim, "ComputedGoto" ]
 
 def __state_entries(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key

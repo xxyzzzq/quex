@@ -118,7 +118,8 @@ def do(SMD, CostCoefficient):
     local_variable_db = transition_target_definition 
     if len(local_variable_db) != 0:
         local_variable_db.update({
-          "target_state_index": [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE"],
+          "target_state_index": [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE",
+                                  None, "NotComputedGoto"],
           "template_state_key": [ "int",                  "(int)0"],
         })
 
@@ -187,7 +188,7 @@ def _do(CombinationList, SMD):
     # -- transition target definition for each templated state
     transition_target_definition = {}
     for template in template_list:
-        __transition_target_data_structures(transition_target_definition, template)
+        __transition_target_data_structures(transition_target_definition, template, SMD)
 
     # -- template state entries
     # -- template state
@@ -356,41 +357,50 @@ class TemplateState(state_machine.State):
     def template_combination(self):
         return self.__template_combination
 
-def __transition_target_data_structures(variable_db, TheTemplate):
+def __transition_target_data_structures(variable_db, TheTemplate, SMD):
     """Defines the transition targets for each involved state.
     """
     template_index      = TheTemplate.core().state_index
 
-    def __array_to_code(Array):
+    def __array_to_code(Array, ComputedGotoF=False):
         txt = ["{ "]
         for index in Array:
-            if index != None: txt.append("%i, " % index)
-            else:             txt.append("-%i," % template_index)
+            if ComputedGotoF:
+                txt.append("&&" + transition.get_label(index, template_index, None, SMD) + ", ")
+            else:
+                if index != None: txt.append("%i, " % index)
+                else:             txt.append("-%i," % template_index)
         txt.append("}")
         return "".join(txt)
 
     involved_state_list = TheTemplate.template_combination().involved_state_list()
     involved_state_n    = len(involved_state_list)
     # Type and dimension of the involved arrays is always the same
-    variable_type  = "const QUEX_TYPE_GOTO_LABEL"
-    dimension      = involved_state_n 
+    var_type  = "const QUEX_TYPE_GOTO_LABEL"
+    dimension = involved_state_n 
 
-    for target_index, target_state_index_list in enumerate(TheTemplate.transitions().target_state_list_db()):
+    target_state_list_db = TheTemplate.transitions().target_state_list_db()
+
+    for target_index, target_state_index_list in enumerate(target_state_list_db):
         assert len(target_state_index_list) == involved_state_n
 
-        variable_name  = "template_%i_target_%i" % (template_index, target_index)
-        variable_value = __array_to_code(target_state_index_list)
+        name     = "template_%i_target_%i" % (template_index, target_index)
+        value    = __array_to_code(target_state_index_list)
+        value_cg = __array_to_code(target_state_index_list, ComputedGotoF=True)
 
-        variable_db[variable_name] = [ variable_type, variable_value, dimension ]
+        variable_db[name]         = [ var_type, value,    dimension, "NotComputedGoto" ]
+        variable_db[name + "_cg"] = [ var_type, value_cg, dimension, "ComputedGoto" ]
 
     # If the template does not have uniform state entries, the entries
     # need to be routed on recursion, for example. Thus we need to map 
     # from state-key to state.
     if not TheTemplate.uniform_state_entries_f():
-        variable_name  = "template_%i_map_state_key_to_state_index" % template_index
-        variable_value = __array_to_code(involved_state_list)
+        name  = "template_%i_map_state_key_to_state_index" % template_index
+        value    = __array_to_code(involved_state_list)
+        value_cg = __array_to_code(involved_state_list, ComputedGotoF=True)
 
-        variable_db[variable_name] = [ variable_type, variable_value, dimension ]
+        variable_db[name]        = [ var_type, value, dimension, "NotComputedGoto"]
+        variable_db[name+ "_cg"] = [ var_type, value_cg, dimension, "ComputedGoto"]
 
 
 def __templated_state_entries(txt, TheTemplate, SMD):

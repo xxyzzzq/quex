@@ -20,7 +20,7 @@ from   quex.input.setup import setup as Setup
 
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
-if True: REMOVE_FILES = True
+if False: REMOVE_FILES = True
 else:    REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
@@ -33,7 +33,10 @@ else:
     SHOW_BUFFER_LOADS_STR = "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
 
-choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "ANSI-C-CG", "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Path", "Cpp-PathUniform", "Cpp-Path-CG", "Cpp-PathUniform-CG"] 
+choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "ANSI-C-CG", 
+                "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Template-CG", 
+                "Cpp-Path", "Cpp-PathUniform", "Cpp-Path-CG", 
+                "Cpp-PathUniform-CG"] 
 
 def hwut_input(Title, Extra="", AddChoices=[], DeleteChoices=[]):
     global choices_list
