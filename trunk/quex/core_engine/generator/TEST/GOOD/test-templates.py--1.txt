@@ -1,8 +1,23 @@
 --(Transition Targets)--------------------------------------------------
 
-    const QUEX_TYPE_GOTO_LABEL template_1_target_0[3] = { 1, -1,2, };
-    const QUEX_TYPE_GOTO_LABEL template_1_target_1[3] = { 1, 3, 2, };
-    const QUEX_TYPE_GOTO_LABEL template_1_target_2[3] = { 2, 3, 1, };
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_0[3]) = { 1, -1,2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_0_cg[3]) = { &&STATE_1, &&STATE_1_DROP_OUT, &&STATE_2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_1[3]) = { 1, 3, 2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_1_cg[3]) = { &&STATE_1, &&STATE_3, &&STATE_2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_2[3]) = { 2, 3, 1, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_2_cg[3]) = { &&STATE_2, &&STATE_3, &&STATE_1, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
 
 --(Template Code)-------------------------------------------------------
@@ -41,9 +56,9 @@ STATE_1_INPUT:
             goto STATE_1_DROP_OUT;    /* [-oo, '\t'] */
         } else {
             if( input == 8) {
-                QUEX_TEMPLATE_GOTO(1, 0);    /* \8 */
+                QUEX_TEMPLATE_GOTO(1, 0, template_state_key);    /* \8 */
             } else {
-                QUEX_TEMPLATE_GOTO(1, 1);    /* '\t' */
+                QUEX_TEMPLATE_GOTO(1, 1, template_state_key);    /* '\t' */
             }
         }
     } else {
@@ -57,7 +72,7 @@ STATE_1_INPUT:
             if( input == 12) {
                 goto STATE_1_DROP_OUT_DIRECT;    /* \12 */
             } else {
-                QUEX_TEMPLATE_GOTO(1, 2);    /* [\14, oo] */
+                QUEX_TEMPLATE_GOTO(1, 2, template_state_key);    /* [\14, oo] */
             }
         }
     }
@@ -65,7 +80,7 @@ STATE_1_INPUT:
 STATE_1_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT");
     if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-       || (me->buffer._memory._end_of_file_p != 0x0) ) {
+        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_1_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
         QUEX_GOTO_last_acceptance();
@@ -79,6 +94,7 @@ STATE_1_DROP_OUT_DIRECT:
 
 --(State Router)--------------------------------------------------------
 
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
 STATE_ROUTER:
     switch( target_state_index ) {
     case 1: goto STATE_1;
@@ -86,5 +102,6 @@ STATE_ROUTER:
     case 3: goto STATE_3;
     case -1: goto STATE_1_DROP_OUT;
     }
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
 

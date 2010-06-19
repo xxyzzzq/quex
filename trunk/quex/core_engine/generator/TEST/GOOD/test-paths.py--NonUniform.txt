@@ -1,19 +1,19 @@
 --(Path Definitions)----------------------------------------------------
 
-    const QUEX_TYPE_CHARACTER path_walker_23_base[23] = {
+    const QUEX_TYPE_CHARACTER (path_walker_23_base[23]) = {
     111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'o''t''t''o' */
     103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'g''r''u''n''i''b''a''l''d''i' */
     102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'f''r''i''t''z' */
 
     };
-    const QUEX_TYPE_CHARACTER* path_6 = path_walker_23_base + 5;
-    const QUEX_TYPE_CHARACTER* path_17 = path_walker_23_base + 16;
-    const QUEX_TYPE_CHARACTER* path_6_end = path_walker_23_base + 15;
     const QUEX_TYPE_CHARACTER* path_1 = path_walker_23_base + 0;
-    const QUEX_TYPE_CHARACTER* path_1_end = path_walker_23_base + 4;
+    const QUEX_TYPE_CHARACTER* path_17 = path_walker_23_base + 16;
     const QUEX_TYPE_CHARACTER* path_17_end = path_walker_23_base + 21;
+    const QUEX_TYPE_CHARACTER* path_1_end = path_walker_23_base + 4;
+    const QUEX_TYPE_CHARACTER* path_6 = path_walker_23_base + 5;
+    const QUEX_TYPE_CHARACTER* path_6_end = path_walker_23_base + 15;
 #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    const QUEX_TYPE_GOTO_LABEL path_walker_23_state[22] = {STATE_1, STATE_2, STATE_3, STATE_4, STATE_5, STATE_6, STATE_7, STATE_8, STATE_9, STATE_10, STATE_11, STATE_12, STATE_13, STATE_14, STATE_15, STATE_16, STATE_17, STATE_18, STATE_19, STATE_20, STATE_21, STATE_22, };
+    const QUEX_TYPE_GOTO_LABEL (path_walker_23_state[22]) = {&&STATE_1, &&STATE_2, &&STATE_3, &&STATE_4, &&STATE_5, &&STATE_6, &&STATE_7, &&STATE_8, &&STATE_9, &&STATE_10, &&STATE_11, &&STATE_12, &&STATE_13, &&STATE_14, &&STATE_15, &&STATE_16, &&STATE_17, &&STATE_18, &&STATE_19, &&STATE_20, &&STATE_21, &&STATE_22, };
 #endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
 
@@ -27,11 +27,6 @@ STATE_1_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "0");
-    path_index = 0;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
     path_iterator = path_1 + 0;
     goto PATH_WALKER_23;
@@ -44,11 +39,6 @@ STATE_2_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "1");
-    path_index = 1;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 1");
     path_iterator = path_1 + 1;
     goto PATH_WALKER_23;
@@ -61,11 +51,6 @@ STATE_3_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "2");
-    path_index = 2;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 2");
     path_iterator = path_1 + 2;
     goto PATH_WALKER_23;
@@ -78,11 +63,6 @@ STATE_4_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "3");
-    path_index = 3;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 3");
     path_iterator = path_1 + 3;
     goto PATH_WALKER_23;
@@ -95,11 +75,6 @@ STATE_6_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "0");
-    path_index = 0;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 0");
     path_iterator = path_6 + 0;
     goto PATH_WALKER_23;
@@ -112,11 +87,6 @@ STATE_7_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "1");
-    path_index = 1;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 1");
     path_iterator = path_6 + 1;
     goto PATH_WALKER_23;
@@ -129,11 +99,6 @@ STATE_8_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "2");
-    path_index = 2;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 2");
     path_iterator = path_6 + 2;
     goto PATH_WALKER_23;
@@ -146,11 +111,6 @@ STATE_9_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "3");
-    path_index = 3;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 3");
     path_iterator = path_6 + 3;
     goto PATH_WALKER_23;
@@ -163,11 +123,6 @@ STATE_10_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "4");
-    path_index = 4;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 4");
     path_iterator = path_6 + 4;
     goto PATH_WALKER_23;
@@ -180,11 +135,6 @@ STATE_11_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "5");
-    path_index = 5;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 5");
     path_iterator = path_6 + 5;
     goto PATH_WALKER_23;
@@ -197,11 +147,6 @@ STATE_12_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "6");
-    path_index = 6;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 6");
     path_iterator = path_6 + 6;
     goto PATH_WALKER_23;
@@ -214,11 +159,6 @@ STATE_13_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "7");
-    path_index = 7;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 7");
     path_iterator = path_6 + 7;
     goto PATH_WALKER_23;
@@ -231,11 +171,6 @@ STATE_14_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "8");
-    path_index = 8;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 8");
     path_iterator = path_6 + 8;
     goto PATH_WALKER_23;
@@ -248,11 +183,6 @@ STATE_15_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "9");
-    path_index = 9;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 9");
     path_iterator = path_6 + 9;
     goto PATH_WALKER_23;
@@ -265,11 +195,6 @@ STATE_17_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "0");
-    path_index = 0;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 0");
     path_iterator = path_17 + 0;
     goto PATH_WALKER_23;
@@ -282,11 +207,6 @@ STATE_18_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "1");
-    path_index = 1;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 1");
     path_iterator = path_17 + 1;
     goto PATH_WALKER_23;
@@ -299,11 +219,6 @@ STATE_19_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "2");
-    path_index = 2;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 2");
     path_iterator = path_17 + 2;
     goto PATH_WALKER_23;
@@ -316,11 +231,6 @@ STATE_20_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "3");
-    path_index = 3;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 3");
     path_iterator = path_17 + 3;
     goto PATH_WALKER_23;
@@ -333,11 +243,6 @@ STATE_21_INPUT:
 
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_index = %s", "4");
-    path_index = 4;
-    
-#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 4");
     path_iterator = path_17 + 4;
     goto PATH_WALKER_23;
@@ -378,7 +283,7 @@ PATH_WALKER_23_STATE_ROUTER:
             default: QUEX_ERROR_EXIT("Pathwalker: path_iterator on inadmissible position.");
             }
 #else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */
-        goto path_walker_23_state[path_iterator - path_walker_23_base];
+        goto *path_walker_23_state[path_iterator - path_walker_23_base];
 #endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
     goto PATH_WALKER_23_STATE_ROUTER;

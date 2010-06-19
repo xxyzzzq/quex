@@ -1,7 +1,17 @@
 --(Transition Targets)--------------------------------------------------
 
-    const QUEX_TYPE_GOTO_LABEL template_1_target_0[6] = { 1, -1,1, 2, 2, 2, };
-    const QUEX_TYPE_GOTO_LABEL template_1_target_1[6] = { 2, 3, 1, -1,2, 2, };
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_0[6]) = { 1, -1,1, 2, 2, 2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_0_cg[6]) = { &&STATE_1, &&STATE_1_DROP_OUT, &&STATE_1, &&STATE_2, &&STATE_2, &&STATE_2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_1[6]) = { 2, 3, 1, -1,2, 2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_1_cg[6]) = { &&STATE_2, &&STATE_3, &&STATE_1, &&STATE_1_DROP_OUT, &&STATE_2, &&STATE_2, };
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
 
 --(Template Code)-------------------------------------------------------
@@ -57,15 +67,15 @@ STATE_1_INPUT:
     QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     input = QUEX_NAME(Buffer_input_get)(&me->buffer);
     if( input < 10) {
-        QUEX_TEMPLATE_GOTO(1, 0);    /* [-oo, '\t'] */
+        QUEX_TEMPLATE_GOTO(1, 0, template_state_key);    /* [-oo, '\t'] */
     } else {
-        QUEX_TEMPLATE_GOTO(1, 1);    /* ['\n', oo] */
+        QUEX_TEMPLATE_GOTO(1, 1, template_state_key);    /* ['\n', oo] */
     }
 
 STATE_1_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT");
     if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-       || (me->buffer._memory._end_of_file_p != 0x0) ) {
+        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
 STATE_1_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
         QUEX_GOTO_last_acceptance();
@@ -79,6 +89,7 @@ STATE_1_DROP_OUT_DIRECT:
 
 --(State Router)--------------------------------------------------------
 
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
 STATE_ROUTER:
     switch( target_state_index ) {
     case 1: goto STATE_1;
@@ -86,5 +97,6 @@ STATE_ROUTER:
     case 3: goto STATE_3;
     case -1: goto STATE_1_DROP_OUT;
     }
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
 
