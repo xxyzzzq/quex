@@ -51,7 +51,7 @@ EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
 		 --token-offset     0x1000     \
-		 --language         C
+		 --language         C          \
 		 --post-categorizer
 
 # (*) HELPERS __________________________________________________________________
