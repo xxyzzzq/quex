@@ -33,13 +33,15 @@
 #   include <assert.h>
 #   include <string.h>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
-    } // extern "C" { 
+    } /* extern "C" { */
 #endif
 #include "unicode/utypes.h"   /* Basic ICU data types */
 #include "unicode/ucnv.h"     /* C   Converter API    */
 #include "unicode/ustring.h"  /* some more string fcns*/
 #include "unicode/uchar.h"    /* char names           */
 #include "unicode/uloc.h"
+#if 0
 #include "unicode/unistr.h"
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H */

@@ -11,9 +11,9 @@
 int 
 main(int argc, char** argv) 
 {        
-    Token*     token_p = 0x0;
-    size_t     token_n = 0;
-    EasyLexer  qlex;
+    QUEX_NAME(Token)*  token_p = 0x0;
+    size_t             number_of_tokens = 0;
+    EasyLexer          qlex;
 
     QUEX_NAME(construct_file_name)(&qlex, "example.txt", ENCODING_NAME, false);
     /* Alternatives:
@@ -31,12 +31,23 @@ main(int argc, char** argv)
         /* Get next token from the token stream   */
         token_p = QUEX_NAME(receive)(&qlex);
         /* Print out token information            */
+#       ifdef PRINT_TOKEN
+        printf("%s '%s'\n", 
+               QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id),
+               (const char*)token_p->text);
+#       else
         printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
-        ++token_n;
+#       endif
+
+#       ifdef SPECIAL_ACTION
+        SPECIAL_ACTION(&qlex, &my_token);
+#       endif
+        ++number_of_tokens;
+
         /* Check against 'termination'            */
     } while( token_p->_id != QUEX_TKN_TERMINATION );
 
-    printf("| [END] number of token = %i\n", token_n);
+    printf("| [END] number of token = %i\n", number_of_tokens);
     printf("`------------------------------------------------------------------------------------\n");
 
     return 0;
