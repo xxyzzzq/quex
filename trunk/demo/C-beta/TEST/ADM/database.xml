@@ -1,13 +1,13 @@
-<test-database execution-time-sec="0.00" date="Tue Jun 22 21:30:31 2010">
+<test-database execution-time-sec="0.12" date="Tue Jun 22 21:43:47 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences" time-sum-sec="0.00"> 
+    <test title="Makefile Differences" time-sum-sec="0.12"> 
         <application file-name="makefile-diff.sh" info-request-time="1277234908L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="000" result="OK" time_sec="0.00" crc="-874721747"/>
-           <choice name="001" result="OK" time_sec="0.00" crc="151857720"/>
-           <choice name="002" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="003" result="NONE" time_sec="0.00" crc="None"/>
-           <choice name="005" result="NONE" time_sec="0.00" crc="None"/>
+           <choice name="000" result="OK" time_sec="0.02" crc="-874721747"/>
+           <choice name="001" result="OK" time_sec="0.02" crc="151857720"/>
+           <choice name="002" result="NO GOOD FILE" time_sec="0.02" crc="-999789489"/>
+           <choice name="003" result="NO GOOD FILE" time_sec="0.02" crc="2026060119"/>
+           <choice name="005" result="NO GOOD FILE" time_sec="0.04" crc="-1411925669"/>
         </choice-list>
     </test>
 </test-database>
