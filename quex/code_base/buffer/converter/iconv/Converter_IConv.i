@@ -78,8 +78,8 @@ QUEX_NAMESPACE_MAIN_OPEN
          *
          *  as a compile option. If you have an elegant solution to solve the problem for 
          *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
-        size_t source_bytes_left_n = SourceEnd - *source;
-        size_t drain_bytes_left_n  = (DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
+        size_t source_bytes_left_n = (size_t)(SourceEnd - *source);
+        size_t drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
 
         size_t report = iconv(me->handle, 
                               __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,

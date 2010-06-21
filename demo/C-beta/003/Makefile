@@ -11,7 +11,6 @@
 #
 #         creates a lexer using the icu library.
 #
-#
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
 include $(QUEX_PATH)/quex/code_base/core.mkd
@@ -25,10 +24,7 @@ ifndef BYTES_PER_CHARACTER
     BYTES_PER_CHARACTER = 2
 endif
 
-# (*) COMPILER SETTINGS ________________________________________________________
-#     (change COMPILER to whatever you use as compiler on the command line,
-#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = gcc
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -36,12 +32,21 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-CC = $(COMPILER) -c -fPIC -Wall -Wimplicit -pedantic\
-	 -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-	 -ggdb \
-     # -DQUEX_OPTION_ASSERTS_DISABLED
-	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+# (*) COMPILER SETTINGS ________________________________________________________
+#     (change COMPILER to whatever you use as compiler on the command line,
+#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = gcc # -ggdb 
 
+CC = $(COMPILER) -c \
+	 -I./ -I$(QUEX_PATH)                             \
+	 -Wall -Wconversion -pedantic                    \
+	 $(CCFLAG_ASSERTS)                               \
+	 -DENCODING_NAME='"UTF8"'                        \
+	 -DPRINT_TOKEN         
+	 # -DQUEX_OPTION_ASSERTS_DISABLED
+	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+   
 LD = $(COMPILER) $(LIB_CONV) 
 
 # (*) Determining the Converter Lib (IConv or ICU) ____________________________
@@ -68,43 +73,34 @@ else
 endif
 
 
-# (*) SETUP ____________________________________________________________________
-# -- INPUT
-MODE_FILES  = definitions.qx \
-			  end_of_file.qx \
-			  program.qx
-# -- FILES PRODUCED BY QUEX
-ENGINE_NAME = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-
-# -- OUTPUT
-OBJS = lexer.o $(ENGINE_NAME).o 
-
 # (*) RULES ____________________________________________________________________
 # -- application
-lexer: $(OBJS)
-	$(LD) $(OBJS) -o lexer
+lexer:          example.o EasyLexer.o
+	$(LD) -o $@ example.o EasyLexer.o 
+          
+# Object files:
+EasyLexer.o: EasyLexer.c 
+	$(CC) $< -o $@ 
 
-# -- engine and object files (make sure that code has been generated)
-%.o: %.c tiny_lexer.c
-	$(CC) $< -o $@
+example.o: ../example.c  EasyLexer.c
+	$(CC) $< -o $@ 
 
-%.o: %.E 
-	$(CC:-c=-E) $< -o $@
+# Macro expansions (only for debugging):
+%.E: %.c    
+	$(CC) -E $< -o $@ 
 
-tiny_lexer.c: $(MODE_FILES) $(QUEX_CORE)
-	@echo ":$(CONVERTER):" $(QUEX_FLAG)
-	quex -i                  $(MODE_FILES)          \
-		 --engine            $(ENGINE_NAME)         \
-	     --bytes-per-trigger $(BYTES_PER_CHARACTER) \
-		 --language          C                      \
-	     $(QUEX_FLAG)
+EasyLexer.c: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
+	quex -i                 definitions.qx end_of_file.qx program.qx \
+	     --engine           EasyLexer  \
+		 --token-offset     0x1000     \
+	     -b $(BYTES_PER_CHARACTER)     \
+		 --language C                  \
+		 $(QUEX_FLAG)
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	touch $(MODE_FILES)
-	rm -f tiny_lexer*
-	rm -f $(ENGINE_NAME)-*
-	rm -f $(ENGINE_NAME).[oE]
-	rm -f lexer.[oE]
-	rm -f lexer
+	rm -f EasyLexer*
+	rm -f *.o
 	rm -f *.bak
+	rm -f *.E
+	rm -f lexer

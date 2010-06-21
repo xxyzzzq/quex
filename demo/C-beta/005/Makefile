@@ -29,7 +29,7 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
+COMPILER = gcc
 CC = $(COMPILER) -c -ggdb -Wno-deprecated -Wall  \
 	 -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS)   \
      # -DQUEX_OPTION_ASSERTS_DISABLED
@@ -47,7 +47,10 @@ $(APPLICATION): $(APPLICATION).o $(ENGINE_NAME).o
 %.o: %.c $(ENGINE_SOURCES)
 	$(CC) $< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
+example.o: ../example.c  EasyLexer.c
+	$(CC) $< -o $@ 
+
+EasyLexer EasyLexer.c: $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-policy single \
 		 --language C
 
@@ -55,7 +58,7 @@ $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 #
 clean:	
 	touch $(MODE_FILES)
-	rm -f $(ENGINE_SOURCES)
+	rm -f EasyLexer-token EasyLexer-configuration
 	rm -f $(ENGINE_NAME)-token
 	rm -f $(ENGINE_NAME).o
 	rm -f lexer.o

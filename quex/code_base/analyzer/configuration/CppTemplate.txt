@@ -31,6 +31,10 @@
 $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 
+#if ! defined(__QUEX_OPTION_PLAIN_C) && ! defined(__cplusplus)
+#   error "__QUEX_OPTION_PLAIN_C must be defined if no C++ compiler is used! Call quex with option '--language C'."
+#endif
+
 /* By default ASSERTS are enabled ! */
 #if defined(__QUEX_INCLUDE_INDICATOR__ASSERTS)
 #   error "Asserts have been adapted before the inclusion of the configuration file."
