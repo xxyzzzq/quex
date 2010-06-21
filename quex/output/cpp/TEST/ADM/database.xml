@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.19" date="Sun Jun 20 19:48:36 2010">
+<test-database execution-time-sec="3.18" date="Tue Jun 22 21:38:22 2010">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.07"> 
         <application file-name="test-token_class.py" info-request-time="1265060365L" vanished="False"/>
@@ -7,7 +7,7 @@
         </choice-list>
     </test>
     <group name="Converter">
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.16"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.15"> 
             <application file-name="test-converter-x.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.05" crc="-705738934"/>
@@ -15,7 +15,7 @@
                <choice name="3" result="OK" time_sec="0.05" crc="1569909165"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="2.74"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="2.73"> 
             <application file-name="test-converter-C.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="cp737" result="OK" time_sec="0.46" crc="1246986017"/>
