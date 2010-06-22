@@ -1,0 +1,10 @@
+< COMPILER = g++ -std=c++0x -ggdb 
+---
+> COMPILER = gcc # -ggdb 
+< EasyLexer.o: EasyLexer.cpp 
+---
+> EasyLexer.o: EasyLexer.c 
+< example.o: ../example.cpp  EasyLexer.cpp
+---
+> example.o: ../example.c  EasyLexer.c
+< 		 --language C        \
