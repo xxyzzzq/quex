@@ -139,11 +139,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    QUEX_NAME(CounterLineColumn_count_NoNewline)(QUEX_NAME(CounterLineColumn)* me, const ptrdiff_t LexemeLength) 
+    QUEX_NAME(CounterLineColumn_count_NoNewline)(QUEX_NAME(CounterLineColumn)* me, 
+                                                 const size_t                  LexemeLength) 
     {
         __quex_assert( LexemeLength > 0 );
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->base._column_number_at_end += (size_t)LexemeLength;
+        me->base._column_number_at_end += LexemeLength;
 #       endif
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }

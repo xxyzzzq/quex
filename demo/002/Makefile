@@ -49,8 +49,9 @@ example.o: ../example.cpp  EasyLexer.cpp
 %.E: %.cpp    
 	$(CC) -E $< -o $@ 
 
-EasyLexer.cpp: simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine EasyLexer  
+EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
+	quex -i simple.qx        \
+		 --engine EasyLexer  
 
 # (*) HELPERS __________________________________________________________________
 clean:	

@@ -88,12 +88,12 @@ body {
 }
 
 init {
-    // first indentation at column = 0
+    /* first indentation at column = 0 */
     self.indentation_stack.begin[0] = (uint16_t)0;
     self.indentation_stack.end      = self.indentation_stack.begin + 1;
-    // default: do not allow to open a sub-block.
-    // only function definitions, if statements, and for loops
-    // shoul allow to open a new indentation block in the next line.
+    /* default: do not allow to open a sub-block.
+     * only function definitions, if statements, and for loops
+     * should allow to open a new indentation block in the next line. */
     self.allow_opening_indentation_f = false;
 }
 
@@ -115,13 +115,13 @@ mode PROGRAM :
         if( Indentation > IndentationStack_back() ) {
             if( self.allow_opening_indentation_f ) {
                 self_send(QUEX_TKN_BLOCK_OPEN);
-                IndentationStack_push(&self.indentation_stack, Indentation);
+                IndentationStack_push(&self.indentation_stack, (uint16_t)Indentation);
                 self.allow_opening_indentation_f = false;
             }
             else {
-                // -- higher indentation where it was not allowed to indent higher
-                //    => misaligned indentation
-                self_token_object()->number = self_line_number(); 
+                /* -- higher indentation where it was not allowed to indent higher
+                 *    => misaligned indentation                                    */
+                self_token_p()->number = (int)self_line_number(); 
                 self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION);
             }
             return;
@@ -131,10 +131,10 @@ mode PROGRAM :
             IndentationStack_pop(&self.indentation_stack);
         }
 
-        // -- 'landing' indentation has to fit an indentation border
-        //    if not send an error
+        /* -- 'landing' indentation has to fit an indentation border
+         *    if not send an error.                                  */
         if( IndentationStack_back() != Indentation ) {
-            self_token_object()->number = self_line_number(); 
+            self_token_p()->number = (int)self_line_number(); 
             self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION);
         }
     }

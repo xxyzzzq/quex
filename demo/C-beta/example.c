@@ -11,9 +11,11 @@
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_NAME(Token)*  token_p = 0x0;
-    size_t             number_of_tokens = 0;
-    EasyLexer          qlex;
+    Token*       token_p = 0x0;
+    size_t       number_of_tokens = 0;
+    EasyLexer    qlex;
+    const size_t UTF8ContentSize = 1024;
+    uint8_t      utf8_content[1024];
 
     QUEX_NAME(construct_file_name)(&qlex, "example.txt", ENCODING_NAME, false);
     /* Alternatives:
@@ -32,9 +34,15 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
         /* Print out token information            */
 #       ifdef PRINT_TOKEN
+        uint8_t* end =
+        QUEX_NAME(unicode_to_utf8_string)(token_p->text, 
+                                          QUEX_NAME(strlen)(token_p->text),
+                                          utf8_content,
+                                          UTF8ContentSize);
+        *(end-1) = '\0';
         printf("%s '%s'\n", 
                QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id),
-               (const char*)token_p->text);
+               (const char*)utf8_content);
 #       else
         printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
 #       endif

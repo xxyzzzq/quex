@@ -235,7 +235,7 @@ __terminal_state_str  = """
 #define LexemeBegin  (me->buffer._lexeme_start_p)
 #define LexemeEnd    (me->buffer._input_p)
 #define LexemeNull   (&__QuexLexemeNullObject)
-#define LexemeL      (me->buffer._input_p - me->buffer._lexeme_start_p)
+#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -258,8 +258,8 @@ $$FAILURE_ACTION$$
 __terminal_router_str = """
     __quex_assert(false); /* No drop-into __TERMINAL_ROUTER */
 __TERMINAL_ROUTER: {
-        /*  if last_acceptance => goto correspondent acceptance terminal state*/
-        /*  else               => execute defaul action                       */
+        /*  if last_acceptance => goto correspondent acceptance terminal state */
+        /*  else               => execute defaul action                        */
         if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
             goto TERMINAL_FAILURE;
         }
