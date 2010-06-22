@@ -117,6 +117,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*   Begin = (QUEX_TYPE_CHARACTER*)Lexeme;
         QUEX_TYPE_CHARACTER*   Last  = LexemeEnd - 1;                
         QUEX_TYPE_CHARACTER*   it    = Last;
+        QUEX_TYPE_CHARACTER*   start_consideration_it = 0x0;
 
         __quex_assert(Begin < LexemeEnd);   /* LexemeLength >= 1: NEVER COMPROMISE THIS ! */
 
@@ -136,8 +137,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         /* (2) Find last newline in lexeme _______________________________________________ */
-        QUEX_TYPE_CHARACTER* start_consideration_it = 0x0;
-        it = Last;
+        start_consideration_it = 0x0;
+        it                     = Last;
         while( it != Begin ) {
             /* recall assert: no lexeme with len(Lexeme) == 0 */
             --it;
@@ -235,7 +236,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* This is the fastest way to count: simply add the constant integer that represents 
      * the constant length of the lexeme (for patterns with fixed length, e.g. keywords). */
     {
-        __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
+        __quex_assert(ColumnNIncrement > 0);  /* lexeme length >= 1 */
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
         me->base._column_number_at_end += ColumnNIncrement;
 #       endif
@@ -299,7 +300,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         } while ( it != End );
 
         /* no non-whitespace until end of lexeme, thus only increment the indentation */
-        me->_indentation += it - start_consideration_it;
+        me->_indentation += (size_t)(it - start_consideration_it);
         QUEX_NAME(CounterLineColumnIndentation_count_indentation_aux)(me, start_consideration_it, 
                                                      Begin, End, LicenseToIncrementLineCountF);
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
@@ -319,7 +320,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #          endif	    
         }
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->base._column_number_at_end += End - start_consideration_it;
+        me->base._column_number_at_end += (size_t)(End - start_consideration_it);
 #       endif
     }
 

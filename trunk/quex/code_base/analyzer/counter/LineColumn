@@ -27,7 +27,7 @@ QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count)(QUEX_NAME(CounterLineColumn
                                                      QUEX_TYPE_CHARACTER*          Lexeme, 
                                                      QUEX_TYPE_CHARACTER*          LexemeEnd);
 QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count_NoNewline)(QUEX_NAME(CounterLineColumn)* me, 
-                                                               const ptrdiff_t               LexemeLength);
+                                                               const size_t                  LexemeLength);
 QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count_FixNewlineN)(QUEX_NAME(CounterLineColumn)*   me,
                                                       QUEX_TYPE_CHARACTER* Lexeme,
                                                       QUEX_TYPE_CHARACTER* LexemeEnd,
