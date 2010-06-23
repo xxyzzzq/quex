@@ -2,8 +2,8 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include <./tiny_lexer>
-#include <./tiny_lexer-token_ids>
+#include "EasyLexer"
+#include "EasyLexer-token_ids"
 
 using namespace std;
 
@@ -25,31 +25,32 @@ main(int argc, char** argv)
     int  number_of_tokens = 0;
     bool continue_lexing_f = true;
     // (*) loop until the 'termination' token arrives
+    token = qlex.token_p();
     do {
         // (*) get next token from the token stream
-        qlex.receive(&my_token);
+        QUEX_TYPE_TOKEN_ID token_id = qlex.receive();
 
         // (*) print out token information
-        //     -- name of the token
-        print(qlex, my_token, (const char*)my_token.get_text().c_str());
+        print(&qlex, token, (const char*)token->get_text().c_str());
 
-        if( my_token.type_id() == QUEX_TKN_INCLUDE ) { 
-            qlex.receive(&my_token);
-            print(qlex, my_token, (const char*)my_token.get_text().c_str());
-            if( my_token.type_id() != QUEX_TKN_IDENTIFIER ) {
+        if( token_id == QUEX_TKN_INCLUDE ) { 
+            token_id = qlex.receive();
+            print(&qlex, token, (const char*)token->get_text().c_str());
+            if( token_id != QUEX_TKN_IDENTIFIER ) {
                 continue_lexing_f = false;
-                print(qlex, "found 'include' without a subsequent filename. hm?\n");
+                print(&qlex, "Found 'include' without a subsequent filename: '%s' hm?\n",
+                      (char*)QUEX_NAME_TOKEN(map_id_to_name)(token_id));
                 break;
             }
-            print(qlex, ">> including: ", (const char*)my_token.get_text().c_str());
-            QUEX_TYPE_CHARACTER* tmp = (QUEX_TYPE_CHARACTER*)my_token.get_text().c_str();
+            print(&qlex, ">> including: ", (const char*)token->get_text().c_str());
+            QUEX_TYPE_CHARACTER* tmp = (QUEX_TYPE_CHARACTER*)token->get_text().c_str();
             qlex.include_push<FILE>(tmp);
         }
-        else if( my_token.type_id() == QUEX_TKN_TERMINATION ) {
+        else if( token_id == QUEX_TKN_TERMINATION ) {
             if( qlex.include_pop() == false ) 
                 continue_lexing_f = false;
             else 
-                print(qlex, "<< return from include\n");
+                print(&qlex, "<< return from include\n");
         }
 
         ++number_of_tokens;
@@ -68,12 +69,12 @@ space(int N)
 { for(int i=0; i<N; ++i) printf("    "); }
 
 void  
-print(QUEX_TYPE_ANALYZER* qlex, quex::Token& my_token, bool TextF /* = false */)
+print(QUEX_TYPE_ANALYZER* qlex, quex::Token* token_p, bool TextF /* = false */)
 { 
     space(qlex->include_depth);
-    printf("%i: (%i)", (int)my_token.line_number(), (int)my_token.column_number());
-    printf(my_token.type_id_name());
-    if( TextF ) printf("\t'%s'", my_token._text "'");
+    printf("%i: (%i)", (int)token_p->line_number(), (int)token_p->column_number());
+    printf(token_p->type_id_name().c_str());
+    if( TextF ) printf("\t'%s'", (char*)token_p->text.c_str());
     printf("\n");
 }
 

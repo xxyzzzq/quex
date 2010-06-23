@@ -1,10 +1,14 @@
 < COMPILER = g++ -std=c++0x -ggdb 
 ---
 > COMPILER = gcc # -ggdb 
+> 	 -DINDENTATION_STACK_SIZE=64                     \
 < EasyLexer.o: EasyLexer.cpp 
 ---
 > EasyLexer.o: EasyLexer.c 
 < example.o: ../example.cpp  EasyLexer.cpp
 ---
 > example.o: ../example.c  EasyLexer.c
-< 		 --language C        \
+< EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
+---
+> EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
+> 		 --language C        \
