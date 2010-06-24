@@ -58,13 +58,18 @@ token_type {
    }
 
    take_text {
-        if( self.text != 0x0 ) {
+        if( self.text != 0x0 && self.text != LexemeNull ) {
             QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
         }
-        self.text = QUEX_NAME(MemoryManager_Text_allocate)(
+        if( Begin != LexemeNull ) {
+            self.text = QUEX_NAME(MemoryManager_Text_allocate)(
+                                                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
+            __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
-        __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
-                          sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
+        } else {
+            self.text = LexemeNull;
+        }
+
         return false;
    }
 

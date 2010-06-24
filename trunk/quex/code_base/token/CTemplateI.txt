@@ -61,14 +61,21 @@ $$COPY$$
 #endif
 }
 
+extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
+
 QUEX_INLINE bool 
 QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this, 
                            QUEX_TYPE_ANALYZER*        __analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
 {
-#  define self      (*__this)
-#  define analyzer  (*__analyzer)
+#  define self       (*__this)
+#  define analyzer   (*__analyzer)
+#  ifdef  LexemeNull
+#  error  "Error LexemeNull shall not be defined here."
+#  endif
+#  define LexemeNull  &QUEX_NAME(LexemeNullObject)
 $$FUNC_TAKE_TEXT$$
+#  undef LexemeNull
 #  undef analyzer
 #  undef self
 }

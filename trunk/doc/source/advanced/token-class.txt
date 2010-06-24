@@ -308,6 +308,13 @@ sections. The variable ``self`` is a reference to the token object itself.
       to the first character in the text to be received by the token. ``End``
       points to the first character *after* the string to be received.
 
+   .. describe:: LexemeNull
+
+      This is a pointer to the empty lexeme. The ``take_that`` section 
+      might consider not to allocate memory if the LexemeNull is specified,
+      i.e. ``Begin == LexemeNull``. This happens, for example, in the C default
+      token implementation.
+
    The ``take_text`` section receives the raw memory chunk and is free to do
    what it wants with it. However, it must return a boolean value[#f2]_.  
    
