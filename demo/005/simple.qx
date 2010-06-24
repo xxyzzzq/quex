@@ -2,7 +2,7 @@
 
 header {
 extern QUEX_TYPE_CHARACTER  EmptyLexeme;
-void    print(quex::EasyLexer* qlex, quex::Token* Token, bool TextF = false);
+void    print_token(quex::EasyLexer* qlex, quex::Token* Token, bool TextF = false);
 void    print(quex::EasyLexer* qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
 }

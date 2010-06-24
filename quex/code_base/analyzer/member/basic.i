@@ -56,6 +56,9 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->token = 0x0;     
 #           else
             me->token = &me->__memory_token;     
+#              ifdef __QUEX_OPTION_PLAIN_C
+               QUEX_NAME_TOKEN(construct)(&me->token);
+#              endif
 #           endif
 #       endif
        

@@ -29,6 +29,9 @@ all: lexer
 lexer: ../lexer-simply.cpp $(ENGINE_SOURCES)
 	$(CC) $< $(ENGINE_NAME).cpp -o $@ 
 
+Simple.E: Simple.cpp
+	$(CC) -E $< -o $@ 
+
 $(ENGINE_SOURCES): $(EXT_MODE_FILE)
 	@quex -i $(EXT_MODE_FILE) --engine $(ENGINE_NAME) $(EXT_TOKEN_QUEUE_FLAG) >& tmp.txt
 

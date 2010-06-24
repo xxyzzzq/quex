@@ -33,11 +33,6 @@ __header_definitions_txt = """
 #else
 #   define RETURN   do { return __self_result_token_id; } while(0)
 #endif
-
-#ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
-#   define __QUEX_INFO_LEXEME_NULL_DEFINED
-    static QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
-#endif
 """
 
 def __header_definitions(LanguageDB):
@@ -200,8 +195,8 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "        goto __TERMINAL_ROUTER;\n"
     for mode_name in ModeNameList:
         txt += "        unused += (int)%s.id;\n" % mode_name
-    txt += "        unused += (int)__QuexLexemeNullObject;\n"
-    txt += "        unused += (int)__QuexDumpedTokenIdObject;\n"
+    txt += "        unused += (int)QUEX_NAME(LexemeNullObject);\n"
+    txt += "        unused += (int)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
 
@@ -234,8 +229,8 @@ __terminal_state_str  = """
 #define Lexeme       (me->buffer._lexeme_start_p)
 #define LexemeBegin  (me->buffer._lexeme_start_p)
 #define LexemeEnd    (me->buffer._input_p)
-#define LexemeNull   (&__QuexLexemeNullObject)
-#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
+#define LexemeNull   (&QUEX_NAME(LexemeNullObject))
+#define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -538,9 +533,10 @@ def __frame_of_all(Code, Setup):
         implementation_header_str = ""
     return "".join(["#include \"%s\"\n" % Setup.output_file_stem,
                     implementation_header_str,
-                    "QUEX_NAMESPACE_MAIN_OPEN",
+                    "QUEX_NAMESPACE_MAIN_OPEN\n",
+                    "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n",
                     Code,
-                    "QUEX_NAMESPACE_MAIN_CLOSE"])                     
+                    "QUEX_NAMESPACE_MAIN_CLOSE\n"])                     
 
 def __get_if_in_character_set(ValueList):
     assert type(ValueList) == list
