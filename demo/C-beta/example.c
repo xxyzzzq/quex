@@ -39,7 +39,7 @@ main(int argc, char** argv)
                                           QUEX_NAME(strlen)(token_p->text),
                                           utf8_content,
                                           UTF8ContentSize);
-        *(end-1) = '\0';
+        *end = '\0';
         printf("%s '%s'\n", 
                QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id),
                (const char*)utf8_content);

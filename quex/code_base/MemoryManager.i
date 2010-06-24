@@ -82,7 +82,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_Text_free)(QUEX_TYPE_CHARACTER* memory)
     { 
-        if( memory != 0x0 && memory != &(QUEX_NAME(LexemeNullObject))) {
+        /* The de-allocator shall never be called for the fix LexemeNull object. */
+        __quex_assert( memory != &(QUEX_NAME(LexemeNullObject)) );
+
+        if( memory != 0x0 ) {
             QUEX_NAME(MemoryManager_Default_free)((void*)memory); 
         }
     }
