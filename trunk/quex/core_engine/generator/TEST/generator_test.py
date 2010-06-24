@@ -303,7 +303,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
     txt += "\n"
     txt += "bool analyzis_terminated_f = false;\n"
-    txt += "static QUEX_TYPE_TOKEN_ID __QuexDumpedTokenIdObject = 0;\n"
+    txt += "QUEX_TYPE_CHARACTER        QUEX_NAME(LexemeNullObject);\n"
+    txt += "static QUEX_TYPE_TOKEN_ID  QUEX_NAME_TOKEN(DumpedTokenIdObject) = (QUEX_TYPE_TOKEN_ID)0;\n"
     txt += "\n"
     txt += "bool\n"
     txt += "show_next_character(QUEX_NAME(Buffer)* buffer) {\n"
@@ -448,7 +449,8 @@ void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
     using namespace quex;
 #endif
 
-static QUEX_TYPE_TOKEN_ID __QuexDumpedTokenIdObject = 0;
+QUEX_TYPE_CHARACTER        QUEX_NAME(LexemeNullObject);
+static QUEX_TYPE_TOKEN_ID  QUEX_NAME_TOKEN(DumpedTokenIdObject) = (QUEX_TYPE_TOKEN_ID)0;
 
 bool analyzis_terminated_f = false;
 

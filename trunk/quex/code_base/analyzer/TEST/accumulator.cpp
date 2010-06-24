@@ -23,6 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 typedef struct { int _id; } Token;
 
+QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
 class TestAnalyzer {
 public:

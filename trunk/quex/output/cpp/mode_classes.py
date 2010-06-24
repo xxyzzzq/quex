@@ -38,10 +38,10 @@ def write_member_functions(Modes):
     #    (on_entry, on_exit, on_indendation, has_base, has_entry, has_exit)
     txt  = ""
     txt += "#ifndef __QUEX_INDICATOR_DUMPED_TOKEN_ID_DEFINED\n"
-    txt += "    static QUEX_TYPE_TOKEN_ID    __QuexDumpedTokenIdObject;\n"
+    txt += "    static QUEX_TYPE_TOKEN_ID    QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"
     txt += "#endif\n"
     txt += "#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)\n"
-    txt += "#define __self_result_token_id    __QuexDumpedTokenIdObject\n"
+    txt += "#define __self_result_token_id    QUEX_NAME_TOKEN(DumpedTokenIdObject)\n"
     for mode in Modes:        
         txt += get_implementation_of_mode_functions(mode, Modes)
 

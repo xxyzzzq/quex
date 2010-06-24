@@ -32,11 +32,11 @@ main(int argc, char** argv)
         QUEX_TYPE_TOKEN_ID token_id = qlex.receive();
 
         // (*) print out token information
-        print(&qlex, token, (const char*)token->get_text().c_str());
+        print_token(&qlex, token, true);
 
         if( token_id == QUEX_TKN_INCLUDE ) { 
             token_id = qlex.receive();
-            print(&qlex, token, (const char*)token->get_text().c_str());
+            print_token(&qlex, token, true);
             if( token_id != QUEX_TKN_IDENTIFIER ) {
                 continue_lexing_f = false;
                 print(&qlex, "Found 'include' without a subsequent filename: '%s' hm?\n",
@@ -66,11 +66,11 @@ main(int argc, char** argv)
 }
 
 void  
-space(int N)
-{ for(int i=0; i<N; ++i) printf("    "); }
+space(size_t N)
+{ size_t i = 0; for(i=0; i<N; ++i) printf("    "); }
 
 void  
-print(QUEX_TYPE_ANALYZER* qlex, quex::Token* token_p, bool TextF /* = false */)
+print_token(QUEX_TYPE_ANALYZER* qlex, QUEX_TYPE_TOKEN* token_p, bool TextF /* = false */)
 { 
     space(qlex->include_depth);
     printf("%i: (%i)", (int)token_p->line_number(), (int)token_p->column_number());
