@@ -55,7 +55,9 @@ file_str = \
 
 $$TOKEN_ID_DEFINITIONS$$
 
-$$CONTENT$$
+QUEX_NAMESPACE_TOKEN_OPEN
+extern const char* QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID);
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__ */
 """
@@ -64,11 +66,6 @@ func_str = \
 """
 QUEX_NAMESPACE_TOKEN_OPEN
 
-#ifndef __QUEX_OPTION_PLAIN_C
-    inline
-#else
-    static
-#endif
 const char*
 QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
@@ -90,16 +87,6 @@ $$TOKEN_NAMES$$
 $$TOKEN_ID_CASES$$
    }
 }
-
-/* BEGIN OF NONSENSE
- * The following lines are total nonsense with the sole purpose to avoid 
- * a warning if 'map_id_to_name' is used nowhere.                        */
-static void QUEX_NAME(__nonsense2)();
-static void QUEX_NAME(__nonsense)()  
-{ QUEX_NAME_TOKEN(map_id_to_name)((const QUEX_TYPE_TOKEN_ID)0); QUEX_NAME(__nonsense2)(); }
-static void QUEX_NAME(__nonsense2)() 
-{ QUEX_NAME(__nonsense)(); }
-/* END OF NONSENSE */
 
 QUEX_NAMESPACE_TOKEN_CLOSE
 """
@@ -160,17 +147,6 @@ def do(setup):
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
                                                                            token_name, space(token_name), 
                                                                            token_info.number)
-    # -- define the function for token names
-    switch_cases = ""
-    token_names  = ""
-    for token_name in lexer_mode.token_id_db.keys():
-        if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
-        switch_cases += "   case %s%s:%s return token_id_str_%s;\n" % \
-                        (setup.token_id_prefix, token_name, space(token_name), token_name)
-        token_names  += "   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
-                        (token_name, space(token_name), token_name)
-
-    file_str = file_str.replace("$$CONTENT$$", func_str)
     tc_descr = lexer_mode.token_type_definition
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
@@ -179,11 +155,29 @@ def do(setup):
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(
                                                                   LanguageDB["$namespace-ref"](tc_descr.name_space) 
                                                                   + "__" + tc_descr.class_name)],
-                          ["$$TOKEN_ID_CASES$$",              switch_cases],
-                          ["$$TOKEN_NAMES$$",                 token_names],
                           ["$$TOKEN_PREFIX$$",                setup.token_id_prefix]])
 
     write_safely_and_close(setup.output_token_id_file, content)
+
+def do_map_id_to_name_function():
+    L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
+    def space(Name):
+        return " " * (L - len(Name))
+
+    # -- define the function for token names
+    switch_cases = []
+    token_names  = []
+    for token_name in lexer_mode.token_id_db.keys():
+        if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
+        switch_cases.append("   case %s%s:%s return token_id_str_%s;\n" % \
+                            (Setup.token_id_prefix, token_name, space(token_name), token_name))
+        token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
+                           (token_name, space(token_name), token_name))
+
+    return blue_print(func_str,
+                      [["$$TOKEN_ID_CASES$$", "".join(switch_cases)],
+                       ["$$TOKEN_NAMES$$",    "".join(token_names)], ])
+
 
 def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
     """This function somehow interprets the user defined token id file--if there is
