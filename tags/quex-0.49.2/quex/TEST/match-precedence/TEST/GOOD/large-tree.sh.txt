@@ -1,0 +1,13 @@
+[START]
+H 'a' 
+D 'no' 
+I 'not' 
+E 'mean' 
+B 'thing' 
+F 'beyond' 
+G 'rabbits' 
+C 'backyard' 
+A 'elsewhere' 
+<TERMINATION> '' 
+
+[END]

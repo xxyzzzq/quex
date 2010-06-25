@@ -1,0 +1,20 @@
+Stream Navigation
+=================
+
+Independent of the underlying character encoding :ref:`sec-character-encodings`
+quex's generated lexical analyzers allow for a stream navigation on character
+basis. All required mechanisms of buffer loading and stream positioning
+is taking care of in the background. The interface for character index based
+stream navigation consists of the following member functions.
+
+.. code-block:: cpp
+
+    size_t  tell();
+    void    seek(const size_t CharacterIndex);
+    void    move_forward(const size_t CharacterIndex);
+    void    move_backward(const size_t CharacterIndex);
+
+The ``tell()`` function reports the current character index where the lexical analyzer
+is going to continue its next step. With the ``seek(...)`` function the character
+index can be specified where the analyzis is to be continued. By means of ``move_forward(...)``
+and ``move_backward(...)`` the input is adapted relative to the current character index.

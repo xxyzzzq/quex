@@ -1,0 +1,27 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING
+
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+
+    QUEX_INLINE   QUEX_TYPE_TOKEN*
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me);
+
+#elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+
+    QUEX_INLINE  QUEX_TYPE_TOKEN_ID
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me);
+
+#else
+#   error "Token policy must be 'queue' or 'users_token'."
+#endif
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING */
+
