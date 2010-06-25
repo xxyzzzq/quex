@@ -213,7 +213,7 @@ def validate(setup, command_line, argv):
     bpc = setup.bytes_per_ucs_code_point
     if bpc != "wchar_t":
         if bpc not in ["1", "2", "4"]:
-            error_msg("choice for --bytes-per-ucs-code-point: %s" % bpc + \
+            error_msg("choice for '--bytes-per-trigger': %s" % bpc + \
                       "quex only supports 1, 2, or 4 bytes per character in internal engine")
         else:
             setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
@@ -299,11 +299,11 @@ def validate(setup, command_line, argv):
             if setup.engine_character_encoding == "utf8":
                if setup.bytes_per_ucs_code_point != 1:
                    error_msg("Using codec 'utf8' while bytes per chacter is != 1.\n"
-                             "Consult command line argument --bytes-per-ucs-code-point.")
+                             "Consult command line argument '--bytes-per-trigger'.")
             if setup.engine_character_encoding == "utf16":
                if setup.bytes_per_ucs_code_point != 2:
                    error_msg("Using codec 'utf16' while bytes per chacter is != 2.\n"
-                             "Consult command line argument --bytes-per-ucs-code-point.")
+                             "Consult command line argument '--bytes-per-trigger'.")
         else:
             setup.engine_character_encoding_transformation_info = \
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)
