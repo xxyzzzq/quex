@@ -492,6 +492,53 @@ __quex_assert((long)Indentation >= 0);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 
+
+QUEX_NAMESPACE_TOKEN_OPEN
+
+const char*
+QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
+{
+   static char  error_string[64];
+   static const char  uninitialized_string[] = "<UNINITIALIZED>";
+   static const char  termination_string[]   = "<TERMINATION>";
+   static const char  token_id_str_BRACKET_CLOSE[] = "BRACKET_CLOSE";
+   static const char  token_id_str_TYPE_INT[]      = "TYPE_INT";
+   static const char  token_id_str_STRUCT[]        = "STRUCT";
+   static const char  token_id_str_SEMICOLON[]     = "SEMICOLON";
+   static const char  token_id_str_BRACKET_OPEN[]  = "BRACKET_OPEN";
+   static const char  token_id_str_NUMBER[]        = "NUMBER";
+   static const char  token_id_str_SEND[]          = "SEND";
+   static const char  token_id_str_TYPE_DOUBLE[]   = "TYPE_DOUBLE";
+   static const char  token_id_str_EXPECT[]        = "EXPECT";
+   static const char  token_id_str_IDENTIFIER[]    = "IDENTIFIER";
+       
+
+   /* NOTE: This implementation works only for token id types that are 
+    *       some type of integer or enum. In case an alien type is to
+    *       used, this function needs to be redefined.                  */
+   switch( TokenID ) {
+   default: {
+       __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
+       return error_string;
+   }
+   case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
+   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
+   case QUEX_TKN_BRACKET_CLOSE: return token_id_str_BRACKET_CLOSE;
+   case QUEX_TKN_TYPE_INT:      return token_id_str_TYPE_INT;
+   case QUEX_TKN_STRUCT:        return token_id_str_STRUCT;
+   case QUEX_TKN_SEMICOLON:     return token_id_str_SEMICOLON;
+   case QUEX_TKN_BRACKET_OPEN:  return token_id_str_BRACKET_OPEN;
+   case QUEX_TKN_NUMBER:        return token_id_str_NUMBER;
+   case QUEX_TKN_SEND:          return token_id_str_SEND;
+   case QUEX_TKN_TYPE_DOUBLE:   return token_id_str_TYPE_DOUBLE;
+   case QUEX_TKN_EXPECT:        return token_id_str_EXPECT;
+   case QUEX_TKN_IDENTIFIER:    return token_id_str_IDENTIFIER;
+
+   }
+}
+
+QUEX_NAMESPACE_TOKEN_CLOSE
+
     /* 
      * MODE: ONE_AND_ONLY
      * 
@@ -2285,7 +2332,7 @@ TERMINAL_6_DIRECT:
         self_send(QUEX_TKN_STRUCT);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1854 "Simple.cpp"
+#line 1901 "Simple.cpp"
         
         }
     }
@@ -2310,7 +2357,7 @@ TERMINAL_8_DIRECT:
         self_send(QUEX_TKN_TYPE_INT);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1879 "Simple.cpp"
+#line 1926 "Simple.cpp"
         
         }
     }
@@ -2335,7 +2382,7 @@ TERMINAL_10_DIRECT:
         self_send(QUEX_TKN_TYPE_DOUBLE);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1904 "Simple.cpp"
+#line 1951 "Simple.cpp"
         
         }
     }
@@ -2360,7 +2407,7 @@ TERMINAL_12_DIRECT:
         self_send(QUEX_TKN_SEND);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1929 "Simple.cpp"
+#line 1976 "Simple.cpp"
         
         }
     }
@@ -2385,7 +2432,7 @@ TERMINAL_14_DIRECT:
         self_send(QUEX_TKN_EXPECT);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1954 "Simple.cpp"
+#line 2001 "Simple.cpp"
         
         }
     }
@@ -2410,7 +2457,7 @@ TERMINAL_16_DIRECT:
         self_send(QUEX_TKN_SEMICOLON);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 1979 "Simple.cpp"
+#line 2026 "Simple.cpp"
         
         }
     }
@@ -2435,7 +2482,7 @@ TERMINAL_18_DIRECT:
         self_send(QUEX_TKN_BRACKET_OPEN);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2004 "Simple.cpp"
+#line 2051 "Simple.cpp"
         
         }
     }
@@ -2460,7 +2507,7 @@ TERMINAL_20_DIRECT:
         self_send(QUEX_TKN_BRACKET_CLOSE);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2029 "Simple.cpp"
+#line 2076 "Simple.cpp"
         
         }
     }
@@ -2487,7 +2534,7 @@ TERMINAL_25_DIRECT:
         self_send(QUEX_TKN_NUMBER);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         
-#line 2056 "Simple.cpp"
+#line 2103 "Simple.cpp"
         
         }
     }
@@ -2512,7 +2559,7 @@ TERMINAL_30_DIRECT:
         #line 28 "dos_lf_2.qx"
          self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2081 "Simple.cpp"
+#line 2128 "Simple.cpp"
         
         }
     }
@@ -2533,7 +2580,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self_send(QUEX_TKN_TERMINATION);
         
-#line 2102 "Simple.cpp"
+#line 2149 "Simple.cpp"
         
         }
                 }
@@ -2668,56 +2715,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 
 
-
 QUEX_NAMESPACE_TOKEN_OPEN
-
-#ifndef __QUEX_OPTION_PLAIN_C
-    inline
-#else
-    static
-#endif
-const char*
-QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
-{
-   static char  error_string[64];
-   static const char  uninitialized_string[] = "<UNINITIALIZED>";
-   static const char  termination_string[]   = "<TERMINATION>";
-   static const char  token_id_str_BRACKET_CLOSE[] = "BRACKET_CLOSE";
-   static const char  token_id_str_TYPE_INT[]      = "TYPE_INT";
-   static const char  token_id_str_STRUCT[]        = "STRUCT";
-   static const char  token_id_str_SEMICOLON[]     = "SEMICOLON";
-   static const char  token_id_str_BRACKET_OPEN[]  = "BRACKET_OPEN";
-   static const char  token_id_str_NUMBER[]        = "NUMBER";
-   static const char  token_id_str_SEND[]          = "SEND";
-   static const char  token_id_str_TYPE_DOUBLE[]   = "TYPE_DOUBLE";
-   static const char  token_id_str_EXPECT[]        = "EXPECT";
-   static const char  token_id_str_IDENTIFIER[]    = "IDENTIFIER";
-       
-
-   /* NOTE: This implementation works only for token id types that are 
-    *       some type of integer or enum. In case an alien type is to
-    *       used, this function needs to be redefined.                  */
-   switch( TokenID ) {
-   default: {
-       __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
-       return error_string;
-   }
-   case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
-   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
-   case QUEX_TKN_BRACKET_CLOSE: return token_id_str_BRACKET_CLOSE;
-   case QUEX_TKN_TYPE_INT:      return token_id_str_TYPE_INT;
-   case QUEX_TKN_STRUCT:        return token_id_str_STRUCT;
-   case QUEX_TKN_SEMICOLON:     return token_id_str_SEMICOLON;
-   case QUEX_TKN_BRACKET_OPEN:  return token_id_str_BRACKET_OPEN;
-   case QUEX_TKN_NUMBER:        return token_id_str_NUMBER;
-   case QUEX_TKN_SEND:          return token_id_str_SEND;
-   case QUEX_TKN_TYPE_DOUBLE:   return token_id_str_TYPE_DOUBLE;
-   case QUEX_TKN_EXPECT:        return token_id_str_EXPECT;
-   case QUEX_TKN_IDENTIFIER:    return token_id_str_IDENTIFIER;
-
-   }
-}
-
+extern const char* QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID);
 QUEX_NAMESPACE_TOKEN_CLOSE
-
 

@@ -54,6 +54,7 @@ def do():
 
     # (*) Generate the token ids
     token_id_maker.do(Setup) 
+    map_id_to_name_function_implementation_txt = token_id_maker.do_map_id_to_name_function()
 
     # (*) [Optional] Make a customized token class
     token_class_maker.do()
@@ -87,8 +88,9 @@ def do():
     write_safely_and_close(Setup.output_file_stem,
                            header_engine_txt)
     write_safely_and_close(Setup.output_code_file, 
-                           mode_implementation_txt       + "\n" 
-                           + constructor_and_memento_txt + "\n" 
+                             mode_implementation_txt                    + "\n" 
+                           + constructor_and_memento_txt                + "\n" 
+                           + map_id_to_name_function_implementation_txt + "\n" 
                            + analyzer_code)
 
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")

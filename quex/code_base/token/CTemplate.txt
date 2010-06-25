@@ -38,8 +38,7 @@ QUEX_INLINE void
 QUEX_NAME_TOKEN(_set)(QUEX_TYPE_TOKEN*         __this, 
                       const QUEX_TYPE_TOKEN_ID ID);
 
-static const char*    
-QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
+extern const char*  QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID);
 
 QUEX_INLINE bool 
 QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this, 

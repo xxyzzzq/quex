@@ -15,7 +15,7 @@ class $$TOKEN_CLASS$$;
 
 /* NOTE: The following function might have to be defined by the user if one
  *       does not rely on quex's function generation.                        */
-const char*  QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID);
+extern const char*  QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID);
 
 inline void  QUEX_NAME_TOKEN(copy)($$TOKEN_CLASS$$* me, const $$TOKEN_CLASS$$* That);
 inline bool  QUEX_NAME_TOKEN(take_text)($$TOKEN_CLASS$$*            __this, 
