@@ -377,8 +377,43 @@ sections. The variable ``self`` is a reference to the token object itself.
           return true;
       }
 
+The ``take_text`` section is vital for all analyzers that rely on lexeme content.
+If it is not rock-solid, then the analyzer is on jeopardy. The default
+implementations in ``$QUEX_PATH/code_base/token`` contain disabled debug sections
+that may be copy-pasted into customized classes. For example for C, the default
+implementation in ``CDefault.qx`` contains the sections
 
-Additionally, content may be added to the class' body using the following
+  .. code-block:: cpp
+
+        #  if 0
+           {
+               /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+               const QUEX_TYPE_CHARACTER* it = 0x0;
+               printf("previous:  '");
+               if( self.text != 0x0 ) for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+               printf("'\n");
+               printf("take_text: '");
+               for(it = Begin; it != End; ++it) printf("%04X.", (int)*it);
+               printf("'\n");
+           }
+        #  endif
+
+           ... code of take_text ...
+
+        #  if 0
+           {
+               /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+               const QUEX_TYPE_CHARACTER* it = 0x0;
+               printf("after:     '");
+               if( self.text != 0x0 ) for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+               printf("'\n");
+           }
+        #  endif
+
+As mentioned in the comment, these section can be activated by switching the 
+``0`` to ``1`` in the pre-processor conditionals.
+
+Additional content may be added to the class' body using the following
 code section:
 
 .. describe:: body

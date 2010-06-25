@@ -91,6 +91,16 @@ $$TOKEN_ID_CASES$$
    }
 }
 
+/* BEGIN OF NONSENSE
+ * The following lines are total nonsense with the sole purpose to avoid 
+ * a warning if 'map_id_to_name' is used nowhere.                        */
+static void QUEX_NAME(__nonsense2)();
+static void QUEX_NAME(__nonsense)()  
+{ QUEX_NAME_TOKEN(map_id_to_name)((const QUEX_TYPE_TOKEN_ID)0); QUEX_NAME(__nonsense2)(); }
+static void QUEX_NAME(__nonsense2)() 
+{ QUEX_NAME(__nonsense)(); }
+/* END OF NONSENSE */
+
 QUEX_NAMESPACE_TOKEN_CLOSE
 """
 
