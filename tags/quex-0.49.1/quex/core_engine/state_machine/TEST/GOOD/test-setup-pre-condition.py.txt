@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------------
+EXPRESSION =  init-state = 18L
+00018 == 'a' ==> 00019
+      <no epsilon>
+00019* <no epsilon>
+
+PRE-CONDITION =  init-state = 20L
+00020 == ';' ==> 00021
+      <no epsilon>
+00021* <no epsilon>
+
+with pre-condition =  init-state = 18L
+00018 <~ (4, 18, pre=9)
+      == 'a' ==> 00019
+      <no epsilon>
+00019* <~ (4, 19, S, pre=9)
+      <no epsilon>
+pre-condition inverted = init-state = 28L
+00028 <~ (4, 28)
+      == ';' ==> 00029
+      <no epsilon>
+00029* <~ (4, 29, S)
+      <no epsilon>
+
+-------------------------------------------------------------------------------
+EXPRESSION =  init-state = 5L
+00005 == ['a', 'h') ==> 00006
+      <no epsilon>
+00006 == [-oo, 'e'), ['f', oo) ==> 00006
+      == 'e' ==> 00007
+      <no epsilon>
+00007 == 'f' ==> 00008
+      <no epsilon>
+00008* <no epsilon>
+
+PRE-CONDITION =  init-state = 14L
+00014 == 'a' ==> 00015
+      <no epsilon>
+00015 == 'b' ==> 00016
+      <no epsilon>
+00016 == 'c' ==> 00017
+      <no epsilon>
+00017* <no epsilon>
+
+with pre-condition =  init-state = 5L
+00005 <~ (1, 5, pre=13)
+      == ['a', 'h') ==> 00006
+      <no epsilon>
+00006 <~ (1, 6, pre=13)
+      == [-oo, 'e'), ['f', oo) ==> 00006
+      == 'e' ==> 00007
+      <no epsilon>
+00007 <~ (1, 7, pre=13)
+      == 'f' ==> 00008
+      <no epsilon>
+00008* <~ (1, 8, S, pre=13)
+      <no epsilon>
+pre-condition inverted = init-state = 40L
+00040 <~ (1, 40)
+      == 'c' ==> 00042
+      <no epsilon>
+00041* <~ (1, 41, S)
+      <no epsilon>
+00042 <~ (1, 42)
+      == 'b' ==> 00043
+      <no epsilon>
+00043 <~ (1, 43)
+      == 'a' ==> 00041
+      <no epsilon>
+

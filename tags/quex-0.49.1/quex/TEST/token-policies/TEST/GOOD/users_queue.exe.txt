@@ -1,0 +1,44 @@
+NOTE: The production of an assertion error might be part of the test.
+---------------------------------------------------------------------
+Pseudo Analysis: Replace analysis pointer with own function.
+Queue Size: 5
+    received: ONE
+---- 
+    received: TWO
+---- 
+    received: THREE
+---- 
+    received: FOUR
+---- 
+    received: FIVE
+---- 
+    received: _____NEXT_____
+---- 
+    received: _____NEXT_____
+---- 
+    received: _____NEXT_____
+---- 
+    received: ONE
+    received: _____NEXT_____
+---- 
+    received: ONE
+    received: TWO
+    received: _____NEXT_____
+---- 
+    received: ONE
+    received: TWO
+    received: THREE
+    received: _____NEXT_____
+---- 
+    received: ONE
+    received: TWO
+    received: THREE
+    received: FOUR
+    received: _____NEXT_____
+---- 
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Error: Token queue overflow. This happens if too many tokens are sent
+       as a reaction to one single pattern match. Use quex's command line
+       option --token-queue-safety-border, or define the macro
+       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.
+

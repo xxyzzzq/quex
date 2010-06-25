@@ -1,0 +1,72 @@
+-------------------------
+Interval:     [0000, 07FF]
+   .front --> 00.
+   .back  --> DF.BF.
+
+Result:
+      SubInterval (bytes=1): [0000, 007F] 
+         .front --> 00.
+         .back  --> 7F.
+      SubInterval (bytes=2): [0080, 07FF] 
+         .front --> C2.80.
+         .back  --> DF.BF.
+-------------------------
+Interval:     [0000, FFFF]
+   .front --> 00.
+   .back  --> EF.BF.BF.
+
+Result:
+      SubInterval (bytes=1): [0000, 007F] 
+         .front --> 00.
+         .back  --> 7F.
+      SubInterval (bytes=2): [0080, 07FF] 
+         .front --> C2.80.
+         .back  --> DF.BF.
+      SubInterval (bytes=3): [0800, FFFF] 
+         .front --> E0.A0.80.
+         .back  --> EF.BF.BF.
+-------------------------
+Interval:     [0080, FFFF]
+   .front --> C2.80.
+   .back  --> EF.BF.BF.
+
+Result:
+      SubInterval (bytes=2): [0080, 07FF] 
+         .front --> C2.80.
+         .back  --> DF.BF.
+      SubInterval (bytes=3): [0800, FFFF] 
+         .front --> E0.A0.80.
+         .back  --> EF.BF.BF.
+-------------------------
+Interval:     [0080, 10FFFF]
+   .front --> C2.80.
+   .back  --> F4.8F.BF.BF.
+
+Result:
+      SubInterval (bytes=2): [0080, 07FF] 
+         .front --> C2.80.
+         .back  --> DF.BF.
+      SubInterval (bytes=3): [0800, FFFF] 
+         .front --> E0.A0.80.
+         .back  --> EF.BF.BF.
+      SubInterval (bytes=4): [10000, 10FFFF] 
+         .front --> F0.90.80.80.
+         .back  --> F4.8F.BF.BF.
+-------------------------
+Interval:     [0000, 10FFFF]
+   .front --> 00.
+   .back  --> F4.8F.BF.BF.
+
+Result:
+      SubInterval (bytes=1): [0000, 007F] 
+         .front --> 00.
+         .back  --> 7F.
+      SubInterval (bytes=2): [0080, 07FF] 
+         .front --> C2.80.
+         .back  --> DF.BF.
+      SubInterval (bytes=3): [0800, FFFF] 
+         .front --> E0.A0.80.
+         .back  --> EF.BF.BF.
+      SubInterval (bytes=4): [10000, 10FFFF] 
+         .front --> F0.90.80.80.
+         .back  --> F4.8F.BF.BF.
