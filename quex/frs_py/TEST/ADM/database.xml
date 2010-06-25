@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.12" date="Sat Jun 26 07:28:27 2010">
+<test-database execution-time-sec="0.12" date="Sat Jun 26 08:06:20 2010">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.04"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.03" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.04" crc="-957083127"/>
             </choice-list>
         </test>
         <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.04"> 
