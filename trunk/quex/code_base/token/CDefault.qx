@@ -95,6 +95,8 @@ token_type {
         }
 #       endif
 
+        /* This token copied the text from the chunk into the string, 
+         * so we do not claim owneship over it.                       */
         return false;
    }
 
