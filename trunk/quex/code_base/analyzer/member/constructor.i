@@ -68,7 +68,7 @@ QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
     **               ** this is essential to profit from the quex buffer! */
     QUEX_NAME(constructor_core)(me, fh, 
                                 CharacterEncodingName, ByteOrderReversionF, 
-                                0x0, 0);
+                                0x0, QUEX_SETTING_BUFFER_SIZE);
 }
 
 #ifndef __QUEX_OPTION_PLAIN_C
@@ -82,7 +82,7 @@ QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
     if( p_input_stream == std::cin ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR);
     QUEX_NAME(constructor_core)(me, p_input_stream, 
                                 CharacterEncodingName, ByteOrderReversionF, 
-                                0x0, 0);
+                                0x0,  QUEX_SETTING_BUFFER_SIZE);
 }
 #endif
 
@@ -98,7 +98,7 @@ QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
         QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
     QUEX_NAME(constructor_core)(me, p_input_stream, 
                                 CharacterEncodingName, ByteOrderReversionF, 
-                                0x0, 0);
+                                0x0, QUEX_SETTING_BUFFER_SIZE);
 }
 #endif
 
@@ -168,7 +168,7 @@ QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_inpu
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
     QUEX_NAME(constructor_core)(this, p_input_stream, 
                                 CharacterEncodingName, ByteOrderReversionF, 
-                                0x0, 0);
+                                0x0, QUEX_SETTING_BUFFER_SIZE);
 }
 #endif
 

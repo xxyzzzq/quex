@@ -16,7 +16,7 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
     QUEX_NAME(construct_basic)(me, input_handle,
-                               BufferMemory, QUEX_SETTING_BUFFER_SIZE,
+                               BufferMemory, BufferMemorySize,
                                CharacterEncodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                ByteOrderReversionF);
