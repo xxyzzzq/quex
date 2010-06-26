@@ -1,4 +1,4 @@
-<test-database execution-time-sec="117.93" date="Sun Jun 27 05:39:43 2010">
+<test-database execution-time-sec="122.38" date="Sun Jun 27 06:58:16 2010">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences" time-sum-sec="0.13"> 
         <application file-name="makefile-diff.sh" info-request-time="1277609842L" vanished="False"/>
@@ -87,6 +87,15 @@
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.69" crc="2101215229"/>
                <choice name="DEBUG" result="OK" time_sec="5.12" crc="1035623857"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/008">
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.45"> 
+            <application file-name="008.sh" info-request-time="1277614317L" vanished="False"/>
+            <choice-list number="2" same_result="True">
+               <choice name="NDEBUG" result="OK" time_sec="2.13" crc="-106314939"/>
+               <choice name="DEBUG" result="OK" time_sec="2.31" crc="-106314939"/>
             </choice-list>
         </test>
     </group>
