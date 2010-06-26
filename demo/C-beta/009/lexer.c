@@ -12,10 +12,8 @@ main(int argc, char** argv)
     /**/
     int               number_of_tokens = 0;
     /**/
-    const size_t      UTF8ContentSize = 1024;
-    uint8_t           utf8_content[1024];
-    uint8_t*          end = (uint8_t)0x0;
-
+    const size_t      BufferSize = 1024;
+    char              buffer[1024];
 
     /* Normal File Input */
     printf("## FILE* (stdio.h):\n");
@@ -32,7 +30,7 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
 
         /* print out token information */
-        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p));
+        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
 
         ++number_of_tokens;
 

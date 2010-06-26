@@ -53,7 +53,9 @@ wlexer: wlexer.o tiny_wlexer.o
 	$(LD) -o $@  wlexer.o tiny_wlexer.o 
           
 $(WSOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_wlexer -b wchar_t 
+	quex -i simple.qx --engine tiny_wlexer \
+		 --language C                      \
+	  	 -b wchar_t 
 
 # -- The general way to get .o from .c
 %.o: %.c $(SOURCES) $(WSOURCES)

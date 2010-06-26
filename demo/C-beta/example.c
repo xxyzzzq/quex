@@ -15,8 +15,8 @@ main(int argc, char** argv)
     size_t       number_of_tokens = 0;
     EasyLexer    qlex;
 #   ifdef PRINT_TOKEN
-    const size_t UTF8ContentSize = 1024;
-    uint8_t      utf8_content[1024];
+    const size_t BufferSize = 1024;
+    uint8_t      buffer[1024];
     uint8_t*     end = (uint8_t)0x0;
 #   endif
 
@@ -37,14 +37,7 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
         /* Print out token information            */
 #       ifdef PRINT_TOKEN
-        end = QUEX_NAME(unicode_to_utf8_string)(token_p->text, 
-                                                QUEX_NAME(strlen)(token_p->text),
-                                                utf8_content,
-                                                UTF8ContentSize);
-        *end = '\0';
-        printf("%s '%s' \n", 
-               QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id),
-               (const char*)utf8_content);
+        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
 #       else
         printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
 #       endif
