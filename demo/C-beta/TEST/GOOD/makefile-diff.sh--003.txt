@@ -1,6 +1,6 @@
 < COMPILER = g++ -ggdb 
 ---
-> COMPILER = gcc # -ggdb 
+> COMPILER = gcc -ggdb 
 < EasyLexer.o: EasyLexer.cpp 
 ---
 > EasyLexer.o: EasyLexer.c 
