@@ -7,6 +7,11 @@ token_type {
        #include <quex/code_base/asserts>
        #include <quex/code_base/unicode>
        #include <quex/code_base/compatibility/inttypes.h>
+
+       const char* 
+       QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN* TokenP, 
+                                   const char*            buffer, 
+                                   size_t                 BufferSize);
    }
    standard {
         id            : uint32_t;
@@ -115,8 +120,30 @@ token_type {
    }
 
    footer {
-       /*
-        */
+        const char* 
+        QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN*  me, 
+                                    const char*             buffer, 
+                                    size_t                  BufferSize) 
+        {
+            char* iterator = 0;
+            __quex_assert(BufferSize !=  0);
+
+            *buffer = '\0';
+            __QUEX_STD_strncat(buffer, QUEX_NAME_TOKEN(map_id_to_name)(me->_id), BufferSize);
+            __QUEX_STD_strncat(buffer, " '", BufferSize);
+
+            /* Get current size of the string. */
+            for(iterator = (char*)buffer; *iterator; ++iterator);
+            current_size = iterator - buffer;
+
+            iterator = (char*)QUEX_NAME(unicode_to_utf8_string)(me->text, 
+                                                                QUEX_NAME(strlen)(me->text),
+                                                                iterator,
+                                                                BufferSize - current_size);
+            *iterator = '\0';
+            __QUEX_STD_strncat(buffer, "'", BufferSize);
+            return buffer;
+        }
    }
 }
 

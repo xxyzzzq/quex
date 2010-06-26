@@ -1,7 +1,7 @@
-<test-database execution-time-sec="353.37" date="Sun Jun 27 05:15:29 2010">
+<test-database execution-time-sec="349.97" date="Sun Jun 27 06:51:06 2010">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" time-sum-sec="32.70"> 
+        <test title="Sun Microsystem's sunCC" time-sum-sec="32.71"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="5.12" crc="-240093176"/>
@@ -34,7 +34,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="8.88"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="8.89"> 
             <application file-name="001.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.26" crc="1389342228"/>
@@ -94,7 +94,7 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="9.57"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="9.58"> 
             <application file-name="006.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.59" crc="-455193977"/>
@@ -112,11 +112,11 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="7.93"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.49"> 
             <application file-name="008.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="3.83" crc="-106314939"/>
-               <choice name="DEBUG" result="OK" time_sec="4.09" crc="-106314939"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.17" crc="-106314939"/>
+               <choice name="DEBUG" result="OK" time_sec="2.32" crc="-106314939"/>
             </choice-list>
         </test>
     </group>
@@ -150,7 +150,7 @@
                <choice name="fill" result="OK" time_sec="11.82" crc="-1870066300"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="31.10"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="31.11"> 
             <application file-name="010c.sh" info-request-time="1264886942L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="14.41" crc="-470382527"/>

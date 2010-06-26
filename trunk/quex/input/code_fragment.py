@@ -5,6 +5,7 @@ from   quex.input.setup                       import setup as Setup
 from   quex.input.ucs_db_parser               import ucs_property_db
 from   quex.core_engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.core_engine.generator.action_info import *
+import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 
 
@@ -88,7 +89,12 @@ def read_character_code(fh):
     elif start == "'": 
         # read an utf-8 char an get the token-id
         # Example: '+'
-        character_code = __read_one_utf8_code_from_stream(fh)
+        if check(fh, "\\"):
+            # snap_backslashed_character throws an exception if 'backslashed char' is nonsense.
+            character_code = snap_backslashed_character.do(fh, ReducedSetOfBackslashedCharactersF=True)
+        else:
+            character_code = __read_one_utf8_code_from_stream(fh)
+
         if character_code == 0xFF:
             error_msg("Missing utf8-character for definition of character code by character.", fh)
 
@@ -202,9 +208,11 @@ def __parse_token_id_specification_by_character_code(fh):
     return character_code
 
 def __create_token_sender_by_character_code(fh, CharacterCode):
+    LanguageDB = Setup.language_db
+    # The '--' will prevent the token name from being printed
     prefix_less_token_name = "UCS_0x%06X" % CharacterCode
-    token_id_str = Setup.token_id_prefix + prefix_less_token_name
-    lexer_mode.token_id_db[prefix_less_token_name] = \
+    token_id_str           = "0x%06X" % CharacterCode 
+    lexer_mode.token_id_db["--" + prefix_less_token_name] = \
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 

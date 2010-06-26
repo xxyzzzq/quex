@@ -145,7 +145,8 @@ def do(setup):
             if token_info.number == None: 
                 token_info.number = i; i+= 1
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
-                                                                           token_name, space(token_name), 
+                                                                           token_info.name, 
+                                                                           space(token_info.name), 
                                                                            token_info.number)
     tc_descr = lexer_mode.token_type_definition
     content = blue_print(file_str,
@@ -167,12 +168,21 @@ def do_map_id_to_name_function():
     # -- define the function for token names
     switch_cases = []
     token_names  = []
-    for token_name in lexer_mode.token_id_db.keys():
+    for token_name in sorted(lexer_mode.token_id_db.keys()):
         if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
-        switch_cases.append("   case %s%s:%s return token_id_str_%s;\n" % \
-                            (Setup.token_id_prefix, token_name, space(token_name), token_name))
-        token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
-                           (token_name, space(token_name), token_name))
+
+        # UCS codepoints are coded directly as pure numbers
+        if len(token_name) > 2 and token_name[:2] == "--":
+            token = lexer_mode.token_id_db[token_name]
+            switch_cases.append("   case 0x%06X: return token_id_str_%s;\n" % \
+                                (token.number, token.name))
+            token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
+                               (token.name, space(token.name), token.name))
+        else:
+            switch_cases.append("   case %s%s:%s return token_id_str_%s;\n" % \
+                                (Setup.token_id_prefix, token_name, space(token_name), token_name))
+            token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
+                               (token_name, space(token_name), token_name))
 
     return blue_print(func_str,
                       [["$$TOKEN_ID_CASES$$", "".join(switch_cases)],

@@ -89,6 +89,7 @@ def _do(Descr):
                        [
                         ["$$COPY$$",             copy_str],
                         ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
+                        ["$$FOOTER$$",           Descr.footer.get_code()],
                         ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                         ["$$FUNC_TAKE_TEXT$$",   take_text_str],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
