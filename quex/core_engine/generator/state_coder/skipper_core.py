@@ -365,7 +365,7 @@ lc_counter_in_loop = """
             ++(self.counter.base._line_number_at_end);
 #           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
             column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
-            self.counter.base._column_number_at_end = 0;
+            self.counter.base._column_number_at_end = (size_t)0;
 #           endif
         }
 #       endif
@@ -413,7 +413,7 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
         delimiter_newline_n = EndSequence[1:].count(ord("\n"))
         if delimiter_newline_n != 0:
             end_procedure += "#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING\n" + \
-                             "        self.counter.base._line_number_at_end += %i;\n" % delimiter_newline_n + \
+                             "        self.counter.base._line_number_at_end += (size_t)%i;\n" % delimiter_newline_n + \
                              "#       endif\n"
 
         # If delimiter contains newline, then the column number is identical to the distance
@@ -423,16 +423,16 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
         delimiter_tail_n    = dummy.index(ord("\n")) + 1
         if delimiter_tail_n != 0:
             end_procedure += "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                             "        self.counter.base._column_number_at_end = %i;\n" % delimiter_tail_n + \
+                             "        self.counter.base._column_number_at_end = (size_t)%i;\n" % delimiter_tail_n + \
                              "#       endif\n"
     else:
         end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                        "        self.counter.base._column_number_at_end +=   QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                        "                                              - column_count_p_$$SKIPPER_INDEX$$;\n" + \
-                        "#   endif\n"
+                        "        self.counter.base._column_number_at_end += (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+                        "                                                            - column_count_p_$$SKIPPER_INDEX$$);\n" + \
+                        "#       endif\n"
     before_reload  = "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "    self.counter.base._column_number_at_end +=  QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                     "                                         - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                     "    self.counter.base._column_number_at_end += (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+                     "                                                        - column_count_p_$$SKIPPER_INDEX$$);\n" + \
                      "#   endif\n"
     after_reload   = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
                      "        column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
@@ -483,12 +483,12 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
         in_loop = lc_counter_in_loop
 
     end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                    "        self.counter.base._column_number_at_end +=   QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                    "                                              - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                    "        self.counter.base._column_number_at_end += (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+                    "                                                            - column_count_p_$$SKIPPER_INDEX$$);\n" + \
                     "#       endif\n"
     before_reload  = "#      ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "       self.counter.base._column_number_at_end +=  QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                     "                                            - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                     "       self.counter.base._column_number_at_end +=  (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+                     "                                                            - column_count_p_$$SKIPPER_INDEX$$);\n" + \
                      "#      endif\n"
     after_reload   = "#          ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
                      "           column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \

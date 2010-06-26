@@ -14,9 +14,11 @@ main(int argc, char** argv)
     Token*       token_p = 0x0;
     size_t       number_of_tokens = 0;
     EasyLexer    qlex;
+#   ifdef PRINT_TOKEN
     const size_t UTF8ContentSize = 1024;
     uint8_t      utf8_content[1024];
     uint8_t*     end = (uint8_t)0x0;
+#   endif
 
     QUEX_NAME(construct_file_name)(&qlex, "example.txt", ENCODING_NAME, false);
     /* Alternatives:
