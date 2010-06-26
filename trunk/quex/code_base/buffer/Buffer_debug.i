@@ -107,11 +107,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*  end_p    = buffer->_memory._end_of_file_p != 0x0 ? buffer->_memory._end_of_file_p 
                                          :                                       buffer->_memory._back;
 
-        __QUEX_STD_printf("|%c", QUEX_NAME(__BufferFiller_get_border_char)(buffer, BufferFront));
+        __QUEX_STD_printf("|%c", (int)QUEX_NAME(__BufferFiller_get_border_char)(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
-            __QUEX_STD_printf("%c", *iterator == EmptyChar ? '~' : *iterator);
+            __QUEX_STD_printf("%c", *iterator == EmptyChar ? (int)'~' : (int)*iterator);
         }
-        __QUEX_STD_printf("%c", QUEX_NAME(__BufferFiller_get_border_char)(buffer, end_p));
+        __QUEX_STD_printf("%c", (int)QUEX_NAME(__BufferFiller_get_border_char)(buffer, end_p));
         /**/
         length = (buffer->_memory._end_of_file_p == 0x0) ? 0 : (size_t)(BufferBack - buffer->_memory._end_of_file_p);
         for(i=0; i < length; ++i) __QUEX_STD_printf("|");

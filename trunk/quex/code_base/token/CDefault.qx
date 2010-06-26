@@ -10,7 +10,7 @@ token_type {
 
        const char* 
        QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN* TokenP, 
-                                   const char*            buffer, 
+                                   char*                  buffer, 
                                    size_t                 BufferSize);
    }
    standard {
@@ -122,10 +122,11 @@ token_type {
    footer {
         const char* 
         QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN*  me, 
-                                    const char*             buffer, 
+                                    char*                   buffer, 
                                     size_t                  BufferSize) 
         {
-            char* iterator = 0;
+            char*    iterator = 0;
+            size_t   current_size = (size_t)-1;
             __quex_assert(BufferSize !=  0);
 
             *buffer = '\0';
@@ -133,14 +134,23 @@ token_type {
             __QUEX_STD_strncat(buffer, " '", BufferSize);
 
             /* Get current size of the string. */
-            for(iterator = (char*)buffer; *iterator; ++iterator);
-            current_size = iterator - buffer;
+            for(iterator = buffer; *iterator; ++iterator);
+            current_size = (size_t)(iterator - buffer);
 
+            /* To be on the safe side: Do a conversion to UTF8.
+             * This is slow, so avoid it, if you deal only with plain ASCII. 
+             * Then: '#if 1' --> '#if 0'                                     */
+#           if 1
             iterator = (char*)QUEX_NAME(unicode_to_utf8_string)(me->text, 
                                                                 QUEX_NAME(strlen)(me->text),
-                                                                iterator,
+                                                                (uint8_t*)iterator,
                                                                 BufferSize - current_size);
             *iterator = '\0';
+#           else
+            /* In cas you are sure, that you use only ASCII. */
+            __QUEX_STD_strncat(buffer, me->text, BufferSize);
+#           endif
+
             __QUEX_STD_strncat(buffer, "'", BufferSize);
             return buffer;
         }

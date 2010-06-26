@@ -19,6 +19,27 @@ QUEX_INLINE void        QUEX_NAME(move_backward)(QUEX_TYPE_ANALYZER* me, const s
 QUEX_INLINE size_t      QUEX_NAME(tell)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void        QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t);
 
+/* Token handling. */
+#ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
+#   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+    QUEX_INLINE QUEX_TYPE_TOKEN*    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER*  me, 
+                                                              QUEX_TYPE_TOKEN*     TokenP);
+#   endif
+#else
+    QUEX_INLINE bool    QUEX_NAME(token_queue_is_empty)(QUEX_TYPE_ANALYZER* me);
+    QUEX_INLINE void    QUEX_NAME(token_queue_remainder_get)(QUEX_TYPE_ANALYZER*  me,
+                                                             QUEX_TYPE_TOKEN**    begin, 
+                                                             QUEX_TYPE_TOKEN**    end);
+
+#   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+    QUEX_INLINE void    QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER*  me, 
+                                                             QUEX_TYPE_TOKEN**    memory, 
+                                                             size_t*              n);
+#   endif
+
+#endif
+
+/* Print */
 QUEX_INLINE void        QUEX_NAME(print_this)(QUEX_TYPE_ANALYZER* me);
 
 QUEX_NAMESPACE_MAIN_CLOSE
