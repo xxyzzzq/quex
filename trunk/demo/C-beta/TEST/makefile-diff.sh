@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "Makefile Differences;"
-    echo "CHOICES:  000, 001, 002, 003, 005;"
+    echo "CHOICES:  000, 001, 002, 003, 005, 006, 007;"
     exit
 fi
 diff --ignore-tab-expansion \
