@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "tiny_lexer"
+#include "tiny_lexer-token.i"
 #include "messaging-framework.h"
 
 typedef struct {
@@ -13,52 +14,58 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    // Zero pointer to constructor --> memory managed by user
-    tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
-    QUEX_TYPE_TOKEN           token;           
-    QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
+    /* Zero pointer to constructor --> memory managed by user */
+    tiny_lexer            qlex;
+    QUEX_TYPE_TOKEN       token;           
+    QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; /* receive buffer */
     MemoryChunk           chunk;
+    size_t                BufferSize = 1024;
+    char                  buffer[1024];
 
-    // -- trigger reload of memory
+    QUEX_NAME_TOKEN(construct)(&token);
+
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, false);
+
+    /* -- trigger reload of memory */
     chunk.begin = chunk.end;
 
-    // -- LOOP until 'bye' token arrives
-    (void)qlex.token_p_switch(&token);
+    /* -- LOOP until 'bye' token arrives */
+    (void)QUEX_NAME(token_p_switch)(&qlex, &token);
     while( 1 + 1 == 2 ) {
-        // -- Receive content from a messaging framework
-        //    The function 'buffer_fill_region_append()' may possibly not
-        //    concatinate all content, so it needs to be tested wether new
-        //    content needs to be loaded.
+        /* -- Receive content from a messaging framework                   */
+        /*    The function 'buffer_fill_region_append()' may possibly not  */
+        /*    concatinate all content, so it needs to be tested wether new */
+        /*    content needs to be loaded.                                  */
         if( chunk.begin == chunk.end ) {
-            // -- If the receive buffer has been read, it can be released.
+            /* -- If the receive buffer has been read, it can be released. */
             if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
-            // -- Setup the pointers 
+            /* -- Setup the pointers                                       */
             const size_t Size  = messaging_framework_receive_syntax_chunk(&rx_buffer);
             chunk.begin = rx_buffer;
             chunk.end   = chunk.begin + Size;
         } else {
-            // If chunk.begin != chunk.end, this means that there are still
-            // some characters in the pipeline. Let us use them first.
+            /* If chunk.begin != chunk.end, this means that there are still */
+            /* some characters in the pipeline. Let us use them first.      */
         }
 
-        // -- Copy buffer content into the analyzer's buffer
-        //    (May be, not all content can be copied into the buffer, in 
-        //     this case the '_append(...)' function returns a position
-        //     different from 'chunk.end'. This would indicate the there
-        //     are still bytes left. The next call of '_apend(...)' will
-        //     deal with it.)
-        chunk.begin = (uint8_t*)qlex.buffer_fill_region_append(chunk.begin, chunk.end);
+        /* -- Copy buffer content into the analyzer's buffer               
+         *    (May be, not all content can be copied into the buffer, in   
+         *     this case the '_append(...)' function returns a position    
+         *     different from 'chunk.end'. This would indicate the there   
+         *     are still bytes left. The next call of '_apend(...)' will  
+         *     deal with it.                                                */
+        chunk.begin = (uint8_t*)QUEX_NAME(buffer_fill_region_append)(&qlex, chunk.begin, chunk.end);
 
-        // -- Loop until the 'termination' token arrives
+        /* -- Loop until the 'termination' token arrives                    */
         while( 1 + 1 == 2 ) {
-            const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
+            const QUEX_TYPE_TOKEN_ID TokenID = QUEX_NAME(receive)(&qlex);
 
-            // TERMINATION => possible reload
-            // BYE         => end of game
+            /* TERMINATION => possible reload */
+            /* BYE         => end of game     */
             if( TokenID == QUEX_TKN_TERMINATION ) break;
             if( TokenID == QUEX_TKN_BYE )         return 0;
 
-            cout << "Consider: " << string(token) << endl;
+            printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
         }
     }
 
