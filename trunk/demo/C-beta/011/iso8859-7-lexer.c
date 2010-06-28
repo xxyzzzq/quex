@@ -8,19 +8,21 @@
 int 
 main(int argc, char** argv) 
 {        
-    Token*           token;
+    Token*           token_p;
     ISO8859_7_Lex    qlex;
+    size_t           BufferSize = 1024;
+    char             buffer[1024];
     
     QUEX_NAME(construct_file_name)(&qlex, "example-iso8859-7.txt", 0x0, false);
 
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        token = QUEX_NAME(receive)(&qlex);
+        token_p = QUEX_NAME(receive)(&qlex);
 
-        // (*) print out token information
-        printf("%s\t", (char*)token->type_id_name().c_str());
-        printf("%s\n",   (char*)Quex_iso8859_7_to_utf8_string(token->get_text()).c_str());
+        /* (*) print out token information
+         *     'get_string' automagically converts codec bytes into utf8 */
+        printf("%s\n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
 #       if 0
         cout << "\t\t plain bytes: ";
         for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
@@ -29,7 +31,7 @@ main(int argc, char** argv)
 #       endif
 
         // (*) check against 'termination'
-    } while( token->_id != TKN_TERMINATION );
+    } while( token_p->_id != TKN_TERMINATION );
 
     return 0;
 }

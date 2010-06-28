@@ -7,6 +7,17 @@ token_type {
        #include <quex/code_base/asserts>
        #include <quex/code_base/unicode>
        #include <quex/code_base/compatibility/inttypes.h>
+
+       /* Different codecs may have different converters, the name of the converter
+        * is to be defined in the configuration file using the. All converters 
+        * follow the function signature below.                                       */
+       QUEX_NAMESPACE_MAIN_OPEN
+       QUEX_INLINE uint8_t*
+       QUEX_CONVERTER_OF_TEXT_TO_UTF8(const QUEX_TYPE_CHARACTER*  Source, 
+                                      size_t                      SourceSize, 
+                                      uint8_t*                    Drain, 
+                                      size_t                      DrainSize);
+       QUEX_NAMESPACE_MAIN_CLOSE
    }
    standard {
         id            : uint32_t;
@@ -62,9 +73,10 @@ token_type {
             std::string                tmp;
             QUEX_TYPE_TOKEN::__string  tmp2 = self.text;
 
-            uint8_t* end = QUEX_NAME(unicode_to_utf8_string)((QUEX_TYPE_CHARACTER*)tmp2.c_str(), 
-                                                             tmp2.length(), utf8_buffer, 
-                                                             QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE);
+            uint8_t* end = QUEX_CONVERTER_OF_TEXT_TO_UTF8((QUEX_TYPE_CHARACTER*)tmp2.c_str(),
+                                                          tmp2.length(),
+                                                          utf8_buffer, 
+                                                          QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE);
             *end = '\0'; /* terminating zero */
 
             return std::string((char*)utf8_buffer);

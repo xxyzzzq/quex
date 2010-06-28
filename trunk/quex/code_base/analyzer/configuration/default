@@ -167,6 +167,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #   define     QUEX_TYPE_COUNTER_PRINT_THIS    /* empty */
 #endif
 
+/* For the utf8 printing: Name the function that converts the 
+ * specific codec to utf8 representation.                       */
+#define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
+
 /* Decide about computed gotos */
 #if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
 #   if    defined(__GNUC__) \

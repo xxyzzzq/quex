@@ -24,8 +24,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          of 7 bytes! This way you can store always a terminating
          *          zero after the last byte of the representation.
          *
-         * RETURNS: Number of bytes that was required to convert the character
-         *          into its utf8 representation.                               */
+         * RETURNS: Pointer to the fist position after the last character.      */
         const uint8_t NEXT	= 0x80;
         const uint8_t LEN2	= 0xc0;
         const uint8_t LEN3	= 0xe0;
@@ -106,6 +105,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                       size_t                      SourceSize, 
                                       uint8_t*                    Drain, 
                                       size_t                      DrainSize)
+        /* RETURNS: Pointer to end of string, i.e. a pointer after the last
+         *          element of the string.                                   */
     {
         const QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
         const QUEX_TYPE_CHARACTER*  source_end = 0x0;
