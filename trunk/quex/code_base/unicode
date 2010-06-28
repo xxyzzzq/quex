@@ -22,6 +22,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                                       uint8_t*                   Drain, 
                                       size_t                     DrainSize);
 
+    /* The following function exists for uniformity. */
+    QUEX_INLINE uint8_t*
+    QUEX_NAME(utf8_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, 
+                                   size_t                     SourceSize, 
+                                   uint8_t*                   Drain, 
+                                   size_t                     DrainSize);
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__UNICODE */

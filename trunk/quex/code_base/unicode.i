@@ -128,6 +128,19 @@ QUEX_NAMESPACE_MAIN_OPEN
         return drain_iterator;
     }
 
+    /* The following function exists for uniformity. */
+    QUEX_INLINE uint8_t*
+    QUEX_NAME(utf8_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, 
+                                   size_t                     SourceSize, 
+                                   uint8_t*                   Drain, 
+                                   size_t                     DrainSize)
+    {
+        const size_t Size = SourceSize < DrainSize ? SourceSize : DrainSize;
+
+        __QUEX_STD_memcpy((void*)Drain, (void*)Source, Size);
+                          
+        return Drain + Size;
+    }
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
