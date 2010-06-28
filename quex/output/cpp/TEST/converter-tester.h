@@ -14,12 +14,10 @@
 #include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/asserts>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include <stdexcept>
-namespace quex { 
-#endif
+QUEX_NAMESPACE_MAIN_OPEN
+
 QUEX_INLINE uint8_t*
-Quex_cp1256_to_utf8(QUEX_TYPE_CHARACTER input, uint8_t* output)
+QUEX_NAME(cp1256_to_utf8)(QUEX_TYPE_CHARACTER input, uint8_t* output)
 {
     const int NEXT = 0x80;
     const int LEN2 = 0x0C0;
@@ -416,7 +414,7 @@ Quex_cp1256_to_utf8(QUEX_TYPE_CHARACTER input, uint8_t* output)
 
 QUEX_INLINE uint32_t
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-Quex_cp1256_to_ucs4(QUEX_TYPE_CHARACTER input)
+QUEX_NAME(cp1256_to_ucs4)(QUEX_TYPE_CHARACTER input)
 {
     uint32_t  unicode = 0L;
     if( input < 0x0000A1) {
@@ -710,9 +708,9 @@ Quex_cp1256_to_ucs4(QUEX_TYPE_CHARACTER input)
 }
 
 QUEX_INLINE uint16_t*
-Quex_cp1256_to_utf16(QUEX_TYPE_CHARACTER input, uint16_t* p)
+QUEX_NAME(cp1256_to_utf16)(QUEX_TYPE_CHARACTER input, uint16_t* p)
 {
-    uint32_t unicode = Quex_cp1256_to_ucs4(input);
+    uint32_t unicode = QUEX_NAME(cp1256_to_ucs4)(input);
     *p++ = unicode;
 
     return p;
@@ -720,16 +718,16 @@ Quex_cp1256_to_utf16(QUEX_TYPE_CHARACTER input, uint16_t* p)
 
 QUEX_INLINE uint16_t
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-Quex_cp1256_to_ucs2(QUEX_TYPE_CHARACTER input)
+QUEX_NAME(cp1256_to_ucs2)(QUEX_TYPE_CHARACTER input)
 {
-    return (uint16_t)Quex_cp1256_to_ucs4(input);
+    return (uint16_t)QUEX_NAME(cp1256_to_ucs4)(input);
 }
 
 QUEX_INLINE uint8_t*
-Quex_cp1256_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
+QUEX_NAME(cp1256_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
 {
-    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
-    uint8_t             *drain_iterator, *drain_end;
+    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
+    uint8_t*                    drain_iterator, *drain_end;
 
     __quex_assert(Source != 0x0);
     __quex_assert(Drain != 0x0);
@@ -740,17 +738,17 @@ Quex_cp1256_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8
 
     for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
         if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
-        drain_iterator = Quex_cp1256_to_utf8(*source_iterator, drain_iterator);
+        drain_iterator = QUEX_NAME(cp1256_to_utf8)(*source_iterator, drain_iterator);
     }
 
     return drain_iterator;
 }
 
 QUEX_INLINE uint16_t*
-Quex_cp1256_to_utf16_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+QUEX_NAME(cp1256_to_utf16_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
 {
-    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
-    uint16_t            *drain_iterator, *drain_end;
+    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
+    uint16_t*                   drain_iterator, *drain_end;
 
     __quex_assert(Source != 0x0);
     __quex_assert(Drain != 0x0);
@@ -761,17 +759,17 @@ Quex_cp1256_to_utf16_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint
 
     for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
         if( drain_end - drain_iterator < (ptrdiff_t)2 ) break;
-        drain_iterator = Quex_cp1256_to_utf16(*source_iterator, drain_iterator);
+        drain_iterator = QUEX_NAME(cp1256_to_utf16)(*source_iterator, drain_iterator);
     }
 
     return drain_iterator;
 }
 
 QUEX_INLINE uint16_t*
-Quex_cp1256_to_ucs2_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+QUEX_NAME(cp1256_to_ucs2_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
 {
-    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
-    uint16_t            *drain_iterator, *drain_end;
+    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
+    uint16_t*                   drain_iterator, *drain_end;
 
     __quex_assert(Source != 0x0);
     __quex_assert(Drain != 0x0);
@@ -782,17 +780,17 @@ Quex_cp1256_to_ucs2_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint1
 
     for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
         if( drain_end == drain_iterator ) break;
-        *drain_iterator++ = Quex_cp1256_to_ucs2(*source_iterator);
+        *drain_iterator++ = QUEX_NAME(cp1256_to_ucs2)(*source_iterator);
     }
 
     return drain_iterator;
 }
 
 QUEX_INLINE uint32_t*
-Quex_cp1256_to_ucs4_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint32_t *Drain, size_t DrainSize)
+QUEX_NAME(cp1256_to_ucs4_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint32_t *Drain, size_t DrainSize)
 {
-    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
-    uint32_t            *drain_iterator, *drain_end;
+    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
+    uint32_t*                   drain_iterator, *drain_end;
 
     __quex_assert(Source != 0x0);
     __quex_assert(Drain != 0x0);
@@ -803,7 +801,7 @@ Quex_cp1256_to_ucs4_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint3
 
     for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
         if( drain_end == drain_iterator ) break;
-        *drain_iterator++ = Quex_cp1256_to_ucs4(*source_iterator);
+        *drain_iterator++ = QUEX_NAME(cp1256_to_ucs4)(*source_iterator);
     }
 
     return drain_iterator;
@@ -812,16 +810,16 @@ Quex_cp1256_to_ucs4_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint3
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::string
-Quex_cp1256_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+QUEX_NAME(cp1256_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 {
-    QUEX_TYPE_CHARACTER*  source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
-    QUEX_TYPE_CHARACTER*  source_end      = source_iterator + Source.length();
-    uint8_t               drain[8];
-    uint8_t*              drain_end = 0;
-    std::string           result;
+    const QUEX_TYPE_CHARACTER*  source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    const QUEX_TYPE_CHARACTER*  source_end      = source_iterator + Source.length();
+    uint8_t                     drain[8];
+    uint8_t*                    drain_end = 0;
+    std::string                 result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        drain_end = Quex_cp1256_to_utf8(*source_iterator, (uint8_t*)drain);
+        drain_end = QUEX_NAME(cp1256_to_utf8)(*source_iterator, (uint8_t*)drain);
         *drain_end = (uint8_t)0;
         result += (char*)drain;
     }
@@ -829,16 +827,16 @@ Quex_cp1256_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 }
 
 QUEX_INLINE std::basic_string<uint16_t>
-Quex_cp1256_to_utf16_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+QUEX_NAME(cp1256_to_utf16_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 {
-    QUEX_TYPE_CHARACTER*         source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
-    QUEX_TYPE_CHARACTER*         source_end      = source_iterator + Source.length();
+    const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
     uint16_t                     drain[8];
     uint16_t*                    drain_end = 0;
     std::basic_string<uint16_t>  result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        drain_end = Quex_cp1256_to_utf16(*source_iterator, (uint16_t*)drain);
+        drain_end = QUEX_NAME(cp1256_to_utf16)(*source_iterator, (uint16_t*)drain);
         *drain_end = (uint16_t)0;
         result += (uint16_t*)drain;
     }
@@ -846,34 +844,32 @@ Quex_cp1256_to_utf16_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source
 }
 
 QUEX_INLINE std::basic_string<uint16_t>
-Quex_cp1256_to_ucs2_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+QUEX_NAME(cp1256_to_ucs2_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 {
-    QUEX_TYPE_CHARACTER*         source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
-    QUEX_TYPE_CHARACTER*         source_end      = source_iterator + Source.length();
+    const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
     std::basic_string<uint16_t>  result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        result += Quex_cp1256_to_ucs2(*source_iterator);
+        result += QUEX_NAME(cp1256_to_ucs2)(*source_iterator);
     }
     return result;
 }
 
 QUEX_INLINE std::basic_string<uint32_t>
-Quex_cp1256_to_ucs4_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+QUEX_NAME(cp1256_to_ucs4_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
 {
-    QUEX_TYPE_CHARACTER*         source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
-    QUEX_TYPE_CHARACTER*         source_end      = source_iterator + Source.length();
+    const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
     std::basic_string<uint32_t>  result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        result += Quex_cp1256_to_ucs4(*source_iterator);
+        result += QUEX_NAME(cp1256_to_ucs4)(*source_iterator);
     }
     return result;
 }
+#endif /* __QUEX_OPTION_PLAIN_C */
 
-
-} // namespace quex
-#endif
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__ */
-
