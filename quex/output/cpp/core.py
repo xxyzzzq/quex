@@ -88,6 +88,11 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     token_descr = lexer_mode.token_type_definition
     namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
+    # -- name of the character codec
+    codec_name = "unicode"
+    if Setup.engine_character_encoding != "": 
+        codec_name = make_safe_identifier(Setup.engine_character_encoding).lower()
+
     def namespace(NameSpaceList):
         result = Setup.language_db["$namespace-ref"](NameSpaceList)
 
@@ -105,6 +110,7 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
                                                          Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
                                                              + "__" + Setup.analyzer_class_name)],
              ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
+             ["$$CODEC_NAME$$",                 codec_name],
              ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],

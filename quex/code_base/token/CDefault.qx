@@ -8,10 +8,21 @@ token_type {
        #include <quex/code_base/unicode>
        #include <quex/code_base/compatibility/inttypes.h>
 
-       const char* 
+       extern const char* 
        QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN* TokenP, 
                                    char*                  buffer, 
                                    size_t                 BufferSize);
+
+       /* Different codecs may have different converters, the name of the converter
+        * is to be defined in the configuration file using the. All converters 
+        * follow the function signature below.                                       */
+       QUEX_NAMESPACE_MAIN_OPEN
+       QUEX_INLINE uint8_t*
+       QUEX_CONVERTER_OF_TEXT_TO_UTF8(const QUEX_TYPE_CHARACTER*  Source, 
+                                      size_t                      SourceSize, 
+                                      uint8_t*                    Drain, 
+                                      size_t                      DrainSize);
+       QUEX_NAMESPACE_MAIN_CLOSE
    }
    standard {
         id            : uint32_t;
@@ -141,10 +152,10 @@ token_type {
              * This is slow, so avoid it, if you deal only with plain ASCII. 
              * Then: '#if 1' --> '#if 0'                                     */
 #           if 1
-            iterator = (char*)QUEX_NAME(unicode_to_utf8_string)(me->text, 
-                                                                QUEX_NAME(strlen)(me->text),
-                                                                (uint8_t*)iterator,
-                                                                BufferSize - current_size);
+            iterator = (char*)QUEX_CONVERTER_OF_TEXT_TO_UTF8(me->text, 
+                                                             QUEX_NAME(strlen)(me->text),
+                                                             (uint8_t*)iterator,
+                                                             BufferSize - current_size);
             *iterator = '\0';
 #           else
             /* In cas you are sure, that you use only ASCII. */

@@ -11,7 +11,7 @@ main(int argc, char** argv)
 {        
     using namespace quex;
 
-    Token*           token;
+    Token*           token_p;
     Token::__string  tmp;
     ISO8859_7_Lex    qlex("example-iso8859-7.txt");
     
@@ -19,11 +19,10 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        token = qlex.receive();
+        token_p = qlex.receive();
 
         // (*) print out token information
-        printf("%s\t", (char*)token->type_id_name().c_str());
-        printf("%s\n",   (char*)Quex_iso8859_7_to_utf8_string(token->get_text()).c_str());
+        cout << string(*token_p) << endl;
 #       if 0
         cout << "\t\t plain bytes: ";
         for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
@@ -32,7 +31,7 @@ main(int argc, char** argv)
 #       endif
 
         // (*) check against 'termination'
-    } while( token->type_id() != TKN_TERMINATION );
+    } while( token_p->type_id() != TKN_TERMINATION );
 
     return 0;
 }
