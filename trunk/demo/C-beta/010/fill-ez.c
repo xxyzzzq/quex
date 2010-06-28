@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "tiny_lexer"
+#include "tiny_lexer-token.i"
 #include "messaging-framework.h"
 
 size_t 
@@ -9,31 +10,34 @@ messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER*, size_t);
 int 
 main(int argc, char** argv) 
 {        
-    using namespace std;
+    QUEX_TYPE_TOKEN  token;
+    tiny_lexer       qlex;
+    size_t           BufferSize = 1024;
+    char             buffer[1024];
 
-    QUEX_TYPE_TOKEN       token;
-    tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0); /* No args to constructor --> raw memory */
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, false);
+    QUEX_NAME_TOKEN(construct)(&token);
 
-    (void)qlex.token_p_switch(&token);
+    (void)QUEX_NAME(token_p_switch)(&qlex, &token);
     while( 1 + 1 == 2 ) {
-        // -- Initialize the filling of the fill region
-        qlex.buffer_fill_region_prepare();
+        /* -- Initialize the filling of the fill region         */
+        QUEX_NAME(buffer_fill_region_prepare)(&qlex);
 
-        // -- Call the low lever driver to fill the fill region
-        size_t receive_n = messaging_framework_receive_into_buffer_syntax_chunk(qlex.buffer_fill_region_begin(), 
-                                                                                qlex.buffer_fill_region_size());
+        /* -- Call the low lever driver to fill the fill region */
+        size_t receive_n = messaging_framework_receive_into_buffer_syntax_chunk(QUEX_NAME(buffer_fill_region_begin)(&qlex), 
+                                                                                QUEX_NAME(buffer_fill_region_size)(&qlex));
 
-        // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
-        qlex.buffer_fill_region_finish(receive_n);
+        /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
+        QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n);
 
-        // -- Loop until the 'termination' token arrives
+        /* -- Loop until the 'termination' token arrives */
         while( 1 + 1 == 2 ) {
-            const QUEX_TYPE_TOKEN_ID TokenID = qlex.receive();
+            const QUEX_TYPE_TOKEN_ID TokenID = QUEX_NAME(receive)(&qlex);
 
             if( TokenID == QUEX_TKN_TERMINATION ) break;
             if( TokenID == QUEX_TKN_BYE )         return 0;
 
-            cout << "Consider: " << string(token) << endl;
+            printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
         }
     }
 
