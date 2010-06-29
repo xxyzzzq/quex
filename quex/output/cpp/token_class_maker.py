@@ -59,6 +59,12 @@ def _do(Descr):
     include_guard_extension_str = get_include_guard_extension(
                                         Setup.language_db["$namespace-ref"](Descr.name_space) 
                                         + "__" + Descr.class_name)
+
+    # In case of plain 'C' the class name must incorporate the namespace (list)
+    token_class_name = Descr.class_name
+    if Setup.language == "C":
+        token_class_name = Setup.token_class_name_safe
+
     txt = blue_print(template_str,
              [
               ["$$BODY$$",                    Descr.body.get_code()],
@@ -74,7 +80,7 @@ def _do(Descr):
               ["$$NAMESPACE_OPEN$$",          Setup.language_db["$namespace-open"](Descr.name_space)],
               ["$$QUICK_SETTERS$$",          get_quick_setters(Descr)],
               ["$$SETTERS_GETTERS$$",        get_setter_getter(Descr)],
-              ["$$TOKEN_CLASS$$",            Descr.class_name],
+              ["$$TOKEN_CLASS$$",            token_class_name],
               ["$$TOKEN_REPETITION_N_GET$$", Descr.repetition_get.get_code()],
               ["$$TOKEN_REPETITION_N_SET$$", Descr.repetition_set.get_code()],
               ["$$UNION_MEMBERS$$",          get_union_members(Descr)],

@@ -391,8 +391,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
 #   define QUEX_NAMESPACE_TOKEN_CLOSE 
 
-#   define QUEX_NAME(NAME)             $$NAMESPACE_MAIN_STR$$_$$LEXER_CLASS_NAME$$_ ## NAME
-#   define QUEX_NAME_TOKEN(NAME)       $$NAMESPACE_TOKEN_STR$$Token ## NAME
+#   define QUEX_NAME(NAME)             $$ANALYZER_NAME_SAFE$$_ ## NAME
+#   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_NAME_SAFE$$_ ## NAME
 #   define QUEX_MEMBER(NAME)           void /* Undefined, not required */
 #else
 #   define QUEX_NAMESPACE_MAIN         $$NAMESPACE_MAIN$$

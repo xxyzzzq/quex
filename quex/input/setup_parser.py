@@ -80,7 +80,9 @@ def do(argv):
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
 
     # (*) Classes and their namespace
-    setup.analyzer_class_name, setup.analyzer_name_space = \
+    setup.analyzer_class_name,      \
+    setup.analyzer_name_space,      \
+    setup.analyzer_namespace_safe = \
          read_namespaced_name(setup.analyzer_class_name, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
     if setup.analyzer_name_space == []:
@@ -88,18 +90,21 @@ def do(argv):
 
     # Token classes and derived classes have the freedom not to open a namespace,
     # thus no check 'if namespace == []'.
-    setup.token_class_name, setup.token_class_name_space = \
+    setup.token_class_name,       \
+    setup.token_class_name_space, \
+    setup.token_class_name_safe = \
          read_namespaced_name(setup.token_class_name, 
                               "token class (options --token-class, --tc)")
 
     if setup.token_class_name_space == []:
         setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
 
-    setup.analyzer_derived_class_name, setup.analyzer_derived_class_name_space = \
+    setup.analyzer_derived_class_name,       \
+    setup.analyzer_derived_class_name_space, \
+    setup.analyzer_derived_class_name_safe = \
          read_namespaced_name(setup.analyzer_derived_class_name, 
                               "derived analyzer class (options --derived-class, --dc)",
                               AllowEmptyF=True)
-        
 
     # (*) Output programming language        
     setup.language = setup.language.upper()

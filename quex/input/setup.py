@@ -58,8 +58,11 @@ SETUP_INFO = {
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_name_space":                       None,
+    "analyzer_name_safe":                        None,
     "analyzer_derived_class_name_space":         None,
+    "analyzer_derived_class_name_safe":          None,
     "token_class_name_space":                    None,
+    "token_class_name_safe":                     None,
     "engine_character_encoding_header_file":     None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED

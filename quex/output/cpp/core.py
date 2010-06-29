@@ -22,7 +22,10 @@ def do(Modes, IndentationSupportF, BeginOfLineSupportF):
     return header_engine_txt, code_engine_txt, header_configuration_txt
 
 def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
-    LexerClassName            = Setup.analyzer_class_name
+    if Setup.language = "C":
+        LexerClassName            = Setup.analyzer_class_name
+    else:
+        :wqa
     ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
                                    + Setup.language_db["$code_base"] 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
@@ -51,8 +54,6 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
         token_repeat_test_txt += "TokenID == %s || " % token_id_str
     if token_repeat_test_txt != "":
         token_repeat_test_txt = token_repeat_test_txt[:-3]
-
-    namespace_main_str = make_safe_identifier(Setup.language_db["$namespace-ref"](Setup.analyzer_name_space)[:-2])
 
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
@@ -124,11 +125,11 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$TOKEN_REPEAT_TEST$$",          token_repeat_test_txt],
              ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
-             ["$$NAMESPACE_MAIN_STR$$",         namespace_main_str],
+             ["$$ANALYZER_NAME_SAFE$$",         Setup.analyzer_name_safe],
              ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN$$",            namespace(token_descr.name_space)],
-             ["$$NAMESPACE_TOKEN_STR$$",        namespace_token_str],
+             ["$$TOKEN_NAME_SAFE$$",            Setup.token_class_name_safe],
              ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN_CLOSE$$",      Setup.language_db["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],

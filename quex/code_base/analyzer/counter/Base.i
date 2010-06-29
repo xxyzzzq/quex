@@ -13,7 +13,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
-    CounterBase_init(__CounterBase* me)
+    QUEX_NAME(CounterBase_init)(QUEX_NAME(CounterBase)* me)
     {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         me->_line_number_at_begin = (size_t)0;
@@ -26,7 +26,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void             
-    CounterBase_shift_end_values_to_start_values(__CounterBase* me) 
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)(QUEX_NAME(CounterBase)* me) 
     {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         me->_line_number_at_begin   = me->_line_number_at_end;
@@ -37,7 +37,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    CounterBase_count_newline_n_backwards(__CounterBase*       me, 
+    QUEX_NAME(CounterBase_count_newline_n_backwards)(QUEX_NAME(CounterBase)*       me, 
                                           QUEX_TYPE_CHARACTER* it,
                                           QUEX_TYPE_CHARACTER* Begin)
     /* NOTE: If *it == '\n' this function does **not** count it. The user must
@@ -56,7 +56,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void 
-    CounterBase_print_this(__CounterBase* me)
+    QUEX_NAME(CounterBase_print_this)(QUEX_NAME(CounterBase)* me)
     {
         __QUEX_STD_printf("   Counter:\n");
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING

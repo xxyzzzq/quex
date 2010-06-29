@@ -29,7 +29,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
         memset((void*)me, 0xFF, sizeof(QUEX_NAME(CounterLineColumn)));
 #       endif
-        CounterBase_init((__CounterBase*)me); 
+        QUEX_NAME(CounterBase_init)((QUEX_NAME(CounterBase)*)me); 
 
         /* The lexical analyzer is not important for this type of counter. */
     }
@@ -37,7 +37,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(CounterLineColumn_reset)(QUEX_NAME(CounterLineColumn)* me)
     {
-        CounterBase_init((__CounterBase*)me);
+        QUEX_NAME(CounterBase_init)((QUEX_NAME(CounterBase)*)me);
     }
 
     QUEX_INLINE void  
@@ -133,7 +133,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         /* The last function may have digested a newline (*it == '\n'), but then it 
          * would have increased the base._line_number_at_end.                        */
-        CounterBase_count_newline_n_backwards((__CounterBase*)me, it, Begin);
+        QUEX_NAME(CounterBase_count_newline_n_backwards)((QUEX_NAME(CounterBase)*)me, it, Begin);
 #       endif
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
@@ -152,7 +152,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(CounterLineColumn_print_this)(QUEX_NAME(CounterLineColumn)* me)
     {
-        CounterBase_print_this((__CounterBase*)me);
+        QUEX_NAME(CounterBase_print_this)((QUEX_NAME(CounterBase)*)me);
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE
