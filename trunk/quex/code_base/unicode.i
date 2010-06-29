@@ -142,6 +142,44 @@ QUEX_NAMESPACE_MAIN_OPEN
         return Drain + Size;
     }
 
+    QUEX_INLINE uint8_t*
+    QUEX_NAME(utf16_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, 
+                                    size_t                     SourceSize, 
+                                    uint8_t*                   Drain, 
+                                    size_t                     DrainSize)
+    {
+        const QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
+        const QUEX_TYPE_CHARACTER*  source_end = 0x0;
+        uint8_t*                    drain_iterator = 0x0; 
+        uint8_t*                    drain_end = 0x0;
+        uint32_t                    x0 = (uint16_t)-1;
+        uint32_t                    x1 = (uint16_t)-1;
+        uint32_t                    unicode_value = 0;
+
+        __quex_assert(Source != 0x0);
+        __quex_assert(Drain != 0x0);
+
+        drain_iterator = Drain;
+        drain_end      = Drain  + DrainSize;
+        source_end     = Source + SourceSize;
+
+        for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+            /* If code is two 'words': First word == 0xD800 */
+            if( *source_iterator >= 0xD800 && *source_iterator <= 0xDBFF ) {
+                x0 = *source_iterator++ - 0xD800;
+                x1 = *source_iterator   - 0xDC00;
+                unicode_value = (x0 << 10) + x1 + 0x10000;
+            } else {
+                unicode_value = *source_iterator;
+            }
+            if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
+            drain_iterator = QUEX_NAME(unicode_to_utf8)((QUEX_TYPE_CHARACTER)unicode_value,
+                                                        drain_iterator);
+        }
+
+        return drain_iterator;
+    }
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__UNICODE_I */

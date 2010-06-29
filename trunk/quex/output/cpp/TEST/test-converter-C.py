@@ -16,7 +16,7 @@ def test(CodecName):
     fh = open("converter-tester.h", "w")
     fh.write(code_str)
     fh.close()
-    define_str = "-DCONVERT_TO_UTF8=Quex_%s_to_utf8_string " % CodecName + \
+    define_str = "-DCONVERT_TO_UTF8='QUEX_NAME(%s_to_utf8_string)' " % CodecName + \
                  "-DQUEX_TYPE_CHARACTER='unsigned char' " + \
                  "-DQUEX_INLINE=inline " + \
                  "-D__QUEX_CODEC=\\\"%s\\\" " % CodecName + \
