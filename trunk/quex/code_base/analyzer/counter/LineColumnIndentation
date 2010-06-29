@@ -21,7 +21,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(TestAnalyzer_tag);
 
     typedef struct {
-        __CounterBase   base;
+        QUEX_NAME(CounterBase)   base;
 
         QUEX_TYPE_ANALYZER*   _the_lexer;
 

@@ -48,7 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(CounterLineColumnIndentation_init)(QUEX_NAME(CounterLineColumnIndentation)* me)
     {
-        CounterBase_init((__CounterBase*)me);
+        CounterBase_init((QUEX_NAME(CounterBase)*)me);
         me->_indentation = 0;
         me->_indentation_count_enabled_f = true;
         me->_indentation_event_enabled_f = true;
@@ -127,7 +127,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->_indentation_count_enabled_f = true;
 #           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
             ++(me->base._line_number_at_end);
-            CounterBase_count_newline_n_backwards((__CounterBase*)me, it, Begin);
+            CounterBase_count_newline_n_backwards((QUEX_NAME(CounterBase)*)me, it, Begin);
 #           endif
 #           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
             me->base._column_number_at_end   = 1;  /* next lexeme starts at _column_number_at_end + 1 */
@@ -316,7 +316,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* when inlined, this is a condition on a constant => deleted by compiler. */
         if( LicenseToIncrementLineCountF ) {
 #          ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-           CounterBase_count_newline_n_backwards((__CounterBase*)me, start_consideration_it, Begin);
+           CounterBase_count_newline_n_backwards((QUEX_NAME(CounterBase)*)me, start_consideration_it, Begin);
 #          endif	    
         }
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -327,7 +327,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(CounterLineColumnIndentation_print_this)(QUEX_NAME(CounterLineColumnIndentation)* me)
     {
-        CounterBase_print_this((__CounterBase*)me);
+        CounterBase_print_this((QUEX_NAME(CounterBase)*)me);
         __QUEX_STD_printf("   _indentation                 = %i;\n", (int)me->_indentation);
         __QUEX_STD_printf("   _indentation_count_enabled_f = %s;\n", me->_indentation_count_enabled_f ? "true" : "false");
         __QUEX_STD_printf("   _indentation_event_enabled_f = %s;\n", me->_indentation_event_enabled_f ? "true" : "false");
