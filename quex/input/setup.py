@@ -60,6 +60,7 @@ SETUP_INFO = {
     "analyzer_name_space":                       None,
     "analyzer_derived_class_name_space":         None,
     "token_class_name_space":                    None,
+    "engine_character_encoding_header_file":     None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
     "XX_bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED

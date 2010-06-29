@@ -17,8 +17,7 @@ def do():
     txt = write(Setup.engine_character_encoding_transformation_info, 
                 Setup.engine_character_encoding)
 
-    file_name = __prepare_file_name("-converter-%s" % Setup.engine_character_encoding)
-    write_safely_and_close(file_name, txt) 
+    write_safely_and_close(Setup.engine_character_encoding_header, txt) 
 
 def write(UnicodeTrafoInfo, CodecName):
     """

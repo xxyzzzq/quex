@@ -114,6 +114,12 @@ def do(argv):
     setup.output_configuration_file = __prepare_file_name("-configuration")
     setup.output_token_id_file      = __prepare_file_name("-token_ids")
     setup.output_token_class_file   = __prepare_file_name("-token")
+    if setup.engine_character_encoding != "":
+        # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
+        # See Internal engine character encoding'
+        setup.engine_character_encoding_header = __prepare_file_name("-converter-%s" % setup.engine_character_encoding)
+    else:
+        setup.engine_character_encoding_header = None
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 
@@ -307,6 +313,9 @@ def validate(setup, command_line, argv):
         else:
             setup.engine_character_encoding_transformation_info = \
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)
+
+    if setup.engine_character_encoding_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
+        setup.engine_character_encoding_header = None
 
     # Path Compression
     if setup.compression_path_uniform_f and setup.compression_path_f:

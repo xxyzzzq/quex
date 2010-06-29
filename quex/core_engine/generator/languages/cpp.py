@@ -531,8 +531,14 @@ def __frame_of_all(Code, Setup):
         implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
     else:
         implementation_header_str = ""
+
+    codec_header_str = ""
+    if Setup.engine_character_encoding_header != None:
+        codec_header_str = "#include \"%s\"\n" % Setup.engine_character_encoding_header
+
     return "".join(["#include \"%s\"\n" % Setup.output_file_stem,
                     implementation_header_str,
+                    codec_header_str,
                     "QUEX_NAMESPACE_MAIN_OPEN\n",
                     "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n",
                     Code,
