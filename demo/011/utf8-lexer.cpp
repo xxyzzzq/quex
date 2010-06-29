@@ -20,8 +20,7 @@ main(int argc, char** argv)
         token = qlex.receive();
 
         // (*) print out token information
-        printf("%s\t", (char*)token->type_id_name().c_str());
-        printf("%s\n", (char*)(token->get_text()).c_str());
+        printf("%s\n", (char*)(string(*token).c_str()));
 
         // (*) check against 'termination'
     } while( token->type_id() != TKN_TERMINATION );
