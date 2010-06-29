@@ -6,16 +6,26 @@ endif
 
 all: iso8859-7-lexer utf8-lexer 
 
-iso8859-7-lexer: iso8859-7-lexer.cpp
+ISO8859_7_Lex.cpp: greek.qx
 	quex -i greek.qx         \
 		 --codec iso8859_7   \
 		 --token-prefix TKN_ \
 		 -o ISO8859_7_Lex
-	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
+
+iso8859-7-lexer.o: iso8859-7-lexer.cpp ISO8859_7_Lex.cpp
+	g++ -c -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
 		-Wall              \
 		-I$(QUEX_PATH) -I. \
 		$<                 \
 		$(CCFLAG_ASSERTS)  \
+		-o iso8859-7-lexer.o
+
+iso8859-7-lexer: iso8859-7-lexer.o ISO8859_7_Lex.cpp
+	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
+		-Wall              \
+		$(CCFLAG_ASSERTS)  \
+		-I$(QUEX_PATH) -I. \
+		iso8859-7-lexer.o  \
 		ISO8859_7_Lex.cpp  \
 		-o $@
 
