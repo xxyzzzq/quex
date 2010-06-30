@@ -1,4 +1,4 @@
-<history date="Thu Jul  1 21:17:12 2010" element-n="148">
+<history date="Thu Jul  1 22:35:28 2010" element-n="149">
     <day year="2009" month="04" day="25">
         <history-init time="06:37:01"/>
         <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:37:01"/>
@@ -414,5 +414,8 @@
     </day>
     <day year="2010" month="06" day="26">
         <crc-error time="05:26:02" application="test-token_class.py" choice="" database-crc="964207907" real-crc="401064764"/>
+    </day>
+    <day year="2010" month="07" day="01">
+        <crc-error time="20:35:27" application="test-token_class.py" choice="" database-crc="401064764" real-crc="281822600"/>
     </day>
 </history>

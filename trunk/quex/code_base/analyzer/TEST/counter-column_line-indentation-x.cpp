@@ -28,7 +28,7 @@ print(QUEX_NAME(CounterLineColumnIndentation)& x, const char* TestString)
 void 
 test(const char* TestString, QUEX_NAME(CounterLineColumnIndentation)& x)
 {
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumnIndentation_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -36,7 +36,7 @@ test(const char* TestString, QUEX_NAME(CounterLineColumnIndentation)& x)
 void 
 test_NoNewline(const char* TestString, QUEX_NAME(CounterLineColumnIndentation)& x)
 {
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
     print(x, TestString);
 }
@@ -47,7 +47,7 @@ test_NoNewline_NeverStartOnWhitespace(const char* TestString, QUEX_NAME(CounterL
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -58,7 +58,7 @@ test_NoNewline_ContainsOnlySpace(const char* TestString, QUEX_NAME(CounterLineCo
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpace)(&x, strlen(TestString));
     print(x, TestString);
 }
