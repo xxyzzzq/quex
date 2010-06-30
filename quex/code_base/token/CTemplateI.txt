@@ -19,7 +19,9 @@ QUEX_INLINE void
 QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self (*__this)
+#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
 $$CONSTRUCTOR$$
+#   undef  LexemeNull
 #   undef  self
 }
 
@@ -35,7 +37,9 @@ QUEX_INLINE void
 QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self (*__this)
+#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
 $$DESTRUCTOR$$
+#   undef  LexemeNull
 #   undef  self
 }
 
@@ -45,7 +49,9 @@ QUEX_NAME_TOKEN(copy)(QUEX_TYPE_TOKEN*       __this,
 {
 #   define self  (*__this)
 #   define Other (*__That)
+#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
 $$COPY$$
+#   undef LexemeNull
 #   undef Other
 #   undef self
     /* If the user even misses to copy the token id, then there's
@@ -68,16 +74,15 @@ QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this,
                            QUEX_TYPE_ANALYZER*        __analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
 {
-#  define self       (*__this)
-#  define analyzer   (*__analyzer)
-#  ifdef  LexemeNull
-#  error  "Error LexemeNull shall not be defined here."
-#  endif
-#  define LexemeNull  &QUEX_NAME(LexemeNullObject)
+#   define self       (*__this)
+#   define analyzer   (*__analyzer)
+#   error  "Error LexemeNull shall not be defined here."
+#   endif
+#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
 $$FUNC_TAKE_TEXT$$
-#  undef LexemeNull
-#  undef analyzer
-#  undef self
+#   undef LexemeNull
+#   undef analyzer
+#   undef self
 }
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
@@ -85,7 +90,9 @@ QUEX_INLINE size_t
 QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self      (*__this)
+#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
     $$TOKEN_REPETITION_N_GET$$
+#   undef  LexemeNull
 #   undef  self
 }
 
@@ -93,7 +100,9 @@ QUEX_INLINE void
 QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 {
 #   define self      (*__this)
+#   define LexemeNull  &QUEX_NAME(LexemeNullObject)
     $$TOKEN_REPETITION_N_SET$$
+#   undef  LexemeNull
 #   undef  self
 }
 #endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */

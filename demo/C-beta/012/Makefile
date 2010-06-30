@@ -27,16 +27,22 @@ lexer: $(OBJS)
 	# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 max_Lexer.c: max.qx
-	quex -i token.qx $< -o max::Lexer --iconv -b 4 --token-prefix MAX_TKN_ --token-policy single \
-		 --language C
+	quex -i token.qx $< -o max::Lexer --iconv -b 4     \
+		 --token-prefix MAX_TKN_ --token-policy single \
+		 --language C                                  \
+		 --no-warning-on-no-token-queue                
 
 moritz_Lexer.c: moritz.qx
-	quex -i token.qx $< -o moritz::Lexer --iconv -b 2 --token-prefix MORITZ_TKN_ --token-policy single \
-		 --language C
+	quex -i token.qx $< -o moritz::Lexer --iconv -b 2     \
+		 --token-prefix MORITZ_TKN_ --token-policy single \
+		 --language C                                     \
+		 --no-warning-on-no-token-queue                
 
 boeck_Lexer.c: boeck.qx
-	quex -i token.qx $< -o boeck::Lexer --codec utf8 --token-prefix TKN_ --token-policy single \
-		 --language C
+	quex -i token.qx $< -o boeck::Lexer --codec utf8 \
+		 --token-prefix TKN_ --token-policy single   \
+		 --language C                                \
+		 --no-warning-on-no-token-queue                
 
 clean:
 	rm -rf $(ENGINE)

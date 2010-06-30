@@ -1,6 +1,6 @@
-<test-database execution-time-sec="11.51" date="Wed Jun 30 07:58:49 2010">
+<test-database execution-time-sec="11.54" date="Thu Jul  1 05:59:00 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Subset Determination" time-sum-sec="2.03"> 
+    <test title="Pattern Subset Determination" time-sum-sec="2.05"> 
         <application file-name="test-subset_checker.py" info-request-time="1276059503L" vanished="False"/>
         <choice-list number="7" same_result="False">
            <choice name="Easy" result="OK" time_sec="0.09" crc="-1954154735"/>
@@ -12,7 +12,7 @@
            <choice name="Pre-Post-Conditions" result="OK" time_sec="0.11" crc="54741919"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="0.90"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.91"> 
         <application file-name="test-identity_checker.py" info-request-time="1276059489L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="True" result="OK" time_sec="0.48" crc="-390242573"/>
@@ -207,10 +207,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="372081665"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1264886941L" vanished="False"/>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.03"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="658399412"/>
+               <choice name="" result="OK" time_sec="0.03" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="Cloning" time-sum-sec="0.06"> 
@@ -219,10 +219,10 @@
                <choice name="" result="OK" time_sec="0.06" crc="-973496326"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.03"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1264886941L" vanished="False"/>
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.03" crc="-1604145748"/>
+               <choice name="" result="OK" time_sec="0.04" crc="658399412"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.05"> 
@@ -259,7 +259,7 @@
         </test>
     </group>
     <group name="UTF8 State Split">
-        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.24"> 
+        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.23"> 
             <application file-name="test-utf8_number_set_split.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="1765966415"/>
@@ -285,7 +285,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.04" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" time-sum-sec="0.47"> 
+        <test title="Plug Intermediate States" time-sum-sec="0.46"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="1.1" result="OK" time_sec="0.03" crc="66719042"/>

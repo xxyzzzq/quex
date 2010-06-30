@@ -53,8 +53,9 @@ SETUP_INFO = {
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
-    "version_information":            [["--version", "-v"],                  FLAG],
-    "help":                           [["--help", "-h"],                     FLAG],
+    "version_information":               [["--version", "-v"],                FLAG],
+    "help":                              [["--help", "-h"],                   FLAG],
+    "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_name_space":                       None,

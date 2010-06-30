@@ -22,10 +22,8 @@ def do(Modes, IndentationSupportF, BeginOfLineSupportF):
     return header_engine_txt, code_engine_txt, header_configuration_txt
 
 def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
-    if Setup.language = "C":
-        LexerClassName            = Setup.analyzer_class_name
-    else:
-        :wqa
+    LexerClassName = Setup.analyzer_class_name
+
     ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
                                    + Setup.language_db["$code_base"] 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
@@ -105,37 +103,37 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
         return result[:-2]
 
     txt = blue_print(txt, 
-            [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
-             ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
-             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(
-                                                         Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
-                                                             + "__" + Setup.analyzer_class_name)],
-             ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
+            [
+             ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$CODEC_NAME$$",                 codec_name],
-             ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
-             ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
-             ["$$LEXER_BUILD_DATE$$",           time.asctime()],
-             ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
+             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension( Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
              ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
-             ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
+             ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
+             ["$$LEXER_CLASS_NAME_SAFE$$",      Setup.analyzer_name_safe],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
+             ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
+             ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
+             ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN$$",            namespace(token_descr.name_space)],
+             ["$$NAMESPACE_TOKEN_CLOSE$$",      Setup.language_db["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
+             ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
+             ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
+             ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
+             ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
+             ["$$TOKEN_CLASS_NAME_SAFE$$",      Setup.token_class_name_safe],
+             ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
+             ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
+             ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
+             ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$TOKEN_REPEAT_TEST$$",          token_repeat_test_txt],
-             ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
-             ["$$ANALYZER_NAME_SAFE$$",         Setup.analyzer_name_safe],
-             ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN$$",            namespace(token_descr.name_space)],
-             ["$$TOKEN_NAME_SAFE$$",            Setup.token_class_name_safe],
-             ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN_CLOSE$$",      Setup.language_db["$namespace-close"](token_descr.name_space).replace("\n", "\\\n")],
-             ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
-             ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
-             ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
-             ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
+             ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
+             ])
 
     return txt
 
@@ -145,7 +143,6 @@ def __switch(txt, Name, SwitchF):
     return txt
     
 def write_constructor_and_memento_functions(ModeDB):
-    LexerClassName = Setup.analyzer_class_name
 
     FileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                     + Setup.language_db["$code_base"] 
@@ -155,7 +152,7 @@ def write_constructor_and_memento_functions(ModeDB):
     func_txt = blue_print(func_txt,
             [
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
-                ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values(), LexerClassName)],
+                ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values())],
                 ["$$MEMENTO_EXTENSIONS_PACK$$",                 lexer_mode.memento_pack_extension.get_code()],
                 ["$$MEMENTO_EXTENSIONS_UNPACK$$",               lexer_mode.memento_unpack_extension.get_code()],
                 ])
@@ -189,8 +186,7 @@ def write_engine_header(Modes):
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
     mode_specific_functions_txt, \
-    friend_txt =                 \
-         get_mode_class_related_code_fragments(Modes.values(), LexerClassName)
+    friend_txt                   = get_mode_class_related_code_fragments(Modes.values())
 
     # -- define a pointer that directly has the type of the derived class
     if Setup.analyzer_derived_class_name == "":
@@ -211,10 +207,12 @@ def write_engine_header(Modes):
 
     txt = blue_print(template_code_txt,
             [
+                ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
                 ["$$CLASS_FUNCTIONS$$",                  function_code_txt],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
+                ["$$LEXER_CLASS_NAME_SAFE$$",            Setup.analyzer_name_safe],
                 ["$$LEXER_CONFIG_FILE$$",                Setup.output_configuration_file],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",         Setup.analyzer_derived_class_name],
@@ -256,7 +254,7 @@ quex_mode_init_call_str = """
 #    endif
 """
 
-def __get_mode_init_call(mode, LexerClassName):
+def __get_mode_init_call(mode):
     
     analyzer_function = "QUEX_NAME(%s_analyzer_function)" % mode.name
     on_indentation    = "QUEX_NAME(%s_on_indentation)"    % mode.name
@@ -280,7 +278,6 @@ def __get_mode_init_call(mode, LexerClassName):
 
     txt = blue_print(quex_mode_init_call_str,
                 [["$$MN$$",             mode.name],
-                 ["$$CLASS$$",          LexerClassName],
                  ["$analyzer_function", analyzer_function],
                  ["$on_indentation",    on_indentation],
                  ["$on_entry",          on_entry],
@@ -291,7 +288,7 @@ def __get_mode_init_call(mode, LexerClassName):
 
     return txt
 
-def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
+def __get_mode_function_declaration(Modes, FriendF=False):
 
     if FriendF: prolog = "    friend "
     else:       prolog = "extern "
@@ -332,7 +329,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
 
     return txt
 
-def get_constructor_code(Modes, LexerClassName):
+def get_constructor_code(Modes):
     L = max(map(lambda m: len(m.name), Modes))
 
     txt = ""
@@ -341,14 +338,14 @@ def get_constructor_code(Modes, LexerClassName):
                (mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:
-        txt += __get_mode_init_call(mode, LexerClassName)
+        txt += __get_mode_init_call(mode)
 
     for mode in Modes:
         txt += "        me->mode_db[QUEX_NAME(ModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
                (mode.name, " " * (L-len(mode.name)), mode.name)
     return txt
 
-def get_mode_class_related_code_fragments(Modes, LexerClassName):
+def get_mode_class_related_code_fragments(Modes):
     """
        RETURNS:  -- members of the lexical analyzer class for the mode classes
                  -- static member functions declaring the analyzer functions for he mode classes 
@@ -363,8 +360,8 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
     for mode in Modes:
         members_txt += "        extern QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode.name
 
-    mode_functions_txt = __get_mode_function_declaration(Modes, LexerClassName, FriendF=False)
-    friends_txt        = __get_mode_function_declaration(Modes, LexerClassName, FriendF=True)
+    mode_functions_txt = __get_mode_function_declaration(Modes, FriendF=False)
+    friends_txt        = __get_mode_function_declaration(Modes, FriendF=True)
 
     return members_txt,        \
            mode_functions_txt, \

@@ -71,7 +71,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "CounterBase_shift_end_values_to_start_values(&self.counter.base);\n"
+    txt = "QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);\n"
 
     if EOF_ActionF:
         txt += "    QUEX_NAME(CounterLineColumnIndentation_on_end_of_file)(&self.counter);\n"
@@ -112,7 +112,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "CounterBase_shift_end_values_to_start_values(&self.counter.base);\n"
+    txt = "QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);\n"
 
     if EOF_ActionF:
         return txt
