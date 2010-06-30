@@ -1,4 +1,4 @@
-#include<stdio.h>    
+#include <stdio.h>    
 
 #include "EasyLexer"
 #include "EasyLexer-token.i"
@@ -16,8 +16,7 @@ main(int argc, char** argv)
     EasyLexer    qlex;
 #   ifdef PRINT_TOKEN
     const size_t BufferSize = 1024;
-    uint8_t      buffer[1024];
-    uint8_t*     end = (uint8_t)0x0;
+    char         buffer[1024];
 #   endif
 
     QUEX_NAME(construct_file_name)(&qlex, "example.txt", ENCODING_NAME, false);
@@ -52,6 +51,8 @@ main(int argc, char** argv)
 
     printf("| [END] number of token = %i\n", number_of_tokens);
     printf("`-----------------------------------------------------------------\n");
+
+    QUEX_NAME(destruct)(&qlex);
 
     return 0;
 }

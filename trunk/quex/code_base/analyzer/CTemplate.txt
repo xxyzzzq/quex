@@ -74,16 +74,16 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
-typedef struct $$LEXER_CLASS_NAME$$_tag {
+typedef struct $$LEXER_CLASS_NAME_SAFE$$_tag {
 
-#   include <quex/code_base/analyzer/Engine_body>
+#include <quex/code_base/analyzer/Engine_body>
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's class body extensions _____________________________________________*/
 $$CLASS_BODY_EXTENSION$$
 /* END: ____________________________________________________________________________*/
 #undef  self
 
-} $$LEXER_CLASS_NAME$$;
+} $$LEXER_CLASS_NAME_SAFE$$;
 
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>

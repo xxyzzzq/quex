@@ -104,11 +104,13 @@
 #       define QUEX_TYPE_TOKEN  quex_Token
 #   endif
 #endif
-#ifndef    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+
+/* QUEX_TYPE0_TOKEN --> name of token class without namespace */
+#ifndef    QUEX_TYPE0_TOKEN
 #   ifndef __QUEX_OPTION_PLAIN_C
-#      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE Token
+#      define QUEX_TYPE0_TOKEN Token
 #   else
-#      define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE quex_Token
+#      define QUEX_TYPE0_TOKEN quex_Token
 #   endif
 #endif
 #ifndef    QUEX_TYPE_TOKEN_ID

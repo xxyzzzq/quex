@@ -391,8 +391,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
 #   define QUEX_NAMESPACE_TOKEN_CLOSE 
 
-#   define QUEX_NAME(NAME)             $$ANALYZER_NAME_SAFE$$_ ## NAME
-#   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_NAME_SAFE$$_ ## NAME
+#   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME_SAFE$$_ ## NAME
+#   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
 #   define QUEX_MEMBER(NAME)           void /* Undefined, not required */
 #else
 #   define QUEX_NAMESPACE_MAIN         $$NAMESPACE_MAIN$$
@@ -413,21 +413,28 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
 #endif
 
+/* QUEX_TYPE_X  --> Type of X in global namespace 
+ * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
 #ifdef __QUEX_OPTION_PLAIN_C
-#   define QUEX_TYPE_ANALYZER                   struct $$LEXER_CLASS_NAME$$_tag
-#   define QUEX_TYPE0_ANALYZER                  struct $$LEXER_CLASS_NAME$$_tag
-#   define QUEX_TYPE_DERIVED_ANALYZER           struct $$LEXER_CLASS_NAME$$_tag
-#   define QUEX_TYPE_TOKEN                      struct $$TOKEN_CLASS$$_tag
-#   define QUEX_TYPE0_TOKEN                     $$TOKEN_CLASS$$
+/* In 'C' there are no namespaces, so namespaces are coded directly
+ * into the type name. Both, global and local names are equal.       */
+#   define QUEX_TYPE_ANALYZER                struct $$LEXER_CLASS_NAME_SAFE$$_tag
+#   define QUEX_TYPE0_ANALYZER               struct $$LEXER_CLASS_NAME_SAFE$$_tag
+#   define QUEX_TYPE_DERIVED_ANALYZER        struct $$LEXER_CLASS_NAME_SAFE$$_tag
+
+#   define QUEX_TYPE_TOKEN                   struct $$TOKEN_CLASS_NAME_SAFE$$_tag
+#   define QUEX_TYPE0_TOKEN                  struct $$TOKEN_CLASS_NAME_SAFE$$_tag
 #else
-#   define QUEX_TYPE_ANALYZER                   $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
-#   define QUEX_TYPE0_ANALYZER                  $$LEXER_CLASS_NAME$$
-#   define QUEX_TYPE_DERIVED_ANALYZER           $$LEXER_DERIVED_CLASS_NAME$$
-#   define QUEX_TYPE_TOKEN                      $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
-#   define QUEX_TYPE0_TOKEN                     $$TOKEN_CLASS$$
+/* Add namespaces for the global names of the classes of analyzer
+ * and token.                                                        */
+#   define QUEX_TYPE_ANALYZER                $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
+#   define QUEX_TYPE0_ANALYZER               $$LEXER_CLASS_NAME$$
+#   define QUEX_TYPE_DERIVED_ANALYZER        $$LEXER_DERIVED_CLASS_NAME$$
+
+#   define QUEX_TYPE_TOKEN                   $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
+#   define QUEX_TYPE0_TOKEN                  $$TOKEN_CLASS$$
 #endif
 
-#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE    $$TOKEN_CLASS$$
 #define QUEX_TYPE_TOKEN_ID                   $$TOKEN_ID_TYPE$$
 #define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
 #define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
@@ -467,7 +474,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Engine_tag);
     struct QUEX_NAME(Memento_tag);
 #   ifdef __QUEX_OPTION_PLAIN_C
-    /* struct */ QUEX_TYPE_ANALYZER;
+    struct $$LEXER_CLASS_NAME_SAFE$$_tag;
 #   else
     class  $$LEXER_DERIVED_CLASS_NAME$$; /* Derived Class if different from lexer class. */
     class  $$LEXER_CLASS_NAME$$;

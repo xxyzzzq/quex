@@ -166,11 +166,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
             /* If code is two 'words': First word == 0xD800 */
             if( *source_iterator >= 0xD800 && *source_iterator <= 0xDBFF ) {
-                x0 = *source_iterator++ - 0xD800;
-                x1 = *source_iterator   - 0xDC00;
-                unicode_value = (x0 << 10) + x1 + 0x10000;
+                x0 = (uint32_t)(*source_iterator++ - 0xD800);
+                x1 = (uint32_t)(*source_iterator   - 0xDC00);
+                unicode_value = (uint32_t)((x0 << 10) + x1 + (uint32_t)0x10000);
             } else {
-                unicode_value = *source_iterator;
+                unicode_value = (uint32_t)(*source_iterator);
             }
             if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
             drain_iterator = QUEX_NAME(unicode_to_utf8)((QUEX_TYPE_CHARACTER)unicode_value,

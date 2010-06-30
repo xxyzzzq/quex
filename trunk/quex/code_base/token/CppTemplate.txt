@@ -79,10 +79,10 @@ $$BODY$$
 
 inline
 /* NOTE: If you get an error here, then your configuration
- *       file does not declare QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE as $$TOKEN_CLASS$$. 
+ *       file does not declare QUEX_TYPE0_TOKEN as $$TOKEN_CLASS$$. 
  *       The following weirdly typed constructor shall break in
  *       this particular case.                                        */
-$$TOKEN_CLASS$$::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
+$$TOKEN_CLASS$$::QUEX_TYPE0_TOKEN()
 /*****************************************************/
 {
 #   define self (*this)
@@ -117,7 +117,7 @@ QUEX_NAME_TOKEN(construct)($$TOKEN_CLASS$$* __this)
 inline void
 QUEX_NAME_TOKEN(destruct)($$TOKEN_CLASS$$* __this)
 {
-    __this->QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
+    __this->QUEX_TYPE0_TOKEN::~QUEX_TYPE0_TOKEN();  
 }
 
 inline void

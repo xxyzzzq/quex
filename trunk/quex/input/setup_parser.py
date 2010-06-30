@@ -82,7 +82,7 @@ def do(argv):
     # (*) Classes and their namespace
     setup.analyzer_class_name,      \
     setup.analyzer_name_space,      \
-    setup.analyzer_namespace_safe = \
+    setup.analyzer_name_safe = \
          read_namespaced_name(setup.analyzer_class_name, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
     if setup.analyzer_name_space == []:

@@ -9,7 +9,7 @@
 # (C) 2006 Frank-Rene Schäfer
 #
 #______________________________________________________________________
-cd $QUEX_PATH/demo/$1 
+cd $QUEX_PATH/demo/C-beta/$1 
 if [[ $2 == "NDEBUG" ]]; then
     arg1=""
 else
@@ -27,7 +27,7 @@ if [[ -z $application ]]; then
     if [[ $no_valgrind != "YES" ]]; then
         valgrind ./lexer $args_to_lexer > stdout.txt 2> tmp.txt
         cat stdout.txt
-        python ../TEST/show-valgrind.py
+        python $QUEX_PATH/TEST/show-valgrind.py
     else
         ./lexer $args_to_lexer
     fi
@@ -35,7 +35,7 @@ else
     if [[ $no_valgrind != "YES" ]]; then
         valgrind $application $args_to_lexer > stdout.txt 2> tmp.txt
         cat stdout.txt
-        python ../TEST/show-valgrind.py
+        python $QUEX_PATH/TEST/show-valgrind.py
     else
        $application $args_to_lexer
     fi

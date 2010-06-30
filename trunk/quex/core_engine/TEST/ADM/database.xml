@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.00" date="Wed Jun 30 07:54:51 2010">
+<test-database execution-time-sec="14.01" date="Thu Jul  1 05:58:59 2010">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" time-sum-sec="0.05"> 
@@ -45,7 +45,7 @@
                <choice name="" result="OK" time_sec="0.06" crc="-1284156277"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="9.08"> 
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="9.09"> 
             <application file-name="test-NumberSet-transform-x.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="10" result="OK" time_sec="0.04" crc="1378888075"/>
