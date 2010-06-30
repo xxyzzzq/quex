@@ -1,4 +1,4 @@
-/* -*- C++ -*- vim: set syntax=cpp: */
+/* -*- C++ -*- vim:set syntax=cpp: */
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I
 

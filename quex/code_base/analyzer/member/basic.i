@@ -83,7 +83,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_mode_stack.end        = me->_mode_stack.begin;
         me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, BufferMemory, BufferMemorySize,
+        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 
+                                    BufferMemory, BufferMemorySize,
                                     CharacterEncodingName, TranslationBufferMemorySize,
                                     ByteOrderReversionF);
 
