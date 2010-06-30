@@ -29,7 +29,7 @@ print(QUEX_NAME(CounterLineColumn)& x, const char* TestString)
 void 
 test(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumn_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -37,7 +37,7 @@ test(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 void 
 test_NoNewline(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumn_count_NoNewline)(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -48,7 +48,7 @@ test_FixedNewlineN(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    CounterBase_shift_end_values_to_start_values((__CounterBase*)&x);
+    QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
     QUEX_NAME(CounterLineColumn_count_FixNewlineN)(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                               (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString), line_n);
     print(x, TestString);
