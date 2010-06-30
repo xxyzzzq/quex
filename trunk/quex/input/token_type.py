@@ -18,10 +18,13 @@ class TokenTypeDescriptorCore:
         if Core == None:
             self._file_name            = Setup.output_token_class_file
             if Setup.token_class_name.find("::") != -1:
-                Setup.token_class_name, Setup.token_class_name_space = \
+                Setup.token_class_name,       \
+                Setup.token_class_name_space, \
+                Setup.token_class_name_safe = \
                         read_namespaced_name(Setup.token_class_name, 
-                                "token class (options --token-class, --tc)")
+                                             "token class (options --token-class, --tc)")
             self.class_name            = Setup.token_class_name
+            self.class_name_safe       = Setup.token_class_name_safe
             self.name_space            = Setup.token_class_name_space
             self.open_for_derivation_f      = False
             self.token_contains_token_id_f  = True
@@ -304,7 +307,7 @@ def __parse_section(fh, descriptor, already_defined_list):
     if word == "name":
         if not check(fh, "="):
             error_msg("Missing '=' in token_type 'name' specification.", fh)
-        descriptor.class_name, descriptor.name_space = read_namespaced_name(fh, "token_type")
+        descriptor.class_name, descriptor.name_space, descriptor.class_name_safe = read_namespaced_name(fh, "token_type")
         if not check(fh, ";"):
             error_msg("Missing terminating ';' in token_type 'name' specification.", fh)
 

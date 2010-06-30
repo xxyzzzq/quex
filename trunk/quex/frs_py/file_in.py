@@ -154,7 +154,7 @@ def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
             error_msg("Trailing characters '%s' in '%s'\nfor %s name specification." % \
                       (trailing_chars, FileHandle_or_String, Meaning))
 
-        return name_list[-1], name_list[:-1], reduce(lambda x, y: x + "_" + y, name_list)  
+    return name_list[-1], name_list[:-1], reduce(lambda x, y: x + "_" + y, name_list)  
 
 def get_text_line_n(Txt, Pos):
     line_n = 1
