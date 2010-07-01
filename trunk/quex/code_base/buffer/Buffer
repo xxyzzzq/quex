@@ -70,10 +70,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         struct    QUEX_NAME(BufferFiller_tag)*             filler;
     } QUEX_NAME(Buffer);
 
-    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*            me, 
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*     me, 
                                                                   InputHandleT*          input_handle,
                                                                   QUEX_TYPE_CHARACTER*   InputMemory,
                                                                   const size_t           BufferMemorySize,
+                                                                  QUEX_TYPE_CHARACTER*   EndOfFileP,
                                                                   const char*            CharacterEncodingName, 
                                                                   const size_t           TranslationBufferMemorySize, 
                                                                   bool                   ByteOrderReversionF);

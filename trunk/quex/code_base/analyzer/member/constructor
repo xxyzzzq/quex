@@ -25,6 +25,7 @@ QUEX_INLINE void
 QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                             QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                             size_t               BufferMemorySize,
+                            QUEX_TYPE_CHARACTER* BufferEndOfFileP, 
                             const char*          CharacterEncodingName /* = 0x0   */,
                             bool                 ByteOrderReversionF   /* = false */);
 

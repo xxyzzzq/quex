@@ -11,7 +11,7 @@ cd $bug/
 if [[ $1 == "good" ]]; then
     quex -i good.qx -o Simple
     echo "(*) Core Engine"
-    awk ' /QUEX_TKN_/ { print; } ' Simple.cpp 
+    awk ' /token_id_str_/ { print; } ' Simple.cpp 
     echo "(*) Token IDs"
     awk ' /QUEX_TKN_/ { print; } ' Simple-token_ids
 else

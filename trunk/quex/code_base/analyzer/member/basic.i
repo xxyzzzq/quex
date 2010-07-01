@@ -18,6 +18,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                InputHandleT*           input_handle,
                                QUEX_TYPE_CHARACTER*    BufferMemory,
                                const size_t            BufferMemorySize,
+                               QUEX_TYPE_CHARACTER*    EndOfFileP,
                                const char*             CharacterEncodingName, 
                                const size_t            TranslationBufferMemorySize,
                                bool                    ByteOrderReversionF)
@@ -84,7 +85,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
         QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 
-                                    BufferMemory, BufferMemorySize,
+                                    BufferMemory, BufferMemorySize, EndOfFileP,
                                     CharacterEncodingName, TranslationBufferMemorySize,
                                     ByteOrderReversionF);
 
