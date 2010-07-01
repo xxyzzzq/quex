@@ -1,24 +1,24 @@
-<test-database execution-time-sec="1.01" date="Thu Jul  1 21:59:10 2010">
+<test-database execution-time-sec="0.38" date="Fri Jul  2 08:00:25 2010">
     <last-used-diff-display-program name=""/>
-    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="simple-queue.exe" info-request-time="1278014295L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.092762"/>
+    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.00"> 
+        <application file-name="simple-queue.exe" info-request-time="1278050422L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.857296"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.01" crc="0"/>
+           <choice name="" result="OK" time_sec="0.00" crc="0"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="1.00"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.38"> 
         <application file-name="misc.sh" info-request-time="1264886931L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.56" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.16" crc="-517532967"/>
-           <choice name="double-colon" result="OK" time_sec="0.13" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.15" crc="-26357094"/>
+           <choice name="empty" result="OK" time_sec="0.10" crc="-1191820474"/>
+           <choice name="no-namespace" result="OK" time_sec="0.12" crc="-517532967"/>
+           <choice name="double-colon" result="OK" time_sec="0.08" crc="-223322448"/>
+           <choice name="token" result="OK" time_sec="0.08" crc="-26357094"/>
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1278014303L" vanished="False"/>
-        <make-procedure success="True" time_sec="3.046555"/>
+        <application file-name="simple.exe" info-request-time="1278050424L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.767131"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
         </choice-list>

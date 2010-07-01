@@ -41,7 +41,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* (B) Initializations on Inclusion:
          *  
          *    (1) A new buffer is required for the new content.                           */
-        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 0x0, QUEX_SETTING_BUFFER_SIZE,
+        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 
+                                    0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
                                     CharacterCodecName, QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                     me->buffer._byte_order_reversion_active_f);
 

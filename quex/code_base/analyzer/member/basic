@@ -16,6 +16,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                InputHandleT*         input_handle,
                                QUEX_TYPE_CHARACTER*  BufferMemory,
                                const size_t          BufferMemorySize,
+                               QUEX_TYPE_CHARACTER*  EndOfFileP,
                                const char*           CharacterEncodingName, 
                                const size_t          TranslationBufferMemorySize,
                                bool                  ByteOrderReversionF);

@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.24" date="Thu Jul  1 21:10:04 2010">
+<test-database execution-time-sec="0.04" date="Fri Jul  2 08:00:11 2010">
     <last-used-diff-display-program name=""/>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.22"> 
-            <application file-name="transition-x.exe" info-request-time="1278011400L" vanished="False"/>
-            <make-procedure success="True" time_sec="3.246034"/>
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="transition-x.exe" info-request-time="1278050409L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.123136"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.20" crc="2085579180"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="741669396"/>
-               <choice name="error" result="OK" time_sec="0.01" crc="-544814889"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="2085579180"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time_sec="0.00" crc="-544814889"/>
             </choice-list>
         </test>
         <test title="transition.qx" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="transition.exe" info-request-time="1278011403L" vanished="False"/>
-            <make-procedure success="True" time_sec="3.199235"/>
+            <application file-name="transition.exe" info-request-time="1278050410L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.177447"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="2085579180"/>
                <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="741669396"/>
-               <choice name="error" result="OK" time_sec="0.01" crc="1220708930"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time_sec="0.00" crc="1220708930"/>
             </choice-list>
         </test>
     </group>

@@ -471,7 +471,7 @@ test_program_db = {
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
         QUEX_NAME(construct_basic)(&lexer_state, (void*)0x0,
-                                   TestString, MemorySize, 0x0, 0, false);
+                                   TestString, MemorySize, 0x0, 0x0, 0x0, 0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
@@ -499,7 +499,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         QUEX_NAME(construct_basic)(&lexer_state, fh, 0x0,
-                                    $$BUFFER_SIZE$$, 0x0, 
+                                    $$BUFFER_SIZE$$, 0x0, 0x0,
                                     /* No translation, no translation buffer */0x0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
@@ -528,7 +528,7 @@ test_program_db = {
         istringstream      istr("$$TEST_STRING$$");
 
         QUEX_NAME(construct_basic)(&lexer_state, &istr, 0x0,
-                                   $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
+                                   $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
 
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
@@ -556,7 +556,7 @@ test_program_db = {
         StrangeStream<istringstream>  strange_stream(&istr);
 
         QUEX_NAME(construct_basic)(&lexer_state, &strange_stream, 0x0,
-                                    $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
+                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");

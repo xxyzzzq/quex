@@ -11,12 +11,13 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             const char*            CharacterEncodingName,
                             bool                   ByteOrderReversionF,
                             QUEX_TYPE_CHARACTER*   BufferMemory,    
-                            size_t                 BufferMemorySize)
+                            size_t                 BufferMemorySize,
+                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP)
 {
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
     QUEX_NAME(construct_basic)(me, input_handle,
-                               BufferMemory, BufferMemorySize,
+                               BufferMemory, BufferMemorySize, BufferEndOfFileP,
                                CharacterEncodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                ByteOrderReversionF);
