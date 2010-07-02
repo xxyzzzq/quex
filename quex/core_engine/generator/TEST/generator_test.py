@@ -471,7 +471,8 @@ test_program_db = {
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
         QUEX_NAME(construct_basic)(&lexer_state, (void*)0x0,
-                                   TestString, MemorySize, 0x0, 0x0, 0x0, 0, false);
+                                   TestString, MemorySize, TestString + MemorySize - 1, 
+                                   0x0, 0, false);
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/

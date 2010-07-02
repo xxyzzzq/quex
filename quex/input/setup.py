@@ -156,8 +156,8 @@ DEPRECATED = {
 
 setup = something()
 for key, entry in SETUP_INFO.items():
-    if type(entry) != list:        continue
-    if   entry[1] == LIST:         default_value = []
+    if type(entry) != list:        default_value = entry
+    elif entry[1] == LIST:         default_value = []
     elif entry[1] == FLAG:         default_value = False
     elif entry[1] == NEGATED_FLAG: default_value = True
     else:                          default_value = entry[1]

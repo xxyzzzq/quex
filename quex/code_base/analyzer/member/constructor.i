@@ -18,25 +18,31 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                             const char*          CharacterEncodingName /* = 0x0   */,
                             bool                 ByteOrderReversionF   /* = false */)
 {
-#   ifdef QUEX_OPTION_ASSERTS
-    QUEX_TYPE_CHARACTER*   iterator = 0x0;
-#   endif
-
     size_t  memory_size = BufferMemoryBegin != 0 ? BufferMemorySize 
                           :                        QUEX_SETTING_BUFFER_SIZE;
+#   ifdef QUEX_OPTION_ASSERTS
+    QUEX_TYPE_CHARACTER*   iterator = 0x0;
 
     __quex_assert(memory_size > 2);
 
-#   ifdef QUEX_OPTION_ASSERTS
-    /* The memory provided must be initialized. If it is not that's wrong.
-     * Try to detect this with 'zeroes' or buffer limit code.              */
-    for(iterator = BufferMemoryBegin + 1; iterator != BufferMemoryBegin + BufferMemorySize;
-        ++iterator) {
-        if(    *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE 
-            || *iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
-            QUEX_ERROR_EXIT("\nConstructor: Buffer limit code and/or path termination code appeared in buffer\n"
-                            "Constructor: when pointed to user memory. Note, that the memory pointed to must\n"
-                            "Constructor: be initialized!");
+    if( BufferMemoryBegin != 0x0 ) {
+        /* End of File must be inside the buffer, because we assume that the buffer
+         * contains all that is required.                                           */
+        __quex_assert(BufferEndOfFileP != 0x0);
+    }
+    if( BufferEndOfFileP != 0x0 ) {
+        __quex_assert(BufferEndOfFileP >  BufferMemoryBegin);
+        __quex_assert(BufferEndOfFileP <= BufferMemoryBegin + memory_size - 1);
+
+        /* The memory provided must be initialized. If it is not, then that's wrong.
+         * Try to detect this by searching for BLC and PTC.                         */
+        for(iterator = BufferMemoryBegin + 1; iterator != BufferEndOfFileP; ++iterator) {
+            if(    *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE 
+                || *iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
+                QUEX_ERROR_EXIT("\nConstructor: Buffer limit code and/or path termination code appeared in buffer\n"
+                                "Constructor: when pointed to user memory. Note, that the memory pointed to must\n"
+                                "Constructor: be initialized!");
+            }
         }
     }
 #   endif

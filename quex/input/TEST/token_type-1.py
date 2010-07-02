@@ -11,6 +11,8 @@ quex.input.setup.setup.token_class_name_space = ""
 from quex.input.token_type import *
 from StringIO import StringIO
 
+# for element in quex.input.setup.setup.__dict__.keys():
+#    print "##", element
 
 if "--hwut-info" in sys.argv:
     print "token_type: Buildt-In Members;"
