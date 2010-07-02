@@ -1,15 +1,14 @@
-#include <fstream>    
-#include <iostream> 
-#include "Calc_parser.tab.hpp"
+#include <stdio.h>
+#include "Calc_parser.tab.h"
 #include "Calc_lexer"
 
-int Calc_yyparse(quex::Calc_lexer  *qlex);
+int Calc_yyparse(Calc_lexer  *qlex);
 
 int main(int argc, char** argv) 
 {
 	Calc_lexer qlex;
     
-    QUEX_NAME(construct_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1]);
+    QUEX_NAME(construct_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0, false);
 
     printf("Calculator Example Application\n");
     printf("Contributed by: Marco Antonelli (date: 09y11m7d)\n\n");

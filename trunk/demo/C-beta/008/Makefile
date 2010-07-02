@@ -22,9 +22,9 @@ LEXER_SOURCES	= $(LEXER_NAME)                     \
 TOKEN_FILE		= Calc_token-ids
 
 PARSER_NAME		=	Calc_parser
-PARSER_FILE		=	$(PARSER_NAME).ypp
+PARSER_FILE		=	$(PARSER_NAME).y
 PARSER_SOURCES	=	$(PARSER_NAME).tab.c	\
-					$(PARSER_NAME).tab.hpp
+					$(PARSER_NAME).tab.h
 # -- OUTPUT
 APPLICATION      = lexer
 

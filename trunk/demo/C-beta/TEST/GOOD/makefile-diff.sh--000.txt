@@ -1,4 +1,4 @@
-< COMPILER = g++ # -ggdb 
+< COMPILER = g++ -ggdb 
 ---
 > COMPILER = gcc # -ggdb 
 < EasyLexer.o: EasyLexer.cpp 

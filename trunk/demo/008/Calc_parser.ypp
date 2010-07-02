@@ -11,6 +11,7 @@
 #include "Calc_lexer"
 #include <iostream>
 #include <math.h>
+#include <errno.h>
 %}
 
 %union

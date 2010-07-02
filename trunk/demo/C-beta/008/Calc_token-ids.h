@@ -9,7 +9,7 @@
 #define PROTO_TOKENIDS_H_
 
 //#include "Proto_token-ids.i"
-#include "Calc_parser.tab.hpp"
+#include "Calc_parser.tab.h"
 
 #define TKN_TERMINATION 0
 #define TKN_UNINITIALIZED 1

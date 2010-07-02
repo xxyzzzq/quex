@@ -36,11 +36,11 @@ LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application
-lexer:          example.o EasyLexer.o
-	$(LD) -o $@ example.o EasyLexer.o 
+lexer:          example.o EasyLexer.o indentation_stack.o
+	$(LD) -o $@ example.o EasyLexer.o indentation_stack.o
           
 # Object files:
-EasyLexer.o: EasyLexer.c 
+%.o: %.c 
 	$(CC) $< -o $@ 
 
 example.o: ../example.c  EasyLexer.c
