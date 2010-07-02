@@ -3,25 +3,26 @@
 %debug
 %pure-parser
 %error-verbose
-%lex-param {quex::Calc_lexer  *qlex}
-%parse-param {quex::Calc_lexer  *qlex}
+%lex-param {Calc_lexer  *qlex}
+%parse-param {Calc_lexer  *qlex}
 %name-prefix="Calc_yy"
 
 %{
 #include "Calc_lexer"
-#include <iostream>
+#include <stdio.h>
 #include <math.h>
+#include <errno.h>
 %}
 
 %union
 {
-	double dbl;
-	std::string *str;
+	double      dbl;
+	const char* str;
 };
 
 %{
-int Calc_yylex(YYSTYPE *yylval, quex::Calc_lexer *qlex);
-void Calc_yyerror(quex::Calc_lexer *qlex, const std::string& m);
+int  Calc_yylex(YYSTYPE *yylval, Calc_lexer *qlex);
+void Calc_yyerror(Calc_lexer *qlex, const char* m);
 %}
 
 %type<dbl> exp num
@@ -57,37 +58,40 @@ exp:      num                { $$ = $1;         }
 num:	TKN_NUM
 {
 	char *endptr;
-	const char *str = $1->c_str();
+	const char *str = $1;
 	double val;
 	val = strtod(str, &endptr);
 	
 	/* Check for various possible errors */
 	if (errno == ERANGE || endptr == str)
 	{
-		std::string err = std::string("strtod failed");
-		Calc_yyerror(qlex, err);
+		Calc_yyerror(qlex, "strtod failed");
 		YYABORT;
 	}
 	$$ = val;
-	delete $1;
+	free((void*)$1);
 }
         
 %%
 
-void Calc_yyerror(quex::Calc_lexer *qlex, const std::string& m)
+void Calc_yyerror(Calc_lexer *qlex, const char*  m)
 {
-	std::cout << "Parsing error at " << qlex->line_number() 
-		<< ":" << qlex->column_number() << " : " << m;
+	printf("Parsing error at %i:%s: %s", 
+           (int)qlex->counter.base._line_number_at_begin, (int)qlex->counter.base._column_number_at_begin, m);
+           
 }
 
-int Calc_yylex(YYSTYPE *yylval, quex::Calc_lexer *qlex)
+int Calc_yylex(YYSTYPE *yylval, Calc_lexer *qlex)
 {
-	quex::Token* token;
-	token = qlex->receive();
-	if (token->get_text().length()>0)
+	QUEX_TYPE_TOKEN* token;
+
+	token = QUEX_NAME(receive)(qlex);
+
+	if (strlen((char*)token->text) > 0 )
 	{
-		yylval->str = new std::string((const char *)token->get_text().c_str());
-		//printit(yylval->str);
+
+		yylval->str = (char*)malloc((size_t)(strlen((char*)token->text)+1));
+        memcpy(yylval->str, token->text, (size_t)(strlen(token->text) + 1));
 	}
-	return (int)token->type_id();
+	return (int)token->_id;
 }

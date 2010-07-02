@@ -19,7 +19,8 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             const char*            CharacterEncodingName,
                             bool                   ByteOrderReversionF,
                             QUEX_TYPE_CHARACTER*   BufferMemory,    
-                            size_t                 BufferMemorySize);
+                            size_t                 BufferMemorySize,
+                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP);
 
 QUEX_INLINE void
 QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,

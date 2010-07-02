@@ -10,27 +10,16 @@ header {
         uint16_t*  memory_end;
     } IndentationStack;
 
-    static void
-    IndentationStack_push(IndentationStack* me, uint16_t Indentation)
-    {
-        if( me->end == me->memory_end ) 
-            QUEX_ERROR_EXIT("Indentation stack overflow.");
-        *(me->end++) = Indentation;
-    }
+    void      IndentationStack_push(IndentationStack* me, uint16_t Indentation);
+    uint16_t  IndentationStack_pop(IndentationStack* me);
 
-    static uint16_t
-    IndentationStack_pop(IndentationStack* me)
-    {
-        __quex_assert( me->end != me->begin );
-        return *(--(me->end));
-    }
 #   define IndentationStack_back() *(self.indentation_stack.end - 1)
 }
 
 define {
-    // -*- C -*-
-    // Pattern definitions for example application
-    P_WHITESPACE              [ \t\n]
+    /* -*- C -*-
+     * Pattern definitions for example application */
+    P_WHITESPACE          [ \t\n]
     P_CURLY_BRACKET_O     "{"
     P_CURLY_BRACKET_C     "}"
     P_BRACKET_O           "("
