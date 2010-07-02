@@ -600,20 +600,27 @@ used by the lexical analyzer. A constructor call
 
 .. code-block:: cpp
 
-    quex::MyLexer   qlex((QUEX_TYPE_CHARACTER*)BUFFER_ADR, BUFFER_SIZE); 
+    quex::MyLexer   qlex((QUEX_TYPE_CHARACTER*)BUFFER_ADR, 
+                         BUFFER_SIZE,
+                         (QUEX_TYPE_CHARACTER*)END_OF_CONTENT); 
 
-announces the memory to be used by the engine. Note, that the first position
-to be written to must be ``BUFFER_ADR + 1``, because the first element of
-the memory is filled with the buffer limit code. When the content of the
-buffer is filled a call to 
+announces the memory to be used by the engine. Note, that the first position to
+be written to must be ``BUFFER_ADR + 1``, because the first element of the
+memory is filled with the buffer limit code. The buffer can be filled
+initially. The third argument to the constructor must tell the end of the
+content. If the buffer is empty at construction time the end of content
+must point to ``BUFFER_ADR + 1``. When the content of the buffer is filled
+a code fragment like
 
 .. code-block:: cpp
 
     qlex.buffer_fill_region_finish(receive_n);
+    qlex.buffer_input_pointer_set(BUFFER_ADR + 1);
 
 tells the analyzer about the number of characters that make up the content.
-Now, the analyzis may start. The file ``point.cpp`` in the ``demo/010``
-directory implements an example. 
+Also, it resets the input position to the start of the buffer.  Now, the
+analyzis may start. The file ``point.cpp`` in the ``demo/010`` directory
+implements an example. 
 
 .. note::
 
