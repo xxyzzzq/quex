@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.22" date="Sat Jul  3 07:06:16 2010">
+<test-database execution-time-sec="0.22" date="Sat Jul  3 07:33:40 2010">
     <last-used-diff-display-program name=""/>
     <group name="Include Stack">
         <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.12"> 
@@ -14,7 +14,7 @@
                <choice name="20" result="OK" time_sec="0.06" crc="-1349073584"/>
             </choice-list>
         </test>
-        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Misc Scenarios" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="users_token.exe" info-request-time="1278133576L" vanished="False"/>
             <make-procedure success="True" time_sec="2.072395"/>
             <choice-list number="7" same_result="False">
