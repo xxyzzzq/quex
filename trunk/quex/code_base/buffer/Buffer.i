@@ -55,7 +55,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( InputMemory  != 0x0 ) { 
             __quex_assert(input_handle == 0x0 );
             /* If the input memory is provided, the content **must** be propperly set up.      */
-            QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, InputMemory + MemorySize - 1);
+            QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, EndOfFileP - 1);
         }
 #       endif
 
@@ -591,8 +591,23 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_external_owner_f = ExternalOwnerF;
         *(me->_front)         = QUEX_SETTING_BUFFER_LIMIT_CODE;
         *(me->_back)          = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        if( me->_end_of_file_p != 0x0 ) {
+            *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        }
+
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(me->_front + 1, 0xFF, Size - 2);
+        if( EndOfFileP != 0x0 ) {
+            __quex_assert(EndOfFileP >  me->_front);
+            __quex_assert(EndOfFileP <= me->_back);
+        }
+
+        if( EndOfFileP != 0x0 ) {
+           if( EndOfFileP < me->_back - 1 ) {
+               __QUEX_STD_memset(EndOfFileP + 1, 0xFF, (size_t)((me->_back - EndOfFileP) - (ptrdiff_t)(2)));
+            }
+        } else {
+            __QUEX_STD_memset(me->_front + 1, 0xFF, (size_t)(Size - 2));
+        }
 #       endif 
     }
 

@@ -16,7 +16,7 @@ main(int argc, char** argv)
     using namespace std;
 
     // Zero pointer to constructor --> use raw memory
-    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, "UTF-8");   
+    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, "UTF-8");   
 
     quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
     quex::Token*   prev_token;        // Use pointers to swap quickly.

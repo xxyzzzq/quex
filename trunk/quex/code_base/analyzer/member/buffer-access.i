@@ -214,6 +214,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(buffer_fill_region_finish)(QUEX_TYPE_ANALYZER*  me,
                                          const size_t         CharacterN)
     {
+        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
         __quex_assert(me->buffer._memory._end_of_file_p + CharacterN <= me->buffer._memory._back);
 
         /* We assume that the content from '_end_of_file_p' to '_end_of_file_p + CharacterN'
