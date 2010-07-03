@@ -52,13 +52,13 @@ token {
 start = MAIN;
 
 mode MAIN
+: <skip: [ \t\r\n]> 
 {
     <<EOF>> {
-        int i = -1;
-        self.token->text = LexemeNull;
-	    self_send(QUEX_TKN_TERMINATION);
-        for(i=-1; i < (int)self.include_depth; ++i) printf("    ");
-        printf("Per File Letter Count = %i\n", (int)self.include_depth);
+        size_t i = 0;
+	    self_send1(QUEX_TKN_TERMINATION, LexemeNull);
+        for(i=0; i<self.include_depth; ++i) printf("    ");
+        printf("Per File Letter Count = %i\n", (int)self.letter_count);
         RETURN;
     }
 
@@ -66,31 +66,28 @@ mode MAIN
     ")"         => QUEX_TKN_BRACKET_CLOSE(text=LexemeNull);
     //
     "include"   { 
-        self.token->text = LexemeNull;
-        self_send(QUEX_TKN_INCLUDE); 
+        self_send1(QUEX_TKN_INCLUDE, LexemeNull); 
         self.letter_count += strlen((char*)Lexeme); 
         self_enter_mode(&FIND_INCLUDE_NAME);
         RETURN;
     }
     //
     ([_a-zA-Z]|("/"|"."|"'"))+  { 
-        self_token_take_text(Lexeme, LexemeEnd); 
-        self_send(QUEX_TKN_IDENTIFIER); 
+        self_send1(QUEX_TKN_IDENTIFIER, Lexeme); 
         self.letter_count += strlen((char*)Lexeme); 
     }
-    [ \t\r\n]+                  { }
 }
 
-mode FIND_INCLUDE_NAME {
+mode FIND_INCLUDE_NAME 
+: <skip: [ \t\r\n]> 
+{
     ([_a-zA-Z]|("/"|"."|"'"))+  { 
-        self_token_take_text(Lexeme, LexemeEnd); 
-        self_send(QUEX_TKN_IDENTIFIER); 
+        self_send1(QUEX_TKN_IDENTIFIER, Lexeme); 
         self.letter_count += strlen((char*)Lexeme); 
         self_enter_mode(&MAIN);
         /* IMPORTANT -- see documentation */
         RETURN;
     }
-    [ \t\r\n]+                  { }
 }
 
 
