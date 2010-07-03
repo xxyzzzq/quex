@@ -1,4 +1,4 @@
-<test-database execution-time-sec="221.66" date="Sat Jul  3 21:53:59 2010">
+<test-database execution-time-sec="216.96" date="Sun Jul  4 07:09:20 2010">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.24"> 
         <application file-name="makefile-diff.sh" info-request-time="1277961902L" vanished="False"/>
@@ -36,7 +36,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="6.84"> 
+        <test title="Indentation Based Scopes" time-sum-sec="6.85"> 
             <application file-name="002.sh" info-request-time="1277481418L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.20" crc="-1258256003"/>
@@ -67,13 +67,13 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="11.86"> 
+        <test title="Including Files" time-sum-sec="10.56"> 
             <application file-name="005.sh" info-request-time="1277481418L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="3.37" crc="-65032981"/>
-               <choice name="1_NDEBUG" result="FAIL" time_sec="2.55" crc="1486108253"/>
-               <choice name="2" result="FAIL" time_sec="3.08" crc="-782712698"/>
-               <choice name="2_NDEBUG" result="FAIL" time_sec="2.86" crc="-1753507247"/>
+               <choice name="1" result="OK" time_sec="2.69" crc="-65032981"/>
+               <choice name="1_NDEBUG" result="OK" time_sec="2.43" crc="1486108253"/>
+               <choice name="2" result="OK" time_sec="2.91" crc="-782712698"/>
+               <choice name="2_NDEBUG" result="OK" time_sec="2.53" crc="-1753507247"/>
             </choice-list>
         </test>
     </group>
@@ -114,11 +114,11 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="26.78"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="23.37"> 
             <application file-name="010b.sh" info-request-time="1277719185L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="copy" result="OK" time_sec="13.14" crc="-1213714542"/>
-               <choice name="fill" result="OK" time_sec="13.64" crc="-1213714542"/>
+               <choice name="copy" result="OK" time_sec="11.69" crc="-1213714542"/>
+               <choice name="fill" result="OK" time_sec="11.68" crc="-1213714542"/>
             </choice-list>
         </test>
         <test title="Standard Input" time-sum-sec="14.94"> 
