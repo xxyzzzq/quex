@@ -4,9 +4,6 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 cd $QUEX_PATH/demo/010
-if [[ $1 == "copy-conversion" ]]; then
-    touch simple.qx
-fi
 make  stdinlexer.exe >& tmp.txt
 cat tmp.txt | awk ' ! /g++/ { print; }' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/ '
 rm -f tmp.txt
