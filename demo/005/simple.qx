@@ -1,7 +1,6 @@
 // -*- C++ -*-
 
 header {
-extern QUEX_TYPE_CHARACTER  EmptyLexeme;
 void    print_token(quex::EasyLexer* qlex, quex::Token* Token, bool TextF = false);
 void    print(quex::EasyLexer* qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
@@ -72,7 +71,10 @@ mode MAIN
         RETURN;
     }
     //
-    ([_a-zA-Z]|("/"|"."|"'"))+  { self_send1(QUEX_TKN_IDENTIFIER, Lexeme); self.letter_count += strlen((char*)Lexeme); }
+    ([_a-zA-Z]|("/"|"."|"'"))+  { 
+        self_send1(QUEX_TKN_IDENTIFIER, Lexeme); 
+        self.letter_count += strlen((char*)Lexeme); 
+    }
 }
 
 mode FIND_INCLUDE_NAME 
