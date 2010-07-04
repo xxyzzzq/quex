@@ -76,7 +76,7 @@ num:	TKN_NUM
 
 void Calc_yyerror(Calc_lexer *qlex, const char*  m)
 {
-	printf("Parsing error at %i:%s: %s", 
+	printf("Parsing error at %i:%i: %s", 
            (int)qlex->counter.base._line_number_at_begin, (int)qlex->counter.base._column_number_at_begin, m);
            
 }
@@ -91,7 +91,7 @@ int Calc_yylex(YYSTYPE *yylval, Calc_lexer *qlex)
 	{
 
 		yylval->str = (char*)malloc((size_t)(strlen((char*)token->text)+1));
-        memcpy(yylval->str, token->text, (size_t)(strlen(token->text) + 1));
+        memcpy((void*)yylval->str, (void*)token->text, (size_t)(strlen((char*)token->text) + 1));
 	}
 	return (int)token->_id;
 }

@@ -1,3 +1,4 @@
+## make lexer CONVERTER=ICU BYTES_PER_CHARACTER=2  
 ,-----------------------------------------------------------------
 | [START]
 PI 'π' 
@@ -33,3 +34,4 @@ LATIN_IDENTIFIER 'Schäfer'
 <TERMINATION> '' 
 | [END] number of token = 31
 `-----------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible

@@ -1,7 +1,3 @@
-makefile = Makefile
-cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
-executing ...
 ,-----------------------------------------------------------------
 | [START]
 PI 'π' 
@@ -38,4 +34,3 @@ LATIN_IDENTIFIER 'Schäfer'
 | [END] number of token = 31
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-cleaning ...

@@ -1,0 +1,19 @@
+<                   $(LEXER_NAME).cpp                 \
+---
+>                   $(LEXER_NAME).c                 \
+< PARSER_SOURCES	=	$(PARSER_NAME).tab.cpp	\
+---
+> PARSER_SOURCES	=	$(PARSER_NAME).tab.c	\
+< COMPILER = g++ -ggdb -Wall
+---
+> COMPILER = gcc -ggdb -Wall
+< %.o: %.cpp $(LEXER_SOURCES) $(PARSER_NAME).tab.cpp
+---
+> %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
+< $(LEXER_SOURCES): $(LEXER_FILE) $(PARSER_NAME).tab.cpp
+---
+> $(LEXER_SOURCES): $(LEXER_FILE) $(PARSER_NAME).tab.c
+> 		  --language C                                               \
+< $(PARSER_NAME).tab.cpp: $(PARSER_FILE)
+---
+> $(PARSER_NAME).tab.c: $(PARSER_FILE)

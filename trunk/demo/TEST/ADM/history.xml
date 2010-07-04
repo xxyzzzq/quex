@@ -1,4 +1,4 @@
-<history date="Sun Jul  4 07:52:48 2010" element-n="713">
+<history date="Mon Jul  5 09:01:41 2010" element-n="725">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -1441,5 +1441,19 @@
         <crc-error time="05:37:57" application="010.sh" choice="copy-ez" database-crc="-1213714542" real-crc="-812025512"/>
         <crc-error time="05:38:11" application="010.sh" choice="fill-ez" database-crc="-1213714542" real-crc="-812025512"/>
         <crc-error time="05:38:44" application="010.sh" choice="stdinlexer" database-crc="-1570483469" real-crc="248250308"/>
+        <crc-error time="10:24:00" application="003.sh" choice="BPC=2" database-crc="-354359547" real-crc="766281751"/>
+        <crc-error time="10:24:04" application="003.sh" choice="BPC=2_NDEBUG" database-crc="-354359547" real-crc="766281751"/>
+        <crc-error time="10:24:06" application="003.sh" choice="BPC=4" database-crc="-354359547" real-crc="766281751"/>
+        <crc-error time="10:24:07" application="003.sh" choice="BPC=4_NDEBUG" database-crc="-354359547" real-crc="766281751"/>
+        <crc-error time="10:24:09" application="003.sh" choice="BPC=wchar_t" database-crc="-354359547" real-crc="766281751"/>
+        <crc-error time="10:29:34" application="003-icu.sh" choice="BPC=2" database-crc="667876392" real-crc="1977270883"/>
+        <crc-error time="10:29:38" application="003-icu.sh" choice="BPC=2_NDEBUG" database-crc="667876392" real-crc="1977270883"/>
+        <crc-error time="10:29:39" application="003-icu.sh" choice="BPC=4" database-crc="667876392" real-crc="1977270883"/>
+        <crc-error time="10:29:41" application="003-icu.sh" choice="BPC=4_NDEBUG" database-crc="667876392" real-crc="1977270883"/>
+        <crc-error time="10:29:43" application="003-icu.sh" choice="BPC=wchar_t" database-crc="667876392" real-crc="1977270883"/>
+    </day>
+    <day year="2010" month="07" day="05">
+        <crc-error time="06:55:42" application="008.sh" choice="NDEBUG" database-crc="-106314939" real-crc="335189180"/>
+        <crc-error time="06:55:43" application="008.sh" choice="DEBUG" database-crc="-106314939" real-crc="335189180"/>
     </day>
 </history>

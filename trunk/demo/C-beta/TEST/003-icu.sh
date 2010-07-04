@@ -1,28 +1,22 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
-    echo "demo/003: Unicode Based Lexical Analyzis (Using IBM's ICU Library)"
-    echo "CHOICES:  BPC=2, BPC=2_NDEBUG, BPC=4, BPC=4_NDEBUG, BPC=wchar_t;"
-    echo "SAME;"
-    exit
+    cat << EOF
+        demo/003: Unicode Based Lexical Analyzis (Using IBM's ICU Library);
+        CHOICES:  BPC=2, BPC=2_NDEBUG, BPC=4, BPC=4_NDEBUG, BPC=wchar_t;
+        SAME;
+EOF
+exit
 fi
 
 case $1 in
 "BPC=2" )        args="BYTES_PER_CHARACTER=2" ;;
-"BPC=2_NDEBUG" ) args="NDEBUG   BYTES_PER_CHARACTER=2" ;;
+"BPC=2_NDEBUG" ) args="BYTES_PER_CHARACTER=2 NDEBUG" ;;
 "BPC=4" )        args="BYTES_PER_CHARACTER=4" ;;
-"BPC=4_NDEBUG" ) args="NDEBUG   BYTES_PER_CHARACTER=4" ;;
+"BPC=4_NDEBUG" ) args="BYTES_PER_CHARACTER=4 NDEBUG" ;;
 "BPC=wchar_t" )  args="BYTES_PER_CHARACTER=wchar_t" ;;
 esac
 
-cd ../003  
-make clean >& /dev/null
-make CONVERTER=icu lexer $args >& tmp.txt
-cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ && ! /deprecated since quex/'
-rm tmp.txt
-
-# valgrind ./lexer >& tmp.txt
-# python ../TEST/show-valgrind.py
-./lexer
-# echo "ICU Version 4.2 causes memory leaks."
-
-make clean >& /dev/null
+# HWUT provides:
+# $2 == FIRST if it is the first choice that is applied on this test.
+# $3 == LAST  if it is the last choice.
+source core-new.sh 003 $2 $3 CONVERTER=ICU $args 
