@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "Calc_parser.tab.h"
 #include "Calc_lexer"
+#include "Calc_lexer-token.i"
 
 int Calc_yyparse(Calc_lexer  *qlex);
 
@@ -19,6 +20,8 @@ int main(int argc, char** argv)
 		printf("Some error in yyparse\n");
 		return ret;
 	}
+
+    QUEX_NAME(destruct)(&qlex);
 	return 0;
 }
 

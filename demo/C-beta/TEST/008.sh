@@ -5,5 +5,5 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "SAME;"
     exit
 fi
-export no_valgrind=YES
-source core.sh 008 $1
+cp 008-side-kick.sh side-kick.sh
+source core-new.sh 008 $2 $3 $1

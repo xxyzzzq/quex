@@ -1,4 +1,9 @@
-fh = open("tmp.txt")
+import sys
+if len(sys.argv) > 1: file_name = sys.argv[1]
+else:                 file_name = "tmp.txt"
+
+fh = open(file_name)
+
 print_f = False
 for line in fh.readlines():
     if line.find("==") == 0:

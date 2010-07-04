@@ -1,0 +1,25 @@
+< COMPILER = g++ -ggdb -Wall -pedantic 
+---
+> COMPILER = gcc -ggdb -Wall -pedantic 
+< %-conversion-direct.exe: %-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+---
+> %-conversion-direct.exe: %-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
+< %-conversion.exe:        %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+---
+> %-conversion.exe:        %-conversion.c $(UTF8_OBJS) $(QUEX_CORE) 
+< %.exe:                   %.cpp $(OBJS) $(QUEX_CORE) 
+---
+> %.exe:                   %.c $(OBJS) $(QUEX_CORE) 
+< %-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
+---
+> %-utf8.o:                %.c $(QUEX_CORE) tiny_lexer
+< %.o:                     %.cpp $(QUEX_CORE) tiny_lexer
+---
+> %.o:                     %.c $(QUEX_CORE) tiny_lexer
+< %.E:                     %.cpp $(QUEX_CORE) tiny_lexer
+---
+> %.E:                     %.c $(QUEX_CORE) tiny_lexer
+< tiny_lexer tiny_lexer.cpp: simple.qx $(QUEX_CORE)
+---
+> tiny_lexer tiny_lexer.c: simple.qx $(QUEX_CORE)
+> 		 --language C          \

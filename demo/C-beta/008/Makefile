@@ -49,7 +49,7 @@ LD = $(COMPILER)
 # (*) RULES ____________________________________________________________________
 # -- application
 $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
-	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
+	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o -lm
 
 # -- engine and object files
 %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
