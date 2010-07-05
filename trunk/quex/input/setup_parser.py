@@ -15,6 +15,27 @@ from   quex.output.cpp.token_id_maker import parse_token_id_file
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED
 from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
+from   quex.core_engine.generator.action_info import CodeFragment
+
+class ManualTokenClassSetup:
+    """Class to mimik as 'real' TokenTypeDescriptor as defined in 
+       quex.input.token_type.py. Names and functions must remain
+       as they are for compatibility.
+    """
+    def __init__(self, FileName, ClassName, NameSpace, ClassNameSafe, TokenIDType):
+        
+        self.__file_name       = FileName
+        self.class_name        = ClassName
+        self.name_space        = NameSpace
+        self.class_name_safe   = ClassNameSafe
+
+        self.column_number_type = CodeFragment("size_t")
+        self.line_number_type   = CodeFragment("size_t")
+        self.token_id_type      = CodeFragment(TokenIDType)
+
+    def get_file_name(self):
+        return self.__file_name
+
 def do(argv):
     """RETURN:  True, if process needs to be started.
                 False, if job is done.
@@ -95,6 +116,14 @@ def do(argv):
     setup.token_class_name_safe = \
          read_namespaced_name(setup.token_class_name, 
                               "token class (options --token-class, --tc)")
+
+    if setup.token_class_file != "":
+        lexer_mode.token_type_definition = \
+                ManualTokenClassSetup(setup.token_class_file,
+                                      setup.token_class_name,
+                                      setup.token_class_name_space,
+                                      setup.token_class_name_safe,
+                                      setup.token_id_type)
 
     if setup.token_class_name_space == []:
         setup.token_class_name_space = deepcopy(setup.analyzer_name_space)

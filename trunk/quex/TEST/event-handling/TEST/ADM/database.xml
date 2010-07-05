@@ -1,23 +1,23 @@
-<test-database execution-time-sec="0.06" date="Sat Jul  3 07:33:40 2010">
+<test-database execution-time-sec="0.04" date="Tue Jul  6 07:26:33 2010">
     <last-used-diff-display-program name=""/>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="transition-x.exe" info-request-time="1278133569L" vanished="False"/>
-            <make-procedure success="True" time_sec="3.863542"/>
-            <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.01" crc="2085579180"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="741669396"/>
-               <choice name="error" result="OK" time_sec="0.01" crc="-544814889"/>
-            </choice-list>
-        </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="transition.exe" info-request-time="1278133571L" vanished="False"/>
-            <make-procedure success="True" time_sec="2.390181"/>
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="transition-x.exe" info-request-time="1278393991L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.104894"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="2085579180"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="741669396"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time_sec="0.00" crc="-544814889"/>
+            </choice-list>
+        </test>
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="transition.exe" info-request-time="1278393993L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.327276"/>
+            <choice-list number="4" same_result="False">
+               <choice name="1" result="OK" time_sec="0.00" crc="2085579180"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
                <choice name="error" result="OK" time_sec="0.00" crc="1220708930"/>
             </choice-list>
         </test>

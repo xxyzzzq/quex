@@ -297,10 +297,14 @@ def __create_token_sender_by_token_name(fh, TokenName):
     txt = ""
     for member, value in member_value_pairs:
         if value == "":
-            error_msg("One explicit argument name mentioned requires all arguments to\n" + \
-                      "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
+            error_msg("One explicit argument name mentioned requires all arguments to\n"  + \
+                      "be mentioned explicitly. Value '%s' mentioned without argument.\n"   \
                       % member, fh)
 
+        if Setup.token_class_file != "":
+            error_msg("Member assignments in brief token senders are inadmissible\n" + \
+                      "with manually written token classes. User provided file '%s'.\n" % Setup.token_class_file + \
+                      "Found member assignment: '%s' = '%s'." % (member, value), fh)
         else:
             member_name = member.strip()
             verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 

@@ -14,6 +14,10 @@ from   quex.input.setup_parser                import __prepare_file_name
 def do():
     assert lexer_mode.token_type_definition != None
 
+    if lexer_mode.token_type_definition.__class__.__name__ == "ManualTokenClassSetup":
+        # User has specified a manually written token class
+        return 
+
     txt, txt_i = _do(lexer_mode.token_type_definition)
 
     file_name = lexer_mode.token_type_definition.get_file_name()

@@ -660,7 +660,6 @@ which results in a generated token class in C++:
         { _id = ID; content.who_is_that = Value0; }
 
 
-        private:
             QUEX_TYPE_TOKEN_ID    _id;
         public:
             QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
@@ -670,17 +669,17 @@ which results in a generated token class in C++:
     #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
     #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         private:
-            QUEX_TYPE_LINE_N  _line_n;
+            QUEX_TYPE_TOKEN_LINE_N  _line_n;
         public:
-            QUEX_TYPE_LINE_N    line_number() const                           { return _line_n; }
-            void                set_line_number(const QUEX_TYPE_LINE_N Value) { _line_n = Value; }
+            QUEX_TYPE_TOKEN_LINE_N    line_number() const                                 { return _line_n; }
+            void                      set_line_number(const QUEX_TYPE_TOKEN_LINE_N Value) { _line_n = Value; }
     #       endif
     #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
         private:
-            QUEX_TYPE_COLUMN_N  _column_n;
+            QUEX_TYPE_TOKEN_COLUMN_N  _column_n;
         public:
-            QUEX_TYPE_COLUMN_N  column_number() const                             { return _column_n; }
-            void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
+            QUEX_TYPE_TOKEN_COLUMN_N  column_number() const                                   { return _column_n; }
+            void                      set_column_number(const QUEX_TYPE_TOKEN_COLUMN_N Value) { _column_n = Value; }
     #       endif
     #   endif
         public:
@@ -791,9 +790,17 @@ A hand written token class must comply to the following constraints:
       
       .. cfunction:: QUEX_TYPE_TOKEN_ID   _id
 
-    * There must be a function 
+    * The following function must be defined. Even an empty definition will do.
     
-      .. cfunction:: void QUEX_NAME_TOKEN(copy)(Token* me, const Token* Other)`` 
+      .. cfunction:: void QUEX_NAME_TOKEN(copy)(Token* me, const Token* Other) 
+
+      .. cfunction:: void QUEX_NAME_TOKEN(construct)(Token* __this)
+
+      .. cfunction:: void QUEX_NAME_TOKEN(destruct)(Token* __this)
+
+    inline void
+    QUEX_NAME_TOKEN(destruct)($$TOKEN_CLASS$$* __this)
+
       
       in the token's namespace which copies the content of token ``Other`` to the
       content of token ``me``.
@@ -834,6 +841,7 @@ A hand written token class must comply to the following constraints:
       The conditional compilation must also be implemented for the ``__copy``
       operation which copies those values.
 
+    
 
 As long as these conventions are respected the user created token class will
 interoperate with the framework smoothly. The inner structure of the token
