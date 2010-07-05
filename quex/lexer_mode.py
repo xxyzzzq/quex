@@ -611,8 +611,12 @@ token_repetition_token_id_list = ""
 #                        The first token_type section defines the variable as 
 #                        a real 'TokenTypeDescriptor'.
 #
-#                        Default = None is detected by the input parser and triggers
-#                        the parsing of the default token type description. 
+#                        Default = None is detected by the 'quex_file_parser.py' and
+#                        triggers the parsing of the default token type description. 
+#          
+#                        The setup_parser.py checks for the specification of a manually
+#                        written token class file. If so then an object of type 
+#                        'ManualTokenClassSetup' is assigned.
 #-----------------------------------------------------------------------------------------
 token_type_definition = None
 

@@ -80,7 +80,6 @@ SETUP_INFO = {
     "XX_string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
     "XX_disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
     "XX_disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
-    "XX_input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
     "XX_input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
     "XX_token_class_name":               [["--token-class-name"],               ""],             # DEPRECATED
     "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",    "--ttnsc"], NEGATED_FLAG], # DEPRECATED
@@ -133,10 +132,6 @@ DEPRECATED = {
   "XX_disable_return_token_id_f":      
      ("Flag --no-return-token-id is no longer supported. In recent versions of quex\n" + \
       "token-IDs are not passed as return values at all.", "0.37.1"), 
-  "XX_input_token_class_name":  
-     ("The specification of the customized token class name via flag '--token-class' has been\n" + \
-      "deprecated. The file containing the token class definition needs to define a macro\n" + \
-      "QUEX_TYPE_TOKEN specifying  the token class.", "0.38.3"),
   "XX_input_lexer_class_friends":  
       ("Since version 0.46.3, friend classes are no longer defined on the command line. Please,\n"
        "use the 'body { ... }' section and fill be-'friend'-ing code there.", "0.46.3"),

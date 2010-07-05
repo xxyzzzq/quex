@@ -160,6 +160,11 @@ def parse_section(fh):
 
         elif word == "token_type":       
 
+            if Setup.token_class_file != "":
+                error_msg("Token type definition inadmissible while specifying on the command line\n" + \
+                          "the file %s to contain a manually written token class." % repr(Setup.token_class_file),
+                          fh)
+       
             if lexer_mode.token_type_definition == None:
                 lexer_mode.token_type_definition = token_type_definition.parse(fh)
                 return

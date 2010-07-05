@@ -239,7 +239,6 @@ def data_name_index_counter_get():
     return __data_name_index_counter
 
 def parse(fh):
-       
     descriptor = TokenTypeDescriptorCore()
 
     if not check(fh, "{"):
