@@ -2,9 +2,14 @@
 ---
 > COMPILER = gcc # -ggdb 
 > 	 -DINDENTATION_STACK_SIZE=64                     \
+< lexer:          example.o EasyLexer.o
+< 	$(LD) -o $@ example.o EasyLexer.o 
+---
+> lexer:          example.o EasyLexer.o indentation_stack.o
+> 	$(LD) -o $@ example.o EasyLexer.o indentation_stack.o
 < EasyLexer.o: EasyLexer.cpp 
 ---
-> EasyLexer.o: EasyLexer.c 
+> %.o: %.c 
 < example.o: ../example.cpp  EasyLexer.cpp
 ---
 > example.o: ../example.c  EasyLexer.c

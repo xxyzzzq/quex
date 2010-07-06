@@ -11,7 +11,7 @@
 int 
 main(int argc, char** argv) 
 {        
-    Token*       token_p = 0x0;
+    quex_Token*  token_p = 0x0;
     size_t       number_of_tokens = 0;
     EasyLexer    qlex;
 #   ifdef PRINT_TOKEN

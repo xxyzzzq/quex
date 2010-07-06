@@ -227,7 +227,7 @@ def write_engine_header(Modes):
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_INSTALLATION_DIR + Setup.language_db["$code_base"]],
                 ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
-                ["$$TOKEN_CLASS$$",                      lexer_mode.token_type_definition.class_name],
+                ["$$TOKEN_CLASS_NAME_SAFE$$",            Setup.token_class_name_safe],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
