@@ -12,7 +12,7 @@ echo "(1) Generate 'OK-Sources' and Compile"
 quex -i scan.qx -o br_scan --token-class-file token.h --token-prefix BR_TKN_ --foreign-token-id-file gramma.h --token-class blackray::Token >& tmp.txt
 # File 'check' will only be there, if the compilation was successful
 rm -f check
-g++ br_scan.cpp example.cpp -I$QUEX_PATH -I. -o check >& tmp.txt
+g++ -Wall br_scan.cpp example.cpp -I$QUEX_PATH -I. -o check >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 ls check
 rm -f check
@@ -26,6 +26,10 @@ rm -f br_scan*
 echo "(3) Provide a 'token_type' definition together with a manually written class."
 quex -i CppDefault.qx scan.qx -o br_scan --token-class-file token.h --token-prefix BR_TKN_ --foreign-token-id-file gramma.h --token-class blackray::Token
 rm -f br_scan*
+
+echo "(4) Manually written token class without '--token-class' definition"
+quex -i scan.qx -o br_scan --token-class-file token.h --token-prefix BR_TKN_ --foreign-token-id-file gramma.h  
+
 
 # cleansening
 make clean >& /dev/null
