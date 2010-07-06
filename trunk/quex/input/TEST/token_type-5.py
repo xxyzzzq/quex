@@ -8,6 +8,7 @@ quex.input.setup.setup.token_class_take_text_check_f = False
 quex.input.setup.setup.output_token_class_file = ""
 quex.input.setup.setup.token_class_name_space = ""
 quex.input.setup.setup.token_class_name_safe = ""
+quex.input.setup.setup.token_class_name = "Token"
 
 from quex.input.token_type import *
 from StringIO import StringIO

@@ -1,6 +1,6 @@
 < COMPILER = g++ -ggdb 
 ---
-> COMPILER = gcc -ggdb 
+> COMPILER = gcc -ggdb -std=c99
 < %.o: %.cpp EasyLexer
 ---
 > %.o: %.c EasyLexer

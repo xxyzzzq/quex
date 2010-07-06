@@ -1,12 +1,19 @@
 <                   $(LEXER_NAME).cpp                 \
 ---
 >                   $(LEXER_NAME).c                 \
+< PARSER_FILE		=	$(PARSER_NAME).ypp
 < PARSER_SOURCES	=	$(PARSER_NAME).tab.cpp	\
+< 					$(PARSER_NAME).tab.hpp
 ---
+> PARSER_FILE		=	$(PARSER_NAME).y
 > PARSER_SOURCES	=	$(PARSER_NAME).tab.c	\
+> 					$(PARSER_NAME).tab.h
 < COMPILER = g++ -ggdb -Wall
 ---
 > COMPILER = gcc -ggdb -Wall
+< 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
+---
+> 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o -lm
 < %.o: %.cpp $(LEXER_SOURCES) $(PARSER_NAME).tab.cpp
 ---
 > %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
