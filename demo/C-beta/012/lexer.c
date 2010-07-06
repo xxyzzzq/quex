@@ -8,21 +8,24 @@ int
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    max::Lexer     max_lex("example-utf16.txt", "UTF16");
-    moritz::Lexer  moritz_lex("example-ucs2.txt", "UCS-2");
-    boeck::Lexer   boeck_lex("example-utf8.txt");
-    max::Token*    max_token    = 0x0;
-    moritz::Token* moritz_token = 0x0;
-    boeck::Token*  boeck_token  = 0x0;
+    max_Lexer     max_lex;
+    moritz_Lexer  moritz_lex;
+    boeck_Lexer   boeck_lex;
+    max_Token*    max_token    = 0x0;
+    moritz_Token* moritz_token = 0x0;
+    boeck_Token*  boeck_token  = 0x0;
 
+    max_Lexer_construct_file_name(&max_lex, "example-utf16.txt", "UTF16", false);
+    moritz_Lexer_construct_file_name(&moritz_lex, "example-ucs2.txt", "UCS-2", false);
+    boeck_Lexer_construct_file_name(&boeck_lex, "example-utf8.txt", 0x0, false);
 
     // Each lexer reads one token, since the grammars are similar the lexeme 
     // is always the same.                                                    
     printf("                Max:        Moritz:      Boeck:\n");
 
-    max_token    = max_lex.token_p();
-    moritz_token = moritz_lex.token_p();
-    boeck_token  = boeck_lex.token_p();
+    max_token    = max_Lexer_token_p(&max_lex);
+    moritz_token = moritz_Lexer_token_p(&moritz_lex);
+    boeck_token  = boeck_Lexer_token_p(&boeck_lex);
     do {
         (void)max_lex.receive();
         (void)moritz_lex.receive();

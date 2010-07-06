@@ -111,6 +111,8 @@ def do(argv):
                               "analyzer engine (options -o, --engine, --analyzer-class)")
     if setup.analyzer_name_space == []:
         setup.analyzer_name_space = ["quex"]
+    if setup.token_class_name == "":
+        setup.token_class_name = "%s::Token" % reduce(lambda a, b: a + "::" + b, setup.analyzer_name_space)
 
     # Token classes and derived classes have the freedom not to open a namespace,
     # thus no check 'if namespace == []'.
@@ -282,7 +284,7 @@ def validate(setup, command_line, argv):
                   "Maybe it works.", DontExitF=True)
 
     # Manually written token class requires token class name to be specified
-    if setup.token_class_file != "" and command_line.search("--token-class") == False:
+    if setup.token_class_file != "" and command_line.search("--token-class", "--tc") == False:
         error_msg("The use of a manually written token class requires that the name of the class\n"
                   "is specified on the command line via the '--token-class' option.")
     
