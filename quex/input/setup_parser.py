@@ -36,6 +36,9 @@ class ManualTokenClassSetup:
     def get_file_name(self):
         return self.__file_name
 
+    def manually_written(self):
+        return True
+
 def do(argv):
     """RETURN:  True, if process needs to be started.
                 False, if job is done.
@@ -263,7 +266,7 @@ def validate(setup, command_line, argv):
                   "Note, that this option is only interesting for cross plattform development.\n" + \
                   "By default, quex automatically chooses the endian type of your system.")
 
-    # token offset and several ids
+    # Token offset and several ids
     if setup.token_id_counter_offset == setup.token_id_termination:
         error_msg("Token id offset (--token-offset) == token id for termination (--token-id-termination)\n")
     if setup.token_id_counter_offset == setup.token_id_uninitialized:
@@ -277,8 +280,13 @@ def validate(setup, command_line, argv):
     if setup.token_id_counter_offset < setup.token_id_termination:
         error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
                   "Maybe it works.", DontExitF=True)
+
+    # Manually written token class requires token class name to be specified
+    if setup.token_class_file != "" and command_line.search("--token-class") == False:
+        error_msg("The use of a manually written token class requires that the name of the class\n"
+                  "is specified on the command line via the '--token-class' option.")
     
-    # token queue
+    # Token queue
     if setup.token_policy != "queue" and command_line.search("--token-queue-size"):
         error_msg("Option --token-queue-size determines a fixed token queue size. This makes\n" + \
                   "only sense in conjunction with '--token-policy queue'.\n")
@@ -289,7 +297,7 @@ def validate(setup, command_line, argv):
                   (setup.token_queue_size, cmp_str, setup.token_queue_safety_border) + 
                   "Set appropriate values with --token-queue-size and --token-queue-safety-border.")
 
-    # check that names are valid identifiers
+    # Check that names are valid identifiers
     __check_identifier(setup, "token_id_prefix",    "Token prefix")
     __check_identifier(setup, "analyzer_class_name", "Engine name")
     if setup.analyzer_derived_class_name != "": 
@@ -315,7 +323,6 @@ def validate(setup, command_line, argv):
         error_msg("An engine that is to be generated for a specific codec cannot rely\n" + \
                   "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
                   "`--converter-new`.")
-
 
     # Token transmission policy
     token_policy_list = ["queue", "single", "users_token", "users_queue"]

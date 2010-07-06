@@ -121,6 +121,9 @@ class TokenTypeDescriptorCore:
 
         return txt
 
+    def manually_written(self):
+        return False
+
 
 class TokenTypeDescriptor(TokenTypeDescriptorCore):
     """The final product."""

@@ -87,8 +87,6 @@ inline void QUEX_NAME_TOKEN(destruct)(Token* __this) { }
 
 } //namespace 
 
-#   define QUEX_TYPE_TOKEN                      ::blackray::Token
-#   define QUEX_TYPE0_TOKEN                     Token
 
 #endif
 
