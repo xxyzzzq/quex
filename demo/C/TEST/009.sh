@@ -5,7 +5,7 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "SAME;"
     exit
 fi
-cd $QUEX_PATH/demo/009
+cd ../009
 make $1 >& /dev/null
 echo "Normal FILE input"
 ./$1 FILE

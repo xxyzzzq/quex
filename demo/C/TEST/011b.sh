@@ -5,7 +5,8 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "SAME;"
     exit
 fi
-cd $QUEX_PATH/demo/011
+cd ../011
+
 make clean >& /dev/null
 make utf16-lexer >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '

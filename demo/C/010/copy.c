@@ -12,8 +12,6 @@ typedef struct {
 int 
 main(int argc, char** argv) 
 {        
-    using namespace std;
-
     tiny_lexer            qlex;
 
     QUEX_TYPE_TOKEN       token_bank[2];    /* Two tokens required, one for look-ahead */
@@ -29,8 +27,10 @@ main(int argc, char** argv)
     /* */
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; /* Store the start of the
     *                                                 * lexeme for possible backup.    */    
+    size_t                size = (size_t)-1;
+    QUEX_TYPE_TOKEN_ID    token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, false);
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0x0, 0, 0x0, false);
 
     /* -- initialize the token pointers */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
@@ -54,9 +54,9 @@ main(int argc, char** argv)
             /* -- If the receive buffer has been read, it can be released. */
             if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
             /* -- Setup the pointers  */
-            const size_t Size  = messaging_framework_receive(&rx_buffer);
+            size        = messaging_framework_receive(&rx_buffer);
             chunk.begin = rx_buffer;
-            chunk.end   = chunk.begin + Size;
+            chunk.end   = chunk.begin + size;
         } else {
             /* If chunk.begin != chunk.end, this means that there are still */
             /* some characters in the pipeline. Let us use them first.      */
@@ -71,7 +71,7 @@ main(int argc, char** argv)
         chunk.begin = (uint8_t*)QUEX_NAME(buffer_fill_region_append)(&qlex, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives */
-        QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)-1;
+        token_id = (QUEX_TYPE_TOKEN_ID)-1;
         while( 1 + 1 == 2 ) {
             prev_lexeme_start_p = QUEX_NAME(buffer_lexeme_start_pointer_get)(&qlex);
             

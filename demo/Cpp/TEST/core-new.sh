@@ -14,6 +14,7 @@ echo $1 $2 $3 >> tmp.txt
 current_dir=`pwd`
 
 cd $test_dir
+echo "## " `pwd`
 
 if [[ $first_f == "FIRST" ]]; then
     make clean >& /dev/null

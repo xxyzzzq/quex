@@ -8,6 +8,6 @@ diff --ignore-tab-expansion \
      --ignore-space-change  \
      --ignore-all-space     \
      --ignore-blank-lines   \
-     $QUEX_PATH/demo/$1/Makefile \
-     $QUEX_PATH/demo/C-beta/$1/Makefile | awk '! /[0-9]+[a-z]+[0-9]+/'
+     $QUEX_PATH/demo/Cpp/$1/Makefile \
+     $QUEX_PATH/demo/C/$1/Makefile | awk '! /[0-9]+[a-z]+[0-9]+/'
      # --ignore-matching-lines=RE
