@@ -41,6 +41,7 @@ class TokenTypeDescriptorCore:
         else:
             self._file_name            = Core._file_name
             self.class_name            = Core.class_name
+            self.class_name_safe       = Core.class_name_safe
             self.name_space            = Core.name_space
             self.open_for_derivation_f      = Core.open_for_derivation_f
             self.token_contains_token_id_f  = Core.token_contains_token_id_f

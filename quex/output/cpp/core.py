@@ -124,7 +124,7 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
              ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
              ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
-             ["$$TOKEN_CLASS_NAME_SAFE$$",      Setup.token_class_name_safe],
+             ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],
              ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
              ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
              ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
@@ -198,6 +198,8 @@ def write_engine_header(Modes):
         derived_class_type_declaration = "class %s;" % Setup.analyzer_derived_class_name
 
     token_class_file_name = lexer_mode.token_type_definition.get_file_name()
+    token_class_name      = lexer_mode.token_type_definition.class_name
+    token_class_name_safe = lexer_mode.token_type_definition.class_name_safe
 
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
@@ -227,7 +229,8 @@ def write_engine_header(Modes):
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_INSTALLATION_DIR + Setup.language_db["$code_base"]],
                 ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
-                ["$$TOKEN_CLASS_NAME_SAFE$$",            Setup.token_class_name_safe],
+                ["$$TOKEN_CLASS$$",                      token_class_name],
+                ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
