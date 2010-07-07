@@ -1,0 +1,12 @@
+// -*- C++ -*- vim: set syntax=cpp:
+token {
+    BYE
+}
+
+mode ONE_AND_ONLY :
+{
+    "bye"                     => QUEX_TKN_BYE;
+}
+
+
+

@@ -27,4 +27,4 @@ clean:
 	@rm -rf IndigoLexer-*
 	@rm -rf IndigoLexer.cpp
 	@rm -rf IndigoLexer
-	@rm -rf a.out
+	@rm -rf a.out lexer-icu lexer-iconv

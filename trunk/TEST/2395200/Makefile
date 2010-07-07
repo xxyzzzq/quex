@@ -22,6 +22,6 @@ lexer:
 		  ../lexer-simply.cpp Simple.cpp -o lexer
 
 clean:
-	rm -f EasyLexer*
+	rm -f Simple*
 	rm -f *.o
 	rm -f lexer error-lexer

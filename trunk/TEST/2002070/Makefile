@@ -28,5 +28,5 @@ clean:
 	@rm -rf Simple-*
 	@rm -rf Simple.cpp
 	@rm -rf Simple
-	@rm -rf a.out
+	@rm -rf a.out lexer-iconv lexer-icu
 	@bzip2 text.345
