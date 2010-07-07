@@ -5,4 +5,5 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "SAME;"
     exit
 fi
-source core.sh 006 $1
+cp 006-side-kick.sh side-kick.sh
+source core-new.sh 006 $2 $3 $1
