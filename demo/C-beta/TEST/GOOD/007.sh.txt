@@ -1,7 +1,3 @@
-makefile = Makefile
-cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
-executing ...
 ,-----------------------------------------------------------------
 | [START]
 FISCHERS
@@ -24,4 +20,3 @@ MATH_OPERATOR_LIST
 | [END] number of token = 17
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-cleaning ...

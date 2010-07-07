@@ -19,7 +19,7 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb 
+COMPILER = gcc -ggdb 
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)              \
@@ -38,18 +38,19 @@ lexer:          example.o EasyLexer.o
 	$(LD) -o $@ example.o EasyLexer.o 
           
 # Object files:
-EasyLexer.o: EasyLexer.cpp 
+EasyLexer.o: EasyLexer.c 
 	$(CC) $< -o $@ 
 
-example.o: ../example.cpp  EasyLexer.cpp
+example.o: ../example.c  EasyLexer.c
 	$(CC) $< -o $@ 
 
 # Macro expansions (only for debugging):
-%.E: %.cpp    
+%.E: %.c    
 	$(CC) -E $< -o $@ 
 
-EasyLexer.cpp: c.qx $(QUEX_CORE)
-	quex -i c.qx --engine EasyLexer 
+EasyLexer.c: c.qx $(QUEX_CORE)
+	quex -i c.qx --engine EasyLexer \
+		 --language C
 
 # (*) HELPERS __________________________________________________________________
 clean:	
