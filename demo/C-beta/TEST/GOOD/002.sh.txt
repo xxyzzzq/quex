@@ -1,7 +1,3 @@
-makefile = Makefile
-cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
-executing ...
 ,-----------------------------------------------------------------
 | [START]
 STRUCT
@@ -61,4 +57,3 @@ BLOCK_CLOSE
 | [END] number of token = 54
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-cleaning ...

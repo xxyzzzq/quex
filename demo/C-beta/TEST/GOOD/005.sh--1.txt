@@ -1,7 +1,3 @@
-makefile = Makefile
-cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
-executing ...
 ,------------------------------------------------------------------------------------
 | [START]
 1: (1)INCLUDE	''
@@ -17,4 +13,3 @@ Per File Letter Count = 26
 | [END] number of token = 4
 `------------------------------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-cleaning ...
