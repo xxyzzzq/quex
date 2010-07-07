@@ -21,6 +21,5 @@ case $1 in
 ;;
 esac
 
-source core.sh 005 $args 
+source core-new.sh 005 $2 $3 $args 
 
-export args_to_lexer=""
