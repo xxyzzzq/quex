@@ -9,7 +9,7 @@
 # (C) 2006 Frank-Rene Schäfer
 #
 #______________________________________________________________________
-cd $QUEX_PATH/demo/$1 
+cd $QUEX_PATH/demo/Cpp/$1 
 if [[ $2 == "NDEBUG" ]]; then
     arg1=""
 else

@@ -4,7 +4,7 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "CHOICES:  point, copy, copy-ez, fill, fill-ez, copy-conversion, copy-conversion-direct, fill-conversion-direct, stdinlexer;"
     exit
 fi
-cd $QUEX_PATH/demo/010
+cd ../010
 
 if [[ $2 == "FIRST" ]]; then
     make clean >& /dev/null

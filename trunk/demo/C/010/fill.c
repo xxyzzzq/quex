@@ -15,8 +15,9 @@ main(int argc, char** argv)
     size_t                BufferSize = 1024;
     char                  buffer[1024];
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;
-
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, false);
+    size_t                receive_n = (size_t)-1;
+    QUEX_TYPE_TOKEN_ID    token_id  = 0;
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0x0, 0, 0x0, false);
 
     /* -- initialize the token pointers */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
@@ -32,14 +33,14 @@ main(int argc, char** argv)
         QUEX_NAME(buffer_fill_region_prepare)(&qlex);
 
         /* -- Call the low lever driver to fill the fill region                            */
-        size_t receive_n = messaging_framework_receive_into_buffer(QUEX_NAME(buffer_fill_region_begin)(&qlex), 
+        receive_n = messaging_framework_receive_into_buffer(QUEX_NAME(buffer_fill_region_begin)(&qlex), 
                                                                    QUEX_NAME(buffer_fill_region_size)(&qlex));
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
         QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n);
 
         /* -- Loop until the 'termination' token arrives                                   */
-        QUEX_TYPE_TOKEN_ID   token_id = 0;
+        token_id = 0;
         while( 1 + 1 == 2 ) {
             prev_lexeme_start_p = QUEX_NAME(buffer_lexeme_start_pointer_get)(&qlex);
             
