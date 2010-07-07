@@ -18,6 +18,8 @@ cd $test_dir
 if [[ $first_f == "FIRST" ]]; then
     make clean >& /dev/null
 fi
+# In any case delete existing object files, and executables
+rm -f *.o *.exe
 
 # Make the test program _______________________________________________________
 echo "## make lexer $4 $5 $6 $7"
