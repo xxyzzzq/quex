@@ -1,10 +1,3 @@
-makefile = Makefile
-cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
-		 --no-warning-on-no-token-queue
-		 --no-warning-on-no-token-queue
-		 --no-warning-on-no-token-queue
-executing ...
                 Max:        Moritz:      Boeck:
 Max       	ME________   MY_BROTHER   SCALLYWAG_
 und       	UKNOWN____   UKNOWN____   PREDICATE_
@@ -36,4 +29,3 @@ Lücke    	SUBJECT___   SUBJECT___   SUBJECT___
 .         	MARK______   MARK______   MARK______
           	<TERMINATION>   <TERMINATION>   <TERMINATION>
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-cleaning ...
