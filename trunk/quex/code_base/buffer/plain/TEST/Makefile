@@ -54,6 +54,8 @@ all: $(TEST_FILES)
 hwut-info:
 	@echo $(TEST_FILES)
 
+hwut-end: clean
+
 %-wiostream.exe: %-wiostream.cpp $(HEADERS)
 	$(CC) -DQUEX_TYPE_CHARACTER=wchar_t $< -o $@
 

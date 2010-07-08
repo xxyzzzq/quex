@@ -24,6 +24,9 @@ all: $(TEST_FILES)
 hwut-info:
 	@echo $(TEST_FILES)
 
+hwut-end: clean
+	@echo Bye
+
 %.exe: %.cpp $(QUEX_CORE)
 	g++ -DQUEX_TYPE_CHARACTER=uint8_t \
 		-Wall \

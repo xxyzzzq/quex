@@ -23,7 +23,7 @@ else
     valgrind --leak-check=full ./$1.exe >& tmp.txt
 fi
 
-python ../TEST/show-valgrind.py
+python $QUEX_PATH/TEST/show-valgrind.py 
 rm -f tmp.txt
 
 if [[ $3 == "LAST" ]]; then

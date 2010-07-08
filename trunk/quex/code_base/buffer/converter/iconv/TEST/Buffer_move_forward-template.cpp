@@ -20,7 +20,7 @@ main(int argc, char** argv)
     std::FILE*         fh            = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize, false);
+    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, 0x0, "UTF8", RawMemorySize, false);
     assert((void*)((QUEX_NAME(BufferFiller_Converter)<FILE>*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 

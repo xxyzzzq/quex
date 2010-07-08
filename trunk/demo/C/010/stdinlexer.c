@@ -10,6 +10,8 @@ main(int argc, char** argv)
     // Zero pointer to constructor --> use raw memory
     tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
 
+    QUEX_NAME_TOKEN(construct)(&token);
+
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
     cout << "Please, type an arbitrary sequence of the following:\n";

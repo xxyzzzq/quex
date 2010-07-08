@@ -14,6 +14,7 @@ main(int argc, char** argv)
     size_t             receive_n = (size_t)-1;
     int                i = 0;
 
+    QUEX_NAME_TOKEN(construct)(&token);
     QUEX_NAME(construct_memory)(&qlex, 
                                 MESSAGING_FRAMEWORK_BUFFER, 
                                 MESSAGING_FRAMEWORK_BUFFER_SIZE, 
@@ -38,15 +39,17 @@ main(int argc, char** argv)
         do {
             QUEX_NAME(receive)(&qlex);
 
-            if( token->_id != QUEX_TKN_TERMINATION )
-                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(token, buffer, BufferSize));
+            if( token._id != QUEX_TKN_TERMINATION )
+                printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
 
-            if( token->_id == QUEX_TKN_BYE ) 
-                printf("## ");
+            if( token._id == QUEX_TKN_BYE ) 
+                printf("##\n");
             
-        } while( token->_id != QUEX_TKN_TERMINATION );
+        } while( token._id != QUEX_TKN_TERMINATION );
     }
 
+    QUEX_NAME(destruct)(&qlex);
+    QUEX_NAME_TOKEN(destruct)(&token);
     return 0;
 }
 
