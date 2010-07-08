@@ -59,6 +59,10 @@ else
     cat tmp-stderr.txt 
 fi
 
+rm -f tmp-stdout.txt tmp-stdout0.txt
+rm -f tmp-stderr.txt tmp-stderr0.txt
+rm -f tmp-make.txt   tmp-make0.txt
+
 # Clean up ____________________________________________________________________
 if [[ $last_f == "LAST" ]]; then
     make clean >& /dev/null

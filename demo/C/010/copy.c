@@ -20,8 +20,8 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  /* A pointer to the receive buffer that 
     *                                        * the messaging framework provides.       */
 
-    MemoryChunk           chunk;      /* Pointers to the memory positions under        
-    *                                  * consideration.                                */
+    MemoryChunk           chunk = { 0x0, 0x0 }; /* Pointers to the memory positions under        
+    *                                            * consideration.                      */
     size_t                BufferSize = 1024;
     char                  buffer[1024];
     /* */
@@ -100,6 +100,8 @@ main(int argc, char** argv)
     }
 
     QUEX_NAME(destruct)(&qlex);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[1]);
     return 0;
 }
 

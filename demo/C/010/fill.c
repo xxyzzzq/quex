@@ -34,7 +34,7 @@ main(int argc, char** argv)
 
         /* -- Call the low lever driver to fill the fill region                            */
         receive_n = messaging_framework_receive_into_buffer(QUEX_NAME(buffer_fill_region_begin)(&qlex), 
-                                                                   QUEX_NAME(buffer_fill_region_size)(&qlex));
+                                                            QUEX_NAME(buffer_fill_region_size)(&qlex));
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
         QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n);
@@ -59,6 +59,9 @@ main(int argc, char** argv)
         QUEX_NAME(buffer_input_pointer_set)(&qlex, prev_lexeme_start_p);
     }
 
+    QUEX_NAME(destruct)(&qlex);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[1]);
     return 0;
 }
 

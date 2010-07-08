@@ -60,6 +60,9 @@ main(int argc, char** argv)
     }
     printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(&prev_token, buffer, BufferSize));
 
+    QUEX_NAME(destruct)(&qlex);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[1]);
     return 0;
 }
 

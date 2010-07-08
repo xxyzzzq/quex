@@ -42,6 +42,9 @@ all: $(FILES)
 hwut-info:
 	@echo $(FILES)
 
+hwut-end: clean
+	@echo Bye
+
 %.cpp: %-template.cpp
 	sed   -e 's/\_\_\_HEADER\_\_\_/$(HEADER)/g' $<    \
 	| sed -e 's/\_\_\_NEW\_\_\_/$(NEW_OPERATOR)/g'    \

@@ -12,8 +12,6 @@ typedef struct {
 int 
 main(int argc, char** argv) 
 {        
-    using namespace std;
-
     /* Zero pointer to constructor --> use raw memory */
     tiny_lexer  qlex;
 
@@ -28,9 +26,11 @@ main(int argc, char** argv)
 
     size_t                BufferSize = 1024;
     char                  buffer[1024];
+    size_t                size = (size_t)-1;
+    QUEX_TYPE_TOKEN_ID    token_id = 0;
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; /* Store the start of the  
-    *                                                /* lexeme for possible backup.  */ 
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, "UTF-8", false);
+    *                                                 * lexeme for possible backup.  */ 
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, "UTF-8", false);
 
     /* -- initialize the token pointers */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
@@ -41,8 +41,7 @@ main(int argc, char** argv)
 
     QUEX_NAME(token_p_switch)(&qlex, &token_bank[0]);
 
-    /* */
-    /* -- trigger reload of memory */
+    /* -- trigger reload of memory       */
     chunk.begin = chunk.end;
 
     /* -- LOOP until 'bye' token arrives */
@@ -55,9 +54,9 @@ main(int argc, char** argv)
             /* -- If the receive buffer has been read, it can be released. */
             if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
             /* -- Setup the pointers  */
-            const size_t Size  = messaging_framework_receive_whole_characters(&rx_buffer);
+            size  = messaging_framework_receive_whole_characters(&rx_buffer);
             chunk.begin = rx_buffer;
-            chunk.end   = chunk.begin + Size;
+            chunk.end   = chunk.begin + size;
         } else {
             /* If chunk.begin != chunk.end, this means that there are still
              * some characters in the pipeline. Let us use them first.      */
@@ -72,7 +71,7 @@ main(int argc, char** argv)
         chunk.begin = (uint8_t*)QUEX_NAME(buffer_fill_region_append_conversion_direct)(&qlex, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives */
-        QUEX_TYPE_TOKEN_ID token_id = 0;
+        token_id = 0;
         while( 1 + 1 == 2 ) {
             prev_lexeme_start_p = QUEX_NAME(buffer_lexeme_start_pointer_get)(&qlex);
             
@@ -88,7 +87,7 @@ main(int argc, char** argv)
 
             /* If the previous token was not a TERMINATION, it can be considered
              * by the syntactical analyzer (parser).                            */
-            if( prev_token->type_id() != QUEX_TKN_TERMINATION )
+            if( prev_token->_id != QUEX_TKN_TERMINATION )
                 printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 
             if( token_id == QUEX_TKN_BYE ) 
@@ -104,6 +103,9 @@ main(int argc, char** argv)
     }
     printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 
+    QUEX_NAME(destruct)(&qlex);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
+    QUEX_NAME_TOKEN(destruct)(&token_bank[1]);
     return 0;
 }
 
