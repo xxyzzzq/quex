@@ -8,7 +8,7 @@
 int 
 main(int argc, char** argv) 
 {        
-    Token*           token_p;
+    QUEX_TYPE_TOKEN* token_p;
     ISO8859_7_Lex    qlex;
     size_t           BufferSize = 1024;
     char             buffer[1024];

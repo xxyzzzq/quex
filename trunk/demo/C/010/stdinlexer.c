@@ -1,58 +1,56 @@
 #include <stdio.h>
 #include <./tiny_lexer>
+#include <./tiny_lexer-token.i>
 
 int 
 main(int argc, char** argv) 
 {        
-    using namespace std;
-
-    QUEX_TYPE_TOKEN       token;
-    // Zero pointer to constructor --> use raw memory
-    tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
+    QUEX_TYPE_TOKEN   token;
+    tiny_lexer        qlex;   
+    size_t            received_n = (size_t)-1;
+    size_t            BufferSize = 1024;
+    char              buffer[1024];
 
     QUEX_NAME_TOKEN(construct)(&token);
+    /* Zero pointer to constructor --> use raw memory */
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
 
-    cout << ",------------------------------------------------------------------------------------\n";
-    cout << "| [START]\n";
-    cout << "Please, type an arbitrary sequence of the following:\n";
-    cout << "-- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.\n";
-    cout << "-- An integer number.\n";
-    cout << "-- The word 'bye' in order to terminate.\n";
-    cout << "Please, terminate each line with pressing [enter].\n";
+    printf("Please, type an arbitrary sequence of the following:\n");
+    printf("-- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.\n");
+    printf("-- An integer number.\n");
+    printf("-- The word 'bye' in order to terminate.\n");
+    printf("Please, terminate each line with pressing [enter].\n");
 
-    int number_of_tokens = 0;
-    (void)qlex.token_p_switch(&token);
-    while( cin ) {
-        qlex.buffer_fill_region_prepare();
+    (void)QUEX_NAME(token_p_switch)(&qlex, &token);
+    while( received_n ) {
+        QUEX_NAME(buffer_fill_region_prepare)(&qlex);
         
-        // Read a line from standard input
-        cin.getline((char*)qlex.buffer_fill_region_begin(), 
-                    qlex.buffer_fill_region_size());
-        cout << "[[Received " << cin.gcount() << " characters in line.]]\n";
+        /* Read a line from standard input */
+        received_n = getline((char*)QUEX_NAME(buffer_fill_region_begin)(&qlex), 
+                             QUEX_NAME(buffer_fill_region_size(&qlex)),
+                             stdin);
+        printf("[[Received %i characters in line.]]\n", (int)received_n);
         
-        if( cin.gcount() == 0 ) {
+        if( received_n == 0 ) {
             return 0;
         }
-        // Inform about number of read characters. Note, that getline
-        // writes a terminating zero, which has not to be part of the 
-        // buffer content.
-        qlex.buffer_fill_region_finish(cin.gcount() - 1);
+        /* Inform about number of read characters. */
+        QUEX_NAME(buffer_fill_region_finish)(&qlex, received_n - 1);
         
-        // Loop until the 'termination' token arrives
+        /* Loop until the 'termination' token arrives */
         do {
-            (void)qlex.receive();
-            cout << string(token) << endl;
-            ++number_of_tokens;
-        } while( token.type_id() != QUEX_TKN_TERMINATION && token.type_id() != QUEX_TKN_BYE );
+            QUEX_NAME(receive)(&qlex);
+            printf("%s \n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
+        } while( token._id != QUEX_TKN_TERMINATION && token._id != QUEX_TKN_BYE );
         
-        cout << "[[End of Input]]\n";
+        printf("[[End of Input]]\n");
 
-        if( token.type_id() == QUEX_TKN_BYE ) break;
+        if( token._id == QUEX_TKN_BYE ) break;
     }
 
-    cout << "| [END] number of token = " << number_of_tokens << "\n";
-    cout << "`------------------------------------------------------------------------------------\n";
-
+    QUEX_NAME_TOKEN(destruct)(&token);
+    /* Zero pointer to constructor --> use raw memory */
+    QUEX_NAME(destruct_memory)(&qlex);
     return 0;
 }
 

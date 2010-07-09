@@ -34,6 +34,12 @@ QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me,
 {
     me->the_lexer = lexer;
     QUEX_NAME(Accumulator_init_memory)(me);
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    me->_begin_line = 0;
+#   endif
+#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    me->_begin_column = 0;
+#   endif
 }
 
 

@@ -101,8 +101,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->converter = converter;
         me->converter->open(me->converter, FromCoding, ToCoding);
 
-        /* Setup the tell/seek of character positions                                       */
-        me->start_position    = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+        /* Setup the tell/seek of character positions                                      
+         * (disabled in case of buffer based lexical analyzis)                              */
+        if( me->ih != 0x0 ) {
+            me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+        } else { 
+            me->start_position = 0;
+        }
 
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
@@ -289,7 +294,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                 STREAM_POSITION_TYPE(InputHandleT) avoid_tmp_arg =
                     (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_TYPE_CHARACTER)) \
                     + me->start_position;
-                QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
+                /* Seek stream position cannot be handled when buffer based analyzis is on.       */
+                if( me->ih != 0x0 ) {
+                    QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
+                }
                 buffer->end_stream_position = avoid_tmp_arg;
                 /* iterator == end => trigger reload                                              */
                 buffer->iterator                  = buffer->end;
@@ -321,7 +329,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                 /* No idea where to start --> start from the beginning. In some cases this might
                  * mean a huge performance penalty. But note, that this only occurs at pre-conditions
                  * that are very very long and happen right at the beginning of the raw buffer.   */
-                QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->start_position);
+
+                /* Seek stream position cannot be handled when buffer based analyzis is on.       */
+                if( me->ih != 0x0 ) {
+                    QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->start_position);
+                }
                 buffer->end_stream_position       = me->start_position;
                 /* trigger reload, not only conversion                                            */
                 buffer->end                       = buffer->begin;
@@ -350,7 +362,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
        QUEX_ASSERT_BUFFER_INFO(buffer);
        __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
-       __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
+       /* End stream position cannot be handled when buffer based analyzis is on.      */
+       if( me->ih != 0x0 ) {
+           __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
+       }
 
        /* Store information about the current position's character index. 
         * [Ref 1] -- 'end' may point point into the middle of an (not yet converted) character. 
@@ -383,10 +398,17 @@ QUEX_NAMESPACE_MAIN_OPEN
 
        FillStartPosition = buffer->begin + RemainingBytesN;
        FillSize          = (size_t)(buffer->memory_end - buffer->begin) - RemainingBytesN;
-       LoadedByteN       = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
-                                                        FillStartPosition, FillSize);
+       /* We cannot load bytes, if buffer based analyzis is on.                        */
+       if( me->ih != 0x0 ) {
+           LoadedByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
+                                                      FillStartPosition, FillSize);
+       }
 
-       buffer->end_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+
+       /* End stream position cannot be handled when buffer based analyzis is on.      */
+       if( me->ih != 0x0 ) {
+           buffer->end_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+       }
        /* '.character_index' remains to be updated after character conversion */
 
        /* In any case, we start reading from the beginning of the raw buffer. */
