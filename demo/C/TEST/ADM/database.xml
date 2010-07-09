@@ -1,4 +1,4 @@
-<test-database execution-time-sec="192.23" date="Fri Jul  9 07:39:41 2010">
+<test-database execution-time-sec="207.50" date="Sat Jul 10 07:59:05 2010">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.32"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
@@ -114,11 +114,11 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="2.37"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="2.26"> 
             <application file-name="009.sh" info-request-time="1278568378L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="lexer" result="FAIL" time_sec="1.20" crc="334441210"/>
-               <choice name="wlexer" result="FAIL" time_sec="1.17" crc="334441210"/>
+               <choice name="lexer" result="OK" time_sec="2.08" crc="-1473894578"/>
+               <choice name="wlexer" result="OK" time_sec="0.18" crc="-1473894578"/>
             </choice-list>
         </test>
     </group>
@@ -136,7 +136,7 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="37.69"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="51.98"> 
             <application file-name="010.sh" info-request-time="1278651067L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="copy" result="OK" time_sec="4.88" crc="595815643"/>
@@ -144,10 +144,10 @@
                <choice name="point" result="OK" time_sec="4.87" crc="-999766639"/>
                <choice name="copy-ez" result="OK" time_sec="4.88" crc="-812025512"/>
                <choice name="fill-ez" result="OK" time_sec="4.86" crc="-812025512"/>
-               <choice name="copy-conversion" result="FAIL" time_sec="6.44" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="FAIL" time_sec="2.97" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="FAIL" time_sec="2.54" crc="-470382527"/>
-               <choice name="stdinlexer" result="FAIL" time_sec="0.94" crc="248250308"/>
+               <choice name="copy-conversion" result="OK" time_sec="10.08" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="5.02" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="10.08" crc="-470382527"/>
+               <choice name="stdinlexer" result="FAIL" time_sec="2.00" crc="248250308"/>
             </choice-list>
         </test>
         <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="36.63"> 
@@ -160,20 +160,20 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="1.82"> 
-            <application file-name="011.sh" info-request-time="1278568418L" vanished="False"/>
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="3.21"> 
+            <application file-name="011.sh" info-request-time="1278689294L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="0.97" crc="-1827787599"/>
-               <choice name="utf8" result="FAIL" time_sec="0.85" crc="-1827787599"/>
+               <choice name="iso8859-7" result="FAIL" time_sec="0.85" crc="-1827787599"/>
+               <choice name="utf8" result="OK" time_sec="2.36" crc="-1827787599"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" time-sum-sec="1.95"> 
+        <test title="Engine Encoding UTF16" time-sum-sec="1.66"> 
             <application file-name="011b.sh" info-request-time="1278568428L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="LE" result="FAIL" time_sec="1.20" crc="2001714839"/>
-               <choice name="BE" result="FAIL" time_sec="0.76" crc="2001714839"/>
+               <choice name="LE" result="FAIL" time_sec="0.83" crc="2001714839"/>
+               <choice name="BE" result="FAIL" time_sec="0.83" crc="2001714839"/>
             </choice-list>
         </test>
     </group>

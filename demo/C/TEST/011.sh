@@ -12,5 +12,5 @@ make $1-lexer >& tmp.txt
 cat tmp.txt | awk ' ! /g\+\+/ ' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
 rm tmp.txt
 valgrind --leak-check=full ./$1-lexer >& tmp.txt
-python ../TEST/show-valgrind.py
+python $QUEX_PATH/TEST/show-valgrind.py
 rm -f tmp.txt

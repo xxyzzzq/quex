@@ -31,7 +31,7 @@ HELLO 'hallo'
 WORLD 'welt' 
 <TERMINATION> '' 
 | [END] number of token = 7
-`------------------------------------------------------------------------------------
+`-----------------------------------------------------------------
 Normal stringstream input
 ## stringstream:
 ##    Note this works only when engine is generated with -b 1 (or no -b)
@@ -55,7 +55,7 @@ Normal stringstream input
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-,------------------------------------------------------------------------------------
+,-----------------------------------------------------------------
 | [START]
 HELLO 'bonjour' 
 WORLD 'le monde' 

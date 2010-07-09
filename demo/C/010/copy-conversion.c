@@ -30,7 +30,7 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; /* Store the start of the  
     *                                                 * lexeme for possible backup.  */
 
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, "UTF-8", false);
+    QUEX_NAME(construct_memory)(&qlex, (QUEX_TYPE_CHARACTER*)0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, "UTF-8", false);
 
     /* -- initialize the token pointers */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
@@ -88,7 +88,7 @@ main(int argc, char** argv)
             /* If the previous token was not a TERMINATION, it can be considered */
             /* by the syntactical analyzer (parser). */
             if( prev_token->_id != QUEX_TKN_TERMINATION )
-                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
+                printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 
             if( token_id == QUEX_TKN_BYE ) 
                 break;
@@ -101,7 +101,7 @@ main(int argc, char** argv)
         /*    enters the matching game again. */
         QUEX_NAME(buffer_input_pointer_set)(&qlex, prev_lexeme_start_p);
     }
-    printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
+    printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 
     QUEX_NAME(destruct)(&qlex);
     QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
