@@ -10,6 +10,8 @@ main(int argc, char** argv)
     size_t            received_n = (size_t)-1;
     size_t            BufferSize = 1024;
     char              buffer[1024];
+    char*   qlex_buffer      = 0x0;
+    size_t  qlex_buffer_size = 0;
 
     QUEX_NAME_TOKEN(construct)(&token);
     /* Zero pointer to constructor --> use raw memory */
@@ -26,9 +28,9 @@ main(int argc, char** argv)
         QUEX_NAME(buffer_fill_region_prepare)(&qlex);
         
         /* Read a line from standard input */
-        received_n = getline((char*)QUEX_NAME(buffer_fill_region_begin)(&qlex), 
-                             QUEX_NAME(buffer_fill_region_size(&qlex)),
-                             stdin);
+        qlex_buffer      = (char*)QUEX_NAME(buffer_fill_region_begin)(&qlex);
+        qlex_buffer_size = QUEX_NAME(buffer_fill_region_size(&qlex));
+        received_n = getline(qlex_buffer, qlex_buffer_size, stdin);
         printf("[[Received %i characters in line.]]\n", (int)received_n);
         
         if( received_n == 0 ) {
@@ -50,7 +52,7 @@ main(int argc, char** argv)
 
     QUEX_NAME_TOKEN(destruct)(&token);
     /* Zero pointer to constructor --> use raw memory */
-    QUEX_NAME(destruct_memory)(&qlex);
+    QUEX_NAME(destruct)(&qlex);
     return 0;
 }
 
