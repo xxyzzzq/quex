@@ -14,12 +14,18 @@ def do():
 
     assert Setup.engine_character_encoding_transformation_info != None
 
-    txt = write(Setup.engine_character_encoding_transformation_info, 
-                Setup.engine_character_encoding)
+    txt, txt_i = _do(Setup.engine_character_encoding_transformation_info, 
+                     Setup.engine_character_encoding)
 
-    write_safely_and_close(Setup.engine_character_encoding_header, txt) 
+    if txt_i != None:
+        # When we deal with 'C' we need to distinguish between declaration and
+        # implementation, thus we need two headers.
+        write_safely_and_close(Setup.engine_character_encoding_header, txt) 
+        write_safely_and_close(Setup.engine_character_encoding_header + ".i", txt_i) 
+    else:
+        write_safely_and_close(Setup.engine_character_encoding_header, txt) 
 
-def write(UnicodeTrafoInfo, CodecName):
+def _do(UnicodeTrafoInfo, CodecName):
     """
     PURPOSE: Writes converters for conversion towards UTF8/UTF16/UCS2/UCS4.
 
@@ -45,13 +51,79 @@ def write(UnicodeTrafoInfo, CodecName):
     dummy,        ucs4_function_body  = ConverterWriterUCS4().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
+    if Setup.language == "C": implementation_str = "I"
+    else:                     implementation_str = ""
 
-    return blue_print(template_txt, 
-                      [["$$CODEC$$",       codec_name],
-                       ["$$PROLOG_UTF8$$", utf8_prolog],
-                       ["$$BODY_UTF8$$",   utf8_function_body],
-                       ["$$BODY_UTF16$$",  utf16_function_body],
-                       ["$$BODY_UCS4$$",   ucs4_function_body]])
+
+    txt = blue_print(template_txt, 
+                     [["$$CODEC$$",       codec_name],
+                      ["$$I$$",           implementation_str],
+                      ["$$PROLOG_UTF8$$", utf8_prolog],
+                      ["$$BODY_UTF8$$",   utf8_function_body],
+                      ["$$BODY_UTF16$$",  utf16_function_body],
+                      ["$$BODY_UCS4$$",   ucs4_function_body]])
+
+    if Setup.language == "C":
+        # A separate declaration header is required
+        txt_h = template_h_txt.replace("$$CODEC$$", codec_name)
+        return txt_h, txt
+    else:
+        return txt, None
+
+template_h_txt = \
+"""
+/* -*- C++ -*- vim: set syntax=cpp:
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer                                                */
+
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
+QUEX_NAMESPACE_MAIN_OPEN
+
+QUEX_INLINE uint8_t*
+QUEX_NAME($$CODEC$$_to_utf8)(QUEX_TYPE_CHARACTER input, uint8_t* output);
+
+QUEX_INLINE uint32_t
+/* DrainEnd pointer is not returned, since the increment is always '1' */
+QUEX_NAME($$CODEC$$_to_ucs4)(QUEX_TYPE_CHARACTER input);
+
+QUEX_INLINE uint16_t*
+QUEX_NAME($$CODEC$$_to_utf16)(QUEX_TYPE_CHARACTER input, uint16_t* p);
+
+QUEX_INLINE uint16_t
+/* DrainEnd pointer is not returned, since the increment is always '1' */
+QUEX_NAME($$CODEC$$_to_ucs2)(QUEX_TYPE_CHARACTER input);
+
+QUEX_INLINE uint8_t*
+QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize);
+
+QUEX_INLINE uint16_t*
+QUEX_NAME($$CODEC$$_to_utf16_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize);
+
+QUEX_INLINE uint16_t*
+QUEX_NAME($$CODEC$$_to_ucs2_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize);
+
+QUEX_INLINE uint32_t*
+QUEX_NAME($$CODEC$$_to_ucs4_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint32_t *Drain, size_t DrainSize);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::string
+QUEX_NAME($$CODEC$$_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+
+QUEX_INLINE std::basic_string<uint16_t>
+QUEX_NAME($$CODEC$$_to_utf16_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+
+QUEX_INLINE std::basic_string<uint16_t>
+QUEX_NAME($$CODEC$$_to_ucs2_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+
+QUEX_INLINE std::basic_string<uint32_t>
+QUEX_NAME($$CODEC$$_to_ucs4_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#endif /* __QUEX_OPTION_PLAIN_C */
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__ */
+"""
 
 template_txt = \
 """
@@ -63,8 +135,8 @@ template_txt = \
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
 
-#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
-#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>
@@ -287,7 +359,7 @@ QUEX_NAME($$CODEC$$_to_ucs4_string)(const std::basic_string<QUEX_TYPE_CHARACTER>
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__ */
+#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$ */
 """
 
 class ConverterWriter:

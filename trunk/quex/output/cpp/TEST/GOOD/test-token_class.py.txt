@@ -213,7 +213,7 @@ MeinToken::~MeinToken()
 inline void
 QUEX_NAME_TOKEN(construct)(MeinToken* __this)
 {
-    /* Clean-up by placement new */
+    /* Explicit constructor call by 'placement new' */
     new ((void*)__this) QUEX_TYPE_TOKEN;
 }
 

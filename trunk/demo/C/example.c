@@ -36,7 +36,7 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
         /* Print out token information            */
 #       ifdef PRINT_TOKEN
-        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+        printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
 #       else
         printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
 #       endif

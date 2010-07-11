@@ -1,7 +1,7 @@
 
-lexer-iconv: IndigoLexer.cpp
+lexer-iconv: Simple.cpp
 	@g++ -I./ -I$(QUEX_PATH) \
-		IndigoLexer.cpp     \
+		Simple.cpp     \
 		../lexer.cpp        \
 		-ggdb               \
 		-o $@               \
@@ -9,9 +9,9 @@ lexer-iconv: IndigoLexer.cpp
 	@cat tmp.txt
 	@rm  tmp.txt
 	
-lexer-icu: IndigoLexer.cpp
+lexer-icu: Simple.cpp
 	@g++ -I./ -I$(QUEX_PATH) \
-		IndigoLexer.cpp     \
+		Simple.cpp     \
 		../lexer.cpp           \
 		-ggdb               \
 		-o $@               \
@@ -19,12 +19,10 @@ lexer-icu: IndigoLexer.cpp
 	@cat tmp.txt
 	@rm  tmp.txt
 
-IndigoLexer.cpp: indigo.qx
-	@quex -i indigo.qx -o IndigoLexer -b 4 --iconv 
+Simple.cpp: indigo.qx
+	@quex -i indigo.qx -o Simple -b 4 --iconv 
 
 
 clean:
-	@rm -rf IndigoLexer-*
-	@rm -rf IndigoLexer.cpp
-	@rm -rf IndigoLexer
+	@rm -rf Simple*
 	@rm -rf a.out lexer-icu lexer-iconv

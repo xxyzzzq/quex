@@ -10,7 +10,10 @@ main(int argc, char** argv)
 {        
     using namespace quex;
 
-    if( argc == 1 ) return 0;
+    if( argc == 1 ) {
+       printf("Required at least one argument: 'LE' or 'BE'.\n");
+       return -1;
+    }
 
     Token*       token;
     bool         BigEndianF = (strcmp(argv[1], "BE") == 0); 

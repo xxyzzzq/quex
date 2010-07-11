@@ -30,7 +30,7 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
 
         /* print out token information */
-        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+        printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
 
         ++number_of_tokens;
 

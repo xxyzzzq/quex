@@ -88,7 +88,7 @@ main(int argc, char** argv)
             /* If the previous token was not a TERMINATION, it can be considered */
             /* by the syntactical analyzer (parser).                             */
             if( prev_token->_id != QUEX_TKN_TERMINATION )
-                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
+                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_utf8_string)(prev_token, buffer, BufferSize));
         }
 
         /* -- If the 'bye' token appeared, leave! */

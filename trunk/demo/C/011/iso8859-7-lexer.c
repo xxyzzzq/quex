@@ -3,7 +3,7 @@
 // (*) include lexical analyser header
 #include "ISO8859_7_Lex"
 #include "ISO8859_7_Lex-token.i"
-#include "ISO8859_7_Lex-converter-iso8859_7"
+#include "ISO8859_7_Lex-converter-iso8859_7.i"
 
 int 
 main(int argc, char** argv) 
@@ -21,8 +21,8 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
 
         /* (*) print out token information
-         *     'get_string' automagically converts codec bytes into utf8 */
-        printf("%s\n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+         *     'get_utf8_string' automagically converts codec bytes into utf8 */
+        printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
 #       if 0
         cout << "\t\t plain bytes: ";
         for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
@@ -33,5 +33,6 @@ main(int argc, char** argv)
         // (*) check against 'termination'
     } while( token_p->_id != TKN_TERMINATION );
 
+    QUEX_NAME(destruct)(&qlex);
     return 0;
 }
