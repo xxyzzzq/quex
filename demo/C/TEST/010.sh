@@ -16,8 +16,8 @@ cat tmp.txt | awk ' ! /g\+\+/' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr
 rm tmp.txt
 
 if [[ $1 == "stdinlexer" ]]; then
-    echo "Hello World" | valgrind --leak-check=full ./stdinlexer.exe >& tmp0.txt
-    echo "212 W32orld" | valgrind --leak-check=full ./stdinlexer.exe >& tmp1.txt
+    echo -e "Hello World\nbye\n" | valgrind --leak-check=full ./stdinlexer.exe >& tmp0.txt
+    echo -e "212 W32orld\nbye\n" | valgrind --leak-check=full ./stdinlexer.exe >& tmp1.txt
     cat tmp0.txt tmp1.txt >> tmp.txt
 else
     valgrind --leak-check=full ./$1.exe >& tmp.txt

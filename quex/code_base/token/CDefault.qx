@@ -11,9 +11,19 @@ token_type {
        extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
        extern const char* 
-       QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN* TokenP, 
-                                   char*                  buffer, 
-                                   size_t                 BufferSize);
+       QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN*  me, 
+                                   char*                   buffer, 
+                                   size_t                  BufferSize); 
+
+       extern const char* 
+       QUEX_NAME_TOKEN(get_utf8_string)(const QUEX_TYPE_TOKEN*  me, 
+                                        char*                   buffer, 
+                                        size_t                  BufferSize); 
+
+       extern void
+       QUEX_NAME_TOKEN(__get_string_core)(const QUEX_TYPE_TOKEN*  me, 
+                                          char*                   buffer, 
+                                          size_t                  BufferSize);
 
        /* Different codecs may have different converters, the name of the converter
         * is to be defined in the configuration file using the. All converters 
@@ -145,34 +155,45 @@ token_type {
                                     char*                   buffer, 
                                     size_t                  BufferSize) 
         {
-            char*    iterator = 0;
-            size_t   current_size = (size_t)-1;
-            __quex_assert(BufferSize !=  0);
+            QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
+            __QUEX_STD_strncat(buffer, (const char*)me->text, BufferSize);
+            __QUEX_STD_strncat(buffer, "'", BufferSize);
+            return buffer;
+        }
 
-            *buffer = '\0';
-            __QUEX_STD_strncat(buffer, QUEX_NAME_TOKEN(map_id_to_name)(me->_id), BufferSize);
-            __QUEX_STD_strncat(buffer, " '", BufferSize);
+        const char* 
+        QUEX_NAME_TOKEN(get_utf8_string)(const QUEX_TYPE_TOKEN*  me, 
+                                         char*                   buffer, 
+                                         size_t                  BufferSize) 
+        {
+            char*    iterator     = 0;
+            size_t   current_size = (size_t)-1;
+
+            QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
 
             /* Get current size of the string. */
-            for(iterator = buffer; *iterator; ++iterator);
+            for(iterator = buffer; *iterator; ++iterator) ;
             current_size = (size_t)(iterator - buffer);
 
-            /* To be on the safe side: Do a conversion to UTF8.
-             * This is slow, so avoid it, if you deal only with plain ASCII. 
-             * Then: '#if 1' --> '#if 0'                                     */
-#           if 1
             iterator = (char*)QUEX_CONVERTER_OF_TEXT_TO_UTF8(me->text, 
                                                              QUEX_NAME(strlen)(me->text),
                                                              (uint8_t*)iterator,
                                                              BufferSize - current_size);
             *iterator = '\0';
-#           else
-            /* In case you are sure, that you use only ASCII. */
-            __QUEX_STD_strncat(buffer, me->text, BufferSize);
-#           endif
-
             __QUEX_STD_strncat(buffer, "'", BufferSize);
             return buffer;
+        }
+
+        void
+        QUEX_NAME_TOKEN(__get_string_core)(const QUEX_TYPE_TOKEN*  me, 
+                                           char*                   buffer, 
+                                           size_t                  BufferSize) 
+        {
+            __quex_assert(BufferSize !=  0);
+
+            *buffer = '\0';
+            __QUEX_STD_strncat(buffer, QUEX_NAME_TOKEN(map_id_to_name)(me->_id), BufferSize);
+            __QUEX_STD_strncat(buffer, " '", BufferSize);
         }
    }
 }

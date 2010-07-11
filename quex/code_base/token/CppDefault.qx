@@ -50,6 +50,31 @@ token_type {
 
         operator 
         const std::string() const
+        { return get_utf8_string(); }
+
+        const std::string
+        get_string() const 
+        {
+            std::string             tmp;
+            // The following conversion can go terribly wrong in case of 
+            // multi-byte encodings. For a safe ride, use: get_utf8_string().
+            std::string             tmp2((const char*)self.text.c_str());
+            std::string::size_type  pos  = 0;
+
+            tmp = map_id_to_name(self._id);
+
+            tmp += " '" + tmp2 + "' ";
+
+            while( (pos = tmp.find("\n") ) != __string::npos )
+                tmp.replace(pos, 1, std::string("\\n"));
+            while( (pos = tmp.find("\t") ) != __string::npos ) 
+                tmp.replace(pos, 1, std::string("\\t"));
+
+            return tmp;
+        }
+
+        const std::string
+        get_utf8_string() const 
         {
             std::string             tmp;
             std::string::size_type  pos  = 0;
@@ -88,6 +113,7 @@ token_type {
         {
             /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
             QUEX_TYPE_CHARACTER* it = 0x0;
+            printf("%lX ", (long)__this);
             printf("previous:  '");
             for(it = (QUEX_TYPE_CHARACTER*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
             printf("'\n");

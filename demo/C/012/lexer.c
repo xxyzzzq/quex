@@ -61,6 +61,10 @@ main(int argc, char** argv)
 
     } while( boeck_token->_id != TKN_TERMINATION );
 
+    boeck_Lexer_destruct(&boeck_lex);
+    max_Lexer_destruct(&max_lex);
+    moritz_Lexer_destruct(&moritz_lex);
+
     return 0;
 }
 

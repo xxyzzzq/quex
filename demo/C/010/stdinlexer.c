@@ -30,7 +30,8 @@ main(int argc, char** argv)
         /* Read a line from standard input */
         qlex_buffer      = (char*)QUEX_NAME(buffer_fill_region_begin)(&qlex);
         qlex_buffer_size = QUEX_NAME(buffer_fill_region_size(&qlex));
-        received_n = getline(qlex_buffer, qlex_buffer_size, stdin);
+        while( fgets(qlex_buffer, qlex_buffer_size, stdin) == NULL );
+        received_n = strlen(qlex_buffer);
         printf("[[Received %i characters in line.]]\n", (int)received_n);
         
         if( received_n == 0 ) {
@@ -42,7 +43,7 @@ main(int argc, char** argv)
         /* Loop until the 'termination' token arrives */
         do {
             QUEX_NAME(receive)(&qlex);
-            printf("%s \n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
+            printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(&token, buffer, BufferSize));
         } while( token._id != QUEX_TKN_TERMINATION && token._id != QUEX_TKN_BYE );
         
         printf("[[End of Input]]\n");

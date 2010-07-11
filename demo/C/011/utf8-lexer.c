@@ -20,8 +20,8 @@ main(int argc, char** argv)
         token_p = QUEX_NAME(receive)(&qlex);
 
         /* (*) print out token information
-         *     'get_string' automagically converts codec bytes into utf8 */
-        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+         *     'get_utf8_string' automagically converts codec bytes into utf8 */
+        printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
 
         // (*) check against 'termination'
     } while( token_p->_id != TKN_TERMINATION );

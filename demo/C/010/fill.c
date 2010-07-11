@@ -51,7 +51,7 @@ main(int argc, char** argv)
             if( token_id == QUEX_TKN_TERMINATION || token_id == QUEX_TKN_BYE )
                 break;
             if( prev_token->_id != QUEX_TKN_TERMINATION ) 
-                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
+                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_utf8_string)(prev_token, buffer, BufferSize));
         }
 
         if( token_id == QUEX_TKN_BYE ) break;
