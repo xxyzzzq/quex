@@ -1,0 +1,186 @@
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT
+#define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT
+
+#ifdef  __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
+#   error "More then one configuration header interfer. Please, report a bug at quex.sourceforge.net."
+#endif
+
+/* By default ASSERTS are enabled ! */
+#if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
+#   ifdef     QUEX_OPTION_ASSERTS
+#      undef  QUEX_OPTION_ASSERTS
+#   endif
+#else
+#   ifndef    QUEX_OPTION_ASSERTS
+#      define QUEX_OPTION_ASSERTS
+#   endif
+#endif
+
+#if   ! defined(__QUEX_OPTION_LITTLE_ENDIAN) \
+   && ! defined(__QUEX_OPTION_BIG_ENDIAN) 
+#   define __QUEX_OPTION_LITTLE_ENDIAN
+#endif
+
+#if   ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)       \
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#   define QUEX_OPTION_TOKEN_POLICY_QUEUE
+#endif
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) 
+#   define  QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   ifndef    QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
+#      define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER (0)
+#   endif
+#   ifndef    QUEX_SETTING_TOKEN_QUEUE_SIZE
+#      define QUEX_SETTING_TOKEN_QUEUE_SIZE (256)
+#   endif
+#endif
+
+#ifdef     QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   define __QUEX_TYPE_ANALYZER_RETURN_VALUE             void
+#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN()  CONTINUE
+#else
+#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN()  RETURN
+#   define __QUEX_TYPE_ANALYZER_RETURN_VALUE             QUEX_TYPE_TOKEN_ID
+#endif
+
+#ifndef    __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID  (0)
+#endif
+
+#ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
+#   define QUEX_SETTING_BUFFER_LIMIT_CODE        ((QUEX_TYPE_CHARACTER)0x00)
+#endif
+#ifndef    QUEX_SETTING_PATH_TERMINATION_CODE
+#   define QUEX_SETTING_PATH_TERMINATION_CODE    ((QUEX_TYPE_CHARACTER)0x01)
+#endif
+
+#ifndef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N
+#   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N    (0)
+#endif
+
+#ifndef    QUEX_SETTING_BUFFER_SIZE
+#   define QUEX_SETTING_BUFFER_SIZE  (65536)
+#endif
+
+#ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+#   if   defined (QUEX_OPTION_ENABLE_ICONV)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_IConv_new)
+#   elif defined (QUEX_OPTION_ENABLE_ICU)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_ICU_new)
+#   else
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(__Converter_EMPTY_new)
+#   endif
+#endif
+
+#ifndef    QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
+#   define QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE  ((const size_t)(512))
+#endif
+#ifndef    QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE
+#   define QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE                (64)
+#endif
+
+
+#ifndef    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
+#   define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (1)
+#endif
+
+#ifndef    QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE 
+#   define QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE (0)
+#endif
+#ifndef    QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  
+#   define QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (1)
+#endif
+
+#ifndef    __QUEX_SETTING_MAX_MODE_CLASS_N
+#   define __QUEX_SETTING_MAX_MODE_CLASS_N  (256)
+#endif
+#ifndef    QUEX_SETTING_MODE_STACK_SIZE
+#   define QUEX_SETTING_MODE_STACK_SIZE     (256)
+#endif
+#ifndef    QUEX_TYPE_TOKEN  
+#   ifndef __QUEX_OPTION_PLAIN_C
+#       define QUEX_TYPE_TOKEN  quex::Token
+#   else
+#       define QUEX_TYPE_TOKEN  quex_Token
+#   endif
+#endif
+
+/* QUEX_TYPE0_TOKEN --> name of token class without namespace */
+#ifndef    QUEX_TYPE0_TOKEN
+#   ifndef __QUEX_OPTION_PLAIN_C
+#      define QUEX_TYPE0_TOKEN Token
+#   else
+#      define QUEX_TYPE0_TOKEN quex_Token
+#   endif
+#endif
+#ifndef    QUEX_TYPE_TOKEN_ID
+#   define QUEX_TYPE_TOKEN_ID uint8_t
+#endif
+
+#define QUEX_NAME(NAME)        QuexDefault ## _ ## NAME                
+#define QUEX_MEMBER(NAME)      QUEX_TYPE_ANALYZER :: NAME                
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#define QUEX_NAMESPACE_MAIN            quex
+#define QUEX_NAMESPACE_MAIN_OPEN       namespace quex { // namespace components {
+#define QUEX_NAMESPACE_MAIN_CLOSE      } // }
+#define QUEX_NAMESPACE_TOKEN           quex
+#define QUEX_NAMESPACE_TOKEN_OPEN      namespace quex { // namespace components {
+#define QUEX_NAMESPACE_TOKEN_CLOSE     } // }
+#else
+#define QUEX_NAMESPACE_MAIN
+#define QUEX_NAMESPACE_MAIN_OPEN             
+#define QUEX_NAMESPACE_MAIN_CLOSE            
+#define QUEX_NAMESPACE_TOKEN
+#define QUEX_NAMESPACE_TOKEN_OPEN             
+#define QUEX_NAMESPACE_TOKEN_CLOSE            
+#endif
+
+#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_NAME(MemoryPositionMimiker)
+#else
+#    define QUEX_TYPE_CHARACTER_POSITION   QUEX_TYPE_CHARACTER*
+#endif
+
+#define QUEX_NAME_TOKEN(X)        QuexToken ## X
+
+#ifndef    QUEX_TYPE_ANALYZER
+#   define QUEX_TYPE_ANALYZER     struct QUEX_NAME(TestAnalyzer_tag)
+#endif
+
+QUEX_NAMESPACE_MAIN_OPEN
+    struct  QUEX_NAME(TestAnalyzer_tag);
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define     QUEX_TYPE_COUNTER               CounterLineColumnIndentation
+#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   CounterLineColumnIndentation_construct
+#   define     QUEX_TYPE_COUNTER_RESET         CounterLineColumnIndentation_reset
+#   define     QUEX_TYPE_COUNTER_PRINT_THIS    CounterLineColumnIndentation_print_this
+#elif  defined(__QUEX_OPTION_COUNTER)
+#   define     QUEX_TYPE_COUNTER               CounterLineColumn
+#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   CounterLineColumn_construct
+#   define     QUEX_TYPE_COUNTER_RESET         CounterLineColumn_reset
+#   define     QUEX_TYPE_COUNTER_PRINT_THIS    CounterLineColumn_print_this
+#else
+#   define     QUEX_TYPE_COUNTER               void*
+#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   /* empty */
+#   define     QUEX_TYPE_COUNTER_RESET         /* empty */
+#   define     QUEX_TYPE_COUNTER_PRINT_THIS    /* empty */
+#endif
+
+/* For the utf8 printing: Name the function that converts the 
+ * specific codec to utf8 representation.                       */
+#define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
+
+/* Decide about computed gotos */
+#if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
+#   if    defined(__GNUC__) \
+       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
+#       if ! defined(__QUEX_OPTION_USE_COMPUTED_GOTOS)
+#           define __QUEX_OPTION_USE_COMPUTED_GOTOS
+#       endif
+#   endif
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT */

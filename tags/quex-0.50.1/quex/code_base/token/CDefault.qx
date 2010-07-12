@@ -1,0 +1,200 @@
+token_type {
+   header {
+       #include <stdio.h>
+       #include <string.h>
+
+       #include <quex/code_base/definitions>
+       #include <quex/code_base/asserts>
+       #include <quex/code_base/unicode>
+       #include <quex/code_base/compatibility/inttypes.h>
+
+       extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
+
+       extern const char* 
+       QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN*  me, 
+                                   char*                   buffer, 
+                                   size_t                  BufferSize); 
+
+       extern const char* 
+       QUEX_NAME_TOKEN(get_utf8_string)(const QUEX_TYPE_TOKEN*  me, 
+                                        char*                   buffer, 
+                                        size_t                  BufferSize); 
+
+       extern void
+       QUEX_NAME_TOKEN(__get_string_core)(const QUEX_TYPE_TOKEN*  me, 
+                                          char*                   buffer, 
+                                          size_t                  BufferSize);
+
+       /* Different codecs may have different converters, the name of the converter
+        * is to be defined in the configuration file using the. All converters 
+        * follow the function signature below.                                       */
+       QUEX_INLINE uint8_t*
+       QUEX_CONVERTER_OF_TEXT_TO_UTF8(const QUEX_TYPE_CHARACTER*  Source, 
+                                      size_t                      SourceSize, 
+                                      uint8_t*                    Drain, 
+                                      size_t                      DrainSize);
+   }
+   standard {
+        id            : uint32_t;
+        line_number   : size_t;
+        column_number : size_t;
+   }
+   distinct {
+       text   :  const QUEX_TYPE_CHARACTER*;
+       number :  int;
+   }
+
+   inheritable;
+
+   constructor {
+       self.number = 0;
+       self.text   = LexemeNull;
+   }
+
+   destructor {
+       if( self.text != LexemeNull ) {
+           QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
+           self.text = LexemeNull;
+       }
+   }
+
+   copy {
+        self._id  = Other._id;
+
+        if( self.text != LexemeNull ) {
+            QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
+        }
+        if( Other.text != LexemeNull ) {
+            self.text = QUEX_NAME(MemoryManager_Text_allocate)(
+                                    sizeof(QUEX_TYPE_CHARACTER) 
+                                  * (QUEX_NAME(strlen)(Other.text) + 1));
+            __QUEX_STD_memcpy((void*)self.text, (void*)Other.text, 
+                                sizeof(QUEX_TYPE_CHARACTER) 
+                              * (QUEX_NAME(strlen)(Other.text) + 1));
+        }
+        self.number = Other.number;
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+            self._line_n   = Other._line_n;
+    #       endif
+    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            self._column_n = Other._column_n;
+    #       endif
+    #   endif
+   }
+
+   take_text {
+
+#       if 0
+        /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+        {
+            const QUEX_TYPE_CHARACTER* it = 0x0;
+            printf("previous:  '");
+            if( self.text != LexemeNull ) {
+                for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+                printf("%04X.", (int)*it);
+            }
+            printf("'\n");
+            printf("take_text: '");
+            for(it = Begin; it != End; ++it) printf("%04X.", (int)*it);
+            printf("%04X.", (int)*it);
+            printf("'\n");
+        }
+#       endif
+
+
+        if( self.text != LexemeNull ) {
+            QUEX_NAME(MemoryManager_Text_free)((QUEX_TYPE_CHARACTER*)self.text);
+        }
+        if( Begin != LexemeNull ) {
+            self.text = QUEX_NAME(MemoryManager_Text_allocate)(
+                              sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1));
+            __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
+                              sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin));
+            /* The string is not necessarily zero terminated, so terminate it here. */
+            *((QUEX_TYPE_CHARACTER*)(self.text + (End - Begin))) = (QUEX_TYPE_CHARACTER)0;
+        } else {
+            self.text = LexemeNull;
+        }
+
+#       if 0
+        /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+        {
+            const QUEX_TYPE_CHARACTER* it = 0x0;
+            printf("after:     '");
+            if( self.text != LexemeNull ) { 
+                for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
+                printf("%04X.", (int)*it);
+            }
+            printf("'\n");
+        }
+#       endif
+
+        /* This token copied the text from the chunk into the string, 
+         * so we do not claim owneship over it.                       */
+        return false;
+   }
+
+   body {
+
+       /*
+        */
+   }
+
+   repetition_set {
+       self.number = N;
+   }
+
+   repetition_get {
+       return self.number;
+   }
+
+   footer {
+        const char* 
+        QUEX_NAME_TOKEN(get_string)(const QUEX_TYPE_TOKEN*  me, 
+                                    char*                   buffer, 
+                                    size_t                  BufferSize) 
+        {
+            QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
+            __QUEX_STD_strncat(buffer, (const char*)me->text, BufferSize);
+            __QUEX_STD_strncat(buffer, "'", BufferSize);
+            return buffer;
+        }
+
+        const char* 
+        QUEX_NAME_TOKEN(get_utf8_string)(const QUEX_TYPE_TOKEN*  me, 
+                                         char*                   buffer, 
+                                         size_t                  BufferSize) 
+        {
+            char*    iterator     = 0;
+            size_t   current_size = (size_t)-1;
+
+            QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
+
+            /* Get current size of the string. */
+            for(iterator = buffer; *iterator; ++iterator) ;
+            current_size = (size_t)(iterator - buffer);
+
+            iterator = (char*)QUEX_CONVERTER_OF_TEXT_TO_UTF8(me->text, 
+                                                             QUEX_NAME(strlen)(me->text),
+                                                             (uint8_t*)iterator,
+                                                             BufferSize - current_size);
+            *iterator = '\0';
+            __QUEX_STD_strncat(buffer, "'", BufferSize);
+            return buffer;
+        }
+
+        void
+        QUEX_NAME_TOKEN(__get_string_core)(const QUEX_TYPE_TOKEN*  me, 
+                                           char*                   buffer, 
+                                           size_t                  BufferSize) 
+        {
+            __quex_assert(BufferSize !=  0);
+
+            *buffer = '\0';
+            __QUEX_STD_strncat(buffer, QUEX_NAME_TOKEN(map_id_to_name)(me->_id), BufferSize);
+            __QUEX_STD_strncat(buffer, " '", BufferSize);
+        }
+   }
+}
+

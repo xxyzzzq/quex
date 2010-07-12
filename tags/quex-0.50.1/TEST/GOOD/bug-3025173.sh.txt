@@ -1,0 +1,12 @@
+(1) Generate 'OK-Sources' and Compile
+check
+(2) Mix member assignments with manually written token class.
+scan-error.qx:5:error: Member assignments in brief token senders are inadmissible
+scan-error.qx:5:error: with manually written token classes. User provided file 'token.h'.
+scan-error.qx:5:error: Found member assignment: 'text' = 'Lexeme'.
+(3) Provide a 'token_type' definition together with a manually written class.
+CppDefault.qx:1:error: Token type definition inadmissible while specifying on the command line
+CppDefault.qx:1:error: the file 'token.h' to contain a manually written token class.
+(4) Manually written token class without '--token-class' definition
+command line: The use of a manually written token class requires that the name of the class
+command line: is specified on the command line via the '--token-class' option.

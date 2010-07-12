@@ -1,0 +1,27 @@
+< SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  \
+---
+> SOURCES  = tiny_lexer  tiny_lexer.c  tiny_lexer-token_ids  \
+< WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
+---
+> WSOURCES = tiny_wlexer tiny_wlexer.c tiny_wlexer-token_ids \
+< COMPILER = g++ -ggdb -Wall -pedantic 
+---
+> COMPILER = gcc -ggdb -Wall -pedantic 
+< 	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "-b wchar_t" 
+---
+> 	quex -i simple.qx --engine tiny_lexer \
+> 		 --language C                     \
+> 		 # CERTAINLY NOT: "-b wchar_t" 
+< 	quex -i simple.qx --engine tiny_wlexer -b wchar_t 
+---
+> 	quex -i simple.qx --engine tiny_wlexer \
+> 		 --language C                      \
+> 	  	 -b wchar_t 
+< # -- The general way to get .o from .cpp
+< %.o: %.cpp $(SOURCES) $(WSOURCES)
+---
+> # -- The general way to get .o from .c
+> %.o: %.c $(SOURCES) $(WSOURCES)
+< 	rm -f wchar_t-example.txt # created by wlexer.cpp
+---
+> 	rm -f wchar_t-example.txt # created by wlexer.c
