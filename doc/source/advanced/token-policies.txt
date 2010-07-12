@@ -42,13 +42,13 @@ token, i.e.
 
    .. code-block:: cpp
 
-      token_p = my_lexer.receive();
+      my_lexer.receive(&token_p);
 
-where the member function ``.receive()`` returns a pointer to the current token
-inside the pre-allocated token array.  The call to the receive function either
-reads remaining tokens in the token queue or triggers the next step of lexical
-analyzis. All the management of the token queue is hidden inside the analyzer's
-engine. 
+where the member function ``.receive()`` adapts the provided pointer to the
+current token inside the pre-allocated token array.  The call to the receive
+function either reads remaining tokens in the token queue or triggers the next
+step of lexical analyzis. All the management of the token queue is hidden
+inside the analyzer's engine. 
 
 The size of the token queue is constant during run-time. Quex generates the size
 based on the the command line option ``--token-queue-size``. An overflow of the

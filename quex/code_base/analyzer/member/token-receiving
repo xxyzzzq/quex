@@ -9,11 +9,22 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 
-    QUEX_INLINE   QUEX_TYPE_TOKEN*
-    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me);
+    /* When using a token queue, the pointer **must** be adapted.
+     * Otherwise, very strange results may occur. Force the user
+     * to provide a pointer that can be adapted by having him 
+     * specify the second argument--not only a return value.      
+     *
+     * This also catches strange scenerarios when switching from
+     * token policy 'queue' to 'single'.                           */
+    QUEX_INLINE void
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN**);
 
 #elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
+    /* When there is only one single token as interface, than the
+     * token id is returned. Having it return something forces the
+     * user to change the call to receive when switching from 
+     * token policy 'single' to 'queue'.                           */
     QUEX_INLINE  QUEX_TYPE_TOKEN_ID
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me);
 

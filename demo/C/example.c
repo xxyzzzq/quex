@@ -33,7 +33,8 @@ main(int argc, char** argv)
     /* Loop until the 'termination' token arrives */
     do {
         /* Get next token from the token stream   */
-        token_p = QUEX_NAME(receive)(&qlex);
+        QUEX_NAME(receive)(&qlex, &token_p);
+
         /* Print out token information            */
 #       ifdef PRINT_TOKEN
         printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
