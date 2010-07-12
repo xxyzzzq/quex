@@ -153,8 +153,8 @@ put quex-$1-linux-installer.bin          /home/frs/project/q/qu/quex/Current
 put quex-$1-osx-installer.app.zip        /home/frs/project/q/qu/quex/Current
 put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/Current
 put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/Current
-mkdir ../HISTORY/OLD
 cd /home/frs/project/q/qu/quex/Current
+mkdir ../HISTORY/OLD
 rename quex-OLD.7z                           ../HISTORY/OLD/quex-OLD.7z
 rename quex-OLD.tar.gz                       ../HISTORY/OLD/quex-OLD.tar.gz
 rename quex-OLD.zip                          ../HISTORY/OLD/quex-OLD.zip   

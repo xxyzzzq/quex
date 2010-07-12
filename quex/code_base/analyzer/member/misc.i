@@ -72,7 +72,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
         QUEX_TYPE_TOKEN*  prev_memory = 0x0;
         size_t            prev_n      = (size_t)-1;
         QUEX_NAME(TokenQueue_memory_get)(&me->_token_queue, &prev_memory, &prev_n); 
-        QUEX_NAME(TokenQueue_init)(&this->_token_queue, *memory, *n); 
+        QUEX_NAME(TokenQueue_init)(&me->_token_queue, *memory, *memory + *n); 
         *memory = prev_memory;
         *n      = prev_n;
     }

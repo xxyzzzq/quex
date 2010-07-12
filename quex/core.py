@@ -120,6 +120,8 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                                     IndentationSupportF=IndentationSupportF)
     # -- 'on failure' action (nothing matched)
     if not Mode.has_code_fragment_list("on_failure"):
+        # We cannot make any assumptions about the token class, i.e. whether
+        # it can take a lexeme or not. Thus, no passing of lexeme here.
         txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
         txt += "RETURN;\n"
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
