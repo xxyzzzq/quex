@@ -403,7 +403,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_NAMESPACE_TOKEN_CLOSE  $$NAMESPACE_TOKEN_CLOSE$$
 
 #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME$$_ ## NAME
-#   define QUEX_NAME_TOKEN(NAME)       Token ## NAME
+#   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS$$_ ## NAME
 #   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
 #endif
 
