@@ -1,10 +1,10 @@
-<test-database execution-time-sec="171.84" date="Tue Jul 13 07:06:29 2010">
+<test-database execution-time-sec="169.71" date="Tue Jul 13 23:08:59 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
-        <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.42"> 
-            <application file-name="bug-3022603.sh" info-request-time="1277876318L" vanished="False"/>
+        <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="0.00"> 
+            <application file-name="bug-3022603.sh" info-request-time="1279053930L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.42" crc="0"/>
+               <choice name="" result="OK" time_sec="0.00" crc="934358125"/>
             </choice-list>
         </test>
         <test title="3025173 0.49.2 Custom Token struct for quex" time-sum-sec="1.44"> 
@@ -507,10 +507,10 @@
         </test>
     </group>
     <group name="the-user-k">
-        <test title="3021502 0.49.2 Buffer-size gets ignored" time-sum-sec="0.71"> 
+        <test title="3021502 0.49.2 Buffer-size gets ignored" time-sum-sec="0.00"> 
             <application file-name="bug-3021502.sh" info-request-time="1278997580L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="NO GOOD FILE" time_sec="0.71" crc="1059794394"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-2142433527"/>
             </choice-list>
         </test>
     </group>
