@@ -15,7 +15,7 @@ if [[ $2 == "FIRST" ]]; then
 fi
 
 make lexer-$1
-./lexer-$1
+./lexer-$1 example-utf-8.dat
 
 # cleansening
 if [[ $3 == "LAST" ]]; then
