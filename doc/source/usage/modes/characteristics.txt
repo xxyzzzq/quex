@@ -184,6 +184,11 @@ in the event handler definition. The list of event handlers is the following:
    Event handler for the case that a character stream does not match any pattern 
    in the mode. This is equivalent to the ``<<FAIL>>`` pattern.
 
+   .. note:: The definition of an ``on_failure`` section can be of great help
+             whenever the analyzer shows an unexpected behavior. Before doing any
+             in-depth analyzis, or even bug reporting, the display of the mismatching
+             lexeme may give a useful hint towards a lack in the specified pattern set.
+
 .. data:: on_end_of_stream
 
    Event handler for the case that the end of file, or end of stream is reached.
