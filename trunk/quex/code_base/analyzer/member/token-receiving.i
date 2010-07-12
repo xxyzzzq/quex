@@ -18,8 +18,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define self (*me)
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-    QUEX_INLINE QUEX_TYPE_TOKEN* 
-    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me)
+    QUEX_INLINE void
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** result_pp)
     { 
         register QUEX_TYPE_TOKEN* result_p = 0x0;
 #       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
@@ -32,13 +32,14 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
             __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
-            return self_token_p();  
+            *result_pp = self_token_p();  
+            return;
         } else
 #       endif
         /* Tokens are in queue --> take next token from queue */ 
         if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
-            result_p = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
-            return result_p;  
+            *result_pp = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+            return;  
         } 
 
         /* Restart filling the queue from begin */
@@ -61,11 +62,13 @@ QUEX_NAMESPACE_MAIN_OPEN
             } else {
                 __QUEX_REPEATED_TOKEN_DECREMENT_N(result_p); 
             }
-            return result_p;
+            *result_pp = result_p;
+            return;
         } else 
 #       endif
         {
-            return QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+            *result_pp = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+            return;
         }
     }
 
