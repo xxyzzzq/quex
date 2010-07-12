@@ -8,30 +8,25 @@ int
 main(int argc, char** argv) 
 {        
     using namespace std;
-    const static size_t MESSAGING_FRAMEWORK_BUFFER_SIZE = 10000;
-    uint8_t MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
+    const static size_t BUFFER_SIZE = 10000;
+    uint8_t             BUFFER[BUFFER_SIZE];
     quex::Token*   token;
-    quex::Simple   qlex(MESSAGING_FRAMEWORK_BUFFER, MESSAGING_FRAMEWORK_BUFFER_SIZE); 
+    quex::Simple   qlex(BUFFER, BUFFER_SIZE, BUFFER + 1); 
 
     // -- Call the low lever driver to fill the fill region
-    const char* str = "struct";
-    size_t receive_n = strlen(str);
-    memcpy(MESSAGING_FRAMEWORK_BUFFER, str, receive_n*sizeof(char));
+    const char* str  = "bye";
+    size_t      receive_n = strlen(str);
+    memcpy(BUFFER + 1, str, receive_n*sizeof(char));
     
     // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
     qlex.buffer_fill_region_finish(receive_n);
 
     // -- Loop until the 'termination' token arrives
-    token = qlex.token_p();
     do {
-        qlex.receive();
+        token = qlex.receive();
 
-        if( token->type_id() == QUEX_TKN_BYE ) 
-            cout << "## ";
+        cout << token->get_string() << endl;
 
-        if( token->type_id() != QUEX_TKN_TERMINATION )
-            cout << "Consider: " << string(*token) << endl;
-        
     } while( token->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;

@@ -7,9 +7,14 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple
-g++  point.cpp Simple.cpp -I. -I$QUEX_PATH
-./a.out
+quex -i simple.qx -o Simple                > tmp.txt  2>  tmp2.txt
+g++  point.cpp Simple.cpp -I. -I$QUEX_PATH >> tmp.txt 2>> tmp2.txt
+./a.out                                    >> tmp.txt 2>> tmp2.txt
+
+cat tmp.txt
+cat tmp2.txt
+
+rm -f tmp.txt tmp2.txt
 
 # cleansening
 rm ./a.out Simple*
