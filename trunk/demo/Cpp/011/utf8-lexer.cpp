@@ -17,7 +17,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        token = qlex.receive();
+        qlex.receive(&token);
 
         // (*) print out token information
         printf("%s\n", (char*)(string(*token).c_str()));
