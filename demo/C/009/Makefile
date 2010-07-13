@@ -40,9 +40,6 @@ lexer: lexer.o tiny_lexer.o
 stdinlexer: stdinlexer.o tiny_lexer.o 
 	$(LD) -o $@  stdinlexer.o tiny_lexer.o 
           
-chunked_input: chunked_input.o tiny_lexer.o 
-	$(LD) -o $@  chunked_input.o tiny_lexer.o 
-          
 $(SOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_lexer \
 		 --language C                     \

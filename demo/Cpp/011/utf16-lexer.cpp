@@ -27,7 +27,7 @@ main(int argc, char** argv)
     printf("## byte order reversion = %s\n", qlex.byte_order_reversion() ? "true" : "false");
     
     do {
-        token = qlex.receive();
+        qlex.receive(&token);
 
         printf("%s\t", (char*)token->type_id_name().c_str());
         for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token->get_text()).c_str();

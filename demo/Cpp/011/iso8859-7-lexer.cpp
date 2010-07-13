@@ -19,7 +19,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        token_p = qlex.receive();
+        qlex.receive(&token_p);
 
         // (*) print out token information
         cout << string(*token_p) << endl;
