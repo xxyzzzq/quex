@@ -1,4 +1,4 @@
-<history date="Tue Jul 13 23:08:59 2010" element-n="719">
+<history date="Wed Jul 14 07:20:30 2010" element-n="740">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1435,5 +1435,28 @@
     <day year="2010" month="07" day="13">
         <crc-error time="04:12:37" application="bug-1895500.sh" choice="iconv" database-crc="-94562967" real-crc="-1482504339"/>
         <crc-error time="04:34:35" application="bug-2799244.sh" choice="good-2" database-crc="-581797415" real-crc="-1916167"/>
+    </day>
+    <day year="2010" month="07" day="14">
+        <crc-error time="04:26:08" application="bug-1952133.sh" choice="29" database-crc="-1061142085" real-crc="125506198"/>
+        <crc-error time="04:26:11" application="bug-1952133.sh" choice="30" database-crc="-630736507" real-crc="125506198"/>
+        <crc-error time="04:26:19" application="bug-1952133.sh" choice="30" database-crc="125506198" real-crc="783389291"/>
+        <crc-error time="04:26:22" application="bug-1952133.sh" choice="127" database-crc="-1826490750" real-crc="125506198"/>
+        <crc-error time="04:26:29" application="bug-1952133.sh" choice="127" database-crc="125506198" real-crc="-817250260"/>
+        <crc-error time="04:26:33" application="bug-1952133.sh" choice="128" database-crc="2075811687" real-crc="125506198"/>
+        <crc-error time="04:26:40" application="bug-1952133.sh" choice="128" database-crc="125506198" real-crc="1133967653"/>
+        <crc-error time="04:26:43" application="bug-1952133.sh" choice="129" database-crc="-1301601134" real-crc="125506198"/>
+        <crc-error time="04:26:50" application="bug-1952133.sh" choice="129" database-crc="125506198" real-crc="-308434255"/>
+        <crc-error time="04:26:53" application="bug-1952133.sh" choice="2499" database-crc="1124787203" real-crc="125506198"/>
+        <crc-error time="04:26:59" application="bug-1952133.sh" choice="2499" database-crc="125506198" real-crc="1274987542"/>
+        <crc-error time="04:27:03" application="bug-1952133.sh" choice="2500" database-crc="-2119259764" real-crc="125506198"/>
+        <crc-error time="04:27:11" application="bug-1952133.sh" choice="2500" database-crc="125506198" real-crc="1457347780"/>
+        <crc-error time="04:27:15" application="bug-1952133.sh" choice="2501" database-crc="-122485437" real-crc="125506198"/>
+        <crc-error time="04:27:21" application="bug-1952133.sh" choice="2501" database-crc="125506198" real-crc="-120189104"/>
+        <crc-error time="04:27:25" application="bug-1952133.sh" choice="2502" database-crc="1939206162" real-crc="125506198"/>
+        <crc-error time="04:29:02" application="bug-1952133.sh" choice="2502" database-crc="125506198" real-crc="-776274515"/>
+        <crc-error time="04:51:45" application="bug-2819022.sh" choice="0" database-crc="924833233" real-crc="-1370866432"/>
+        <crc-error time="04:51:59" application="bug-2819022.sh" choice="1" database-crc="-687795300" real-crc="-1838097774"/>
+        <crc-error time="04:52:06" application="bug-2819022.sh" choice="2" database-crc="1923590724" real-crc="-1650840420"/>
+        <crc-error time="04:52:14" application="bug-2819022.sh" choice="3" database-crc="-556417700" real-crc="-845320683"/>
     </day>
 </history>

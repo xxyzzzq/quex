@@ -28,7 +28,7 @@ main(int argc, char** argv)
 #       ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
         qlex.receive();
 #       else
-        token_p = qlex.receive();
+        qlex.receive(&token_p);
 #       endif
         if( token_p->type_id() == QUEX_TKN_TERMINATION ) {
             token_p->text = (QUEX_TYPE_CHARACTER*)"";

@@ -138,13 +138,13 @@ namespace quex {
 
 	Token * Parser::read() {
 		deque<Token *> * memento = tokenMemento.top();
-		Token * nextToken        = 0x00;
+		Token* nextToken        = 0x00;
 
 		if(tokenQueue.empty()) {
-			nextToken = new Token();
-
+            Token*  token_p = 0x0;
 			// Receive from lexer...
-			*nextToken = *(lexer.receive());
+			lexer.receive(&token_p);
+            nextToken = new Token(*token_p);
 		} else {
 			nextToken = tokenQueue.front();
 
@@ -177,10 +177,10 @@ namespace quex {
 			size_t needCount = (peekIndex + 1) - queueSize;
 
 			for(int index = 0x00;index < needCount;index++) {
-				Token * readToken = new Token();
-
-				// Receive from lexer...
-				*readToken = *(lexer.receive());
+                Token*  token_p = 0x0;
+                // Receive from lexer...
+                lexer.receive(&token_p);
+                Token* readToken = new Token(*token_p);
 
 				// Push into look-ahead buffer...
 				tokenQueue.push_back(readToken);

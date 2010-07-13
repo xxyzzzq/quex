@@ -10,7 +10,7 @@ main(int argc, char** argv)
     using namespace std;
     const static size_t BUFFER_SIZE = 10000;
     uint8_t             BUFFER[BUFFER_SIZE];
-    quex::Token*   token;
+    quex::Token*   token_p;
     quex::Simple   qlex(BUFFER, BUFFER_SIZE, BUFFER + 1); 
 
     // -- Call the low lever driver to fill the fill region
@@ -21,13 +21,13 @@ main(int argc, char** argv)
     // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
     qlex.buffer_fill_region_finish(receive_n);
 
-    // -- Loop until the 'termination' token arrives
+    // -- Loop until the 'termination' token_p arrives
     do {
-        token = qlex.receive();
+        qlex.receive(&token_p);
 
-        cout << token->get_string() << endl;
+        cout << token_p->get_string() << endl;
 
-    } while( token->type_id() != QUEX_TKN_TERMINATION );
+    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     return 0;
 }

@@ -9,4 +9,3 @@ asillya
 OTHER 'a' 
 WORD 'silly' 
 OTHER 'a' 
-<TERMINATION> '' 

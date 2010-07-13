@@ -9,4 +9,3 @@ error-3.qx:7:warning: Token id 'QUEX_TKN_OTHER' defined implicitly.
 OTHER ''' 
 WORD 'silly' 
 QUOTE_S_PRE_COND ''s' 
-<TERMINATION> '' 

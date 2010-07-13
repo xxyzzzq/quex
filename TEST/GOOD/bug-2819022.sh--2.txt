@@ -10,4 +10,3 @@ error-2.qx:8:warning: Token id 'QUEX_TKN_NEWLINE' defined implicitly.
 OTHER ''' 
 WORD 'silly' 
 OTHER ''' 
-<TERMINATION> '' 

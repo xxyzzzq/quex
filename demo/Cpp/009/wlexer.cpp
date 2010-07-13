@@ -38,7 +38,7 @@ main(int argc, char** argv)
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
     do {
-        token = qlex->receive();
+        qlex->receive(&token);
         cout << string(*token) << endl;
         ++number_of_tokens;
     } while( token->type_id() != QUEX_TKN_TERMINATION );

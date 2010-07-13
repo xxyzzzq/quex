@@ -85,7 +85,7 @@ int Calc_yylex(YYSTYPE *yylval, Calc_lexer *qlex)
 {
 	QUEX_TYPE_TOKEN* token;
 
-	token = QUEX_NAME(receive)(qlex);
+	QUEX_NAME(receive)(qlex, &token);
 
 	if (strlen((char*)token->text) > 0 )
 	{

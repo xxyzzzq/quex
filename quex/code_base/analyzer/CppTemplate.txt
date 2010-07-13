@@ -143,11 +143,17 @@ public:
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
+    /* NOTE: The receive() functions for token policy 'queue' and 'single' are
+     *       kept incompatible by purpose. This way is forced to reflect about
+     *       crucial changes in the token communication mechanism.                */
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    QUEX_TYPE_TOKEN*      receive();
+    /* Enforce user to adapt the token pointer when token policy == 'queue'       */
+    void                  receive(QUEX_TYPE_TOKEN**);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+    /* Fastest way of passing a token-id: via stack (or many times cpu register!) */
     QUEX_TYPE_TOKEN_ID    receive();
 #   endif
+
     // NOTE: A pointer to an object of the token queue/object is used in order to make
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
