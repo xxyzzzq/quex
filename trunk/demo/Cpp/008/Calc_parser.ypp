@@ -84,7 +84,7 @@ void Calc_yyerror(quex::Calc_lexer *qlex, const std::string& m)
 int Calc_yylex(YYSTYPE *yylval, quex::Calc_lexer *qlex)
 {
 	quex::Token* token;
-	token = qlex->receive();
+	qlex->receive(&token);
 	if (token->get_text().length()>0)
 	{
 		yylval->str = new std::string((const char *)token->get_text().c_str());

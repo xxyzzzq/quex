@@ -18,7 +18,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        token_p = QUEX_NAME(receive)(&qlex);
+        QUEX_NAME(receive)(&qlex, &token_p);
 
         /* (*) print out token information
          *     'get_utf8_string' automagically converts codec bytes into utf8 */

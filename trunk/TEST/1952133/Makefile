@@ -19,6 +19,7 @@ CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      -DQUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE) \
 	 -DQUEX_OPTION_ACTIVATE_ASSERTS \
+	 -DTEST_EPILOG='std::printf("Buffer Size = %i\n", QUEX_SETTING_BUFFER_SIZE);'
 	 # -D__QUEX_OPTION_UNIT_TEST \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
      # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
@@ -33,6 +34,9 @@ lexer: lexer.o Simple.o
 	$(LD) lexer.o Simple.o -o $@
 
 # -- engine and object files
+lexer.o: ../lexer.cpp Simple.cpp
+	$(CC) -Wall $< -ggdb -o $@
+
 %.o: %.cpp Simple.cpp
 	$(CC) -Wall $< -ggdb -o $@
 

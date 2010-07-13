@@ -22,7 +22,7 @@ main(int argc, char** argv)
     printf("| [START]\n");
 
     do {
-        token_p = QUEX_NAME(receive)(&qlex);
+        QUEX_NAME(receive)(&qlex, &token_p);
         /* print out token information */
         printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
  

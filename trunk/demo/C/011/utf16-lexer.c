@@ -28,7 +28,7 @@ main(int argc, char** argv)
     printf("## byte order reversion = %s\n", QUEX_NAME(byte_order_reversion)(&qlex) ? "true" : "false");
     
     do {
-        token_p = QUEX_NAME(receive)(&qlex);
+        QUEX_NAME(receive)(&qlex, &token_p);
 
         printf("%s\t", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
         for(iterator = token_p->text; *iterator; ++iterator) {

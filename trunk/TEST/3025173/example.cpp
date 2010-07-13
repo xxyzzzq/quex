@@ -7,7 +7,7 @@ main(int argc, char** argv)
     quex::br_scan    qlex("example.txt");
 
     do {
-        token_p = qlex.receive();
+        qlex.receive(&token_p);
     } while( 1 + 1 == 2 );
 
     return 0;
