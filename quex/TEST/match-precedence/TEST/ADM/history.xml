@@ -1,4 +1,4 @@
-<history date="Tue Jul 13 06:19:04 2010" element-n="115">
+<history date="Wed Jul 14 07:13:18 2010" element-n="116">
     <day year="2009" month="06" day="27">
         <history-init time="20:41:20"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:27"/>
@@ -341,5 +341,8 @@
     </day>
     <day year="2010" month="03" day="02">
         <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:35:35"/>
+    </day>
+    <day year="2010" month="07" day="14">
+        <crc-error time="05:12:55" application="large-tree.sh" choice="" database-crc="-1542010050" real-crc="-828763524"/>
     </day>
 </history>

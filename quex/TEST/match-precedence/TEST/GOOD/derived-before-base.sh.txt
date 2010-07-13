@@ -1,6 +1,2 @@
-[START]
 B_WORD 'word' 
 A_IDENTIFIER 'otto' 
-<TERMINATION> '' 
-
-[END]
