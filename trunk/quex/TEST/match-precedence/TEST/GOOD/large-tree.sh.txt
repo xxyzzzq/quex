@@ -1,4 +1,3 @@
-[START]
 H 'a' 
 D 'no' 
 I 'not' 
@@ -8,6 +7,3 @@ F 'beyond'
 G 'rabbits' 
 C 'backyard' 
 A 'elsewhere' 
-<TERMINATION> '' 
-
-[END]
