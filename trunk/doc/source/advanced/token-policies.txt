@@ -9,17 +9,44 @@ identifier', that tells how the current input can be catagorized, e.g. as a
 the actual stream content might have to be stored. For example when a 'STRING'
 is identified the content of the string might be interesting for the caller of
 the lexical analyzer. This basic information needs to be passed to the user of
-the lexical analyzer. The following subsections describe the two token passing
-policies available in quex: ``queue`` and ``single``.
+the lexical analyzer. Token passing in quex can be characterized by 
 
-Queue
------
+  #. Memory managements: Memory management of the token or token queue 
+     can be either be accomplished by the analyzer engine or by the user.
 
-Command line option: ``--token-policy  queue``, or no ``--token-policy``. 
+     By default the analyzer engine takes over memory management for the token
+     or token queue. Also, it calls constructors and destructors as required.
 
-This is the policy that is used if no other one is specified. It has multiple
-advantages:
-  
+  #. Token passing policy: Possible policies are 'queue' and 'single'.  Tokens
+     can be stored in a *queue* to be able to produce more than one token per
+     analyzis step. If this is not required a *single* token instance may be used to
+     communicate analyzis results.
+
+     The default policy is 'queue' since it is the easiest and safest to
+     handle during analyzis and event handlers.
+
+The following two sections discuss automatic and user token memory management
+separately. For each memory management type the two token passing policies
+'single' and 'queue' are described.
+
+
+Automatic Token Memory Management
+---------------------------------
+
+Automatic token memory management relieves the user from anything related to
+memory management of the internal token or token queues. It might require
+copying and memory allocations which are not necessary if the user controls the
+token memory management. However, its ease allows to explain the token passing
+policies without much distractive comments.
+
+The default token policy is 'queue'. Explicitly it can be activated
+via the command line option ``--token-policy``, i.e.::
+
+   > quex ... --token-policy queue ...
+
+This policy is the safe choice and requires a minimum of programming effort.
+It has the following advantages:
+
    -- Using a token queue enables the sending of multiple
       tokens as response to a single pattern match. 
       
@@ -27,8 +54,91 @@ advantages:
       can be used without much consideration of what happens to the 
       tokens. 
       
-   -- Finally, multiple pattern matches can be performed without 
+   -- Multiple pattern matches can be performed without 
       returning from the lexical analyzer function.
+
+Figure :ref:`fig-token-queue` shows the mechanism of the token queue policy.
+The lexical analyzer fills the tokens in the queue and is only limited by the
+queue's size. The user maintains a pointer to the currently considered token
+``token_p``. During the call to 'receive()' this pointer bent so that it points
+to the next token to be considered. A code fragment applying this policy needs
+to follow the scheme
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN*  token_p = 0x0; 
+    ...
+    while( analyzis ) {
+        lexer.receive(&token_p);
+        ...
+        if( content_is_important_f ) {
+            safe_place = new QUEX_TYPE_TOKEN(*token_p);
+        }
+    }
+
+The tokens all live inside the analyzer's token queue. A call to 'receive()'
+may overwrite any token. Thus, if the content of the token is of interest it
+needs to be copied to a safe place.
+
+The size of the token queue is constant during run-time. Quex generates the size
+based on the the command line option ``--token-queue-size``. An overflow of the
+queue is prevented since the analyser returns as soon as the queue is full. 
+
+Then the ``--token-queue-safety-border`` command line flag allows to define a
+safety region. Now, the analyzer returns as soon as the remaining free places
+in the queue are less then the specified number. This ensures that for each
+analyzis step there is a minimum of places in the queue to which it can write
+tokens. In other words, the safety-border corresponds to the maximum number of
+tokens send as reaction to a pattern match, including indentation events and
+mode transitions.  The default safety border is 16 tokens.
+
+The policy 'single' is an alternative to the 'queue' policy. Explicitly it can
+be activated via the command line option ``--token-policy single``, i.e.::
+
+   > quex ... --token-policy single ...
+
+
+
+Multiple tokens can be sent for
+a single 
+
+The two token policies 'single' and 'queue' can be activated
+via the command line option to quex '--token-polcy' followed by
+either 'single' or 'queue'. Depending on the policy the passing 
+of token information changes and, thus the interface functions
+change. If 'queue' is used as policy tokens are received via
+
+Here, the receive function bends the pointer ``token_p`` to the 
+next token in the queue. When 'single' is used as policy, then
+tokens are received via
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN*  token_p = 0x0; 
+    ...
+    token_p = qlex.token_p();
+    ...
+    while( analyzis ) {
+        token_id = qlex.receive();
+        ...
+        /* work with *token_p */
+    }
+
+Since there is only one single token, it is enough to request a pointer to it
+before the analyzis starts. The receive function now returns a token
+identifier. The design choice of having two incompatible receive functions for
+the two token policies was made by good purpose. When the user switches from
+one policy to another, or uses code examples for a different policy, then he
+must be aware that certain things are different. For example, when switching
+from 'single' to 'queue' it is not enough to refer to the token pointer at the
+begin of the analyzis. It must be updated at each step. Compatibility would
+mean to tolerate non-functional setups
+
+
+
+This is the policy that is used if no other one is specified. It has multiple
+advantages:
+  
 
 All of this comes with the slight disadvantage that the token queue iterators
 need to be increased and reset for an analyzis step. Since this overhead is
@@ -49,19 +159,6 @@ current token inside the pre-allocated token array.  The call to the receive
 function either reads remaining tokens in the token queue or triggers the next
 step of lexical analyzis. All the management of the token queue is hidden
 inside the analyzer's engine. 
-
-The size of the token queue is constant during run-time. Quex generates the size
-based on the the command line option ``--token-queue-size``. An overflow of the
-queue is prevented since the analyser returns as soon as the queue is full. The
-default size of the token queue is 64 tokens.
-
-Then the ``--token-queue-safety-border`` command line flag allows to define a
-safety region. Now, the analyzer returns as soon as the remaining free places
-in the queue are less then the specified number. This ensures that for each
-analyzis step there is a minimum of places in the queue to which it can write
-tokens. In other words, the safety-border corresponds to the maximum number of
-tokens send as reaction to a pattern match, including indentation events and
-mode transitions.  The default safety border is 16 tokens.
 
 Additionally, there are three functions for low-level interaction
 with the token queue:
@@ -232,7 +329,7 @@ token. The current token can be accessed via
 
    .. code-block:: cpp
    
-       token_p = my_lexer.token_p();
+       my_lexer.token_p(&token_p);
 
 where the returned pointer always points to the same token object as long
 as one does not call 
