@@ -14,10 +14,10 @@ example
     mode SOMETHING {
         ...
 
-        {P_STRING_DELIMITER} {
+        "\"" {
             self << STRING_READER; 
             self_send(QUEX_TKN_EVENT_MODE_CHANGE);
-            return;
+            RETURN;
         }
 
         ...
@@ -25,13 +25,18 @@ example
         [a-z]+ {
             self_send(QUEX_TKN_IDENTIFIER, Lexeme);
             self.allow_opening_indentation_f = true;
-            return;
+            RETURN;
         }
     }
 
-The patterns ``P_IF_KEYWORD`` and ``P_STRING_DELIMITER`` would be
-defined in a ``define`` section. The functions used in this example are
-as follows. The lexical analyzer object can be accessed via
+The C-code fragments may be ended with ``RETURN`` and ``CONTINUE``. If
+``RETURN`` is specified the analyzer returns from its analyzis. If ``CONTINUE``
+is specified the analyzis may continue without returning to the caller. The reason
+for these two being defined as macros is that they behave differently depending
+of token passing policies (:ref:`sec-token-policies`).
+
+The functions used in this example are as follows. The lexical analyzer object
+can be accessed via
 
 .. data:: self
 
@@ -118,7 +123,7 @@ example
 
         {P_STRING_DELIMITER} {
             self.enter_mode(STRING_READER); 
-            return;
+            RETURN;
         }
 
 causes a mode transition to the ``STRING_READER`` mode as soon as a string
