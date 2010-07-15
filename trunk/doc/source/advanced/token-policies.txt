@@ -11,33 +11,36 @@ is identified the content of the string might be interesting for the caller of
 the lexical analyzer. This basic information needs to be passed to the user of
 the lexical analyzer. Token passing in quex can be characterized by 
 
-  #. Memory managements: Memory management of the token or token queue 
-     can be either be accomplished by the analyzer engine or by the user.
+  .. describe:: Memory managements 
+  
+     Memory management of the token or token queue can be either be
+     accomplished by the analyzer engine or by the user.
 
      By default the analyzer engine takes over memory management for the token
      or token queue. Also, it calls constructors and destructors as required.
 
-  #. Token passing policy: Possible policies are 'queue' and 'single'.  Tokens
-     can be stored in a *queue* to be able to produce more than one token per
-     analyzis step. If this is not required a *single* token instance may be used to
-     communicate analyzis results.
+  .. describe:: Token passing policy
+ 
+     Possible policies are 'queue' and 'single'.  Tokens can be stored in a
+     *queue* to be able to produce more than one token per analyzis step. If
+     this is not required a *single* token instance may be used to communicate
+     analyzis results.
 
-     The default policy is 'queue' since it is the easiest and safest to
-     handle during analyzis and event handlers.
+     The default policy is 'queue' since it is the easiest and safest to handle
+     during analyzis and event handlers.
 
-The following two sections discuss automatic and user token memory management
-separately. For each memory management type the two token passing policies
-'single' and 'queue' are described.
+The following two sections discuss automatic and user controlled token memory
+management separately. For each memory management type the two token passing
+policies 'single' and 'queue' are described.
 
 
 Automatic Token Memory Management
 ---------------------------------
 
-Automatic token memory management relieves the user from anything related to
-memory management of the internal token or token queues. It might require
-copying and memory allocations which are not necessary if the user controls the
-token memory management. However, its ease allows to explain the token passing
-policies without much distractive comments.
+Automatic token memory management is active by default. It relieves the user
+from anything related to memory management of the internal token or token
+queues. It is the seemingless nature which makes it possible to introduce the
+concepts of token passing policies without much distractive comments. 
 
 The default token policy is 'queue'. Explicitly it can be activated
 via the command line option ``--token-policy``, i.e.::
@@ -57,6 +60,17 @@ It has the following advantages:
    -- Multiple pattern matches can be performed without 
       returning from the lexical analyzer function.
 
+However, there is a significant drawback:
+
+   -- The state of the analyzer is not syncronized with the currently 
+      reported token, but with the token currently on top of the queue.
+
+A direct consequence of this is that parameters like line number, stream
+position etc.  must be stored inside the token at the time it is created, i.e.
+inside the pattern action (see :ref:`sec-token-stamping`). For the above
+reason, the line number reported by the analyzer is not necessarily the line
+number of the token which is currently taken from the queue.
+
 Figure :ref:`fig-token-queue` shows the mechanism of the token queue policy.
 The lexical analyzer fills the tokens in the queue and is only limited by the
 queue's size. The user maintains a pointer to the currently considered token
@@ -72,13 +86,21 @@ to follow the scheme
         lexer.receive(&token_p);
         ...
         if( content_is_important_f ) {
-            safe_place = new QUEX_TYPE_TOKEN(*token_p);
+            safe_token = new QUEX_TYPE_TOKEN(*token_p);
         }
     }
 
-The tokens all live inside the analyzer's token queue. A call to 'receive()'
-may overwrite any token. Thus, if the content of the token is of interest it
-needs to be copied to a safe place.
+The tokens all live inside the analyzer's token queue and the user primarily
+only owns a reference to a token object ``token_p``. The next call to
+'receive()' may potentially overwrite the content to which ``token_p`` points.
+Thus, if the content of the token is of interest for a longer term, then it
+must be stored safely away.
+
+.. note:: The usage of ``malloc`` or ``new`` to allocate memory for 
+          each token may have a major influence on performance. Consider
+          a memory pool instead, which is allocated at once and which
+          is able to provide token objects quickly without interaction
+          with the operating system.
 
 The size of the token queue is constant during run-time. Quex generates the size
 based on the the command line option ``--token-queue-size``. An overflow of the
@@ -90,27 +112,51 @@ in the queue are less then the specified number. This ensures that for each
 analyzis step there is a minimum of places in the queue to which it can write
 tokens. In other words, the safety-border corresponds to the maximum number of
 tokens send as reaction to a pattern match, including indentation events and
-mode transitions.  The default safety border is 16 tokens.
+mode transitions.  
 
 The policy 'single' is an alternative to the 'queue' policy. Explicitly it can
 be activated via the command line option ``--token-policy single``, i.e.::
 
    > quex ... --token-policy single ...
 
+The advantages of a token queue are all lost, i.e. 
 
+   -- No more than one token can be sent per pattern match.
+   
+   -- Event handlers better not send any token or it must be sure
+      that the surrounding patterns do not send token.
 
-Multiple tokens can be sent for
-a single 
+   -- Only one pattern match can be performed per call to the analyzer
+      function. The usage of ``CONTINUE`` in a pattern action is 
+      generally not advisable.
 
-The two token policies 'single' and 'queue' can be activated
-via the command line option to quex '--token-polcy' followed by
-either 'single' or 'queue'. Depending on the policy the passing 
-of token information changes and, thus the interface functions
-change. If 'queue' is used as policy tokens are received via
+On the other hand, there is a major advantage:
 
-Here, the receive function bends the pointer ``token_p`` to the 
-next token in the queue. When 'single' is used as policy, then
-tokens are received via
+   -- The state of the analyzer is conform with the currently reported
+      token.
+
+Thus, line numbers stream positions and even the current lexeme can be
+determined from outside the analyzer function. The analyzer function does not
+have to send a whole token. Actually, it is only required to send a token id.
+This token id is the functions return value and, with most compilers, stored in
+a CPU register. Since only one token object is stored inside the analyzer the data
+locality is improved and cache misses are less probable.  The token passing
+policy 'single' is designed to support a minimal setup, which may 
+improve the performance of an analyzer.
+
+.. note:: Even with the token passing policy 'single' the ability to send
+          multiple repeated tokens (using ``self_send_n()``) at the same time 
+          remains intact. The repetition is implemented via a repetition counter
+          not by duplication of tokens.
+
+---[writing]
+
+In contrast to the policy 'queue' a with 'single' the call to ``receive()``
+does not bend any token pointer to a current token. Instead, the one 
+token inside the analyzer can be referred to once. The receive function
+returns only the token id as a basis for later analyzis. If necessary, the
+application may rely on the token's content by dereferencing the pointer
+at any time. A code fragment for policy 'single' is shown below:
 
 .. code-block:: cpp
 
@@ -121,38 +167,48 @@ tokens are received via
     while( analyzis ) {
         token_id = qlex.receive();
         ...
-        /* work with *token_p */
+        if( content_is_important_f ) {
+            safe_token = new QUEX_TYPE_TOKEN(*token_p);
+        }
     }
 
-Since there is only one single token, it is enough to request a pointer to it
-before the analyzis starts. The receive function now returns a token
-identifier. The design choice of having two incompatible receive functions for
-the two token policies was made by good purpose. When the user switches from
-one policy to another, or uses code examples for a different policy, then he
-must be aware that certain things are different. For example, when switching
-from 'single' to 'queue' it is not enough to refer to the token pointer at the
-begin of the analyzis. It must be updated at each step. Compatibility would
-mean to tolerate non-functional setups
+Again, the next call to ``receive()`` may overwrite the content of the token.
+If it is needed on a longer term, then it must be copied to a safe place.
+
+Note, that the function signature for the receive functions in 'queue' and 'single'
+are incompatible. The receive function for 'queue' has the following signature
+
+.. code-block:: cpp
+
+    void  receive(QUEX_TYPE_TOKEN**);  // 'queue' bends a pointer
+
+where the signature in case of token passing policy 'single' is
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN_ID  receive();     // 'single' only reports token id
+
+This choice has been made so that user code breaks if the token policy is switched.
+Both policies require a different handling and a compile error forces the user
+to rethink his strategy[#f1]_.  It is expected that the compiler reacts to a
+mismatching function call by pointing to a location where a matching candidate
+can be found. At this location, the user will find a hint that the token policy
+is not appropriate. 
 
 
+User Controlled Token Memory Management
+---------------------------------------
 
-This is the policy that is used if no other one is specified. It has multiple
-advantages:
-  
+The previous discussion has revealed a major drawback in automatic token memory
+management: Whenever the content of a token is of interest for a longer term,
+it must be copied. Alternative, the user may tell the analyzer where to
+write information about tokens. Then, when the analyzer has finished it may
+provide it with a new 'piece of paper' and take away the current one for
+further analyzis. These reduces the need for memory allocation and disposes
+the need of copying. As a disadvantage, the user is now responsible for 
+allocating and freeing of memory, as well as constructing and destructing
+of the involved tokens.
 
-All of this comes with the slight disadvantage that the token queue iterators
-need to be increased and reset for an analyzis step. Since this overhead is
-most likely outweight by the three advantages above, ``queue`` is the default
-token. The decision wether the analyzis shall continue or return can be
-made inside the pattern actions using ``RETURN`` and ``CONTINUE``.
-
-When 'queue' is used as token passing policy, then the interaction with 
-the lexical analyzer is simply to receive a pointer to the current
-token, i.e.
-
-   .. code-block:: cpp
-
-      my_lexer.receive(&token_p);
 
 where the member function ``.receive()`` adapts the provided pointer to the
 current token inside the pre-allocated token array.  The call to the receive
@@ -458,3 +514,10 @@ about which policy is preferable for a particular application.
    ``self_send_n()`` is always available. The requirement that a multiple same
    tokens may be sent repeatedly does *not* imply that a token queue policy must be
    used.
+
+.. rubric:: Footnotes
+
+   [#f1] Previous designs where both setups compiled for both policies had
+   let to wrong and confusing results; and only in depth analyzis revealed the
+   inappropriate token policy being applied. 
+
