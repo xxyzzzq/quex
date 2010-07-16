@@ -8,28 +8,51 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-
-    /* When using a token queue, the pointer **must** be adapted.
-     * Otherwise, very strange results may occur. Force the user
-     * to provide a pointer that can be adapted by having him 
-     * specify the second argument--not only a return value.      
+    /* NOTE: All calls to receive functions for the four scenarios
+     *       are deliberately chosen to be incompatible! 
      *
-     * This also catches strange scenerarios when switching from
-     * token policy 'queue' to 'single'.                           */
+     * If the user changes the token handling of the analyzer his handling
+     * **must** adapt. This is forced by making the call to the receive() 
+     * function inoperable except for the case for which it was designed.  */
+
+#   if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+    /* (1.1) Token Queue with Automatic Token Memory Management
+     * 
+     *   When using a token queue, the pointer **must** be adapted.
+     *   Otherwise, very strange results may occur. Force the user
+     *   to provide a pointer that can be adapted by having him 
+     *   specify the second argument--not only a return value.             */
     QUEX_INLINE void
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN**);
+#   else
+    /* (1.1) Token Queue with User Token Memory Management
+     *
+     *   At each receive() step the token queue is switched with the queue
+     *   of the analyzer.                                                  */
+    QUEX_INLINE size_t /* finished_token_queue_fill_level */
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER*  me,
+                       QUEX_TYPE_TOKEN**    finished_token_queue, 
+                       QUEX_TYPE_TOKEN*     empty_token_queue,
+                       size_t               empty_token_queue_size);
+#   endif
 
 #elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
+#   if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     /* When there is only one single token as interface, than the
-     * token id is returned. Having it return something forces the
-     * user to change the call to receive when switching from 
-     * token policy 'single' to 'queue'.                           */
+     * token id is returned. This enables a minimal setup were the
+     * analyzer may only return a token id and does not work on tokens.    */
     QUEX_INLINE  QUEX_TYPE_TOKEN_ID
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me);
+#   else
+    /* Switching the token at each receive() step.                         */
+    QUEX_INLINE  QUEX_TYPE_TOKEN* /* finished_token */
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, 
+                       QUEX_TYPE_TOKEN*    empty_token);
+#   endif
 
 #else
-#   error "Token policy must be 'queue' or 'users_token'."
+#   error "Token policy must be 'queue' or 'single'."
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

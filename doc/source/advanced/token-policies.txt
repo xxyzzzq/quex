@@ -74,9 +74,19 @@ number of the token which is currently taken from the queue.
 Figure :ref:`fig-token-queue` shows the mechanism of the token queue policy.
 The lexical analyzer fills the tokens in the queue and is only limited by the
 queue's size. The user maintains a pointer to the currently considered token
-``token_p``. During the call to 'receive()' this pointer bent so that it points
-to the next token to be considered. A code fragment applying this policy needs
-to follow the scheme
+``token_p``. As a result to the call to 'receive()' this pointer bent so that
+it points to the next token to be considered. The receive function itself
+does the following:
+
+   -- if there are tokens left inside the queue, it returns a pointer
+      to the next token.
+
+   -- if not, then a call to the analyzer function is performed. The analyzer
+      function fills some tokens in the queue, and the first token from the queue
+      is returned to the user. 
+
+An application that applies a 'queue' token policy needs to implement
+a code fragment like the following
 
 .. code-block:: cpp
 
@@ -90,7 +100,7 @@ to follow the scheme
         }
     }
 
-The tokens all live inside the analyzer's token queue and the user primarily
+All tokens primarily live inside the analyzer's token queue and the user
 only owns a reference to a token object ``token_p``. The next call to
 'receive()' may potentially overwrite the content to which ``token_p`` points.
 Thus, if the content of the token is of interest for a longer term, then it
@@ -149,8 +159,6 @@ improve the performance of an analyzer.
           remains intact. The repetition is implemented via a repetition counter
           not by duplication of tokens.
 
----[writing]
-
 In contrast to the policy 'queue' a with 'single' the call to ``receive()``
 does not bend any token pointer to a current token. Instead, the one 
 token inside the analyzer can be referred to once. The receive function
@@ -201,13 +209,81 @@ User Controlled Token Memory Management
 
 The previous discussion has revealed a major drawback in automatic token memory
 management: Whenever the content of a token is of interest for a longer term,
-it must be copied. Alternative, the user may tell the analyzer where to
-write information about tokens. Then, when the analyzer has finished it may
-provide it with a new 'piece of paper' and take away the current one for
-further analyzis. These reduces the need for memory allocation and disposes
-the need of copying. As a disadvantage, the user is now responsible for 
-allocating and freeing of memory, as well as constructing and destructing
-of the involved tokens.
+it must be copied. This could be spared, if the lexical analyzer is told
+were to write the token information. When an analyzis step is done the user
+takes the pointer to the finished token, and provides the analyzer with a
+pointer to an empty token.  This token-switching  reduces the need for
+memory allocation and disposes the need of copying. As a disadvantage, the
+user is now responsible for allocating and freeing of memory, as well as
+constructing and destructing of the involved tokens.
+
+Applying these concepts to the token passing policy 'single' is straight
+forward. The reception of a token is necessarily bound to the switch of
+token pointer. Thus, they can be combined. The function signature
+of the receive function is
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN* receive(QUEX_TYPE_TOKEN* empty_token);
+
+The receive function takes a pointer to an allocated, ready-to-rumble, but
+empty token object. The next analyzis step will write content into this
+object. The result of the current analyzis step is available as the return
+value. A typical code fragment for this scenerio looks like
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN  token_bank[2]; 
+    QUEX_TYPE_TOKEN* token_p = &token_bank[1];
+    ...
+    lexer.set_token_p(&token_bank[0]);
+    ...
+    while( analyzis ) {
+        token_p = lexer.receive(&token_p);
+        ...
+        if( content_is_important_f ) {
+            store_away(token_p);
+            token_p = get_new_token();
+        }
+    }
+
+The idea of 'switching the thing on which the analyzer writes' can also be
+applied to the 'queue' token passing policy. When switching a token queue,
+however, the user has to iterate himself over the content. The iteration
+over the token queue can no longer automatically happen inside the 
+receive function. The function signature of the receive function
+is the following:
+
+
+.. code-block:: cpp
+
+    size_t receive(QUEX_TYPE_TOKEN**    finished_token_queue, 
+                   QUEX_TYPE_TOKEN*     empty_token_queue,
+                   size_t               empty_token_queue_size);
+
+This receive function always performs a call to the underlying analyzer
+function. At each step an empty queue is filled from ground until the analyzer
+function returns. The return value is the fill level of the currently finished
+token queue, the pointer of the first argument is bent towards the begin of the
+finished token queue. The second and third argument determine the memory
+location and size of the new token queue for the next analyzis step. A typical
+code fragment applying this approach could be similar to 
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN*  token_p = 0x0; 
+    ...
+    qlex.set_token_queue(empty_queue, empty_queue_size);
+    ...
+    while( analyzis ) {
+        fill_level = qlex.receive(queue, empty_queue, empty_queue_size);
+        ...
+        if( content_is_important_f ) {
+            store_away(token_p);
+            token_p = get_new_token();
+        }
+    }
+
 
 
 where the member function ``.receive()`` adapts the provided pointer to the
