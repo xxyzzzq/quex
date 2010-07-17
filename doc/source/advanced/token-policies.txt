@@ -42,6 +42,10 @@ from anything related to memory management of the internal token or token
 queues. It is the seemingless nature which makes it possible to introduce the
 concepts of token passing policies without much distractive comments. 
 
+
+Queue
+.....
+
 The default token policy is 'queue'. Explicitly it can be activated
 via the command line option ``--token-policy``, i.e.::
 
@@ -123,6 +127,9 @@ analyzis step there is a minimum of places in the queue to which it can write
 tokens. In other words, the safety-border corresponds to the maximum number of
 tokens send as reaction to a pattern match, including indentation events and
 mode transitions.  
+
+Single
+......
 
 The policy 'single' is an alternative to the 'queue' policy. Explicitly it can
 be activated via the command line option ``--token-policy single``, i.e.::
@@ -215,12 +222,19 @@ takes the pointer to the finished token, and provides the analyzer with a
 pointer to an empty token.  This token-switching  reduces the need for
 memory allocation and disposes the need of copying. As a disadvantage, the
 user is now responsible for allocating and freeing of memory, as well as
-constructing and destructing of the involved tokens.
+constructing and destructing of the involved tokens. User controlled memory
+management is activated via the command line option
+``--token-memory-management-by-user``, or ``--tmmbu``, i.e. quex has to 
+be called with::
 
-Applying these concepts to the token passing policy 'single' is straight
-forward. The reception of a token is necessarily bound to the switch of
-token pointer. Thus, they can be combined. The function signature
-of the receive function is
+   > quex ... --token-memory-management-by-user ...
+
+The following paragraphs will first discuss the 'single' token passing policy
+and then 'queue', because it is straight forward for the former and a little
+more involved for the later. Whenever a token is received a new token must be
+provided on which the analyzer can write.  Thus, the token pointer switching
+and the reception can be combined. The function signature of the receive
+function is
 
 .. code-block:: cpp
 
@@ -239,7 +253,8 @@ value. A typical code fragment for this scenerio looks like
     lexer.set_token_p(&token_bank[0]);
     ...
     while( analyzis ) {
-        token_p = lexer.receive(&token_p);
+        /* call to receive(...) switches token pointer */
+        token_p = lexer.receive(token_p);
         ...
         if( content_is_important_f ) {
             store_away(token_p);
@@ -248,49 +263,54 @@ value. A typical code fragment for this scenerio looks like
     }
 
 The idea of 'switching the thing on which the analyzer writes' can also be
-applied to the 'queue' token passing policy. When switching a token queue,
-however, the user has to iterate himself over the content. The iteration
-over the token queue can no longer automatically happen inside the 
-receive function. The function signature of the receive function
-is the following:
-
+applied to the 'queue' token passing policy. The user provides a chunk of
+allocated and constructed tokens. The receive function fills the token queue
+during the call to receive and prepares a new token queue to carry analyzis
+results. The switched entity is the token queue and no longer a single token.
+Note, that with this approach, the receive function can longer longer
+implicitly iterate over a token queue in the background. Instead, the user is
+responsible to iterate over the received queue of tokens. The function
+signature of the receive function is the following:
 
 .. code-block:: cpp
 
-    size_t receive(QUEX_TYPE_TOKEN**    finished_token_queue, 
-                   QUEX_TYPE_TOKEN*     empty_token_queue,
-                   size_t               empty_token_queue_size);
+    QUEX_TYPE_TOKEN* receive(QUEX_TYPE_TOKEN**    finished_token_queue, 
+                             QUEX_TYPE_TOKEN*     empty_token_queue,
+                             size_t               empty_token_queue_size);
+
+The resulting token queue is communicated via the return value and the 
+first argument. The first argument's pointer is bent to the begin of the
+currently finished token queue and the return value marks the end of the
+queue. Further, the receive function accepts a new token queue for the next
+analyzis step by means of the second and third argument, carrying a pointer
+to the begin of the new empty token queue and its size.
 
 This receive function always performs a call to the underlying analyzer
 function. At each step an empty queue is filled from ground until the analyzer
-function returns. The return value is the fill level of the currently finished
-token queue, the pointer of the first argument is bent towards the begin of the
-finished token queue. The second and third argument determine the memory
-location and size of the new token queue for the next analyzis step. A typical
-code fragment applying this approach could be similar to 
+function returns. A typical code fragment applying this approach could be
+similar to 
 
 .. code-block:: cpp
 
-    QUEX_TYPE_TOKEN*  token_p = 0x0; 
+    QUEX_TYPE_TOKEN*  iterator        = 0x0; 
+    QUEX_TYPE_TOKEN*  queue           = 0x0;
+    QUEX_TYPE_TOKEN*  queue_watermark = 0;
     ...
+    empty_queue = get_token_queue(empty_queue_size);
     qlex.set_token_queue(empty_queue, empty_queue_size);
     ...
     while( analyzis ) {
-        fill_level = qlex.receive(queue, empty_queue, empty_queue_size);
-        ...
-        if( content_is_important_f ) {
-            store_away(token_p);
-            token_p = get_new_token();
+        empty_queue      = get_token_queue(empty_queue_size);
+        queue_fill_level = qlex.receive(&queue, empty_queue, empty_queue_size);
+
+        /* Manual iteration over received token queue */
+        for(iterator = queue; iterator != queue_watermark ; ++iterator) {
+            ...
+            if( content_is_important_f ) {
+                store_away(iterator);
+            }
         }
     }
-
-
-
-where the member function ``.receive()`` adapts the provided pointer to the
-current token inside the pre-allocated token array.  The call to the receive
-function either reads remaining tokens in the token queue or triggers the next
-step of lexical analyzis. All the management of the token queue is hidden
-inside the analyzer's engine. 
 
 Additionally, there are three functions for low-level interaction
 with the token queue:
@@ -313,7 +333,6 @@ Analogously in C:
       void   QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER* me,
                                                   QUEX_TYPE_TOKEN**   memory, 
                                                   size_t*             n);
-
 
 The first function returns ``true`` if the queue is empty and ``false`` if
 not. The second function returns the remaining tokens. After a call to 
