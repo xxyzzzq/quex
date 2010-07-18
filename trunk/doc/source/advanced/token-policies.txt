@@ -128,6 +128,48 @@ tokens. In other words, the safety-border corresponds to the maximum number of
 tokens send as reaction to a pattern match, including indentation events and
 mode transitions.  
 
+For low level interaction with the token queue the following functions are
+provided
+
+   .. code-block:: cpp
+
+      bool   token_queue_is_empty();
+      void   token_queue_take_remainder(QUEX_TYPE_TOKEN**  begin_p, 
+                                        QUEX_TYPE_TOKEN**  end_p);
+
+The first function informs tells whether there are tokens in the queue. The
+second function empties the queue. Two pointers as first and second argument
+must be provided. At function return, the pointers will point to the begin and
+end of the list of remaining tokens. Again, end means the first token after the
+last token. Note, that the content from ``begin`` to ``end`` may be overwritten
+at the next call to receive(). The following code fragment displays the usage 
+of this function:
+
+    QUEX_TYPE_TOKEN*  iterator = 0x0; 
+    QUEX_TYPE_TOKEN*  begin_p  = 0x0;
+    QUEX_TYPE_TOKEN*  end_p    = 0;
+    ...
+    while( analyzis ) {
+        qlex.receive(&iterator);
+        if( content_is_important_f ) {
+            store_away(iterator);
+        }
+
+        token_queue_take_remainder(&iterator; &end_p);
+        while( iterator != end_p ) {
+            ...
+            if( content_is_important_f ) {
+                store_away(iterator);
+            }
+            ++iterator;
+        }
+    }
+
+Such a setup may be helpful if the lexical analyzer and the parse run in two
+different threads. Then the token tokens that are communicated between the
+threads could be copied in greater chunks. 
+
+
 Single
 ......
 
@@ -274,9 +316,11 @@ signature of the receive function is the following:
 
 .. code-block:: cpp
 
-    QUEX_TYPE_TOKEN* receive(QUEX_TYPE_TOKEN**    finished_token_queue, 
-                             QUEX_TYPE_TOKEN*     empty_token_queue,
-                             size_t               empty_token_queue_size);
+    void   receive(QUEX_TYPE_ANALYZER*  me,
+                   QUEX_TYPE_TOKEN**    finished_token_queue, 
+                   QUEX_TYPE_TOKEN**    finished_token_queue_watermark, 
+                   QUEX_TYPE_TOKEN*     empty_token_queue,
+                   size_t               empty_token_queue_size);
 
 The resulting token queue is communicated via the return value and the 
 first argument. The first argument's pointer is bent to the begin of the
@@ -296,12 +340,12 @@ similar to
     QUEX_TYPE_TOKEN*  queue           = 0x0;
     QUEX_TYPE_TOKEN*  queue_watermark = 0;
     ...
-    empty_queue = get_token_queue(empty_queue_size);
+    empty_queue = get_new_token_queue(empty_queue_size);
     qlex.set_token_queue(empty_queue, empty_queue_size);
     ...
     while( analyzis ) {
-        empty_queue      = get_token_queue(empty_queue_size);
-        queue_fill_level = qlex.receive(&queue, empty_queue, empty_queue_size);
+        empty_queue      = get_new_token_queue(empty_queue_size);
+        qlex.receive(&queue, &queue_watermark, empty_queue, empty_queue_size);
 
         /* Manual iteration over received token queue */
         for(iterator = queue; iterator != queue_watermark ; ++iterator) {
@@ -312,24 +356,15 @@ similar to
         }
     }
 
-Additionally, there are three functions for low-level interaction
-with the token queue:
+Additionally, there are three functions for low-level interaction with the
+token queue:
 
    .. code-block:: cpp
 
-      bool   token_queue_is_empty();
-      void   token_queue_remainder_get(QUEX_TYPE_TOKEN**  begin, 
-                                       QUEX_TYPE_TOKEN**  end);
       void   token_queue_memory_switch(QUEX_TYPE_TOKEN** memory, size_t* n);
 
 Analogously in C:
 
-   .. code-block:: cpp
-
-      bool   QUEX_NAME(token_queue_is_empty)(QUEX_TYPE_ANALYZER*);
-      void   QUEX_NAME(token_queue_remainder_get)(QUEX_TYPE_ANALYZER* me,
-                                                  QUEX_TYPE_TOKEN**   begin, 
-                                                  QUEX_TYPE_TOKEN**   end);
       void   QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER* me,
                                                   QUEX_TYPE_TOKEN**   memory, 
                                                   size_t*             n);
