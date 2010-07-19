@@ -211,7 +211,7 @@ public:
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       QUEX_TYPE_TOKEN*  token_p_set(QUEX_TYPE_TOKEN*);
+       void     token_p_set(QUEX_TYPE_TOKEN*);
 #      endif
 #   else
        bool     token_queue_is_empty();

@@ -66,7 +66,7 @@ main(int argc, char** argv)
         chunk.begin = (uint8_t*)qlex.buffer_fill_region_append(chunk.begin, chunk.end);
 
         // -- Loop until the 'termination' token arrives
-        QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)-1;
+        QUEX_TYPE_TOKEN_ID prev_token_id = (QUEX_TYPE_TOKEN_ID)-1;
         while( 1 + 1 == 2 ) {
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
@@ -75,7 +75,7 @@ main(int argc, char** argv)
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( token_p->token_id == QUEX_TKN_TERMINATION || token_p->token_id == QUEX_TKN_BYE )
+            if( token_p->type_id() == QUEX_TKN_TERMINATION || token_p->type_id() == QUEX_TKN_BYE )
                 break;
 
             // If the previous token was not a TERMINATION, it can be considered
@@ -87,7 +87,7 @@ main(int argc, char** argv)
         }
 
         // -- If the 'bye' token appeared, leave!
-        if( token_id == QUEX_TKN_BYE ) break;
+        if( prev_token_id == QUEX_TKN_BYE ) break;
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.

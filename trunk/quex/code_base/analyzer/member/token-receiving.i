@@ -154,15 +154,40 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 #endif
 
-#   ifndef __QUEX_OPTION_PLAIN_C
-#      ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-       QUEX_INLINE void                QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN** token_pp) 
-       { QUEX_NAME(receive)(this, token_pp); }
-#      else
-       QUEX_INLINE QUEX_TYPE_TOKEN_ID  QUEX_MEMBER(receive)() 
-       { return QUEX_NAME(receive)(this); }
-#      endif
+#ifndef __QUEX_OPTION_PLAIN_C
+#   if    ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
+       &&   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    QUEX_INLINE void  
+    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN** token_pp) 
+    { QUEX_NAME(receive)(this, token_pp); }
+
+#   elif    ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
+         && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    QUEX_INLINE QUEX_TYPE_TOKEN_ID  
+    QUEX_MEMBER(receive)() 
+    { return QUEX_NAME(receive)(this); }
+
+#   elif      defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
+         &&   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    QUEX_INLINE void                
+    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN**    finished_token_queue, 
+                         QUEX_TYPE_TOKEN**    finished_token_queue_watermark, 
+                         QUEX_TYPE_TOKEN*     empty_token_queue,
+                         size_t               empty_token_queue_size)
+    { QUEX_NAME(receive)(this, 
+                         finished_token_queue,
+                         finished_token_queue_watermark,
+                         empty_token_queue,
+                         empty_token_queue_size); }
+
+#   elif      defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
+         && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #   endif
+    QUEX_INLINE  QUEX_TYPE_TOKEN*    
+    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN*  empty_token)
+    { return QUEX_NAME(receive)(this, empty_token); }
+
+#endif
 
 #   undef self
 
