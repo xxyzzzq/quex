@@ -151,9 +151,9 @@ QUEX_MEMBER(token_p)()
 #if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-    QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_MEMBER(token_p_switch)(QUEX_TYPE_TOKEN* TokenP)
-    { return QUEX_NAME(token_p_switch)(this, TokenP); }
+    QUEX_INLINE  void             
+    QUEX_MEMBER(token_p_set)(QUEX_TYPE_TOKEN* TokenP)
+    { QUEX_NAME(token_p_set)(this, TokenP); }
 #   endif
 
 #else
