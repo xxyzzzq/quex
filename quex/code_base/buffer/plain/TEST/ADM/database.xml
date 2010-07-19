@@ -1,23 +1,23 @@
-<test-database execution-time-sec="0.23" date="Wed Jul 14 07:25:43 2010">
+<test-database execution-time-sec="0.24" date="Mon Jul 19 13:17:43 2010">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
-        <test title="Character=4 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_backward_load-4.exe" info-request-time="1279085139L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.566838"/>
+        <test title="Character=4 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.01"> 
+            <application file-name="BufferFiller_backward_load-4.exe" info-request-time="1279538258L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.570527"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="-93227443"/>
+               <choice name="" result="OK" time_sec="0.01" crc="-93227443"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_backward_load-1.exe" info-request-time="1279085139L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.582902"/>
+            <application file-name="BufferFiller_backward_load-1.exe" info-request-time="1279538259L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.563825"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="2042338175"/>
             </choice-list>
         </test>
         <test title="Character=2 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_backward_load-2.exe" info-request-time="1279085142L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.589981"/>
+            <application file-name="BufferFiller_backward_load-2.exe" info-request-time="1279538261L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.587577"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="2072000706"/>
             </choice-list>
@@ -25,171 +25,171 @@
     </group>
     <group name="Load Forward">
         <test title="Character=1 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-1-fb0.exe" info-request-time="1279085132L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.568868"/>
+            <application file-name="BufferFiller_forward_load-1-fb0.exe" info-request-time="1279538252L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.573628"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="512405397"/>
             </choice-list>
         </test>
         <test title="Character=2 Byte(s), Fallback=1" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-2-fb1.exe" info-request-time="1279085133L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.569129"/>
+            <application file-name="BufferFiller_forward_load-2-fb1.exe" info-request-time="1279538253L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.571999"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="736895487"/>
             </choice-list>
         </test>
-        <test title="With Error in Stream (Character=4 Byte(s))" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1279085134L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.591161"/>
+        <test title="With Error in Stream (Character=4 Byte(s))" make-dependent="True" time-sum-sec="0.01"> 
+            <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1279538254L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.575529"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="1418030292"/>
+               <choice name="" result="OK" time_sec="0.01" crc="1418030292"/>
             </choice-list>
         </test>
-        <test title="Character=4 Byte(s), Fallback=1" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_forward_load-4-fb1.exe" info-request-time="1279085135L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.578903"/>
+        <test title="Character=4 Byte(s), Fallback=1" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="BufferFiller_forward_load-4-fb1.exe" info-request-time="1279538254L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.577790"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="811198168"/>
+               <choice name="" result="OK" time_sec="0.00" crc="811198168"/>
             </choice-list>
         </test>
         <test title="Character=4 Byte(s), Fallback=5" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1279085142L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.597298"/>
+            <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1279538262L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.572842"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="1146948856"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=5" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-1-fb5.exe" info-request-time="1279085134L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.579636"/>
+            <application file-name="BufferFiller_forward_load-1-fb5.exe" info-request-time="1279538253L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.564464"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-1648407571"/>
             </choice-list>
         </test>
         <test title="Character=4 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-4-fb0.exe" info-request-time="1279085137L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.579872"/>
+            <application file-name="BufferFiller_forward_load-4-fb0.exe" info-request-time="1279538256L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.577755"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-396853177"/>
             </choice-list>
         </test>
         <test title="Character=2 Byte(s), Fallback=0" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-2-fb0.exe" info-request-time="1279085137L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.575832"/>
+            <application file-name="BufferFiller_forward_load-2-fb0.exe" info-request-time="1279538257L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.590802"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="2016591838"/>
             </choice-list>
         </test>
         <test title="Character=2 Byte(s), Fallback=5" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-2-fb5.exe" info-request-time="1279085140L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.573675"/>
+            <application file-name="BufferFiller_forward_load-2-fb5.exe" info-request-time="1279538260L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.579783"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-986272934"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=1" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-1-fb1.exe" info-request-time="1279085141L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.611538"/>
+            <application file-name="BufferFiller_forward_load-1-fb1.exe" info-request-time="1279538260L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.586479"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-613799360"/>
             </choice-list>
         </test>
     </group>
     <group name="Move by Offset">
-        <test title="Forward (BPC=1)" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="Buffer_move_forward-1-fb0.exe" info-request-time="1279085130L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.599896"/>
+        <test title="Forward (BPC=1)" make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="Buffer_move_forward-1-fb0.exe" info-request-time="1279538250L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.585027"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="-190669657"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-490320300"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="1696214664"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="1696214664"/>
                <choice name="4" result="OK" time_sec="0.00" crc="2065809326"/>
                <choice name="5" result="OK" time_sec="0.00" crc="-1165581227"/>
             </choice-list>
         </test>
         <test title="Forward (BPC=1)" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="Buffer_move_forward-1-fb1.exe" info-request-time="1279085131L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.582361"/>
+            <application file-name="Buffer_move_forward-1-fb1.exe" info-request-time="1279538251L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.597777"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.00" crc="337010543"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="-31484492"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="-1921808422"/>
+               <choice name="1" result="OK" time_sec="0.02" crc="337010543"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-31484492"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="-1921808422"/>
                <choice name="4" result="OK" time_sec="0.00" crc="-410031371"/>
-               <choice name="5" result="OK" time_sec="0.02" crc="1018040844"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="1018040844"/>
             </choice-list>
         </test>
         <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="Buffer_move_backward-4-fb0.exe" info-request-time="1279085135L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.603682"/>
+            <application file-name="Buffer_move_backward-4-fb0.exe" info-request-time="1279538255L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.601574"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.00" crc="-1988240594"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-837282876"/>
                <choice name="3" result="OK" time_sec="0.00" crc="280977458"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="1685172226"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="1635091244"/>
-            </choice-list>
-        </test>
-        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="Buffer_move_backward-1-fb1.exe" info-request-time="1279085143L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.623533"/>
-            <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.00" crc="-1988240594"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-837282876"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="280977458"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="1685172226"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="1685172226"/>
                <choice name="5" result="OK" time_sec="0.00" crc="1635091244"/>
             </choice-list>
         </test>
         <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="Buffer_move_backward-1-fb0.exe" info-request-time="1279085131L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.614651"/>
+            <application file-name="Buffer_move_backward-1-fb1.exe" info-request-time="1279538262L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.644216"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.00" crc="-1988240594"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-837282876"/>
                <choice name="3" result="OK" time_sec="0.01" crc="280977458"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="1685172226"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="1685172226"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="1635091244"/>
+            </choice-list>
+        </test>
+        <test title="Backward (BPC=1)" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="Buffer_move_backward-1-fb0.exe" info-request-time="1279538250L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.604990"/>
+            <choice-list number="5" same_result="False">
+               <choice name="1" result="OK" time_sec="0.00" crc="-1988240594"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-837282876"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="280977458"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="1685172226"/>
                <choice name="5" result="OK" time_sec="0.00" crc="1635091244"/>
             </choice-list>
         </test>
         <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="Buffer_move_forward-4-fb0.exe" info-request-time="1279085136L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.766259"/>
+            <application file-name="Buffer_move_forward-4-fb0.exe" info-request-time="1279538256L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.592677"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.01" crc="-190669657"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-190669657"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-490320300"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="1696214664"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="2065809326"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="-1165581227"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="1696214664"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="2065809326"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="-1165581227"/>
             </choice-list>
         </test>
     </group>
     <group name="Tell and Seek">
-        <test title="Bytes Per Character (BPC)=1" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="Buffer_tell_and_seek-1-fb0.exe" info-request-time="1279085133L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.626487"/>
+        <test title="Bytes Per Character (BPC)=1" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="Buffer_tell_and_seek-1-fb0.exe" info-request-time="1279538252L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.606174"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="-772468173"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-772468173"/>
             </choice-list>
         </test>
         <test title="wiostream" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="Buffer_tell_and_seek-wiostream.exe" info-request-time="1279085138L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.659899"/>
+            <application file-name="Buffer_tell_and_seek-wiostream.exe" info-request-time="1279538258L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.670885"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.01" crc="-772468173"/>
             </choice-list>
         </test>
-        <test title="Bytes Per Character (BPC)=1" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="Buffer_tell_and_seek-1-fb1.exe" info-request-time="1279085140L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.608550"/>
+        <test title="Bytes Per Character (BPC)=1" make-dependent="True" time-sum-sec="0.01"> 
+            <application file-name="Buffer_tell_and_seek-1-fb1.exe" info-request-time="1279538259L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.604055"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="-561665442"/>
+               <choice name="" result="OK" time_sec="0.01" crc="-561665442"/>
             </choice-list>
         </test>
-        <test title="Bytes Per Character (BPC)=4" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="Buffer_tell_and_seek-4-fb0.exe" info-request-time="1279085129L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.668509"/>
+        <test title="Bytes Per Character (BPC)=4" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="Buffer_tell_and_seek-4-fb0.exe" info-request-time="1279538249L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.709788"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="-772468173"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-772468173"/>
             </choice-list>
         </test>
     </group>

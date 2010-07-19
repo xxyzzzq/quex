@@ -17,8 +17,8 @@ main(int argc, char** argv)
 
     quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
 
-    quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
-    quex::Token*   prev_token;        // Use pointers to swap quickly.
+    quex::Token    token_bank[2];           // Two tokens required, one for look-ahead
+    quex::Token*   token_p = 0x0;           // Use pointers to swap quickly.
 
     QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  // A pointer to the receive buffer that
     //                                      // the messaging framework provides.
@@ -31,9 +31,9 @@ main(int argc, char** argv)
     //                                               // backup.
 
     // -- initialize the token pointers
-    prev_token = &(token_bank[1]);
+    token_p = &(token_bank[1]);
     token_bank[0].set(QUEX_TKN_TERMINATION);
-    qlex.token_p_switch(&token_bank[0]);
+    qlex.token_p_set(&token_bank[0]);
 
     //
     // -- trigger reload of memory
@@ -71,19 +71,19 @@ main(int argc, char** argv)
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
             // Let the previous token be the current token of the previous run.
-            prev_token = qlex.token_p_switch(prev_token);
-
-            token_id = qlex.receive();
+            token_p = qlex.receive(token_p);
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( token_id == QUEX_TKN_TERMINATION || token_id == QUEX_TKN_BYE )
+            if( token_p->token_id == QUEX_TKN_TERMINATION || token_p->token_id == QUEX_TKN_BYE )
                 break;
 
             // If the previous token was not a TERMINATION, it can be considered
             // by the syntactical analyzer (parser).
-            if( prev_token->type_id() != QUEX_TKN_TERMINATION )
-                cout << "Consider: " << string(*prev_token) << endl;
+            if( prev_token_id != QUEX_TKN_TERMINATION )
+                cout << "Consider: " << string(*token_p) << endl;
+
+            prev_token_id = token_p->type_id();
         }
 
         // -- If the 'bye' token appeared, leave!
