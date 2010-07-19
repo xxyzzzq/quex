@@ -134,8 +134,8 @@ provided
    .. code-block:: cpp
 
       bool   token_queue_is_empty();
-      void   token_queue_take_remainder(QUEX_TYPE_TOKEN**  begin_p, 
-                                        QUEX_TYPE_TOKEN**  end_p);
+      void   token_queue_remainder_get(QUEX_TYPE_TOKEN**  begin_p, 
+                                       QUEX_TYPE_TOKEN**  end_p);
 
 The first function informs tells whether there are tokens in the queue. The
 second function empties the queue. Two pointers as first and second argument

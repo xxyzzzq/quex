@@ -8,9 +8,11 @@
 #   else
 #       include <assert.h>
 #   endif
-#   define  __quex_assert(X)      assert(X)
+#   define  __quex_assert(X)         assert(X)
+#   define  __quex_assert_msg(X, Y)  if( ! (X) ) do { QUEX_ERROR_EXIT(Y); } while ( 0 )
 #else
-#   define  __quex_assert(X)      /*no assert*/
+#   define  __quex_assert(X)         /* no assert */
+#   define  __quex_assert_msg(X, Y)  /* no assert, no message */
 #endif
 
 #define __QUEX_INCLUDE_INDICATOR__ASSERTS

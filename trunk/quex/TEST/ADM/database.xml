@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.97" date="Wed Jul 14 07:24:44 2010">
+<test-database execution-time-sec="0.95" date="Mon Jul 19 13:16:23 2010">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
@@ -12,17 +12,17 @@
            <choice name="" result="OK" time_sec="0.09" crc="1233921745"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.03"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.02"> 
         <application file-name="macro-check.py" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
+           <choice name="" result="OK" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.40"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.39"> 
         <application file-name="include_guard.py" info-request-time="1267963690L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="convention" result="OK" time_sec="0.20" crc="-1609475582"/>
-           <choice name="undefinition" result="OK" time_sec="0.20" crc="-1546884230"/>
+           <choice name="undefinition" result="OK" time_sec="0.19" crc="-1546884230"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

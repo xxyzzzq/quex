@@ -43,12 +43,10 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 
 #ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-    QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
+    QUEX_INLINE  void
+    QUEX_NAME(token_p_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
     {
-        QUEX_TYPE_TOKEN* prev_token_p = me->token;
         me->token = TokenP;
-        return prev_token_p;
     }
 #   endif
 #else
@@ -66,15 +64,10 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE void
-    QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER* me, 
-                                         QUEX_TYPE_TOKEN**   memory, size_t* n)
+    QUEX_NAME(token_queue_set)(QUEX_TYPE_ANALYZER* me, 
+                               QUEX_TYPE_TOKEN*    token_queue, size_t Size)
     { 
-        QUEX_TYPE_TOKEN*  prev_memory = 0x0;
-        size_t            prev_n      = (size_t)-1;
-        QUEX_NAME(TokenQueue_memory_get)(&me->_token_queue, &prev_memory, &prev_n); 
-        QUEX_NAME(TokenQueue_init)(&me->_token_queue, *memory, *memory + *n); 
-        *memory = prev_memory;
-        *n      = prev_n;
+        QUEX_NAME(TokenQueue_init)(&me->token_queue, memory, memory + Size);
     }
 #   endif
 
