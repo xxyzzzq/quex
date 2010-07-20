@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.37" date="Mon Jul 19 13:16:47 2010">
+<test-database execution-time-sec="0.60" date="Wed Jul 21 06:47:00 2010">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="simple-queue.exe" info-request-time="1278994757L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.560717"/>
+        <make-procedure success="True" time_sec="3.502287"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.01" crc="0"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="0.36"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.59"> 
         <application file-name="misc.sh" info-request-time="1264886931L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.08" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.10" crc="-517532967"/>
-           <choice name="double-colon" result="OK" time_sec="0.08" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.10" crc="-26357094"/>
+           <choice name="empty" result="OK" time_sec="0.13" crc="-1191820474"/>
+           <choice name="no-namespace" result="OK" time_sec="0.19" crc="-517532967"/>
+           <choice name="double-colon" result="OK" time_sec="0.13" crc="-223322448"/>
+           <choice name="token" result="OK" time_sec="0.14" crc="-26357094"/>
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="simple.exe" info-request-time="1279080256L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.208953"/>
+        <application file-name="simple.exe" info-request-time="1279687619L" vanished="False"/>
+        <make-procedure success="True" time_sec="3.314208"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
