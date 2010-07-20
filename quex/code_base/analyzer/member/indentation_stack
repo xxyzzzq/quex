@@ -1,5 +1,8 @@
+#ifndef __INCLUDE_GUARD__QUEX__INDENTATION_STACK
+#define __INCLUDE_GUARD__QUEX__INDENTATION_STACK
+
     typedef struct {
-        uint16_t   begin[INDENTATION_STACK_SIZE];
+        uint16_t   begin[QUEX_SETTING_INDENTATION_STACK_SIZE];
         uint16_t*  end;
         uint16_t*  memory_end;
 
@@ -14,3 +17,5 @@
 
     void      QUEX_NAME(IndentationStack_on_indentation)(QUEX_TYPE_ANALYZER*  me, 
                                                          const size_t         Indentation);
+
+#endif /* __INCLUDE_GUARD__QUEX__INDENTATION_STACK */
