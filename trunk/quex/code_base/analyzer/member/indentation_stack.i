@@ -1,3 +1,6 @@
+#ifndef __INCLUDE_GUARD__QUEX__INDENTATION_STACK_I
+#define __INCLUDE_GUARD__QUEX__INDENTATION_STACK_I
+
     QUEX_INLINE void      
     QUEX_NAME(IndentationStack_init)(IndentationStack* me)
     {
@@ -59,3 +62,5 @@
         __quex_assert( me->end != me->begin );
         return *(--(me->end));
     }
+
+#endif /* __INCLUDE_GUARD__QUEX__INDENTATION_STACK_I */
