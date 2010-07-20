@@ -139,85 +139,56 @@ public:
     QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
     void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
-    // -- activate/deactivate byte order reversion (big-/little-endian)
+    /* -- activate/deactivate byte order reversion (big-/little-endian)    */
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
-    /* NOTE: All calls to receive functions for the four scenarios
-     *       are deliberately chosen to be incompatible! 
-     *
-     * If the user changes the token handling of the analyzer his handling
-     * **must** adapt. This is forced by making the call to the receive() 
-     * function inoperable except for the case for which it was designed.  */
-
-#   if    ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-       &&   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    /* (1.1) Token Queue with Automatic Token Memory Management
+    /* NOTE: All calls to receive functions for 'queue' and 'single'
+     *       are deliberately chosen to be incompatible! Thus, when 
+     *       the user switches the token passing policy, he must re-
+     *       think his receive mechanism.                                  */
+#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    /* (1) Token Queue 
      * 
      *   When using a token queue, the pointer **must** be adapted.
-     *   Otherwise, very strange results may occur. Force the user
-     *   to provide a pointer that can be adapted by having him 
-     *   specify the second argument--not only a return value.
+     *   Otherwise, very strange results may occur. Force the user to
+     *   provide a pointer that can be adapted by having him specify
+     *   the second argument--not only a return value.
      *
-     *   Command line options: 
-     *        --token-policy  queue
-     *        --token-memory-management-by-user                             */
+     *   Command line option:  --token-policy  queue                       */
     void                receive(QUEX_TYPE_TOKEN**);
-
-#   elif    ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-         && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    /* (1.2) Single Token with Automatic Token Memory Management
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)  
+    /* (2) Single Token
      * 
      *   When there is only one single token as interface, than the
      *   token id is returned. This enables a minimal setup were the
      *   analyzer may only return a token id and does not work on tokens. 
      *
-     *   Command line options: 
-     *        --token-policy  single                                         */
+     *   Command line options: --token-policy  single                      */
     QUEX_TYPE_TOKEN_ID  receive();
-
-#   elif      defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-         &&   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    /* (2.1) Token Queue with User Token Memory Management
-     *
-     *   At each receive() step the token queue is switched with the queue
-     *   of the analyzer.                                                  
-     *
-     *   Command line options: 
-     *        --token-policy  queue                                  
-     *        --token-memory-management-by-user                             */
-    void                receive(QUEX_TYPE_TOKEN**    finished_token_queue, 
-                                QUEX_TYPE_TOKEN**    finished_token_queue_watermark, 
-                                QUEX_TYPE_TOKEN*     empty_token_queue,
-                                size_t               empty_token_queue_size);
-
-#   elif      defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-         && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    /* (2.2) Single Token with User Token Memory Management
-     *
-     *   Switching the token at each receive() step. 
-     *
-     *   Command line options: 
-     *        --token-policy  single                                  
-     *        --token-memory-management-by-user                             */
-    QUEX_TYPE_TOKEN*    receive(QUEX_TYPE_TOKEN*  empty_token);
+#   else
+#       error "This section should never be compiled."
 #   endif
 
     // NOTE: A pointer to an object of the token queue/object is used in order to make
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
-    QUEX_TYPE_TOKEN*   token_p();
+    QUEX_TYPE_TOKEN*     token_p();
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       void     token_p_set(QUEX_TYPE_TOKEN*);
+       void              token_p_set(QUEX_TYPE_TOKEN*);
+       QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
 #      endif
 #   else
-       bool     token_queue_is_empty();
-       void     token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
+       bool              token_queue_is_empty();
+       void              token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       void     token_queue_set(QUEX_TYPE_TOKEN** begin, size_t* n);
+       void              token_queue_get(QUEX_TYPE_TOKEN** begin, size_t* size);
+       void              token_queue_set(QUEX_TYPE_TOKEN* Begin, size_t Size);
+       void              token_queue_switch(QUEX_TYPE_TOKEN** queue, 
+                                            size_t*           size); 
 #      endif
 #   endif
 

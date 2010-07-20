@@ -1,0 +1,16 @@
+    typedef struct {
+        uint16_t   begin[INDENTATION_STACK_SIZE];
+        uint16_t*  end;
+        uint16_t*  memory_end;
+
+        bool       allow_opening_indentation_f;
+    } IndentationStack;
+
+    void      QUEX_NAME(IndentationStack_init)(IndentationStack* me);
+    void      QUEX_NAME(IndentationStack_push)(IndentationStack* me, uint16_t Indentation);
+    uint16_t  QUEX_NAME(IndentationStack_pop)(IndentationStack* me);
+    uint16_t  QUEX_NAME(IndentationStack_allow)(IndentationStack* me);
+    uint16_t  QUEX_NAME(IndentationStack_disallow)(IndentationStack* me);
+
+    void      QUEX_NAME(IndentationStack_on_indentation)(QUEX_TYPE_ANALYZER*  me, 
+                                                         const size_t         Indentation);

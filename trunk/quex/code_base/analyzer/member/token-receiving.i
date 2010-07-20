@@ -17,10 +17,33 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   define self (*me)
       
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
-    QUEX_NAME(__receive_token_queue)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** result_pp)
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** result_pp)
     { 
+#       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
+        register QUEX_TYPE_TOKEN* result_p = 0x0;
+#       endif
+#       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        if( QUEX_NAME(TokenQueue_begin)(&me->_token_queue) == 0x0 ) {
+            QUEX_ERROR_EXIT("Token queue has not been set before call to .receive().\n"
+                            "Please, consider function 'token_queue_memory_set()'.");
+        }
+#       endif
+
+#       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
+        if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
+            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
+            *result_pp = self_token_p();  
+            return;
+        } else
+#       endif
+        /* Tokens are in queue --> take next token from queue */ 
+        if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
+            *result_pp = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+            return;  
+        } 
+
         /* Restart filling the queue from begin */
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
 
@@ -29,29 +52,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->current_analyzer_function(me);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&me->_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
-    }
-
-#   if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  
-    QUEX_INLINE void
-    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** result_pp)
-    {
-#       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        register QUEX_TYPE_TOKEN* result_p = 0x0;
-
-        if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
-            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
-            *result_pp = self_token_p();  
-            return;
-        } else
-#       endif
-
-        /* Tokens are in queue --> take next token from queue */ 
-        if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
-            *result_pp = QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
-            return;  
-        } 
-
-        QUEX_NAME(__receive_token_queue)(me, result_pp);
+        
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         result_p = me->_token_queue.read_iterator;
@@ -72,36 +73,20 @@ QUEX_NAMESPACE_MAIN_OPEN
             return;
         }
     }
+
 #   else
-    QUEX_INLINE  void
-    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER*  me,
-                       QUEX_TYPE_TOKEN**    finished_token_queue, 
-                       QUEX_TYPE_TOKEN**    finished_token_queue_watermark, 
-                       QUEX_TYPE_TOKEN*     empty_token_queue,
-                       size_t               empty_token_queue_size)
-    {
-        QUEX_TYPE_TOKEN*  finished_token_queue           = me->_token_queue->begin;
-        QUEX_TYPE_TOKEN*  finished_token_queue_watermark = 0x0;
-
-        __quex_assert_msg(QUEX_NAME(TokenQueue_begin)(&me->_token_queue) == 0x0,
-                          "Token queue has not been set before call to .receive().\n"
-                          "Please, consider function 'token_queue_memory_set()'.");
-
-        QUEX_NAME(__receive_token_queue)(me, result_pp);
-
-        finished_token_queue_watermark = me->_token_queue.write_iterator;
-        QUEX_NAME(TokenQueue_init)(&me->token_queue, 
-                                   empty_token_queue,
-                                   empty_token_queue + empty_token_queue_size);
-    }
-#   endif
-
-#elif ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
 
     QUEX_INLINE  QUEX_TYPE_TOKEN_ID
-    QUEX_NAME(__receive_single_token)(QUEX_TYPE_ANALYZER* me) 
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
     {
         register QUEX_TYPE_TOKEN_ID __self_result_token_id = (QUEX_TYPE_TOKEN_ID)-1;
+
+#       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        if( &me->token == 0x0 ) {
+            QUEX_ERROR_EXIT("Token has not been set before call to .receive().\n"
+                            "Please, consider function 'token_p_set()'.");
+        }
+#       endif
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
@@ -131,63 +116,17 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         return __self_result_token_id;
     }
-
-#   if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  
-    QUEX_INLINE  QUEX_TYPE_TOKEN_ID
-    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me) 
-    {
-        return QUEX_NAME(__receive_single_token)(me);
-    }
-#   else
-    QUEX_INLINE  QUEX_TYPE_TOKEN* /* finished_token */
-    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN*    empty_token)
-    {
-        QUEX_TYPE_TOKEN*  result = me->token;
-        __quex_assert_msg(me->token == 0x0,
-                          "Token has not been set before call to .receive().\n"
-                          "Please, consider function 'token_p_set()'.");
-
-        QUEX_NAME(__receive_single_token)(me);
-        self.token_p_set(empty_token);
-        return result;
-    }
 #   endif
-#endif
 
-#ifndef __QUEX_OPTION_PLAIN_C
-#   if    ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-       &&   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    QUEX_INLINE void  
-    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN** token_pp) 
-    { QUEX_NAME(receive)(this, token_pp); }
-
-#   elif    ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-         && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    QUEX_INLINE QUEX_TYPE_TOKEN_ID  
-    QUEX_MEMBER(receive)() 
-    { return QUEX_NAME(receive)(this); }
-
-#   elif      defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-         &&   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    QUEX_INLINE void                
-    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN**    finished_token_queue, 
-                         QUEX_TYPE_TOKEN**    finished_token_queue_watermark, 
-                         QUEX_TYPE_TOKEN*     empty_token_queue,
-                         size_t               empty_token_queue_size)
-    { QUEX_NAME(receive)(this, 
-                         finished_token_queue,
-                         finished_token_queue_watermark,
-                         empty_token_queue,
-                         empty_token_queue_size); }
-
-#   elif      defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)  \
-         && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   ifndef __QUEX_OPTION_PLAIN_C
+#      ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+       QUEX_INLINE void                QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN** token_pp) 
+       { QUEX_NAME(receive)(this, token_pp); }
+#      else
+       QUEX_INLINE QUEX_TYPE_TOKEN_ID  QUEX_MEMBER(receive)() 
+       { return QUEX_NAME(receive)(this); }
+#      endif
 #   endif
-    QUEX_INLINE  QUEX_TYPE_TOKEN*    
-    QUEX_MEMBER(receive)(QUEX_TYPE_TOKEN*  empty_token)
-    { return QUEX_NAME(receive)(this, empty_token); }
-
-#endif
 
 #   undef self
 
