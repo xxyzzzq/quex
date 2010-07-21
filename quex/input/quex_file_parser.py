@@ -101,7 +101,7 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "define", "token", "indentation", "mode", "repeated_token", "token_type" ] + lexer_mode.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
@@ -157,6 +157,9 @@ def parse_section(fh):
         elif word == "token":       
             parse_token_id_definitions(fh)
             return
+
+        elif word == "indentation":
+            pass
 
         elif word == "token_type":       
 
@@ -249,17 +252,6 @@ def parse_pattern_name_definitions(fh):
                 lexer_mode.PatternShorthand(pattern_name, state_machine, 
                                             fh.name, get_current_line_info_number(fh),
                                             regular_expression_str)
-
-def parse_identifier_assignment(fh):
-    # NOTE: Catching of EOF happens in caller: parse_section(...)
-
-    verify_next_word(fh, "=")
-    # specify the name of the intial lexical analyser mode
-    skip_whitespace(fh)
-    identifier = read_identifier(fh)
-    verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
-
-    return identifier.strip()
 
 def parse_token_id_definitions(fh, NamesOnlyF=False):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
