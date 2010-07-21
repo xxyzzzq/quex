@@ -118,6 +118,23 @@ def find_end_of_identifier(Txt, StartIdx, L):
     else:
         return L
 
+def parse_assignment(fh, Comment=""):
+    verify_next_word(fh, "=")
+    skip_whitespace(fh)
+    identifier = read_until_non_letter(fh)
+    verify_next_word(fh, ";", Comment)
+
+    return identifier.strip()
+
+def parse_identifier_assignment(fh):
+    # NOTE: Catching of EOF happens in caller
+    verify_next_word(fh, "=")
+    skip_whitespace(fh)
+    identifier = read_identifier(fh)
+    verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
+
+    return identifier.strip()
+
 def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
     string_f = False
     if type(FileHandle_or_String) in [str, unicode]:
@@ -369,7 +386,6 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
 
 def read_until_non_letter(fh):
     txt = ""
-    tmp = ""
     while 1 + 1 == 2:
         tmp = fh.read(1)
         if tmp.isalpha(): txt += tmp
@@ -618,7 +634,6 @@ def check_letter_from_list(fh, LetterList):
     fh.seek(position)
     return False
 
-    
 def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
     """FH, and LineN work exactly the same as for error_msg(...)"""
     assert len(WordList) != 0

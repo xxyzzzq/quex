@@ -21,7 +21,7 @@ import sys
 import os
 
 from copy                import copy, deepcopy
-from quex.frs_py.file_in import error_msg, verify_word_in_list
+from quex.frs_py.file_in import error_msg, verify_word_in_list, get_current_line_info_number
 from quex.core_engine.generator.action_info import *
 import quex.core_engine.state_machine.subset_checker   as subset_checker
 import quex.core_engine.state_machine.identity_checker as identity_checker
@@ -511,6 +511,26 @@ event_handler_db = {
         "on_failure":       "Code executed in case that no pattern matches.",
         }
 
+class LocalizedParameter:
+    def __init__(self, Name, Default):
+        self.name      = Name
+        self.__value   = None
+        self.__default = Default
+        self.file_name = ""
+        self.line_n    = -1
+
+    def set(self, Value, fh):
+        if self.__value != None:
+            error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
+            error_msg("previous definition has been here.\n", self.file_name, self.line_n)
+                      
+        self.__value   = Value
+        self.file_name = fh.name
+        self.line_n    = get_current_line_info_number(fh)
+
+    def get(self):
+        if self.__value != None: return self.__value
+        return self.__default
 
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
