@@ -65,7 +65,7 @@ def __parse_brief_token_sender(fh, ContinueF):
                 code = __create_mode_transition_and_token_sender(fh, identifier)
             else:
                 code = __create_token_sender_by_token_name(fh, identifier)
-                verify_next_word(fh, ";")
+                check_or_quit(fh, ";")
 
         if code != "": 
             if ContinueF: code += "QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();\n"
@@ -204,7 +204,7 @@ def __parse_function_argument_list(fh, ReferenceName):
 def __parse_token_id_specification_by_character_code(fh):
     character_code = read_character_code(fh)
     if character_code == -1: return -1
-    verify_next_word(fh, ";")
+    check_or_quit(fh, ";")
     return character_code
 
 def __create_token_sender_by_character_code(fh, CharacterCode):

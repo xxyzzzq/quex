@@ -118,20 +118,26 @@ def find_end_of_identifier(Txt, StartIdx, L):
     else:
         return L
 
+def check_or_quit(fh, What, Comment = "."):
+    if not check(fh, What):
+        error_msg("Missing '%s'" + Comment, fh)
+
 def parse_assignment(fh, Comment=""):
-    verify_next_word(fh, "=")
+    check_or_quit(fh, "=", " for assignment.")
+
     skip_whitespace(fh)
-    identifier = read_until_non_letter(fh)
-    verify_next_word(fh, ";", Comment)
+    identifier = read_until_letter(fh, [";"])
 
     return identifier.strip()
 
 def parse_identifier_assignment(fh):
     # NOTE: Catching of EOF happens in caller
-    verify_next_word(fh, "=")
+    check_or_quit(fh, "=", " for assignment")
+
     skip_whitespace(fh)
     identifier = read_identifier(fh)
-    verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
+
+    check_or_quit(fh, ";", " for assignment. Since quex version 0.33.5 this is required.")
 
     return identifier.strip()
 
@@ -384,14 +390,6 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
             else:       return txt
         txt += tmp
 
-def read_until_non_letter(fh):
-    txt = ""
-    while 1 + 1 == 2:
-        tmp = fh.read(1)
-        if tmp.isalpha(): txt += tmp
-        else:             break
-    return txt
-        
 def read_until_line_contains(in_fh, LineContent):
     L = len(LineContent)
 
@@ -505,16 +503,6 @@ def read_word_list(fh, EndMarkers, Verbose=False):
             else:       return word_list
         word_list.append(word)
 
-def verify_next_word(fh, Compare, Quit=True, Comment=""):
-    # read_next_word(...) skips whitespace
-    word = read_next_word(fh)
-    if word != Compare:
-        txt = "Missing token '%s'. found '%s'." % (Compare, word)
-        if Comment != "": 
-            txt += "\n" + Comment
-        error_msg(txt, fh)
-    return word
-        
 def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True):
     # fh        = filehandle [1] or filename [2]
     # LineN     = line_number of error

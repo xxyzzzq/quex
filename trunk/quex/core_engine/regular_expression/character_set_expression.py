@@ -35,7 +35,6 @@ from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.file_in                 import read_until_letter, \
                                                 read_identifier, \
-                                                read_until_non_letter, \
                                                 skip_whitespace, \
                                                 verify_word_in_list, \
                                                 check

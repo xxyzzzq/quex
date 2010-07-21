@@ -1,4 +1,12 @@
-from quex.frs_py.file_in import get_current_line_info_number, error_msg
+
+from quex.frs_py.file_in import get_current_line_info_number, \
+                                error_msg, \
+                                check, \
+                                skip_whitespace, \
+                                read_identifier, \
+                                verify_word_in_list, \
+                                parse_assignment, \
+                                read_until_whitespace
 from quex.lexer_mode     import LocalizedParameter
 
 class IndentationSetup:
@@ -7,6 +15,7 @@ class IndentationSetup:
         self.tabulator_grid_width = LocalizedParameter("indentation setup: 'tabs'",   4)
 
 def do(fh):
+    position = fh.tell()
     indentation_setup = IndentationSetup()
 
     if not check(fh, "{"):
@@ -15,9 +24,17 @@ def do(fh):
     while parse_setting(fh, indentation_setup):
         pass
 
+    skip_whitespace(fh)
     if not check(fh, "}"):
+        found_str = read_until_whitespace(fh)
         fh.seek(position)
-        error_msg("Missing closing '}' at end of token_type definition.", fh);
+        error_msg("Missing closing '}' at end of token_type definition.\nFound '%s'." % found_str, fh);
+
+    if      indentation_setup.spaces_addmissible_f.get() == False \
+        and indentation_setup.tabulator_grid_width.get() == -1:
+        fh.seek(position)
+        error_msg("Tabulators and spaces have both been de-activated.\n" \
+                  "No indentation detection possible.", fh)
 
     return indentation_setup
 
@@ -40,7 +57,8 @@ def parse_setting(fh, indentation_setup):
     position = fh.tell()
     skip_whitespace(fh)
     word = read_identifier(fh)
-    if word == "": return False
+    if word == "": 
+        return False
 
     verify_word_in_list(word, ["spaces", "tabs"],
                         "Unrecognized indentation setting parameter '%s'." % word)
@@ -49,22 +67,23 @@ def parse_setting(fh, indentation_setup):
     value     = parse_assignment(fh)
 
     if parameter == "spaces":
-        verify_word_in_list(value, ["spaces", "tabs"],
-                            "indentation setup: 'spaces' set to '%s'" % value)
+        verify_word_in_list(value, ["good", "bad"],
+                            "indentation setup: Value for 'spaces' set to '%s'" % value)
         if value == "good": indentation_setup.spaces_addmissible_f.set(True, fh)
         else:               indentation_setup.spaces_addmissible_f.set(False, fh)
 
     elif parameter == "tabs":
-        # Try to convert to integer
         try:
+            # Try to convert to integer
             if len(value) > 2 and value[:2] == "0x": net_value = int(value, 16)
             else:                                    net_value = int(value)
             indentation_setup.tabulator_grid_width.set(net_value, fh)
+            return True
         except:
             pass
 
         if value != "bad":
-            error_msg("indentation setup: 'tabs' must be either set to\n" + \
+            error_msg("indentation setup: value for 'tabs' is specified as '%s'. It must be either\n" % value + \
                       " -- a possitive integer, which specifies the width of the tabulator grid, or\n" + \
                       " -- 'bad' which tells that tabs are not to be considered for indentation\n" + \
                       "    handling.", fh)

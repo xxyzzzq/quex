@@ -316,11 +316,11 @@ def __parse_section(fh, descriptor, already_defined_list):
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True
-        verify_next_word(fh, ";")
+        check_or_quit(fh, ";")
 
     elif word == "noid":
         descriptor.token_contains_token_id_f = False;
-        verify_next_word(fh, ";")
+        check_or_quit(fh, ";")
 
     elif word == "file_name":
         if not check(fh, "="):
@@ -538,7 +538,7 @@ def something_different(fh):
     if member_name == "":
         error_msg("Missing identifier for token struct/class member.", fh)
 
-    verify_next_word(fh, ":")
+    check_or_quit(fh, ";")
 
     if check(fh, "}"): 
         error_msg("Missing type for token struct/class member '%s'." % member_name, fh)
