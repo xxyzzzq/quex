@@ -9,12 +9,17 @@ from quex.frs_py.file_in import get_current_line_info_number, \
                                 read_until_whitespace
 from quex.lexer_mode     import LocalizedParameter
 
+import quex.input.regular_expression  as regular_expression
+
 class IndentationSetup:
     def __init__(self):
         self.spaces_addmissible_f = LocalizedParameter("indentation setup: 'spaces'", True)
         self.tabulator_grid_width = LocalizedParameter("indentation setup: 'tabs'",   4)
+        self.tabs_definition      = LocalizedParameter("indentation setup: 'tabs defintion'",    ["[\\t]", ])
+        self.spaces_definition    = LocalizedParameter("indentation setup: 'spaces definition'", ["[ ]", ])
 
 def do(fh):
+    """Note: EndOfStreamException is to be caught be caller."""
     position = fh.tell()
     indentation_setup = IndentationSetup()
 
@@ -60,8 +65,8 @@ def parse_setting(fh, indentation_setup):
     if word == "": 
         return False
 
-    verify_word_in_list(word, ["spaces", "tabs"],
-                        "Unrecognized indentation setting parameter '%s'." % word)
+    verify_word_in_list(word, ["spaces", "tabs", "define"],
+                        "Unrecognized indentation setting element '%s'." % word)
 
     parameter = word
     value     = parse_assignment(fh)
@@ -89,6 +94,51 @@ def parse_setting(fh, indentation_setup):
                       "    handling.", fh)
         indentation_setup.tabulator_grid_width.set(-1, fh) # '-1' tells that tabulators are 'bad'
 
+    elif parameter == "define":
+        # parse a definition of tabs and spaces
+
     return True
 
         
+def parse_tabs_and_spaces_definitions(indentation_setup, fh):
+    """Parses pattern definitions of the form:
+   
+          tabs    [ \t]
+          spaces  [:intersection([:alpha:], [\X064-\X066]):]
+
+       In other words the right hand side *must* be a character set.
+          
+    """
+    # NOTE: Catching of EOF happens in caller: parse_section(...)
+    #
+    skip_whitespace(fh)
+    if not check(fh, "{"):
+        error_msg("indentation setup: define region must start with opening '{'.", fh)
+
+    while 1 + 1 == 2:
+        skip_whitespace(fh)
+
+        if check(fh, "}"): 
+            return
+        
+        # -- get the name of the pattern
+        skip_whitespace(fh)
+        pattern_name = read_identifier(fh)
+        if pattern_name == "":
+            error_msg("Missing identifier for tabs/spaces definition.", fh)
+
+        verify_word_in_list(pattern_name, ["spaces", "tabs"],
+                            "Unrecognized indentation setting element '%s'." % word)
+
+        skip_whitespace(fh)
+
+        if check(fh, "}"): 
+            error_msg("Missing character set expression for tabs/spaces definition '%s'." % \
+                      pattern_name, fh)
+
+        # A regular expression state machine
+        pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
+
+        { "tabs":   indentation_setup.spaces_definition,
+          "spaces": indentation_setup.tabs_definition,
+        }[pattern_name].set([pattern_str, trigger_set], fh)
