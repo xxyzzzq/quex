@@ -13,10 +13,13 @@ import quex.input.regular_expression  as regular_expression
 
 class IndentationSetup:
     def __init__(self):
-        self.spaces_addmissible_f = LocalizedParameter("indentation setup: 'spaces'", True)
-        self.tabulator_grid_width = LocalizedParameter("indentation setup: 'tabs'",   4)
-        self.tabs_definition      = LocalizedParameter("indentation setup: 'tabs defintion'",    ["[\\t]", ])
-        self.spaces_definition    = LocalizedParameter("indentation setup: 'spaces definition'", ["[ ]", ])
+        self.setup["spaces"]     = LocalizedParameter("indentation setup: 'spaces'", 1)
+        self.setup["tabulators"] = LocalizedParameter("indentation setup: 'tabulators'", -4)
+
+        self.defines["spaces"]     = LocalizedParameter("indentation setup: 'tabulators defintion'",    
+                                                        ["[\\t]", NumberSet(ord("\t"))])
+        self.defines["tabulators"] = LocalizedParameter("indentation setup: 'spaces definition'", 
+                                                        ["[ ]", NumberSet(ord(" "))])
 
 def do(fh):
     """Note: EndOfStreamException is to be caught be caller."""
@@ -35,11 +38,30 @@ def do(fh):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.\nFound '%s'." % found_str, fh);
 
-    if      indentation_setup.spaces_addmissible_f.get() == False \
-        and indentation_setup.tabulator_grid_width.get() == -1:
+    # Are there at least some indentation elements?
+    if len(filter(lambda x: x.get() != "bad", indentation_setup.setup)) == 0:
         fh.seek(position)
-        error_msg("Tabulators and spaces have both been de-activated.\n" \
+        error_msg("All possible indentation elements are set to 'bad'.\n" \
                   "No indentation detection possible.", fh)
+
+    # Are all defined elements listed as parameters?
+    parameter_set = set(indentation_setup.setup.keys())
+    for defined in indentation_setup.defines.keys():
+        if defined not in parameter_set:
+            error_msg("Indentation element '%s' has been defined, but not parameterized.\n" % defined + \
+                      "Add an assignment in the indentation section, e.g. '%s = 3;'." % defined, 
+                      indentation_setup.defines[defined].file_name,
+                      indentation_setup.defines[defined].line_n)
+
+    # Are all setup elements defined as character sets?
+    parameter_set = set(indentation_setup.defines.keys())
+    for parameterized in indentation_setup.setup.keys():
+        if parameterized not in parameter_set:
+            error_msg("Indentation element '%s' has been parameterized, but not defined.\n" % parameterized + \
+                      "Add a character set definition in a 'define' section inside the\n" + \
+                      "indentation section, e.g. '%s = 3;'." % parameterized, 
+                      indentation_setup.setup[parameterized].file_name,
+                      indentation_setup.setup[parameterized].line_n)
 
     return indentation_setup
 
@@ -65,45 +87,61 @@ def parse_setting(fh, indentation_setup):
     if word == "": 
         return False
 
-    verify_word_in_list(word, ["spaces", "tabs", "define"],
+    verify_word_in_list(word, ["spaces", "tabulators", "define"],
                         "Unrecognized indentation setting element '%s'." % word)
 
     parameter = word
-    value     = parse_assignment(fh)
 
-    if parameter == "spaces":
-        verify_word_in_list(value, ["good", "bad"],
-                            "indentation setup: Value for 'spaces' set to '%s'" % value)
-        if value == "good": indentation_setup.spaces_addmissible_f.set(True, fh)
-        else:               indentation_setup.spaces_addmissible_f.set(False, fh)
-
-    elif parameter == "tabs":
-        try:
-            # Try to convert to integer
-            if len(value) > 2 and value[:2] == "0x": net_value = int(value, 16)
-            else:                                    net_value = int(value)
-            indentation_setup.tabulator_grid_width.set(net_value, fh)
-            return True
-        except:
-            pass
-
-        if value != "bad":
-            error_msg("indentation setup: value for 'tabs' is specified as '%s'. It must be either\n" % value + \
-                      " -- a possitive integer, which specifies the width of the tabulator grid, or\n" + \
-                      " -- 'bad' which tells that tabs are not to be considered for indentation\n" + \
-                      "    handling.", fh)
-        indentation_setup.tabulator_grid_width.set(-1, fh) # '-1' tells that tabulators are 'bad'
-
-    elif parameter == "define":
-        # parse a definition of tabs and spaces
+    if parameter == "define":
+        # parse a definition of tabulators and spaces
+        parse_definitions
+    else:
+        indentation_setup.setting[parameter] = \
+            LocalizedParameter("Indentation setup for '%s'" % parameter,
+                               parse_parameter_setting(fh, parameter), fh)
 
     return True
 
+def parse_parameter_setting(fh, ParameterName):
+    """Parses information about a type of 'whitespace'. Possible values are
+
+       (1) A possitive integer --> number of indentation spaces that it
+           shall represent.
+
+       (2) "grid" + possitive integer --> width of the grid on which the 
+           character shall snap.
+
+       (3) "bad" --> disallow the particular character.
+    """
+    value  = parse_assignment(fh)
+    fields = value.split()
+
+    grid_f = False
+    if fields[0] == "grid": grid_f = True
+
+    try:
+        # Try to convert to integer
+        if len(value) > 2 and value[:2] == "0x": net_value = int(value, 16)
+        else:                                    net_value = int(value)
+    
+        if grid_f: return - net_value
+        else:      return net_value
+
+    except:
+        pass
+
+    if value != "bad":
+        error_msg("indentation setup: value for '%s' is specified as '%s'. It must be either\n" % (ParameterName, value) + \
+                  " -- a possitive integer, which specifies the width of the tabulator grid, or\n" + \
+                  " -- 'bad' which tells that tabulators are not to be considered for indentation\n" + \
+                  "    handling.", fh)
+
+    return "bad"
         
-def parse_tabs_and_spaces_definitions(indentation_setup, fh):
+def parse_tabulators_and_spaces_definitions(indentation_setup, fh):
     """Parses pattern definitions of the form:
    
-          tabs    [ \t]
+          tabulators    [ \t]
           spaces  [:intersection([:alpha:], [\X064-\X066]):]
 
        In other words the right hand side *must* be a character set.
@@ -125,20 +163,17 @@ def parse_tabs_and_spaces_definitions(indentation_setup, fh):
         skip_whitespace(fh)
         pattern_name = read_identifier(fh)
         if pattern_name == "":
-            error_msg("Missing identifier for tabs/spaces definition.", fh)
-
-        verify_word_in_list(pattern_name, ["spaces", "tabs"],
-                            "Unrecognized indentation setting element '%s'." % word)
+            error_msg("Missing identifier for tabulators/spaces definition.", fh)
 
         skip_whitespace(fh)
 
         if check(fh, "}"): 
-            error_msg("Missing character set expression for tabs/spaces definition '%s'." % \
+            error_msg("Missing character set expression for tabulators/spaces definition '%s'." % \
                       pattern_name, fh)
 
         # A regular expression state machine
         pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
 
-        { "tabs":   indentation_setup.spaces_definition,
-          "spaces": indentation_setup.tabs_definition,
-        }[pattern_name].set([pattern_str, trigger_set], fh)
+        indentation_setup.defines[pattern_name] = \
+                     LocalizedParameter("Pattern definition for '%s'" % pattern_name,
+                                        [pattern_str, trigger_set], fh)
