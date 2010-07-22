@@ -218,9 +218,9 @@ def parse_pattern_name_definitions(fh):
        One regular expression can have more than one name, but one name can 
        only have one regular expression.
     """
-    # NOTE: Catching of EOF happens in caller: parse_section(...)
-    #
-    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
+    skip_whitespace(fh)
+    if not check(fh, "{"):
+        error_msg("define region must start with opening '{'.", fh)
 
     while 1 + 1 == 2:
         skip_whitespace(fh)
@@ -260,6 +260,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
     if NamesOnlyF: db = {}
     else:          db = lexer_mode.token_id_db
 
+    skip_whitespace(fh)
     if not check(fh, "{"):
         error_msg("missing opening '{' for after 'token' section identifier.\n", fh)
 
