@@ -11,7 +11,8 @@ from   quex.core_engine.utf8        import map_unicode_to_utf8
 from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
-    print "Parse Indentation Setup"
+    print "Parse Indentation Setup;"
+    print "CHOICES: count, character_set;"
     sys.exit()
 
 # choice = sys.argv[1]
@@ -24,25 +25,37 @@ def test(Text):
 
     sh      = StringIO(Text)
     sh.name = "test_string"
+
+    descr = None
+    # descr = indentation.do(sh)
     try:    
         descr = indentation.do(sh)
-        print "spaces allowed =", repr(descr.spaces_setup.get())
-        print "tabs           =", repr(descr.tabulators_setup.get())
+        pass
 
     except EndOfStreamException:
         error_msg("End of file reached while parsing 'indentation' section", sh, DontExitF=True)
 
     except:
+        print "Exception!"
         pass
+
+    print descr
+
 
     print
 
-test("{ tabulators   = 5; spaces = good; }")
-test("{tabulators=bad;spaces=bad;}")
-test("{tabulators=grid 5;spaces=good;}")
-test("tabulators=grid 5;spaces=good;}")
-test("{tabulators=grid 5;spaces=good;")
-test("{fabulators=grid 5;spaces=good;")
-test("{tabulators==5;spaces=good;}")
+if "count" in sys.argv:
+    test("{ tabulator   = 5; space = 1; }")
+    test("{tabulator=bad;space=bad;}")
+    test("{tabulator=grid 5;space=1;}")
+    test("tabulator=grid 5;space=1;}")
+    test("{tabulator=grid 5;space=1;")
+    test("{fabulators=grid 5;space=1;")
+    test("{tabulator==5;space=1;}")
 
-
+else:
+    test("{ define { tabulator  [\\r\\a] } }")
+    test("{ define { tabulator  [\\r\\a] space [\:]}}")
+    test("{ define { fabulator  [\\r\\a] space [\:]}}")
+    test("{ fabulator = 34; define { fabulator  [\\r\\a] space [\:]}}")
+    test("{ fabulator = 34; }")
