@@ -1,0 +1,53 @@
+(1) |{ tabulator   = 5; space = 1; }|
+
+Counts:
+  space     = 1
+  tabulator = 5
+Character Sets:
+  space     --> ' '
+  tabulator --> '\t'
+
+
+(2) |{tabulator=bad;space=bad;}|
+
+string:1:error: All possible indentation elements are set to 'bad'.
+string:1:error: No indentation detection possible.
+Exception!
+None
+
+(3) |{tabulator=grid 5;space=1;}|
+
+Counts:
+  space     = 1
+  tabulator = -5
+Character Sets:
+  space     --> ' '
+  tabulator --> '\t'
+
+
+(4) |tabulator=grid 5;space=1;}|
+
+string:1:error: Missing opening '{' at begin of token_type definition
+Exception!
+None
+
+(5) |{tabulator=grid 5;space=1;|
+
+string:1:warning: End of file reached while parsing 'indentation' section
+None
+
+(6) |{fabulators=grid 5;space=1;|
+
+string:1:warning: End of file reached while parsing 'indentation' section
+None
+
+(7) |{tabulator==5;space=1;}|
+
+string:1:error: Indentation setup: Error, value for 'tabulator' is specified as '=5'.
+string:1:error: Example Usages:
+string:1:error:     space     = 1;      // specifies that spaces shall take 1 indentation space.
+string:1:error:     tabulator = grid 4; // specifies that tabulators shall be on a 4 space grid.
+string:1:error:     tabulator = bad;    // tells that tabulators shall not occur in indentation.
+Exception!
+None
+
