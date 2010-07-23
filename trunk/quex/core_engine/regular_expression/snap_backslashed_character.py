@@ -6,9 +6,9 @@ backslashed_character_db = {
         # inside string "..." and outside 
         'a': ord('\a'),   'b': ord('\b'), 'f': ord('\f'),   'n': ord('\n'),
         'r': ord('\r'),   't': ord('\t'), 'v': ord('\v'),   '\\': ord('\\'), '"': ord('"'),
-        # only ouside of string
-        '+': ord('+'), '*': ord('*'), '?': ord('?'), '/': ord('/'), 
-        '|': ord('|'), '$': ord('$'), '^': ord('^'), '-': ord('-'), '.': ord('.'),
+        # only outside of string
+        '+': ord('+'), '*': ord('*'), '?': ord('?'), '/': ord('/'), ":": ord(":"),
+        '|': ord('|'), '$': ord('$'), '^': ord('^'), '-': ord('-'), '.': ord('.'), 
         '[': ord('['), ']': ord(']'),    
         '(': ord('('), ')': ord(')'),  
         '{': ord('{'), '}': ord('}'), 

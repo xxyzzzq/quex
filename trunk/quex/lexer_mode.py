@@ -512,12 +512,18 @@ event_handler_db = {
         }
 
 class LocalizedParameter:
-    def __init__(self, Name, Default):
+    def __init__(self, Name, Default, FH=-1):
         self.name      = Name
-        self.__value   = None
         self.__default = Default
-        self.file_name = ""
-        self.line_n    = -1
+        if FH == -1:
+            self.__value   = None
+            self.file_name = ""
+            self.line_n    = -1
+        else:
+            self.__value   = Default
+            self.file_name = FH.name
+            self.line_n    = get_current_line_info_number(FH)
+
 
     def set(self, Value, fh):
         if self.__value != None:
