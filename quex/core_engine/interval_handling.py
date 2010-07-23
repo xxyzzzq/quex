@@ -28,6 +28,10 @@ utf8_char_db = {
     ord('\n'):     "'\\n'",
     ord('\t'):     "'\\t'",
     ord('\r'):     "'\\r'",
+    ord('\a'):     "'\\a'",
+    ord('\b'):     "'\\b'",
+    ord('\f'):     "'\\f'",
+    ord('\v'):     "'\\v'",
 }
 
 class Interval:
