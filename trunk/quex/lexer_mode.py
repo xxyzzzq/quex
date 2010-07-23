@@ -646,3 +646,8 @@ token_repetition_token_id_list = ""
 #-----------------------------------------------------------------------------------------
 token_type_definition = None
 
+#-----------------------------------------------------------------------------------------
+# indentation_setup: Definition of spaces tabs (and the like) for indentation. This
+#                    structure defines their counts and their character sets.
+#-----------------------------------------------------------------------------------------
+indentation_setup = None

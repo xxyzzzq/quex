@@ -23,6 +23,7 @@ import quex.input.mode_definition    as mode_definition
 import quex.input.token_type         as token_type_definition
 import quex.input.regular_expression as regular_expression
 import quex.input.code_fragment      as code_fragment
+import quex.input.indentation_setup  as indentation_setup
 from   quex.input.setup             import setup as Setup
 from   quex.core_engine.generator.action_info import UserCodeFragment
 
@@ -159,7 +160,13 @@ def parse_section(fh):
             return
 
         elif word == "indentation":
-            pass
+            if lexer_mode.indentation_setup != None:
+                error_msg("indentation setup defined more than once!", fh, DontExitF=True)
+                error_msg("previously defined here",
+                          lexer_mode.indentation_setup.file_name,
+                          lexer_mode.indentation_setup.line_n)
+
+            lexer_mode.indentation_setup = indentation_setup.do(fh)
 
         elif word == "token_type":       
 

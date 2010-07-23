@@ -13,7 +13,10 @@ from   quex.core_engine.interval_handling import NumberSet
 import quex.input.regular_expression      as regular_expression
 
 class IndentationSetup:
-    def __init__(self):
+    def __init__(self, fh):
+        self.file_name = fh.name
+        self.line_n    = get_current_line_info_number(fh)
+
         self.count_db = {}
         self.specify_count("space", 1)
         self.specify_count("tabulator", -4)
@@ -75,7 +78,7 @@ class IndentationSetup:
 def do(fh):
     """Note: EndOfStreamException is to be caught be caller."""
     position = fh.tell()
-    indentation_setup = IndentationSetup()
+    indentation_setup = IndentationSetup(fh)
 
     if not check(fh, "{"):
         error_msg("Missing opening '{' at begin of token_type definition", fh)
