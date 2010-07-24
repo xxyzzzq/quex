@@ -18,18 +18,37 @@ class IndentationSetup:
         self.line_n    = get_current_line_info_number(fh)
 
         self.count_db = {}
-        self.specify_count("space", 1)
-        self.specify_count("tabulator", -4)
-
         self.character_set_db = {}
-        self.specify_character_set("tabulator", NumberSet(ord("\t")))
-        self.specify_character_set("space",     NumberSet(ord(" ")))
+
+    def seal(self):
+        if not self.count_db.has_key("space"):             self.specify_count("space", 1)
+        if not self.count_db.has_key("tabulator"):         self.specify_count("tabulator", -4)
+        if not self.character_set_db.has_key("space"):     self.specify_character_set("space",     NumberSet(ord(" ")))
+        if not self.character_set_db.has_key("tabulator"): self.specify_character_set("tabulator", NumberSet(ord("\t")))
+
+    def __error_msg_if_defined_twice(self, db, Name, FH):
+        before = db.get(Name)
+        if before == None: return
+        error_msg(before.name + " has been defined before", FH, DontExitF=True, WarningF=False)
+        error_msg("at this place.", before.file_name, before.line_n)
 
     def specify_count(self, Name, Setting, FH=-1):
-        self.count_db[Name] = LocalizedParameter("indentation count: '%s'", Setting, FH)
+        self.__error_msg_if_defined_twice(self.count_db, Name, FH)
+        self.count_db[Name] = LocalizedParameter("indentation count '%s'" % Name, Setting, FH)
 
     def specify_character_set(self, Name, Setting, FH=-1):
-        self.character_set_db[Name] = LocalizedParameter("indentation character set: '%s'", Setting, FH)
+        self.__error_msg_if_defined_twice(self.character_set_db, Name, FH)
+
+        # A character cannot appear in more than one set
+        for name, character_set in self.character_set_db.items():
+            if character_set.get().has_intersection(Setting):
+                error_msg("Character set for '%s' intersects with" % Name, FH, DontExitF=True, WarningF=False)
+                error_msg("character set for '%s'.\n" % name + \
+                          "However, character sets must be mutually exclusive.", 
+                          character_set.file_name,
+                          character_set.line_n)
+
+        self.character_set_db[Name] = LocalizedParameter("indentation character set '%s'" % Name, Setting, FH)
 
     def consistency_check(self, fh, position):
         # Are there at least some indentation elements?
@@ -46,7 +65,7 @@ class IndentationSetup:
             assert count != None
             if count.get() != "bad": continue
             error_msg("Indentation element '%s' specified as 'bad'." % identifier,
-                      count.file_name, count.line_n, DontExitF=True)
+                      count.file_name, count.line_n, DontExitF=True, WarningF=False)
             error_msg("However, a character set has been defined for it.",
                       self.character_set_db[identifier].file_name,
                       self.character_set_db[identifier].line_n)
@@ -55,9 +74,10 @@ class IndentationSetup:
         parameter_set = set(self.character_set_db.keys())
         for identifier in self.count_db.keys():
             if self.character_set_db.has_key(identifier): continue
-            error_msg("Count of indentation element '%s' has been specified, but its character set\n" % identifier + \
-                      "has not been defined. Add a character set definition in a 'define' section\n" + \
-                      "inside the indentation section, e.g. 'indentation { ... define { %s [\\t] }}'." % identifier, 
+            error_msg("Count of indentation element '%s' has been specified,\n" % identifier + \
+                      "but its character set has not been defined. Add a character\n" + \
+                      "set definition in a 'define' section, e.g.\n" + \
+                      "'indentation { ... define { %s [\\t] }}'." % identifier, 
                       self.count_db[identifier].file_name,
                       self.count_db[identifier].line_n)
 
@@ -92,6 +112,7 @@ def do(fh):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.\nFound '%s'." % found_str, fh);
 
+    indentation_setup.seal()
     indentation_setup.consistency_check(fh, position)
 
     return indentation_setup
@@ -202,7 +223,7 @@ def parse_character_set(fh, indentation_setup):
         if identifier == "":
             error_msg("Missing identifier for indentation element definition.", fh)
 
-        verify_word_in_list(identifier, indentation_setup.count_db.keys(),
+        verify_word_in_list(identifier, indentation_setup.count_db.keys() + ["tabulator", "space"],
                             "Unrecognized character set identifier '%s'." % identifier, fh)
 
         skip_whitespace(fh)

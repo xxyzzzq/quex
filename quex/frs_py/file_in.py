@@ -532,8 +532,8 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
         else:
             if fh != None:
                 line_n   = get_current_line_info_number(fh)
-                if fh.__class__.__name__ == "StringIO": Filename = "string"
-                else:                                   Filename = fh.name
+                Filename = fh.__dict__.get("name")
+                if Filename == None: Filename = "string"
             else:
                 line_n = -1
                 Filename = ""
@@ -624,7 +624,10 @@ def check_letter_from_list(fh, LetterList):
 
 def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
     """FH, and LineN work exactly the same as for error_msg(...)"""
-    assert len(WordList) != 0
+    if len(WordList) == 0:
+        error_msg(Comment + "\n'%s' is not addmissible here." % Word, FH, LineN, DontExitF=False)
+        return
+
     position_known_f = False
     if type(WordList) == dict:
         word_list = WordList.keys()

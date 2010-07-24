@@ -222,7 +222,7 @@ def __get_post_context_n(match_info_list):
 
 def do_plot():
 
-    mode_db = __get_mode_db(Setup)
+    mode_db             = __get_mode_db(Setup)
     IndentationSupportF = __requires_indentation_count(mode_db)
 
     for mode in mode_db.values():        
