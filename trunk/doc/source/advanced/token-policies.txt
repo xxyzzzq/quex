@@ -54,20 +54,20 @@ via the command line option ``--token-policy``, i.e.::
 This policy is the safe choice and requires a minimum of programming effort.
 It has the following advantages:
 
-   -- Using a token queue enables the sending of multiple
-      tokens as response to a single pattern match. 
+   * Using a token queue enables the sending of multiple
+     tokens as response to a single pattern match. 
       
-   -- The events ``on_entry``, ``on_exit``, and ``on_indentation`` 
-      can be used without much consideration of what happens to the 
-      tokens. 
+   * The events ``on_entry``, ``on_exit``, and ``on_indentation`` 
+     can be used without much consideration of what happens to the 
+     tokens. 
       
-   -- Multiple pattern matches can be performed without 
-      returning from the lexical analyzer function.
+   * Multiple pattern matches can be performed without 
+     returning from the lexical analyzer function.
 
 However, there is a significant drawback:
 
-   -- The state of the analyzer is not syncronized with the currently 
-      reported token, but with the token currently on top of the queue.
+   * The state of the analyzer is not syncronized with the currently 
+     reported token, but with the token currently on top of the queue.
 
 A direct consequence of this is that parameters like line number, stream
 position etc.  must be stored inside the token at the time it is created, i.e.
@@ -82,12 +82,12 @@ queue's size. The user maintains a pointer to the currently considered token
 it points to the next token to be considered. The receive function itself
 does the following:
 
-   -- if there are tokens left inside the queue, it returns a pointer
-      to the next token.
+   * if there are tokens left inside the queue, it returns a pointer
+     to the next token.
 
-   -- if not, then a call to the analyzer function is performed. The analyzer
-      function fills some tokens in the queue, and the first token from the queue
-      is returned to the user. 
+   * if not, then a call to the analyzer function is performed. The analyzer
+     function fills some tokens in the queue, and the first token from the queue
+     is returned to the user. 
 
 An application that applies a 'queue' token policy needs to implement
 a code fragment like the following
@@ -273,14 +273,34 @@ be called with::
 
 The following paragraphs will first discuss the 'single' token passing policy
 and then 'queue', because it is straight forward for the former and a little
-more involved for the later. Whenever a token is received a new token must be
-provided on which the analyzer can write.  Thus, the token pointer switching
-and the reception can be combined. The function signature of the receive
-function is
+more involved for the later. The function signatures for both policies 
+remain the same as with automatic token memory management. Depending whether
+the received token is of interest, the token inside the analyzer can be 
+switched with the new token. This can be done by the functions
 
 .. code-block:: cpp
 
-    QUEX_TYPE_TOKEN* receive(QUEX_TYPE_TOKEN* empty_token);
+    void              token_p_set(QUEX_TYPE_TOKEN*);
+
+The first function only sets a new token. The currently set token pointer
+is overwritten. This is dangerous, since one might loose the reference
+to an allocated object. To avoid this the current token pointer can be
+read out using 
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN*     token_p();
+    
+
+To do the read-out and set operation in one step the function 
+
+.. code-block:: cpp
+
+    QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
+
+is provided. It returns the a pointer to the currently set token inside
+the analyzer and sets the token pointer to what is provided as a second
+argument.
 
 The receive function takes a pointer to an allocated, ready-to-rumble, but
 empty token object. The next analyzis step will write content into this

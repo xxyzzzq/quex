@@ -20,8 +20,8 @@ Character Sets:
 
 (3) |{ define { fabulator  [\r\a] space [\:]}}|
 
-string:1:error: Unrecognized character set identifier 'fabulator'.
-string:1:error: Did you mean 'tabulator'?
+test_string:1:error: Unrecognized character set identifier 'fabulator'.
+test_string:1:error: Did you mean 'tabulator'?
 Exception!
 None
 
@@ -39,9 +39,43 @@ Character Sets:
 
 (5) |{ fabulator = 34; }|
 
-test_string:1:error: Count of indentation element 'fabulator' has been specified, but its character set
-test_string:1:error: has not been defined. Add a character set definition in a 'define' section
-test_string:1:error: inside the indentation section, e.g. 'indentation { ... define { fabulator [\t] }}'.
+test_string:1:error: Count of indentation element 'fabulator' has been specified,
+test_string:1:error: but its character set has not been defined. Add a character
+test_string:1:error: set definition in a 'define' section, e.g.
+test_string:1:error: 'indentation { ... define { fabulator [\t] }}'.
+Exception!
+None
+
+(6) |{ 
+fabulator = 34;
+fabulator = 12;
+}|
+
+test_string:3:error: indentation count 'fabulator' has been defined before
+test_string:2:error: at this place.
+Exception!
+None
+
+(7) |{ define { 
+space  [\r\a] 
+space [\:]
+  }
+}|
+
+test_string:3:error: indentation character set 'space' has been defined before
+test_string:2:error: at this place.
+Exception!
+None
+
+(8) |{ define { 
+space  [\:]    
+tabulator [\:]
+  }
+}|
+
+test_string:3:error: Character set for 'tabulator' intersects with
+test_string:2:error: character set for 'space'.
+test_string:2:error: However, character sets must be mutually exclusive.
 Exception!
 None
 

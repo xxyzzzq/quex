@@ -254,14 +254,18 @@ def validate(setup, command_line, argv):
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
-    # check validity
+    # Check validity
     bpc = setup.bytes_per_ucs_code_point
-    if bpc != "wchar_t":
+    if bpc.isdigit():
         if bpc not in ["1", "2", "4"]:
             error_msg("choice for '--bytes-per-trigger': %s" % bpc + \
-                      "quex only supports 1, 2, or 4 bytes per character in internal engine")
+                      "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
         else:
             setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
+
+    if bpc != "wchar_t":
+        error_msg("choice for '--bytes-per-trigger': %s" % bpc + \
+                  "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
 
     if setup.byte_order not in ["<system>", "little", "big"]:
         error_msg("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
@@ -347,11 +351,11 @@ def validate(setup, command_line, argv):
                     setup.engine_character_encoding + "-state-split"
             if setup.engine_character_encoding == "utf8":
                if setup.bytes_per_ucs_code_point != 1:
-                   error_msg("Using codec 'utf8' while bytes per chacter is != 1.\n"
+                   error_msg("Using codec 'utf8' while bytes per trigger is != 1.\n"
                              "Consult command line argument '--bytes-per-trigger'.")
             if setup.engine_character_encoding == "utf16":
                if setup.bytes_per_ucs_code_point != 2:
-                   error_msg("Using codec 'utf16' while bytes per chacter is != 2.\n"
+                   error_msg("Using codec 'utf16' while bytes per trigger is != 2.\n"
                              "Consult command line argument '--bytes-per-trigger'.")
         else:
             setup.engine_character_encoding_transformation_info = \
