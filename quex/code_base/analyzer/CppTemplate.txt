@@ -246,6 +246,10 @@ public:
     void        seek(const size_t);
 
 public:
+
+    void        set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
+                                                                       QUEX_TYPE_CHARACTER*));
+
     template <class InputHandleT> void reset(InputHandleT*  input_handle, 
                                              const char*    CharacterEncodingName = 0x0);
     void                               reset(const char*    CharacterEncodingName = 0x0) 

@@ -3,13 +3,14 @@
 Token Passing Policies
 ======================
 
-The primary result result of a lexical analysis step is a so called 'token
-identifier', that tells how the current input can be catagorized, e.g. as a
-'KEYWORD', a 'NUMBER', or an 'IP_ADDRESS'. Additionally some information about
-the actual stream content might have to be stored. For example when a 'STRING'
-is identified the content of the string might be interesting for the caller of
-the lexical analyzer. This basic information needs to be passed to the user of
-the lexical analyzer. Token passing in quex can be characterized by 
+This section discusses how the generated analyzer communicates its results to
+its user.  The primary result result of a lexical analysis step is a so called
+'token identifier', that tells how the current input can be catagorized, e.g.
+as a 'KEYWORD', a 'NUMBER', or an 'IP_ADDRESS'. Additionally some information
+about the actual stream content might have to be stored. For example when a
+'STRING' is identified the content of the string might be interesting for the
+caller of the lexical analyzer. This basic information needs to be passed to
+the user of the lexical analyzer. Token passing in quex can be characterized by 
 
   .. describe:: Memory managements 
   
@@ -289,23 +290,18 @@ read out using
 
 .. code-block:: cpp
 
-    QUEX_TYPE_TOKEN*     token_p();
+    QUEX_TYPE_TOKEN*  token_p();
     
-
 To do the read-out and set operation in one step the function 
 
 .. code-block:: cpp
 
     QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
 
-is provided. It returns the a pointer to the currently set token inside
-the analyzer and sets the token pointer to what is provided as a second
-argument.
-
-The receive function takes a pointer to an allocated, ready-to-rumble, but
-empty token object. The next analyzis step will write content into this
-object. The result of the current analyzis step is available as the return
-value. A typical code fragment for this scenerio looks like
+is provided. It returns the a pointer to the currently set token inside the
+analyzer and sets the token pointer to what is provided as a second argument.
+It must point to a constructed, token object.  A typical code fragment for this
+scenerio looks like
 
 .. code-block:: cpp
 
@@ -316,56 +312,44 @@ value. A typical code fragment for this scenerio looks like
     ...
     while( analyzis ) {
         /* call to receive(...) switches token pointer */
-        token_p = lexer.receive(token_p);
+        token_id = lexer.receive();
         ...
         if( content_is_important_f ) {
-            store_away(token_p);
-            token_p = get_new_token();
+            store_away(lexer.token_p_switch(get_new_token());
         }
     }
 
 The idea of 'switching the thing on which the analyzer writes' can also be
 applied to the 'queue' token passing policy. The user provides a chunk of
-allocated and constructed tokens. The receive function fills the token queue
-during the call to receive and prepares a new token queue to carry analyzis
-results. The switched entity is the token queue and no longer a single token.
-Note, that with this approach, the receive function can longer longer
-implicitly iterate over a token queue in the background. Instead, the user is
-responsible to iterate over the received queue of tokens. The function
-signature of the receive function is the following:
+allocated and constructed tokens. The receive function fills this token queue
+during the call to ``receive``. If the token queue is of interest, it can be taken
+out and the lexer gets a new, ready-to-rumble token queue. This actions 
+can be take by means of the functions
 
 .. code-block:: cpp
 
-    void   receive(QUEX_TYPE_ANALYZER*  me,
-                   QUEX_TYPE_TOKEN**    finished_token_queue, 
-                   QUEX_TYPE_TOKEN**    finished_token_queue_watermark, 
-                   QUEX_TYPE_TOKEN*     empty_token_queue,
-                   size_t               empty_token_queue_size);
+       void  token_queue_get(QUEX_TYPE_TOKEN** begin, size_t* size);
+       void  token_queue_set(QUEX_TYPE_TOKEN* Begin, size_t Size);
+       void  token_queue_switch(QUEX_TYPE_TOKEN** queue, 
+                                size_t*           size); 
 
-The resulting token queue is communicated via the return value and the 
-first argument. The first argument's pointer is bent to the begin of the
-currently finished token queue and the return value marks the end of the
-queue. Further, the receive function accepts a new token queue for the next
-analyzis step by means of the second and third argument, carrying a pointer
-to the begin of the new empty token queue and its size.
 
-This receive function always performs a call to the underlying analyzer
-function. At each step an empty queue is filled from ground until the analyzer
-function returns. A typical code fragment applying this approach could be
-similar to 
+The following code fragment displays a sample application of this approach:
 
 .. code-block:: cpp
 
-    QUEX_TYPE_TOKEN*  iterator        = 0x0; 
-    QUEX_TYPE_TOKEN*  queue           = 0x0;
-    QUEX_TYPE_TOKEN*  queue_watermark = 0;
+    QUEX_TYPE_TOKEN*  iterator   = 0x0; 
+    QUEX_TYPE_TOKEN*  queue      = 0x0;
+    size_t            queue_size = (size_t)16;
     ...
-    empty_queue = get_new_token_queue(empty_queue_size);
-    qlex.set_token_queue(empty_queue, empty_queue_size);
+    queue = get_new_token_queue(queue_size);
+    qlex.token_queue_set(queue, queue_size);
     ...
     while( analyzis ) {
-        empty_queue      = get_new_token_queue(empty_queue_size);
-        qlex.receive(&queue, &queue_watermark, empty_queue, empty_queue_size);
+        iterator    = qlex.receive();
+        /* consider the first token, the remainder is in the queue.
+        ...
+        qlex.token_queue_switch(&queue);
 
         /* Manual iteration over received token queue */
         for(iterator = queue; iterator != queue_watermark ; ++iterator) {
@@ -376,272 +360,119 @@ similar to
         }
     }
 
-Additionally, there are three functions for low-level interaction with the
-token queue:
 
-   .. code-block:: cpp
+Token Construction and Destruction
+..................................
 
-      void   token_queue_memory_switch(QUEX_TYPE_TOKEN** memory, size_t* n);
+As mentioned for user token memory management, the user owns the token's memory
+and is responsible for construction and destruction.  In C++ construction and
+destruction happen implicitly, when on calls the ``new`` and ``delete``
+operator, or if one defines a local variable and this variable runs out of
+scope, e.g.
 
-Analogously in C:
+.. code-block:: cpp
 
-      void   QUEX_NAME(token_queue_memory_switch)(QUEX_TYPE_ANALYZER* me,
-                                                  QUEX_TYPE_TOKEN**   memory, 
-                                                  size_t*             n);
+   QUEX_TYPE_TOKEN*   queue = QUEX_TYPE_TOKEN[16];
 
-The first function returns ``true`` if the queue is empty and ``false`` if
-not. The second function returns the remaining tokens. After a call to 
-this function ``*Begin`` will point to the begin of the remaining tokens
-and ``*End`` will point right behind the last token in the remainder. Thus,
-it is possible to iterate over the remaining tokens with
+allocates space for 16 tokens, and calls their constructors. A call to delete,
+e.g.
 
-   .. code-block:: cpp
+.. code-block:: cpp
 
-      qlex.token_queue_remainder_get(&begin, &end);
-      for(QUEX_TYPE_TOKEN* p = *begin; p != *end; ++p) {
-          ...
-      }
+   delete [] queue;
 
-Note, that a call to this function empties the token queue. Thus, if one does
-not consider the reported remaining tokens, then tokens are definitely lost.
-The function ``token_queue_memory_switch(...)`` sets a memory chunk that is
-to be used as a token queue. At the same time it returns the pointer to the
-previous memory. Its arguments are as follows:
+invoques the token destructor and deletes all related memory. In C, however,
+construction and destruction must happen by hand, i.e.
 
-  .. describe:: ``QUEX_TYPE_TOKEN** memory``
+.. code-block:: cpp
 
-     At function entry ``*memory`` must point to the memory chunk to be used
-     for the token queue. At function exit ``*memory`` will point to the 
-     chunk that was used before. The ownership of the memory chunk is
-     now transferred to the caller, i.e. the user. He is now responsible
-     of deleting it. If ``*memory`` is zero at function exit then there
-     was not yet any memory associated.
+   QUEX_TYPE_TOKEN*   queue = (QUEX_TYPE_TOKEN*)malloc(sizeof(QUEX_TYPE_TOKEN) * 16);
 
-  .. describe:: ``size_t* n``
+   for(iterator = queue; iterator != queue QueueSize; ++iterator) 
+       QUEX_NAME_TOKEN(construct)(iterator);
 
-     At function entry ``*n`` must contain the numbers of tokens that fit into
-     the provided chunk. At function exit ``*n`` will contain the number of
-     tokens carried by the previous memory chunk.
+and 
      
-The design choice of implementing a 'switch' function instead of a 'set' and a
-'get' function was made by purpose. It imposes on the user to have an idea
-about what to do with the memory chunk that is currently used. If only the new
-memory chunk was put in place and no one takes responsibility of the old one,
-then this is a source of memory leaks. By default the ability to set a
-customized memory chunk is turned of. It is only enabled via if the
-macro::
+.. code-block:: cpp
 
-        QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
+   for(iterator = queue; iterator != queue QueueSize; ++iterator) 
+       QUEX_NAME_TOKEN(destruct)(iterator);
 
-e.g. witha a command line ``-D...`` definition, or the
-command line flag ``--token-memory-management-by-user`` or ``--tmmbu`` being
-passed to quex. If user managed token memory is defined, no initial token queue
-is setup. The user is responsible for allocating the memory chunk and for
-calling the constructors for each token element. Vice versa, the analyzer's
-destructor will neither take care of the destruction of the token objects, nor it
-will deallocate the memory chunk where they reside. It is all the users task.
+   free(queue)
 
-It is advisable to call ``token_queue_memory_get(...)`` where ``*memory`` will
-point to the begin of the token queue's memory and ``*n`` will contain the
-number of tokens that can be contained by it.
 
-It is generally a good idea to check whether the token queue is empty before
-imposing a new queue. That is
+Remark on Token Passing
+-----------------------
 
-   .. code-block:: cpp
-
-      if( my_lexer.token_queue_is_empty() ) {
-          n      = 32;
-          memory = new QUEX_TYPE_TOKEN[n];
-
-          my_lexer.token_queue_memory_switch(&memory, &n);
-
-          if( memory != 0x0 ) delete [] memory;
-      }
-
-otherwise, one might risk to drop tokens that are lost inside the old queue
-when the new queue came in. As shown in the example it shall also be checked
-wether the memory was already set. If so the user is responsible for deleting
-it.  The memory passed as token queue memory must be allocated and initialized,
-i.e. the constructor must have been called for each token object in the
-memory chunk. In C++ this happens automatically when the ``new`` operator
-is used for arrays, e.g.
-
-   .. code-block:: cpp
-
-      QUEX_TYPE_TOKEN*  my_memory = new QUEX_TYPE_TOKEN[512];
-
-does all that is required to setup a token queue memory. In C, though, 
-the constructor calls for the tokens must be triggered explicitly, e.g.
-
-   .. code-block:: cpp
-
-      size_t             n             = 512;
-      QUEX_TYPE_TOKEN*   my_memory     = 0x0;
-      QUEX_TYPE_TOKEN*   my_memory_end = 0x0;
-
-      my_memory     = (QUEX_TYPE_TOKEN*)malloc(512 * sizeof(QUEX_TYPE_TOKEN));
-      my_memory_end = my_memory + n;
-
-      for(p = my_memory; p != my_memory_end; ++p) {
-          QUEX_NAME_TOKEN(construct)(p);
-      }
-
-      QUEX_NAME(token_queue_memory_switch)(&my_memory, &n);
-      ...
-
-is a C code fragment that corresponds to the C++ fragment above. Analogously,
-the destruction of a token queue array happens automatically C++. In C the destructors
-for the token objects must be called explicitly before the memory can be freed, e.g.
-
-   .. code-block:: cpp
-
-      if( my_memory != 0x0 ) {
-          for(p = my_memory; p != my_memory_end; ++p) {
-              QUEX_NAME_TOKEN(destruct)(p);
-          }
-          free(my_memory);
-      }
-
-.. warning::
-
-   The state of the lexical analyzer corresponds always to the last token in
-   the token queue! The ``.receive()`` functions only take one token from the
-   queue which is not necessarily the last one. If state elements, such as line
-   numbers or indentation, need to be associated with tokens, token stamping
-   needs to be used :ref:`sec-token-stamping`.
-
-Single
-------
-
-Command line option: ``--token-policy  single``
-
-When a single token is used many advantages are lost queue are lost. The
-capability to send repeated tokens via a single token using ``self_send_n``
-remains intact. However, only one distinct token can be sent as reaction to one
-pattern match. Also, it must be taken care that the pattern actions that appear
-around the events ``on_entry``, ``on_exit``, and ``on_indentation`` do not sent
-tokens if the event handler's do. Otherwise, token content is simply overwritten
-and lost. Also, if the content of a token is set by a pattern action, it is
-generally a bad idea to use ``CONTINUE`` after sending a token. The subsequent
-pattern action may corrupt the token content. 
-
-   .. code-block:: cpp
-
-      token_id = my_lexer.receive();
-
-where the member function ``.receive()`` returns the identifier of the current
-token. The current token can be accessed via
-
-   .. code-block:: cpp
-   
-       my_lexer.token_p(&token_p);
-
-where the returned pointer always points to the same token object as long
-as one does not call 
-
-   .. code-block:: cpp
-   
-       prev_token_p = my_lexer.token_p_switch(&my_token);
-
-where the passed argument must point to a prepared token object. Again, the
-choice of implementing a 'switch' function was made to remind the user of the
-previous token inside the analyzer of which he needs to take care. If the
-returned pointer is zero, then no token was previously set. Otherwise, the user
-takes over the ownership over the token and is responsible for destructing and
-de-allocating it. That is, for example
-
-   .. code-block:: cpp
-
-       token_p = (QUEX_TYPE_TOKEN*)malloc(sizeof(QUEX_TYPE_TOKEN));
-       QUEX_NAME_TOKEN(construct)(token_p);
-
-       prev_token_p = QUEX_NAME(token_p_switch)(token_p);
-       if( prev_token_p != 0x0 ) {
-           QUEX_NAME_TOKEN(destruct)(prev_token_p);
-           free(prev_token_p);
-       }
-
-is an appropriate way to handle multiple tokens in plain C. In C++ things 
-are a lot easier. The above segment can be written in C++ as
-
-   .. code-block:: cpp
-
-       prev_token_p = QUEX_NAME(token_p_switch)(new QUEX_TYPE_TOKEN());
-       if( prev_token_p != 0x0 ) delete prev_token_p;
-
-This is so, since in C++ constructor and destructor calls happen implicitly
-when the operators ``new`` and ``delete`` are applied.  As with the token queue,
-this set funtion is only available if the macro::
-
-        QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
-
-is defined, or the command line option ``--token-memory-management-by-user``
-or ``--tmmbu`` is passed to quex. As with the policy 'queue' the token memory
-needs to be constructed. In C++ this happens implicitly by a call to the 
-``new``-operator or by plain variable definition. In C the token object
-needs to be constructed explicitly, i.e. a fragment such as the following 
-is required
-
-   .. code-block:: cpp
-
-       QUEX_TYPE_TOKEN   my_token;
-       ...
-       QUEX_NAME_TOKEN(construct)(&my_token);
-       ...
-       my_lexer.token_p_set(&my_token);
-
-Again, the destruction of a token object happens implicitly in C++, but 
-in C the destructor must be called explicitly, i.e.
-
-   .. code-block:: cpp
-
-      QUEX_NAME_TOKEN(destruct)(&my_token);
-
-must be called befor the token object is deallocated or runs out of scope, i.e.
-before function return if it is defined as a local variable. 
-
-An advantage of the single token policy is that there is no increment 
-operation for the iteration over the token array. Also, no token queue
-reset needs to happen at the entry of the analyzis step. A decision whether
-to take the risk and effort that comes with the single token policy
-needs to be well considered. It is always a good idea to run some benchmarks
-on a basic lexical analyzer implementation in order to see which policy
-is preferrable. 
-
-Remarks
--------
-
-The passing of tokens from the analyzer is a straight-forward one-way
-process. The life line of an object generated by the analyzer shall
-look like
-
-   #. Caller calls the lexical analyzer via ``.receive()``.
-   #. Analyzer generates an object based on the lexical 'event'. It does
-      *not* create the token that carries it.
-   #. Object is stored inside the token.
-   #. Caller takes the object.
-   #. Caller deletes the object, but *not* the token.
-
-If this policy is followed consequently, then the token never needs to have
-ownership over the carried object. That means, it shall not be responsible for
-allocation or deallocation of the carried object.  As a consequence the token
-passing becomes both faster and less memory consuming. The default token class
-used in quex, however, implements a safe strategy. For example the ``text``
-member relies on C++ Standard Library's ``basic_string`` for strings. This
-ensures that the carried string object is deleted as soon as it is re-assigned
-or if the token is destructed at destruction time of the analyzer. A well
-designed token passing might cope with simple pointers to memory that is
-allocated by the analyzer and de-allocated by the caller of the analyzer.
+The user initiates an analyzis step by his call to ``.receive()``. The analyzer
+tries to make sense out of the following sequence of characters, i.e.
+characterizes it as being a number, a keyword, etc. The character sequence that
+constitutes the pattern, i.e. the lexeme, has a begin and an end. Now, comes
+the point where this information has to be passed to the caller of
+``.receive()`` through a token.
 
 .. note:: 
 
-   The allocation, constructor calls, destructor calls  or de-allocation of
-   token memory and tokens *is not* element of the analyzis process! The tokens
-   are created once--at best before the analyzis starts. The are equally
-   deleted once when the analyzis is terminated. Tokens behave like ships
-   that are kept ready to carry information from the analyzer to the caller
-   of the analyzer.
+   The concept of a 'token' is that of a container that carries some
+   information from the analyzer to the user. No tokens shall be allocated
+   in a pattern action. During analyzis it is only filled, not created, and when
+   ``receive()`` returns the user reads it what is in it. 
+  
+   Token allocation, construction, destruction, and deallocation is either
+   done by the analyzer itself (default automatic token memory management), 
+   or by the caller of ``.receive()`` (user token memory management). It
+   is not element of an analyzer step.
+
+Token passing is something with happens notoriously often, and thus it is
+crucial for the performance of the lexical analyzer. During the pattern-match
+action the lexeme is referred to by means of a character pointer. This pointer
+is safe, as long as no buffer reload happens. Buffer reloads are triggered 
+by analyzis steps. Depending on the token passing policy, the lexeme pointer 
+is safe to be used without copying:
+
+ .. describe:: Single
+
+    The pointer to the lexeme is safe from the moment that it is provided in
+    the matching pattern action and while the function returns from
+    ``receive()``. When ``receive()`` is called the next time, a buffer reload
+    may happen. If string to which the lexeme pointer points is important, then
+    it must be copied before this next call to receive.
+
+    .. note:: When ``CONTINUE`` is used, this initiates an analyzis step
+              during which a buffer reload may happen.
+
+
+ .. describe:: Queue
+
+    As with 'single', a lexeme pointer must be copied away before the next
+    call to ``receive()``. However, potentially multipl tokens are sent,
+    and analyzis continues after a pattern has matched, then the lexeme
+    pointer may be invalid after each step.
+
+The default token implementation ensures, that the lexeme is stored away
+in  safe place, during the pattern match action. However, for things that
+can be interpreted, such as numbers it may be advantegeous to interpret
+them directly and store only the result inside the token. 
+
+The above mentioned copy operations are done, because the buffer content
+*might* change while the lexeme content is of interest. A very sophisticated
+management of lexemes triggers on the actual buffer content change and
+safes all trailing lexemes at on single beat into a safe place. This is
+possible by registering a callback on buffer content change. The 
+function to do this is
+
+.. code-block:: cpp
+
+    void  set_callback_on_buffer_content_change(
+                void (*callback)(QUEX_TYPE_CHARACTER* ContentBegin, 
+                                 QUEX_TYPE_CHARACTER* ContentEnd));
+
+As long as the provided callback is not called, all lexeme pointers 
+are safe. If the callback is called, then the current buffer content
+is overwritten and thus all related lexeme pointers will be invalid. 
+To help with the decision which lexemes need to be stored away, the
+callback is called with pointers to the begin and end of the related
+content.
 
 Summary
 -------
