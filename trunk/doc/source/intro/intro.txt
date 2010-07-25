@@ -25,7 +25,7 @@ demonstrated in the following chapters.
 
 .. _fig-lexical-analyser:
 
-.. figure:: ../figures/lexical-analysis-process-text-to-path.*
+.. figure:: ../figures/lexical-analysis-process-text-to-path.* 
    
    Process of lexical analysis.
 

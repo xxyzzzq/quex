@@ -159,16 +159,23 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
      *       addresses related to acceptance positions need to be adapted. This
      *       is not the case for 'reload_backward()'. In no case of backward
-     *       reloading, there are important addresses to keep track. */
+     *       reloading, there are important addresses to keep track.            */
     QUEX_INLINE void 
     QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
-        size_t LoadedCharacterN = 0;
+        size_t                 LoadedCharacterN = 0;
+        QUEX_TYPE_CHARACTER*   end_of_content_p = 0x0;
 
         __quex_assert(buffer != 0x0);
         __quex_assert(buffer->filler != 0x0);
 
         QUEX_DEBUG_PRINT(buffer, "BACKWARD: BUFFER RELOAD");
+
+        if( buffer->on_buffer_reload != 0x0 ) {
+            if( buffer->_end_of_file_p != 0x0 ) end_of_content = buffer->_end_of_file_p;
+            else                                end_of_content = buffer->_memory._back;
+            buffer->on_buffer_content_change(buffer->_memory._front, end_of_content_p);
+        }
 
         LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
         QUEX_DEBUG_PRINT2(buffer, "BACKWARD: LOADED %i CHARACTERS", (int)LoadedCharacterN);
@@ -194,6 +201,18 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(buffer != 0x0);
         __quex_assert(buffer->filler != 0x0);
         __quex_assert(buffer->_memory._end_of_file_p == 0x0);
+
+        if( buffer->_end_of_file_p != 0x0 ) {
+            return 0;
+        }
+
+        if( buffer->on_buffer_reload != 0x0 ) 
+            /* If the end of file pointer is set, the reload will not be initiated,
+             * and the buffer remains as is. No reload happens, see above. 
+             * => HERE: end of content = end of buffer.                             */
+            buffer->on_buffer_content_change(buffer->_memory._front, 
+                                             buffer->_memory._back);
+        }
 
         loaded_character_n = QUEX_NAME(BufferFiller_load_forward)(buffer);
         QUEX_DEBUG_PRINT2(buffer, "FORWARD: LOADED %i CHARACTERS", (int)loaded_character_n);
