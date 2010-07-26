@@ -92,6 +92,10 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     if Setup.engine_character_encoding != "": 
         codec_name = make_safe_identifier(Setup.engine_character_encoding).lower()
 
+    indentation_space_trigger = "/* No indentation space trigger defined */"
+    indentation_grid_trigger  = "/* No indentation grid trigger defined  */"
+    indentation_check_space   = "(C != ' ')"
+
     def namespace(NameSpaceList):
         result = Setup.language_db["$namespace-ref"](NameSpaceList)
 
@@ -133,6 +137,9 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$TOKEN_REPEAT_TEST$$",          token_repeat_test_txt],
              ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
+             ["$$CHECK_INDENTATION_SPACE$$",       indentation_check_space],
+             ["$$__QUEX_INDENTATION_SPACE$$",      indentation_space_trigger],
+             ["$$__QUEX_OPTION_INDENTATION_GRID$$", indentation_grid_trigger],
              ])
 
     return txt

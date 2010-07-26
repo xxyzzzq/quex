@@ -142,7 +142,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         while( it != Begin ) {
             /* recall assert above: no lexeme with LexemeLength == 0 */
             --it;
-            if( *it == '\n' ) { 		
+            if( *it == '\n' ) {
                 /* NOTE: according to the test in (1) it is not possible
                  *       that *it == "\n" and it == Last 
                  *       => there is always an iterator behind 'it' if *it == "\n". 
@@ -283,7 +283,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *    (indentation count is disabled if non-whitespace arrives) */
         QUEX_TYPE_CHARACTER* it = start_consideration_it;
         do { 
-            if( *it != ' ' ) { 
+            if( __QUEX_INDENTATION_CHECK_SPACE(*it) ) { 
                 me->_indentation_count_enabled_f = false;
                 me->_indentation += (size_t)(it - start_consideration_it);
                 /* Line and column number need to be counted before the indentation handler
@@ -303,13 +303,20 @@ QUEX_NAMESPACE_MAIN_OPEN
                 __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
                 return;
             }
+#           ifdef __QUEX_OPTION_INDENTATION_GRID
+            __QUEX_INDENTATION_ADD(me->indentation, *it);
+#           else
             ++it; 		    
+#           endif
         } while ( it != End );
 
         /* no non-whitespace until end of lexeme, thus only increment the indentation */
+#       if ! defined(__QUEX_OPTION_INDENTATION_GRID)
         me->_indentation += (size_t)(it - start_consideration_it);
+        /* If a grid is defined, the increment happens inside the loop above.         */
+#       endif
         QUEX_NAME(CounterLineColumnIndentation_count_indentation_aux)(me, start_consideration_it, 
-                                                     Begin, End, LicenseToIncrementLineCountF);
+                                                                      Begin, End, LicenseToIncrementLineCountF);
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 

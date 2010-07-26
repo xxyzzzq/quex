@@ -9,8 +9,9 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void        
-QUEX_MEMBER(set_callback_on_buffer_content_change)(void (*callback)(QUEX_TYPE_CHARACTER*, 
-                                                                    QUEX_TYPE_CHARACTER*))
+QUEX_NAME(set_callback_on_buffer_content_change)(QUEX_TYPE_ANALYZER*  me,
+                                                 void               (*callback)(QUEX_TYPE_CHARACTER*, 
+                                                                                QUEX_TYPE_CHARACTER*))
 { me->buffer.on_buffer_content_change = callback; }
 
 QUEX_INLINE void    
@@ -162,7 +163,7 @@ QUEX_NAME(print_this)(QUEX_TYPE_ANALYZER* me)
 QUEX_INLINE void        
 QUEX_MEMBER(set_callback_on_buffer_content_change)(void (*callback)(QUEX_TYPE_CHARACTER*, 
                                                             QUEX_TYPE_CHARACTER*))
-{ QUEX_NAME(set_callback_on_buffer_content_change)(callback); }
+{ QUEX_NAME(set_callback_on_buffer_content_change)(this, callback); }
 
 QUEX_INLINE void    
 QUEX_MEMBER(move_forward)(const size_t CharacterN)

@@ -17,7 +17,7 @@ class IndentationSetup:
         self.file_name = fh.name
         self.line_n    = get_current_line_info_number(fh)
 
-        self.count_db = {}
+        self.count_db         = {}
         self.character_set_db = {}
 
     def seal(self):
@@ -49,6 +49,44 @@ class IndentationSetup:
                           character_set.line_n)
 
         self.character_set_db[Name] = LocalizedParameter("indentation character set '%s'" % Name, Setting, FH)
+
+    def has_grid(self):
+        """A 'grid' is defined by a negative integer."""
+        for count in self.count_db.values():
+            if count < 0: return True
+        return False
+
+    def has_only_single_spaces(self):
+        if self.has_grid(): return False
+        if len(self.count_db): return False
+        for count in self.count_db.values():
+            if count != -1: return False
+        return True
+
+    def __character_info(self, FilterFunc):
+        """Returns a list of character sets paired with their count information.
+        """
+        result = []
+        for identifier, count in self.count_db.items():
+            # Consider only what user wants
+            if count == "bad" or not FilterFunc(count): continue 
+            
+            # The consistency check must have ensured that every key in
+            # 'character_set_db' is als in 'count_db'.
+            character_set = self.character_set.get(identifier)
+            assert character_set != None
+
+            result.append([character_set, count])
+
+        return result
+
+    def characters_for_grid(self):
+        # count < 0 ==> characters span a grid and '- count' is the grid with
+        return __character_info(lambda count: count < 0))
+
+    def characters_for_space(self):
+        # count >= 0 ==> characters are single spaces, count = number of spaces
+        return __character_info(lambda count: count >= 0))
 
     def consistency_check(self, fh, position):
         # Are there at least some indentation elements?

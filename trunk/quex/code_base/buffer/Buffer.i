@@ -64,6 +64,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferMemory_construct)(&(me->_memory), 
                                           InputMemory, MemorySize, EndOfFileP);      
 
+        me->on_buffer_content_change = 0x0;
+
         me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 
         QUEX_NAME(Buffer_init)(me, ByteOrderReversionF);

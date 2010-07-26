@@ -258,13 +258,13 @@ def validate(setup, command_line, argv):
     bpc = setup.bytes_per_ucs_code_point
     if bpc.isdigit():
         if bpc not in ["1", "2", "4"]:
-            error_msg("choice for '--bytes-per-trigger': %s" % bpc + \
+            error_msg("choice for '--bytes-per-trigger': '%s'\n" % bpc + \
                       "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
         else:
             setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
 
-    if bpc != "wchar_t":
-        error_msg("choice for '--bytes-per-trigger': %s" % bpc + \
+    elif bpc not in ["wchar_t", ""]:
+        error_msg("choice for '--bytes-per-trigger': '%s'\n" % bpc + \
                   "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
 
     if setup.byte_order not in ["<system>", "little", "big"]:
