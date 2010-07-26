@@ -164,17 +164,17 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer)
     {
         size_t                 LoadedCharacterN = 0;
-        QUEX_TYPE_CHARACTER*   end_of_content_p = 0x0;
 
         __quex_assert(buffer != 0x0);
         __quex_assert(buffer->filler != 0x0);
 
         QUEX_DEBUG_PRINT(buffer, "BACKWARD: BUFFER RELOAD");
 
-        if( buffer->on_buffer_reload != 0x0 ) {
-            if( buffer->_end_of_file_p != 0x0 ) end_of_content = buffer->_end_of_file_p;
-            else                                end_of_content = buffer->_memory._back;
-            buffer->on_buffer_content_change(buffer->_memory._front, end_of_content_p);
+        if( buffer->on_buffer_content_change != 0x0 ) {
+            /* In contrast to 'reload forward', a reload backward is very well 
+             * conceivable, even if end of file pointer != 0x0.                          */
+            buffer->on_buffer_content_change(buffer->_memory._front, 
+                                             QUEX_NAME(Buffer_text_end)(buffer));
         }
 
         LoadedCharacterN = QUEX_NAME(BufferFiller_load_backward)(buffer);
@@ -202,11 +202,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(buffer->filler != 0x0);
         __quex_assert(buffer->_memory._end_of_file_p == 0x0);
 
-        if( buffer->_end_of_file_p != 0x0 ) {
+        if( buffer->_memory._end_of_file_p != 0x0 ) {
             return 0;
         }
 
-        if( buffer->on_buffer_reload != 0x0 ) 
+        if( buffer->on_buffer_content_change != 0x0 ) {
             /* If the end of file pointer is set, the reload will not be initiated,
              * and the buffer remains as is. No reload happens, see above. 
              * => HERE: end of content = end of buffer.                             */

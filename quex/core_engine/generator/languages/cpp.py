@@ -596,3 +596,20 @@ def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
     __label_used_in_computed_goto_list_unique[PatternID] = True 
     return "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % PatternID + \
            "QUEX_SET_last_acceptance(%s);\n" % PatternID
+
+def __indentation_add(Info):
+    def __do(txt, CharSet, Operation):
+        txt.append([ __condition(CharSet) + " {", Operation, "}\n" ])
+
+    if Info.has_only_single_spaces():
+        # The count can be done simply by adding 'end - start' of the whitespace
+        return ""
+
+    txt = []
+    for character_set, count in Info.characters_for_space(): 
+        __do(txt, "I += %i;\n" % count)
+    for character_set, count in Info.characters_for_grid(): 
+        __do(txt, character_set, "   I += (%i - I %% %i);\n" % (count, count))
+
+    return txt
+
