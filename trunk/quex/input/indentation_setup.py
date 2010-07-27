@@ -53,14 +53,19 @@ class IndentationSetup:
     def has_grid(self):
         """A 'grid' is defined by a negative integer."""
         for count in self.count_db.values():
-            if count < 0: return True
+            if count.get() != "bad" and count.get() < 0: return True
         return False
 
+    def has_spaces(self):
+        for count in self.count_db.values():
+            if count.get() != "bad" and count.get() >= 0: return True
+        return False
+
+
     def has_only_single_spaces(self):
-        if self.has_grid(): return False
         if len(self.count_db): return False
         for count in self.count_db.values():
-            if count != -1: return False
+            if count.get() not in [1, -1]: return False
         return True
 
     def __character_info(self, FilterFunc):
@@ -69,24 +74,24 @@ class IndentationSetup:
         result = []
         for identifier, count in self.count_db.items():
             # Consider only what user wants
-            if count == "bad" or not FilterFunc(count): continue 
+            if count.get() == "bad" or not FilterFunc(count): continue 
             
             # The consistency check must have ensured that every key in
             # 'character_set_db' is als in 'count_db'.
             character_set = self.character_set.get(identifier)
             assert character_set != None
 
-            result.append([character_set, count])
+            result.append([character_set.get(), count.get()])
 
         return result
 
     def characters_for_grid(self):
         # count < 0 ==> characters span a grid and '- count' is the grid with
-        return __character_info(lambda count: count < 0))
+        return self.__character_info(lambda count: count.get() < 0)
 
     def characters_for_space(self):
         # count >= 0 ==> characters are single spaces, count = number of spaces
-        return __character_info(lambda count: count >= 0))
+        return self.__character_info(lambda count: count.get() >= 0)
 
     def consistency_check(self, fh, position):
         # Are there at least some indentation elements?
@@ -110,15 +115,55 @@ class IndentationSetup:
 
         # Are all setting elements defined as character sets?
         parameter_set = set(self.character_set_db.keys())
-        for identifier in self.count_db.keys():
+        for identifier, count in self.count_db.items():
             if self.character_set_db.has_key(identifier): continue
             error_msg("Count of indentation element '%s' has been specified,\n" % identifier + \
                       "but its character set has not been defined. Add a character\n" + \
                       "set definition in a 'define' section, e.g.\n" + \
                       "'indentation { ... define { %s [\\t] }}'." % identifier, 
-                      self.count_db[identifier].file_name,
-                      self.count_db[identifier].line_n)
+                      count.file_name, count.line_n)
 
+        # Grid counts of '1' are better expressed as spaces of 1
+        # .items() --> x, with x[0] = identifier, x[1] = count.
+        grid_count_one_list = map(lambda x: x[0], filter(lambda x: x[1].get() == -1, self.count_db.items()))
+
+        if len(grid_count_one_list) != 0:
+            error_msg("Indentation grid counts of '1' as in %s\n" % repr(grid_count_one_list)[1:-1] + \
+                      "are equivalent to spaces of '1' which are faster to compute.",
+                      count.file_name, count.line_n, DontExitF=True)
+
+        # If there are no spaces, then the grid is on a scale, then the grid 
+        # can be transformed into 'easy-to-compute' spaces.
+        if self.has_spaces() == False:
+            grid_value_list = map(lambda x: - x.get(), 
+                                  filter(lambda x: x.get() != "bad" and x.get() < 0, 
+                                         self.count_db.values()))
+            grid_value_list = list(set(grid_value_list)) # make sure things are unique
+            min_grid_value  = min(grid_value_list)
+            # Are all grid values a multiple of the minimum?
+            if len(filter(lambda x: x % min_grid_value == 0, grid_value_list)) == len(grid_value_list):
+                error_msg("Indentation setup does not contain spaces, only grids (tabulators). All grid\n" + \
+                          "widths are a multiple of %i. The grid setup %s\n" \
+                          % (min_grid_value, repr(sorted(grid_value_list))[1:-1]) + \
+                          "is equivalent to a setup with space counts %s.\n" \
+                          % repr(map(lambda x: x / min_grid_value, sorted(grid_value_list)))[1:-1] + \
+                          "Space counts are faster to compute.", 
+                          count.file_name, count.line_n, DontExitF=True)
+
+        elif self.has_grid() == False:
+            space_value_list = map(lambda x: x.get(), 
+                                   filter(lambda x: x.get() != "bad" and x.get() >= 0, 
+                                          self.count_db.values()))
+            # If all space values are the same, then they can be replaced by '1' spaces
+            prototype = space_value_list[0]
+            if prototype != 1:
+                unequal_list = filter(lambda x: x != prototype, space_value_list[1:])
+                if len(unequal_list) == 0:
+                    error_msg("Indentation does not contain a grid but only homogenous space counts of %i.\n" % prototype + \
+                              "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
+                              "of 1 are the fastest to compute.", 
+                              count.file_name, count.line_n, DontExitF=True)
+                
     def __repr__(self):
         txt = "Counts:\n"
         L = max(map(len, self.count_db.keys()))
@@ -139,7 +184,7 @@ def do(fh):
     indentation_setup = IndentationSetup(fh)
 
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type definition", fh)
+        error_msg("Missing opening '{' at begin of indentation setup definition", fh)
 
     while parse_count(fh, indentation_setup):
         pass
@@ -148,7 +193,7 @@ def do(fh):
     if not check(fh, "}"):
         found_str = read_until_whitespace(fh)
         fh.seek(position)
-        error_msg("Missing closing '}' at end of token_type definition.\nFound '%s'." % found_str, fh);
+        error_msg("Missing closing '}' at end of indentation setup definition.\nFound '%s'." % found_str, fh);
 
     indentation_setup.seal()
     indentation_setup.consistency_check(fh, position)
