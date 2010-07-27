@@ -53,6 +53,11 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     if token_repeat_test_txt != "":
         token_repeat_test_txt = token_repeat_test_txt[:-3]
 
+    # Indentation support setup
+    indentation_add_str           = LanguageDB["$indentation_add"](lexer_mode.indentation_setup),
+    indentation_check_space_str   = LanguageDB["$indentation_check_space"](lexer_mode.indentation_setup)
+    indentation_dedicated_count_f = indentation_add_str != ""
+
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
@@ -70,18 +75,19 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     txt = __switch(txt, "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK", Setup.mode_transition_check_f)
     txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
-    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_SINGLE",      Setup.token_policy == "single")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_SINGLE",           Setup.token_policy == "single")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "")
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
+    txt = __switch(txt, "__QUEX_OPTION_INDENTATION_DEDICATED_COUNT", indentation_dedicated_count_f)
     txt = __switch(txt, "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT", IndentationSupportF)     
     txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
+    txt = __switch(txt, "__QUEX_OPTION_PLAIN_C",                     Setup.language.upper() == "C")
     txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION", BeginOfLineSupportF)
     txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
-    txt = __switch(txt, "__QUEX_OPTION_PLAIN_C",                    Setup.language.upper() == "C")
 
     # -- token class related definitions
     token_descr = lexer_mode.token_type_definition
@@ -91,10 +97,6 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     codec_name = "unicode"
     if Setup.engine_character_encoding != "": 
         codec_name = make_safe_identifier(Setup.engine_character_encoding).lower()
-
-    indentation_space_trigger = "/* No indentation space trigger defined */"
-    indentation_grid_trigger  = "/* No indentation grid trigger defined  */"
-    indentation_check_space   = "(C != ' ')"
 
     def namespace(NameSpaceList):
         result = Setup.language_db["$namespace-ref"](NameSpaceList)
@@ -137,9 +139,8 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$TOKEN_REPEAT_TEST$$",          token_repeat_test_txt],
              ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
-             ["$$CHECK_INDENTATION_SPACE$$",       indentation_check_space],
-             ["$$__QUEX_INDENTATION_SPACE$$",      indentation_space_trigger],
-             ["$$__QUEX_OPTION_INDENTATION_GRID$$", indentation_grid_trigger],
+             ["$$CHECK_INDENTATION_SPACE$$",    indentation_check_space_str],
+             ["$$INDENTATION_ADD$$",            indentation_add_str],
              ])
 
     return txt
@@ -385,5 +386,4 @@ def get_mode_class_related_code_fragments(Modes):
     return members_txt,        \
            mode_functions_txt, \
            friends_txt
-
 
