@@ -303,7 +303,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                 __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
                 return;
             }
-#           ifdef __QUEX_OPTION_INDENTATION_GRID
+#           ifdef __QUEX_OPTION_INDENTATION_DEDICATED_COUNT
             __QUEX_INDENTATION_ADD(me->indentation, *it);
 #           else
             ++it; 		    
@@ -311,7 +311,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         } while ( it != End );
 
         /* no non-whitespace until end of lexeme, thus only increment the indentation */
-#       if ! defined(__QUEX_OPTION_INDENTATION_GRID)
+#       if ! defined(__QUEX_OPTION_INDENTATION_DEDICATED_COUNT)
         me->_indentation += (size_t)(it - start_consideration_it);
         /* If a grid is defined, the increment happens inside the loop above.         */
 #       endif

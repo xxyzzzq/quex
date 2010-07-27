@@ -597,34 +597,51 @@ def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
     return "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % PatternID + \
            "QUEX_SET_last_acceptance(%s);\n" % PatternID
 
+def __condition(txt, CharSet):
+    for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
+        if interval.end - interval.begin == 1:
+            txt.append("(C == 0x%X)"                % (interval.begin, interval.end))
+        elif interval.end - interval.begin == 2:
+            txt.append("(C == 0x%X) || (C == 0x%X)" % (interval.begin, interval.end - 1))
+        else:
+            txt.append("(C <= 0x%X && C < 0x%X)"    % (interval.begin, interval.end))
+
 def __indentation_add(Info):
-    def __condition(txt, CharSet):
-        txt.append("if( ")
-        for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
-            if interval.end - interval.begin == 1:
-                txt.append("(C == 0x%X)"                % (interval.begin, interval.end))
-            elif interval.end - interval.begin == 2:
-                txt.append("(C == 0x%X) || (C == 0x%X)" % (interval.begin, interval.end - 1))
-            else:
-                txt.append("(C <= 0x%X && C < 0x%X)"    % (interval.begin, interval.end))
-        txt.append(") {")
-
-    def __do(txt, CharSet, Operation):
-        __condition(txt, CharSet)
-        txt.append(Operation)
-        txt.append("}\n")
-
     # (0) If all involved counts are single spaces, the 'counting' can be done
     #     easily by subtracting 'end - begin', no adaption.
     if Info.has_only_single_spaces():
         return ""
 
+    def __do(txt, CharSet, Operation):
+        txt.append("if( ")
+        __condition(txt, CharSet)
+        txt.append(") {")
+        txt.append(Operation)
+        txt.append("}\n")
+
     txt = []
-    for character_set, count in Info.characters_for_space(): 
-        __do(txt, "I += %i;\n" % count)
+    spaces_db = {} # Sort same space counts together
+    grid_db   = {} # Sort same grid counts together
+    for character_set, count_parameter in Info.character_set_db.items():
+        count = count_parameter.get()
+        if count == "bad": continue
+        # grid counts are indicated by negative integer for count.
+        if count >= 0:
+            spaces_db[count].setdefault(count, NumberSet()).unite_with(character_set)
+        else:
+            grid_db[count].setdefault(count, NumberSet()).unite_with(character_set)
 
-    for character_set, count in Info.characters_for_space():
-        __do(txt, character_set, "   I += (%i - I %% %i);\n" % (count, count))
+    for count, character_set in spaces_db.items():
+        __do(txt, character_set, "I += %i;\n" % count)
 
-    return txt
+    for count, character_set in grid_db.items():
+        __do(txt, character_set, "I += (%i - I %% %i);\n" % (count, count))
 
+    return "".join(txt)
+
+def __indentation_check_whitespace(Info):
+    all_character_list = map(lambda x: x.get(), Info.character_set_db.values())
+    number_set         = reduce(lambda x, y: x.unite_with(y), all_character_list)
+    txt = []
+    __condition(txt, CharSet)
+    return "".join(txt)

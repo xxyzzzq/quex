@@ -144,6 +144,8 @@ db["C++"] = {
     "$loop-start-endless":    "while( 1 + 1 == 2 ) {\n",
     "$loop-end":              "}\n",
     "$continue":              "continue;\n",
+    "$indentation_add":          __indentation_add,
+    "$indentation_check_space":  __indentation_check_whitespace,
     "$break":                 "break;\n",
     "$not BLC":               "(input != QUEX_SETTING_BUFFER_LIMIT_CODE) ",
     "$EOF":                   "QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)",
