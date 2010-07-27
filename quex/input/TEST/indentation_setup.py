@@ -27,7 +27,7 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    #descr = indentation.do(sh)
+    # descr = indentation.do(sh)
     try:    
         descr = indentation.do(sh)
         pass
@@ -52,6 +52,10 @@ if "count" in sys.argv:
     test("{tabulator=grid 5;space=1;")
     test("{fabulators=grid 5;space=1;")
     test("{tabulator==5;space=1;}")
+    test("{tabulator=grid 100; space= grid 500; otto= grid 25000; fritz = 500; define { otto [o] fritz [f] } }")
+    test("{tabulator=grid 100; space= grid 500; otto= grid 25000; fritz = grid 500; define { otto [o] fritz [f] } }")
+    test("{tabulator=grid 1; space= grid 1; otto= grid 1; fritz = 1; define { otto [o] fritz [f] } }")
+    test("{tabulator= 4; space= 4; otto= 4; fritz = 4; define { otto [o] fritz [f] } }")
 
 else:
     test("{ define { tabulator  [\\r\\a] } }")
@@ -62,3 +66,4 @@ else:
     test("{ \nfabulator = 34;\nfabulator = 12;\n}")
     test("{ define { \nspace  [\\r\\a] \nspace [\\:]\n  }\n}")
     test("{ define { \nspace  [\\:]    \ntabulator [\\:]\n  }\n}")
+

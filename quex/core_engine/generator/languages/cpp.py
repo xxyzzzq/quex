@@ -598,17 +598,32 @@ def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
            "QUEX_SET_last_acceptance(%s);\n" % PatternID
 
 def __indentation_add(Info):
-    def __do(txt, CharSet, Operation):
-        txt.append([ __condition(CharSet) + " {", Operation, "}\n" ])
+    def __condition(txt, CharSet):
+        txt.append("if( ")
+        for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
+            if interval.end - interval.begin == 1:
+                txt.append("(C == 0x%X)"                % (interval.begin, interval.end))
+            elif interval.end - interval.begin == 2:
+                txt.append("(C == 0x%X) || (C == 0x%X)" % (interval.begin, interval.end - 1))
+            else:
+                txt.append("(C <= 0x%X && C < 0x%X)"    % (interval.begin, interval.end))
+        txt.append(") {")
 
+    def __do(txt, CharSet, Operation):
+        __condition(txt, CharSet)
+        txt.append(Operation)
+        txt.append("}\n")
+
+    # (0) If all involved counts are single spaces, the 'counting' can be done
+    #     easily by subtracting 'end - begin', no adaption.
     if Info.has_only_single_spaces():
-        # The count can be done simply by adding 'end - start' of the whitespace
         return ""
 
     txt = []
     for character_set, count in Info.characters_for_space(): 
         __do(txt, "I += %i;\n" % count)
-    for character_set, count in Info.characters_for_grid(): 
+
+    for character_set, count in Info.characters_for_space():
         __do(txt, character_set, "   I += (%i - I %% %i);\n" % (count, count))
 
     return txt
