@@ -651,3 +651,34 @@ token_type_definition = None
 #                    structure defines their counts and their character sets.
 #-----------------------------------------------------------------------------------------
 indentation_setup = None
+
+
+#-----------------------------------------------------------------------------------------
+# Helper functions about required features.
+#-----------------------------------------------------------------------------------------
+def requires_indentation_count(ModeDB):
+    """Determine whether the lexical analyser needs indentation counting
+       support. if one mode has an indentation handler, than indentation
+       support must be provided.                                         
+    """
+    if lexer_mode.indentation_setup != None:
+        return True
+
+    for mode in ModeDB.values():
+        if mode.has_code_fragment_list("on_indentation"):
+            return True
+
+    return False
+
+def requires_begin_of_line_condition_support(ModeDB):
+    """If one single pattern in one mode depends on begin of line, then
+       the begin of line condition must be supported. Otherwise not.
+    """
+    for mode in ModeDB.values():
+        pattern_action_pair_list = mode.get_pattern_action_pair_list()
+        for info in pattern_action_pair_list:
+            state_machine = info.pattern_state_machine()
+            if state_machine.core().pre_context_begin_of_line_f():
+                return True
+    return False
+

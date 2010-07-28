@@ -9,83 +9,10 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 .. cmdoption:: -i, --mode-files file-list
         
         ``file-list`` = list of files of the file containing mode definitions
-        (see sections <<sec-practical-modes>>, <<sec-practical-pattern-action-pairs>>, and <<sec-formal-generated-class-mode-handling>>). 
+        (see sections <<sec-practical-modes>>, <<sec-practical-pattern-action-pairs>>, 
+         and <<sec-formal-generated-class-mode-handling>>). 
         
         DEFAULT = ``<empty>``
-
-.. cmdoption:: --token-prefix name
-    
-        ``name`` = Name prefix to prepend to the name
-        given in the token-id files. For example, if a token section contains
-        the name ``COMPLEX`` and the token-prefix is ``TOKEN\_PRE_``
-        then the token-id inside the code will be ``TOKEN_PRE_COMPLEX``. 
-        
-        DEFAULT = ``QUEX_TKN_``
-
-.. cmdoption:: --token-offset number
-        
-        ``number`` = Number where the numeric values for the token-ids start
-        to count. 
-        
-        DEFAULT = ``10000``
-
-.. cmdoption:: --token-policy, --tp [queue, single]
-
-        Determines the policy for passing tokens from the analyzer to the user.
-
-        DEFAULT = ``queue``
-
-.. cmdoption:: --token-memory-management-by-user, --tmmbu
-
-        Enables the token memory management by the user. This command line
-        option is equivalent to the compile option::
-
-             QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
-
-        It provides the functions ``token_queue_memory_switch(...)`` for
-        token policy 'queue' and ``token_p_switch(...)`` for token policy
-        'single' (section :ref:`sec-token-policies`).
-
-.. cmdoption:: --token-queue-size number
-
-        In conjunction with token passing policy 'queue', ``number`` specifies
-        the number of tokens in the token queue. This determines the maximum
-        number of tokens that can be send without returning from the analyzer
-        function.
-
-        DEFAULT = ``64``.
-
-.. cmdoption:: --token-queue-safety-border number
-
-        Specifies the number of tokens that can be sent at maximum as reaction to
-        one single pattern match.
-
-        DEFAULT = ``16``
-
-.. cmdoption:: --token-id-termination number
-        
-        ``number`` = Token identifier for the event of 'end of token stream'.
-        Note, that the termination token id can always be referred to 
-        via `__QUEX_SETTING_TOKEN_ID_TERMINATION`. One does not have to specify it just in order
-        to be able to know its value. Consider also the comments on the token for 
-        'uninitialized'. 
-        
-        DEFAULT = ``0`` 
-
-.. cmdoption:: --token-id-uninitialized number
-        
-        ``number`` = Token identifier of a token that has not yet been
-        initialized.  Any token that arrives to the user 'on purpose' should not
-        contain this identifier.  It is basically a means for debugging in order
-        to check whether tokens slip through due to any erroneous behavior.
-
-        DEFAULT = ``1`` 
-        
-        This option is close to meaningless under normal conditions. One can always
-        refer to the unitiliazed token id via `__QUEX_SETTING_TOKEN_ID_UNINITIALIZED`. In
-        certain cases, though, it might make sense to ensure this id to have a certain
-        value. This would be the case, if someone would like to code more than just the
-        token id in the token id variable.
 
 .. cmdoption:: --version-id name
 
@@ -93,14 +20,6 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         is reported by the `version()` member function of the lexical analyser. 
 
         DEFAULT = `"0.0.0-pre-release"`
-
-.. cmdoption:: --foreign-token-id-file filename
-        
-        ``filename`` = Name of the file that contains an alternative definition
-        of the numerical values for the token-ids (see also section
-        <<sec-formal-macro>>). 
-        
-        DEFAULT = <empty>
 
 .. cmdoption:: `-o`, `--engine`, `--analyzer-class` name
         
@@ -176,6 +95,98 @@ following command line options can be used.
         ``filename`` = If specified, the name of the file where the derived class is
         defined.  This option only makes sense in the context of optioin
         --derived-class`. 
+        
+        DEFAULT = <empty>
+
+.. cmdoption:: --token-prefix name
+    
+        ``name`` = Name prefix to prepend to the name
+        given in the token-id files. For example, if a token section contains
+        the name ``COMPLEX`` and the token-prefix is ``TOKEN\_PRE_``
+        then the token-id inside the code will be ``TOKEN_PRE_COMPLEX``. 
+        
+        DEFAULT = ``QUEX_TKN_``
+
+.. cmdoption:: --token-policy, --tp [queue, single]
+
+        Determines the policy for passing tokens from the analyzer to the user.
+
+        DEFAULT = ``queue``
+
+.. cmdoption:: --token-memory-management-by-user, --tmmbu
+
+        Enables the token memory management by the user. This command line
+        option is equivalent to the compile option::
+
+             QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
+
+        It provides the functions ``token_queue_memory_switch(...)`` for
+        token policy 'queue' and ``token_p_switch(...)`` for token policy
+        'single' (section :ref:`sec-token-policies`).
+
+.. cmdoption:: --token-queue-size number
+
+        In conjunction with token passing policy 'queue', ``number`` specifies
+        the number of tokens in the token queue. This determines the maximum
+        number of tokens that can be send without returning from the analyzer
+        function.
+
+        DEFAULT = ``64``.
+
+.. cmdoption:: --token-queue-safety-border number
+
+        Specifies the number of tokens that can be sent at maximum as reaction to
+        one single pattern match.
+
+        DEFAULT = ``16``
+
+.. cmdoption:: --token-offset number
+        
+        ``number`` = Number where the numeric values for the token-ids start
+        to count. 
+        
+        DEFAULT = ``10000``
+
+Certain token ids are pre-defined since they required for a functioning lexical
+analyzer, as they ids for ``TERMINATION``, ``UNINITIALIZED``, and optionally
+``INDENTATION_ERROR`` if indentation support is enabled. The default values
+can be modified by the following command line arguments:
+
+.. cmdoption:: --token-id-termination  number
+        
+        ``number`` = Token identifier for the event of 'end of token stream'.
+        Note, that the termination token id can always be referred to via
+        `__QUEX_SETTING_TOKEN_ID_TERMINATION`. One does not have to specify it
+        just in order to be able to know its value. Consider also the comments
+        on the token for 'uninitialized'. 
+        
+        DEFAULT = ``0`` 
+
+.. cmdoption:: --token-id-uninitialized  number
+        
+        ``number`` = Token identifier of a token that has not yet been
+        initialized.  Any token that arrives to the user 'on purpose' should
+        not contain this identifier.  It is basically a means for debugging in
+        order to check whether tokens slip through due to any erroneous
+        behavior.
+
+        DEFAULT = ``1`` 
+        
+.. cmdoption:: --token-id-indentation-error  number
+
+        ``number`` = Token identifier to signalize an indentation error. This
+        option only makes sense if indentation support is activate. It
+        indicates that a misalligned indentation has been detected. 
+
+        DEFAULT = ``2`` 
+
+A whole file with token ids can be provided by the option
+
+.. cmdoption:: --foreign-token-id-file filename
+        
+        ``filename`` = Name of the file that contains an alternative definition
+        of the numerical values for the token-ids (see also section
+        <<sec-formal-macro>>). 
         
         DEFAULT = <empty>
 

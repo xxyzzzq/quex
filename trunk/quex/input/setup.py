@@ -39,6 +39,7 @@ SETUP_INFO = {
     "token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
     "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
+    "token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],
     "token_queue_size":               [["--token-queue-size"],               "64"],
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                

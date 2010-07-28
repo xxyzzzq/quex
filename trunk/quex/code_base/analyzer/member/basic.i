@@ -81,6 +81,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_parent_memento = 0x0;
 #       endif
 
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        QUEX_NAME(IndentationStack_init)(&me->_indentation_handler);
+#       endif
+
         me->_mode_stack.end        = me->_mode_stack.begin;
         me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 

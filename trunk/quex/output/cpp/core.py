@@ -54,9 +54,14 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
         token_repeat_test_txt = token_repeat_test_txt[:-3]
 
     # Indentation support setup
-    indentation_add_str           = LanguageDB["$indentation_add"](lexer_mode.indentation_setup),
-    indentation_check_space_str   = LanguageDB["$indentation_check_space"](lexer_mode.indentation_setup)
-    indentation_dedicated_count_f = indentation_add_str != ""
+    if lexer_mode.indentation_setup != None:
+        indentation_add_str           = LanguageDB["$indentation_add"](lexer_mode.indentation_setup),
+        indentation_check_space_str   = LanguageDB["$indentation_check_space"](lexer_mode.indentation_setup)
+        indentation_dedicated_count_f = indentation_add_str != ""
+    else:
+        indentation_add_str           = ""
+        indentation_check_space_str   = ""
+        indentation_dedicated_count_f = ""
 
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
