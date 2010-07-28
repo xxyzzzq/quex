@@ -31,21 +31,6 @@ def do():
     IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
     BeginOfLineSupportF = lexer_mode.requires_begin_of_line_condition_support(mode_db)
 
-    # NOTE: The generated header file that contains the lexical analyser class includes
-    #       the file "code_base/code_base/definitions-quex-buffer.h". But the analyser
-    #       functions also need 'connection' to the lexer class, so we include the header
-    #       of the generated lexical analyser at this place.
-    lexer_mode.token_id_db["TERMINATION"]   = token_id_maker.TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
-    lexer_mode.token_id_db["UNINITIALIZED"] = token_id_maker.TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
-    if IndentationSupportF:
-        lexer_mode.token_id_db["INDENTATION_ERROR"] = token_id_maker.TokenInfo("INDENTATION_ERROR", ID=Setup.token_id_indentation_error)
-
-
-    # (*) Get list of modes that are actually implemented
-    #     (abstract modes only serve as common base)
-    mode_list      = filter(lambda mode: mode.options["inheritable"] != "only", mode_db.values())
-    mode_name_list = map(lambda mode: mode.name, mode_list)
-
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
     header_engine_txt,           \
@@ -56,7 +41,7 @@ def do():
     mode_implementation_txt  = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
-    token_id_maker.do(Setup) 
+    token_id_maker.do(Setup, IndentationSupportF) 
     map_id_to_name_function_implementation_txt = token_id_maker.do_map_id_to_name_function()
 
     # (*) [Optional] Make a customized token class
@@ -68,7 +53,12 @@ def do():
     # (*) implement the lexer mode-specific analyser functions
     inheritance_info_str = ""
     analyzer_code        = ""
-    # generator.init_unused_labels()
+
+    # (*) Get list of modes that are actually implemented
+    #     (abstract modes only serve as common base)
+    mode_list      = filter(lambda mode: mode.options["inheritable"] != "only", mode_db.values())
+    mode_name_list = map(lambda mode: mode.name, mode_list)
+
     for mode in mode_list:        
         generator.init_unused_labels()
 

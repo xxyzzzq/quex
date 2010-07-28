@@ -14,6 +14,7 @@ from quex.frs_py.file_in  import open_file_or_die, \
                                  error_msg
 
 import quex.lexer_mode             as lexer_mode
+from   quex.lexer_mode             import token_id_db
 from   quex.frs_py.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
 
@@ -97,7 +98,7 @@ $$TOKEN_ID_CASES$$
 QUEX_NAMESPACE_TOKEN_CLOSE
 """
 
-def do(setup):
+def do(setup, IndentationSupportF):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
 
@@ -105,14 +106,13 @@ def do(setup):
     """
     global file_str
 
-    IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
+    if token_id_db.has_key("TERMINATION") == False:
+        token_id_db["TERMINATION"]       = TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
+    if token_id_db.has_key("UNINITIALIZED") == False:
+        token_id_db["UNINITIALIZED"]     = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
+    if IndentationSupportF and token_id_db.has_key("INDENTATION_ERROR") == False:
+        token_id_db["INDENTATION_ERROR"] = TokenInfo("INDENTATION_ERROR", ID=Setup.token_id_indentation_error)
 
-    assert lexer_mode.token_id_db.has_key("TERMINATION"), \
-           "TERMINATION token id must be defined by setup or user."
-    assert lexer_mode.token_id_db.has_key("UNINITIALIZED"), \
-           "UNINITIALIZED token id must be defined by setup or user."
-    assert IndentationSupportF == False || lexer_mode.token_id_db.has_key("INDENTATION_ERROR"), \
-           "INDENTATION_ERROR token id must be defined by setup or user."
     assert lexer_mode.token_type_definition != None, \
            "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
            "handle this."
@@ -131,17 +131,17 @@ def do(setup):
     #
     default_token_id_n = 2
     if IndentationSupportF: default_token_id_n = 3
-    if len(lexer_mode.token_id_db.keys()) == default_token_id_n:
+    if len(token_id_db.keys()) == default_token_id_n:
         token_id_str = "%sTERMINATION and %sUNINITIALIZED" % \
                        (setup.token_id_prefix, setup.token_id_prefix) 
         if IndentationSupportF: token_id_str = "%sINDENTATION_ERROR, " + token_id_str
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
-        error_msg("Only token ids %s are defined.\n" % token_id_str \
+        error_msg("Only token ids %s are defined.\n" % token_id_str + \
                   "Quex refuses to proceed. Please, use the 'token { ... }' section to\n" + \
                   "specify at least one other token id.")
 
     #______________________________________________________________________________________
-    L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
+    L = max(map(lambda name: len(name), token_id_db.keys()))
     def space(Name):
         return " " * (L - len(Name))
 
@@ -151,12 +151,12 @@ def do(setup):
         token_id_txt += "#include\"%s\"\n" % setup.token_id_foreign_definition_file
 
     else:
-        token_names = lexer_mode.token_id_db.keys()
+        token_names = token_id_db.keys()
         token_names.sort()
 
         i = setup.token_id_counter_offset
         for token_name in token_names:
-            token_info = lexer_mode.token_id_db[token_name] 
+            token_info = token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
@@ -176,19 +176,19 @@ def do(setup):
     write_safely_and_close(setup.output_token_id_file, content)
 
 def do_map_id_to_name_function():
-    L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
+    L = max(map(lambda name: len(name), token_id_db.keys()))
     def space(Name):
         return " " * (L - len(Name))
 
     # -- define the function for token names
     switch_cases = []
     token_names  = []
-    for token_name in sorted(lexer_mode.token_id_db.keys()):
+    for token_name in sorted(token_id_db.keys()):
         if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
 
         # UCS codepoints are coded directly as pure numbers
         if len(token_name) > 2 and token_name[:2] == "--":
-            token = lexer_mode.token_id_db[token_name]
+            token = token_id_db[token_name]
             switch_cases.append("   case 0x%06X: return token_id_str_%s;\n" % \
                                 (token.number, token.name))
             token_names.append("   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
@@ -234,7 +234,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         for token_name, line_n in token_id_finding_list:
             prefix_less_token_name = token_name[len(TokenPrefix):]
             # NOTE: The line number might be wrong, because of the comment deletion
-            lexer_mode.token_id_db[prefix_less_token_name] = \
+            token_id_db[prefix_less_token_name] = \
                     TokenInfo(prefix_less_token_name, None, None, fh.name, line_n) 
         
         # find "#include" statements
