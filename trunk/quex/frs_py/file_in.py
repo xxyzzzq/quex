@@ -532,8 +532,8 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
         else:
             if fh != None:
                 line_n   = get_current_line_info_number(fh)
-                Filename = fh.__dict__.get("name")
-                if Filename == None: Filename = "string"
+                if hasattr(fh, "name"): Filename = fh.name
+                else:                   Filename = "string"
             else:
                 line_n = -1
                 Filename = ""

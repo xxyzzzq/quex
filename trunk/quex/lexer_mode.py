@@ -661,7 +661,9 @@ def requires_indentation_count(ModeDB):
        support. if one mode has an indentation handler, than indentation
        support must be provided.                                         
     """
-    if lexer_mode.indentation_setup != None:
+    global indentation_setup
+
+    if indentation_setup != None:
         return True
 
     for mode in ModeDB.values():
