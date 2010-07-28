@@ -26,14 +26,20 @@ def do():
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
     """
+    mode_db = __get_mode_db(Setup)
+
+    IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
+    BeginOfLineSupportF = lexer_mode.requires_begin_of_line_condition_support(mode_db)
+
     # NOTE: The generated header file that contains the lexical analyser class includes
     #       the file "code_base/code_base/definitions-quex-buffer.h". But the analyser
     #       functions also need 'connection' to the lexer class, so we include the header
     #       of the generated lexical analyser at this place.
     lexer_mode.token_id_db["TERMINATION"]   = token_id_maker.TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
     lexer_mode.token_id_db["UNINITIALIZED"] = token_id_maker.TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
+    if IndentationSupportF:
+        lexer_mode.token_id_db["INDENTATION_ERROR"] = token_id_maker.TokenInfo("INDENTATION_ERROR", ID=Setup.token_id_indentation_error)
 
-    mode_db = __get_mode_db(Setup)
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -42,9 +48,6 @@ def do():
 
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
-    IndentationSupportF = __requires_indentation_count(mode_db)
-    BeginOfLineSupportF = __requires_begin_of_line_condition_support(mode_db)
-
     header_engine_txt,           \
     constructor_and_memento_txt, \
     header_configuration_txt = quex_class_out.do(mode_db, IndentationSupportF, BeginOfLineSupportF)
@@ -223,7 +226,7 @@ def __get_post_context_n(match_info_list):
 def do_plot():
 
     mode_db             = __get_mode_db(Setup)
-    IndentationSupportF = __requires_indentation_count(mode_db)
+    IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
@@ -256,28 +259,6 @@ def __get_mode_db(Setup):
 
     return lexer_mode.mode_db
 
-
-def __requires_indentation_count(ModeDB):
-    """Determine whether the lexical analyser needs indentation counting
-       support. if one mode has an indentation handler, than indentation
-       support must be provided.                                         
-    """
-    for mode in ModeDB.values():
-        if mode.has_code_fragment_list("on_indentation"):
-            return True
-    return False
-
-def __requires_begin_of_line_condition_support(ModeDB):
-    """If one single pattern in one mode depends on begin of line, then
-       the begin of line condition must be supported. Otherwise not.
-    """
-    for mode in ModeDB.values():
-        pattern_action_pair_list = mode.get_pattern_action_pair_list()
-        for info in pattern_action_pair_list:
-            state_machine = info.pattern_state_machine()
-            if state_machine.core().pre_context_begin_of_line_f():
-                return True
-    return False
 
 #########################################################################################
 # Allow to check wether the exception handlers are all in place

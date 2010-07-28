@@ -1,3 +1,5 @@
+/* (C) 2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY       */
 #ifndef __INCLUDE_GUARD__QUEX__INDENTATION_STACK_I
 #define __INCLUDE_GUARD__QUEX__INDENTATION_STACK_I
 
@@ -9,30 +11,31 @@
 
         /* first indentation at column = 0 */
         IndentationStack_push(0);
-        /* Default: do not allow to open a sub-block.
-         * only function definitions, if statements, and for loops
-         * shoul allow to open a new indentation block in the next line. */
-        IndentationStack_sleep();
+        /* Default: Do not allow to open a sub-block. Constructs like 'for' loops
+         * 'if' blocks etc. should allow the opening of an indentation.           */
+        me->allow_opening_indentation_f = false;
     }
 
     QUEX_INLINE void      
-    QUEX_NAME(IndentationStack_on_indentation)(QUEX_TYPE_ANALYZER*  me, 
-                                                         const size_t         Indentation)
+    QUEX_NAME(IndentationStack_on_indentation)(QUEX_TYPE_ANALYZER*  lexer, 
+                                               const size_t         Indentation)
     {
+        QUEX_NAME(IndentationStack)*    me = lexer->indentation_stack;
+
         /* There should be at least the '0' indentation in place, thus: */
         __quex_assert(me->end > me->begin);
 
         if( Indentation > *(me->end - 1) ) {
-            if( self.allow_opening_indentation_f ) {
+            if( me->_enabled_f ) {
                 self_send(QUEX_TKN_BLOCK_OPEN);
                 IndentationStack_push(&self.indentation_stack, (uint16_t)Indentation);
-                self.allow_opening_indentation_f = false;
+                me->_enabled_f = false;
             }
             else {
                 /* -- higher indentation where it was not allowed to indent higher
                  *    => misaligned indentation                                    */
                 self_token_p()->number = (int)self_line_number(); 
-                self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION);
+                self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
             }
             return;
         }
@@ -45,7 +48,7 @@
          *    if not send an error.                                  */
         if( *(me->end - 1) != Indentation ) {
             self_token_p()->number = (int)self_line_number(); 
-            self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION);
+            self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
         }
     }
 
@@ -62,5 +65,14 @@
         __quex_assert( me->end != me->begin );
         return *(--(me->end));
     }
+
+    void      
+    QUEX_NAME(IndentationStack_enable)(IndentationStack* me)
+    { me->_enabled_f = true; } 
+    
+    void
+    QUEX_NAME(IndentationStack_disable)(IndentationStack* me)
+    { me->_enabled_f = false; } 
+
 
 #endif /* __INCLUDE_GUARD__QUEX__INDENTATION_STACK_I */

@@ -94,9 +94,12 @@ mode END_OF_FILE :
 }
 
 indentation {
-    tabs               = 4 in my_tabs;
-    spaces             = good;
-    newline-suppressor = "\\";
+    tabulator = grid 4;
+    space     = 1;
+    define {
+        space      [ \:]
+        tabulator  [ \t]
+    }
 }
 
 mode PROGRAM :

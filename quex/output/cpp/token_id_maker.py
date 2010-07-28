@@ -70,8 +70,11 @@ const char*
 QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
-   static const char  uninitialized_string[] = "<UNINITIALIZED>";
-   static const char  termination_string[]   = "<TERMINATION>";
+   static const char  uninitialized_string[]       = "<UNINITIALIZED>";
+   static const char  termination_string[]         = "<TERMINATION>";
+#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+   static const char  indentation_error_string[]   = "<INDENTATION_ERROR>";
+#  endif
 $$TOKEN_NAMES$$       
 
    /* NOTE: This implementation works only for token id types that are 
@@ -82,8 +85,11 @@ $$TOKEN_NAMES$$
        __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
        return error_string;
    }
-   case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
-   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
+   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
+   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
+#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+   case __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR: return indentation_error_string;
+#  endif
 $$TOKEN_ID_CASES$$
    }
 }
@@ -98,10 +104,15 @@ def do(setup):
        const string& $$token$$::map_id_to_name().
     """
     global file_str
+
+    IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
+
     assert lexer_mode.token_id_db.has_key("TERMINATION"), \
            "TERMINATION token id must be defined by setup or user."
     assert lexer_mode.token_id_db.has_key("UNINITIALIZED"), \
            "UNINITIALIZED token id must be defined by setup or user."
+    assert IndentationSupportF == False || lexer_mode.token_id_db.has_key("INDENTATION_ERROR"), \
+           "INDENTATION_ERROR token id must be defined by setup or user."
     assert lexer_mode.token_type_definition != None, \
            "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
            "handle this."
@@ -118,10 +129,14 @@ def do(setup):
     #     plus the suffix "--token-ids". Note, that the token id file is a
     #     header file.
     #
-    if len(lexer_mode.token_id_db.keys()) == 2:
+    default_token_id_n = 2
+    if IndentationSupportF: default_token_id_n = 3
+    if len(lexer_mode.token_id_db.keys()) == default_token_id_n:
+        token_id_str = "%sTERMINATION and %sUNINITIALIZED" % \
+                       (setup.token_id_prefix, setup.token_id_prefix) 
+        if IndentationSupportF: token_id_str = "%sINDENTATION_ERROR, " + token_id_str
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
-        error_msg("No token id other than %sTERMINATION and %sUNINITIALIZED are defined.\n" % \
-                  (setup.token_id_prefix, setup.token_id_prefix) + \
+        error_msg("Only token ids %s are defined.\n" % token_id_str \
                   "Quex refuses to proceed. Please, use the 'token { ... }' section to\n" + \
                   "specify at least one other token id.")
 
