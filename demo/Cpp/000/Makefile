@@ -50,7 +50,7 @@ example.o: ../example.cpp  EasyLexer.cpp
 EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
-		 --token-offset     0x1000     \
+		 --token-id-offset  0x1000     \
 		 --post-categorizer
 
 # (*) HELPERS __________________________________________________________________
