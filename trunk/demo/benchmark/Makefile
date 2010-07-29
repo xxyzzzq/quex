@@ -89,7 +89,7 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 	     --output-directory       out            \
 		 --engine                 quex_scan      \
 		 --no-string-accumulator                 \
-		 --token-offset           3              \
+		 --token-id-offset        3              \
 		 --token-prefix           TKN_           \
 	     --token-policy           single         
 

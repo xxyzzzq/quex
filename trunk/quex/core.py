@@ -26,6 +26,8 @@ def do():
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
     """
+    token_id_maker.prepare_default_standard_token_ids()
+
     mode_db = __get_mode_db(Setup)
 
     IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
@@ -41,6 +43,8 @@ def do():
     mode_implementation_txt  = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
+    #     (This needs to happen after the parsing of mode_db, since during that
+    #      the token_id_db is developped.)
     token_id_maker.do(Setup, IndentationSupportF) 
     map_id_to_name_function_implementation_txt = token_id_maker.do_map_id_to_name_function()
 

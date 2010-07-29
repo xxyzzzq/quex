@@ -554,10 +554,9 @@ def something_different(fh):
                       member_name, fh)
     else:
         skip_whitespace(fh)
-        number_str = read_integer(fh)
-        if number_str == "":
+        array_element_n = read_integer(fh)
+        if array_element_n == None:
             error_msg("Missing integer after '[' in '%s' definition." % member_name, fh)
-        array_element_n = int(number_str)
 
         skip_whitespace(fh)
 

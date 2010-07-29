@@ -270,7 +270,7 @@
                <choice name="NoModeDetection_ErrorCase" result="OK" time_sec="1.68" crc="-653972300"/>
             </choice-list>
         </test>
-        <test title="1898125 invalid argument for --token-offset can crash 0.21.4" time-sum-sec="0.22"> 
+        <test title="1898125 invalid argument for --token-id-offset can crash 0.21.4" time-sum-sec="0.22"> 
             <application file-name="bug-1898125.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.22" crc="1414329022"/>

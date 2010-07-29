@@ -140,17 +140,18 @@ following command line options can be used.
 
         DEFAULT = ``16``
 
-.. cmdoption:: --token-offset number
+.. cmdoption:: --token-id-offset number
         
-        ``number`` = Number where the numeric values for the token-ids start
-        to count. 
+        ``number`` = Number where the numeric values for the token ids start
+        to count. Note, that this does not include the standard token ids
+        for termination, unitialized, and indentation error.
         
         DEFAULT = ``10000``
 
-Certain token ids are pre-defined since they required for a functioning lexical
-analyzer, as they ids for ``TERMINATION``, ``UNINITIALIZED``, and optionally
+Certain token ids are standard, in a sense that they are required for a functioning lexical
+analyzer. Namely they are ``TERMINATION``, ``UNINITIALIZED``, and optionally
 ``INDENTATION_ERROR`` if indentation support is enabled. The default values
-can be modified by the following command line arguments:
+of those can be modified by the following command line arguments:
 
 .. cmdoption:: --token-id-termination  number
         

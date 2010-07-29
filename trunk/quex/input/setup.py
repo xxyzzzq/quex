@@ -32,9 +32,9 @@ SETUP_INFO = {
     "input_mode_files":               [["-i", "--mode-files"],                 LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class_name":               [["--token-class", "--tc"],              ""],
-    "token_class_take_text_check_f":  [["--token-type-no-take_text-check",    "--ttnttc"], NEGATED_FLAG], 
+    "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
-    "token_id_counter_offset":        [["--token-offset"],                   "10000"],
+    "token_id_counter_offset":        [["--token-id-offset"],                  "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
     "token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
@@ -83,7 +83,8 @@ SETUP_INFO = {
     "XX_disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
     "XX_input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
     "XX_token_class_name":               [["--token-class-name"],               ""],             # DEPRECATED
-    "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",    "--ttnsc"], NEGATED_FLAG], # DEPRECATED
+    "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",  "--ttnsc"], NEGATED_FLAG], # DEPRECATED
+    "XX_token_id_counter_offset":        [["--token-offset"],                   "10000"],        # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -147,6 +148,9 @@ DEPRECATED = {
       ("The command line option '--bytes-per-ucs-code-point' has been renamed to\n"
        "'--bytes-per-trigger'. The old name causes heavy confusion when it was\n"
        "used in combination with dynamic length codecs (option --codec).", "0.49.1")
+  "XX_token_id_counter_offset":
+      ("The command line option '--token-offset' has been replaced by '--token-id-offset'."
+       "0.51.1")
 }
  
 

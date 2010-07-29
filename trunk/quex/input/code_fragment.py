@@ -121,46 +121,14 @@ def read_character_code(fh):
             error_msg("%s relates to more than one character in unicode database." % ucs_name, fh) 
         return character_code
 
-    second = fh.read(1)
-    if start == "0" and second.isdigit() == False:
-        base = second
-        if base not in ["x", "o", "b"]: 
-            error_msg("Number base '0%s' is unknown, please use '0x' for hexidecimal,\n" % base + \
-                      "'0o' for octal, or '0b' for binary.", fh)
-        number_txt = read_integer(fh)
-        if number_txt == "":
-            error_msg("Missing integer number after '0%s'" % base, fh)
-        try: 
-            if   base == "x": character_code = int("0x" + number_txt, 16) 
-            elif base == "o": character_code = int(number_txt, 8) 
-            elif base == "b": 
-                character_code = 0
-                for letter in number_txt:
-                    character_code = character_code << 1
-                    if   letter == "1":   character_code += 1
-                    elif letter != "0":
-                        error_msg("Letter '%s' not permitted in binary number (something start with '0b')" % letter, fh)
-            else:
-                # A normal integer number (starting with '0' though)
-                character_code = int(base + number_text)
-        except:
-            error_msg("The string '%s' is not appropriate for number base '0%s'." % (number_txt, base), fh)
+    fh.seek(-2, 1)
+    character_code = read_integer(fh)
+    if character_code != None: return character_code
 
-        return character_code
-
-    elif start.isdigit():
-        fh.seek(-2, 1) # undo 'start' and 'second'
-        # All that remains is that it is a 'normal' integer
-        number_txt = read_integer(fh)
-
-        if number_txt == "": fh.seek(pos); return -1
-        
-        try:    return int(number_txt)
-        except: error_msg("The string '%s' is not appropriate for number base '10'." % number_txt, fh)
+    # Try to interpret it as something else ...
+    fh.seek(pos); return -1               
 
     else:
-        # Try to interpret it as something else ...
-        fh.seek(pos); return -1               
 
 def __parse_function_argument_list(fh, ReferenceName):
     argument_list = []

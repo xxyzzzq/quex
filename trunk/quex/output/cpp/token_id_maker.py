@@ -98,6 +98,15 @@ $$TOKEN_ID_CASES$$
 QUEX_NAMESPACE_TOKEN_CLOSE
 """
 
+standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENTATION_ERROR"]
+
+def prepare_default_standard_token_ids():
+
+    token_id_db["TERMINATION"]       = TokenInfo("TERMINATION",       ID=Setup.token_id_termination)
+    token_id_db["UNINITIALIZED"]     = TokenInfo("UNINITIALIZED",     ID=Setup.token_id_uninitialized)
+    token_id_db["INDENTATION_ERROR"] = TokenInfo("INDENTATION_ERROR", ID=Setup.token_id_indentation_error)
+
+
 def do(setup, IndentationSupportF):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
@@ -106,16 +115,13 @@ def do(setup, IndentationSupportF):
     """
     global file_str
 
-    if token_id_db.has_key("TERMINATION") == False:
-        token_id_db["TERMINATION"]       = TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
-    if token_id_db.has_key("UNINITIALIZED") == False:
-        token_id_db["UNINITIALIZED"]     = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
-    if IndentationSupportF and token_id_db.has_key("INDENTATION_ERROR") == False:
-        token_id_db["INDENTATION_ERROR"] = TokenInfo("INDENTATION_ERROR", ID=Setup.token_id_indentation_error)
+    for standard_token_id in standard_token_id_list:
+        assert token_id_db.has_key(standard_token_id)
 
     assert lexer_mode.token_type_definition != None, \
            "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
            "handle this."
+
     # (*) Token ID File ________________________________________________________________
     #
     #     The token id file can either be specified as database of
@@ -129,9 +135,7 @@ def do(setup, IndentationSupportF):
     #     plus the suffix "--token-ids". Note, that the token id file is a
     #     header file.
     #
-    default_token_id_n = 2
-    if IndentationSupportF: default_token_id_n = 3
-    if len(token_id_db.keys()) == default_token_id_n:
+    if len(token_id_db.keys()) == len(standard_token_id_list):
         token_id_str = "%sTERMINATION and %sUNINITIALIZED" % \
                        (setup.token_id_prefix, setup.token_id_prefix) 
         if IndentationSupportF: token_id_str = "%sINDENTATION_ERROR, " + token_id_str
@@ -159,6 +163,11 @@ def do(setup, IndentationSupportF):
             token_info = token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
+            print "##", repr([setup.token_id_prefix,
+                token_info.name, 
+                space(token_info.name), 
+                token_info.number])
+
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
                                                                            token_info.name, 
                                                                            space(token_info.name), 
@@ -184,7 +193,7 @@ def do_map_id_to_name_function():
     switch_cases = []
     token_names  = []
     for token_name in sorted(token_id_db.keys()):
-        if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
+        if token_name in standard_token_id_list: continue
 
         # UCS codepoints are coded directly as pure numbers
         if len(token_name) > 2 and token_name[:2] == "--":

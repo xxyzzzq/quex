@@ -2,6 +2,7 @@ from   quex.DEFINITIONS import *
 from   copy import copy, deepcopy
 import sys
 import os
+from   StringIO import StringIO
 
 from   quex.GetPot                 import GetPot
 from   quex.frs_py.file_in         import error_msg, error_msg_file_not_found, is_identifier, \
@@ -173,6 +174,7 @@ def do(argv):
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_id_termination       = __get_integer("token_id_termination")
     setup.token_id_uninitialized     = __get_integer("token_id_uninitialized")
+    setup.token_id_indentation_error = __get_integer("token_id_indentation_error")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
     validate(setup, command_line, argv)
@@ -273,19 +275,19 @@ def validate(setup, command_line, argv):
                   "By default, quex automatically chooses the endian type of your system.")
 
     # Token offset and several ids
-    if setup.token_id_counter_offset == setup.token_id_termination:
-        error_msg("Token id offset (--token-offset) == token id for termination (--token-id-termination)\n")
-    if setup.token_id_counter_offset == setup.token_id_uninitialized:
-        error_msg("Token id offset (--token-offset) == token id for uninitialized (--token-id-uninitialized)\n")
-    if setup.token_id_termination == setup.token_id_uninitialized:
-        error_msg("Token id for termination (--token-id-termination) and uninitialized (--token-id-uninitialized)\n" + \
-                  "are chosen to be the same. Maybe it works.", DontExitF=True)
-    if setup.token_id_counter_offset < setup.token_id_uninitialized:
-        error_msg("Token id offset (--token-offset) < token id uninitialized (--token-id-uninitialized).\n" + \
-                  "Maybe it works.", DontExitF=True)
-    if setup.token_id_counter_offset < setup.token_id_termination:
-        error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
-                  "Maybe it works.", DontExitF=True)
+    for x_id in ["token_id_uninitialized", "token_id_termination", "token_id_indentation_error"]:
+        x_name = x_id.replace("_", "-")
+        for y_id in ["token_id_uninitialized", "token_id_termination", "token_id_indentation_error"]:
+            if   x_id == y_id: continue
+            elif setup.__dict__[x_id] != setup.__dict__[y_id]: 
+                y_name = y_id.replace("_", "-")
+                error_msg("Token id for %s (--token-id-%s) and %s (--token-id-%s)\n" \
+                          % (x_name, x_name, y_name, y_name) + \
+                          "are chosen to be the same. Dangerous, but may be it works.", DontExitF=True)
+        if setup.token_id_counter_offset < setup.__dict__[x_id]:
+            error_msg("Token id offset (--token-id-offset) <= token id %s (--token-id-%s).\n" + \
+                      % (x_name, x_name) + \
+                      "Dangerous, but maybe it works.", DontExitF=True)
 
     # Manually written token class requires token class name to be specified
     if setup.token_class_file != "" and command_line.search("--token-class", "--tc") == False:
@@ -416,15 +418,15 @@ def __get_float(MemberName):
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]
-    if type(ValueStr) == int: return ValueStr
-    try:
-        if len(ValueStr) > 2:
-            if   ValueStr[:2] == "0x": return int(ValueStr, 16)
-            elif ValueStr[:2] == "0o": return int(ValueStr, 8)
-        return int(ValueStr)
-    except:
+    result = read_integer(StringIO(ValueStr))
+    if result == None:
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
-        error_msg("Cannot convert '%s' into an integer for '%s'" % (ValueStr, option_name))
+        error_msg("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, option_name) + \
+                  "Use prefix '0x' for hexadecimal numbers.\n" + \
+                  "           '0o' for octal numbers.\n"       + \
+                  "           '0b' for binary numbers.\n"      + \
+                  "           and no prefix for decimal numbers.")
+    return result
 
 def __prepare_file_name(Suffix, FileStemIncludedF=False):
     global setup

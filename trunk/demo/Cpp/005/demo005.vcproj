@@ -136,7 +136,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine EasyLexer --token-offset 0x1000
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine EasyLexer --token-id-offset 0x1000
 "
 						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>
@@ -145,7 +145,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine EasyLexer --token-offset 0x1000
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine EasyLexer --token-id-offset 0x1000
 "
 						Outputs="EasyLexer.cpp"/>
 				</FileConfiguration>

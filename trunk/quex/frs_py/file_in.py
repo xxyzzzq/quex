@@ -204,17 +204,47 @@ def delete_comment(Content, Opener, Closer, LeaveNewlineDelimiter=False):
 
     return new_content
 
-def read_integer(fh, HexF=True):
-    if HexF: digit_list = "abcdefABCDEF"
-    else:    digit_list = ""
+def read_integer(fh):
     pos = fh.tell()
-    tmp = fh.read(1)
+
+    first = fh.read(1)
+    if first == "" or first.isdigit() == False: fh.seek(pos); return None
+    second = fh.read(1)
+    if second == "": fh.seek(pos); return None
+
+    if   second == "x":    base = 16; digit_list = "0123456789abcdefABCDEF"
+    elif second == "o":    base = 8;  digit_list = "01234567"
+    elif second == "b":    base = 2;  digit_list = "01"
+    elif second == "n":    base = 2;  digit_list = range(ord('a'), ord('z')) + range(ord('A'), ord('Z')); base = "name"
+    elif second.isdigit(): base = 10; digit_list = "0123456789"; second = first; first = ""; fh.seek(-1, 1)
+    else:                  fh.seek(-1, 1); return int(first)
+
+    tmp = second
     txt = ""
-    while tmp.isdigit() or tmp in digit_list:
+    while tmp in digit_list:
         txt += tmp
         tmp = fh.read(1)
     fh.seek(-1, 1)
-    return txt
+
+    if tmp == "":
+        if base in [2, 8, 16]:
+            error_msg("Missing or mismatching digits after '0%s'." % second, fh)
+        fh.seek(pos)
+        return None
+
+    # Octal, decimal, and hexadecimal numbers
+    if base in [8, 10, 16]:
+        return int(first + second + txt, base)
+
+    elif base == "name":(
+        return parse_number_name
+
+    # Binary numbers
+    result = 0
+    for letter in txt:
+        result <<= 1
+        if letter == "1": result |= 1
+    return result
 
 def extract_identifiers_with_specific_sub_string(Content, SubString):
     L = len(Content)
