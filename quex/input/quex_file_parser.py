@@ -274,10 +274,10 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
     while check(fh, "}") == False:
         skip_whitespace(fh)
 
-        candidate = read_until_whitespace(fh)
+        candidate = read_identifier(fh, TolerantF=True)
 
-        if not is_identifier(candidate, TolerantF=True): 
-            error_msg("'%s' is not a valid token identifier." % candidate, fh)
+        if candidate == "":
+            error_msg("Missing valid token identifier." % candidate, fh)
 
         # -- check the name, if it starts with the token prefix paste a warning
         if candidate.find(token_prefix) == 0:
