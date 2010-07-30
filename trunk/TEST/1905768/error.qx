@@ -1,5 +1,5 @@
 token {
-STRING_LITERAL
+STRING_LITERAL;
 }
 start = MODULE;
 mode MODULE {

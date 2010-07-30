@@ -1,11 +1,11 @@
 start = ONE;
 
 token {
-    LETTER
-    ONE
-    TWO
-    THREE
-    FOUR
+    LETTER;
+    ONE;
+    TWO;
+    THREE;
+    FOUR;
 }
 
 mode BASE :

@@ -147,10 +147,10 @@ DEPRECATED = {
   "XX_bytes_per_ucs_code_point": 
       ("The command line option '--bytes-per-ucs-code-point' has been renamed to\n"
        "'--bytes-per-trigger'. The old name causes heavy confusion when it was\n"
-       "used in combination with dynamic length codecs (option --codec).", "0.49.1")
+       "used in combination with dynamic length codecs (option --codec).", "0.49.1"),
   "XX_token_id_counter_offset":
       ("The command line option '--token-offset' has been replaced by '--token-id-offset'."
-       "0.51.1")
+       "0.51.1"),
 }
  
 

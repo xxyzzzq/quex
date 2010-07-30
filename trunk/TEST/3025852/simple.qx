@@ -1,5 +1,5 @@
 token {
-    TOK
+    TOK;
 }
 
 mode THE_INHERITABLE_ONLY_MODE_XYZ_4711 :

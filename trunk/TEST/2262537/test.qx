@@ -1,5 +1,5 @@
 token {
-    GOOD
+    GOOD;
 }
 
 start = ONE;

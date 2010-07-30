@@ -9,7 +9,7 @@ take_text {
 }
 }
 token {
-A
+A;
 }
 start = START;
 mode START {

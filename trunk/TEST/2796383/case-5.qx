@@ -5,7 +5,7 @@ a : type;
 }
 }
 token {
-A
+A;
 }
 mode START {
 "A" => QUEX_TKN_A;

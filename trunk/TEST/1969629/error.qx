@@ -1,5 +1,5 @@
 token {
-TERMINATION
+TERMINATION;
 }
 start = START;
 mode START {

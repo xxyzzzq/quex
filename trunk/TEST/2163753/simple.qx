@@ -4,9 +4,9 @@ define {
 }
 
 token {
-   WORD
-   EMAIL
-   FAILED
+   WORD;
+   EMAIL;
+   FAILED;
 }
 
 mode ONE_AND_ONLY

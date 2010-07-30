@@ -1,6 +1,6 @@
 
 token {
-    WORD
+    WORD;
 }
 
 mode X :

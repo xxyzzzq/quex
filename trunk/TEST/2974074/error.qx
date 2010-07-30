@@ -5,9 +5,9 @@ header {
 }
 
 token {
-    NUM
-    JUNK
-    LETTER
+    NUM;
+    JUNK;
+    LETTER;
 }
 
 define {

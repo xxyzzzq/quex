@@ -1,11 +1,11 @@
 
 token {
-    ONE
-    TWO
-    THREE
-    FOUR
-    FIVE
-    _____NEXT_____
+    ONE;
+    TWO;
+    THREE;
+    FOUR;
+    FIVE;
+    _____NEXT_____;
 }
 // The mode is totally senseless, since we do all sending in 
 // a pseudo-analysis function (see lexer.cpp)

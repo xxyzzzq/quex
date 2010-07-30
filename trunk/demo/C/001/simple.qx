@@ -15,18 +15,18 @@ define {
 }
 
 token {
-    BRACKET_O
-    BRACKET_C
-    CURLY_BRACKET_O
-    CURLY_BRACKET_C
-    OP_ASSIGNMENT
-    IF
-    IDENTIFIER
-    STRUCT
-    SEMICOLON
-    NUMBER
-    STRING
-    QUOTE
+    BRACKET_O;
+    BRACKET_C;
+    CURLY_BRACKET_O;
+    CURLY_BRACKET_C;
+    OP_ASSIGNMENT;
+    IF;
+    IDENTIFIER;
+    STRUCT;
+    SEMICOLON;
+    NUMBER;
+    STRING;
+    QUOTE;
 }
 
 mode END_OF_FILE :

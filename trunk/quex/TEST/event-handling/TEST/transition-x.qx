@@ -1,8 +1,8 @@
 token { 
-    GOTO
-    GOSUB_TO_MODE
-    RETURN_TO_MODE
-    IGNORED
+    GOTO;
+    GOSUB_TO_MODE;
+    RETURN_TO_MODE;
+    IGNORED;
 }
 
 start = ONE;

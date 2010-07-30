@@ -1,9 +1,9 @@
 
 token {
-    WORD
-    LASTWORD
-    SENTBOUND
-    OTHER
+    WORD;
+    LASTWORD;
+    SENTBOUND;
+    OTHER;
 }
 
 define {

@@ -35,21 +35,21 @@ define {
 }
 
 token {
-    ASTS
-    ATS
-    DATE
-    EOS
-    EXPRESSION
-    FNMARKS
-    LDOTS
-    MONEY
-    NONE
-    NUMBER
-    PUNCT
-    THING
-    WORD
-    URL
-    XML
+    ASTS;
+    ATS;
+    DATE;
+    EOS;
+    EXPRESSION;
+    FNMARKS;
+    LDOTS;
+    MONEY;
+    NONE;
+    NUMBER;
+    PUNCT;
+    THING;
+    WORD;
+    URL;
+    XML;
 }
 
 mode ONE_AND_ONLY

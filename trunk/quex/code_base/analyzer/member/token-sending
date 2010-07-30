@@ -20,12 +20,24 @@ QUEX_NAMESPACE_MAIN_OPEN
         } while ( 0 )
 
 #ifdef     QUEX_OPTION_TOKEN_REPETITION_SUPPORT
-#   define self_send_n(RepetitionN, ID)     \
-        do {                                                                \
+#   ifdef  QUEX_OPTION_ASSERTS
+#      define self_send_n(RepetitionN, ID)     \
+       do {                                                                 \
+            if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(ID) == false ) {    \
+                QUEX_ERROR_EXIT("send_send_n() applied to token id which was not mentioned\n"      \
+                                "in a 'repeated_token { ... }' section.");  \
+            }                                                               \
             self_token_set_id(ID);                                          \
             QUEX_NAME_TOKEN(repetition_n_set)(self_token_p(), RepetitionN); \
             QUEX_TOKEN_POLICY_PREPARE_NEXT();                               \
-        } while ( 0 )
+       } while ( 0 )
+#   else
+#      define self_send_n(RepetitionN, ID)     \
+       do {                                                                 \
+            self_token_set_id(ID);                                          \
+            QUEX_NAME_TOKEN(repetition_n_set)(self_token_p(), RepetitionN); \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();                               \
+       } while ( 0 )
 #else
 #   define self_send_n(RepetitionN, ID) \
         QUEX_ERROR_EXIT("\n" \

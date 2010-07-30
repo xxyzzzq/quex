@@ -58,9 +58,9 @@ The following send macros are available:
        .. code-block:: cpp
 
           repeated_token {
-              BLOCK_CLOSE
-              BRACKET_OPEN
-              BRACKET_CLOSE
+              BLOCK_CLOSE;
+              BRACKET_OPEN;
+              BRACKET_CLOSE;
           }
 
     The ``self_send_n`` macro stores the repetition number inside the token

@@ -1,8 +1,8 @@
 // This file implements a lexer that does not rely on implicit mode change
 // detection. Rather, it ensures **itself**, that the lexer returns on mode change.
 token {
-   STRING_LITERAL
-   EVENT_MODE_CHANGE
+   STRING_LITERAL;
+   EVENT_MODE_CHANGE;
 }
 
 start = MODULE;

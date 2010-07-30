@@ -6,7 +6,7 @@ token_type {
     }
 }
 token {
-    A
+    A;
 }
 start = START;
 mode START {

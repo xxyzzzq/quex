@@ -6,7 +6,7 @@ fred : int;
 }
 }
 token {
-A
+A;
 }
 start = START;
 mode START {

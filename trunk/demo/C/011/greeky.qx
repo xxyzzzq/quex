@@ -4,11 +4,11 @@ define {
 }
 
 token {
-    COLON
-    NUMBER
-    UNKNOWN
-    WORD
-    WHITE
+    COLON;
+    NUMBER;
+    UNKNOWN;
+    WORD;
+    WHITE;
 }
 
 mode X :

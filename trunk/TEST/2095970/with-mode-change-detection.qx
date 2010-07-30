@@ -2,7 +2,7 @@
 // lexer to detect mode changes and re-dive into analysis when a mode change has
 // been detected.
 token {
-   STRING_LITERAL
+   STRING_LITERAL;
 }
 
 start = MODULE;

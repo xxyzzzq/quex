@@ -7,8 +7,8 @@ define {
 }
 
 token {
-  TOK
-  NONE
+  TOK;
+  NONE;
 }
 
 mode ONE_AND_ONLY

@@ -126,9 +126,9 @@ def read_character_code(fh):
     if character_code != None: return character_code
 
     # Try to interpret it as something else ...
-    fh.seek(pos); return -1               
+    fh.seek(pos)
+    return -1               
 
-    else:
 
 def __parse_function_argument_list(fh, ReferenceName):
     argument_list = []

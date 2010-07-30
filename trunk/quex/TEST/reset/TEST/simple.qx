@@ -1,13 +1,13 @@
 token {
-    ERROR
-    HALF
-    IDENTIFIER
-    MARK
-    ME
-    MINE
-    NUMBER
-    SOMETHING_IS
-    NEVER_TOKEN
+    ERROR;
+    HALF;
+    IDENTIFIER;
+    MARK;
+    ME;
+    MINE;
+    NUMBER;
+    SOMETHING_IS;
+    NEVER_TOKEN;
 }
 
 start = SIMPLE;

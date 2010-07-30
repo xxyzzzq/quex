@@ -1,5 +1,5 @@
 token {
-A
+A;
 }
 header {
 void my_function(void);

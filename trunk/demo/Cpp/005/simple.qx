@@ -42,11 +42,11 @@ memento_unpack {
 }
 
 token {
-   INCLUDE
-   IDENTIFIER
-   BRACKET_OPEN
-   BRACKET_CLOSE
-   NUMBER
+   INCLUDE;
+   IDENTIFIER;
+   BRACKET_OPEN;
+   BRACKET_CLOSE;
+   NUMBER;
 }
 
 start = MAIN;

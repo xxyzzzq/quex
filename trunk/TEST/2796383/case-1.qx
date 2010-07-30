@@ -43,7 +43,7 @@ token_type {
 }
 
 token {
-    A
+    A;
 }
 
 mode START {

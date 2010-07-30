@@ -1,6 +1,6 @@
 start = ONE;
 token {
-    SOMETHING
+    SOMETHING;
 }
 mode ONE { 
     "aber hallo" => QUEX_TKN_SOMETHING;

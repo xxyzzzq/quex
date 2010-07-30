@@ -1,10 +1,10 @@
 start = ONE;
 
 token {
-    A
-    B
-    C
-    D
+    A;
+    B;
+    C;
+    D;
 }
 
 mode ONE { 
