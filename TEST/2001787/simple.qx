@@ -5,8 +5,8 @@ define {
 }
 
 token {
-   URL
-   NONE
+   URL;
+   NONE;
 }
 
 mode ONE_AND_ONLY

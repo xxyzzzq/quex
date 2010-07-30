@@ -1,10 +1,10 @@
 // -*- C++ -*- vim: set syntax=cpp:
 token {
-    HELLO
-    WORLD
-    NUMBER
-    BYE
-    IDENTIFIER
+    HELLO;
+    WORLD;
+    NUMBER;
+    BYE;
+    IDENTIFIER;
 }
 
 mode ONE_AND_ONLY :

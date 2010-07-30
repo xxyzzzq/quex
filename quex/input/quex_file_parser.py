@@ -286,10 +286,27 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
                       "code as '%s%s'." % (token_prefix, candidate), \
                       fh, DontExitF=True)
 
+        skip_whitespace(fh)
+
         if NamesOnlyF:
             db[token_prefix + candidate] = True
-        elif not db.has_key(candidate): 
-            db[candidate] = TokenInfo(candidate, None, Filename=fh.name, LineN=get_current_line_info_number(fh))
+            if check(fh, ";") == False:
+                error_msg("Missing ';' after definition of token identifier '%s'.\n" % candidate + \
+                          "This is mandatory since Quex version 0.50.1.", fh)
+
+        # Parse a possible numeric value after '='
+        numeric_value = None
+        if check(fh, "="):
+            skip_whitespace(fh)
+            numeric_value = read_integer(fh)
+            if numeric_value == None:
+                error_msg("Missing number after '=' for token identifier '%s'." % candidate, fh)
+
+        if check(fh, ";") == False:
+            error_msg("Missing ';' after definition of token identifier '%s'.\n" % candidate + \
+                      "This is mandatory since Quex version 0.50.1.", fh)
+
+        db[candidate] = TokenInfo(candidate, numeric_value, Filename=fh.name, LineN=get_current_line_info_number(fh))
 
     if NamesOnlyF:
         result = db.keys()

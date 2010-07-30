@@ -15,16 +15,16 @@ the following example:
 .. code-block:: cpp
 
     token {
-       IDENTIFIER
-       STRUCT
-       TYPE_INT
-       TYPE_DOUBLE
-       SEND
-       EXPECT
-       SEMICOLON
-       BRACKET_OPEN
-       BRACKET_CLOSE
-       NUMBER
+       IDENTIFIER;
+       STRUCT;
+       TYPE_INT;
+       TYPE_DOUBLE;
+       SEND;
+       EXPECT;
+       SEMICOLON;
+       BRACKET_OPEN;
+       BRACKET_CLOSE;
+       NUMBER;
     }
 
 Note, that the names of the token identifiers are specified without any prefix.

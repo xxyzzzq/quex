@@ -65,9 +65,11 @@ in a source file to be treated by quex:
 
       token {
           ...
-          TOKEN_NAME
+          TOKEN_NAME;
           ...
       }
+      
+   The token identifiers need to be separated by semi-colons.
 
    .. note:: 
 
@@ -79,11 +81,11 @@ in a source file to be treated by quex:
 
       repeated_token {
           ...
-          TOKEN_NAME
+          TOKEN_NAME;
           ...
       }
 
-      Inside this section the names of the tokens are listed that may be sent
+      Inside this section the token names are listed that may be sent
       via implicit repetition using ``self_send_n(...)``. That is, inside
       the token a repetition number is stored and the ``receive()``
       function keeps returning the same token identifier until the

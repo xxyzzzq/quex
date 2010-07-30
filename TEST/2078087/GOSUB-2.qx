@@ -1,7 +1,7 @@
 start = ONE;
 
 token {
-    LETTER
+    LETTER;
 }
 
 mode BASE :

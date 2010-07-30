@@ -7,10 +7,10 @@ define {
 }
 
 token {
-	LINE
-	IDENTIFIER
-    UNIT
-	EOL
+	LINE;
+	IDENTIFIER;
+    UNIT;
+	EOL;
 }
 
 mode comment :

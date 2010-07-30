@@ -58,9 +58,9 @@ memento_unpack {
 }
 
 token {
-   INCLUDE
-   IDENTIFIER
-   STRING
+   INCLUDE;
+   IDENTIFIER;
+   STRING;
 }
 
 mode END_INCLUDED_FILE {

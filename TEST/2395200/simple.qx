@@ -12,12 +12,12 @@ define {
 }
 
 token {
-    ALIEN
-    IDENTIFIER
-    KEYWORD
-    NUMBER
-    OPERATOR
-    SOMETHING
+    ALIEN;
+    IDENTIFIER;
+    KEYWORD;
+    NUMBER;
+    OPERATOR;
+    SOMETHING;
 }
 
 mode ONE_AND_ONLY :

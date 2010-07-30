@@ -1,5 +1,5 @@
 token {
-  ID
+  ID;
 }
 define {
   P_IDC [: intersection(\P{XIDC}, [\x0-\XFBFF]) :]

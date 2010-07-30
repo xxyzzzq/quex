@@ -1,7 +1,7 @@
 // -*- C++ -*- vim: set syntax=cpp:
 token {
-    BYE
-    ERROR
+    BYE;
+    ERROR;
 }
 
 mode ONE_AND_ONLY :

@@ -1,5 +1,5 @@
 token {
-    WORD
+    WORD;
 }
 
 define {

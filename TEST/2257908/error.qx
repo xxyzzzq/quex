@@ -8,7 +8,7 @@ define {
 }
 
 token { 
-    OK 
+    OK;
 }
 
 start = ONE_AND_ONLY;

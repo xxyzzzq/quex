@@ -6,9 +6,9 @@ define {
 }
 
 token {
-EXPRESSION
-NONE
-THING
+EXPRESSION;
+NONE;
+THING;
 }
 
 mode ONE_AND_ONLY

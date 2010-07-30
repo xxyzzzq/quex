@@ -212,11 +212,11 @@ def read_integer(fh):
     second = fh.read(1)
     if second == "": fh.seek(pos); return None
 
-    if   second == "x":    base = 16; digit_list = "0123456789abcdefABCDEF"
-    elif second == "o":    base = 8;  digit_list = "01234567"
-    elif second == "b":    base = 2;  digit_list = "01"
-    elif second == "n":    base = 2;  digit_list = range(ord('a'), ord('z')) + range(ord('A'), ord('Z')); base = "name"
-    elif second.isdigit(): base = 10; digit_list = "0123456789"; second = first; first = ""; fh.seek(-1, 1)
+    if   second == "x":    base = 16;       digit_list = "0123456789abcdefABCDEF"
+    elif second == "o":    base = 8;        digit_list = "01234567"
+    elif second == "b":    base = 2;        digit_list = "01"
+    elif second == "r":    base = "roman";  digit_list = "MCDXLIVmcdxliv"
+    elif second.isdigit(): base = 10;       digit_list = "0123456789"; second = first; first = ""; fh.seek(-1, 1)
     else:                  fh.seek(-1, 1); return int(first)
 
     tmp = second
@@ -227,7 +227,7 @@ def read_integer(fh):
     fh.seek(-1, 1)
 
     if tmp == "":
-        if base in [2, 8, 16]:
+        if base in [2, 8, 16, "roman"]:
             error_msg("Missing or mismatching digits after '0%s'." % second, fh)
         fh.seek(pos)
         return None
@@ -236,14 +236,42 @@ def read_integer(fh):
     if base in [8, 10, 16]:
         return int(first + second + txt, base)
 
-    elif base == "name":(
-        return parse_number_name
+    elif base == "roman":
+        return __roman_number(txt, fh)
 
     # Binary numbers
     result = 0
     for letter in txt:
         result <<= 1
         if letter == "1": result |= 1
+    return result
+
+def __roman_number(Text, fh):
+    """Source: http://code.activestate.com -- Code Recipes 
+               Recipe 81611 by Paul Winkler.
+    """
+    input = Text.upper() 
+    # map of (numeral, value, maxcount) tuples
+    roman_numeral_map = (('M',  1000, 3), ('CM', 900, 1),
+                         ('D',  500, 1),  ('CD', 400, 1),
+                         ('C',  100, 3),  ('XC', 90, 1),
+                         ('L',  50, 1),   ('XL', 40, 1),
+                         ('X',  10, 3),   ('IX', 9, 1),
+                         ('V',  5, 1),    ('IV', 4, 1), ('I',  1, 3))
+
+    result, index = 0, 0
+    for numeral, value, maxcount in roman_numeral_map:
+        count = 0
+        while input[index: index + len(numeral)] == numeral:
+            count += 1 # how many of this numeral we have
+            if count > maxcount:
+                error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
+            result += value
+            index  += len(numeral)
+
+    if index < len(input): # There are characters unaccounted for.
+        error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
+
     return result
 
 def extract_identifiers_with_specific_sub_string(Content, SubString):

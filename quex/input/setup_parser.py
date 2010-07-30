@@ -7,7 +7,8 @@ from   StringIO import StringIO
 from   quex.GetPot                 import GetPot
 from   quex.frs_py.file_in         import error_msg, error_msg_file_not_found, is_identifier, \
                                           extract_identifiers_with_specific_prefix, \
-                                          delete_comment, verify_word_in_list, read_namespaced_name
+                                          delete_comment, verify_word_in_list, read_namespaced_name, \
+                                          read_integer
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
 import quex.input.codec_db as codec_db
@@ -285,7 +286,7 @@ def validate(setup, command_line, argv):
                           % (x_name, x_name, y_name, y_name) + \
                           "are chosen to be the same. Dangerous, but may be it works.", DontExitF=True)
         if setup.token_id_counter_offset < setup.__dict__[x_id]:
-            error_msg("Token id offset (--token-id-offset) <= token id %s (--token-id-%s).\n" + \
+            error_msg("Token id offset (--token-id-offset) <= token id %s (--token-id-%s).\n" \
                       % (x_name, x_name) + \
                       "Dangerous, but maybe it works.", DontExitF=True)
 
@@ -418,6 +419,7 @@ def __get_float(MemberName):
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]
+    if type(ValueStr) == int: return ValueStr
     result = read_integer(StringIO(ValueStr))
     if result == None:
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]

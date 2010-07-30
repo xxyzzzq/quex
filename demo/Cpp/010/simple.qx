@@ -1,12 +1,12 @@
 // -*- C++ -*- vim: set syntax=cpp:
 token {
-    HELLO
-    WORLD
-    NUMBER
-    BYE
-    DOT
-    FAIL
-    IDENTIFIER
+    HELLO;
+    WORLD;
+    NUMBER;
+    BYE;
+    DOT;
+    FAIL;
+    IDENTIFIER;
 }
 
 mode ONE_AND_ONLY :

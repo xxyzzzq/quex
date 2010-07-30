@@ -10,13 +10,13 @@ define {
 }
 
 token {
-    WORD
-    NUMBER
-    UNIT
-    PERIOD
-    B_OPEN
-    B_CLOSE
-    UNKNOWN
+    WORD;
+    NUMBER;
+    UNIT;
+    PERIOD;
+    B_OPEN;
+    B_CLOSE;
+    UNKNOWN;
 }
 
 mode X :

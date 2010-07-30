@@ -54,18 +54,18 @@ token_type {
 }
 
 token {
-    N1a
-    N1b
-    N1c
-    
-    N2a
-    N2b
-    N2c
-    
-    N3a
-    N3b
-    N3c
-    
-    WHO
+    N1a;
+    N1b;
+    N1c;
+
+    N2a;
+    N2b;
+    N2c;
+
+    N3a;
+    N3b;
+    N3c;
+
+    WHO;
 }
 

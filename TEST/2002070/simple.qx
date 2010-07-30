@@ -3,10 +3,10 @@ define {
 }
 
 token {
-    TOK
-    NONE
-    NEWLINE
-    WORD
+    TOK;
+    NONE;
+    NEWLINE;
+    WORD;
 }
 
 mode ONE_AND_ONLY

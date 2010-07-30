@@ -1,11 +1,11 @@
 define {
-P_LETTER [: intersection(\G{Ll}, [\X0-\XFFFF]) :]
-P_WORD [a-z]*{P_LETTER}+
+    P_LETTER [: intersection(\G{Ll}, [\X0-\XFFFF]) :]
+    P_WORD   [a-z]*{P_LETTER}+
 }
 
 token {
-WORD
-NONE
+    WORD;
+    NONE;
 }
 
 mode ONE_AND_ONLY
