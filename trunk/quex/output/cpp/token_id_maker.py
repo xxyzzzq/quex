@@ -163,10 +163,6 @@ def do(setup, IndentationSupportF):
             token_info = token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
-            print "##", repr([setup.token_id_prefix,
-                token_info.name, 
-                space(token_info.name), 
-                token_info.number])
 
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
                                                                            token_info.name, 

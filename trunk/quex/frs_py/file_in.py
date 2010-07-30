@@ -100,10 +100,14 @@ def is_identifier(identifier, TolerantF=False):
 
     return True
 
-def read_identifier(fh):
+def read_identifier(fh, TolerantF=False):
     txt = fh.read(1)
     if txt == "": return ""
-    if is_identifier_start(txt) == False: fh.seek(-1, 1); return ""
+
+    if TolerantF:
+        if is_identifier_continue(txt) == False: fh.seek(-1, 1); return ""
+    else:
+        if is_identifier_start(txt) == False: fh.seek(-1, 1); return ""
 
     while 1 + 1 == 2:
         tmp = fh.read(1)
@@ -210,23 +214,26 @@ def read_integer(fh):
     first = fh.read(1)
     if first == "" or first.isdigit() == False: fh.seek(pos); return None
     second = fh.read(1)
-    if second == "": fh.seek(pos); return None
+    if second == "": 
+        # The first thing *must* be a digit, thus
+        fh.seek(-1, 1)
+        return int(first)
 
     if   second == "x":    base = 16;       digit_list = "0123456789abcdefABCDEF"
     elif second == "o":    base = 8;        digit_list = "01234567"
     elif second == "b":    base = 2;        digit_list = "01"
     elif second == "r":    base = "roman";  digit_list = "MCDXLIVmcdxliv"
-    elif second.isdigit(): base = 10;       digit_list = "0123456789"; second = first; first = ""; fh.seek(-1, 1)
+    elif second.isdigit(): base = 10;       digit_list = "0123456789"; fh.seek(-1, 1)
     else:                  fh.seek(-1, 1); return int(first)
 
-    tmp = second
     txt = ""
-    while tmp in digit_list:
-        txt += tmp
+    while 1 + 1 == 2:
         tmp = fh.read(1)
-    fh.seek(-1, 1)
+        if   tmp == "": break
+        elif tmp not in digit_list: fh.seek(-1, 1); break
+        txt += tmp
 
-    if tmp == "":
+    if len(txt) == 0:
         if base in [2, 8, 16, "roman"]:
             error_msg("Missing or mismatching digits after '0%s'." % second, fh)
         fh.seek(pos)
@@ -591,7 +598,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
             if fh != None:
                 line_n   = get_current_line_info_number(fh)
                 if hasattr(fh, "name"): Filename = fh.name
-                else:                   Filename = "string"
+                else:                   Filename = "command line"
             else:
                 line_n = -1
                 Filename = ""
