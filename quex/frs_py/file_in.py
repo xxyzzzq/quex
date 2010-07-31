@@ -124,7 +124,7 @@ def find_end_of_identifier(Txt, StartIdx, L):
 
 def check_or_quit(fh, What, Comment = "."):
     if not check(fh, What):
-        error_msg("Missing '%s'" + Comment, fh)
+        error_msg("Missing '%s'" % What + Comment, fh)
 
 def parse_assignment(fh, Comment=""):
     check_or_quit(fh, "=", " for assignment.")
@@ -212,21 +212,32 @@ def read_integer(fh):
     pos = fh.tell()
 
     first = fh.read(1)
-    if first == "" or first.isdigit() == False: fh.seek(pos); return None
-    second = fh.read(1)
-    if second == "": 
-        # The first thing *must* be a digit, thus
-        fh.seek(-1, 1)
-        return int(first)
+    if first == "" or first.isdigit() == False: 
+        fh.seek(pos)
+        return None
 
-    if   second == "x":    base = 16;       digit_list = "0123456789abcdefABCDEF"
-    elif second == "o":    base = 8;        digit_list = "01234567"
-    elif second == "b":    base = 2;        digit_list = "01"
-    elif second == "r":    base = "roman";  digit_list = "MCDXLIVmcdxliv"
-    elif second.isdigit(): base = 10;       digit_list = "0123456789"; fh.seek(-1, 1)
-    else:                  fh.seek(-1, 1); return int(first)
+    txt  = ""
+    base = None
+    if first == "0":
+        second = fh.read(1)
+        if   second == "":  return 0
+        elif second == "x": base = 16;       digit_list = "0123456789abcdefABCDEF"
+        elif second == "o": base = 8;        digit_list = "01234567"
+        elif second == "b": base = 2;        digit_list = "01"
+        elif second == "r": base = "roman";  digit_list = "MCDXLIVmcdxliv"
+        elif second.isdigit(): txt = second; # base = None --> base = 10, see below
+        else:
+            error_msg("Number format '0%s' is not supported by quex.\n" % second + \
+                      "Use prefix '0x' for hexadecimal numbers.\n" + \
+                      "           '0o' for octal numbers.\n"       + \
+                      "           '0b' for binary numbers.\n"      + \
+                      "           '0r' for roman numbers.\n"      + \
+                      "           and no prefix for decimal numbers.", fh)
+    else:
+        txt = first
 
-    txt = ""
+    if base == None:        base = 10;       digit_list = "0123456789"
+
     while 1 + 1 == 2:
         tmp = fh.read(1)
         if   tmp == "": break
@@ -235,13 +246,13 @@ def read_integer(fh):
 
     if len(txt) == 0:
         if base in [2, 8, 16, "roman"]:
-            error_msg("Missing or mismatching digits after '0%s'." % second, fh)
+            error_msg("Missing digits after '0%s' base %i, found '%s'." % (second, base, tmp), fh)
         fh.seek(pos)
         return None
 
     # Octal, decimal, and hexadecimal numbers
-    if base in [8, 10, 16]:
-        return int(first + second + txt, base)
+    if base in [2, 8, 10, 16]:
+        return int(txt, base)
 
     elif base == "roman":
         return __roman_number(txt, fh)

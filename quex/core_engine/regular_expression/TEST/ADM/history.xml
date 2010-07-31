@@ -1,4 +1,4 @@
-<history date="Thu Jul 22 06:53:10 2010" element-n="367">
+<history date="Sun Aug  1 13:48:00 2010" element-n="372">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -997,5 +997,12 @@
         <crc-error time="07:08:13" application="test-pattern-matching.py" choice="" database-crc="-550712540" real-crc="62926260"/>
         <crc-error time="07:10:00" application="test-pre-condition.py" choice="" database-crc="911738110" real-crc="-1244675969"/>
         <crc-error time="07:10:58" application="test-pre-and-post-condition.py" choice="" database-crc="1399161853" real-crc="423562782"/>
+    </day>
+    <day year="2010" month="08" day="01">
+        <crc-error time="11:46:47" application="test-case_fold.py" choice="set" database-crc="-191921414" real-crc="1832220665"/>
+        <crc-error time="11:48:00" application="test-case_fold.py" choice="pattern" database-crc="-840017498" real-crc="2048360827"/>
+        <crc-error time="11:48:00" application="test-lonely-characters.py" choice="" database-crc="1432501454" real-crc="795801240"/>
+        <crc-error time="11:48:00" application="test-set.py" choice="" database-crc="1815858266" real-crc="1371206887"/>
+        <crc-error time="11:48:00" application="test-string.py" choice="" database-crc="600430077" real-crc="-751008829"/>
     </day>
 </history>
