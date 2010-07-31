@@ -146,36 +146,56 @@ public:
     QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
     void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
-    // -- activate/deactivate byte order reversion (big-/little-endian)
+    /* -- activate/deactivate byte order reversion (big-/little-endian)    */
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);
 
-    /* NOTE: The receive() functions for token policy 'queue' and 'single' are
-     *       kept incompatible by purpose. This way is forced to reflect about
-     *       crucial changes in the token communication mechanism.                */
-#   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-    /* Enforce user to adapt the token pointer when token policy == 'queue'       */
-    void                  receive(QUEX_TYPE_TOKEN**);
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
-    /* Fastest way of passing a token-id: via stack (or many times cpu register!) */
-    QUEX_TYPE_TOKEN_ID    receive();
+    /* NOTE: All calls to receive functions for 'queue' and 'single'
+     *       are deliberately chosen to be incompatible! Thus, when 
+     *       the user switches the token passing policy, he must re-
+     *       think his receive mechanism.                                  */
+#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    /* (1) Token Queue 
+     * 
+     *   When using a token queue, the pointer **must** be adapted.
+     *   Otherwise, very strange results may occur. Force the user to
+     *   provide a pointer that can be adapted by having him specify
+     *   the second argument--not only a return value.
+     *
+     *   Command line option:  --token-policy  queue                       */
+    void                receive(QUEX_TYPE_TOKEN**);
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)  
+    /* (2) Single Token
+     * 
+     *   When there is only one single token as interface, than the
+     *   token id is returned. This enables a minimal setup were the
+     *   analyzer may only return a token id and does not work on tokens. 
+     *
+     *   Command line options: --token-policy  single                      */
+    QUEX_TYPE_TOKEN_ID  receive();
+#   else
+#       error "This section should never be compiled."
 #   endif
 
     // NOTE: A pointer to an object of the token queue/object is used in order to make
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
-    QUEX_TYPE_TOKEN*   token_p();
+    QUEX_TYPE_TOKEN*     token_p();
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+       void              token_p_set(QUEX_TYPE_TOKEN*);
        QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
 #      endif
 #   else
-       bool     token_queue_is_empty();
-       void     token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
+       bool              token_queue_is_empty();
+       void              token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-       void     token_queue_memory_switch(QUEX_TYPE_TOKEN** begin, size_t* n);
+       void              token_queue_get(QUEX_TYPE_TOKEN** begin, size_t* size);
+       void              token_queue_set(QUEX_TYPE_TOKEN* Begin, size_t Size);
+       void              token_queue_switch(QUEX_TYPE_TOKEN** queue, 
+                                            size_t*           size); 
 #      endif
 #   endif
 
@@ -231,6 +251,10 @@ public:
     void        seek(const size_t);
 
 public:
+
+    void        set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
+                                                                       QUEX_TYPE_CHARACTER*));
+
     template <class InputHandleT> void reset(InputHandleT*  input_handle, 
                                              const char*    CharacterEncodingName = 0x0);
     void                               reset(const char*    CharacterEncodingName = 0x0) 
@@ -505,18 +529,21 @@ const char*
 QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
-   static const char  uninitialized_string[] = "<UNINITIALIZED>";
-   static const char  termination_string[]   = "<TERMINATION>";
-   static const char  token_id_str_BRACKET_CLOSE[] = "BRACKET_CLOSE";
-   static const char  token_id_str_BRACKET_OPEN[]  = "BRACKET_OPEN";
-   static const char  token_id_str_EXPECT[]        = "EXPECT";
-   static const char  token_id_str_IDENTIFIER[]    = "IDENTIFIER";
-   static const char  token_id_str_NUMBER[]        = "NUMBER";
-   static const char  token_id_str_SEMICOLON[]     = "SEMICOLON";
-   static const char  token_id_str_SEND[]          = "SEND";
-   static const char  token_id_str_STRUCT[]        = "STRUCT";
-   static const char  token_id_str_TYPE_DOUBLE[]   = "TYPE_DOUBLE";
-   static const char  token_id_str_TYPE_INT[]      = "TYPE_INT";
+   static const char  uninitialized_string[]       = "<UNINITIALIZED>";
+   static const char  termination_string[]         = "<TERMINATION>";
+#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+   static const char  indentation_error_string[]   = "<INDENTATION_ERROR>";
+#  endif
+   static const char  token_id_str_BRACKET_CLOSE[]     = "BRACKET_CLOSE";
+   static const char  token_id_str_BRACKET_OPEN[]      = "BRACKET_OPEN";
+   static const char  token_id_str_EXPECT[]            = "EXPECT";
+   static const char  token_id_str_IDENTIFIER[]        = "IDENTIFIER";
+   static const char  token_id_str_NUMBER[]            = "NUMBER";
+   static const char  token_id_str_SEMICOLON[]         = "SEMICOLON";
+   static const char  token_id_str_SEND[]              = "SEND";
+   static const char  token_id_str_STRUCT[]            = "STRUCT";
+   static const char  token_id_str_TYPE_DOUBLE[]       = "TYPE_DOUBLE";
+   static const char  token_id_str_TYPE_INT[]          = "TYPE_INT";
        
 
    /* NOTE: This implementation works only for token id types that are 
@@ -527,18 +554,21 @@ QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
        __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
        return error_string;
    }
-   case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
-   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
-   case QUEX_TKN_BRACKET_CLOSE: return token_id_str_BRACKET_CLOSE;
-   case QUEX_TKN_BRACKET_OPEN:  return token_id_str_BRACKET_OPEN;
-   case QUEX_TKN_EXPECT:        return token_id_str_EXPECT;
-   case QUEX_TKN_IDENTIFIER:    return token_id_str_IDENTIFIER;
-   case QUEX_TKN_NUMBER:        return token_id_str_NUMBER;
-   case QUEX_TKN_SEMICOLON:     return token_id_str_SEMICOLON;
-   case QUEX_TKN_SEND:          return token_id_str_SEND;
-   case QUEX_TKN_STRUCT:        return token_id_str_STRUCT;
-   case QUEX_TKN_TYPE_DOUBLE:   return token_id_str_TYPE_DOUBLE;
-   case QUEX_TKN_TYPE_INT:      return token_id_str_TYPE_INT;
+   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
+   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
+#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+   case __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR: return indentation_error_string;
+#  endif
+   case QUEX_TKN_BRACKET_CLOSE:     return token_id_str_BRACKET_CLOSE;
+   case QUEX_TKN_BRACKET_OPEN:      return token_id_str_BRACKET_OPEN;
+   case QUEX_TKN_EXPECT:            return token_id_str_EXPECT;
+   case QUEX_TKN_IDENTIFIER:        return token_id_str_IDENTIFIER;
+   case QUEX_TKN_NUMBER:            return token_id_str_NUMBER;
+   case QUEX_TKN_SEMICOLON:         return token_id_str_SEMICOLON;
+   case QUEX_TKN_SEND:              return token_id_str_SEND;
+   case QUEX_TKN_STRUCT:            return token_id_str_STRUCT;
+   case QUEX_TKN_TYPE_DOUBLE:       return token_id_str_TYPE_DOUBLE;
+   case QUEX_TKN_TYPE_INT:          return token_id_str_TYPE_INT;
 
    }
 }

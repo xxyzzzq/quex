@@ -30,8 +30,8 @@ init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "[:\C(m){[:union([a-z], [ﬀİ]):]}:]"
-string:1:error: Option 'm' not permitted as case fold option in set expression.
-string:1:error: Set expressions cannot absorb multi character sequences.
+command line:1:error: Option 'm' not permitted as case fold option in set expression.
+command line:1:error: Set expressions cannot absorb multi character sequences.
 -------------------------------------------------------------------
 expression    = "[:\C(st){[i]}:]"
 state machine
@@ -54,23 +54,23 @@ init-state = 0L
 
 -------------------------------------------------------------------
 expression    = "[:\C(st){}:]"
-string:1:error: Missing character set for case fold in set expression.
-string:1:error: The content in '\C{content}' should start with '[' or '[:'.
+command line:1:error: Missing character set for case fold in set expression.
+command line:1:error: The content in '\C{content}' should start with '[' or '[:'.
 -------------------------------------------------------------------
 expression    = "[:\C{[]}:]"
 Regular Expression: Character set expression results in empty set.
 -------------------------------------------------------------------
 expression    = "[:\C(d){[]}:]"
-string:1:error: Letter 'd' not permitted as case fold option.
-string:1:error: Options are:  's' for simple case fold.
-string:1:error:               'm' for multi character sequence case fold.
-string:1:error:               't' for special turkish case fold rules.
+command line:1:error: Letter 'd' not permitted as case fold option.
+command line:1:error: Options are:  's' for simple case fold.
+command line:1:error:               'm' for multi character sequence case fold.
+command line:1:error:               't' for special turkish case fold rules.
 -------------------------------------------------------------------
 expression    = "[:\C( d ){[]}:]"
-string:1:error: Letter 'd' not permitted as case fold option.
-string:1:error: Options are:  's' for simple case fold.
-string:1:error:               'm' for multi character sequence case fold.
-string:1:error:               't' for special turkish case fold rules.
+command line:1:error: Letter 'd' not permitted as case fold option.
+command line:1:error: Options are:  's' for simple case fold.
+command line:1:error:               'm' for multi character sequence case fold.
+command line:1:error:               't' for special turkish case fold rules.
 -------------------------------------------------------------------
 expression    = "[:\C( s ){[a]}:]"
 state machine

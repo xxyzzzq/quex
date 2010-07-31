@@ -429,6 +429,7 @@ def __get_integer(MemberName):
                   "Use prefix '0x' for hexadecimal numbers.\n" + \
                   "           '0o' for octal numbers.\n"       + \
                   "           '0b' for binary numbers.\n"      + \
+                  "           '0r' for roman numbers.\n"      + \
                   "           and no prefix for decimal numbers.")
     return result
 

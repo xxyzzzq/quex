@@ -22,7 +22,7 @@ if "--hwut-info" in sys.argv:
 def test(Tag, Txt):
     descr = TokenTypeDescriptorCore()
     sh = StringIO(Tag + Txt)
-    sh.name = "a string"
+    sh.name = "string"
     print "-----------------------------"
     print "IN:"
     print "    [" + (Tag + Txt).replace("\n", "\n    ") + "]"

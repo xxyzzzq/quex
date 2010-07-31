@@ -25,7 +25,7 @@ OptionList = ["id", "column_number", "line_number"]
 def test(Txt):
     descr = TokenTypeDescriptorCore()
     sh = StringIO("standard " + Txt)
-    sh.name = "a string"
+    sh.name = "string"
     print "-----------------------------"
     print "IN:"
     print "    [" + Txt.replace("\n", "\n    ") + "]"

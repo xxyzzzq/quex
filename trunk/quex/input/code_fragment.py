@@ -121,7 +121,7 @@ def read_character_code(fh):
             error_msg("%s relates to more than one character in unicode database." % ucs_name, fh) 
         return character_code
 
-    fh.seek(-2, 1)
+    fh.seek(pos)
     character_code = read_integer(fh)
     if character_code != None: return character_code
 
@@ -170,7 +170,9 @@ def __parse_function_argument_list(fh, ReferenceName):
         error_msg("End of file reached while parsing token shortcut.", fh)
 
 def __parse_token_id_specification_by_character_code(fh):
+    ## pos = fh.tell(); print "##input:", fh.read(3); fh.seek(pos)
     character_code = read_character_code(fh)
+    ## print "##cc:", character_code
     if character_code == -1: return -1
     check_or_quit(fh, ";")
     return character_code

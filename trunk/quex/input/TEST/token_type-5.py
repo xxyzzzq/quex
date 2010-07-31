@@ -23,7 +23,7 @@ def test(Txt):
     descr = TokenTypeDescriptorCore()
     txt = "{" + Txt + "}"
     sh = StringIO(txt)
-    sh.name = "a string"
+    sh.name = "string"
     print "-----------------------------"
     print "IN:"
     print "    [ " + txt.replace("\n", "\n    ") + "]"

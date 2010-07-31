@@ -22,7 +22,7 @@ if "--hwut-info" in sys.argv:
 def test(Txt):
     descr = TokenTypeDescriptorCore()
     sh = StringIO("distinct " + Txt)
-    sh.name = "a string"
+    sh.name = "string"
     print "-----------------------------"
     print "IN:"
     print "    [" + Txt.replace("\n", "\n    ") + "]"

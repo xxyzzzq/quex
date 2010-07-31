@@ -1,1 +1,1 @@
-error-4.qx:7:error: The string '956' is not appropriate for number base '0o'.
+error-4.qx:7:error: Missing digits after '0o' base 8, found '9'.

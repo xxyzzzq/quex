@@ -1,4 +1,4 @@
-<history date="Thu Jul 22 06:44:09 2010" element-n="740">
+<history date="Sun Aug  1 13:12:55 2010" element-n="754">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1458,5 +1458,21 @@
         <crc-error time="04:51:59" application="bug-2819022.sh" choice="1" database-crc="-687795300" real-crc="-1838097774"/>
         <crc-error time="04:52:06" application="bug-2819022.sh" choice="2" database-crc="1923590724" real-crc="-1650840420"/>
         <crc-error time="04:52:14" application="bug-2819022.sh" choice="3" database-crc="-556417700" real-crc="-845320683"/>
+    </day>
+    <day year="2010" month="08" day="01">
+        <crc-error time="06:38:30" application="bug-2937342.sh" choice="2" database-crc="-587067459" real-crc="-114712102"/>
+        <crc-error time="06:38:30" application="bug-2937342.sh" choice="4" database-crc="1529693976" real-crc="-1998612403"/>
+        <crc-error time="06:38:30" application="bug-2937342.sh" choice="5" database-crc="31004219" real-crc="436945311"/>
+        <crc-error time="06:40:04" application="bug-1898125.sh" choice="" database-crc="1414329022" real-crc="1289694907"/>
+        <crc-error time="06:41:50" application="bug-2891125.sh" choice="" database-crc="-1922924063" real-crc="-1877463517"/>
+        <crc-error time="06:50:00" application="bug-1887163.sh" choice="" database-crc="-1351534098" real-crc="1510346924"/>
+        <crc-error time="07:07:42" application="bug-1889086.sh" choice="" database-crc="-920743287" real-crc="1314140379"/>
+        <crc-error time="07:11:00" application="bug-1898125.sh" choice="" database-crc="1289694907" real-crc="934070554"/>
+        <crc-error time="10:46:49" application="feature-2251359.sh" choice="good" database-crc="-1499129362" real-crc="-63597415"/>
+        <crc-error time="10:47:15" application="feature-2251359.sh" choice="good" database-crc="-63597415" real-crc="-2123425497"/>
+        <crc-error time="10:47:48" application="feature-2251359.sh" choice="good" database-crc="-2123425497" real-crc="1519131440"/>
+        <crc-error time="11:00:03" application="feature-2251359.sh" choice="2" database-crc="167645209" real-crc="433983726"/>
+        <crc-error time="11:00:03" application="feature-2251359.sh" choice="3" database-crc="-1571764502" real-crc="-2070980201"/>
+        <crc-error time="11:00:03" application="feature-2251359.sh" choice="4" database-crc="-182585680" real-crc="-9379937"/>
     </day>
 </history>
