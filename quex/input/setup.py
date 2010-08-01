@@ -37,9 +37,6 @@ SETUP_INFO = {
     "token_id_counter_offset":        [["--token-id-offset"],                  "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
     "token_id_prefix":                [["--token-prefix"],                   "QUEX_TKN_"],
-    "token_id_termination":           [["--token-id-termination"],           "0"],
-    "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
-    "token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],
     "token_queue_size":               [["--token-queue-size"],               "64"],
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
@@ -85,6 +82,9 @@ SETUP_INFO = {
     "XX_token_class_name":               [["--token-class-name"],               ""],             # DEPRECATED
     "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",  "--ttnsc"], NEGATED_FLAG], # DEPRECATED
     "XX_token_id_counter_offset":        [["--token-offset"],                   "10000"],        # DEPRECATED
+    "XX_token_id_termination":           [["--token-id-termination"],           "0"],            # DEPRECATED
+    "XX_token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],            # DEPRECATED
+    "XX_token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],            # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -151,6 +151,27 @@ DEPRECATED = {
   "XX_token_id_counter_offset":
       ("The command line option '--token-offset' has been replaced by '--token-id-offset'."
        "0.51.1"),
+  "XX_token_id_termination":
+      ("Option '--token-id-termination' is no longer supported.\n" \
+       "Numeric value for token ids are no longer defined on the command line.\n" \
+       "Numeric values for token ids can be defined in token sections, e.g.\n" \
+       "    token {\n" \
+       "       TERMINATION = 4711;\n"
+       "    }", "0.51.1"),
+  "XX_token_id_uninitialized":         
+      ("Option '--token-id-uninitialized' is no longer supported.\n" \
+       "Numeric value for token ids are no longer defined on the command line.\n" \
+       "Numeric values for token ids can be defined in token sections, e.g.\n" \
+       "    token {\n" \
+       "       UNINITIALIZED = 4711;\n"
+       "    }", "0.51.1"),
+  "XX_token_id_indentation_error":     
+      ("Option '--token-id-indentation-error' is no longer supported.\n" \
+       "Numeric value for token ids are no longer defined on the command line.\n" \
+       "Numeric values for token ids can be defined in token sections, e.g.\n" \
+       "    token {\n" \
+       "       INDENTATION_ERROR = 4711;\n"
+       "    }", "0.51.1"),
 }
  
 

@@ -152,17 +152,17 @@ core pattern            = (.)+a
 post condition pattern  = (.)+
 ambigous post condition = init-state = 0L
 00000() <~ 
-      == [\0, '\t'], [\11, oo] ==> 00001
+      == [\0, '\t'], ['\v', oo] ==> 00001
       <no epsilon>
 00001() <~ 
-      == [\0, '\t'], [\11, '`'], ['b', oo] ==> 00001
+      == [\0, '\t'], ['\v', '`'], ['b', oo] ==> 00001
       == 'a' ==> 00002
       <no epsilon>
 00002() <~ 
-      == [\0, '\t'], [\11, oo] ==> 00003
+      == [\0, '\t'], ['\v', oo] ==> 00003
       <no epsilon>
 00003(A, S, papc=107) <~ 
-      == [\0, '\t'], [\11, oo] ==> 00003
+      == [\0, '\t'], ['\v', oo] ==> 00003
       <no epsilon>
 
 backward detector = init-state = 0L
@@ -170,6 +170,6 @@ backward detector = init-state = 0L
       == [-oo, oo] ==> 00001
       <no epsilon>
 00001(A, S) <~ 
-      == [\0, '\t'], [\11, oo] ==> 00001
+      == [\0, '\t'], ['\v', oo] ==> 00001
       <no epsilon>
 

@@ -102,10 +102,12 @@ standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENTATION_ERROR"]
 
 def prepare_default_standard_token_ids():
 
-    token_id_db["TERMINATION"]       = TokenInfo("TERMINATION",       ID=Setup.token_id_termination)
-    token_id_db["UNINITIALIZED"]     = TokenInfo("UNINITIALIZED",     ID=Setup.token_id_uninitialized)
-    token_id_db["INDENTATION_ERROR"] = TokenInfo("INDENTATION_ERROR", ID=Setup.token_id_indentation_error)
+    token_id_db["TERMINATION"]       = TokenInfo("TERMINATION",       ID=0)
+    token_id_db["UNINITIALIZED"]     = TokenInfo("UNINITIALIZED",     ID=1)
+    token_id_db["INDENTATION_ERROR"] = TokenInfo("INDENTATION_ERROR", ID=2)
 
+def __is_token_id_occupied(TokenID):
+    return TokenID in map(lambda x: x.number, token_id_db.values())
 
 def do(setup, IndentationSupportF):
     """Creates a file of token-ids from a given set of names.
@@ -162,7 +164,10 @@ def do(setup, IndentationSupportF):
         for token_name in token_names:
             token_info = token_id_db[token_name] 
             if token_info.number == None: 
-                token_info.number = i; i+= 1
+                token_info.number = i; 
+                i += 1
+                while __is_token_id_occupied(i):
+                    i += 1
 
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
                                                                            token_info.name, 
