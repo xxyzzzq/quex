@@ -173,9 +173,6 @@ def do(argv):
     setup.path_limit_code             = __get_integer("path_limit_code")
 
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
-    setup.token_id_termination       = __get_integer("token_id_termination")
-    setup.token_id_uninitialized     = __get_integer("token_id_uninitialized")
-    setup.token_id_indentation_error = __get_integer("token_id_indentation_error")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
     validate(setup, command_line, argv)
@@ -275,23 +272,6 @@ def validate(setup, command_line, argv):
                   "Note, that this option is only interesting for cross plattform development.\n" + \
                   "By default, quex automatically chooses the endian type of your system.")
 
-    # Token offset and several ids
-    for x_id in ["token_id_uninitialized", "token_id_termination", "token_id_indentation_error"]:
-        x_name = x_id.replace("_", "-")
-        for y_id in ["token_id_uninitialized", "token_id_termination", "token_id_indentation_error"]:
-            if   x_id == y_id: continue
-            elif setup.__dict__[x_id] == setup.__dict__[y_id]: 
-                y_name = y_id.replace("_", "-")
-                error_msg("Token id for %s (--token-id-%s)\n"        \
-                          % (x_name, x_name)                       + \
-                          "and token id for %s (--token-id-%s).\n"   \
-                          % (y_name, y_name)                       + \
-                          "are chosen to be the same. Dangerous, but may be it works.", DontExitF=True)
-        if setup.token_id_counter_offset < setup.__dict__[x_id]:
-            error_msg("Token id offset (--token-id-offset) <= token id %s (--token-id-%s).\n" \
-                      % (x_name, x_name) + \
-                      "Dangerous, but maybe it works.", DontExitF=True)
-
     # Manually written token class requires token class name to be specified
     if setup.token_class_file != "" and command_line.search("--token-class", "--tc") == False:
         error_msg("The use of a manually written token class requires that the name of the class\n"
@@ -314,8 +294,6 @@ def validate(setup, command_line, argv):
     if setup.analyzer_derived_class_name != "": 
         __check_identifier(setup, "analyzer_derived_class_name", "Derived class name")
     
-    # __check_identifier("token_id_termination",     "Token id for termination")
-    # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
     __check_file_name(setup, "token_class_file",            "file containing token class definition")
     __check_file_name(setup, "analyzer_derived_class_file", "file containing user derived lexer class")
     __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids")

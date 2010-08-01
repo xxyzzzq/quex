@@ -221,11 +221,13 @@ def read_integer(fh):
     if first == "0":
         second = fh.read(1)
         if   second == "":  return 0
-        elif second == "x": base = 16;       digit_list = "0123456789abcdefABCDEF"
-        elif second == "o": base = 8;        digit_list = "01234567"
-        elif second == "b": base = 2;        digit_list = "01"
+        elif second == "x": base = 16;       digit_list = "0123456789abcdefABCDEF."
+        elif second == "o": base = 8;        digit_list = "01234567."
+        elif second == "b": base = 2;        digit_list = "01."
         elif second == "r": base = "roman";  digit_list = "MCDXLIVmcdxliv"
         elif second.isdigit(): txt = second; # base = None --> base = 10, see below
+        elif second == ".":
+            error_msg("Decimal integer number cannot contain '.'.", fh)
         else:
             error_msg("Number format '0%s' is not supported by quex.\n" % second + \
                       "Use prefix '0x' for hexadecimal numbers.\n" + \
@@ -244,9 +246,10 @@ def read_integer(fh):
         elif tmp not in digit_list: fh.seek(-1, 1); break
         txt += tmp
 
+    txt = txt.replace(".", "")
     if len(txt) == 0:
         if base in [2, 8, 16, "roman"]:
-            error_msg("Missing digits after '0%s' base %i, found '%s'." % (second, base, tmp), fh)
+            error_msg("Missing digits after '0%s' base %s, found '%s'." % (second, repr(base), tmp), fh)
         fh.seek(pos)
         return None
 
@@ -270,19 +273,20 @@ def __roman_number(Text, fh):
     """
     input = Text.upper() 
     # map of (numeral, value, maxcount) tuples
-    roman_numeral_map = (('M',  1000, 3), ('CM', 900, 1),
-                         ('D',  500, 1),  ('CD', 400, 1),
-                         ('C',  100, 3),  ('XC', 90, 1),
-                         ('L',  50, 1),   ('XL', 40, 1),
-                         ('X',  10, 3),   ('IX', 9, 1),
-                         ('V',  5, 1),    ('IV', 4, 1), ('I',  1, 3))
+    roman_numeral_map = (('M',  1000, None), ('CM', 900, 1),
+                         ('D',  500, 1),     ('CD', 400, 1),
+                         ('C',  100, 3),     ('XC', 90, 1),
+                         ('L',  50, 1),      ('XL', 40, 1),
+                         ('X',  10, 3),      ('IX', 9, 1),
+                         ('V',  5, 1),       ('IV', 4, 1), 
+                         ('I',  1, 3))
 
     result, index = 0, 0
     for numeral, value, maxcount in roman_numeral_map:
         count = 0
         while input[index: index + len(numeral)] == numeral:
             count += 1 # how many of this numeral we have
-            if count > maxcount:
+            if maxcount != None and count > maxcount:
                 error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
             result += value
             index  += len(numeral)

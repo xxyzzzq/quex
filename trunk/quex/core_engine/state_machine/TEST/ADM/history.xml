@@ -1,4 +1,4 @@
-<history date="Sun Aug  1 13:10:42 2010" element-n="452">
+<history date="Mon Aug  2 08:57:40 2010" element-n="454">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1104,5 +1104,9 @@
         <crc-error time="05:26:03" application="test-nfa-to-dfa-special.py" choice="" database-crc="74950847" real-crc="-1042796353"/>
         <crc-error time="05:27:03" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="-445054721" real-crc="792982194"/>
         <crc-error time="05:28:21" application="test-nfa-to-dfa-special.py" choice="" database-crc="-1042796353" real-crc="-562487828"/>
+    </day>
+    <day year="2010" month="08" day="02">
+        <crc-error time="05:15:44" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-744398143" real-crc="797490981"/>
+        <crc-error time="05:15:49" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="792982194" real-crc="392262815"/>
     </day>
 </history>
