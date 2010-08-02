@@ -230,6 +230,7 @@ def parse_action_code(new_mode, fh, pattern, pattern_state_machine):
         error_msg("End of file reached while parsing action code for pattern.", fh)
 
 def check_for_event_specification(word, fh, new_mode):
+    pos = fh.tell()
 
     # Allow '<<EOF>>' and '<<FAIL>>' out of respect for classical tools like 'lex'
     if   word == "<<EOF>>":                  word = "on_end_of_stream"
@@ -249,9 +250,10 @@ def check_for_event_specification(word, fh, new_mode):
         #       return from the analyzer. Do not allow CONTINUE.
         continue_f = False
 
-    if     word in ["on_entry", "on_exit", "on_indentation"] \
+    if     word in ["on_entry", "on_exit", "on_indentation", "on_indent", "on_dedent"] \
        and Setup.token_policy not in ["queue"] \
        and not Setup.warning_disabled_no_token_queue_f:
+        fh.seek(pos)
         error_msg("Using '%s' event handler, while the token queue is disabled.\n" % word + \
                   "Use '--token-policy queue', so then tokens can be sent safer\n" + \
                   "from inside this event handler. Disable this warning by command\n"
@@ -259,6 +261,15 @@ def check_for_event_specification(word, fh, new_mode):
 
     new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
                                                 ContinueF=continue_f)
+
+    if word == "on_indentation" and lexer_mode.indentation_setup != None:
+        fh.seek(pos)
+        error_msg("Definition of 'on_indentation' code fragment while", fh, 
+                  DontExitF=True, WarningF=False)
+        error_msg("an indentation setup has been provided. In this case the on_indentation\n" \
+                  "code fragment is written by quex.", 
+                  lexer_mode.indentation_setup.file_name, 
+                  lexer_mode.indentation_setup.line_n) 
 
     return True
 

@@ -506,6 +506,8 @@ event_handler_db = {
         "on_entry":         "Code executed on entry of a mode.",
         "on_exit":          "Code executed on exit of a mode.", 
         "on_indentation":   "Code executed on transition from whitespace to non-whitespace.",
+        "on_indent":        "Code executed on the event of indentation.",
+        "on_dedent":        "Code executed on the event of 'de-dentation'.",
         "on_match":         "Code executed on each match.",
         "on_end_of_stream": "Code executed on end of file/stream.",
         "on_failure":       "Code executed in case that no pattern matches.",
