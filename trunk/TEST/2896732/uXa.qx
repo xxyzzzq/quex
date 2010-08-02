@@ -391,6 +391,10 @@ define {
 start = INITIAL;
 
 token {
+
+    UNINITIALIZED = 1114112;
+    TERMINATION   = 1114113;
+
 	FCK;
 	WS;
 	UNICODE;
