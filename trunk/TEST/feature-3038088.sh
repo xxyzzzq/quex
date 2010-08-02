@@ -7,10 +7,9 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-make story >& tmp.txt
-cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
-rm tmp.txt
+quex -i simple.qx -o Simple --token-id-offset 111
+grep QUEX_TKN Simple-token_ids
 
 # cleansening
-make clean >& /dev/null
+rm Simple*
 cd $tmp
