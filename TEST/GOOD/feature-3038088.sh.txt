@@ -1,0 +1,15 @@
+simple.qx:14:warning: Token id 'QUEX_TKN_Z' defined implicitly.
+simple.qx:2:warning: Token id 'UNINITIALIZED'
+simple.qx:9:warning: and token id 'F' have same numeric value '111'.
+simple.qx:6:warning: Token id 'C'
+simple.qx:8:warning: and token id 'E' have same numeric value '115'.
+#define QUEX_TKN_A                 ((QUEX_TYPE_TOKEN_ID)112)
+#define QUEX_TKN_B                 ((QUEX_TYPE_TOKEN_ID)114)
+#define QUEX_TKN_C                 ((QUEX_TYPE_TOKEN_ID)115)
+#define QUEX_TKN_D                 ((QUEX_TYPE_TOKEN_ID)116)
+#define QUEX_TKN_E                 ((QUEX_TYPE_TOKEN_ID)115)
+#define QUEX_TKN_F                 ((QUEX_TYPE_TOKEN_ID)111)
+#define QUEX_TKN_INDENTATION_ERROR ((QUEX_TYPE_TOKEN_ID)113)
+#define QUEX_TKN_TERMINATION       ((QUEX_TYPE_TOKEN_ID)0)
+#define QUEX_TKN_UNINITIALIZED     ((QUEX_TYPE_TOKEN_ID)111)
+#define QUEX_TKN_Z                 ((QUEX_TYPE_TOKEN_ID)117)
