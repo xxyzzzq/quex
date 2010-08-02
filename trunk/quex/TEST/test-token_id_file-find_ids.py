@@ -22,7 +22,7 @@ def test(TokenIDFile, TokenPrefix):
     token_id_db.clear()
     parse_token_id_file(TokenIDFile, TokenPrefix, CommentDelimiterList, IncludeRE)
     for key, token_info in token_id_db.items():
-        print "%s:%i: %s" % (token_info.positions[0], token_info.positions[1], key)
+        print "%s:%i: %s" % (token_info.file_name, token_info.line_n, key)
 
 test("example.h",     "TKN_")
 test("example-x.h",   "TKN_")

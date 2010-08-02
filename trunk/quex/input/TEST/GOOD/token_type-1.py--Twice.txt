@@ -4,5 +4,5 @@ IN:
 
 OUT:
 
-a string:1:warning: Token type member name 'id' defined twice.
-a string:1:error: Previously defined here.
+string:1:warning: Token type member name 'id' defined twice.
+string:1:error: Previously defined here.

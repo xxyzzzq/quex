@@ -4,4 +4,4 @@ IN:
 
 OUT:
 
-a string:1:error: Member 'id' only allowed in 'standard' section.
+string:1:error: Member 'id' only allowed in 'standard' section.

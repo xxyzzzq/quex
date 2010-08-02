@@ -80,3 +80,12 @@ elif "roman" in sys.argv:
     test("0rG")
     test("0rI", 1)
     test("0rX", 10)
+
+elif "decimal" in sys.argv:
+    # Check that all digits are recognized
+    test("0x12340",  int("12340", 10))
+    test("0x56789",  int("56789", 10))
+    # Disallowed
+    test("A")
+    # Check that dots are not allowed
+    test("10.20")

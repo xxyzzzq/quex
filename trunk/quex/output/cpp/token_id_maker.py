@@ -25,7 +25,8 @@ class TokenInfo:
         self.name         = Name
         self.number       = ID
         self.related_type = TypeName
-        self.positions    = [ Filename, LineN ]
+        self.file_name    = Filename
+        self.line_n       = LineN
         self.id           = None
 
 file_str = \
@@ -164,15 +165,23 @@ def do(setup, IndentationSupportF):
         for token_name in token_names:
             token_info = token_id_db[token_name] 
             if token_info.number == None: 
-                token_info.number = i; 
-                i += 1
                 while __is_token_id_occupied(i):
                     i += 1
+                token_info.number = i; 
 
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
                                                                            token_info.name, 
                                                                            space(token_info.name), 
                                                                            token_info.number)
+    # (*) Double check that no token id appears twice
+    token_list = token_id_db.values()
+    for i, x in enumerate(token_list):
+        for y in token_list[i+1:]:
+            if x.number != y.number: continue
+            error_msg("Token id '%s'" % x.name, x.file_name, x.line_n, DontExitF=True)
+            error_msg("and token id '%s' have same numeric value '%s'." \
+                      % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
+                          
     tc_descr = lexer_mode.token_type_definition
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
