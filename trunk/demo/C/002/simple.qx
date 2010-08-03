@@ -71,22 +71,6 @@ token {
     EVENT_MODE_CHANGE;
 }
 
-body {
-    IndentationStack  indentation_stack;
-    bool              allow_opening_indentation_f;
-}
-
-init {
-    /* first indentation at column = 0 */
-    self.indentation_stack.begin[0] = (uint16_t)0;
-    self.indentation_stack.end      = self.indentation_stack.begin + 1;
-    /* default: do not allow to open a sub-block.
-     * only function definitions, if statements, and for loops
-     * should allow to open a new indentation block in the next line. */
-    self.allow_opening_indentation_f = false;
-}
-
-
 mode END_OF_FILE :
 <inheritable: only>  
 {    
@@ -98,7 +82,7 @@ indentation {
     space     = 1;
     define {
         space      [ \:]
-        tabulator  [ \t]
+        tabulator  [\t]
     }
 }
 
@@ -108,7 +92,7 @@ mode PROGRAM :
 <exit:  STRING_READER>
 {
     on_indent => QUEX_TKN_BLOCK_OPEN;
-    on_dedent => QUEX_TKN_BLOCK_OPEN x BorderN;
+    on_dedent => REPEAT(QUEX_TKN_BLOCK_OPEN, BorderN);
 
     {P_BACKSLASHED_NEWLINE} {
         self_disable_next_indentation_event();

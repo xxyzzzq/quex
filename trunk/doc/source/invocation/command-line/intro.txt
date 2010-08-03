@@ -2,9 +2,9 @@ Command Line Options
 ====================
 
 This section lists the command line options to control the behavior of the
-generated lexical analyzer.  Numbers following these options can be either
-decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
-'0o' prefix.  
+generated lexical analyzer. Strings following these options must be either
+without whitespaces or in quotes. Numbers are specified in C-like format 
+as described in :ref:`sec-number-format`.
 
 .. cmdoption:: -i, --mode-files file-list
         
@@ -13,13 +13,6 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
          and <<sec-formal-generated-class-mode-handling>>). 
         
         DEFAULT = ``<empty>``
-
-.. cmdoption:: --version-id name
-
-       ``name`` = arbitrary name of the version that was generated. This string
-        is reported by the `version()` member function of the lexical analyser. 
-
-        DEFAULT = `"0.0.0-pre-release"`
 
 .. cmdoption:: `-o`, `--engine`, `--analyzer-class` name
         
@@ -37,6 +30,15 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         
         DEFAULT = ``lexer``
 
+.. cmdoption:: --language name
+
+        Defines the programming language of the output. ``name`` can be 
+
+         * ``C`` for plain C code.
+         * ``C++`` for C++ code.
+
+        DEFAULT = ``C++``
+
 .. cmdoption:: `--debug`
 
         If provided, then code fragments are created to
@@ -46,6 +48,13 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         code overhead. 
         
         DEFAULT = `<disabled>`
+
+.. cmdoption:: --version-id name
+
+       ``name`` = arbitrary name of the version that was generated. This string
+        is reported by the `version()` member function of the lexical analyser. 
+
+        DEFAULT = `"0.0.0-pre-release"`
 
 .. cmdoption:: `--no-mode-transition-check` 
 
@@ -151,37 +160,16 @@ following command line options can be used.
 Certain token ids are standard, in a sense that they are required for a functioning lexical
 analyzer. Namely they are ``TERMINATION``, ``UNINITIALIZED``, and optionally
 ``INDENTATION_ERROR`` if indentation support is enabled. The default values
-of those can be modified by the following command line arguments:
+of those do not follow the token id offset, but are 0, 1, and 2. If they need
+to be different, they must be defined in the ``token { ... }`` section, e.g.:: 
 
-.. cmdoption:: --token-id-termination  number
-        
-        ``number`` = Token identifier for the event of 'end of token stream'.
-        Note, that the termination token id can always be referred to via
-        `__QUEX_SETTING_TOKEN_ID_TERMINATION`. One does not have to specify it
-        just in order to be able to know its value. Consider also the comments
-        on the token for 'uninitialized'. 
-        
-        DEFAULT = ``0`` 
+    token {
+        TERMINATION   = 10001;
+        UNINITIALIZED = 10002;
+        ...
+    }
 
-.. cmdoption:: --token-id-uninitialized  number
-        
-        ``number`` = Token identifier of a token that has not yet been
-        initialized.  Any token that arrives to the user 'on purpose' should
-        not contain this identifier.  It is basically a means for debugging in
-        order to check whether tokens slip through due to any erroneous
-        behavior.
-
-        DEFAULT = ``1`` 
-        
-.. cmdoption:: --token-id-indentation-error  number
-
-        ``number`` = Token identifier to signalize an indentation error. This
-        option only makes sense if indentation support is activate. It
-        indicates that a misalligned indentation has been detected. 
-
-        DEFAULT = ``2`` 
-
-A whole file with token ids can be provided by the option
+A file with token ids can be provided by the option
 
 .. cmdoption:: --foreign-token-id-file filename
         
