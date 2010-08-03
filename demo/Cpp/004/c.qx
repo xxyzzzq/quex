@@ -4,7 +4,7 @@ start = PROGRAM;
 
 define {
     // Pattern definitions for example application
-    P_WHITESPACE          [ \t\n]+
+    P_WHITESPACE          [ \r\t\n]+
     P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
     P_NUMBER              [0-9]+
     //
@@ -19,7 +19,7 @@ define {
 }
 
 mode PROGRAM :
-<skip:       [ \n\t]>
+<skip:       [ \r\n\t]>
 <skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {
