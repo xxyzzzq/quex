@@ -24,7 +24,7 @@
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
 #ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   include <quex/code_base/analyzer/IndentationStack>
+#   include <quex/code_base/analyzer/IndentationHandler>
 #endif
 #include    <quex/code_base/analyzer/counter/Base>
 #include    <quex/code_base/analyzer/member/basic>

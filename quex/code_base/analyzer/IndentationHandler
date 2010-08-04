@@ -9,7 +9,10 @@
         uint16_t*  memory_end;
 
         /* Indentation detection may be turned on or off */
-        bool       _enabled_f;
+        size_t     count;           /* number of columns to first non-whitespace  */
+        /*                           * in the current line.                       */
+        bool       count_enabled_f; /* count whitespace for indentation?          */
+        bool       event_enabled_f; /* trigger when first non-whitespace occurs?  */
     } QUEX_NAME(IndentationHandler);
 
     void      QUEX_NAME(IndentationHandler_init)(QUEX_NAME(IndentationHandler)* me);

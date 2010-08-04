@@ -599,18 +599,22 @@ def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
            "QUEX_SET_last_acceptance(%s);\n" % PatternID
 
 def __condition(txt, CharSet):
+    first_f = True
     for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
+        if first_f: first_f = False
+        else:       txt.append(" || ")
+
         if interval.end - interval.begin == 1:
-            txt.append("(C == 0x%X)"                % interval.begin)
+            txt.append("(C) == 0x%X"                % interval.begin)
         elif interval.end - interval.begin == 2:
-            txt.append("(C == 0x%X) || (C == 0x%X)" % (interval.begin, interval.end - 1))
+            txt.append("(C) == 0x%X || (C) == 0x%X" % (interval.begin, interval.end - 1))
         else:
-            txt.append("(C <= 0x%X && C < 0x%X)"    % (interval.begin, interval.end))
+            txt.append("(C) <= 0x%X && (C) < 0x%X" % (interval.begin, interval.end))
 
 def __indentation_add(Info):
     # (0) If all involved counts are single spaces, the 'counting' can be done
     #     easily by subtracting 'end - begin', no adaption.
-    indent_txt = " " * 32
+    indent_txt = " " * 16
     if Info.has_only_single_spaces():
         return ""
 
@@ -635,10 +639,10 @@ def __indentation_add(Info):
             grid_db.setdefault(count, NumberSet()).unite_with(character_set)
 
     for count, character_set in spaces_db.items():
-        __do(txt, character_set, "I += %i;" % count)
+        __do(txt, character_set, "(I) += %i;" % count)
 
     for count, character_set in grid_db.items():
-        __do(txt, character_set, "I += (%i - I %% %i);" % (abs(count), abs(count)))
+        __do(txt, character_set, "(I) += (%i - ((I) %% %i));" % (abs(count), abs(count)))
 
     return "".join(txt)
 
