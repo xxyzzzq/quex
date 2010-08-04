@@ -31,5 +31,8 @@
 #ifdef      QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer.i>
 #endif
+#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   include <quex/code_base/analyzer/IndentationStack.i>
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS_I */

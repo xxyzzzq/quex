@@ -100,7 +100,7 @@
          *
          *                                                                         */
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-        QUEX_NAME(IndentationStack)     _indentation_handler;
+        QUEX_NAME(IndentationHandler)     _indentation_handler;
 #       endif
 
         /*_________________________________________________________________________
