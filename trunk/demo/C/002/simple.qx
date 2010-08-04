@@ -92,7 +92,7 @@ mode PROGRAM :
 <exit:  STRING_READER>
 {
     on_indent => QUEX_TKN_BLOCK_OPEN;
-    on_dedent => REPEAT(QUEX_TKN_BLOCK_OPEN, BorderN);
+    on_dedent => QUEX_TKN_BLOCK_CLOSE;
 
     {P_BACKSLASHED_NEWLINE} {
         self_disable_next_indentation_event();
