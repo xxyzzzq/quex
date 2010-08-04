@@ -4,9 +4,9 @@
 int 
 main(int argc, char** argv) 
 {        
-    Token    token;
-    Simple   qlex;
-    int      token_n = 0;
+    QUEX_TYPE_TOKEN*   token_p = 0x0;
+    int                token_n = 0;
+    Simple             qlex;
 
     QUEX_NAME(construct_file_name)(&qlex, "example.txt", 0x0, false);
 
@@ -17,12 +17,12 @@ main(int argc, char** argv)
     token_n = 0;
     do {
         /* Get next token from the token stream   */
-        QUEX_NAME(receive_p)(&qlex, &token);
+        QUEX_NAME(receive)(&qlex, &token_p);
         /* Print out token information            */
-        printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token._id));
+        printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
         ++token_n;
         /* Check against 'termination'            */
-    } while( token._id != QUEX_TKN_TERMINATION );
+    } while( token_p->_id != QUEX_TKN_TERMINATION );
 
     printf("| [END] number of token = %i\n", token_n);
     printf("`------------------------------------------------------------------------------------\n");
