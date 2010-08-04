@@ -21,14 +21,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(TestAnalyzer_tag);
 
     typedef struct {
-        QUEX_NAME(CounterBase)   base;
+        QUEX_NAME(CounterBase)          base;
 
-        QUEX_TYPE_ANALYZER*   _the_lexer;
+        QUEX_NAME(IndentationHandler)   indentation;
 
-        size_t  _indentation;                 /* number of columns to first non-whitespace  */
-        /*                                     * in the current line.                       */
-        bool    _indentation_count_enabled_f; /* count whitespace for indentation?          */
-        bool    _indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
+        QUEX_TYPE_ANALYZER*             _the_lexer;
+
     } QUEX_NAME(CounterLineColumnIndentation);
 
     QUEX_INLINE void

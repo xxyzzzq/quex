@@ -451,6 +451,9 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
            do {\
 $$INDENTATION_ADD$$           } while (0)
 $$SWITCH$$ __QUEX_OPTION_INDENTATION_DEDICATED_COUNT
+#   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
+#      define QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
+#   endif
 #elif  defined(__QUEX_OPTION_COUNTER)
 #   define QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumn)
 #   define QUEX_TYPE_COUNTER_CONSTRUCTOR QUEX_NAME(CounterLineColumn_construct)
