@@ -5,8 +5,16 @@
 # $3 title
 #
 mkdir $1
-cat bug-template.sh | sed -e "s/BUG\_ID/$1/g" | sed -e "s/SUBMITTER/$2/g" | sed -s "s/TITLE/$3/g" > bug-$1.sh
-chmod u+x bug-$1.sh
-svn add bug-$1.sh
+if [[ $4 == "feature" ]]; then
+    file=feature-$1.sh
+else
+    file=bug-$1.sh
+fi
+
+cat bug-template.sh | sed -e "s/BUG\_ID/$1/g" | sed -e "s/SUBMITTER/$2/g" | sed -s "s/TITLE/$3/g" > $file
+
+chmod u+x $file
+
+svn add $file
 svn add $1
 
