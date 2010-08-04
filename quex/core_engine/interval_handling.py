@@ -17,7 +17,7 @@
 from copy import copy, deepcopy
 
 from   quex.frs_py.file_in                       import error_msg
-import quex.core_engine.generator.languages.core as languages
+# import quex.core_engine.generator.languages.core as languages
 import sys
 import quex.core_engine.utf8 as utf8
 
@@ -845,7 +845,7 @@ class NumberSet:
             txt += "\n"
         return txt
 
-    def condition_code(self,
+    def DELETED_condition_code(self,
                        Language     = "C",
                        FunctionName = "example"):
 
@@ -856,7 +856,7 @@ class NumberSet:
 
         return txt
 
-    def __condition_code(self, LanguageDB,
+    def DELETED___condition_code(self, LanguageDB,
                          LowestInterval_Idx = -1, UppestInterval_Idx = -1, 
                          NoIndentF = False):
         

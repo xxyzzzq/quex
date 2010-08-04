@@ -23,6 +23,7 @@ def do(Modes, IndentationSupportF, BeginOfLineSupportF):
 
 def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     LexerClassName = Setup.analyzer_class_name
+    LanguageDB     = Setup.language_db
 
     ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
                                    + Setup.language_db["$code_base"] 
@@ -55,7 +56,7 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
 
     # Indentation support setup
     if lexer_mode.indentation_setup != None:
-        indentation_add_str           = LanguageDB["$indentation_add"](lexer_mode.indentation_setup),
+        indentation_add_str           = LanguageDB["$indentation_add"](lexer_mode.indentation_setup)
         indentation_check_space_str   = LanguageDB["$indentation_check_space"](lexer_mode.indentation_setup)
         indentation_dedicated_count_f = indentation_add_str != ""
     else:
