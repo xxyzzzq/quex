@@ -250,7 +250,7 @@ def check_for_event_specification(word, fh, new_mode):
         #       return from the analyzer. Do not allow CONTINUE.
         continue_f = False
 
-    if     word in ["on_entry", "on_exit", "on_indentation", "on_indent", "on_dedent"] \
+    if     word in ["on_entry", "on_exit", "on_indent", "on_dedent"] \
        and Setup.token_policy not in ["queue"] \
        and not Setup.warning_disabled_no_token_queue_f:
         fh.seek(pos)
@@ -262,14 +262,11 @@ def check_for_event_specification(word, fh, new_mode):
     new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
                                                 ContinueF=continue_f)
 
-    if word == "on_indentation" and lexer_mode.indentation_setup != None:
+    if word == "on_indentation":
         fh.seek(pos)
-        error_msg("Definition of 'on_indentation' code fragment while", fh, 
-                  DontExitF=True, WarningF=False)
-        error_msg("an indentation setup has been provided. In this case the on_indentation\n" \
-                  "code fragment is written by quex.", 
-                  lexer_mode.indentation_setup.file_name, 
-                  lexer_mode.indentation_setup.line_n) 
+        error_msg("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
+                  "Please, use 'on_indent' for the event of an opening indentation and 'on_dedent'\n"
+                  "for the event of a closing indentation.", fh, 
 
     return True
 

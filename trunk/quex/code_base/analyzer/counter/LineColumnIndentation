@@ -20,12 +20,34 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     struct QUEX_NAME(TestAnalyzer_tag);
 
+
     typedef struct {
-        QUEX_NAME(CounterBase)          base;
+        uint16_t   begin[QUEX_SETTING_INDENTATION_STACK_SIZE];
+        uint16_t*  end;
+        uint16_t*  memory_end;
+    } QUEX_NAME(IndentationStack);
 
-        QUEX_NAME(IndentationHandler)   indentation;
+    QUEX_INLINE void   
+    QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me);
 
-        QUEX_TYPE_ANALYZER*             _the_lexer;
+    QUEX_INLINE void      
+    QUEX_NAME(IndentationHandler_push)(QUEX_NAME(IndentationHandler)* me, uint16_t Indentation);
+    
+    QUEX_INLINE uint16_t  
+    QUEX_NAME(IndentationHandler_pop)(QUEX_NAME(IndentationHandler)* me);
+
+
+    typedef struct {
+        QUEX_NAME(CounterBase)      base;
+
+        QUEX_TYPE_ANALYZER*         _the_lexer;
+
+        QUEX_NAME(IndentationStack) indentation_stack;
+
+        size_t     indentation;                 /* number of columns to first non-whitespace  */
+        /*                                       * in the current line.                       */
+        bool       indentation_count_enabled_f; /* count whitespace for indentation?          */
+        bool       indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
 
     } QUEX_NAME(CounterLineColumnIndentation);
 
@@ -81,6 +103,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                  const bool               LicenseToIncrementLineCountF);
     QUEX_INLINE void 
     QUEX_NAME(CounterLineColumnIndentation_print_this)(QUEX_NAME(CounterLineColumnIndentation)* me);
+
+    QUEX_INLINE void      
+    QUEX_NAME(CounterLineColumnIndentation_on_indentation)(QUEX_NAME(CounterLineColumnIndentation)* me);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

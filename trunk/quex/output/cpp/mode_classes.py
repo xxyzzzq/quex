@@ -36,7 +36,7 @@ def do(Modes):
 def write_member_functions(Modes):
 
     # -- get the implementation of mode class functions
-    #    (on_entry, on_exit, on_indendation, has_base, has_entry, has_exit)
+    #    (on_entry, on_exit, on_indent, on_dedent, has_base, has_entry, has_exit)
     txt  = ""
     txt += "#ifndef __QUEX_INDICATOR_DUMPED_TOKEN_ID_DEFINED\n"
     txt += "    static QUEX_TYPE_TOKEN_ID    QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"
@@ -66,8 +66,12 @@ $$EXIT-PROCEDURE$$
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER* me, const size_t Indentation) {
-$$INDENTATION-PROCEDURE$$
+    QUEX_NAME($$MODE_NAME$$_on_indent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation) {
+$$INDENT-PROCEDURE$$
+    }
+    void
+    QUEX_NAME($$MODE_NAME$$_on_dedent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation) {
+$$DEDENT-PROCEDURE$$
     }
 #endif
 
@@ -120,9 +124,13 @@ def  get_implementation_of_mode_functions(mode, Modes):
         on_exit_str += code_info.get_code()
 
     # (*) on indentation
-    on_indentation_str = "__quex_assert((long)Indentation >= 0);" 
-    for code_info in mode.get_code_fragment_list("on_indentation"):
-        on_indentation_str += code_info.get_code()
+    on_indent_str = "__quex_assert((long)Indentation >= 0);" 
+    for code_info in mode.get_code_fragment_list("on_indent"):
+        on_indent_str += code_info.get_code()
+        
+    on_dedent_str = "__quex_assert((long)Indentation >= 0);" 
+    for code_info in mode.get_code_fragment_list("on_dedent"):
+        on_dedent_str += code_info.get_code()
         
     # (*) has base mode
     if mode.has_base_mode():
@@ -150,13 +158,14 @@ def  get_implementation_of_mode_functions(mode, Modes):
 
     
     txt = blue_print(mode_function_implementation_str,
-                     [["$$ENTER-PROCEDURE$$",           on_entry_str],
-                      ["$$EXIT-PROCEDURE$$",            on_exit_str],
-                      ["$$INDENTATION-PROCEDURE$$",     on_indentation_str],
-                      ["$$HAS_BASE_MODE$$",             has_base_mode_str],
-                      ["$$HAS_ENTRANCE_FROM$$",         has_entry_from_str],
-                      ["$$HAS_EXIT_TO$$",               has_exit_to_str],
-                      ["$$MODE_NAME$$",                 mode.name],
+                     [["$$ENTER-PROCEDURE$$",      on_entry_str],
+                      ["$$EXIT-PROCEDURE$$",       on_exit_str],
+                      ["$$INDENT-PROCEDURE$$",     on_indent_str],
+                      ["$$DEDENT-PROCEDURE$$",     on_dedent_str],
+                      ["$$HAS_BASE_MODE$$",        has_base_mode_str],
+                      ["$$HAS_ENTRANCE_FROM$$",    has_entry_from_str],
+                      ["$$HAS_EXIT_TO$$",          has_exit_to_str],
+                      ["$$MODE_NAME$$",            mode.name],
                       ])
     return txt
 

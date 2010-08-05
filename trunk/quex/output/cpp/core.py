@@ -262,7 +262,8 @@ quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).name = "$$MN$$";
      QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-     QUEX_NAME($$MN$$).on_indentation = $on_indentation;
+     QUEX_NAME($$MN$$).on_indent      = $on_indent;
+     QUEX_NAME($$MN$$).on_dedent      = $on_dedent;
 #    endif
      QUEX_NAME($$MN$$).on_entry       = $on_entry;
      QUEX_NAME($$MN$$).on_exit        = $on_exit;
@@ -276,7 +277,8 @@ quex_mode_init_call_str = """
 def __get_mode_init_call(mode):
     
     analyzer_function = "QUEX_NAME(%s_analyzer_function)" % mode.name
-    on_indentation    = "QUEX_NAME(%s_on_indentation)"    % mode.name
+    on_indent         = "QUEX_NAME(%s_on_indent)"         % mode.name
+    on_dedent         = "QUEX_NAME(%s_on_dedent)"         % mode.name
     on_entry          = "QUEX_NAME(%s_on_entry)"          % mode.name
     on_exit           = "QUEX_NAME(%s_on_exit)"           % mode.name
     has_base          = "QUEX_NAME(%s_has_base)"          % mode.name
@@ -292,13 +294,17 @@ def __get_mode_init_call(mode):
     if mode.get_code_fragment_list("on_exit") == []:
         on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if mode.get_code_fragment_list("on_indentation") == []:
-        on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
+    if mode.get_code_fragment_list("on_indent") == []:
+        on_indent = "QUEX_NAME(Mode_on_indent_dedent_null_function)"
+
+    if mode.get_code_fragment_list("on_dedent") == []:
+        on_dedent = "QUEX_NAME(Mode_on_indent_dedent_null_function)"
 
     txt = blue_print(quex_mode_init_call_str,
                 [["$$MN$$",             mode.name],
                  ["$analyzer_function", analyzer_function],
-                 ["$on_indentation",    on_indentation],
+                 ["$on_indent",         on_indent],
+                 ["$on_dedent",         on_dedent],
                  ["$on_entry",          on_entry],
                  ["$on_exit",           on_exit],
                  ["$has_base",          has_base],
@@ -327,26 +333,21 @@ def __get_mode_function_declaration(Modes, FriendF=False):
             txt += __mode_functions(prolog, "__QUEX_TYPE_ANALYZER_RETURN_VALUE", 
                                     ["analyzer_function"],
                                     "QUEX_TYPE_ANALYZER*")
-    for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
-        if mode.has_code_fragment_list("on_indentation"):
-            txt += __mode_functions(prolog, "void", ["on_indentation"], 
-                                    "QUEX_TYPE_ANALYZER*, const size_t")
 
-    for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        for event_name in ["on_indent", "on_dedent"]:
+            if not mode.has_code_fragment_list(event_name): continue
+            txt += __mode_functions(prolog, "void", [event_name], 
+                                    "QUEX_TYPE_ANALYZER*, const size, const size_t")
+
         for event_name in ["on_exit", "on_entry"]:
             if not mode.has_code_fragment_list(event_name): continue
             txt += __mode_functions(prolog, "void", [event_name], 
                                     "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
 
-    txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    for mode in Modes:
-        if mode.options["inheritable"] == "only": continue
+        txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
                                 "const QUEX_NAME(Mode)*")
-        
-    txt += "#endif\n"
+        txt += "#endif\n"
     txt += "\n"
 
     return txt

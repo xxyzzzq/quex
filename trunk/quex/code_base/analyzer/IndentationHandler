@@ -15,9 +15,6 @@
         bool       event_enabled_f; /* trigger when first non-whitespace occurs?  */
     } QUEX_NAME(IndentationHandler);
 
-    void      QUEX_NAME(IndentationHandler_init)(QUEX_NAME(IndentationHandler)* me);
-    void      QUEX_NAME(IndentationHandler_push)(QUEX_NAME(IndentationHandler)* me, uint16_t Indentation);
-    uint16_t  QUEX_NAME(IndentationHandler_pop)(QUEX_NAME(IndentationHandler)* me);
     uint16_t  QUEX_NAME(IndentationHandler_allow)(QUEX_NAME(IndentationHandler)* me);
     uint16_t  QUEX_NAME(IndentationHandler_disallow)(QUEX_NAME(IndentationHandler)* me);
 
