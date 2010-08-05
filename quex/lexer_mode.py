@@ -505,7 +505,6 @@ mode_option_info_db = {
 event_handler_db = {
         "on_entry":         "Code executed on entry of a mode.",
         "on_exit":          "Code executed on exit of a mode.", 
-        "on_indentation":   "Code executed on transition from whitespace to non-whitespace.",
         "on_indent":        "Code executed on the event of indentation.",
         "on_dedent":        "Code executed on the event of 'de-dentation'.",
         "on_match":         "Code executed on each match.",
@@ -669,7 +668,8 @@ def requires_indentation_count(ModeDB):
         return True
 
     for mode in ModeDB.values():
-        if mode.has_code_fragment_list("on_indentation"):
+        if    mode.has_code_fragment_list("on_indent") \
+           or mode.has_code_fragment_list("on_dedent"):
             return True
 
     return False
