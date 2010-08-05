@@ -1,4 +1,4 @@
-<history date="Wed Aug  4 23:06:05 2010" element-n="336">
+<history date="Fri Aug  6 20:51:16 2010" element-n="337">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -950,5 +950,8 @@
         <crc-error time="18:39:34" application="token_type-3.py" choice="Forbidden" database-crc="1220694349" real-crc="227999755"/>
         <crc-error time="18:39:34" application="token_type-3.py" choice="Twice" database-crc="1953879902" real-crc="1610656116"/>
         <crc-error time="18:39:34" application="token_type-3.py" choice="Twice-2" database-crc="1705118108" real-crc="1768785304"/>
+    </day>
+    <day year="2010" month="08" day="06">
+        <crc-error time="18:51:16" application="indentation_setup.py" choice="character_set" database-crc="442991598" real-crc="-17164770"/>
     </day>
 </history>

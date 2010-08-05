@@ -66,4 +66,5 @@ else:
     test("{ \nfabulator = 34;\nfabulator = 12;\n}")
     test("{ define { \nspace  [\\r\\a] \nspace [\\:]\n  }\n}")
     test("{ define { \nspace  [\\:]    \ntabulator [\\:]\n  }\n}")
+    test("{ define { \nspace  [\\:]    \ntabulator [a\\n]\n  }\n}")
 
