@@ -446,7 +446,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TYPE_COUNTER_RESET       QUEX_NAME(CounterLineColumnIndentation_reset)
 #   define QUEX_TYPE_COUNTER_PRINT_THIS  QUEX_NAME(CounterLineColumnIndentation_print_this)
 
-#   define __QUEX_INDENTATION_CHECK_SPACE(C) ($$CHECK_INDENTATION_SPACE$$)
+#   define __QUEX_INDENTATION_CHECK_WHITESPACE(C) ($$CHECK_INDENTATION_SPACE$$)
 #   define __QUEX_INDENTATION_ADD(I, C) \
            do {\
 $$INDENTATION_ADD$$           } while (0)

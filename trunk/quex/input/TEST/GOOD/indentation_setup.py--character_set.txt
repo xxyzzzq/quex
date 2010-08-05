@@ -79,3 +79,13 @@ test_string:2:error: However, character sets must be mutually exclusive.
 Exception!
 None
 
+(9) |{ define { 
+space  [\:]    
+tabulator [a\n]
+  }
+}|
+
+test_string:3:error: Character set for indentation cannot contain newline.
+Exception!
+None
+

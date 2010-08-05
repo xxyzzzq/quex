@@ -48,6 +48,9 @@ class IndentationSetup:
                           character_set.file_name,
                           character_set.line_n)
 
+        if Setting.contains(ord("\n")):
+            error_msg("Character set for indentation cannot contain newline.", FH)
+
         self.character_set_db[Name] = LocalizedParameter("indentation character set '%s'" % Name, Setting, FH)
 
     def has_grid(self):
