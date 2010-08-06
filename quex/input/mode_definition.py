@@ -69,6 +69,7 @@ def parse_mode_option(fh, new_mode):
     if identifier == None: return False
 
     mode_option_name_list = ["skip", "skip_range", "skip_nesting_range" ] + \
+                            ["indentation"] + \
                             lexer_mode.mode_option_info_db.keys()
     verify_word_in_list(identifier, mode_option_name_list,
                         "mode option", fh.name, get_current_line_info_number(fh))
@@ -127,6 +128,9 @@ def parse_mode_option(fh, new_mode):
         
     elif identifier == "skip_nesting_range":
         error_msg("skip_nesting_range is not yet supported.", fh)
+
+    elif identifier == "indentation":
+        indentation_setup = indentation_setup.parse.do(fh)
 
     else:
         value = read_option_value(fh)
@@ -266,7 +270,7 @@ def check_for_event_specification(word, fh, new_mode):
         fh.seek(pos)
         error_msg("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
                   "Please, use 'on_indent' for the event of an opening indentation and 'on_dedent'\n"
-                  "for the event of a closing indentation.", fh, 
+                  "for the event of a closing indentation.", fh) 
 
     return True
 

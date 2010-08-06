@@ -32,7 +32,19 @@ class IndentationSetup:
         error_msg(before.name + " has been defined before", FH, DontExitF=True, WarningF=False)
         error_msg("at this place.", before.file_name, before.line_n)
 
-    def specify_count(self, Name, Setting, FH=-1):
+    def specify_space(self, CharSet, Count, FH=-1):
+        pass
+
+    def specify_grid(self, CharSet, Count, FH=-1):
+        pass
+
+    def specify_newline(self, CharSet, Count, FH=-1):
+        pass
+
+    def specify_suppressor(self, CharSet, Count, FH=-1):
+        pass
+
+    def specify_space(self, Name, Setting, FH=-1):
         self.__error_msg_if_defined_twice(self.count_db, Name, FH)
         self.count_db[Name] = LocalizedParameter("indentation count '%s'" % Name, Setting, FH)
 
@@ -182,143 +194,68 @@ class IndentationSetup:
 
 
 def do(fh):
-    """Note: EndOfStreamException is to be caught be caller."""
-    position = fh.tell()
-    indentation_setup = IndentationSetup(fh)
-
-    if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of indentation setup definition", fh)
-
-    while parse_count(fh, indentation_setup):
-        pass
-
-    skip_whitespace(fh)
-    if not check(fh, "}"):
-        found_str = read_until_whitespace(fh)
-        fh.seek(position)
-        error_msg("Missing closing '}' at end of indentation setup definition.\nFound '%s'." % found_str, fh);
-
-    indentation_setup.seal()
-    indentation_setup.consistency_check(fh, position)
-
-    return indentation_setup
-
-def parse_count(fh, indentation_setup):
-    """NOTE: The feature of 'indentation inhibitor' has been declined for two 
-             reasons:
-
-             -- the inhibitor would require a space to delimit the regular 
-                expression and the ';' to delimit the assigment statement.
-                this could cause very confusing errors.
-             -- inhibitors would have to be webbed into the modes which 
-                increases complexity.
-             -- inhibitors can be programmed easily by having pattern actions
-                such as 
-
-                {BACKSLASHED_NEWLINE} {
-                    indentation_stack.sleep();
-                }
-    """
-    position = fh.tell()
-    skip_whitespace(fh)
-    word = read_identifier(fh)
-    if word == "": 
-        return False
-
-    parameter = word
-
-    if parameter == "define":
-        parse_character_set(fh, indentation_setup)
-    else:
-        indentation_setup.specify_count(parameter, parse_parameter_setting(fh, parameter), fh)
-
-    return True
-
-def get_integer(Text):
-    try:
-        if len(Text) > 2 and Text[:2] == "0x": return int(Text, 16)
-        else:                                  return int(Text)
-    except:
-        return None
-
-def parse_parameter_setting(fh, ParameterName):
-    """Parses information about a type of 'whitespace'. Possible values are
-
-       (1) A possitive integer --> number of indentation spaces that it
-           shall represent.
-
-       (2) "grid" + possitive integer --> width of the grid on which the 
-           character shall snap.
-
-       (3) "bad" --> disallow the particular character.
-    """
-    value  = parse_assignment(fh)
-    if value == "": 
-        error_msg("Error while parsing assignment for '%s'." % ParameterName, fh)
-
-    grid_f = False
-    fields = value.split()
-    if fields[0] == "grid": # Since value != "", the fields[0] is safe.
-        grid_f = True
-        if len(fields) < 2:
-            error_msg("Missing integer after keyword 'grid'.", fh)
-        net_value = get_integer(fields[1])
-        if net_value == None:
-            error_msg("Missing integer after keyword 'grid'.", fh)
-        # Negative number means: Grid width
-        return - net_value
-
-    # Try to convert to integer
-    net_value = get_integer(value) 
-    if   net_value != None: 
-        return net_value
-    elif value == "bad":    
-        return "bad"
-    else:
-        error_msg("Indentation setup: Error, value for '%s' is specified as '%s'.\n" % (ParameterName, value) + \
-                  "Example Usages:\n" + \
-                  "    space     = 1;      // specifies that spaces shall take 1 indentation space.\n" + \
-                  "    tabulator = grid 4; // specifies that tabulators shall be on a 4 space grid.\n" + \
-                  "    tabulator = bad;    // tells that tabulators shall not occur in indentation.",
-                  fh)
-        
-def parse_character_set(fh, indentation_setup):
     """Parses pattern definitions of the form:
    
-          tabulator [ \t]
-          space     [:intersection([:alpha:], [\X064-\X066]):]
+          [ \t]                                       => grid 4;
+          [:intersection([:alpha:], [\X064-\X066]):]  => spaces 1;
 
        In other words the right hand side *must* be a character set.
           
     """
+    indentation_setup = IndentationSetup(fh)
+
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
     skip_whitespace(fh)
-    if not check(fh, "{"):
-        error_msg("indentation setup: define region must start with opening '{'.", fh)
 
     while 1 + 1 == 2:
         skip_whitespace(fh)
 
-        if check(fh, "}"): 
-            return
+        if check(fh, ">"): 
+            return indentation_setup
         
-        # -- get the name of the pattern
-        skip_whitespace(fh)
-        identifier = read_identifier(fh)
-        if identifier == "":
-            error_msg("Missing identifier for indentation element definition.", fh)
-
-        verify_word_in_list(identifier, indentation_setup.count_db.keys() + ["tabulator", "space"],
-                            "Unrecognized character set identifier '%s'." % identifier, fh)
-
-        skip_whitespace(fh)
-        if check(fh, "}"): 
-            error_msg("Missing character set expression for indentation element '%s'." % identifier, 
-                      fh)
-
         # A regular expression state machine
         pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
 
         indentation_setup.specify_character_set(identifier, trigger_set, fh)
+
+        # -- get the name of the pattern
+        skip_whitespace(fh)
+
+        if not check(fh, "=>"):
+            error_msg("Missing '=>' after character set definition.", fh)
+
+        identifier = read_identifier(fh)
+        if identifier == "":
+            error_msg("Missing identifier for indentation element definition.", fh)
+
+        verify_word_in_list(identifier, 
+                            ["space", "grid", "newline", "suppressor"],
+                            "Unrecognized specifier '%s'." % identifier, fh)
+
+        skip_whitespace(fh)
+
+        if identifier == "space":
+            value = read_integer(fh)
+            if value == None: value = 1
+            indentation_setup.specify_space(trigger_set, value)
+
+        elif identifier == "grid":
+            value = read_integer(fh)
+            if value == None: error_msg("Missing integer after keyword 'grid'.", fh) 
+            indentation_setup.specify_grid(trigger_set, value)
+
+        elif identifier == "newline":
+            indentation_setup.specify_newline(trigger_set)
+
+        elif identifier == "suppressor":
+            indentation_setup.specify_suppressor(trigger_set)
+
+        else:
+            assert False, "Unreachable code reached."
+
+        if check(fh, ";"):
+            error_msg("Missing ';' after indentation specification.", fh)
+
+
 
