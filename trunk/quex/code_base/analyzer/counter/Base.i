@@ -37,9 +37,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(CounterBase_count_newline_n_backwards)(QUEX_NAME(CounterBase)*       me, 
-                                          QUEX_TYPE_CHARACTER* it,
-                                          QUEX_TYPE_CHARACTER* Begin)
+    QUEX_NAME(CounterBase_count_newline_n_backwards)(QUEX_NAME(CounterBase)*  me, 
+                                                     QUEX_TYPE_CHARACTER*     it,
+                                                     QUEX_TYPE_CHARACTER*     Begin)
     /* NOTE: If *it == '\n' this function does **not** count it. The user must
      *       have increased the _line_number_at_end by hisself. This happens
      *       for performance reasons.                                             */

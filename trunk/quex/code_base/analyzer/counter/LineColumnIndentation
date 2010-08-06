@@ -31,10 +31,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me);
 
     QUEX_INLINE void      
-    QUEX_NAME(IndentationHandler_push)(QUEX_NAME(IndentationHandler)* me, uint16_t Indentation);
+    QUEX_NAME(IndentationHandler_push)(QUEX_NAME(IndentationStack)* me, uint16_t Indentation);
     
     QUEX_INLINE uint16_t  
-    QUEX_NAME(IndentationHandler_pop)(QUEX_NAME(IndentationHandler)* me);
+    QUEX_NAME(IndentationHandler_pop)(QUEX_NAME(IndentationStack)* me);
 
 
     typedef struct {

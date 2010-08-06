@@ -41,7 +41,7 @@ mini_mode_on_indentation(my_tester* x, size_t Indentation)
 
 my_tester::my_tester() 
 { 
-    tester_mini_mode.on_indentation = mini_mode_on_indentation;
+    /* tester_mini_mode.on_indentation = mini_mode_on_indentation; */
     __current_mode_p = &tester_mini_mode; 
 }
 
