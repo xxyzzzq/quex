@@ -41,10 +41,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void  
-    QUEX_NAME(CounterLineColumn_count_FixNewlineN)(QUEX_NAME(CounterLineColumn)*             me,
-                              QUEX_TYPE_CHARACTER* Lexeme,
-                              QUEX_TYPE_CHARACTER* LexemeEnd,
-                              const int            LineNIncrement) 
+    QUEX_NAME(CounterLineColumn_count_FixNewlineN)(QUEX_NAME(CounterLineColumn)*  me,
+                                                   QUEX_TYPE_CHARACTER*           Lexeme,
+                                                   QUEX_TYPE_CHARACTER*           LexemeEnd,
+                                                   const int                      LineNIncrement) 
     {
         __quex_assert( LexemeEnd > Lexeme );
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING

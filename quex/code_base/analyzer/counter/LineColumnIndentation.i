@@ -67,7 +67,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(CounterLineColumnIndentation_on_end_of_file)(QUEX_NAME(CounterLineColumnIndentation)* me)
     {
         /* 'flush' remaining indentations                                      */
-        if( me->indentation.event_enabled_f ) {
+        if( me->indentation_event_enabled_f ) {
             me->indentation = 0;
             QUEX_NAME(CounterLineColumnIndentation_on_indentation)(me);
         }
@@ -118,101 +118,49 @@ QUEX_NAMESPACE_MAIN_OPEN
          *      column_number_at_end  = End_it - start_consideration_it
          *      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
          *                                                                       */
-        QUEX_TYPE_CHARACTER*   Begin = (QUEX_TYPE_CHARACTER*)Lexeme;
-        QUEX_TYPE_CHARACTER*   Last  = LexemeEnd - 1;                
-        QUEX_TYPE_CHARACTER*   it    = Begin;
+        QUEX_TYPE_CHARACTER*  start_it = Lexeme;
+        QUEX_TYPE_CHARACTER*  it       = Lexeme;
 
-        __quex_assert(Begin < LexemeEnd);   /* LexemeLength >= 1: NEVER COMPROMISE THIS ! */
+        __quex_assert(Lexeme < LexemeEnd);   /* LexemeLength >= 1: NEVER COMPROMISE THIS ! */
 
-        if( me->indentation_count_enabled_f == false ) {
-            ... count only line and column number ...
-            return;
-        }
-
-        /* (1) Last character == newline ? _______________________________________________ */
-        if( *Last == '\n' ) {
-            me->indentation                 = 0;
-            me->indentation.count_enabled_f = true;
-#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-            ++(me->base._line_number_at_end);
-            QUEX_NAME(CounterBase_count_newline_n_backwards)((QUEX_NAME(CounterBase)*)me, it, Begin);
-#           endif
-#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            me->base._column_number_at_end   = 1;  /* next lexeme starts at _column_number_at_end + 1 */
-#           endif
-            __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
-            return;
-        }
-
-        
-        while( it != LexemeEnd ) {
-            if( indentation_count_enabled_f == false || *it == '\n' ) {
-                /* Loop until either end or newline occurs. 
-                 * Indentation count can only be activated through a newline.                 */
-                while( it != LexemeEnd && *it != '\n' ) {
-find_newline:
-                    ++it;
-                }
-
-                if( it == LexemeEnd ) { 
-                    /* No change in indentation, only change column number. */
-                    break;
-                }
-                column_count_begin_it = it;
-
-#               ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-                ++(me->base._line_number_at_end);
-#               endif
-
-                /* Newline has been reached */
-                if( it != Last && __QUEX_INDENTATION_NEWLINE_SUPRESSOR(*(it + 1)) ) 
-                    goto find_newline;
-
+        for(it = Lexeme; it != LexemeEnd; ++it) {
+            if( *it == '\n' ) {
                 me->indentation_count_enabled_f = true;
-            }
-            /* HERE: me->indentation_count_enabled_f == true  */
-            /* Indentation WHITESPACE cannot contain newline! */
-            else if( __QUEX_INDENTATION_CHECK_SPACE(*it) == false ) {
+                start_it = it;
+            } else if( __QUEX_INDENTATION_CHECK_WHITESPACE(*it) == false ) {
+                /* HERE: me->indentation_count_enabled_f == true  */
+                /* Indentation WHITESPACE cannot contain newline! */
                 /* A transition from indentation whitespace to non-whitespace detected !! */
 
-                /* Line and column number need to be counted before the indentation handler
-                 * is called. This way it has to correct information.                     */
-#               if ! defined(__QUEX_OPTION_INDENTATION_DEDICATED_COUNT)
-                me->indentation += (size_t)(it - start_consideration_it);
-#               endif
+                if( me->indentation_count_enabled_f ) {
+                    /* Line and column number need to be counted before the indentation handler
+                     * is called. This way it has to correct information.                     */
+                    __QUEX_INDENTATION_ADD_CHUNK(me->indentation, (size_t)(it - start_it));
 
-#               if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-                me->base._column_number_at_end = me->indentation;
-#               endif
-
-                if( me->indentation.event_enabled_f ) {
-                    QUEX_NAME(CounterLineColumnIndentation_on_indentation)(me);
-                } else {
-                    me->indentation_event_enabled_f = true; /* Auto-enable for next time. */
+                    if( me->indentation_event_enabled_f ) {
+                        QUEX_NAME(CounterLineColumnIndentation_on_indentation)(me);
+                    } else {
+                        me->indentation_event_enabled_f = true; /* Auto-enable for next time. */
+                    }
+                    /* Indentation counts only during first whitespace of a line. */
+                    me->indentation_count_enabled_f = false;
                 }
-                /* Now, the count is disabled, since a non-whitespace has been reached.   */
-                me->indentation_count_enabled_f = false;
 
             } else {
-#               ifdef __QUEX_OPTION_INDENTATION_DEDICATED_COUNT
-                __QUEX_INDENTATION_ADD(me->indentation.count, *it);
-#               endif
-#               if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-                __QUEX_INDENTATION_ADD(me->base._column_number_at_end, *it);
-#               endif
+                if( me->indentation_count_enabled_f ) {
+                    __QUEX_INDENTATION_ADD_SINGLE(me->indentation, *it);
+                }
+                __QUEX_INDENTATION_ADD_SINGLE(me->base._column_number_at_end, *it);
             }
-            ++it; 		    
         }
 
-        if( me->_indentation_count_enabled_f ) {
-#           if ! defined(__QUEX_OPTION_INDENTATION_DEDICATED_COUNT)
-            me->indentation.count += (size_t)(it - start_consideration_it);
-#           endif
+        if( me->indentation_count_enabled_f ) {
+            __QUEX_INDENTATION_ADD_CHUNK(me->indentation, (size_t)(it - start_it));
         }
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
-
+#   if 0
     QUEX_INLINE void    
     QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(QUEX_NAME(CounterLineColumnIndentation)*  me,
                                                             QUEX_TYPE_CHARACTER*                      Lexeme,
@@ -282,40 +230,40 @@ find_newline:
         if( me->indentation.count_enabled_f ) me->indentation.count += ColumnNIncrement;
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
+#endif
 
     QUEX_INLINE void      
     QUEX_NAME(CounterLineColumnIndentation_on_indentation)(QUEX_NAME(CounterLineColumnIndentation)* me)
     {
-        QUEX_NAME(IndentationHandler)*    me = lexer->indentation_stack;
+#       define self (*(me->_the_lexer))
 
         /* There should be at least the '0' indentation in place, thus: */
-        __quex_assert(me->end > me->begin);
+        __quex_assert(me->indentation_stack.end > me->indentation_stack.begin);
 
-        if( Indentation > *(me->end - 1) ) {
-            if( me->_enabled_f ) {
-                self_send(QUEX_TKN_BLOCK_OPEN);
-                IndentationHandler_push(&self.indentation_stack, (uint16_t)Indentation);
-                me->_enabled_f = false;
-            }
-            else {
-                /* -- higher indentation where it was not allowed to indent higher
-                 *    => misaligned indentation                                    */
-                self_token_p()->number = (int)self_line_number(); 
-                self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
-            }
+        /* Opening Indentation Block? */
+        if( me->indentation > *(me->indentation_stack.end - 1) ) {
+            self_send(QUEX_TKN_BLOCK_OPEN);
+            QUEX_NAME(IndentationStack_push)(&me->indentation_stack, me->indentation);
             return;
         }
+
+        /* Closing Indentation Block */
+#       ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+        self_send_n(QUEX_TKN_CLOSE, 
+                    QUEX_NAME(IndentationStack_pop_until)(&self.indentation_stack, Indentation));
+#       else
         while( *(me->end - 1) > Indentation ) {
             self_send(QUEX_TKN_BLOCK_CLOSE);     
-            IndentationHandler_pop(&self.indentation_stack);
+            QUEX_NAME(IndentationStack_pop)(&me->indentation_stack);
         }
+#       endif
 
-        /* -- 'landing' indentation has to fit an indentation border
-         *    if not send an error.                                  */
+        /* Landing: Indentation has to fit indentation border. */
         if( *(me->end - 1) != Indentation ) {
-            self_token_p()->number = (int)self_line_number(); 
             self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
         }
+
+#       undef self
     }
 
     QUEX_INLINE void 
@@ -323,8 +271,8 @@ find_newline:
     {
         QUEX_NAME(CounterBase_print_this)((QUEX_NAME(CounterBase)*)me);
         __QUEX_STD_printf("   indentation                 = %i;\n", (int)me->indentation.count);
-        __QUEX_STD_printf("   indentation.count_enabled_f = %s;\n", me->indentation.count_enabled_f ? "true" : "false");
-        __QUEX_STD_printf("   indentation.event_enabled_f = %s;\n", me->indentation.event_enabled_f ? "true" : "false");
+        __QUEX_STD_printf("   indentation.count_enabled_f = %s;\n", me->indentation_count_enabled_f ? "true" : "false");
+        __QUEX_STD_printf("   indentation.event_enabled_f = %s;\n", me->indentation_event_enabled_f ? "true" : "false");
     }
 
     QUEX_INLINE void      
@@ -348,11 +296,25 @@ find_newline:
         *(me->end++) = Indentation;
     }
 
-    QUEX_INLINE uint16_t
+    QUEX_INLINE void
     QUEX_NAME(IndentationStack_pop)(QUEX_NAME(IndentationStack)* me)
     {
         __quex_assert( me->end != me->begin );
-        return *(--(me->end));
+        *(--(me->end));
+    }
+
+    QUEX_INLINE uint16_t
+    QUEX_NAME(IndentationStack_pop_until)(QUEX_NAME(IndentationStack)* me, size_t Indentation)
+    {
+        uint16_t*  old_end_p = me->end;
+
+        __quex_assert( me->end != me->begin );
+
+        while( *(me->end - 1) > Indentation ) {
+            *(--(me->end));
+        }
+
+        return old_end_p - me->end;
     }
 
 

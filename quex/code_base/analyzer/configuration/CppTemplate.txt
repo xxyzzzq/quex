@@ -440,6 +440,15 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
 #define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
 
+#if defined(__QUEX_OPTION_COUNTER)
+#   define     __QUEX_COUNTER_LINE_N_INCREMENT(LN)     (++(LN))
+#   define     __QUEX_COUNTER_COLUMN_N_INCREMENT(CN)   (++(CN))
+#   define     __QUEX_COUNTER_COLUMN_N_SET(CN, V)      (CN = V)
+#else
+#   define     __QUEX_COUNTER_LINE_N_INCREMENT(LN)     /* empty */
+#   define     __QUEX_COUNTER_COLUMN_N_INCREMENT(CN)   /* empty */
+#   define     __QUEX_COUNTER_COLUMN_N_SET(CN, V)      /* empty */
+#endif
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   define QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumnIndentation)
 #   define QUEX_TYPE_COUNTER_CONSTRUCTOR QUEX_NAME(CounterLineColumnIndentation_construct)
