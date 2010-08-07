@@ -555,6 +555,9 @@ class NumberSet:
 
     def has_intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
+        if   len(self.__intervals) == 0:  return False
+        elif len(Other.__intervals) == 0: return False
+
         self_begin = self.__intervals[0].begin
         self_end   = self.__intervals[-1].end
         if Other.__class__ == Interval: 
