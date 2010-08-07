@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.14" date="Sun Aug  8 20:43:24 2010">
+<test-database execution-time-sec="0.15" date="Sun Aug  8 21:40:55 2010">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
         <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.10"> 
@@ -26,9 +26,9 @@
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="users_token-real.exe" info-request-time="1281293004L" vanished="False"/>
-            <make-procedure success="True" time_sec="2.691958"/>
+            <make-procedure success="True" time_sec="0.094049"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.01" crc="1977572885"/>
+               <choice name="" result="OK" time_sec="0.01" crc="-319520923"/>
             </choice-list>
         </test>
     </group>
