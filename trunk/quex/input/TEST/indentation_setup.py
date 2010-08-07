@@ -12,7 +12,7 @@ from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"
-    print "CHOICES: count, character_set;"
+    print "CHOICES: basic;"
     sys.exit()
 
 # choice = sys.argv[1]
@@ -33,19 +33,16 @@ def test(Text):
         pass
 
     except EndOfStreamException:
-        error_msg("End of file reached while parsing 'indentation' section", sh, DontExitF=True)
+        error_msg("End of file reached while parsing 'indentation' section", sh, DontExitF=True, WarningF=False)
 
     except:
         print "Exception!"
-        pass
 
-    print descr
-
-
+    if descr != None: print descr
     print
 
 if "count" in sys.argv:
-    test("{ tabulator   = 5; space = 1; }")
+    test(" tabulator   = 5; space = 1; }")
     test("{tabulator=bad;space=bad;}")
     test("{tabulator=grid 5;space=1;}")
     test("tabulator=grid 5;space=1;}")
@@ -57,8 +54,8 @@ if "count" in sys.argv:
     test("{tabulator=grid 1; space= grid 1; otto= grid 1; fritz = 1; define { otto [o] fritz [f] } }")
     test("{tabulator= 4; space= 4; otto= 4; fritz = 4; define { otto [o] fritz [f] } }")
 
-else:
-    test("{ define { tabulator  [\\r\\a] } }")
+elif "count" in sys.argv:
+    test("[\\r\\a]")
     test("{ define { tabulator  [\\r\\a] space [\\:]}}")
     test("{ define { fabulator  [\\r\\a] space [\\:]}}")
     test("{ fabulator = 34; define { fabulator  [\\r\\a] space [\\:]}}")
@@ -67,4 +64,16 @@ else:
     test("{ define { \nspace  [\\r\\a] \nspace [\\:]\n  }\n}")
     test("{ define { \nspace  [\\:]    \ntabulator [\\:]\n  }\n}")
     test("{ define { \nspace  [\\:]    \ntabulator [a\\n]\n  }\n}")
+
+
+test("[\\r\\a]")
+test("[\\r\\a] >")
+test("[\\r\\a] => grid")
+test("[\\r\\a] => trid")
+test("[\\r\\a] => grid>")
+test("[\\r\\a] => grid 4;>")
+test("[\\r\\a] => space;>")
+test("[\\r\\a] => space 0rXVI;>")
+test("[\\r\\a] => newline;>")
+test("[\\r\\a] => suppressor;>")
 
