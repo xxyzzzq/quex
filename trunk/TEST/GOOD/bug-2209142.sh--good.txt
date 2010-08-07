@@ -21,5 +21,10 @@
 (1, 91)  	IDENTIFIER 'sechs' 
 (1, 96)  	WHITESPACE '' 
 (1, 97)  	COMMENT '' 
-(1, 115)  	<TERMINATION>
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  
+    Match failure in mode 'ALL'.
+    No 'on_failure' section provided for this mode.
+    Proposal: Define 'on_failure' and analyze 'Lexeme'.
+
 clean

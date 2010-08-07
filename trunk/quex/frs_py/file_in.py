@@ -246,6 +246,10 @@ def read_integer(fh):
         elif tmp not in digit_list: fh.seek(-1, 1); break
         txt += tmp
 
+    # If we drop out on a digit, then let us assume that the user just missed a point
+    if tmp.isdigit() or (tmp in list("ABCDEFabcdef")):
+        error_msg("Digit '%s' cannot be part of an expression of base %s." % (tmp, base), fh)
+
     txt = txt.replace(".", "")
     if len(txt) == 0:
         if base in [2, 8, 16, "roman"]:

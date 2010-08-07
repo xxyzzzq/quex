@@ -12,6 +12,7 @@ mode MODULE {
     "\"" { 
         self << STRING; 
     }
+    [ \t\n] {}
 }
 
 mode STRING {

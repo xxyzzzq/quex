@@ -18,7 +18,9 @@ if [[ $2 == "FIRST" ]]; then
 fi
 
 make lexer-$1 
-./lexer-$1 example.txt
+./lexer-$1 example.txt 2> tmp.txt
+cat tmp.txt
+rm -f tmp.txt
 
 # cleansening
 if [[ $3 == "LAST" ]]; then

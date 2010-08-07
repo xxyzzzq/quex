@@ -14,6 +14,7 @@ mode MODULE {
         self_send1(QUEX_TKN_EVENT_MODE_CHANGE, LexemeNull); 
         RETURN; 
     }
+    [ \t\n] {}
 }
 
 mode STRING {

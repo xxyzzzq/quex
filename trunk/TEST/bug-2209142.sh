@@ -9,6 +9,8 @@ fi
 tmp=`pwd`
 cd $bug/ 
 make $1
-./$1
+./$1 2> tmp.txt
+cat tmp.txt
+rm -f tmp.txt
 make clean
 cd $tmp

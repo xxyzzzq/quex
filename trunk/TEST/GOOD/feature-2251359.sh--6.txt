@@ -1,1 +1,1 @@
-error-6.qx:6:error: The string '1923A' is not appropriate for number base '10'.
+error-6.qx:6:error: Digit 'A' cannot be part of an expression of base 10.
