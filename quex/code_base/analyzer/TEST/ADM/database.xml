@@ -1,13 +1,13 @@
-<test-database execution-time-sec="0.30" date="Wed Aug  4 22:57:36 2010">
+<test-database execution-time-sec="0.29" date="Sun Aug  8 20:43:37 2010">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.03"> 
-        <application file-name="accumulator.exe" info-request-time="1280660748L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.093971"/>
+        <application file-name="accumulator.exe" info-request-time="1281293010L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.826346"/>
         <choice-list number="5" same_result="False">
            <choice name="String" result="OK" time_sec="0.01" crc="1490722418"/>
-           <choice name="Character" result="OK" time_sec="0.01" crc="-276754526"/>
+           <choice name="Character" result="OK" time_sec="0.00" crc="-276754526"/>
            <choice name="N-Character" result="OK" time_sec="0.01" crc="-1120495017"/>
-           <choice name="N-String" result="OK" time_sec="0.01" crc="932695689"/>
+           <choice name="N-String" result="OK" time_sec="0.00" crc="932695689"/>
            <choice name="Mix" result="OK" time_sec="0.01" crc="142252970"/>
         </choice-list>
     </test>
@@ -24,37 +24,37 @@
     <group name="Count Line and Column">
         <test title="Without Indentation Count II" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="counter-column_line-x.exe" info-request-time="1279687637L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.185432"/>
+            <make-procedure success="False" time_sec="1.185432"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="1161278526"/>
+               <choice name="" result="MAKE FAILED" time_sec="0.01" crc="1161278526"/>
             </choice-list>
         </test>
         <test title="With Indentation" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="counter-column_line-indentation.exe" info-request-time="1279687638L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.589946"/>
+            <make-procedure success="False" time_sec="0.589946"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="-1633920135"/>
+               <choice name="" result="MAKE FAILED" time_sec="0.01" crc="-1633920135"/>
             </choice-list>
         </test>
         <test title="Without Indentation Count" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="counter-column_line.exe" info-request-time="1279687645L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.576281"/>
+            <make-procedure success="False" time_sec="0.576281"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="821766212"/>
+               <choice name="" result="MAKE FAILED" time_sec="0.01" crc="821766212"/>
             </choice-list>
         </test>
         <test title="With Indentation II" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="counter-column_line-indentation-x.exe" info-request-time="1279687644L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.591883"/>
+            <make-procedure success="False" time_sec="0.591883"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="-626731824"/>
+               <choice name="" result="MAKE FAILED" time_sec="0.01" crc="-626731824"/>
             </choice-list>
         </test>
     </group>
     <group name="Post Categorizer">
         <test title="Enter" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="post-categorizer-find.exe" info-request-time="1280660746L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.094392"/>
+            <application file-name="post-categorizer-find.exe" info-request-time="1281293007L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.294969"/>
             <choice-list number="7" same_result="True">
                <choice name="0" result="OK" time_sec="0.01" crc="-978220029"/>
                <choice name="1" result="OK" time_sec="0.01" crc="-978220029"/>
@@ -66,11 +66,11 @@
             </choice-list>
         </test>
         <test title="Remove Total" make-dependent="True" time-sum-sec="0.05"> 
-            <application file-name="post-categorizer-remove-total.exe" info-request-time="1280660747L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.094212"/>
+            <application file-name="post-categorizer-remove-total.exe" info-request-time="1281293009L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.325680"/>
             <choice-list number="7" same_result="True">
                <choice name="1" result="OK" time_sec="0.01" crc="312237205"/>
-               <choice name="2" result="OK" time_sec="0.02" crc="312237205"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="312237205"/>
                <choice name="3" result="OK" time_sec="0.01" crc="312237205"/>
                <choice name="4" result="OK" time_sec="0.01" crc="312237205"/>
                <choice name="5" result="OK" time_sec="0.01" crc="312237205"/>
@@ -79,8 +79,8 @@
             </choice-list>
         </test>
         <test title="Enter" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="post-categorizer-enter.exe" info-request-time="1280660751L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.094402"/>
+            <application file-name="post-categorizer-enter.exe" info-request-time="1281293013L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.307150"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="-998642932"/>
                <choice name="2" result="OK" time_sec="0.01" crc="-271066271"/>
@@ -91,9 +91,9 @@
                <choice name="6" result="OK" time_sec="0.01" crc="-376401680"/>
             </choice-list>
         </test>
-        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.05"> 
-            <application file-name="post-categorizer-remove.exe" info-request-time="1280660751L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.088156"/>
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="post-categorizer-remove.exe" info-request-time="1281293015L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.311540"/>
             <choice-list number="8" same_result="True">
                <choice name="Aa" result="OK" time_sec="0.01" crc="1918139693"/>
                <choice name="Ac" result="OK" time_sec="0.01" crc="1918139693"/>
@@ -106,8 +106,8 @@
             </choice-list>
         </test>
         <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.04"> 
-            <application file-name="post-categorizer-remove-2.exe" info-request-time="1280660750L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.094292"/>
+            <application file-name="post-categorizer-remove-2.exe" info-request-time="1281293016L" vanished="False"/>
+            <make-procedure success="True" time_sec="1.327293"/>
             <choice-list number="7" same_result="False">
                <choice name="Ab" result="OK" time_sec="0.01" crc="156350769"/>
                <choice name="Ad" result="OK" time_sec="0.01" crc="-615592824"/>
