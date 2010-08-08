@@ -1887,7 +1887,7 @@ quex/frs_py/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Character Set Queries
-Sun Aug  8 20:52:01 2010
+Mon Aug  9 08:29:18 2010
 quex/input/TEST
 ------------------------------------------------------------------------------------------
  -- Case Folding based on Unicode Database
@@ -1899,6 +1899,8 @@ quex/input/TEST
                      m_multi_turkish ......................................[OK]
  -- Parse Indentation Setup
         indentation_setup.py basic ........................................[OK]
+                             twice ........................................[OK]
+                             intersection .................................[OK]
 
  -- Quex Queries:
 

@@ -1,0 +1,138 @@
+(1) |[\r\a]|
+
+test_string:1:error: End of file reached while parsing 'indentation' section.
+
+(2) |[\r\a] >|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(3) |[\r\a] => grid|
+
+test_string:1:error: End of file reached while parsing 'indentation' section.
+
+(4) |[\r\a] => trid|
+
+test_string:1:error: Unrecognized indentation specifier 'trid'.
+test_string:1:error: Did you mean 'grid'?
+Exception!
+
+(5) |[\r\a] => grid>|
+
+test_string:1:error: Missing integer after keyword 'grid'.
+Exception!
+
+(6) |[\r\a] => grid 4;>|
+
+test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:1:warning: widths are multiples of 4. The grid setup 4
+test_string:1:warning: is equivalent to a setup with space counts 1.
+test_string:1:warning: Space counts are faster to compute.
+Spaces:
+Grids:
+      4 by '\a', '\r'
+Bad:
+    
+Newline:
+    '\n'
+Suppressor:
+    
+
+
+(7) |[\r\a] => space;>|
+
+Spaces:
+      1 by '\a', '\r'
+Grids:
+Bad:
+    
+Newline:
+    '\n'
+Suppressor:
+    
+
+
+(8) |[\r\a] => space 0rXVI;>|
+
+test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 16.
+test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
+test_string:1:warning: of 1 are the fastest to compute.
+Spaces:
+     16 by '\a', '\r'
+Grids:
+Bad:
+    
+Newline:
+    '\n'
+Suppressor:
+    
+
+
+(9) |[\r\a] => newline;>|
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    '\a', '\r'
+Suppressor:
+    
+
+
+(10) |[\r\a] => suppressor;>|
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    '\n'
+Suppressor:
+    '\a', '\r'
+
+
+(11) |[\r\a] => bad;>|
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    '\a', '\r'
+Newline:
+    '\n'
+Suppressor:
+    
+
+
+(12)
+::
+[\r\a] => space;
+[\t] => grid 10;
+::
+
+test_string:2:error: End of file reached while parsing 'indentation' section.
+
+(13)
+::
+[\r\a] => space;
+[\t] => grid 10;>
+::
+
+Spaces:
+      1 by '\a', '\r'
+Grids:
+     10 by '\t'
+Bad:
+    
+Newline:
+    '\n'
+Suppressor:
+    
+
+
