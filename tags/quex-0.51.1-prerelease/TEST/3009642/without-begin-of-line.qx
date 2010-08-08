@@ -1,0 +1,47 @@
+start = data;
+
+define {
+   EoL			 ("\r"|"\n"|"\r\n")
+   LINE         {EoL}
+   WORD         [^ \t\r\n]+
+}
+
+token {
+	LINE;
+	IDENTIFIER;
+    UNIT;
+	EOL;
+}
+
+mode comment :
+	END_OF_FILE
+{
+	{EoL}     => QUEX_TKN_EOL;
+	{LINE}    => QUEX_TKN_LINE(Lexeme);
+}
+
+mode channels :
+	END_OF_FILE {
+	{WORD}    => QUEX_TKN_IDENTIFIER(Lexeme);
+	{EoL}     => QUEX_TKN_EOL;
+}
+
+mode units :
+	END_OF_FILE {
+	{WORD}    => QUEX_TKN_UNIT(Lexeme);
+	{EoL}     => QUEX_TKN_EOL;
+}
+
+mode data :
+	END_OF_FILE {
+	{EoL}     => QUEX_TKN_EOL;
+}
+
+mode END_OF_FILE :
+<inheritable: only>
+{
+	<<EOF>> {
+		self_send(QUEX_TKN_TERMINATION);
+		RETURN;
+	}
+}

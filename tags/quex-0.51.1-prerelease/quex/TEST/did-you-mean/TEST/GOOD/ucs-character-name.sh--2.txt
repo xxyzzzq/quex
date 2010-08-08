@@ -1,0 +1,3 @@
+ucs-character-name-2.qx:2:error: The string SERO_WIDTH_JOINEL
+ucs-character-name-2.qx:2:error: does not identify a known unicode character.
+ucs-character-name-2.qx:2:error: Did you mean 'ZERO_WIDTH_JOINER'?
