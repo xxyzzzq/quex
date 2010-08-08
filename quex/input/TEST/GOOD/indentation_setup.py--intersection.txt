@@ -1,0 +1,200 @@
+(1)
+::
+[abc] => space 10;
+[cde] => grid  4;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(2)
+::
+[abc] => space 10;
+[cde] => newline;>
+::
+
+test_string:2:error: Character set specification 'newline' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(3)
+::
+[abc] => space 10;
+[cde] => suppressor;>
+::
+
+test_string:2:error: Character set specification 'suppressor' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(4)
+::
+[abc] => space 10;
+[cde] => bad;>
+::
+
+test_string:2:error: Character set specification 'bad' intersects
+test_string:1:error: with definition for 'space' at this place.
+Exception!
+
+(5)
+::
+[abc] => grid 10;
+[cde] => space 1;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(6)
+::
+[abc] => grid 10;
+[cde] => newline;>
+::
+
+test_string:2:error: Character set specification 'newline' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(7)
+::
+[abc] => grid 10;
+[cde] => suppressor;>
+::
+
+test_string:2:error: Character set specification 'suppressor' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(8)
+::
+[abc] => grid 10;
+[cde] => bad;>
+::
+
+test_string:2:error: Character set specification 'bad' intersects
+test_string:1:error: with definition for 'grid' at this place.
+Exception!
+
+(9)
+::
+[abc] => bad;
+[cde] => grid  10;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: with definition for 'bad' at this place.
+Exception!
+
+(10)
+::
+[abc] => bad;
+[cde] => newline;>
+::
+
+test_string:2:error: Character set specification 'newline' intersects
+test_string:1:error: with definition for 'bad' at this place.
+Exception!
+
+(11)
+::
+[abc] => bad;
+[cde] => suppressor;>
+::
+
+test_string:2:error: Character set specification 'suppressor' intersects
+test_string:1:error: with definition for 'bad' at this place.
+Exception!
+
+(12)
+::
+[abc] => bad;
+[cde] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: with definition for 'bad' at this place.
+Exception!
+
+(13)
+::
+[abc] => newline;
+[cde] => grid  10;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: with definition for 'newline' at this place.
+Exception!
+
+(14)
+::
+[abc] => newline;
+[cde] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: with definition for 'newline' at this place.
+Exception!
+
+(15)
+::
+[abc] => newline;
+[cde] => suppressor;>
+::
+
+test_string:2:error: Character set specification 'suppressor' intersects
+test_string:1:error: with definition for 'newline' at this place.
+Exception!
+
+(16)
+::
+[abc] => newline;
+[cde] => bad;>
+::
+
+test_string:2:error: Character set specification 'bad' intersects
+test_string:1:error: with definition for 'newline' at this place.
+Exception!
+
+(17)
+::
+[abc] => suppressor;
+[cde] => grid  10;>
+::
+
+test_string:2:error: Character set specification 'grid' intersects
+test_string:1:error: with definition for 'suppressor' at this place.
+Exception!
+
+(18)
+::
+[abc] => suppressor;
+[cde] => newline;>
+::
+
+test_string:2:error: Character set specification 'newline' intersects
+test_string:1:error: with definition for 'suppressor' at this place.
+Exception!
+
+(19)
+::
+[abc] => suppressor;
+[cde] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: with definition for 'suppressor' at this place.
+Exception!
+
+(20)
+::
+[abc] => suppressor;
+[cde] => bad;>
+::
+
+test_string:2:error: Character set specification 'bad' intersects
+test_string:1:error: with definition for 'suppressor' at this place.
+Exception!
+
