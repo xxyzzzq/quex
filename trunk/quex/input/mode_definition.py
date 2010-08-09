@@ -142,10 +142,12 @@ def parse_mode_option(fh, new_mode):
         __add_match(value.newline_character_set.pattern_str, 
                     value.newline_character_set.get())
 
-        # Suppressed Newline = Suppressor followed by Newline
+        # Suppressed Newline = Suppressor followed by Newline,
+        # then it is up to the user to treat the whitespace that follows.
         __add_match(value.newline_suppressor_character_set.pattern_str + value.newline_character_set.pattern_str, 
                     value.newline_suppressor_character_set.get(), 
                     value.newline_character_set.get()))
+        action.set_code(LanguageDB["$goto"]("$start"))   # Go back to start.
 
     else:
         value = read_option_value(fh)

@@ -5,12 +5,32 @@ from   quex.input.setup import setup as Setup
 def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     LanguageDB = Setup.language_db
 
+    # Indentation counting is something totally different ...
+    result = __indentation_count_action(TargetStateIdx, SMD)
+    if result != None: return result
+
     # Template Transition Targets are a little different ...
     result = __template_transition_target(TargetStateIdx, SMD)
     if result != None: return result
 
     # All normal transitions can be handled by 'goto' plus 'label'
     return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD))
+
+def __indentation_count_action(Info, SMD):
+    """Indentation counters may count as a consequence of a 'triggering'."""
+    if Info.__class__.__name__ != "IndentationCounter": return None
+
+    # Spaces simply increment
+    if Info.type == "space": 
+        return "indentation_count += %i;" % Info.number
+    
+    # Grids lie on a grid:
+    elif Info.type == "grid":
+        return "indentation_count = (indentation_count - (indentation_count % %i) + %i;" % (Info.number, Info.number)
+
+    else:
+        assert False, "Unreachable code has been reached."
+    
 
 def __template_transition_target(Info, SMD):
     """Template transition target states. The target state is determined at 

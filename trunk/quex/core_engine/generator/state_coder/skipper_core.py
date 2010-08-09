@@ -98,7 +98,7 @@ $$LC_COUNT_IN_LOOP$$
      *         (2.2) Start detection of tail of delimiter
      *
      */
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
+    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
         /* (1) */
         $$GOTO_DROP_OUT$$            
     } 
@@ -189,27 +189,28 @@ def get_range_skipper(EndSequence, LanguageDB, MissingClosingDelimiterAction="")
 
     # The main part
     code_str = blue_print(range_skipper_template,
-                          [["$$DELIMITER$$",                  delimiter_str],
-                           ["$$DELIMITER_LENGTH$$",           delimiter_length_str],
-                           ["$$DELIMITER_COMMENT$$",          delimiter_comment_str],
-                           ["$$WHILE_1_PLUS_1_EQUAL_2$$",     LanguageDB["$loop-start-endless"]],
-                           ["$$END_WHILE$$",                  LanguageDB["$loop-end"]],
-                           ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
-                           ["$$INPUT_P_DECREMENT$$",          LanguageDB["$input/decrement"]],
-                           ["$$INPUT_GET$$",                  LanguageDB["$input/get"]],
-                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
-                           ["$$BREAK$$",                      LanguageDB["$break"]],
-                           ["$$ENDIF$$",                      LanguageDB["$endif"]],
-                           ["$$ENTRY$$",                      LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                           ["$$GOTO_ENTRY$$",                 LanguageDB["$goto"]("$entry", skipper_index)],
+                          [["$$DELIMITER$$",                      delimiter_str],
+                           ["$$DELIMITER_LENGTH$$",               delimiter_length_str],
+                           ["$$DELIMITER_COMMENT$$",              delimiter_comment_str],
+                           ["$$WHILE_1_PLUS_1_EQUAL_2$$",         LanguageDB["$loop-start-endless"]],
+                           ["$$END_WHILE$$",                      LanguageDB["$loop-end"]],
+                           ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
+                           ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
+                           ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
+                           ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
+                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
+                           ["$$BREAK$$",                          LanguageDB["$break"]],
+                           ["$$ENDIF$$",                          LanguageDB["$endif"]],
+                           ["$$ENTRY$$",                          LanguageDB["$label-def"]("$entry", skipper_index)],
+                           ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                           ["$$GOTO_ENTRY$$",                     LanguageDB["$goto"]("$entry", skipper_index)],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
-                           ["$$GOTO_START$$",                 LanguageDB["$goto"]("$start")], 
-                           ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
-                           ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
-                           ["$$SET_INPUT_P_BEHIND_DELIMITER$$", LanguageDB["$input/add"](len(EndSequence)-1)],
-                           ["$$MISSING_CLOSING_DELIMITER$$",  MissingClosingDelimiterAction],
+                           ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
+                           ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
+                           ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
+                           ["$$SET_INPUT_P_BEHIND_DELIMITER$$",   LanguageDB["$input/add"](len(EndSequence)-1)],
+                           ["$$MISSING_CLOSING_DELIMITER$$",      MissingClosingDelimiterAction],
                           ])
 
     # Line and column number counting
@@ -230,8 +231,11 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) 
+#if 0
+    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
         $$GOTO_DROP_OUT$$
+    }
+#endif
 
     /* NOTE: For simple skippers the end of content does not have to be overwriten 
      *       with anything (as done for range skippers). This is so, because the abort
@@ -252,7 +256,7 @@ $$DROP_OUT$$
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                   
      * -- The input_p will at this point in time always point to the buffer border.        */
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
+    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
@@ -302,26 +306,26 @@ def get_character_set_skipper(TriggerSet, LanguageDB):
     # The finishing touch
     txt = blue_print(code_str,
                       [
-                       ["$$DELIMITER_COMMENT$$",          comment_str],
-                       ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
-                       ["$$INPUT_P_DECREMENT$$",          LanguageDB["$input/decrement"]],
-                       ["$$INPUT_GET$$",                  LanguageDB["$input/get"]],
-                       ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
-                       ["$$ENDIF$$",                      LanguageDB["$endif"]],
-                       ["$$LOOP_START$$",                 LanguageDB["$label-def"]("$input", skipper_index)],
-                       ["$$GOTO_LOOP_START$$",            LanguageDB["$goto"]("$input", skipper_index)],
-                       ["$$LOOP_REENTRANCE$$",            LanguageDB["$label-def"]("$entry", skipper_index)],
-                       ["$$RESTART$$",                    LanguageDB["$label-def"]("$input", skipper_index)],
-                       ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                       ["$$DROP_OUT_DIRECT$$",            LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
-                       ["$$GOTO_LOOP_START$$",            LanguageDB["$goto"]("$entry", skipper_index)],
-                       ["$$SKIPPER_INDEX$$",              repr(skipper_index)],
-                       ["$$GOTO_TERMINAL_EOF$$",          LanguageDB["$goto"]("$terminal-EOF")],
+                       ["$$DELIMITER_COMMENT$$",              comment_str],
+                       ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
+                       ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
+                       ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
+                       ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
+                       ["$$ENDIF$$",                          LanguageDB["$endif"]],
+                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input", skipper_index)],
+                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input", skipper_index)],
+                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
+                       ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
+                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input", skipper_index)],
+                       ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                       ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
+                       ["$$SKIPPER_INDEX$$",                  repr(skipper_index)],
+                       ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
                        # When things were skipped, no change to acceptance flags or modes has
                        # happend. One can jump immediately to the start without re-entry preparation.
-                       ["$$GOTO_START$$",                 LanguageDB["$goto"]("$start")], 
-                       ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
-                       ["$$ON_TRIGGER_SET_TO_LOOP_START$$", iteration_code],
+                       ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
+                       ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
+                       ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
                       ])
 
     return blue_print(txt,
@@ -363,7 +367,9 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
 lc_counter_in_loop = """
 #       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
         if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
+#           if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
             ++(self.counter.base._line_number_at_end);
+#           endif
 #           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
             column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);
             self.counter.base._column_number_at_end = (size_t)0;
@@ -389,11 +395,9 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
     variable_definition = \
-      "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
-      "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n"+\
-      "#   endif\n" + \
-      "#   endif\n"
+    "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
+    "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n"+\
+    "#   endif\n"
     in_loop       = ""
     end_procedure = ""
     exit_loop     = ""
@@ -470,18 +474,12 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
     variable_definition = \
-      "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
       "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n"+\
-      "#   endif\n" + \
       "#   endif\n"
     in_loop       = ""
-    end_procedure = ""
-    exit_loop     = ""
-
     # Does the end delimiter contain a newline?
-    if CharacterSet.contains(ord("\n")):
-        in_loop = lc_counter_in_loop
+    if CharacterSet.contains(ord("\n")): in_loop = lc_counter_in_loop
 
     end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
                     "        self.counter.base._column_number_at_end += (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
