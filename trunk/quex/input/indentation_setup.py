@@ -71,18 +71,20 @@ class IndentationSetup:
         if self.newline_suppressor_character_set.get().has_intersection(CharSet): 
             __error_msg(self.newline_suppressor_character_set)
 
-    def specify_space(self, CharSet, Count, FH=-1):
-        self.__error_msg_if_defined_earlier(self.space_db, FH, Key=Count, Name="space")
+    def __check(self, Name, Before, CharSet, FH, Key=None):
+        self.__error_msg_if_defined_earlier(Before, FH, Key=Key, Name=Name)
         self.__error_msg_if_character_set_empty(CharSet, FH)
-        self.__error_if_intersection(CharSet, FH, "space")
+        self.__error_if_intersection(CharSet, FH, Name)
+
+    def specify_space(self, PatternStr, CharSet, Count, FH=-1):
+        self.__check("space", self.space_db, CharSet, FH, Key=Count)
 
         # Note, a space count of '0' is theoretically possible
         self.space_db[Count] = LocalizedParameter("space", CharSet, FH)
+        self.space_db[Count].pattern_str = PatternStr
 
-    def specify_grid(self, CharSet, Count, FH=-1):
-        self.__error_msg_if_defined_earlier(self.grid_db, FH, Key=Count, Name="grid")
-        self.__error_msg_if_character_set_empty(CharSet, FH)
-        self.__error_if_intersection(CharSet, FH, "grid")
+    def specify_grid(self, PatternStr, CharSet, Count, FH=-1):
+        self.__check("grid", self.grid_db, CharSet, FH, Key=Count)
 
         if Count == 0: 
             error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", FH)
@@ -92,24 +94,22 @@ class IndentationSetup:
                       FH, DontExitF=True)
 
         self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH)
+        self.grid_db[Count].pattern_str = PatternStr
 
-    def specify_bad(self, CharSet, FH=-1):
-        self.__error_msg_if_defined_earlier(self.bad_character_set, FH)
-        self.__error_msg_if_character_set_empty(CharSet, FH)
-        self.__error_if_intersection(CharSet, FH, "bad")
+    def specify_bad(self, PatternStr, CharSet, FH=-1):
+        self.__check("bad", self.bad_character_set, CharSet, FH)
         self.bad_character_set = LocalizedParameter("bad", CharSet, FH)
+        self.bad_character_set.pattern_str = PatternStr
 
-    def specify_newline(self, CharSet, FH=-1):
-        self.__error_msg_if_defined_earlier(self.newline_character_set, FH)
-        self.__error_msg_if_character_set_empty(CharSet, FH)
-        self.__error_if_intersection(CharSet, FH, "newline")
+    def specify_newline(self, PatternStr, CharSet, FH=-1):
+        self.__check("newline", self.newline_character_set, CharSet, FH)
         self.newline_character_set = LocalizedParameter("newline", CharSet, FH)
+        self.newline_character_set.pattern_str = PatternStr
 
-    def specify_suppressor(self, CharSet, FH=-1):
-        self.__error_msg_if_defined_earlier(self.newline_suppressor_character_set, FH)
-        self.__error_msg_if_character_set_empty(CharSet, FH)
-        self.__error_if_intersection(CharSet, FH, "suppressor")
+    def specify_suppressor(self, PatternStr, CharSet, FH=-1):
+        self.__check("suppressor", self.newline_suppressor_character_set, CharSet, FH)
         self.newline_suppressor_character_set = LocalizedParameter("suppressor", CharSet, FH)
+        self.newline_suppressor_character_set.pattern_str = PatternStr
 
     def has_only_single_spaces(self):
         # Note, from about the grid_db does not accept grid values of '1'
@@ -220,21 +220,21 @@ def do(fh):
         if identifier == "space":
             value = read_integer(fh)
             if value == None: value = 1
-            indentation_setup.specify_space(trigger_set, value, fh)
+            indentation_setup.specify_space(pattern_set, trigger_set, value, fh)
 
         elif identifier == "grid":
             value = read_integer(fh)
             if value == None: error_msg("Missing integer after keyword 'grid'.", fh) 
-            indentation_setup.specify_grid(trigger_set, value, fh)
+            indentation_setup.specify_grid(pattern_set, trigger_set, value, fh)
 
         elif identifier == "bad":
-            indentation_setup.specify_bad(trigger_set, fh)
+            indentation_setup.specify_bad(pattern_set, trigger_set, fh)
 
         elif identifier == "newline":
-            indentation_setup.specify_newline(trigger_set, fh)
+            indentation_setup.specify_newline(pattern_set, trigger_set, fh)
 
         elif identifier == "suppressor":
-            indentation_setup.specify_suppressor(trigger_set, fh)
+            indentation_setup.specify_suppressor(pattern_set, trigger_set, fh)
 
         else:
             assert False, "Unreachable code reached."

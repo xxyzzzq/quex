@@ -149,12 +149,16 @@ from quex.core_engine.generator.state_coder.skipper_core import create_skip_code
 def implement_skippers(mode):
     """Code generation for skippers.
 
-       This happens at this point in time in order to have the parsing and 
-       code generation separate. Also, the code generator keeps track of 
-       defined and unused labels per mode. For this, the skipper code
-       generation must happen together with the code generation for the mode--
-       not as it was before when the skippers are parsed.
+       The pattern-action pair for the skippers has been setup before.  This
+       function creates code for the skippers. The code is then assigned as
+       action for the skipper's pattern-action pair.
+
+       Also, the code generator keeps track of defined and unused labels per
+       mode. For this, the skipper code generation must happen together with
+       the code generation for the mode-- not as it was before when the
+       skippers are parsed.  
     """
+
     def get_action(Mode, PatternStr):
         for x in Mode.get_pattern_action_pair_list():
             if x.pattern == PatternStr:
