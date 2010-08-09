@@ -148,6 +148,7 @@ db["C++"] = {
     "$indentation_check_space":  cpp.__indentation_check_whitespace,
     "$break":                 "break;\n",
     "$not BLC":               "(input != QUEX_SETTING_BUFFER_LIMIT_CODE) ",
+    "$BLC":                   "(input == QUEX_SETTING_BUFFER_LIMIT_CODE) ",
     "$EOF":                   "QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)",
     "$BOF":                   "QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer)",
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),

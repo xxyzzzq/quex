@@ -402,7 +402,6 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
         variable_db[name]        = [ var_type, value, dimension, "NotComputedGoto"]
         variable_db[name+ "_cg"] = [ var_type, value_cg, dimension, "ComputedGoto"]
 
-
 def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key
        for the template is set, before the jump into the template. E.g.

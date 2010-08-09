@@ -4,7 +4,7 @@ import sys
 
 from   quex.frs_py.file_in import error_msg, write_safely_and_close, open_file_or_die
 
-from   quex.input.setup import setup as Setup
+from   quex.input.setup                         import setup as Setup
 import quex.lexer_mode                          as lexer_mode
 
 import quex.consistency_check                   as consistency_check
