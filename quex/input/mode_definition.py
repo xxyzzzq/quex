@@ -4,6 +4,7 @@ from   quex.exception                   import RegularExpressionException
 import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
+import quex.input.indentation_setup   as indentation_setup
 from   quex.core_engine.generator.action_info                    import CodeFragment
 from   quex.core_engine.generator.state_coder.skipper_core       import create_skip_code, create_skip_range_code
 import quex.core_engine.state_machine.index                      as index
@@ -65,13 +66,20 @@ def parse_mode_option_list(new_mode, fh):
 
 def parse_mode_option(fh, new_mode):
 
+    def __add_match(PatternStr, TriggerSetList*):
+        sm  = StateMachine()
+        idx = sm.init_state_index
+        for trigger_set in TriggerSetList:
+            idx = sm.add_transition(idx, trigger_set, AcceptanceF=False)
+        sm.states[idx].set_acceptance(True)
+
+        new_mode.add_match(PatternStr, CodeFragment(""), sm)
+                           
+
     identifier = read_option_start(fh)
     if identifier == None: return False
 
-    mode_option_name_list = ["skip", "skip_range", "skip_nesting_range" ] + \
-                            ["indentation"] + \
-                            lexer_mode.mode_option_info_db.keys()
-    verify_word_in_list(identifier, mode_option_name_list,
+    verify_word_in_list(identifier, lexer_mode.mode_option_info_db.keys(),
                         "mode option", fh.name, get_current_line_info_number(fh))
 
     if identifier == "skip":
@@ -90,12 +98,9 @@ def parse_mode_option(fh, new_mode):
 
         # TriggerSet skipping is implemented the following way: As soon as one element of the 
         # trigger set appears, the state machine enters the 'trigger set skipper section'.
-        opener_sm = StateMachine()
-        opener_sm.add_transition(opener_sm.init_state_index, trigger_set, AcceptanceF=True)
-            
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         # NOTE: The correspondent CodeFragment for skipping is created in 'implement_skippers(...)'
-        new_mode.add_match(pattern_str, CodeFragment(""), opener_sm)
+        __add_match(pattern_str, trigger_set)
 
         # The pattern_str will be used as key later to find the related action.
         # It may appear in multiple modes due to inheritance.
@@ -130,7 +135,17 @@ def parse_mode_option(fh, new_mode):
         error_msg("skip_nesting_range is not yet supported.", fh)
 
     elif identifier == "indentation":
-        indentation_setup = indentation_setup.parse.do(fh)
+        value = indentation_setup.parse.do(fh)
+
+        # Enter 'Newline' and 'Suppressed Newline' as matches into the engine.
+        # Similar to skippers, the indentation count is then triggered by the newline.
+        __add_match(value.newline_character_set.pattern_str, 
+                    value.newline_character_set.get())
+
+        # Suppressed Newline = Suppressor followed by Newline
+        __add_match(value.newline_suppressor_character_set.pattern_str + value.newline_character_set.pattern_str, 
+                    value.newline_suppressor_character_set.get(), 
+                    value.newline_character_set.get()))
 
     else:
         value = read_option_value(fh)
@@ -140,10 +155,9 @@ def parse_mode_option(fh, new_mode):
 
     # Is the option of the appropriate value?
     option_info = lexer_mode.mode_option_info_db[identifier]
-    if option_info.type != "list" and value not in option_info.domain:
+    if option_info.domain != None and value not in option_info.domain:
         error_msg("Tried to set value '%s' for option '%s'. " % (Value, Option) + \
-                  "Though, possible \n" + \
-                  "for this option are %s" % repr(oi.domain), fh)
+                  "Though, possible for this option are only: %s." % repr(oi.domain)[1:-1], fh)
 
     # Finally, set the option
     new_mode.add_option(identifier, value)

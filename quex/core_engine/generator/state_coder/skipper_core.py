@@ -3,13 +3,14 @@ import sys
 from   copy import deepcopy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.input.setup import setup as Setup
-import quex.core_engine.state_machine.index as sm_index
-import quex.core_engine.utf8                         as utf8
+from   quex.input.setup                              import setup as Setup
+import quex.core_engine.state_machine.index          as     sm_index
+import quex.core_engine.utf8                         as     utf8
 from   quex.frs_py.string_handling                   import blue_print
 from   quex.core_engine.state_machine.transition_map import TransitionMap 
 from   quex.core_engine.generator.languages.core     import __nice
-import quex.core_engine.generator.state_coder.transition_block as     transition_block
+
+import quex.core_engine.generator.state_coder.transition_block as transition_block
 
 def do(SkipperDescriptor):
     LanguageDB = Setup.language_db

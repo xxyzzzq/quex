@@ -50,11 +50,10 @@ mode_db = {}
 class OptionInfo:
     """This type is used only in context of a dictionary, the key
        to the dictionary is the option's name."""
-    def __init__(self, Type, Domain=-1):
+    def __init__(self, Type, Domain=None):
         # self.name = Option see comment above
         self.type   = Type
-        if Type == "list" and Domain == -1: self.domain = []
-        else:                               self.domain = Domain
+        self.domain = Domain
 
 class ModeDescription:
     def __init__(self, Name, Filename, LineN):
@@ -127,11 +126,11 @@ class ModeDescription:
         """
         assert mode_option_info_db.has_key(Option)
 
-        oi = mode_option_info_db[Option]
-        if oi.type == "list":
+        option_info = mode_option_info_db[Option]
+        if option_info.type == "list":
             self.options.setdefault(Option, []).append(Value)
         else:
-            assert Value in oi.domain
+            assert Value in option_info.domain
             self.options[Option] = Value
 
     def get_pattern_action_pair(self, PatternStr):
@@ -498,6 +497,9 @@ mode_option_info_db = {
    "skip":              OptionInfo("list"), # "multiple: RE-character-set
    "skip_range":        OptionInfo("list"), # "multiple: RE-character-string RE-character-string
    "skip_nested_range": OptionInfo("list"), # "multiple: RE-character-string RE-character-string
+   # -- indentation setup information
+   "indentation":       OptionInfo("single"),
+   
 }
 #-----------------------------------------------------------------------------------------
 # event handler list: 
@@ -646,13 +648,6 @@ token_repetition_token_id_list = ""
 #                        'ManualTokenClassSetup' is assigned.
 #-----------------------------------------------------------------------------------------
 token_type_definition = None
-
-#-----------------------------------------------------------------------------------------
-# indentation_setup: Definition of spaces tabs (and the like) for indentation. This
-#                    structure defines their counts and their character sets.
-#-----------------------------------------------------------------------------------------
-indentation_setup = None
-
 
 #-----------------------------------------------------------------------------------------
 # Helper functions about required features.
