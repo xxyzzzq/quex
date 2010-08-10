@@ -385,6 +385,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     for interval in TriggerSet.get_intervals():
         for char_code in range(interval.begin, interval.end):
             marker_char_list.append(char_code)
+
     return __get_skipper_code_framework(Language, TestStr, skipper_code,
                                         QuexBufferSize, CommentTestStrF=False, ShowPositionF=False, EndStr=end_str,
                                         MarkerCharList=marker_char_list)

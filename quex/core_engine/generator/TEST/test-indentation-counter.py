@@ -34,10 +34,10 @@ else:
     indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 4)
     indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 8)
 
-TestStr  = "aBcD8"
+TestStr  = "    :   :"
 Language = "Cpp"
-print "##", indentation_counter.do(indentation_setup)
+code_str = indentation_counter.do(indentation_setup)
 
-# compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))
+compile_and_run(Language, create_character_set_skipper_code(Language, TestStr, trigger_set, QuexBufferSize=BS))
 
 
