@@ -22,16 +22,19 @@ def __indentation_count_action(Info, SMD):
 
     # Spaces simply increment
     if Info.type == "space": 
-        return "indentation_count += %i;" % Info.number
+        if Info.number != -1: add_str = "%i" % Info.number
+        else:                 add_str = Infor.variable_name
+        return "indentation_count += %s;" % add_str
     
     # Grids lie on a grid:
     elif Info.type == "grid":
-        return "indentation_count = (indentation_count - (indentation_count % %i) + %i;" % (Info.number, Info.number)
+        if Info.number != -1: add_str = "%i" % Info.number
+        else:                 add_str = Infor.variable_name
+        return "indentation_count = (indentation_count - (indentation_count %% %s) + %s;" % (add_str, add_str)
 
     else:
         assert False, "Unreachable code has been reached."
     
-
 def __template_transition_target(Info, SMD):
     """Template transition target states. The target state is determined at 
        run-time based on a 'state_key' for the template.
