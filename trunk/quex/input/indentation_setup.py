@@ -25,15 +25,15 @@ class IndentationSetup:
         self.space_db = {}  # Maps: space width --> character_set
         self.grid_db  = {}  # Maps: grid width  --> character_set
         self.bad_character_set                = LocalizedParameter("bad",        NumberSet())
-        self.newline_character_set            = LocalizedParameter("newline",    NumberSet())
-        self.newline_suppressor_character_set = LocalizedParameter("suppressor", NumberSet())
+        self.newline_state_machine            = LocalizedParameter("newline",    NumberSet())
+        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", NumberSet())
 
     def seal(self):
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
             self.specify_space(NumberSet(ord(' ')), 1)
             self.specify_grid(NumberSet(ord('\t')), 4)
 
-        if self.newline_character_set.get().is_empty():
+        if self.newline_state_machine.get().is_empty():
             self.specify_newline(NumberSet(ord('\n')))
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
@@ -69,11 +69,11 @@ class IndentationSetup:
         if self.bad_character_set.get().has_intersection(CharSet):                
             __error_msg(self.bad_character_set)
 
-        if self.newline_character_set.get().has_intersection(CharSet):            
-            __error_msg(self.newline_character_set)
+        if self.newline_state_machine.get().has_intersection(CharSet):            
+            __error_msg(self.newline_state_machine)
 
-        if self.newline_suppressor_character_set.get().has_intersection(CharSet): 
-            __error_msg(self.newline_suppressor_character_set)
+        if self.newline_suppressor_state_machine.get().has_intersection(CharSet): 
+            __error_msg(self.newline_suppressor_state_machine)
 
     def __check(self, Name, Before, CharSet, FH, Key=None):
         self.__error_msg_if_defined_earlier(Before, FH, Key=Key, Name=Name)
@@ -106,14 +106,14 @@ class IndentationSetup:
         self.bad_character_set.pattern_str = PatternStr
 
     def specify_newline(self, PatternStr, CharSet, FH=-1):
-        self.__check("newline", self.newline_character_set, CharSet, FH)
-        self.newline_character_set = LocalizedParameter("newline", CharSet, FH)
-        self.newline_character_set.pattern_str = PatternStr
+        self.__check("newline", self.newline_state_machine, CharSet, FH)
+        self.newline_state_machine = LocalizedParameter("newline", CharSet, FH)
+        self.newline_state_machine.pattern_str = PatternStr
 
     def specify_suppressor(self, PatternStr, CharSet, FH=-1):
-        self.__check("suppressor", self.newline_suppressor_character_set, CharSet, FH)
-        self.newline_suppressor_character_set = LocalizedParameter("suppressor", CharSet, FH)
-        self.newline_suppressor_character_set.pattern_str = PatternStr
+        self.__check("suppressor", self.newline_suppressor_state_machine, CharSet, FH)
+        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", CharSet, FH)
+        self.newline_suppressor_state_machine.pattern_str = PatternStr
 
     def has_only_single_spaces(self):
         # Note, from about the grid_db does not accept grid values of '1'
@@ -129,7 +129,7 @@ class IndentationSetup:
             error_msg("No whitespace defined for indentation. Define at least one 'space' or 'grid'." +
                       "No indentation detection possible.", fh)
 
-        if self.newline_character_set.get().is_empty():
+        if self.newline_state_machine.get().is_empty():
             error_msg("No newline character set has been specified." + \
                       "No indentation detection possible.", fh)
 
@@ -173,10 +173,10 @@ class IndentationSetup:
         txt += "    %s\n" % self.bad_character_set.get().get_utf8_string()
 
         txt += "Newline:\n"
-        txt += "    %s\n" % self.newline_character_set.get().get_utf8_string()
+        txt += "    %s\n" % self.newline_state_machine.get().get_utf8_string()
 
         txt += "Suppressor:\n"
-        txt += "    %s\n" % self.newline_suppressor_character_set.get().get_utf8_string()
+        txt += "    %s\n" % self.newline_suppressor_state_machine.get().get_utf8_string()
 
         return txt
 
@@ -205,7 +205,7 @@ def do(fh):
             return indentation_setup
         
         # A regular expression state machine
-        pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
+        pattern_str, state_machine = regular_expression.parse(fh)
 
         skip_whitespace(fh)
         if not check(fh, "=>"):
@@ -219,6 +219,15 @@ def do(fh):
         verify_word_in_list(identifier, 
                             ["space", "grid", "bad", "newline", "suppressor"],
                             "Unrecognized indentation specifier '%s'." % identifier, fh)
+
+        trigger_set = None
+        if identifier in ["space", "bad", "grid"]:
+            if len(state_machine.states) != 2:
+                error_msg("For indentation '%s' only patterns are addmissible which\n" % identifier + \
+                          "can be matched by a single character, e.g. \" \" or [a-z].", fh)
+            transition_map = state_machine.get_init_state().transition_map().get_map()
+            assert len(transition_map) == 1
+            trigger_set = transition_map.values()[0]
 
         skip_whitespace(fh)
         if identifier == "space":
@@ -235,10 +244,10 @@ def do(fh):
             indentation_setup.specify_bad(pattern_set, trigger_set, fh)
 
         elif identifier == "newline":
-            indentation_setup.specify_newline(pattern_set, trigger_set, fh)
+            indentation_setup.specify_newline(pattern_set, state_machine, fh)
 
         elif identifier == "suppressor":
-            indentation_setup.specify_suppressor(pattern_set, trigger_set, fh)
+            indentation_setup.specify_suppressor(pattern_set, state_machine, fh)
 
         else:
             assert False, "Unreachable code reached."

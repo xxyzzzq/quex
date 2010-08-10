@@ -139,15 +139,23 @@ def parse_mode_option(fh, new_mode):
 
         # Enter 'Newline' and 'Suppressed Newline' as matches into the engine.
         # Similar to skippers, the indentation count is then triggered by the newline.
-        __add_match(value.newline_character_set.pattern_str, 
-                    value.newline_character_set.get())
+        new_mode.add_match(value.newline_state_machine.pattern_str,
+                           CodeFragment(""), 
+                           value.newline_state_machine.get())
 
         # Suppressed Newline = Suppressor followed by Newline,
         # then it is up to the user to treat the whitespace that follows.
-        __add_match(value.newline_suppressor_character_set.pattern_str + value.newline_character_set.pattern_str, 
-                    value.newline_suppressor_character_set.get(), 
-                    value.newline_character_set.get()))
-        action.set_code(LanguageDB["$goto"]("$start"))   # Go back to start.
+        suppressed_newline_pattern = \
+                  value.newline_suppressor_state_machine.pattern_str 
+                + value.newline_state_machine.pattern_str
+                                           
+        suppressed_newline_sm = \
+            sequentialization.do([value.newline_state_machine.get(),
+                                  value.newline_suppressor_state_machine.get()])
+             
+        new_mode.add_match(suppressed_newline_pattern
+                           CodeFragment(LanguageDB["$goto"]("$start")), # Go back to start.
+                           suppressed_newline_sm)
 
     else:
         value = read_option_value(fh)
