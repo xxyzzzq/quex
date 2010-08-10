@@ -14,9 +14,13 @@ from   quex.core_engine.interval_handling import NumberSet
 import quex.input.regular_expression      as regular_expression
 
 class IndentationSetup:
-    def __init__(self, fh):
-        self.file_name = fh.name
-        self.line_n    = get_current_line_info_number(fh)
+    def __init__(self, fh=-1):
+        if fh != -1:
+            self.file_name = fh.name
+            self.line_n    = get_current_line_info_number(fh)
+        else:
+            self.file_name = "no file handle"
+            self.line_n    = -1
 
         self.space_db = {}  # Maps: space width --> character_set
         self.grid_db  = {}  # Maps: grid width  --> character_set
