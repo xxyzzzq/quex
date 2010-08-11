@@ -125,8 +125,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     if ShowBufferLoadsF:
         state_machine_code = "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS\n" + \
-                             "#define __QUEX_OPTION_UNIT_TEST\n" + \
-                             "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n" + \
+                             "#define __QUEX_OPTION_UNIT_TEST\n"                   + \
+                             "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n"       + \
                              state_machine_code
 
     source_code =   create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN, BufferLimitCode) \
@@ -274,102 +274,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     return generator.delete_unused_labels(txt)
 
+
 def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode, 
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
-    txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
-    if Language.find("Cpp") == -1: txt += "#define __QUEX_OPTION_PLAIN_C\n"
-    txt += "#include <quex/code_base/analyzer/configuration/default>\n"
-    txt += "#if ! defined (__QUEX_OPTION_PLAIN_C)\n"
-    txt += "    namespace quex {\n"
-    txt += "#endif\n"
-    txt += "typedef struct {} QUEX_TYPE0_TOKEN;\n"
-    txt += "void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}\n"
-    txt += "void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}\n"
-    txt += "#if ! defined (__QUEX_OPTION_PLAIN_C)\n"
-    txt += "    }\n"
-    txt += "#endif\n"
-    txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
-    txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
-    txt += "#endif\n"
-    txt += "#include <quex/code_base/buffer/Buffer>\n"
-    txt += "#include <quex/code_base/buffer/Buffer.i>\n"
-    txt += "#include <quex/code_base/buffer/BufferFiller.i>\n"
-    txt += "#include <quex/code_base/test_environment/TestAnalyzer>\n"
-    txt += "#include <quex/code_base/token/TokenQueue>\n"
-    txt += "#include <quex/code_base/token/TokenQueue.i>\n"
-    txt += "#include <quex/code_base/analyzer/member/basic.i>\n"
-    txt += "\n"
-    if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
-    txt += "\n"
-    txt += "bool analyzis_terminated_f = false;\n"
-    txt += "QUEX_TYPE_CHARACTER        QUEX_NAME(LexemeNullObject);\n"
-    txt += "static QUEX_TYPE_TOKEN_ID  QUEX_NAME_TOKEN(DumpedTokenIdObject) = (QUEX_TYPE_TOKEN_ID)0;\n"
-    txt += "\n"
-    txt += "bool\n"
-    txt += "show_next_character(QUEX_NAME(Buffer)* buffer) {\n"
-    txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;\n"
-    txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
-    txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {\n"
-    txt += "        QUEX_NAME(Buffer_mark_lexeme_start)(buffer);\n"
-    txt += "        if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {\n"
-    txt += "            return false;"
-    txt += "        }\n"
-    txt += "        QUEX_NAME(buffer_reload_forward_LA_PC)(buffer, &last_acceptance_input_position,\n"
-    txt += "                                               post_context_start_position, 0);\n"
-    txt += "        QUEX_NAME(Buffer_input_p_increment)(buffer);\n"
-    txt += "    }\n"
-    txt += "    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 )\n"
-    if ShowPositionF:
-        txt += '    printf("next letter: <%c> position: %04X\\n", (char)(*(buffer->_input_p)),\n'
-        txt += '           (int)(buffer->_input_p - buffer->_memory._front));\n'
-    else:
-        txt += '    printf("next letter: <%c>\\n", (char)(*(buffer->_input_p)));\n'
-    txt += "    return true;\n"
-    txt += "}\n"
-    txt += "\n"
-    txt += "void QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)\n"
-    txt += "{\n"
-    txt += "#   define  engine (me)\n"
-    txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
-    txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
-    txt += "    const size_t                  PostContextStartPositionN      = 0;\n"
-    txt += "    QUEX_TYPE_CHARACTER           input                          = 0x0;\n"
-    txt += "ENTRY:\n"
-    txt += "    /* Skip irrelevant characters */\n"
-    txt += "    while(1 + 1 == 2) {\n" 
-    txt += "        input = QUEX_NAME(Buffer_input_get)(&me->buffer);\n"
-    if MarkerCharList != []:
-        for character in MarkerCharList:
-            txt += "        if( input == %i ) break;\n" % character
-    else:
-        txt += "    break;\n"
-    txt += "        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {\n"
-    txt += "            QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);\n"
-    txt += "            if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {\n"
-    txt += "                goto TERMINAL_END_OF_STREAM;\n"
-    txt += "            }\n"
-    txt += "            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,\n"
-    txt += "                                                   post_context_start_position, 0);\n"
-    txt += "        }\n"
-    txt += "        QUEX_NAME(Buffer_input_p_increment)(&me->buffer);\n"
-    txt += "    }\n"
-    txt += "\n"
-    txt += SkipperSourceCode
-    txt += "\n"
-    txt += "__REENTRY:\n"
-    txt += "    /* Originally, the reentry preparation does not increment or do anything to _input_p\n"
-    txt += "     * Here, we use the chance to print the position where the skipper ended.\n"
-    txt += "     * If we are at the border and there is still stuff to load, then load it so we can\n"
-    txt += "     * see what the next character is coming in.                                          */"
-    txt += "    if( ! show_next_character(&me->buffer) ) goto TERMINAL_END_OF_STREAM;\n" 
-    txt += "    goto ENTRY;\n"
-    txt += "\n"
-    txt += "TERMINAL_END_OF_STREAM:\n"
-    txt += EndStr
-    txt += "#undef engine\n"
-    txt += "}\n"
-    txt += "\n"
+    txt  = create_common_declarations(Language, QuexBufferSize, TestStr)
+    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SkipperSourceCode, EndStr)
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
@@ -459,6 +369,89 @@ static           void  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZ
 /* NOT static */ void  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
+"""
+
+def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr):
+    if ShowPositionF: show_position_str = "1"
+    else:             show_position_str = "0"
+
+    ml_txt = ""
+    if MarkerCharList != []:
+        for character in MarkerCharList:
+            ml_txt += "        if( input == %i ) break;\n" % character
+    else:
+        ml_txt += "    break;\n"
+
+    return blue_print(skipper_dedicated_unit_test_function_txt,
+                      [("$$MARKER_LIST$$",   ml_txt),
+                       ("$$SHOW_POSITION$$", show_position_str),
+                       ("$$SOURCE_CODE$$",   SourceCode),
+                       ("$$END_STR$$",       EndStr)])
+
+
+skipper_dedicated_unit_test_function_txt = """
+bool
+show_next_character(QUEX_NAME(Buffer)* buffer) {
+    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
+    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
+        QUEX_NAME(Buffer_mark_lexeme_start)(buffer);
+        if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
+            return false;
+        }
+        QUEX_NAME(buffer_reload_forward_LA_PC)(buffer, &last_acceptance_input_position,
+                                               post_context_start_position, 0);
+        QUEX_NAME(Buffer_input_p_increment)(buffer);
+    }
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
+#       if $$SHOW_POSITION$$
+        printf("next letter: <%c> position: %04X\\n", (char)(*(buffer->_input_p)),
+               (int)(buffer->_input_p - buffer->_memory._front));
+#       else
+        printf("next letter: <%c>\\n", (char)(*(buffer->_input_p)));
+#       endif
+    }
+    return true;
+}
+
+void QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
+{
+#   define  engine (me)
+    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;
+    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
+    const size_t                  PostContextStartPositionN      = 0;
+    QUEX_TYPE_CHARACTER           input                          = 0x0;
+ENTRY:
+    /* Skip irrelevant characters */
+    while(1 + 1 == 2) { 
+        input = QUEX_NAME(Buffer_input_get)(&me->buffer);
+    $$MARKER_LIST$$
+        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
+            QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);
+            if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
+                goto TERMINAL_END_OF_STREAM;
+            }
+            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                                   post_context_start_position, 0);
+        }
+        QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
+    }
+/*________________________________________________________________________________________*/
+$$SOURCE_CODE$$
+/*________________________________________________________________________________________*/
+
+__REENTRY:
+    /* Originally, the reentry preparation does not increment or do anything to _input_p
+     * Here, we use the chance to print the position where the skipper ended.
+     * If we are at the border and there is still stuff to load, then load it so we can
+     * see what the next character is coming in.                                          */
+    if( ! show_next_character(&me->buffer) ) goto TERMINAL_END_OF_STREAM; 
+    goto ENTRY;
+
+TERMINAL_END_OF_STREAM:
+$$END_STR$$
+#undef engine
+}
 """
 
 test_program_db = { 

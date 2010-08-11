@@ -20,13 +20,16 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t  _column_number_at_begin;  /* column where current pattern starts */
         size_t  _column_number_at_end;    /* column after current pattern        */
 #       endif
+#       ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        size_t  _indentation;
+#       endif
     } QUEX_NAME(CounterBase);
 
     QUEX_INLINE void  QUEX_NAME(CounterBase_init)(QUEX_NAME(CounterBase)* me);
     QUEX_INLINE void  QUEX_NAME(CounterBase_shift_end_values_to_start_values)(QUEX_NAME(CounterBase)* me);
-    QUEX_INLINE void  QUEX_NAME(CounterBase_count_newline_n_backwards)(QUEX_NAME(CounterBase)*       me, 
-                                                                       QUEX_TYPE_CHARACTER* it,
-                                                                       QUEX_TYPE_CHARACTER* Begin);
+    QUEX_INLINE void  QUEX_NAME(CounterBase_count_newline_n_backwards)(QUEX_NAME(CounterBase)*  me, 
+                                                                       QUEX_TYPE_CHARACTER*     it,
+                                                                       QUEX_TYPE_CHARACTER*     Begin);
     QUEX_INLINE void  QUEX_NAME(CounterBase_print_this)(QUEX_NAME(CounterBase)* me);
 
 

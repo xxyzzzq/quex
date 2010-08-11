@@ -110,11 +110,11 @@ def do(IndentationSetup):
                        ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$COUNTER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input", counter_index)],
-                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input", counter_index)],
-                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", counter_index)],
+                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input",    counter_index)],
+                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input",         counter_index)],
+                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry",    counter_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input", counter_index)],
+                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input",    counter_index)],
                        ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", counter_index)],
                        ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", counter_index)],
                        ["$$COUNTER_INDEX$$",                  repr(counter_index)],
@@ -138,8 +138,8 @@ def __counting_replacements(code_str, UniformF):
 
     if UniformF:
         end_procedure = \
-        "        self.counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-        "                                             - line_begin_p_$$COUNTER_INDEX$$);\n" 
+        "        self.counter.base._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+        "                                                  - line_begin_p_$$COUNTER_INDEX$$);\n" 
     else:
         end_procedure = "" # indentation has been counted during 'run'
 
