@@ -113,8 +113,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
     end_of_stream_action = action_code_formatter.do(Mode, 
                                                     Mode.get_code_fragment_list("on_end_of_stream"), 
-                                                    "on_end_of_stream", None, EOF_ActionF=True, 
-                                                    IndentationSupportF=IndentationSupportF)
+                                                    "on_end_of_stream", None, EOF_ActionF=True)
     # -- 'on failure' action (nothing matched)
     if not Mode.has_code_fragment_list("on_failure"):
         txt  = "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % Mode.name 
@@ -124,8 +123,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
     on_failure_action = action_code_formatter.do(Mode, 
                                               Mode.get_code_fragment_list("on_failure"), 
-                                              "on_failure", None, Default_ActionF=True, 
-                                              IndentationSupportF=IndentationSupportF)
+                                              "on_failure", None, Default_ActionF=True) 
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
@@ -179,6 +177,8 @@ def implement_skippers(mode):
 
         action = get_action(mode, pattern_str)
         action.set_code(create_skip_range_code(closer_sequence))
+
+def implement_indentation_counter(mode):
 
 def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 

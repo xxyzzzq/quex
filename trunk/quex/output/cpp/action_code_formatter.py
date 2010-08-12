@@ -4,7 +4,7 @@ from   quex.core_engine.generator.action_info import *
 from   quex.input.setup                       import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
-       Default_ActionF=False, EOF_ActionF=False, IndentationSupportF=False):
+       Default_ActionF=False, EOF_ActionF=False):
     """-- If there are multiple handlers for a single event they are combined
     
        -- Adding debug information printer (if desired)
@@ -36,11 +36,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
-    if IndentationSupportF:
-        lc_count_code = __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
-
-    else:
-        lc_count_code = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+    lc_count_code = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
 
     # (*) debug prints -- if desired
     if Setup.output_debug_f == True:
@@ -68,47 +64,6 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 
     return CodeFragment(txt, require_terminating_zero_preparation_f)
 
-def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
-
-    # shift the values for line and column numbering
-    txt = "QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);\n"
-
-    if EOF_ActionF:
-        txt += "    QUEX_NAME(CounterLineColumnIndentation_on_end_of_file)(&self.counter);\n"
-        return txt
-
-    if PatternStateMachine == None:
-        return txt + "QUEX_NAME(CounterLineColumnIndentation_count)(&self.counter, Lexeme, LexemeEnd);\n"
-
-    newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
-    character_n = pattern_analyzer.get_character_n(PatternStateMachine)
-
-    # later implementations may consider '\t' also for indentation counting
-    whitespace_set  = NumberSet(ord(' '))
-    initial_triggers = PatternStateMachine.get_init_state().transitions().get_trigger_set_union()
-
-    starts_never_on_whitespace_f = not initial_triggers.has_intersection(whitespace_set)
-    contains_only_spaces_f       = pattern_analyzer.contains_only_spaces(PatternStateMachine)
-
-    if newline_n != 0:
-        # IDEA: (case newline_n > 0) 
-        #       Try to determine number of characters backwards to newline directly
-        #       from the pattern state machine.
-        func = "QUEX_NAME(CounterLineColumnIndentation_count)(&self.counter, Lexeme, LexemeEnd);"       
-
-    else:
-        if character_n == -1: column_increment = "LexemeL"          # based on matched lexeme
-        else:                 column_increment = "%i" % character_n # fixed length
-            
-        if starts_never_on_whitespace_f:
-            func = "QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_NeverStartOnWhitespace)(&self.counter, %s);" % column_increment
-        elif contains_only_spaces_f:
-            func = "QUEX_NAME(CounterLineColumnIndentation_count_NoNewline_ContainsOnlySpaces)(&self.counter, %s);" % column_increment
-        else:
-            func = "QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(&self.counter, Lexeme, LexemeL);"
-
-    return txt + func + "\n"
-
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
@@ -118,7 +73,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         return txt
 
     if PatternStateMachine == None:
-        return txt + "QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -126,17 +81,19 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     if   newline_n == -1:
         # run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
-        return txt + "QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);\n"
 
     elif newline_n != 0:
         # TODO: Try to determine number of characters backwards to newline directly
         #       from the pattern state machine. (Those seldom cases won't bring much
         #       speed-up)
-        return txt + "QUEX_NAME(CounterLineColumn_count_FixNewlineN)(&self.counter, Lexeme, LexemeEnd, %i);\n" % newline_n
+        return txt + \
+               "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);" % newline_n + \
+               "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, Lexeme, LexemeEnd, %i);\n"
 
     else:
         if character_n == -1: incr_str = "LexemeL"
         else:                 incr_str = repr(character_n) 
 
-        return txt + "QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, %s);\n" % incr_str
+        return txt + "QUEX_NAME(Counter_count_NoNewline)(&self.counter, %s);\n" % incr_str
 

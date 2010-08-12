@@ -23,15 +23,28 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
         size_t  _indentation;
 #       endif
-    } QUEX_NAME(CounterBase);
+    } QUEX_NAME(Counter);
 
-    QUEX_INLINE void  QUEX_NAME(CounterBase_init)(QUEX_NAME(CounterBase)* me);
-    QUEX_INLINE void  QUEX_NAME(CounterBase_shift_end_values_to_start_values)(QUEX_NAME(CounterBase)* me);
-    QUEX_INLINE void  QUEX_NAME(CounterBase_count_newline_n_backwards)(QUEX_NAME(CounterBase)*  me, 
-                                                                       QUEX_TYPE_CHARACTER*     it,
-                                                                       QUEX_TYPE_CHARACTER*     Begin);
-    QUEX_INLINE void  QUEX_NAME(CounterBase_print_this)(QUEX_NAME(CounterBase)* me);
 
+    QUEX_INLINE void  QUEX_NAME(Counter_construct)(QUEX_NAME(Counter)*  me); 
+    QUEX_INLINE void  QUEX_NAME(Counter_init)(QUEX_NAME(Counter)* me);
+    QUEX_INLINE void  QUEX_NAME(Counter_reset)(QUEX_NAME(Counter)* me);
+    QUEX_INLINE void  QUEX_NAME(Counter_copy_construct)(QUEX_NAME(Counter)*  me, 
+                                                       const QUEX_NAME(Counter)*       That);
+
+    QUEX_INLINE void  QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*             me, 
+                                                         QUEX_TYPE_CHARACTER*  Lexeme, 
+                                                         QUEX_TYPE_CHARACTER*  LexemeEnd);
+    QUEX_INLINE void  QUEX_NAME(Counter_count_NoNewline)(QUEX_NAME(Counter)*    me, 
+                                                                   const size_t LexemeLength);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
+    QUEX_NAME(Counter_count_chars_to_newline_backwards)(QUEX_NAME(Counter)*   me, 
+                                                        QUEX_TYPE_CHARACTER*  Begin,
+                                                        QUEX_TYPE_CHARACTER*  End)
+
+    QUEX_INLINE void  QUEX_NAME(Counter_shift_end_values_to_start_values)(QUEX_NAME(Counter)* me);
+
+    QUEX_INLINE void  QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
