@@ -324,14 +324,6 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   define  __QUEX_OPTION_WCHAR_T
 #endif
 
-#if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   \
-    || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        
-#   define __QUEX_OPTION_LINE_COLUMN_COUNTER
-#   define __QUEX_OPTION_COUNTER
-#elif  defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define __QUEX_OPTION_COUNTER
-#endif
-
 /* Tokens may be 'stamped' with the line an column number automatically.
  * This happens by means of the option 
  *      
@@ -440,39 +432,37 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
 #define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
 
-#if defined(__QUEX_OPTION_COUNTER)
-#   define     __QUEX_COUNTER_LINE_N_INCREMENT(LN)     (++(LN))
-#   define     __QUEX_COUNTER_COLUMN_N_INCREMENT(CN)   (++(CN))
-#   define     __QUEX_COUNTER_COLUMN_N_SET(CN, V)      (CN = V)
-#else
-#   define     __QUEX_COUNTER_LINE_N_INCREMENT(LN)     /* empty */
-#   define     __QUEX_COUNTER_COLUMN_N_INCREMENT(CN)   /* empty */
-#   define     __QUEX_COUNTER_COLUMN_N_SET(CN, V)      /* empty */
+#if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+    || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+    || defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)       
+#     define  __QUEX_OPTION_COUNTER
+#     define QUEX_TYPE_COUNTER             QUEX_NAME(Counter)
+#     define QUEX_TYPE_COUNTER_CONSTRUCTOR QUEX_NAME(Counter_construct)
+#     define QUEX_TYPE_COUNTER_RESET       QUEX_NAME(Counter_reset)
+#     define QUEX_TYPE_COUNTER_PRINT_THIS  QUEX_NAME(Counter_print_this)
+#elif defined(__QUEX_OPTION_COUNTER)  
+#     undef   __QUEX_OPTION_COUNTER
+#     define QUEX_TYPE_COUNTER             void*
+#     define QUEX_TYPE_COUNTER_CONSTRUCTOR /* empty */
+#     define QUEX_TYPE_COUNTER_RESET       /* empty */
+#     define QUEX_TYPE_COUNTER_PRINT_THIS  /* empty */
 #endif
-#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumnIndentation)
-#   define QUEX_TYPE_COUNTER_CONSTRUCTOR QUEX_NAME(CounterLineColumnIndentation_construct)
-#   define QUEX_TYPE_COUNTER_RESET       QUEX_NAME(CounterLineColumnIndentation_reset)
-#   define QUEX_TYPE_COUNTER_PRINT_THIS  QUEX_NAME(CounterLineColumnIndentation_print_this)
 
-#   define __QUEX_INDENTATION_CHECK_WHITESPACE(C) ($$CHECK_INDENTATION_SPACE$$)
-#   define __QUEX_INDENTATION_ADD(I, C) \
-           do {\
-$$INDENTATION_ADD$$           } while (0)
-$$SWITCH$$ __QUEX_OPTION_INDENTATION_DEDICATED_COUNT
+#if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
+#   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      EXPRESSION
+#else
+#   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      /* empty */
+#endif
+#if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
+#   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    EXPRESSION
+#else
+#   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    /* empty */
+#endif
+
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
 #      define QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
 #   endif
-#elif  defined(__QUEX_OPTION_COUNTER)
-#   define QUEX_TYPE_COUNTER             QUEX_NAME(CounterLineColumn)
-#   define QUEX_TYPE_COUNTER_CONSTRUCTOR QUEX_NAME(CounterLineColumn_construct)
-#   define QUEX_TYPE_COUNTER_RESET       QUEX_NAME(CounterLineColumn_reset)
-#   define QUEX_TYPE_COUNTER_PRINT_THIS  QUEX_NAME(CounterLineColumn_print_this)
-#else
-#   define QUEX_TYPE_COUNTER             void*
-#   define QUEX_TYPE_COUNTER_CONSTRUCTOR /* empty */
-#   define QUEX_TYPE_COUNTER_RESET       /* empty */
-#   define QUEX_TYPE_COUNTER_PRINT_THIS  /* empty */
 #endif
 
 /* For the utf8 printing: Name the function that converts the 

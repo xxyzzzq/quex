@@ -138,14 +138,14 @@ def __counting_replacements(code_str, UniformF):
 
     if UniformF:
         end_procedure = \
-        "        self.counter.base._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-        "                                                  - line_begin_p_$$COUNTER_INDEX$$);\n" 
+        "        self.counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+        "                                    - line_begin_p_$$COUNTER_INDEX$$);\n" 
     else:
         end_procedure = "" # indentation has been counted during 'run'
 
     end_procedure += \
     "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-    "        self.counter.base._column_number_at_end = self.counter._indentation;\n" + \
+    "        self.counter._column_number_at_end = self.counter._indentation;\n" + \
     "#       endif\n"
 
     return blue_print(code_str,

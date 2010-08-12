@@ -17,31 +17,6 @@ typedef struct {
     QUEX_NAME(CounterBase)  base;
 } QUEX_NAME(CounterLineColumn);
 
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_construct)(QUEX_NAME(CounterLineColumn)*  me, 
-                                                         QUEX_TYPE_ANALYZER* lexer);
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_copy_construct)(QUEX_NAME(CounterLineColumn)*  me, 
-                                                   const QUEX_NAME(CounterLineColumn)*       That);
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_reset)(QUEX_NAME(CounterLineColumn)* me);
-
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count)(QUEX_NAME(CounterLineColumn)* me, 
-                                                     QUEX_TYPE_CHARACTER*          Lexeme, 
-                                                     QUEX_TYPE_CHARACTER*          LexemeEnd);
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count_NoNewline)(QUEX_NAME(CounterLineColumn)* me, 
-                                                               const size_t                  LexemeLength);
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_count_FixNewlineN)(QUEX_NAME(CounterLineColumn)*   me,
-                                                      QUEX_TYPE_CHARACTER* Lexeme,
-                                                      QUEX_TYPE_CHARACTER* LexemeEnd,
-                                                      const int            LineNIncrement);
-
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(__CounterLineColumn_count_chars_to_newline_backwards)(QUEX_NAME(CounterLineColumn)* me, 
-                                                    QUEX_TYPE_CHARACTER* Begin,
-                                                    QUEX_TYPE_CHARACTER* End,
-                                                    const ptrdiff_t      LexemeLength,
-                                                    const bool           LicenseToIncrementLineCountF /*=false*/);
-
-QUEX_INLINE void  QUEX_NAME(CounterLineColumn_print_this)(QUEX_NAME(CounterLineColumn)* me);
-
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
