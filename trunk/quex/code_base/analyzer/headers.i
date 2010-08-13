@@ -14,11 +14,13 @@
 #include    <quex/code_base/analyzer/member/misc.i>
 #include    <quex/code_base/analyzer/member/constructor.i>
 
-#include    <quex/code_base/analyzer/counter/Base.i>
 #include    <quex/code_base/analyzer/member/basic.i>
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/analyzer/Mode.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#ifdef      __QUEX_OPTION_COUNTER
+#include    <quex/code_base/analyzer/counter/Base.i>
+#endif
 #ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/member/include-stack.i>
 #endif

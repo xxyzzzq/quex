@@ -14,6 +14,7 @@
 
 #include    <quex/code_base/MemoryManager>
 #include    <quex/code_base/analyzer/Mode>
+#
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
@@ -26,7 +27,10 @@
 #ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   include <quex/code_base/analyzer/IndentationHandler>
 #endif
+#ifdef      __QUEX_OPTION_COUNTER
 #include    <quex/code_base/analyzer/counter/Base>
+#endif
+#
 #include    <quex/code_base/analyzer/member/basic>
 
 #include    <quex/code_base/analyzer/member/constructor>
