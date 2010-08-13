@@ -10,10 +10,8 @@
 
 #include <quex/code_base/buffer/Buffer>
 
-#if ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   include <quex/code_base/analyzer/counter/LineColumn>
-#   else
-#   include <quex/code_base/analyzer/counter/LineColumnIndentation>
+#ifdef  __QUEX_OPTION_COUNTER
+#   include <quex/code_base/analyzer/counter/Base>
 #endif
 
 #ifdef  QUEX_OPTION_STRING_ACCUMULATOR

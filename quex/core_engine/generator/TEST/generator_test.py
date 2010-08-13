@@ -330,6 +330,12 @@ test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 $$__QUEX_OPTION_PLAIN_C$$
+#define __QUEX_OPTION_COUNTER
+#define __QUEX_IF_COUNT_COLUMNS(EXPRESSION) EXPRESSION
+#define __QUEX_IF_COUNT_LINES(EXPRESSION)   EXPRESSION
+#define QUEX_OPTION_LINE_NUMBER_COUNTING
+#define QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
@@ -347,6 +353,7 @@ void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif
+#include <quex/code_base/analyzer/asserts>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
@@ -356,6 +363,8 @@ void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #include <quex/code_base/token/TokenQueue>
 #include <quex/code_base/token/TokenQueue.i>
 #include <quex/code_base/analyzer/member/basic.i>
+#include <quex/code_base/analyzer/counter/Base>
+#include <quex/code_base/analyzer/counter/Base.i>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;
 #endif

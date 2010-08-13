@@ -436,16 +436,10 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
     || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
     || defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)       
 #     define  __QUEX_OPTION_COUNTER
-#     define QUEX_TYPE_COUNTER             QUEX_NAME(Counter)
-#     define QUEX_TYPE_COUNTER_CONSTRUCTOR QUEX_NAME(Counter_construct)
-#     define QUEX_TYPE_COUNTER_RESET       QUEX_NAME(Counter_reset)
-#     define QUEX_TYPE_COUNTER_PRINT_THIS  QUEX_NAME(Counter_print_this)
-#elif defined(__QUEX_OPTION_COUNTER)  
-#     undef   __QUEX_OPTION_COUNTER
-#     define QUEX_TYPE_COUNTER             void*
-#     define QUEX_TYPE_COUNTER_CONSTRUCTOR /* empty */
-#     define QUEX_TYPE_COUNTER_RESET       /* empty */
-#     define QUEX_TYPE_COUNTER_PRINT_THIS  /* empty */
+#else
+#     if defined(__QUEX_OPTION_COUNTER)  
+#        undef   __QUEX_OPTION_COUNTER
+#     endif
 #endif
 
 #if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   

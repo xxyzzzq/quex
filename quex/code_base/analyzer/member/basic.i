@@ -68,7 +68,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
        
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_TYPE_COUNTER_CONSTRUCTOR(&me->counter, me);
+        QUEX_NAME(Counter_construct)(&me->counter);
 #       endif
 
 #       ifdef QUEX_OPTION_ASSERTS
@@ -79,10 +79,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         me->_parent_memento = 0x0;
-#       endif
-
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-        QUEX_NAME(IndentationStack_init)(&me->_indentation_handler);
 #       endif
 
         me->_mode_stack.end        = me->_mode_stack.begin;
@@ -135,7 +131,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                            const size_t         TranslationBufferMemorySize)
     {
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_TYPE_COUNTER_RESET(&me->counter);
+        QUEX_NAME(Counter_reset)(&me->counter);
 #       endif
 
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE

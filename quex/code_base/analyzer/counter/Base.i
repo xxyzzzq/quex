@@ -4,12 +4,6 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/counter/Base>
 
-#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   include <quex/code_base/analyzer/counter/LineColumn.i>
-#   else
-#   include <quex/code_base/analyzer/counter/LineColumnIndentation.i>
-#endif
-
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
@@ -43,14 +37,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                    const int                      LineNIncrement) 
     {
         __quex_assert( LexemeEnd > Lexeme );
-        __QUEX_IF_COUNT_LINES(me->_line_number_at_end += (size_t)LineNIncrement);
 
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        QUEX_NAME(__Counter_count_chars_to_newline_backwards)(me, (QUEX_TYPE_CHARACTER*)Lexeme, 
-                                                   (QUEX_TYPE_CHARACTER*)(LexemeEnd), 
-                                                   LexemeEnd - Lexeme,
-                                                   /* LicenseToIncrementLineCountF = */ false);
+        QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, (QUEX_TYPE_CHARACTER*)Lexeme, 
+                                                            (QUEX_TYPE_CHARACTER*)(LexemeEnd)); 
 #       endif
+        __QUEX_IF_COUNT_LINES(me->_line_number_at_end += (size_t)LineNIncrement);
+
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
