@@ -2,6 +2,7 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/analyzer/asserts>
 #include <quex/code_base/analyzer/counter/Base>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -28,6 +29,34 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Counter_reset)(QUEX_NAME(Counter)* me)
     {
         QUEX_NAME(Counter_init)((QUEX_NAME(Counter)*)me);
+    }
+
+    QUEX_INLINE void    
+    QUEX_NAME(Counter_count)(QUEX_NAME(Counter)* me, 
+                             QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    /* PURPOSE:
+     *   Adapts the column number and the line number according to the newlines
+     *   and letters of the last line occuring in the lexeme.
+     *
+     * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
+     *       there is no newline in the lexeme (see below).                        */
+    {
+        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
+
+        __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
+
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        /* The last function may have digested a newline (*it == '\n'), but then it 
+         * would have increased the _line_number_at_end.                          */
+        __quex_assert(it >= Begin);
+        /* Investigate remaining part of the lexeme, i.e. before the last newline
+         * (recall the lexeme is traced from the rear)                            */
+        while( it != Begin ) {
+            --it;
+            if( *it == '\n' ) ++(me->_line_number_at_end); 
+        }         
+#       endif
+        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
     QUEX_INLINE void  
@@ -96,53 +125,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
         return it;
     }
-
-    QUEX_INLINE void    
-    QUEX_NAME(Counter_count)(QUEX_NAME(Counter)* me, 
-                             QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
-    /* PURPOSE:
-     *   Adapts the column number and the line number according to the newlines
-     *   and letters of the last line occuring in the lexeme.
-     *
-     * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
-     *       there is no newline in the lexeme (see below).                        */
-    {
-        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
-
-        __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
-
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        /* The last function may have digested a newline (*it == '\n'), but then it 
-         * would have increased the _line_number_at_end.                          */
-        __quex_assert(it >= Begin);
-        /* Investigate remaining part of the lexeme, i.e. before the last newline
-         * (recall the lexeme is traced from the rear)                            */
-        while( it != Begin ) {
-            --it;
-            if( *it == '\n' ) ++(me->_line_number_at_end); 
-        }         
-#       endif
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
-    }
-
-    QUEX_INLINE void  
-    QUEX_NAME(Counter_count_NoNewline)(QUEX_NAME(Counter)* me, 
-                                                 const size_t                  LexemeLength) 
-    {
-        __quex_assert( LexemeLength > 0 );
-
-        __QUEX_IF_COUNT_COLUMNS(me->_column_number_at_end += LexemeLength);
-
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
-    }
-
-    QUEX_INLINE void             
-    QUEX_NAME(Counter_shift_end_values_to_start_values)(QUEX_NAME(Counter)* me) 
-    {
-        __QUEX_IF_COUNT_LINES(me->_line_number_at_begin     = me->_line_number_at_end);
-        __QUEX_IF_COUNT_COLUMNS(me->_column_number_at_begin = me->_column_number_at_end);
-    }
-
 
     QUEX_INLINE void 
     QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me)

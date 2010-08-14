@@ -34,12 +34,8 @@ QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me,
 {
     me->the_lexer = lexer;
     QUEX_NAME(Accumulator_init_memory)(me);
-#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    me->_begin_line = 0;
-#   endif
-#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    me->_begin_column = 0;
-#   endif
+    __QUEX_IF_COUNT_LINES(me->_begin_line = 0);
+    __QUEX_IF_COUNT_COLUMNS(me->_begin_column = 0);
 }
 
 
@@ -97,12 +93,8 @@ QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)* me,
     /* If it is the first string to be appended, the store the location */
 #   ifdef __QUEX_OPTION_COUNTER
     if( me->text.begin == me->text.end ) {
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->_begin_column = me->the_lexer->counter.base._column_number_at_begin;
-#       endif
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        me->_begin_line   = me->the_lexer->counter.base._line_number_at_begin;
-#       endif
+        __QUEX_IF_COUNT_COLUMNS(me->_begin_column = me->the_lexer->counter._column_number_at_begin);
+        __QUEX_IF_COUNT_LINES(me->_begin_line     = me->the_lexer->counter._line_number_at_begin);
     }
 #   endif
 
@@ -127,12 +119,8 @@ QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
     /* If it is the first string to be appended, the store the location */
 #   ifdef __QUEX_OPTION_COUNTER
     if( me->text.begin == me->text.end ) {
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->_begin_column = me->the_lexer->counter.base._column_number_at_begin;
-#       endif
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        me->_begin_line   = me->the_lexer->counter.base._line_number_at_begin;
-#       endif
+        __QUEX_IF_COUNT_COLUMNS(me->_begin_column = me->the_lexer->counter._column_number_at_begin);
+        __QUEX_IF_COUNT_LINES(me->_begin_line     = me->the_lexer->counter._line_number_at_begin);
     }
 #   endif
 
