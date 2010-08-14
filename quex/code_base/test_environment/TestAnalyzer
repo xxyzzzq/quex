@@ -11,7 +11,7 @@
 #include <quex/code_base/buffer/Buffer>
 
 #ifdef  __QUEX_OPTION_COUNTER
-#   include <quex/code_base/analyzer/counter/Base>
+#   include <quex/code_base/analyzer/Counter>
 #endif
 
 #ifdef  QUEX_OPTION_STRING_ACCUMULATOR

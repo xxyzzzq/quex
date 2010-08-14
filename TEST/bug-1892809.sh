@@ -7,12 +7,20 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx --engine Simple 
-g++ -I./ -I$QUEX_PATH Simple.cpp ../lexer-simply.cpp -o Simplicism
+quex -i error.qx --engine Simple --language C --token-policy single
+gcc -I./ -I$QUEX_PATH Simple.c ../lexer.c -o lexer \
+    -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+
 echo "(1)"
-./Simplicism example.txt
+./lexer example.txt 2> tmp.txt
+cat tmp.txt
+rm -f tmp.txt
+
 echo "(2)"
-./Simplicism example-2.txt
+./lexer example-2.txt 2> tmp.txt
+cat tmp.txt
+rm -f tmp.txt
+
 #
-rm -f Simple Simple.cpp Simple-* Simplicism
+rm -f Simple* lexer
 cd $tmp

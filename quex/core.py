@@ -179,6 +179,7 @@ def implement_skippers(mode):
         action.set_code(create_skip_range_code(closer_sequence))
 
 def implement_indentation_counter(mode):
+    pass
 
 def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 
@@ -204,8 +205,7 @@ def get_generator_input(Mode, IndentationSupportF):
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
-                                                   pattern_state_machine,
-                                                   IndentationSupportF=IndentationSupportF)
+                                                   pattern_state_machine)
 
         pattern_info.set_action(prepared_action)
 

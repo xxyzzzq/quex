@@ -60,9 +60,9 @@ try:
     import quex.core               as core
 
 
-except AssertionError, x:
-    on_exception(x, "Module Assertion error -- please report a bug under\n" + \
-                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+#except AssertionError, x:
+#    on_exception(x, "Module Assertion error -- please report a bug under\n" + \
+#                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
 except KeyboardInterrupt: 
     print
@@ -91,9 +91,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
 
-    #except AssertionError, x:
-    #    on_exception(x, "Assertion error -- please report a bug under\n" + \
-    #                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    except AssertionError, x:
+        on_exception(x, "Assertion error -- please report a bug under\n" + \
+                        " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     #except KeyboardInterrupt: 
     #    print

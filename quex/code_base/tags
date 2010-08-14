@@ -641,10 +641,10 @@ __QUEX_CURRENT_TOKEN_P	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token
 __QUEX_CURRENT_TOKEN_P	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenPolicy	8;"	d	file:
 __QUEX_FREE_MEMORY	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	185;"	d	file:
 __QUEX_FREE_MEMORY	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	187;"	d	file:
-__QUEX_LEXER_COUNT_ASSERT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	16;"	d	file:
-__QUEX_LEXER_COUNT_ASSERT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	23;"	d	file:
-__QUEX_LEXER_COUNT_ASSERT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	26;"	d	file:
-__QUEX_LEXER_COUNT_ASSERT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	7;"	d	file:
+__QUEX_ASSERT_COUNTER_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	16;"	d	file:
+__QUEX_ASSERT_COUNTER_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	23;"	d	file:
+__QUEX_ASSERT_COUNTER_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	26;"	d	file:
+__QUEX_ASSERT_COUNTER_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	7;"	d	file:
 __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	246;"	d	file:
 __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	259;"	d	file:
 __QUEX_FIX3	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	271;"	d	file:

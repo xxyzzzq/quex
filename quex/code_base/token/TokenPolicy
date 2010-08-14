@@ -82,14 +82,14 @@
  * exist if the corresponding stamping is active.                            */
 #if    defined(QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN) \
     && defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
-#       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    TOKEN->_line_n = self.counter.base._line_number_at_begin;
+#       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    TOKEN->_line_n = self.counter._line_number_at_begin;
 #else
 #       define __QUEX_STAMP_LINE_NUMBER(TOKEN)    /* empty */
 #endif
 
 #if    defined(QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN) \
     && defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-#       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)    TOKEN->_column_n = self.counter.base._column_number_at_begin;
+#       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)    TOKEN->_column_n = self.counter._column_number_at_begin;
 #else
 #       define __QUEX_STAMP_COLUMN_NUMBER(TOKEN)  /* empty */
 #endif

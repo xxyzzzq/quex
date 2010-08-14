@@ -66,7 +66,7 @@ def parse_mode_option_list(new_mode, fh):
 
 def parse_mode_option(fh, new_mode):
 
-    def __add_match(PatternStr, TriggerSetList*):
+    def __add_match(PatternStr, *TriggerSetList):
         sm  = StateMachine()
         idx = sm.init_state_index
         for trigger_set in TriggerSetList:
@@ -146,14 +146,14 @@ def parse_mode_option(fh, new_mode):
         # Suppressed Newline = Suppressor followed by Newline,
         # then it is up to the user to treat the whitespace that follows.
         suppressed_newline_pattern = \
-                  value.newline_suppressor_state_machine.pattern_str 
+                  value.newline_suppressor_state_machine.pattern_str \
                 + value.newline_state_machine.pattern_str
                                            
         suppressed_newline_sm = \
             sequentialization.do([value.newline_state_machine.get(),
                                   value.newline_suppressor_state_machine.get()])
              
-        new_mode.add_match(suppressed_newline_pattern
+        new_mode.add_match(suppressed_newline_pattern,
                            CodeFragment(LanguageDB["$goto"]("$start")), # Go back to start.
                            suppressed_newline_sm)
 

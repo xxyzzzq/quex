@@ -363,8 +363,8 @@ void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #include <quex/code_base/token/TokenQueue>
 #include <quex/code_base/token/TokenQueue.i>
 #include <quex/code_base/analyzer/member/basic.i>
-#include <quex/code_base/analyzer/counter/Base>
-#include <quex/code_base/analyzer/counter/Base.i>
+#include <quex/code_base/analyzer/Counter>
+#include <quex/code_base/analyzer/Counter.i>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;
 #endif
