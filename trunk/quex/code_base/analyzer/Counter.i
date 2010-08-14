@@ -3,7 +3,7 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/asserts>
-#include <quex/code_base/analyzer/counter/Base>
+#include <quex/code_base/analyzer/Counter>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -56,7 +56,6 @@ QUEX_NAMESPACE_MAIN_OPEN
             if( *it == '\n' ) ++(me->_line_number_at_end); 
         }         
 #       endif
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
     QUEX_INLINE void  
@@ -72,8 +71,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                             (QUEX_TYPE_CHARACTER*)(LexemeEnd)); 
 #       endif
         __QUEX_IF_COUNT_LINES(me->_line_number_at_end += (size_t)LineNIncrement);
-
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
 
@@ -122,7 +119,6 @@ QUEX_NAMESPACE_MAIN_OPEN
          *    the number of letters from newline to end of string             */
         __QUEX_IF_COUNT_COLUMNS(me->_column_number_at_end = (size_t)(End - it));
 
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
         return it;
     }
 

@@ -157,7 +157,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( me->indentation_count_enabled_f ) {
             __QUEX_INDENTATION_ADD_CHUNK(me->indentation, (size_t)(it - start_it));
         }
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 
 #   if 0
@@ -185,7 +185,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
             me->base._column_number_at_end += (size_t)LexemeL;
 #           endif
-            __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+            __QUEX_ASSERT_COUNTER_CONSISTENCY();
             return;
         }
         
@@ -197,7 +197,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                    Begin, 
                                                    Begin + LexemeL, 
                                                    /* LicenseToIncrementLineCountF = */ false);
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 
     QUEX_INLINE void  
@@ -215,7 +215,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->_indentation_count_enabled_f = false; 
             QUEX_NAME(CounterLineColumnIndentation_on_indentation)(me);
         }
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 
     QUEX_INLINE void  
@@ -228,7 +228,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->base._column_number_at_end += ColumnNIncrement;
 #       endif
         if( me->indentation.count_enabled_f ) me->indentation.count += ColumnNIncrement;
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 #endif
 
