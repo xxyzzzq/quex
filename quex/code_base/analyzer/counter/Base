@@ -35,14 +35,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*             me, 
                                                          QUEX_TYPE_CHARACTER*  Lexeme, 
                                                          QUEX_TYPE_CHARACTER*  LexemeEnd);
-    QUEX_INLINE void  QUEX_NAME(Counter_count_NoNewline)(QUEX_NAME(Counter)*    me, 
-                                                                   const size_t LexemeLength);
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_NAME(Counter_count_chars_to_newline_backwards)(QUEX_NAME(Counter)*   me, 
                                                         QUEX_TYPE_CHARACTER*  Begin,
                                                         QUEX_TYPE_CHARACTER*  End);
-
-    QUEX_INLINE void  QUEX_NAME(Counter_shift_end_values_to_start_values)(QUEX_NAME(Counter)* me);
 
     QUEX_INLINE void  QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me);
 

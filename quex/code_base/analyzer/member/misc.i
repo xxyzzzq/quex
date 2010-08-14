@@ -130,10 +130,7 @@ QUEX_NAME(print_this)(QUEX_TYPE_ANALYZER* me)
     QUEX_NAME(Mode)** iterator = 0x0;
 
     __QUEX_STD_printf("   CurrentMode = %s;\n", 
-                      me->__current_mode_p == 0x0 ? 
-                         "0x0" 
-                      : 
-                         me->__current_mode_p->name);
+                      me->__current_mode_p == 0x0 ? "0x0" : me->__current_mode_p->name);
 
     QUEX_NAME(Buffer_print_this)(&me->buffer);
 
@@ -142,12 +139,13 @@ QUEX_NAME(print_this)(QUEX_TYPE_ANALYZER* me)
 #   endif
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_TYPE_COUNTER_PRINT_THIS(&me->counter);
+    QUEX_NAME(Counter_print_this)(&me->counter);
 #   endif
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
     QUEX_NAME(PostCategorizer_print_this)(&me->post_categorizer);
 #   endif
+
     __QUEX_STD_printf("   Mode Stack (%i/%i) = [", 
                       (int)(me->_mode_stack.end        - me->_mode_stack.begin),
                       (int)(me->_mode_stack.memory_end - me->_mode_stack.begin));

@@ -223,17 +223,16 @@ public:
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     size_t      line_number() const          { return line_number_at_begin(); }
-    size_t      line_number_at_begin() const { return counter.base._line_number_at_begin; }
-    size_t      line_number_at_end() const   { return counter.base._line_number_at_end; }
+    size_t      line_number_at_begin() const { return counter._line_number_at_begin; }
+    size_t      line_number_at_end() const   { return counter._line_number_at_end; }
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
     size_t      column_number() const          { return column_number_at_begin(); }
-    size_t      column_number_at_begin() const { return counter.base._column_number_at_begin; }
-    size_t      column_number_at_end() const   { return counter.base._column_number_at_end; }
+    size_t      column_number_at_begin() const { return counter._column_number_at_begin; }
+    size_t      column_number_at_end() const   { return counter._column_number_at_end; }
 #   endif
-#   ifdef       __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
     size_t      indentation()                    { return counter._indentation; }
-    void        disable_next_indentation_event() { counter._indentation_event_enabled_f = false; }
 #   endif
 
     // (*) Version information

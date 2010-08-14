@@ -58,7 +58,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /*    (3) Initialize line, column, and indentation counters.                      */
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_TYPE_COUNTER_CONSTRUCTOR(&me->counter, me);
+        QUEX_NAME(Counter_construct)(&me->counter);
 #       endif
 
         /*    (4) Initialize accumulator content.                                         */
