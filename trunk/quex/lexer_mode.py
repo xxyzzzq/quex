@@ -507,8 +507,9 @@ mode_option_info_db = {
 event_handler_db = {
         "on_entry":         "Code executed on entry of a mode.",
         "on_exit":          "Code executed on exit of a mode.", 
-        "on_indent":        "Code executed on the event of indentation.",
-        "on_dedent":        "Code executed on the event of 'de-dentation'.",
+        "on_indent":        "Code executed on the event of opening indentation.",
+        "on_nodent":        "Code executed on the event of same indentation.",
+        "on_dedent":        "Code executed on the event of closing indentation'.",
         "on_match":         "Code executed on each match.",
         "on_end_of_stream": "Code executed on end of file/stream.",
         "on_failure":       "Code executed in case that no pattern matches.",
@@ -657,13 +658,9 @@ def requires_indentation_count(ModeDB):
        support. if one mode has an indentation handler, than indentation
        support must be provided.                                         
     """
-    global indentation_setup
-
-    if indentation_setup != None:
-        return True
-
     for mode in ModeDB.values():
         if    mode.has_code_fragment_list("on_indent") \
+           or mode.has_code_fragment_list("on_nodent") \
            or mode.has_code_fragment_list("on_dedent"):
             return True
 

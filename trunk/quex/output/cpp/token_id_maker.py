@@ -158,29 +158,30 @@ def do(setup, IndentationSupportF):
         token_id_txt += "#include\"%s\"\n" % setup.token_id_foreign_definition_file
 
     else:
-        token_names = token_id_db.keys()
-        token_names.sort()
-
+        # Assign values to tokens with no numeric identifier
+        # NOTE: This has not to happen if token's are defined by the user's provided file.
         i = setup.token_id_counter_offset
-        for token_name in token_names:
-            token_info = token_id_db[token_name] 
-            if token_info.number == None: 
+        # Take the 'dummy_name' only to have the list sorted by name. The key 'dummy_name' 
+        # may contain '--' to indicate a unicode value, so do not use it as name.
+        for dummy_name, token in sorted(token_id_db.items()):
+            if token.number == None: 
                 while __is_token_id_occupied(i):
                     i += 1
-                token_info.number = i; 
+                token.number = i; 
 
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
-                                                                           token_info.name, 
-                                                                           space(token_info.name), 
-                                                                           token_info.number)
-    # (*) Double check that no token id appears twice
-    token_list = token_id_db.values()
-    for i, x in enumerate(token_list):
-        for y in token_list[i+1:]:
-            if x.number != y.number: continue
-            error_msg("Token id '%s'" % x.name, x.file_name, x.line_n, DontExitF=True)
-            error_msg("and token id '%s' have same numeric value '%s'." \
-                      % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
+                                                                           token.name, 
+                                                                           space(token.name), 
+                                                                           token.number)
+        # Double check that no token id appears twice
+        # Again, this can only happen, if quex itself produced the numeric values for the token
+        token_list = token_id_db.values()
+        for i, x in enumerate(token_list):
+            for y in token_list[i+1:]:
+                if x.number != y.number: continue
+                error_msg("Token id '%s'" % x.name, x.file_name, x.line_n, DontExitF=True)
+                error_msg("and token id '%s' have same numeric value '%s'." \
+                          % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
                           
     tc_descr = lexer_mode.token_type_definition
     content = blue_print(file_str,
@@ -253,6 +254,8 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         for token_name, line_n in token_id_finding_list:
             prefix_less_token_name = token_name[len(TokenPrefix):]
             # NOTE: The line number might be wrong, because of the comment deletion
+            # NOTE: The actual token value is not important, since the token's numeric
+            #       identifier is defined in the user's header. We do not care.
             token_id_db[prefix_less_token_name] = \
                     TokenInfo(prefix_less_token_name, None, None, fh.name, line_n) 
         
@@ -263,21 +266,4 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
         work_list.extend(include_file_list)
 
         fh.close()
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        error_msg("Missing command line parameter: input 'token file'")
-
-    cl = GetPot(sys.argv)
-    input_file       = cl.follow("", "-i")
-    token_class_file = cl.follow("", "-t")
-    token_class      = cl.follow("token", "--token-class-name")
-    token_id_counter_offset = cl.follow(1000, "--offset")
-    output_file          = cl.follow("", "-o")
-    token_prefix         = cl.follow("TKN_", "--tp")
-    
-    if "" in [input_file, output_file]:
-        error_msg("please specify input (option '-i') and output file (option '-o')")
-        
-    do(Setup(input_file, output_file, token_class_file, token_class, token_prefix, token_id_counter_offset))
 

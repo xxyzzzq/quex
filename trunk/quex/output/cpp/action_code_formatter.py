@@ -36,7 +36,9 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
-    lc_count_code = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+    lc_count_code  = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+    if (not Default_ActionF) and (not EOF_ActionF):
+        lc_count_code += "__QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
 
     # (*) debug prints -- if desired
     if Setup.output_debug_f == True:
@@ -67,7 +69,8 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);\n"
+    txt = "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);\n" + \
+          "__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);\n"
 
     if EOF_ActionF:
         return txt
@@ -88,12 +91,12 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         #       from the pattern state machine. (Those seldom cases won't bring much
         #       speed-up)
         return txt + \
-               "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);" % newline_n + \
-               "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, Lexeme, LexemeEnd, %i);\n"
+               "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);\n" % newline_n + \
+               "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, Lexeme, LexemeEnd);\n"
 
     else:
         if character_n == -1: incr_str = "LexemeL"
-        else:                 incr_str = repr(character_n) 
+        else:                 incr_str = "%i" % int(character_n)
 
-        return txt + "QUEX_NAME(Counter_count_NoNewline)(&self.counter, %s);\n" % incr_str
+        return txt + "__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += %s);\n" % incr_str
 

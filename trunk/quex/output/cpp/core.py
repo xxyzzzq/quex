@@ -54,16 +54,6 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     if token_repeat_test_txt != "":
         token_repeat_test_txt = token_repeat_test_txt[:-3]
 
-    # Indentation support setup
-    if lexer_mode.indentation_setup != None:
-        indentation_add_str           = LanguageDB["$indentation_add"](lexer_mode.indentation_setup)
-        indentation_check_space_str   = LanguageDB["$indentation_check_space"](lexer_mode.indentation_setup)
-        indentation_dedicated_count_f = indentation_add_str != ""
-    else:
-        indentation_add_str           = ""
-        indentation_check_space_str   = ""
-        indentation_dedicated_count_f = ""
-
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
@@ -86,7 +76,6 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
-    txt = __switch(txt, "__QUEX_OPTION_INDENTATION_DEDICATED_COUNT", indentation_dedicated_count_f)
     txt = __switch(txt, "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT", IndentationSupportF)     
     txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
@@ -145,8 +134,6 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$TOKEN_REPEAT_TEST$$",          token_repeat_test_txt],
              ["$$USER_LEXER_VERSION$$",         Setup.user_application_version_id],
-             ["$$CHECK_INDENTATION_SPACE$$",    indentation_check_space_str],
-             ["$$INDENTATION_ADD$$",            indentation_add_str],
              ])
 
     return txt
