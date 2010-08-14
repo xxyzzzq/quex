@@ -28,7 +28,7 @@
 #   include <quex/code_base/analyzer/IndentationHandler>
 #endif
 #ifdef      __QUEX_OPTION_COUNTER
-#include    <quex/code_base/analyzer/counter/Base>
+#include    <quex/code_base/analyzer/Counter>
 #endif
 #
 #include    <quex/code_base/analyzer/member/basic>

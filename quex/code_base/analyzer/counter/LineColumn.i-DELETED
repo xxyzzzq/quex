@@ -57,7 +57,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                    LexemeEnd - Lexeme,
                                                    /* LicenseToIncrementLineCountF = */ false);
 #       endif
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 
 
@@ -113,7 +113,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         if( LicenseToIncrementLineCountF ) ++(me->base._line_number_at_end);
 #       endif
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
         return it;
     }
 
@@ -135,7 +135,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * would have increased the base._line_number_at_end.                        */
         QUEX_NAME(CounterBase_count_newline_n_backwards)((QUEX_NAME(CounterBase)*)me, it, Begin);
 #       endif
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 
     QUEX_INLINE void  
@@ -146,7 +146,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
         me->base._column_number_at_end += LexemeLength;
 #       endif
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        __QUEX_ASSERT_COUNTER_CONSISTENCY();
     }
 
     QUEX_INLINE void 
