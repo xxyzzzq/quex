@@ -444,13 +444,19 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
 #if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
 #   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      EXPRESSION
+#   define     __QUEX_IF_COUNT_LINES_ADD(X)           ((me->counter._line_number_at_end) += (X))
 #else
 #   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      /* empty */
+#   define     __QUEX_IF_COUNT_LINES_ADD(X)           /* empty */
 #endif
 #if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
 #   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    EXPRESSION
+#   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         ((me->counter._column_number_at_end) = (X))
+#   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         ((me->counter._column_number_at_end) += (X))
 #else
 #   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    /* empty */
+#   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         /* empty */
+#   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         /* empty */
 #endif
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)

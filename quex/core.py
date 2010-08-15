@@ -156,7 +156,7 @@ def implement_skippers(mode):
        the code generation for the mode-- not as it was before when the
        skippers are parsed.  
     """
-
+    required_local_variable_db = {}
     def get_action(Mode, PatternStr):
         for x in Mode.get_pattern_action_pair_list():
             if x.pattern == PatternStr:
@@ -168,15 +168,19 @@ def implement_skippers(mode):
         pattern_str = info[0]
         trigger_set = info[1]
 
-        action = get_action(mode, pattern_str)
-        action.set_code(create_skip_code(trigger_set))
+        action  = get_action(mode, pattern_str)
+        txt, db = create_skip_code(trigger_set)
+        action.set_code(txt)
+        required_local_variable_db.update(db)
 
     for info in mode.options["skip_range"]:
         pattern_str     = info[0]
         closer_sequence = info[1]
 
-        action = get_action(mode, pattern_str)
-        action.set_code(create_skip_range_code(closer_sequence))
+        action  = get_action(mode, pattern_str)
+        txt, db = create_skip_range_code(closer_sequence)
+        action.set_code(txt)
+        required_local_variable_db.update(db)
 
 def implement_indentation_counter(mode):
     pass

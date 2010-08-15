@@ -109,15 +109,17 @@ state_txt = "".join(states)
 
 exec(state_txt + function)
 differences = []    
+output_txt  = []
 for number in range(interval_end):
     expected_state_index = state.transitions().get_resulting_target_state_index(number)
     if expected_state_index == None: expected_state_index = -1
     actual_state_index = example_func(number)
     if actual_state_index == None: actual_state_index = -1
-    sys.stdout.write("%i %s %s\n" % (number, repr(actual_state_index), repr(expected_state_index)))
+    output_txt.append("%i %s %s\n" % (number, repr(actual_state_index), repr(expected_state_index)))
     if actual_state_index != expected_state_index:
         differences.append(number)
 
+sys.stdout.write("".join(output_txt))
 print "# errors = ", differences    
 
 

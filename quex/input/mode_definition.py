@@ -269,6 +269,7 @@ def check_for_event_specification(word, fh, new_mode):
               "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
               "use double quotes to bracket patterns that start with 'on_'."
 
+    __check_for_deprecated(word)
     verify_word_in_list(word, lexer_mode.event_handler_db.keys(), comment, fh)
 
     continue_f = True
@@ -278,7 +279,7 @@ def check_for_event_specification(word, fh, new_mode):
         #       return from the analyzer. Do not allow CONTINUE.
         continue_f = False
 
-    if     word in ["on_entry", "on_exit", "on_indent", "on_dedent"] \
+    if     word in ["on_entry", "on_exit", "on_indent", "on_dedent", "on_nodent"] \
        and Setup.token_policy not in ["queue"] \
        and not Setup.warning_disabled_no_token_queue_f:
         fh.seek(pos)
@@ -290,11 +291,12 @@ def check_for_event_specification(word, fh, new_mode):
     new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
                                                 ContinueF=continue_f)
 
-    if word == "on_indentation":
+    return True
+
+def __check_for_deprecated_handler(Name):
+    if Name == "on_indentation":
         fh.seek(pos)
         error_msg("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
-                  "Please, use 'on_indent' for the event of an opening indentation and 'on_dedent'\n"
-                  "for the event of a closing indentation.", fh) 
-
-    return True
+                  "Please, use 'on_indent' for the event of an opening indentation, 'on_dedent'\n"
+                  "for closing indentation, and 'on_nodent' for no change in indentation.", fh) 
 

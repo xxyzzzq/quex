@@ -230,17 +230,16 @@ public:
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     size_t      line_number() const          { return line_number_at_begin(); }
-    size_t      line_number_at_begin() const { return counter.base._line_number_at_begin; }
-    size_t      line_number_at_end() const   { return counter.base._line_number_at_end; }
+    size_t      line_number_at_begin() const { return counter._line_number_at_begin; }
+    size_t      line_number_at_end() const   { return counter._line_number_at_end; }
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
     size_t      column_number() const          { return column_number_at_begin(); }
-    size_t      column_number_at_begin() const { return counter.base._column_number_at_begin; }
-    size_t      column_number_at_end() const   { return counter.base._column_number_at_end; }
+    size_t      column_number_at_begin() const { return counter._column_number_at_begin; }
+    size_t      column_number_at_end() const   { return counter._column_number_at_end; }
 #   endif
-#   ifdef       __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
     size_t      indentation()                    { return counter._indentation; }
-    void        disable_next_indentation_event() { counter._indentation_event_enabled_f = false; }
 #   endif
 
 
@@ -347,7 +346,8 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
      QUEX_NAME(ONE_AND_ONLY).name = "ONE_AND_ONLY";
      QUEX_NAME(ONE_AND_ONLY).analyzer_function = QUEX_NAME(ONE_AND_ONLY_analyzer_function);
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-     QUEX_NAME(ONE_AND_ONLY).on_indentation = QUEX_NAME(Mode_on_indentation_null_function);
+     QUEX_NAME(ONE_AND_ONLY).on_indent      = QUEX_NAME(Mode_on_indent_dedent_null_function);
+     QUEX_NAME(ONE_AND_ONLY).on_dedent      = QUEX_NAME(Mode_on_indent_dedent_null_function);
 #    endif
      QUEX_NAME(ONE_AND_ONLY).on_entry       = QUEX_NAME(Mode_on_entry_exit_null_function);
      QUEX_NAME(ONE_AND_ONLY).on_exit        = QUEX_NAME(Mode_on_entry_exit_null_function);
@@ -401,7 +401,9 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
        || defined(QUEX_OPTION_ASSERTS)
     memento->DEBUG_analyzer_function_at_entry = self.DEBUG_analyzer_function_at_entry;
 #   endif
+#   ifdef __QUEX_OPTION_COUNTER
     memento->counter                          = self.counter;
+#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     memento->accumulator                      = self.accumulator;
 #   endif
@@ -439,7 +441,9 @@ QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
        || defined(QUEX_OPTION_ASSERTS)
     self.DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
 #   endif
+#   ifdef __QUEX_OPTION_COUNTER
     self.counter                          = memento->counter;
+#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     self.accumulator                      = memento->accumulator;
 #   endif
@@ -498,7 +502,11 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER* me, const size_t Indentation) {
+    QUEX_NAME(ONE_AND_ONLY_on_indent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation) {
+__quex_assert((long)Indentation >= 0);
+    }
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_dedent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation) {
 __quex_assert((long)Indentation >= 0);
     }
 #endif
@@ -2341,8 +2349,10 @@ TERMINAL_4_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
          
         }
@@ -2360,8 +2370,10 @@ TERMINAL_6_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 6);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_STRUCT);
@@ -2383,8 +2395,10 @@ TERMINAL_8_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 3);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 3);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_TYPE_INT);
@@ -2406,8 +2420,10 @@ TERMINAL_10_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 6);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_TYPE_DOUBLE);
@@ -2429,8 +2445,10 @@ TERMINAL_12_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 4);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_SEND);
@@ -2452,8 +2470,10 @@ TERMINAL_14_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 6);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_EXPECT);
@@ -2475,8 +2495,10 @@ TERMINAL_16_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 1);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_SEMICOLON);
@@ -2498,8 +2520,10 @@ TERMINAL_18_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 1);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_BRACKET_OPEN);
@@ -2521,8 +2545,10 @@ TERMINAL_20_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, 1);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_send(QUEX_TKN_BRACKET_CLOSE);
@@ -2545,8 +2571,10 @@ TERMINAL_25_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, LexemeL);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += LexemeL);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
         self_token_p()->number = atoi((char*)Lexeme);
@@ -2570,8 +2598,10 @@ TERMINAL_30_DIRECT:
     {
         {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count_NoNewline)(&self.counter, LexemeL);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += LexemeL);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
          self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
@@ -2590,7 +2620,8 @@ TERMINAL_END_OF_STREAM:
                 {
                     {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
         #   endif
         
         self_send(QUEX_TKN_TERMINATION);
@@ -2620,11 +2651,13 @@ else {
                 {
                     {
         #   ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(CounterBase_shift_end_values_to_start_values)(&self.counter.base);
-        QUEX_NAME(CounterLineColumn_count)(&self.counter, Lexeme, LexemeEnd);
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);
         #   endif
-        self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-        RETURN;
+        QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
+                        "    No 'on_failure' section provided for this mode.\n"
+                        "    Proposal: Define 'on_failure' and analyze 'Lexeme'.\n");
         
         }
                 }

@@ -1,4 +1,4 @@
-<history date="Sun Aug 15 08:53:11 2010" element-n="301">
+<history date="Sun Aug 15 17:39:30 2010" element-n="303">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:17:55"/>
@@ -899,5 +899,9 @@
     </day>
     <day year="2010" month="08" day="03">
         <crc-error time="06:06:43" application="test-read_integer.py" choice="binary" database-crc="354379581" real-crc="-1774456119"/>
+    </day>
+    <day year="2010" month="08" day="15">
+        <crc-error time="15:39:30" application="test-read_integer.py" choice="octal" database-crc="-380682397" real-crc="1921488222"/>
+        <crc-error time="15:39:30" application="test-read_integer.py" choice="binary" database-crc="-1774456119" real-crc="245398371"/>
     </day>
 </history>
