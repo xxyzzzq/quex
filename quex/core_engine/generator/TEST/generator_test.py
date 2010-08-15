@@ -11,6 +11,7 @@ from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #
 from   quex.core_engine.generator.languages.core import db
+from   quex.core_engine.generator.languages.cpp  import  __local_variable_definitions
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
 import quex.core_engine.generator.core                     as generator
 import quex.core_engine.generator.state_coder.skipper_core as skipper
@@ -205,7 +206,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
         try:    os.remove("%s.exe" % filename_tmp)
         except: pass
 
-def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, LocalVariableDB={}):
+def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
     global plain_memory_based_test_program
     global quex_buffer_based_test_program
     global test_program_common
@@ -213,8 +214,6 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
 
-    txt = get_loc
-    
     txt = test_program_db[Language]
     txt = txt.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
     txt = txt.replace("$$TEST_STRING$$", test_str)
@@ -282,8 +281,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
                                  LocalVariableDB):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr)
-    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SkipperSourceCode, EndStr)
-    txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF, LocalVariableDB)
+    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SkipperSourceCode, EndStr, LocalVariableDB)
+    txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
 
@@ -334,13 +333,15 @@ const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 $$__QUEX_OPTION_PLAIN_C$$
 #define __QUEX_OPTION_COUNTER
+#define QUEX_OPTION_LINE_NUMBER_COUNTING
+#define __QUEX_OPTION_COUNTER
+#define QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #define __QUEX_IF_COUNT_COLUMNS(EXPRESSION) EXPRESSION
 #define __QUEX_IF_COUNT_COLUMNS_SET(X)      ((me->counter._column_number_at_end) = (X))
 #define __QUEX_IF_COUNT_COLUMNS_ADD(X)      ((me->counter._column_number_at_end) += (X))
+#define QUEX_OPTION_LINE_NUMBER_COUNTING
 #define __QUEX_IF_COUNT_LINES(EXPRESSION)   EXPRESSION
 #define __QUEX_IF_COUNT_LINES_ADD(X)        ((me->counter._line_number_at_end) += (X))
-#define QUEX_OPTION_LINE_NUMBER_COUNTING
-#define QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
@@ -386,7 +387,7 @@ static           void  QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZ
  * is never defined.                                                          */
 """
 
-def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr):
+def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={}):
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
 
@@ -398,10 +399,11 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         ml_txt += "    break;\n"
 
     return blue_print(skipper_dedicated_unit_test_function_txt,
-                      [("$$MARKER_LIST$$",   ml_txt),
-                       ("$$SHOW_POSITION$$", show_position_str),
-                       ("$$SOURCE_CODE$$",   SourceCode),
-                       ("$$END_STR$$",       EndStr)])
+                      [("$$MARKER_LIST$$",     ml_txt),
+                       ("$$SHOW_POSITION$$",   show_position_str),
+                       ("$$LOCAL_VARIABLES$$", __local_variable_definitions(LocalVariableDB)),
+                       ("$$SOURCE_CODE$$",     SourceCode),
+                       ("$$END_STR$$",         EndStr)])
 
 
 skipper_dedicated_unit_test_function_txt = """
@@ -409,6 +411,8 @@ bool
 show_next_character(QUEX_NAME(Buffer)* buffer) {
     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
     QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
+$$LOCAL_VARIABLES$$
+
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
         QUEX_NAME(Buffer_mark_lexeme_start)(buffer);
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
