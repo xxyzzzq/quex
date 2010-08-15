@@ -250,6 +250,7 @@ quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
      QUEX_NAME($$MN$$).on_indent      = $on_indent;
+     QUEX_NAME($$MN$$).on_nodent      = $on_nodent;
      QUEX_NAME($$MN$$).on_dedent      = $on_dedent;
 #    endif
      QUEX_NAME($$MN$$).on_entry       = $on_entry;
@@ -265,6 +266,7 @@ def __get_mode_init_call(mode):
     
     analyzer_function = "QUEX_NAME(%s_analyzer_function)" % mode.name
     on_indent         = "QUEX_NAME(%s_on_indent)"         % mode.name
+    on_nodent         = "QUEX_NAME(%s_on_nodent)"         % mode.name
     on_dedent         = "QUEX_NAME(%s_on_dedent)"         % mode.name
     on_entry          = "QUEX_NAME(%s_on_entry)"          % mode.name
     on_exit           = "QUEX_NAME(%s_on_exit)"           % mode.name
@@ -284,6 +286,9 @@ def __get_mode_init_call(mode):
     if mode.get_code_fragment_list("on_indent") == []:
         on_indent = "QUEX_NAME(Mode_on_indent_dedent_null_function)"
 
+    if mode.get_code_fragment_list("on_nodent") == []:
+        on_nodent = "QUEX_NAME(Mode_on_nodent_null_function)"
+
     if mode.get_code_fragment_list("on_dedent") == []:
         on_dedent = "QUEX_NAME(Mode_on_indent_dedent_null_function)"
 
@@ -291,6 +296,7 @@ def __get_mode_init_call(mode):
                 [["$$MN$$",             mode.name],
                  ["$analyzer_function", analyzer_function],
                  ["$on_indent",         on_indent],
+                 ["$on_nodent",         on_nodent],
                  ["$on_dedent",         on_dedent],
                  ["$on_entry",          on_entry],
                  ["$on_exit",           on_exit],
@@ -316,12 +322,13 @@ def __get_mode_function_declaration(Modes, FriendF=False):
 
     txt = ""
     for mode in Modes:
-        if mode.options["inheritable"] != "only":
-            txt += __mode_functions(prolog, "__QUEX_TYPE_ANALYZER_RETURN_VALUE", 
-                                    ["analyzer_function"],
-                                    "QUEX_TYPE_ANALYZER*")
+        if mode.options["inheritable"] == "only": continue
 
-        for event_name in ["on_indent", "on_dedent"]:
+        txt += __mode_functions(prolog, "__QUEX_TYPE_ANALYZER_RETURN_VALUE", 
+                                ["analyzer_function"],
+                                "QUEX_TYPE_ANALYZER*")
+
+        for event_name in ["on_indent", "on_dedent", "on_nodent"]:
             if not mode.has_code_fragment_list(event_name): continue
             txt += __mode_functions(prolog, "void", [event_name], 
                                     "QUEX_TYPE_ANALYZER*, const size, const size_t")

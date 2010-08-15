@@ -152,39 +152,21 @@ QUEX_NAMESPACE_MAIN_OPEN
     struct  QUEX_NAME(TestAnalyzer_tag);
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#if defined(__QUEX_OPTION_COUNTER)
-#   define     __QUEX_COUNTER_LINE_N_INCREMENT(LN)     (++(LN))
-#   define     __QUEX_COUNTER_COLUMN_N_INCREMENT(CN)   (++(CN))
-#   define     __QUEX_COUNTER_COLUMN_N_SET(CN, V)      ((CN) = (V))
-#   define     __QUEX_COUNTER_COLUMN_N_ADD(CN, V)      ((CN) += (V))
+#if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
+#   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      EXPRESSION
+#   define     __QUEX_IF_COUNT_LINES_ADD(X)           ((me->counter._line_number_at_end) += (X))
 #else
-#   define     __QUEX_COUNTER_LINE_N_INCREMENT(LN)     /* empty */
-#   define     __QUEX_COUNTER_COLUMN_N_INCREMENT(CN)   /* empty */
-#   define     __QUEX_COUNTER_COLUMN_N_SET(CN, V)      /* empty */
+#   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      /* empty */
+#   define     __QUEX_IF_COUNT_LINES_ADD(X)           /* empty */
 #endif
-
-#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define     QUEX_TYPE_COUNTER               CounterLineColumnIndentation
-#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   CounterLineColumnIndentation_construct
-#   define     QUEX_TYPE_COUNTER_RESET         CounterLineColumnIndentation_reset
-#   define     QUEX_TYPE_COUNTER_PRINT_THIS    CounterLineColumnIndentation_print_this
-#   ifndef     QUEX_SETTING_INDENTATION_STACK_SIZE
-#      define  QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
-#   endif
-#   define     __QUEX_INDENTATION_NEWLINE_SUPRESSOR(C)  false
-#   define     __QUEX_INDENTATION_CHECK_WHITESPACE(C)   (C == ' ')
-#   define     __QUEX_INDENTATION_ADD_SINGLE(X, V)      (++(X))
-#   define     __QUEX_INDENTATION_ADD_CHUNK(X, SZ)      ((X) += (SZ))
-#elif  defined(__QUEX_OPTION_COUNTER)
-#   define     QUEX_TYPE_COUNTER               CounterLineColumn
-#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   CounterLineColumn_construct
-#   define     QUEX_TYPE_COUNTER_RESET         CounterLineColumn_reset
-#   define     QUEX_TYPE_COUNTER_PRINT_THIS    CounterLineColumn_print_this
+#if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
+#   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    EXPRESSION
+#   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         ((me->counter._column_number_at_end) = (X))
+#   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         ((me->counter._column_number_at_end) += (X))
 #else
-#   define     QUEX_TYPE_COUNTER               void*
-#   define     QUEX_TYPE_COUNTER_CONSTRUCTOR   /* empty */
-#   define     QUEX_TYPE_COUNTER_RESET         /* empty */
-#   define     QUEX_TYPE_COUNTER_PRINT_THIS    /* empty */
+#   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    /* empty */
+#   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         /* empty */
+#   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         /* empty */
 #endif
 
 /* For the utf8 printing: Name the function that converts the 

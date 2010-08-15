@@ -21,21 +21,15 @@ StrangeStream_str = ""
 if Language.find("StrangeStream") != -1:
     StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
-end_sequence = map(ord, "*/")
 
-TestStr  = "abcdefg*/hijklmnop*/qrstuvw*/xyz*/ok"
+def test(TestStr):
+    end_sequence = map(ord, "*/")
+    code_str = create_skipper_code(Language, TestStr, end_sequence)
+    compile_and_run(Language, code_str,
+                    StrangeStream_str=StrangeStream_str)
 
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence), 
-                StrangeStream_str=StrangeStream_str)
-
-TestStr  = "*/hijklmnop*/qrstuvw*/xyz*/"
-
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence),
-                StrangeStream_str=StrangeStream_str)
-
-TestStr  = "a*/h*/*/*/"
-
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence),
-                StrangeStream_str=StrangeStream_str)
+test("abcdefg*/hijklmnop*/qrstuvw*/xyz*/ok")
+test("*/hijklmnop*/qrstuvw*/xyz*/")
+test("a*/h*/*/*/")
 
 

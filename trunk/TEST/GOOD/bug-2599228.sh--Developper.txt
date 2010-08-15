@@ -58,10 +58,6 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-receiving.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/constructor.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/misc.i
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/counter/LineColumn
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/counter/LineColumn.i
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/counter/LineColumnIndentation
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/counter/LineColumnIndentation.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/CppTemplate.txt
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/default
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/validation

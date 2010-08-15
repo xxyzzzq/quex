@@ -205,13 +205,15 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
         try:    os.remove("%s.exe" % filename_tmp)
         except: pass
 
-def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
+def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, LocalVariableDB={}):
     global plain_memory_based_test_program
     global quex_buffer_based_test_program
     global test_program_common
 
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
+
+    txt = get_loc
     
     txt = test_program_db[Language]
     txt = txt.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
@@ -276,11 +278,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
 
 def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode, 
-                                 QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
+                                 QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
+                                 LocalVariableDB):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr)
     txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SkipperSourceCode, EndStr)
-    txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
+    txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF, LocalVariableDB)
 
     return txt
 
@@ -306,11 +309,11 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     end_str  = '    printf("end\\n");'
     end_str += '    analyzis_terminated_f = true; return;\n'
 
-    skipper_code = skipper.get_range_skipper(EndSequence, db["C++"], end_str)
+    skipper_code, local_variable_db = skipper.get_range_skipper(EndSequence, db["C++"], end_str)
 
     return __get_skipper_code_framework(Language, TestStr, skipper_code,
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
-                                        MarkerCharList=[]) # [EndSequence[0]])
+                                        MarkerCharList=[], LocalVariableDB=local_variable_db) # [EndSequence[0]])
 
 
 def action(PatternName): 
@@ -332,7 +335,10 @@ const int TKN_TERMINATION = 0;
 $$__QUEX_OPTION_PLAIN_C$$
 #define __QUEX_OPTION_COUNTER
 #define __QUEX_IF_COUNT_COLUMNS(EXPRESSION) EXPRESSION
+#define __QUEX_IF_COUNT_COLUMNS_SET(X)      ((me->counter._column_number_at_end) = (X))
+#define __QUEX_IF_COUNT_COLUMNS_ADD(X)      ((me->counter._column_number_at_end) += (X))
 #define __QUEX_IF_COUNT_LINES(EXPRESSION)   EXPRESSION
+#define __QUEX_IF_COUNT_LINES_ADD(X)        ((me->counter._line_number_at_end) += (X))
 #define QUEX_OPTION_LINE_NUMBER_COUNTING
 #define QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT

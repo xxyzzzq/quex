@@ -50,12 +50,7 @@ $$DROP_OUT$$
     }
 
 $$DROP_OUT_DIRECT$$
-$$LC_COUNT_END_PROCEDURE$$
-    /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
-     * The character we just swallowed must be re-considered by the main state machine.
-     * But, note that the initial state does not increment '_input_p'!
-     */
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
+    /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
     $$GOTO_START$$                           
 }
 """
@@ -143,10 +138,7 @@ def __counting_replacements(code_str, UniformF):
     else:
         end_procedure = "" # indentation has been counted during 'run'
 
-    end_procedure += \
-    "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-    "        self.counter._column_number_at_end = self.counter._indentation;\n" + \
-    "#       endif\n"
+    end_procedure += "        __QUEX_IF_COUNT_COLUMNS_ADD(self.counter._indentation);\n"
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],
