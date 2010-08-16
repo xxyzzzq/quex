@@ -61,15 +61,17 @@ def __local_variable_definitions(VariableDB):
 
         if "ComputedGoto" in info:
             txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
-        if "CountColumn" in info:
-            txt.append("#ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n")
+        if "CountColumns" in info:
+            txt.append("#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n")
         if "NotComputedGoto" in info:
             txt.append("#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
 
         txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
 
-        if ("ComputedGoto" in info) or ("NotComputedGoto" in info) or ("ColumnCount" in info):
+        if ("ComputedGoto" in info) or ("NotComputedGoto" in info):
             txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+        if  "CountColumns" in info:
+            txt.append("#endif /* QUEX_OPTION_COLUMN_NUMBER_COUNTING */\n")
 
     L = max(map(lambda info: len(info[0]), VariableDB.keys()))
     txt = []

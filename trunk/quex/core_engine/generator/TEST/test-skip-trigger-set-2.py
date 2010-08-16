@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.core_engine.interval_handling import NumberSet, Interval
 from generator_test import create_main_function, \
-                           create_skipper_code, \
+                           create_range_skipper_code, \
                            create_character_set_skipper_code, \
                            compile_and_run
 

@@ -2,8 +2,7 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   generator_test import create_main_function, \
-                             create_skipper_code, \
+from   generator_test import create_range_skipper_code, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
@@ -24,7 +23,7 @@ if Language.find("StrangeStream") != -1:
 
 def test(TestStr):
     end_sequence = map(ord, "*/")
-    code_str = create_skipper_code(Language, TestStr, end_sequence)
+    code_str = create_range_skipper_code(Language, TestStr, end_sequence)
     compile_and_run(Language, code_str,
                     StrangeStream_str=StrangeStream_str)
 

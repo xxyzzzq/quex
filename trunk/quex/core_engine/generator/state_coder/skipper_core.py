@@ -29,28 +29,26 @@ def do(SkipperDescriptor):
 def create_skip_range_code(ClosingSequence):
     LanguageDB   = Setup.language_db
 
-    code_str = get_range_skipper(ClosingSequence, LanguageDB) 
+    code_str, db = get_range_skipper(ClosingSequence, LanguageDB) 
 
     txt =    "{\n"                                          \
            + LanguageDB["$comment"]("Range skipper state")  \
            + code_str                                       \
            + "\n}\n"
 
-    db = { "column_count_p" : [ "QUEX_TYPE_CHARACTER_POSITION", "column_count_p", "CountColumn"] }
-
     return code_str, db
 
 def create_skip_code(CharacterSet):
     LanguageDB   = Setup.language_db
 
-    code_str = get_character_set_skipper(CharacterSet, LanguageDB)   
+    code_str, db = get_character_set_skipper(CharacterSet, LanguageDB)   
 
     txt =   "{\n"                                                 \
           + LanguageDB["$comment"]("Character set skipper state") \
           + code_str                                              \
           + "\n}\n"
 
-    return txt, {}
+    return txt, db
 
 range_skipper_template = """
 {
@@ -235,7 +233,10 @@ def get_range_skipper(EndSequence, LanguageDB, MissingClosingDelimiterAction="")
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
                            ["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
-    return code_str
+    local_variable_db = { "reference_p" : 
+                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
+
+    return code_str, local_variable_db
 
 
 trigger_set_skipper_template = """
@@ -342,8 +343,13 @@ def get_character_set_skipper(TriggerSet, LanguageDB):
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
                       ])
 
-    return blue_print(txt,
-                       [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
+    code_str = blue_print(txt,
+                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
+
+    local_variable_db = { "reference_p" : 
+                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
+
+    return code_str, local_variable_db
 
 def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferEndLimitCode):
     assert StartSequence.__class__  == list
@@ -382,7 +388,7 @@ lc_counter_in_loop = """
 #       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
         if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
             __QUEX_IF_COUNT_LINES(++(me->counter._line_number_at_end));
-            __QUEX_IF_COUNT_COLUMNS(column_count_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
+            __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
             __QUEX_IF_COUNT_COLUMNS(me->counter._column_number_at_end = (size_t)0);
         }
 #       endif
@@ -404,7 +410,7 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    variable_definition = "    __QUEX_IF_COUNT_COLUMNS(column_count_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    variable_definition = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     in_loop       = ""
     end_procedure = ""
@@ -434,10 +440,10 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
             end_procedure += "        __QUEX_IF_COUNT_COLUMNS_SET((size_t)%i);\n" % delimiter_tail_n 
     else:
         end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                        "                                    - column_count_p));\n" 
+                        "                                    - reference_p));\n" 
     before_reload  = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                     "                                - column_count_p));\n" 
-    after_reload   = "        __QUEX_IF_COUNT_COLUMNS(column_count_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+                     "                                - reference_p));\n" 
+    after_reload   = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     if new_line_detection_in_loop_enabled_f:
         in_loop = lc_counter_in_loop
@@ -469,17 +475,17 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    variable_definition = "    __QUEX_IF_COUNT_COLUMNS(column_count_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    variable_definition = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     in_loop       = ""
     # Does the end delimiter contain a newline?
     if CharacterSet.contains(ord("\n")): in_loop = lc_counter_in_loop
 
     end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                    "                                    - column_count_p_$$SKIPPER_INDEX$$));\n" 
+                    "                                    - reference_p));\n" 
     before_reload  = "       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                     "                                   - column_count_p_$$SKIPPER_INDEX$$));\n" 
-    after_reload   = "           __QUEX_IF_COUNT_COLUMNS(column_count_p_$$SKIPPER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n" 
+                     "                                   - reference_p));\n" 
+    after_reload   = "           __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n" 
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],

@@ -207,10 +207,6 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
         except: pass
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
-    global plain_memory_based_test_program
-    global quex_buffer_based_test_program
-    global test_program_common
-
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
 
@@ -275,13 +271,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     return generator.delete_unused_labels(txt)
 
-
-def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode, 
-                                 QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
-                                 LocalVariableDB):
+def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
+                                        QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
+                                        LocalVariableDB):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr)
-    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SkipperSourceCode, EndStr, LocalVariableDB)
+    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB)
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
@@ -291,18 +286,20 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    analyzis_terminated_f = true; return;\n'
 
-    skipper_code = skipper.get_character_set_skipper(TriggerSet, db["C++"])
+    skipper_code, local_variable_db = skipper.get_character_set_skipper(TriggerSet, db["C++"])
 
     marker_char_list = []
     for interval in TriggerSet.get_intervals():
         for char_code in range(interval.begin, interval.end):
             marker_char_list.append(char_code)
 
-    return __get_skipper_code_framework(Language, TestStr, skipper_code,
-                                        QuexBufferSize, CommentTestStrF=False, ShowPositionF=False, EndStr=end_str,
-                                        MarkerCharList=marker_char_list)
+    return create_customized_analyzer_function(Language, TestStr, skipper_code,
+                                               QuexBufferSize, CommentTestStrF=False, 
+                                               ShowPositionF=False, EndStr=end_str,
+                                               MarkerCharList=marker_char_list, LocalVariableDB=local_variable_db)
 
-def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
+def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, 
+                              CommentTestStrF=False, ShowPositionF=False):
     assert QuexBufferSize >= len(EndSequence) + 2
 
     end_str  = '    printf("end\\n");'
@@ -310,9 +307,9 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
 
     skipper_code, local_variable_db = skipper.get_range_skipper(EndSequence, db["C++"], end_str)
 
-    return __get_skipper_code_framework(Language, TestStr, skipper_code,
-                                        QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
-                                        MarkerCharList=[], LocalVariableDB=local_variable_db) # [EndSequence[0]])
+    return create_customized_analyzer_function(Language, TestStr, skipper_code,
+                                               QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
+                                               MarkerCharList=[], LocalVariableDB=local_variable_db) 
 
 
 def action(PatternName): 
@@ -411,7 +408,6 @@ bool
 show_next_character(QUEX_NAME(Buffer)* buffer) {
     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
     QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
-$$LOCAL_VARIABLES$$
 
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
         QUEX_NAME(Buffer_mark_lexeme_start)(buffer);
@@ -440,6 +436,8 @@ void QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
     QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
     const size_t                  PostContextStartPositionN      = 0;
     QUEX_TYPE_CHARACTER           input                          = 0x0;
+$$LOCAL_VARIABLES$$
+
 ENTRY:
     /* Skip irrelevant characters */
     while(1 + 1 == 2) { 

@@ -17,6 +17,18 @@ if len(sys.argv) < 2:
     print "Argument not acceptable, use --hwut-info"
     sys.exit(0)
 
+def test(TestStr, IndentationSetup):
+    end_sequence = map(ord, "*/")
+
+    code_str, db = indentation_counter.do(IndentationSetup)
+
+    txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
+                                              QuexBufferSize=1024, CommentTestStrF="", ShowPositionF=False, 
+                                              EndStr="", MarkerCharList="",
+                                              LocalVariableDB=local_variable_db)
+    compile_and_run(Language, code_str,
+                    StrangeStream_str=StrangeStream_str)
+
 indentation_setup = IndentationSetup()
 
 if "Uniform" in sys.argv:
@@ -29,7 +41,12 @@ TestStr  = "    :   :"
 Language = "Cpp"
 code_str = indentation_counter.do(indentation_setup)
 
-print "##", code_str
+test("   :   ", indentation_setup)
+test("\t", indentation_setup)
+test("\t\t", indentation_setup)
+test("\t\t", indentation_setup)
+
+# print "##", code_str
 # compile_and_run(Language, code_str)
 
 

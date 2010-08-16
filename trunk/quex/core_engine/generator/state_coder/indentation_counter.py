@@ -11,7 +11,7 @@ class IndentationCounter:
 template_str = """
 { 
     $$DELIMITER_COMMENT$$
-$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
+$$INIT_REFERENCE_POINTER$$
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
@@ -51,6 +51,7 @@ $$DROP_OUT$$
 
 $$DROP_OUT_DIRECT$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
+    $$END_PROCEDURE$$                           
     $$GOTO_START$$                           
 }
 """
@@ -64,7 +65,7 @@ def do(IndentationSetup):
     """
     assert IndentationSetup.__class__.__name__ == "IndentationSetup"
 
-    LanguageDB = Setup.language_db
+    LanguageDB    = Setup.language_db
 
     counter_index = sm_index.get()
     
@@ -72,12 +73,23 @@ def do(IndentationSetup):
     # That means: As long as characters of the trigger set appear, we go to the loop start.
 
     trigger_map = []
-    UniformF = IndentationSetup.has_only_single_spaces()
-    if UniformF:
+    if IndentationSetup.has_only_single_spaces():
+        # Count indentation/column at end of run;
+        # simply: current position - reference_p
+
         character_set = IndentationSetup.space_db.values()[0]
         for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
             trigger_map.append([interval, counter_index])
+
+        # Reference Pointer: Define Variable, Initialize, determine how to subtact.
+        local_variable_db = { "reference_p" : 
+                              [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
+        init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);"
+        end_procedure     = \
+        "        self.counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n" 
     else:
+        # Count the indentation/column during the 'run'
+
         # Add the space counters
         for count, character_set in IndentationSetup.space_db.items():
             for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
@@ -87,17 +99,25 @@ def do(IndentationSetup):
             for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
                 trigger_map.append([interval, IndentationCounter("grid", count)])
 
+        # Reference Pointer: Not required.
+        #                    No subtraction 'current_position - reference_p'.
+        local_variable_db = {}
+        end_procedure     = "" 
+        init_reference_p  = "" 
+
     iteration_code = "".join(transition_block.do(trigger_map, counter_index, DSM=None))
 
-    comment_str = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
+    comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
 
-    # Line and column number counting is off:
-    #    -- No newline can occur
-    #    -- column number = indentation at the end of the process
-    code_str = __counting_replacements(template_str, UniformF)
+    # NOTE: Line and column number counting is off
+    #       -- No newline can occur
+    #       -- column number = indentation at the end of the process
+
+    end_procedure += "        __QUEX_IF_COUNT_COLUMNS_ADD(self.counter._indentation);\n"
+    end_procedure += "        QUEX_NAME(on_indentation)(self.counter._indentation, reference_p);\n"
 
     # The finishing touch
-    txt = blue_print(code_str,
+    txt = blue_print(template_str,
                       [
                        ["$$DELIMITER_COMMENT$$",              comment_str],
                        ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
@@ -119,28 +139,12 @@ def do(IndentationSetup):
                        ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
                        ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
+                       ["$$INIT_REFERENCE_POINTER$$",         init_reference_p],
+                       ["$$END_PROCEDURE$$",                  end_procedure],
                       ])
 
-    return blue_print(txt,
-                       [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
+    txt = blue_print(txt,
+                     [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
 
-def __counting_replacements(code_str, UniformF):
+    return txt, local_variable_db
 
-    variable_definition = \
-    "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-    "    QUEX_TYPE_CHARACTER_POSITION  line_begin_p_$$COUNTER_INDEX$$ = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n"+\
-    "#   endif\n"
-
-    if UniformF:
-        end_procedure = \
-        "        self.counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-        "                                    - line_begin_p_$$COUNTER_INDEX$$);\n" 
-    else:
-        end_procedure = "" # indentation has been counted during 'run'
-
-    end_procedure += "        __QUEX_IF_COUNT_COLUMNS_ADD(self.counter._indentation);\n"
-
-    return blue_print(code_str,
-                     [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],
-                      ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
-                      ])

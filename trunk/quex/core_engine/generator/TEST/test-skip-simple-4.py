@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   generator_test import create_main_function, \
-                             create_skipper_code, \
+                             create_range_skipper_code, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
@@ -38,14 +38,14 @@ for x in SEP:
 
 TestStr  = "abcdefg" + fragment + "hijklmnop" + fragment + "qrstuvw" + fragment + "xyz" + fragment + "ab"
 
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 TestStr  = fragment + "hijklmnop" + fragment + "qrstuvw" + fragment + "xyz" + fragment
 
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 TestStr  = "a" + fragment + "h" 
 
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+compile_and_run(Language, create_range_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 
