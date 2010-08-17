@@ -21,9 +21,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN** result_pp)
     { 
-#       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        register QUEX_TYPE_TOKEN* result_p = 0x0;
-#       endif
+        __QUEX_IF_TOKEN_REPETITION_SUPPORT(register QUEX_TYPE_TOKEN* result_p = 0x0);
+
 #       if defined(QUEX_OPTION_ASSERTS) && defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
         if( QUEX_NAME(TokenQueue_begin)(&me->_token_queue) == 0x0 ) {
             QUEX_ERROR_EXIT("Token queue has not been set before call to .receive().\n"

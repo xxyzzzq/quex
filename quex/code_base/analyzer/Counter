@@ -12,6 +12,12 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct {
+        size_t   begin[QUEX_SETTING_INDENTATION_STACK_SIZE];
+        size_t*  end;
+        size_t*  memory_end;
+    } QUEX_NAME(IndentationStack);
+
+    typedef struct {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         size_t  _line_number_at_begin;    /* line where current pattern starts   */
         size_t  _line_number_at_end;      /* line after current pattern          */
@@ -21,7 +27,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t  _column_number_at_end;    /* column after current pattern        */
 #       endif
 #       ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-        size_t  _indentation;
+#       QUEX_NAME(IndentationStack) _indentation_stack;
+        size_t                      _indentation;
 #       endif
     } QUEX_NAME(Counter);
 
