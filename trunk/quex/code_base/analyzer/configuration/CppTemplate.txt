@@ -95,6 +95,13 @@ $$SWITCH$$ QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
 #ifndef QUEX_OPTION_TOKEN_REPETITION_SUPPORT_DISABLED
 $$SWITCH$$ QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 #endif
+#ifdef  QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT(EXPRESSION)          EXPRESSION
+#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(EXPRESSION) /* empty */
+#else
+#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT(EXPRESSION)          /* empty */
+#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(EXPRESSION) EXPRESSION
+#endif
 
 /* OPTIONS: ____________________________________________________________________
  *
@@ -236,6 +243,11 @@ $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
  * class must be setup for indentation counting. The following flag is
  * defined or undefined by the lexical analyser generator quex.         */
 $$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
+#      define QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
+#   endif
+#endif
   
 /* Quex can determine whether certain handlers are not used at all.
  * If so, computation time can be spared and quex comments the following
@@ -400,11 +412,9 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
 #endif
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
-#else
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
-#endif
+/* For the utf8 printing: Name the function that converts the 
+ * specific codec to utf8 representation.                       */
+#define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME($$CODEC_NAME$$_to_utf8_string)
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
  * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
@@ -442,6 +452,12 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #     endif
 #endif
 
+#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
+#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
+#else
+#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
+#endif
+
 #if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
 #   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      EXPRESSION
 #   define     __QUEX_IF_COUNT_LINES_ADD(X)           ((me->counter._line_number_at_end) += (X))
@@ -458,16 +474,12 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         /* empty */
 #   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         /* empty */
 #endif
-
-#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
-#      define QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
-#   endif
+#if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define     __QUEX_IF_COUNT_INDENTATION(EXPRESSION) EXPRESSION
+#else
+#   define     __QUEX_IF_COUNT_INDENTATION(EXPRESSION) /* empty */
 #endif
 
-/* For the utf8 printing: Name the function that converts the 
- * specific codec to utf8 representation.                       */
-#define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME($$CODEC_NAME$$_to_utf8_string)
 
 /* Decide about computed gotos */
 #if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
@@ -478,6 +490,7 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #       endif
 #   endif
 #endif
+
  
 QUEX_NAMESPACE_MAIN_OPEN 
     struct QUEX_NAME(Engine_tag);

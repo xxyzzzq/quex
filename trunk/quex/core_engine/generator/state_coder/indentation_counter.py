@@ -16,11 +16,6 @@ $$INIT_REFERENCE_POINTER$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
 
-    /* NOTE: For simple skippers the end of content does not have to be overwriten 
-     *       with anything (as done for range skippers). This is so, because the abort
-     *       criteria is that a character occurs which does not belong to the trigger 
-     *       set. The BufferLimitCode, though, does never belong to any trigger set and
-     *       thus, no special character is to be set.                                   */
 $$LOOP_START$$
     $$INPUT_GET$$ 
 $$ON_TRIGGER_SET_TO_LOOP_START$$
@@ -86,7 +81,7 @@ def do(IndentationSetup):
                               [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
         init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);"
         end_procedure     = \
-        "        self.counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n" 
+        "    me->counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n" 
     else:
         # Count the indentation/column during the 'run'
 
@@ -113,8 +108,8 @@ def do(IndentationSetup):
     #       -- No newline can occur
     #       -- column number = indentation at the end of the process
 
-    end_procedure += "        __QUEX_IF_COUNT_COLUMNS_ADD(self.counter._indentation);\n"
-    end_procedure += "        QUEX_NAME(on_indentation)(self.counter._indentation, reference_p);\n"
+    end_procedure += "    __QUEX_IF_COUNT_COLUMNS_ADD(me->counter._indentation);\n"
+    end_procedure += "    QUEX_NAME(on_indentation)(me->counter._indentation, reference_p);\n"
 
     # The finishing touch
     txt = blue_print(template_str,

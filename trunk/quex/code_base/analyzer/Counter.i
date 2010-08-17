@@ -14,6 +14,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_IF_COUNT_LINES(me->_line_number_at_end   = (size_t)1);
         __QUEX_IF_COUNT_COLUMNS(me->_column_number_at_begin = (size_t)0);
         __QUEX_IF_COUNT_COLUMNS(me->_column_number_at_end   = (size_t)1); 
+	    __QUEX_IF_COUNT_INDENTATION(QUEX_NAME(IndentationStack_init)(me->_indentation_stack));
     }
 
     QUEX_INLINE void
@@ -122,9 +123,77 @@ QUEX_NAMESPACE_MAIN_OPEN
         return it;
     }
 
+#   if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+    QUEX_NAME(on_indentation)(QUEX_TYPE_ANALYZER* me, size_t Indentation, QUEX_TYPE_CHARACTER* Begin)
+    {
+        __QUEX_IF_TOKEN_REPETITION_SUPPORT(size_t i = 0);
+
+        if( Indentation > IndentationStack_back() ) {
+#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT
+            self_send(QUEX_TKN_BLOCK_OPEN);
+            IndentationStack_push(&self.indentation_stack, (uint16_t)Indentation);
+#           else
+            me->current_mode->on_indent(me, Begin, me->buffer._input_p);
+#           endif
+            return;
+        }
+
+        while( IndentationStack_back() > Indentation ) {
+            __QUEX_IF_TOKEN_REPETITION_SUPPORT(++i);
+#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT
+            __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(self_send(QUEX_TKN_BLOCK_CLOSE));
+#           endif
+            IndentationStack_pop(&self.indentation_stack);
+        }
+
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT
+        __QUEX_IF_TOKEN_REPETITION_SUPPORT(if( i != 0 ) self_send_n(i, QUEX_TKN_BLOCK_CLOSE));     
+#       else
+        if( i != 0 ) me->current_mode->on_dedent(me, i, Begin, me->buffer._input_p);
+        else         me->current_mode->on_nodent(me, Begin, me->buffer._input_p);
+#       endif
+
+        /* -- 'landing' indentation has to fit an indentation border
+         *    if not send an error.                                  */
+        if( IndentationStack_back() != Indentation ) {
+            self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION);
+        }
+    }
+
+	QUEX_INLINE void
+	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me)
+	{
+        me->end        = me->begin;
+        me->memory_end = me->begin + QUEX_SETTING_INDENTATION_STACK_SIZE;
+        
+        /* first indentation at column = 0 */
+        IndentationStack_push(0);
+        /* Default: Do not allow to open a sub-block. Constructs like 'for' loops
+        * 'if' blocks etc. should allow the opening of an indentation. */
+	}
+	
+	
+	QUEX_INLINE void
+	QUEX_NAME(IndentationStack_push)(QUEX_NAME(IndentationStack)* me, size_t Indentation)
+	{
+        if( me->end == me->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
+        *(me->end++) = Indentation;
+	}
+	
+	QUEX_INLINE size_t
+	QUEX_NAME(IndentationStack_pop)(QUEX_NAME(IndentationStack)* me)
+	{
+        __quex_assert( me->end != me->begin );
+        return *(--(me->end));
+	}
+	
+#   endif
+
     QUEX_INLINE void 
     QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me)
     {
+        __QUEX_IF_COUNT_INDENTATION(size_t* iterator = 0x0);
+
         __QUEX_STD_printf("   Counter:\n");
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
@@ -133,6 +202,14 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
         __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
         __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
+#       endif
+#       ifdef  __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        __QUEX_STD_printf("   _indentation = %i;\n", (int)me->_indentation);
+        __QUEX_STD_printf("   _indentation_stack = {");
+        for(iterator = me->_indentation_stack.begin; iterator != me->_indentation_stack.end; ++iterator) {
+            __QUEX_STD_printf("%i, ", (int)me->_indentation);
+        }
+        __QUEX_STD_printf("}");
 #       endif
     }
 

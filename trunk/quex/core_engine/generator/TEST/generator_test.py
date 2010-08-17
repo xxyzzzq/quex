@@ -395,7 +395,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     else:
         ml_txt += "    break;\n"
 
-    return blue_print(skipper_dedicated_unit_test_function_txt,
+    return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",     ml_txt),
                        ("$$SHOW_POSITION$$",   show_position_str),
                        ("$$LOCAL_VARIABLES$$", __local_variable_definitions(LocalVariableDB)),
@@ -403,7 +403,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
                        ("$$END_STR$$",         EndStr)])
 
 
-skipper_dedicated_unit_test_function_txt = """
+customized_unit_test_function_txt = """
 bool
 show_next_character(QUEX_NAME(Buffer)* buffer) {
     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
