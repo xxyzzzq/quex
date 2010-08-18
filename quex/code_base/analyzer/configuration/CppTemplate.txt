@@ -247,6 +247,9 @@ $$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
 #      define QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
 #   endif
+#   ifndef    QUEX_TYPE_INDENTATION
+#      define QUEX_TYPE_INDENTATION  size_t
+#   endif
 #endif
   
 /* Quex can determine whether certain handlers are not used at all.

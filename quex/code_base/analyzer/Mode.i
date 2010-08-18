@@ -20,9 +20,22 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_indent_dedent_null_function)(QUEX_TYPE_ANALYZER* me, 
-                                                   const size_t        OpenOrCloseN) 
-                                                   const size_t        Indentation) 
+    QUEX_NAME(Mode_on_indent_null_function)(QUEX_TYPE_ANALYZER*    me, 
+                                            QUEX_TYPE_CHARACTER*   LexemeBegin, 
+                                            QUEX_TYPE_CHARACTER*   LexemeEnd)
+
+    { }
+    QUEX_INLINE void
+    QUEX_NAME(Mode_on_dedent_null_function)(QUEX_TYPE_ANALYZER*    me, 
+                                            size_t                 ClosedN, 
+                                            QUEX_TYPE_CHARACTER*   LexemeBegin, 
+                                            QUEX_TYPE_CHARACTER*   LexemeEnd)
+
+    { }
+    QUEX_INLINE void
+    QUEX_NAME(Mode_on_nodent_null_function)(QUEX_TYPE_ANALYZER*   me, 
+                                            QUEX_TYPE_CHARACTER*  LexemeBegin, 
+                                            QUEX_TYPE_CHARACTER*  LexemeEnd)
     { }
 #   endif
 
