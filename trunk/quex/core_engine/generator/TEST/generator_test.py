@@ -343,11 +343,17 @@ $$__QUEX_OPTION_PLAIN_C$$
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+#define QUEX_SETTING_INDENTATION_STACK_SIZE (8)
+#define __QUEX_IF_COUNT_INDENTATION(EXPRESSION)        EXPRESSION
+#define __QUEX_IF_TOKEN_REPETITION_SUPPORT(EXPRESSION) /* */
+#define QUEX_TYPE_INDENTATION                          uint8_t
+#define QUEX_TKN_ERROR_MISALIGNED_INDENTATION          777
+
 #include <quex/code_base/analyzer/configuration/default>
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     namespace quex {
 #endif
-typedef struct {} QUEX_TYPE0_TOKEN;
+typedef struct { size_t _id; } QUEX_TYPE0_TOKEN;
 void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}
 void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #if ! defined (__QUEX_OPTION_PLAIN_C)
@@ -366,6 +372,9 @@ void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
 #include <quex/code_base/test_environment/TestAnalyzer>
 #include <quex/code_base/token/TokenQueue>
 #include <quex/code_base/token/TokenQueue.i>
+#include <quex/code_base/analyzer/member/token-sending>
+#include <quex/code_base/analyzer/Mode>
+#include <quex/code_base/analyzer/Mode.i>
 #include <quex/code_base/analyzer/member/basic.i>
 #include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/Counter.i>

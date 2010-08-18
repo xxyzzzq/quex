@@ -28,11 +28,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
 
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indent)(QUEX_TYPE_ANALYZER*, const size_t OpenN, const size_t Indentation, 
+        void (*on_indent)(QUEX_TYPE_ANALYZER*, 
+                          QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
+        void (*on_dedent)(QUEX_TYPE_ANALYZER*, size_t ClosedN, 
                           QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
         void (*on_nodent)(QUEX_TYPE_ANALYZER*, 
-                          QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
-        void (*on_dedent)(QUEX_TYPE_ANALYZER*, const size_t ClosedN, const size_t Indentation,
                           QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
 #       endif
         void (*on_entry)(QUEX_TYPE_ANALYZER*, const struct QUEX_NAME(Mode_tag)* FromMode);
@@ -49,8 +49,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     QUEX_INLINE void
-    QUEX_NAME(Mode_on_indent_dedent_null_function)(QUEX_TYPE_ANALYZER*, const size_t ClosedN, const size_t Indentation,
-                                                   QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
+    QUEX_NAME(Mode_on_indent_null_function)(QUEX_TYPE_ANALYZER*, 
+                                            QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
+    QUEX_INLINE void
+    QUEX_NAME(Mode_on_dedent_null_function)(QUEX_TYPE_ANALYZER*, size_t ClosedN, 
+                                            QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
     QUEX_INLINE void
     QUEX_NAME(Mode_on_nodent_null_function)(QUEX_TYPE_ANALYZER*, 
                                             QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd);
