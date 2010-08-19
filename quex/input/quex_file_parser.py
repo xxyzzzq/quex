@@ -183,7 +183,7 @@ def parse_section(fh):
             # When the first mode is parsed then a token_type definition must be 
             # present. If not, the default token type definition is considered.
             if lexer_mode.token_type_definition == None:
-                sub_fh = open_file_or_die(Setup.QUEX_INSTALLATION_DIR 
+                sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
                                           + Setup.language_db["$code_base"] 
                                           + Setup.language_db["$token-default-file"])
                 parse_section(sub_fh)

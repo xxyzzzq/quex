@@ -31,14 +31,17 @@
 $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 
+/* NOTE: The check for the 'C++/C' version and the Assert derivation
+ *       are not to be located in 'quex/code_base/configuration/validation'
+ *       or 'quex/code_base/configuration/derived' -- errors would be hard to find .*/ 
 #if ! defined(__QUEX_OPTION_PLAIN_C) && ! defined(__cplusplus)
 #   error "__QUEX_OPTION_PLAIN_C must be defined if no C++ compiler is used! Call quex with option '--language C'."
 #endif
 
-/* By default ASSERTS are enabled ! */
 #if defined(__QUEX_INCLUDE_INDICATOR__ASSERTS)
 #   error "Asserts have been adapted before the inclusion of the configuration file."
 #endif
+#
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
 #   ifdef     QUEX_OPTION_ASSERTS
 #      undef  QUEX_OPTION_ASSERTS
@@ -95,13 +98,6 @@ $$SWITCH$$ QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
 #ifndef QUEX_OPTION_TOKEN_REPETITION_SUPPORT_DISABLED
 $$SWITCH$$ QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 #endif
-#ifdef  QUEX_OPTION_TOKEN_REPETITION_SUPPORT
-#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT(EXPRESSION)          EXPRESSION
-#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(EXPRESSION) /* empty */
-#else
-#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT(EXPRESSION)          /* empty */
-#   define __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(EXPRESSION) EXPRESSION
-#endif
 
 /* OPTIONS: ____________________________________________________________________
  *
@@ -115,21 +111,12 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 #ifndef    QUEX_OPTION_LINE_NUMBER_COUNTING            
 $$SWITCH$$ QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
-#ifdef    QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
-#   undef QUEX_OPTION_LINE_NUMBER_COUNTING
-#endif
 #ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
 $$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING       
-#endif
-#ifdef    QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
-#   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #endif
 
 #ifndef QUEX_OPTION_POST_CATEGORIZER
 $$SWITCH$$ QUEX_OPTION_POST_CATEGORIZER
-#endif
-#ifdef    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
-#   undef QUEX_OPTION_POST_CATEGORIZER
 #endif
 
 /* Mode Transitions:
@@ -138,9 +125,6 @@ $$SWITCH$$ QUEX_OPTION_POST_CATEGORIZER
  *    by commenting the following option out.                                  */
 #ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 $$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-#endif
-#ifdef    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
-#   undef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #endif
 
 #ifndef    QUEX_SETTING_MODE_STACK_SIZE 
@@ -157,31 +141,16 @@ $$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
 $$SWITCH$$ QUEX_OPTION_DEBUG_TOKEN_SENDING
 #endif
-#ifdef    QUEX_OPTION_DEBUG_TOKEN_SENDING_DISABLED
-#   undef QUEX_OPTION_DEBUG_TOKEN_SENDING
-#endif
-#ifndef    QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED
-#   define QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE
-#endif
 #ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 $$SWITCH$$ QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #endif
-#ifdef    QUEX_OPTION_DEBUG_MODE_TRANSITIONS_DISABLED
-#   undef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-#endif
 #ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 $$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-#endif
-#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES_DISABLED
-#   undef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #endif
 
 /* Include Stack Support                                                  */
 #ifndef   QUEX_OPTION_INCLUDE_STACK
 $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
-#endif
-#ifdef    QUEX_OPTION_INCLUDE_STACK_DISABLED
-#   undef QUEX_OPTION_INCLUDE_STACK
 #endif
 
 /* BLC -- Buffer Limit Code:
@@ -212,11 +181,6 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
  *       pre-processor comparisons.                                       */
 #ifndef     QUEX_SETTING_BUFFER_SIZE
 #    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
-#endif
-/* The fallback number of bytes can either be defined here, or left for
- * an automatic definition below in the 'Derived' section.                */
-#ifndef        QUEX_SETTING_BUFFER_MIN_FALLBACK_N
-/* #    define QUEX_SETTING_BUFFER_MIN_FALLBACK_N ... left for auto def.  */
 #endif
 
 #ifndef    QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
@@ -256,21 +220,9 @@ $$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
  * If so, computation time can be spared and quex comments the following
  * options out.                                                         */
 $$SWITCH$$ __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-#ifdef    __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
-#   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-#endif
 $$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-#ifdef    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
-#   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-#endif
 $$SWITCH$$ QUEX_OPTION_ENABLE_ICONV
-#ifdef    QUEX_OPTION_ENABLE_ICONV_DISABLED
-#   undef QUEX_OPTION_ENABLE_ICONV
-#endif
 $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
-#ifdef    QUEX_OPTION_ENABLE_ICU_DISABLED
-#   undef QUEX_OPTION_ENABLE_ICU
-#endif
 #if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
 #    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
@@ -287,27 +239,13 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
 #endif
 
-#ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
-#   if   defined (QUEX_OPTION_ENABLE_ICONV)
-#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_IConv_new)
-#   elif defined (QUEX_OPTION_ENABLE_ICU)
-#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(Converter_ICU_new)
-#   else
-#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QUEX_NAME(__Converter_EMPTY_new)
-#   endif
-#endif
-
 /* Begin of line pre-condition requires an extra flag in the buffer
  * structure. Only out-comment this in case of tough memory restrictions,
  * if no begin of line pre-condition is required.                            */
 $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#ifdef     __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
-#   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#endif
 
 #define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
 
-/* Derived */
 #if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
 #   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
 #      error "QUEX_SETTING_BUFFER_SIZE not defined at this place."
@@ -329,47 +267,8 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   endif
 #endif
 
-/* Special Case MinGW: At the time of this writing (2009y09m23d) it does 
- * not support 'wchart_t'.                                                */
-#if      (defined (__GLIBCPP__) || defined(__GLIBCXX__)) \
-    && ! defined  (_GLIBCXX_USE_WCHAR_T)
-#   define  __QUEX_OPTION_WCHAR_T_DISABLED
-#endif
-#ifndef     __QUEX_OPTION_WCHAR_T_DISABLED
-#   define  __QUEX_OPTION_WCHAR_T
-#endif
-
-/* Tokens may be 'stamped' with the line an column number automatically.
- * This happens by means of the option 
- *      
- *       QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
- *
- * It is active by default only for queue token policies, because after
- * a call to .receive(), the lexical analyzer maintains only the position
- * of the last token in the queue. The positions of other tokens would
- * not be accessible once they are in the queue. 
- * 
- * The token policy 'users_token' only communicates one token at a time
- * and the line and column numbers in the lexical analyzer are those
- * of the last token. Thus, in this case the tokens do not need to be 
- * stamped with the position in the file.                                */
-#ifndef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
-#    ifndef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#       define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#    endif
-#else
-#    ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#        undef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-#    endif
-#endif
-
 /* Following switch is also set, if a user defined converter is defined.     */
 $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
-#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
-#   ifndef    __QUEX_OPTION_CONVERTER_ENABLED
-#      define __QUEX_OPTION_CONVERTER_ENABLED
-#   endif
-#endif
 
 /* Type Definitions 
  *
@@ -445,56 +344,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
 #define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
 
-#if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
-    || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
-    || defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)       
-#     define  __QUEX_OPTION_COUNTER
-#else
-#     if defined(__QUEX_OPTION_COUNTER)  
-#        undef   __QUEX_OPTION_COUNTER
-#     endif
-#endif
-
-#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
-#else
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
-#endif
-
-#if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
-#   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      EXPRESSION
-#   define     __QUEX_IF_COUNT_LINES_ADD(X)           ((me->counter._line_number_at_end) += (X))
-#else
-#   define     __QUEX_IF_COUNT_LINES(EXPRESSION)      /* empty */
-#   define     __QUEX_IF_COUNT_LINES_ADD(X)           /* empty */
-#endif
-#if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   
-#   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    EXPRESSION
-#   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         ((me->counter._column_number_at_end) = (X))
-#   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         ((me->counter._column_number_at_end) += (X))
-#else
-#   define     __QUEX_IF_COUNT_COLUMNS(EXPRESSION)    /* empty */
-#   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         /* empty */
-#   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         /* empty */
-#endif
-#if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define     __QUEX_IF_COUNT_INDENTATION(EXPRESSION) EXPRESSION
-#else
-#   define     __QUEX_IF_COUNT_INDENTATION(EXPRESSION) /* empty */
-#endif
-
-
-/* Decide about computed gotos */
-#if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
-#   if    defined(__GNUC__) \
-       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
-#       if ! defined(__QUEX_OPTION_USE_COMPUTED_GOTOS)
-#           define __QUEX_OPTION_USE_COMPUTED_GOTOS
-#       endif
-#   endif
-#endif
-
- 
 QUEX_NAMESPACE_MAIN_OPEN 
     struct QUEX_NAME(Engine_tag);
     struct QUEX_NAME(Memento_tag);
@@ -505,5 +354,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     class  $$LEXER_CLASS_NAME$$;
 #   endif
 QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/analyzer/configuration/derived>
+
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */

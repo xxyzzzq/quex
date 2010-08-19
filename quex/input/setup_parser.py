@@ -150,11 +150,8 @@ def do(argv):
     setup.language_db = quex_core_engine_generator_languages_db[setup.language]
 
     # (*) Output files
-    setup.output_code_file          = __prepare_file_name(setup.language_db["$file_extension"])
-    setup.output_file_stem          = __prepare_file_name("")
-    setup.output_configuration_file = __prepare_file_name("-configuration")
-    setup.output_token_id_file      = __prepare_file_name("-token_ids")
-    setup.output_token_class_file   = __prepare_file_name("-token")
+    prepare_file_names(setup)
+
     if setup.engine_character_encoding != "":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
         # See Internal engine character encoding'
@@ -168,13 +165,8 @@ def do(argv):
     else:
         setup.byte_order_is_that_of_current_system_f = False
 
-    setup.compression_template_coef   = __get_float("compression_template_coef")
-    setup.buffer_limit_code           = __get_integer("buffer_limit_code")
-    setup.path_limit_code             = __get_integer("path_limit_code")
+    make_numbers(setup)
 
-    setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
-    setup.token_queue_size           = __get_integer("token_queue_size")
-    setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
     validate(setup, command_line, argv)
 
     if setup.token_id_foreign_definition_file != "": 
@@ -261,7 +253,7 @@ def validate(setup, command_line, argv):
             error_msg("choice for '--bytes-per-trigger': '%s'\n" % bpc + \
                       "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
         else:
-            setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
+            setup.bytes_per_ucs_code_point = __get_integer("bytes_per_ucs_code_point")
 
     elif bpc not in ["wchar_t", ""]:
         error_msg("choice for '--bytes-per-trigger': '%s'\n" % bpc + \
@@ -396,6 +388,22 @@ def __get_float(MemberName):
     except:
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
         error_msg("Cannot convert '%s' into an floating point number for '%s'" % (ValueStr, option_name))
+
+def prepare_file_names(setup):
+    setup.output_code_file          = __prepare_file_name(setup.language_db["$file_extension"])
+    setup.output_file_stem          = __prepare_file_name("")
+    setup.output_configuration_file = __prepare_file_name("-configuration")
+    setup.output_token_id_file      = __prepare_file_name("-token_ids")
+    setup.output_token_class_file   = __prepare_file_name("-token")
+
+def make_numbers(setup):
+    setup.compression_template_coef  = __get_float("compression_template_coef")
+    setup.buffer_limit_code          = __get_integer("buffer_limit_code")
+    setup.path_limit_code            = __get_integer("path_limit_code")
+
+    setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
+    setup.token_queue_size           = __get_integer("token_queue_size")
+    setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]
