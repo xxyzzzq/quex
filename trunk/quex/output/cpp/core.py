@@ -11,21 +11,21 @@ from quex.frs_py.file_in  import get_file_content_or_die, \
 import quex.lexer_mode  as lexer_mode
 from   quex.input.setup import setup as Setup
 
-def do(Modes, IndentationSupportF, BeginOfLineSupportF):
+def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
     assert lexer_mode.token_type_definition != None
 
-    header_engine_txt, code_engine_txt = write_engine_header(Modes)
-    header_configuration_txt           = write_configuration_header(Modes, 
+    header_engine_txt, code_engine_txt = write_engine_header(ModeDB)
+    header_configuration_txt           = write_configuration_header(ModeDB, 
                                                                     IndentationSupportF, 
                                                                     BeginOfLineSupportF)
 
     return header_engine_txt, code_engine_txt, header_configuration_txt
 
-def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
+def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF):
     LexerClassName = Setup.analyzer_class_name
     LanguageDB     = Setup.language_db
 
-    ConfigurationTemplateFile = os.path.normpath(Setup.QUEX_INSTALLATION_DIR 
+    ConfigurationTemplateFile = os.path.normpath(os.environ["QUEX_PATH"]
                                    + Setup.language_db["$code_base"] 
                                    + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
 
@@ -34,7 +34,7 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     # -- check if exit/entry handlers have to be active
     entry_handler_active_f = False
     exit_handler_active_f = False
-    for mode in Modes.values():
+    for mode in ModeDB.values():
         if mode.get_code_fragment_list("on_entry") != []: entry_handler_active_f = True
         if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
 
@@ -59,14 +59,14 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
                                    "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
 
-    txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        True)        
+    txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        Setup.count_column_number_f)        
     txt = __switch(txt, "QUEX_OPTION_DEBUG_MODE_TRANSITIONS",        Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES",    Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_TOKEN_SENDING",           Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_ENABLE_ICONV",                  Setup.converter_iconv_f)
     txt = __switch(txt, "QUEX_OPTION_ENABLE_ICU",                    Setup.converter_icu_f)
     txt = __switch(txt, "QUEX_OPTION_INCLUDE_STACK",                 Setup.include_stack_support_f)
-    txt = __switch(txt, "QUEX_OPTION_LINE_NUMBER_COUNTING",          True)      
+    txt = __switch(txt, "QUEX_OPTION_LINE_NUMBER_COUNTING",          Setup.count_line_number_f)      
     txt = __switch(txt, "QUEX_OPTION_POST_CATEGORIZER",              Setup.post_categorizer_f)
     txt = __switch(txt, "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK", Setup.mode_transition_check_f)
     txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
@@ -113,7 +113,7 @@ def write_configuration_header(Modes, IndentationSupportF, BeginOfLineSupportF):
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_CLASS_NAME_SAFE$$",      Setup.analyzer_name_safe],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.analyzer_derived_class_name],
-             ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
+             ["$$MAX_MODE_CLASS_N$$",           repr(len(ModeDB))],
              ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
              ["$$NAMESPACE_MAIN_CLOSE$$",       Setup.language_db["$namespace-close"](Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_MAIN_OPEN$$",        Setup.language_db["$namespace-open"](Setup.analyzer_name_space).replace("\n", "\\\n")],
@@ -159,7 +159,7 @@ def write_constructor_and_memento_functions(ModeDB):
                 ])
     return func_txt
 
-def write_engine_header(Modes):
+def write_engine_header(ModeDB):
 
     QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                                    + Setup.language_db["$code_base"] 
@@ -177,7 +177,7 @@ def write_engine_header(Modes):
 
     mode_id_definition_str = "" 
     # NOTE: First mode-id needs to be '1' for compatibility with flex generated engines
-    for i, info in enumerate(Modes.items()):
+    for i, info in enumerate(ModeDB.items()):
         name = info[0]
         mode = info[1]
         if mode.options["inheritable"] == "only": continue
@@ -189,7 +189,7 @@ def write_engine_header(Modes):
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
     mode_specific_functions_txt, \
-    friend_txt                   = get_mode_class_related_code_fragments(Modes.values())
+    friend_txt                   = get_mode_class_related_code_fragments(ModeDB.values())
 
     # -- define a pointer that directly has the type of the derived class
     if Setup.analyzer_derived_class_name == "":
@@ -208,7 +208,7 @@ def write_engine_header(Modes):
             Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
 
-    function_code_txt = write_constructor_and_memento_functions(Modes)
+    function_code_txt = write_constructor_and_memento_functions(ModeDB)
 
     txt = blue_print(template_code_txt,
             [

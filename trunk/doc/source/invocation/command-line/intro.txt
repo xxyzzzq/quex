@@ -85,6 +85,14 @@ as described in :ref:`sec-number-format`.
         mapping from lexemes to token ids based on their name. See class
         'quex::PostCategorizer'.
 
+.. cmdoption:: `--count-lines`
+
+        Lets quex generate an analyzer with internal line counting.
+
+.. cmdoption:: `--count-columns`
+
+        Lets quex generate an analyzer with internal column counting.
+
 For the support of derivation from the generated lexical analyzer class the
 following command line options can be used.
 

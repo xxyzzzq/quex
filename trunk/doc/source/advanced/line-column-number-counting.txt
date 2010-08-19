@@ -5,12 +5,16 @@ Line and Column Number Counting
 Any compiler or lexical analyzer imposes rules on the text that it has to
 apply. Most of those texts are written by humans, and humans occasionally make
 errors and disrespect rules. A gentle compiler tells its user about his errors
-and also tells it about the place where the error occured. Here line numbering
-becomes crucial. Additionally, columns can be counted. This provides even more
-detailed information.
+and also tells it about the place where the error occured. Using quex's ability
+to count lines and columns facilitates the task of pointing into the user's
+code. Line and column numbers are activated by means of the command line options
 
-The analyzer's member functions to access the current line and column number
-are:
+.. describe:: --line-count
+
+.. describe:: --column-count
+
+Both options can be set independently.  The analyzer's member functions to
+access the current line and column number are:
 
 .. cfunction:: int  line_number()
 .. cfunction:: int  line_number_at_begin()
@@ -67,16 +71,16 @@ Stamping Tokens
 Tokens can be stamped at the time that they are sent with the current line
 and/or column number. Indeed, this is what happens by default.  If line or
 column counting is disabled, then also the stamping of the disabled value is
-disabled. The line and column numbers of a token can be accessed via the member
-functions
+disabled (see :ref:`sec-line-column-count`). The line and column numbers of a
+token can be accessed via the member functions
 
 .. cfunction:: size_t line_number()
 
 .. cfunction:: size_t column_number()
 
-of each token object. The stamping happens inside the 'send()' functions.  
-If the stamping procedure needs to be enabled or disabled against the abovementioned
-default settings the macro
+of each token object. The stamping happens inside the 'send()' functions.  If
+the stamping procedure needs to be enabled or disabled against the
+abovementioned default settings the macro
 
 .. cmacro:: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
 

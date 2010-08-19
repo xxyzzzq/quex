@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+if [[ $1 == "--hwut-info" ]]; then
+    echo "Check if the default configuration has been updated."
+    # Use "helper_to_generate_default_configuration.txt" in directory
+    #
+    #  $QUEX_PATH/quex/code_base/analyzer/configuration/
+    #
+    # to generate a new default configuration
+else
+    diff $QUEX_PATH/quex/code_base/analyzer/configuration/CppTemplate.txt \
+         $QUEX_PATH/quex/code_base/analyzer/configuration/default
+fi

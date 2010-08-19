@@ -1,9 +1,15 @@
-<test-database execution-time-sec="0.94" date="Sun Aug 15 08:47:48 2010">
+<test-database execution-time-sec="0.92" date="Fri Aug 20 08:19:05 2010">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="FAIL" time_sec="0.40" crc="-1647352136"/>
+        </choice-list>
+    </test>
+    <test title="Check if the default configuration has been updated." time-sum-sec="0.00"> 
+        <application file-name="check-default-configuration.sh" info-request-time="1282285113L" vanished="False"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="0.00" crc="-1320589017"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 
@@ -18,7 +24,7 @@
            <choice name="" result="FAIL" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.39"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.38"> 
         <application file-name="include_guard.py" info-request-time="1267963690L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="convention" result="FAIL" time_sec="0.19" crc="-1609475582"/>
