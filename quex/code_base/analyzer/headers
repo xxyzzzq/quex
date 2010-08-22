@@ -4,10 +4,12 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
 #define __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
 
+#include    <quex/code_base/aux-string>
+#include    <quex/code_base/definitions>
+
 #ifdef      __QUEX_OPTION_UNIT_TEST
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif
-#include    <quex/code_base/aux-string>
 
 #include    <quex/code_base/buffer/Buffer>
 #include    <quex/code_base/buffer/BufferFiller>

@@ -327,63 +327,25 @@ def action(PatternName):
     
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
-#define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 $$__QUEX_OPTION_PLAIN_C$$
-#define __QUEX_OPTION_COUNTER
-#define QUEX_OPTION_LINE_NUMBER_COUNTING
-#define __QUEX_OPTION_COUNTER
-#define QUEX_OPTION_COLUMN_NUMBER_COUNTING
-#define __QUEX_IF_COUNT_COLUMNS(EXPRESSION) EXPRESSION
-#define __QUEX_IF_COUNT_COLUMNS_SET(X)      ((me->counter._column_number_at_end) = (X))
-#define __QUEX_IF_COUNT_COLUMNS_ADD(X)      ((me->counter._column_number_at_end) += (X))
-#define QUEX_OPTION_LINE_NUMBER_COUNTING
-#define __QUEX_IF_COUNT_LINES(EXPRESSION)   EXPRESSION
-#define __QUEX_IF_COUNT_LINES_ADD(X)        ((me->counter._line_number_at_end) += (X))
-#define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
-#define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
-#define QUEX_SETTING_INDENTATION_STACK_SIZE (8)
-#define __QUEX_IF_COUNT_INDENTATION(EXPRESSION)        EXPRESSION
-#define __QUEX_IF_TOKEN_REPETITION_SUPPORT(EXPRESSION) /* */
-#define QUEX_TYPE_INDENTATION                          uint8_t
-#define QUEX_TKN_ERROR_MISALIGNED_INDENTATION          777
+#define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     ((size_t)$$BUFFER_FALLBACK_N$$)
+#define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+#define QUEX_TKN_ERROR_MISALIGNED_INDENTATION  777
+#define QUEX_OPTION_INCLUDE_STACK_DISABLED
 
-#include <quex/code_base/analyzer/configuration/default>
-#if ! defined (__QUEX_OPTION_PLAIN_C)
-    namespace quex {
-#endif
-typedef struct { size_t _id; } QUEX_TYPE0_TOKEN;
-void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}
-void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
-#if ! defined (__QUEX_OPTION_PLAIN_C)
-    }
-#endif
-/* #define QUEX_OPTION_TOKEN_POLICY_SINGLE */
-#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
-#   include <quex/code_base/test_environment/StrangeStream>
-#endif
-#include <quex/code_base/analyzer/asserts>
-#include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/BufferFiller.i>
-#include <quex/code_base/MemoryManager>
-#include <quex/code_base/MemoryManager.i>
+#define QUEX_TKN_TERMINATION    0
+#define QUEX_TKN_UNINITIALIZED  1
+
 #include <quex/code_base/test_environment/TestAnalyzer>
-#include <quex/code_base/token/TokenQueue>
-#include <quex/code_base/token/TokenQueue.i>
-#include <quex/code_base/analyzer/member/token-sending>
-#include <quex/code_base/analyzer/Mode>
-#include <quex/code_base/analyzer/Mode.i>
-#include <quex/code_base/analyzer/member/basic.i>
-#include <quex/code_base/analyzer/Counter>
-#include <quex/code_base/analyzer/Counter.i>
+
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;
 #endif
 
+QUEX_NAMESPACE_MAIN_OPEN
 QUEX_TYPE_CHARACTER        QUEX_NAME(LexemeNullObject);
 static QUEX_TYPE_TOKEN_ID  QUEX_NAME_TOKEN(DumpedTokenIdObject) = (QUEX_TYPE_TOKEN_ID)0;
+QUEX_NAMESPACE_MAIN_CLOSE
 
 bool analyzis_terminated_f = false;
 
@@ -486,7 +448,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QUEX_NAME(TestAnalyzer)   lexer_state;
+        TestAnalyzer   lexer_state;
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
@@ -510,7 +472,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QUEX_NAME(TestAnalyzer) lexer_state;
+        TestAnalyzer lexer_state;
         /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
@@ -544,7 +506,7 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        QUEX_NAME(TestAnalyzer)  lexer_state;
+        TestAnalyzer  lexer_state;
         /**/
         istringstream      istr("$$TEST_STRING$$");
 
@@ -571,7 +533,7 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        QUEX_NAME(TestAnalyzer) lexer_state;
+        TestAnalyzer lexer_state;
         /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);

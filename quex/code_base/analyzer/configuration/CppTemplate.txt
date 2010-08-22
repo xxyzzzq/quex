@@ -53,7 +53,9 @@ $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N         ($$MAX_MODE_CLASS_N$$)
-#define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID    ($$INITIAL_LEXER_MODE_ID$$)
+#ifndef    __QUEX_SETTING_INITIAL_LEXER_MODE_ID
+#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID    ($$INITIAL_LEXER_MODE_ID$$)
+#endif
 /* NOTE: QUEX_TYPE_TOKEN_ID is later on defined inside the token class header. */
 #define    __QUEX_SETTING_TOKEN_ID_TERMINATION       ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
 #define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED     ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
@@ -343,17 +345,6 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_TOKEN_ID                   $$TOKEN_ID_TYPE$$
 #define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
 #define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
-
-QUEX_NAMESPACE_MAIN_OPEN 
-    struct QUEX_NAME(Engine_tag);
-    struct QUEX_NAME(Memento_tag);
-#   ifdef __QUEX_OPTION_PLAIN_C
-    struct $$LEXER_CLASS_NAME_SAFE$$_tag;
-#   else
-    class  $$LEXER_DERIVED_CLASS_NAME$$; /* Derived Class if different from lexer class. */
-    class  $$LEXER_CLASS_NAME$$;
-#   endif
-QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/analyzer/configuration/derived>
 

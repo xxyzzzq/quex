@@ -30,10 +30,14 @@
 
 #include <quex/code_base/definitions>
 
+struct  QUEX_NAME(Engine_tag);
+struct  QUEX_NAME(Memento_tag);
+struct  QUEX_TYPE0_ANALYZER;    /* $$LEXER_CLASS_NAME_SAFE$$ */
+typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
+
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
-typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
-struct $$TOKEN_CLASS_NAME_SAFE$$_tag;
+struct  QUEX_TYPE0_TOKEN;
 
 /* START: User defined header content _________________________________________
  *        Must come before token class definition, since the token class 

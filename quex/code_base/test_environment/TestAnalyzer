@@ -8,24 +8,45 @@
 #ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER
 #undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER
 
-#include <quex/code_base/buffer/Buffer>
+#define  __QUEX_SETTING_INITIAL_LEXER_MODE_ID  0
 
-#ifdef  __QUEX_OPTION_COUNTER
-#   include <quex/code_base/analyzer/Counter>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
+
+#if defined(__QUEX_OPTION_PLAIN_C)
+    struct  QUEX_NAME(Engine_tag);
+    struct  QUEX_NAME(Memento_tag);
+    struct  TestAnalyzer_tag;    
+    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(TestAnalyzer_tag)*);
+
+    /* Token Class Declaration must preceed the user's header, so that the user
+     * can refer to it at ease.                                                    */
+    QUEX_TYPE0_TOKEN;
+#else
+    QUEX_NAMESPACE_MAIN_OPEN 
+        struct QUEX_NAME(Engine_tag);
+        struct QUEX_NAME(Memento_tag);
+        struct TestAnalyzer;
+        typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(TestAnalyzer*);
+    QUEX_NAMESPACE_MAIN_CLOSE
+
+    /* Token Class Declaration must preceed the user's header, so that the user
+     * can refer to it at ease.                                                    */
+    QUEX_NAMESPACE_TOKEN_OPEN
+        struct QUEX_TYPE0_TOKEN;
+    QUEX_NAMESPACE_TOKEN_CLOSE
 #endif
+   
+#include <quex/code_base/analyzer/headers>
 
-#ifdef  QUEX_OPTION_STRING_ACCUMULATOR
-#   include <quex/code_base/analyzer/Accumulator>
-#endif
-
-#ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
-#   include <quex/code_base/token/TokenQueue>
-#endif
-
-QUEX_NAMESPACE_MAIN_OPEN
-    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
-QUEX_NAMESPACE_MAIN_CLOSE
-
+QUEX_NAMESPACE_TOKEN_OPEN
+#   if defined(__QUEX_OPTION_PLAIN_C)
+        typedef struct quex_Token_tag { size_t _id; } quex_Token;
+#   else
+        struct Token { size_t _id; };
+#   endif
+    void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}
+    void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
+QUEX_NAMESPACE_TOKEN_CLOSE
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -38,20 +59,87 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     struct QUEX_NAME(Mode_tag);
 
-    typedef struct QUEX_NAME(TestAnalyzer_tag) {
-#     ifndef __QUEX_OPTION_PLAIN_C
-        /* Most compilers put the virtual function table in front of the object.
-         * So, if the derived class has a virtual function, and therefore a v-table,
-         * the cast towards the base class and back might not work. Thus let us
-         * ensure that all related objects contain a v-table by having one virtual
-         * function.                                                                      */
-      virtual ~QUEX_NAME(TestAnalyzer_tag)() {}
+#  if defined(__QUEX_OPTION_PLAIN_C)
+   typedef struct TestAnalyzer_tag { 
+#  else
+   struct TestAnalyzer {
+      /* Most compilers put the virtual function table in front of the object.
+       * So, if the derived class has a virtual function, and therefore a v-table,
+       * the cast towards the base class and back might not work. Thus let us
+       * ensure that all related objects contain a v-table by having one virtual
+       * function.                                                                      */
+      virtual ~TestAnalyzer();
+      TestAnalyzer() {}
+      TestAnalyzer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
+                   QUEX_TYPE_CHARACTER* BufferEndOfFileP      = 0x0,
+                   const char*          CharacterEncodingName = 0x0,
+                   bool                 ByteOrderReversionF   = false);
+      TestAnalyzer(const std::string&   Filename,       
+                   const char*          CharacterEncodingName = 0x0,
+                   bool                 ByteOrderReversionF   = false);
+      TestAnalyzer(std::istream*        p_input_stream, 
+                   const char*          CharacterEncodingName = 0x0,
+                   bool                 ByteOrderReversionF   = false);
+#     if defined(__QUEX_OPTION_WCHAR_T)
+      TestAnalyzer(std::wistream*       p_input_stream,
+                   const char*          CharacterEncodingName = 0x0,
+                   bool                 ByteOrderReversionF   = false);
 #     endif
+      TestAnalyzer(std::FILE*           input_fh,       
+                   const char*          CharacterEncodingName = 0x0,
+                   bool                 ByteOrderReversionF   = false);
+#     if defined(__QUEX_OPTION_UNIT_TEST)
+      template <class UnderlyingStreamT>
+          TestAnalyzer(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+                       const char*                              CharacterEncodingName = 0x0,
+                       bool                                     ByteOrderReversionF   = false);
+#     endif
+      template <class InputHandleT> void    reset(InputHandleT*, const char*);
+#  endif
+
 #     include <quex/code_base/analyzer/Engine_body>
-    } QUEX_NAME(TestAnalyzer);
+
+#  if defined(__QUEX_OPTION_PLAIN_C)
+   } TestAnalyzer;
+#  else
+   };
+#  endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
+
+/* NOT: #include <quex/code_base/analyzer/headers.i>
+ * otherwise we might have to provide things that we actually do not need at all. */
+#include    <quex/code_base/aux-string.i>
+#include    <quex/code_base/unicode.i>
+
+/* Token sending happens only via macros, for flexibility. */
+#include    <quex/code_base/analyzer/member/constructor.i>
+
+#include    <quex/code_base/analyzer/member/basic.i>
+#include    <quex/code_base/MemoryManager.i>
+//#include    <quex/code_base/analyzer/Mode.i>
+#include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+
+#ifdef      __QUEX_OPTION_COUNTER
+#   include <quex/code_base/analyzer/Counter.i>
+#endif
+#ifdef      QUEX_OPTION_INCLUDE_STACK
+#   include <quex/code_base/analyzer/member/include-stack.i>
+#endif
+#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator.i>
+#endif
+#ifdef      QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   include <quex/code_base/token/TokenQueue.i>
+#endif
+#ifdef      QUEX_OPTION_POST_CATEGORIZER
+#   include <quex/code_base/analyzer/PostCategorizer.i>
+#endif
+#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   include <quex/code_base/analyzer/IndentationStack.i>
+#endif
+
 
 #endif /* __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER */
