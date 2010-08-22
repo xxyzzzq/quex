@@ -10,7 +10,7 @@ from   quex.frs_py.file_in     import open_file_or_die
 import quex.input.quex_file_parser as quex_file_parser
 
 
-setup_parser.do(["-i", "nothing", "-o", "Default"])
+setup_parser.do(["-i", "nothing", "-o", "TestAnalyzer"])
 
 # Parse default token file
 fh = open_file_or_die(os.environ["QUEX_PATH"] 
@@ -24,4 +24,4 @@ IndentationSupportF = False
 
 txt = write_configuration_header({}, IndentationSupportF, BeginOfLineSupportF)
 
-open("default", "w").write(txt)
+open("TestAnalyzer-configuration", "w").write(txt)

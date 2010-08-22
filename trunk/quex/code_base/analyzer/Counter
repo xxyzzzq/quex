@@ -11,6 +11,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
+#   if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
     typedef struct {
         QUEX_TYPE_INDENTATION   begin[QUEX_SETTING_INDENTATION_STACK_SIZE];
         QUEX_TYPE_INDENTATION*  end;
@@ -23,6 +24,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 	QUEX_NAME(IndentationStack_push)(QUEX_NAME(IndentationStack)* me, QUEX_TYPE_INDENTATION Indentation);
 	QUEX_INLINE QUEX_TYPE_INDENTATION
 	QUEX_NAME(IndentationStack_pop)(QUEX_NAME(IndentationStack)* me);
+#   endif
 
     typedef struct {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
