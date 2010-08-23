@@ -183,13 +183,16 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
     os.system("mv -f %s tmp%s" % (filename_tmp, extension)); 
     filename_tmp = "./tmp%s" % extension # DEBUG
 
+    executable_name = "%s.exe" % filename_tmp
     # NOTE: QUEX_OPTION_ASSERTS is defined by AssertsActionvation_str (or not)
+    try:    os.remove(executable_name)
+    except: pass
     compile_str = compiler                + " " + \
                   StrangeStream_str       + " " + \
                   AssertsActionvation_str + " " + \
                   filename_tmp            + " " + \
                   "-I./. -I%s " % os.environ["QUEX_PATH"] + \
-                  "-o %s.exe " % filename_tmp             + \
+                  "-o %s "      % executable_name         + \
                   "-ggdb"                 + " " + \
                   SHOW_TRANSITIONS_STR    + " " + \
                   SHOW_BUFFER_LOADS_STR
@@ -199,11 +202,11 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
     sys.stdout.flush()
 
     print "## (*) running the test"
-    run_this("./%s.exe" % filename_tmp)
+    run_this("./%s" % executable_name)
     if REMOVE_FILES:
         try:    os.remove(filename_tmp)
         except: pass
-        try:    os.remove("%s.exe" % filename_tmp)
+        try:    os.remove(executable_name)
         except: pass
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
@@ -218,7 +221,7 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
 
     return txt
 
-def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN=-1, BufferLimitCode=0):
+def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN=-1, BufferLimitCode=0, IndentationSupportF=False):
     # Determine the 'fallback' region size in the buffer
     if QuexBufferFallbackN == -1: 
         QuexBufferFallbackN = QuexBufferSize - 3
@@ -230,10 +233,14 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
     txt = "#define QUEX_TYPE_CHARACTER unsigned char\n" + txt
     txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
 
-    if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
-        txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", "#define __QUEX_OPTION_PLAIN_C\n")
-    else:
-        txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", "//#define __QUEX_OPTION_PLAIN_C\n")
+    replace_str = "#define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT"
+    if not IndentationSupportF: replace_str = "/* %s */" % replace_str
+    txt = txt.replace("$$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$", replace_str)
+       
+
+    replace_str = "#define __QUEX_OPTION_PLAIN_C"
+    if Language not in ["ANSI-C", "ANSI-C-PlainMemory"]: replace_str = "/* %s */" % replace_str
+    txt = txt.replace("$$__QUEX_OPTION_PLAIN_C$$", replace_str)
 
     return txt
 
@@ -273,9 +280,10 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
-                                        LocalVariableDB):
+                                        LocalVariableDB, IndentationSupportF=False):
 
-    txt  = create_common_declarations(Language, QuexBufferSize, TestStr)
+    txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
+                                      IndentationSupportF=IndentationSupportF)
     txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB)
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
@@ -328,6 +336,7 @@ def action(PatternName):
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 $$__QUEX_OPTION_PLAIN_C$$
+$$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     ((size_t)$$BUFFER_FALLBACK_N$$)
 #define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
 #define QUEX_TKN_ERROR_MISALIGNED_INDENTATION  777

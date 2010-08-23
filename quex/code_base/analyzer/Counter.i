@@ -42,11 +42,14 @@ QUEX_NAMESPACE_MAIN_OPEN
      * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
      *       there is no newline in the lexeme (see below).                        */
     {
-        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
-
-        __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
-
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        QUEX_TYPE_CHARACTER* it = QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
+        __QUEX_IF_COUNT_LINES(if( *it == '\n' ) ++(me->_line_number_at_end));
+#       else
+        QUEX_TYPE_CHARACTER* it = End;
+#       endif
+
         /* The last function may have digested a newline (*it == '\n'), but then it 
          * would have increased the _line_number_at_end.                          */
         __quex_assert(it >= Begin);
@@ -56,6 +59,8 @@ QUEX_NAMESPACE_MAIN_OPEN
             --it;
             if( *it == '\n' ) ++(me->_line_number_at_end); 
         }         
+#       else
+        QUEX_NAME(Counter_count_chars_to_newline_backwards)(me, Begin, End);
 #       endif
     }
 
@@ -124,54 +129,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
 #   if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-    void
-    QUEX_NAME(on_indentation)(QUEX_TYPE_ANALYZER*    me, 
-                              QUEX_TYPE_INDENTATION  Indentation, 
-                              QUEX_TYPE_CHARACTER*   Begin)
-    {
-#       define self  (*me)
-#       if      defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT) \
-           || ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT)
-        QUEX_TYPE_INDENTATION  i = 0;
-#       endif
-        QUEX_TYPE_INDENTATION  current_indentation = *(me->counter._indentation_stack.end - 1);
-
-        if( Indentation > current_indentation ) {
-#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT
-            self_send(QUEX_TKN_BLOCK_OPEN);
-            QUEX_NAME(IndentationStack_push)(&me->counter.indentation_stack, (uint16_t)Indentation);
-#           else
-            me->__current_mode_p->on_indent(me, Begin, me->buffer._input_p);
-#           endif
-            return;
-        }
-
-        while( current_indentation > Indentation ) {
-#           if      defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT) \
-               || ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT)
-            ++i;
-#           endif
-#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT
-            __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(self_send(QUEX_TKN_BLOCK_CLOSE));
-#           endif
-            QUEX_NAME(IndentationStack_pop)(&me->counter._indentation_stack);
-        }
-
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DEFAULT
-        __QUEX_IF_TOKEN_REPETITION_SUPPORT(if( i != 0 ) self_send_n(i, QUEX_TKN_BLOCK_CLOSE));     
-#       else
-        if( i != 0 ) me->__current_mode_p->on_dedent(me, i, Begin, me->buffer._input_p);
-        else         me->__current_mode_p->on_nodent(me, Begin, me->buffer._input_p);
-#       endif
-
-        /* -- 'landing' indentation has to fit an indentation border
-         *    if not send an error.                                  */
-        if( *(me->counter._indentation_stack.end - 1) != Indentation ) {
-            self_send(QUEX_TKN_ERROR_MISALIGNED_INDENTATION);
-        }
-#       undef self 
-    }
-
 	QUEX_INLINE void
 	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me)
 	{
@@ -179,7 +136,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->memory_end = me->begin + QUEX_SETTING_INDENTATION_STACK_SIZE;
         
         /* first indentation at column = 0 */
-        QUEX_NAME(IndentationStack_push)(0);
+        QUEX_NAME(IndentationStack_push)(me, 0);
         /* Default: Do not allow to open a sub-block. Constructs like 'for' loops
         * 'if' blocks etc. should allow the opening of an indentation. */
 	}
