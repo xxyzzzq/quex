@@ -10,13 +10,14 @@
 
 #define  __QUEX_SETTING_INITIAL_LEXER_MODE_ID  0
 
+#include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 
 #if defined(__QUEX_OPTION_PLAIN_C)
     struct  QUEX_NAME(Engine_tag);
     struct  QUEX_NAME(Memento_tag);
     struct  TestAnalyzer_tag;    
-    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(struct QUEX_NAME(TestAnalyzer_tag)*);
+    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(struct TestAnalyzer_tag*);
 
     /* Token Class Declaration must preceed the user's header, so that the user
      * can refer to it at ease.                                                    */
@@ -40,9 +41,14 @@
 
 QUEX_NAMESPACE_TOKEN_OPEN
 #   if defined(__QUEX_OPTION_PLAIN_C)
-        typedef struct quex_Token_tag { size_t _id; } quex_Token;
+        typedef struct quex_Token_tag { 
+            size_t _id; 
+        } quex_Token;
 #   else
-        struct Token { size_t _id; };
+        struct Token { 
+            QUEX_TYPE_TOKEN_ID _id; 
+            QUEX_TYPE_TOKEN_ID type_id() { return _id; } 
+        };
 #   endif
     void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) {}
     void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) {}
@@ -68,7 +74,8 @@ QUEX_NAMESPACE_MAIN_OPEN
        * the cast towards the base class and back might not work. Thus let us
        * ensure that all related objects contain a v-table by having one virtual
        * function.                                                                      */
-      virtual ~TestAnalyzer();
+      virtual ~TestAnalyzer() {}
+#if 0
       TestAnalyzer() {}
       TestAnalyzer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
                    QUEX_TYPE_CHARACTER* BufferEndOfFileP      = 0x0,
@@ -95,6 +102,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                        bool                                     ByteOrderReversionF   = false);
 #     endif
       template <class InputHandleT> void    reset(InputHandleT*, const char*);
+#endif
 #  endif
 
 #     include <quex/code_base/analyzer/Engine_body>
@@ -115,27 +123,14 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/unicode.i>
 
 /* Token sending happens only via macros, for flexibility. */
-#include    <quex/code_base/analyzer/member/constructor.i>
+/* #include    <quex/code_base/analyzer/member/constructor.i> */
 
 #include    <quex/code_base/analyzer/member/basic.i>
 #include    <quex/code_base/MemoryManager.i>
-//#include    <quex/code_base/analyzer/Mode.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 
 #ifdef      __QUEX_OPTION_COUNTER
 #   include <quex/code_base/analyzer/Counter.i>
-#endif
-#ifdef      QUEX_OPTION_INCLUDE_STACK
-#   include <quex/code_base/analyzer/member/include-stack.i>
-#endif
-#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
-#   include <quex/code_base/analyzer/Accumulator.i>
-#endif
-#ifdef      QUEX_OPTION_TOKEN_POLICY_QUEUE
-#   include <quex/code_base/token/TokenQueue.i>
-#endif
-#ifdef      QUEX_OPTION_POST_CATEGORIZER
-#   include <quex/code_base/analyzer/PostCategorizer.i>
 #endif
 #ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   include <quex/code_base/analyzer/IndentationStack.i>
