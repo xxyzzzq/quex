@@ -122,9 +122,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/aux-string.i>
 #include    <quex/code_base/unicode.i>
 
-/* Token sending happens only via macros, for flexibility. */
-/* #include    <quex/code_base/analyzer/member/constructor.i> */
-
 #include    <quex/code_base/analyzer/member/basic.i>
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
