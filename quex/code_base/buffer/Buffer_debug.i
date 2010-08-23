@@ -9,30 +9,6 @@
 #include <quex/code_base/buffer/BufferFiller>
 
 
-#if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
-#   define QUEX_DEBUG_PRINT(Buffer, FormatStr)       /* empty */
-#   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg) /* empty */
-#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character) /* empty */
-#else
-#   define __QUEX_PRINT_SOURCE_POSITION(Buffer)                              \
-           __QUEX_STD_fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, \
-                             (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
-
-#   define QUEX_DEBUG_PRINT(Buffer, FormatStr)        \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n")
-
-#   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg)       \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)            \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n", Arg)
-
-#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)                             \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)                                  \
-           Character == '\n' ? __QUEX_STD_fprintf(stdout, "input:    '\\n'\n")   \
-           : Character == '\t' ? __QUEX_STD_fprintf(stdout, "input:    '\\t'\n") \
-           :                     __QUEX_STD_fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
-#  endif /* ! __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS */
-
 #if ! defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
 
 #    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg) /* empty */
