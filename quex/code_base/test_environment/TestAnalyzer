@@ -65,53 +65,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     struct QUEX_NAME(Mode_tag);
 
-#  if defined(__QUEX_OPTION_PLAIN_C)
-   typedef struct TestAnalyzer_tag { 
-#  else
-   struct TestAnalyzer {
-      /* Most compilers put the virtual function table in front of the object.
-       * So, if the derived class has a virtual function, and therefore a v-table,
-       * the cast towards the base class and back might not work. Thus let us
-       * ensure that all related objects contain a v-table by having one virtual
-       * function.                                                                      */
-      virtual ~TestAnalyzer() {}
-#if 0
-      TestAnalyzer() {}
-      TestAnalyzer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-                   QUEX_TYPE_CHARACTER* BufferEndOfFileP      = 0x0,
-                   const char*          CharacterEncodingName = 0x0,
-                   bool                 ByteOrderReversionF   = false);
-      TestAnalyzer(const std::string&   Filename,       
-                   const char*          CharacterEncodingName = 0x0,
-                   bool                 ByteOrderReversionF   = false);
-      TestAnalyzer(std::istream*        p_input_stream, 
-                   const char*          CharacterEncodingName = 0x0,
-                   bool                 ByteOrderReversionF   = false);
-#     if defined(__QUEX_OPTION_WCHAR_T)
-      TestAnalyzer(std::wistream*       p_input_stream,
-                   const char*          CharacterEncodingName = 0x0,
-                   bool                 ByteOrderReversionF   = false);
-#     endif
-      TestAnalyzer(std::FILE*           input_fh,       
-                   const char*          CharacterEncodingName = 0x0,
-                   bool                 ByteOrderReversionF   = false);
-#     if defined(__QUEX_OPTION_UNIT_TEST)
-      template <class UnderlyingStreamT>
-          TestAnalyzer(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-                       const char*                              CharacterEncodingName = 0x0,
-                       bool                                     ByteOrderReversionF   = false);
-#     endif
-      template <class InputHandleT> void    reset(InputHandleT*, const char*);
+#if defined(__QUEX_OPTION_PLAIN_C)
+    typedef struct TestAnalyzer_tag { 
+#       include <quex/code_base/analyzer/Engine_body>
+    };
+#else
+    struct TestAnalyzer {
+        virtual ~TestAnalyzer() {}
+#       include <quex/code_base/analyzer/Engine_body>
+    } TestAnalyzer;
 #endif
-#  endif
-
-#     include <quex/code_base/analyzer/Engine_body>
-
-#  if defined(__QUEX_OPTION_PLAIN_C)
-   } TestAnalyzer;
-#  else
-   };
-#  endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
