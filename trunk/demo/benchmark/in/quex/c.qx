@@ -11,8 +11,8 @@ define {
     // String: 
     //    Quote " followe by either \" or something different from " and then a final "
     P_STRING              "\""(\\"\""|[^"])*"\""
-    P_QUOTED_CHAR_1       ("'\\''")|("'"[^']?"'")
-    P_QUOTED_CHAR_2       "'\\"[0-9abcfnrtv\\]"'"
+    P_QUOTED_CHAR_1       ("'\\''")|("'"[^'\n\t]?"'")
+    P_QUOTED_CHAR_2       "'\\"([0-9]+|[abcfnrtv\\])"'"
     P_QUOTED_CHAR         ({P_QUOTED_CHAR_1}|{P_QUOTED_CHAR_2})
     P_INCLUDE_FILE1       "<"[^>]+">"
     P_INCLUDE_FILE2       "\""[^"]+"\""
