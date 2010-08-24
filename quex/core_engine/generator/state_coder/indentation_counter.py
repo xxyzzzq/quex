@@ -46,7 +46,7 @@ $$DROP_OUT$$
 
 $$DROP_OUT_DIRECT$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
-    $$END_PROCEDURE$$                           
+$$END_PROCEDURE$$                           
     $$GOTO_START$$                           
 }
 """
@@ -68,6 +68,7 @@ def do(IndentationSetup):
     # That means: As long as characters of the trigger set appear, we go to the loop start.
 
     trigger_map = []
+    # If the indentation consists only of spaces, than it is 'uniform' ...
     if IndentationSetup.has_only_single_spaces():
         # Count indentation/column at end of run;
         # simply: current position - reference_p
@@ -78,7 +79,7 @@ def do(IndentationSetup):
 
         # Reference Pointer: Define Variable, Initialize, determine how to subtact.
         local_variable_db = { "reference_p" : 
-                              [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
+                              [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
         init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);"
         end_procedure     = \
         "    me->counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n" 

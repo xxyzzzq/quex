@@ -128,36 +128,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         return it;
     }
 
-#   if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-	QUEX_INLINE void
-	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me)
-	{
-        me->end        = me->begin;
-        me->memory_end = me->begin + QUEX_SETTING_INDENTATION_STACK_SIZE;
-        
-        /* first indentation at column = 0 */
-        QUEX_NAME(IndentationStack_push)(me, 0);
-        /* Default: Do not allow to open a sub-block. Constructs like 'for' loops
-        * 'if' blocks etc. should allow the opening of an indentation. */
-	}
-	
-	
-	QUEX_INLINE void
-	QUEX_NAME(IndentationStack_push)(QUEX_NAME(IndentationStack)* me, size_t Indentation)
-	{
-        if( me->end == me->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
-        *(me->end++) = Indentation;
-	}
-	
-	QUEX_INLINE size_t
-	QUEX_NAME(IndentationStack_pop)(QUEX_NAME(IndentationStack)* me)
-	{
-        __quex_assert( me->end != me->begin );
-        return *(--(me->end));
-	}
-	
-#   endif
-
     QUEX_INLINE void 
     QUEX_NAME(Counter_print_this)(QUEX_NAME(Counter)* me)
     {

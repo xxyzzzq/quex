@@ -269,7 +269,7 @@ def check_for_event_specification(word, fh, new_mode):
               "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
               "use double quotes to bracket patterns that start with 'on_'."
 
-    __check_for_deprecated(word)
+    __check_for_deprecated_handler(word)
     verify_word_in_list(word, lexer_mode.event_handler_db.keys(), comment, fh)
 
     continue_f = True

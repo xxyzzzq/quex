@@ -77,7 +77,7 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
     printf("   note         = {" NOTE "}, \n");
     // Result
     printf("   repetition_n               = {%li},\n", (long)(RepetitionN));
-    printf("   time_per_repetition        = {%f},\n",  (float)(TimePerRun - RefTimePerRun));
+    printf("   time_per_repetition_in_sec = {%f},\n",  (float)(TimePerRun - RefTimePerRun));
     printf("   token_n                    = {%i},\n",  (int)TokenN);
     printf("   clock_cycles_per_character = {%f},\n",  (float)(CCC - RefCCC));
     printf("   clock_cycles_per_token     = {%f},\n",  (float)(CCT - RefCCT));

@@ -60,7 +60,6 @@ __QUEX_CORE = \
     ./analyzer/member/constructor.i \
     ./analyzer/member/misc.i \
     ./analyzer/configuration/CppTemplate.txt \
-    ./analyzer/configuration/default \
     ./analyzer/configuration/validation \
     ./analyzer/configuration/undefine \
     ./temporary_macros_off \
