@@ -22,9 +22,9 @@ def do(SkipperDescriptor):
     if skipper_class == "SkipperRange":
         return  create_skip_range_code(SkipperDescriptor.get_closing_sequence())
     elif skipper_class == "SkipperCharacterSet":
-        return  create_skip_code(SkipperDescriptor.get_character_set())
+        return  create_skip_character_set_code(SkipperDescriptor.get_character_set())
     else:
-        assert None
+        assert None, None
 
 def create_skip_range_code(ClosingSequence):
     LanguageDB   = Setup.language_db
@@ -38,7 +38,7 @@ def create_skip_range_code(ClosingSequence):
 
     return code_str, db
 
-def create_skip_code(CharacterSet):
+def create_skip_character_set_code(CharacterSet):
     LanguageDB   = Setup.language_db
 
     code_str, db = get_character_set_skipper(CharacterSet, LanguageDB)   

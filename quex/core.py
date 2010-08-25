@@ -98,7 +98,7 @@ def do():
 
 def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
-    implement_skippers(Mode)
+    required_local_variables_db = implement_skippers(Mode)
 
     # -- some modes only define event handlers that are inherited
     if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
@@ -137,12 +137,14 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                  AnalyserStateClassName         = Setup.analyzer_class_name,
                                  StandAloneAnalyserF            = False, 
                                  QuexEngineHeaderDefinitionFile = Setup.output_file_stem,
-                                 ModeNameList                   = ModeNameList)
+                                 ModeNameList                   = ModeNameList,
+                                 RequiredLocalVariablesDB       = required_local_variables_db)
 
     return analyzer_code
 
 
-from quex.core_engine.generator.state_coder.skipper_core import create_skip_code, create_skip_range_code
+from quex.core_engine.generator.state_coder.skipper_core import create_skip_character_set_code, \
+                                                                create_skip_range_code
 
 def implement_skippers(mode):
     """Code generation for skippers.
@@ -169,7 +171,7 @@ def implement_skippers(mode):
         trigger_set = info[1]
 
         action  = get_action(mode, pattern_str)
-        txt, db = create_skip_code(trigger_set)
+        txt, db = create_skip_character_set_code(trigger_set)
         action.set_code(txt)
         required_local_variable_db.update(db)
 
@@ -181,6 +183,8 @@ def implement_skippers(mode):
         txt, db = create_skip_range_code(closer_sequence)
         action.set_code(txt)
         required_local_variable_db.update(db)
+
+    return required_local_variable_db
 
 def implement_indentation_counter(mode):
     pass

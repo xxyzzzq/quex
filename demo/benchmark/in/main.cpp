@@ -36,21 +36,21 @@ main(int argc, char** argv)
     const size_t   RepetitionN = ExperimentTime / time_per_run_ms;
 
     /* Measure the analyzis time + some overhead ______________________________*/
-    const clock_t  StartTime = clock();
+    const double   StartTime = my_time();
     {
         run_multiple_analyzis(RepetitionN, token_n, /* PseudoF */false);
     }
-    const clock_t  EndTime = clock();
-    const double   Time_ms = (double)(EndTime - StartTime) / (double)CLOCKS_PER_SEC; 
+    const double   EndTime       = my_time();
+    const double   Time_ms       = EndTime - StartTime; 
     const double   TimePerRun_ms = Time_ms / (double)RepetitionN;
 
     /* Measure the overhead ___________________________________________________*/
-    const clock_t  RefStartTime = clock();
+    const double   RefStartTime = my_time();
     {
         run_multiple_analyzis(RepetitionN, token_n, /* PseudoF */true);
     }
-    const clock_t  RefEndTime = clock();
-    const double   RefTime_ms = (double)(RefEndTime - RefStartTime) / (double)CLOCKS_PER_SEC; 
+    const double   RefEndTime       = my_time();
+    const double   RefTime_ms       = RefEndTime - RefStartTime; 
     const double   RefTimePerRun_ms = RefTime_ms / (double)RepetitionN;
 
     /* Raw analyzis time = ... */
