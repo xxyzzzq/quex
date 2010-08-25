@@ -4,8 +4,21 @@
 #include "in/token-ids.h"
 
 #include <cstdio>
-#include <ctime>
 #include <cstdlib>
+#include <ctime>
+
+#ifndef NON_UNIX
+#  include <sys/resource.h>
+inline double my_time() 
+{
+    struct rusage info;
+    getrusage(RUSAGE_SELF, &info);
+    return (double)info.ru_utime.tv_sec + 1e-6 * (double)info.ru_utime.tv_usec;
+}
+#else
+#  include <ctime>
+    #define  my_time() ((double)(clock())/(double)CLOCKS_PER_SEC)
+#endif
 
 using namespace std;
 

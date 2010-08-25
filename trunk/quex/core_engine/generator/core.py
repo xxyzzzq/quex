@@ -4,6 +4,7 @@ import quex.core_engine.generator.input_position_backward_detector as backward_d
 from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
 from   quex.input.setup import setup as Setup
 from   quex.frs_py.string_handling import blue_print
+from   copy import copy
 #
 from quex.core_engine.generator.base import GeneratorBase
 
@@ -84,8 +85,9 @@ class Generator(GeneratorBase):
 
         return txt, variable_db
 
-    def do(self):
-        LanguageDB = self.language_db
+    def do(self, RequiredLocalVariablesDB):
+        local_variable_db = copy(RequiredLocalVariablesDB)
+        LanguageDB        = self.language_db
 
         #  -- state machines for backward input position detection (pseudo ambiguous post conditions)
         papc_input_postion_backward_detector_functions = ""
@@ -95,10 +97,10 @@ class Generator(GeneratorBase):
                   backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
 
         pre_context_sm_code = ""
-        local_variable_db   = {}
         # -- write the combined pre-condition state machine
         if self.pre_context_sm_list != []:
-            pre_context_sm_code, local_variable_db = self.__get_combined_pre_context_state_machine()
+            pre_context_sm_code, variable_db = self.__get_combined_pre_context_state_machine()
+            local_variable_db.update(variable_db)
             
         # -- write the state machine of the 'core' patterns (i.e. no pre-conditions)
         main_sm_code, variable_db = self.__get_core_state_machine()
@@ -131,7 +133,8 @@ def do(PatternActionPair_List, OnFailureAction,
        AnalyserStateClassName="analyzer_state",
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
-       ModeNameList=[]):
+       ModeNameList=[],
+       RequiredLocalVariablesDB={}):
     """Contains a list of pattern-action pairs, i.e. its elements contain
        pairs of state machines and associated actions to be take,
        when a pattern matches. 
@@ -154,7 +157,7 @@ def do(PatternActionPair_List, OnFailureAction,
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
                      OnFailureAction, EndOfStreamAction, ModeNameList, 
-                     PrintStateMachineF, StandAloneAnalyserF).do()
+                     PrintStateMachineF, StandAloneAnalyserF).do(RequiredLocalVariablesDB)
     
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)

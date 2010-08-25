@@ -92,7 +92,6 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 		 --no-string-accumulator                 \
 		 --token-id-offset        3              \
 		 --token-prefix           TKN_           \
-		 --path-compression                      \
 	     --token-policy           single         
 
 out/flex_scan.c:  in/flex/c.lex

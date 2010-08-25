@@ -6,7 +6,6 @@ import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
 import quex.input.indentation_setup   as indentation_setup
 from   quex.core_engine.generator.action_info                    import CodeFragment
-from   quex.core_engine.generator.state_coder.skipper_core       import create_skip_code, create_skip_range_code
 import quex.core_engine.state_machine.index                      as index
 from   quex.core_engine.state_machine.core                       import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
