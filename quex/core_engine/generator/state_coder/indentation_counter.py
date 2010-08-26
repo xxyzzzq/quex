@@ -110,7 +110,7 @@ def do(IndentationSetup):
     #       -- column number = indentation at the end of the process
 
     end_procedure += "    __QUEX_IF_COUNT_COLUMNS_ADD(me->counter._indentation);\n"
-    end_procedure += "    QUEX_NAME(on_indentation)(me->counter._indentation, reference_p);\n"
+    end_procedure += "    QUEX_NAME(on_indentation)(me, me->counter._indentation, reference_p);\n"
 
     # The finishing touch
     txt = blue_print(template_str,
