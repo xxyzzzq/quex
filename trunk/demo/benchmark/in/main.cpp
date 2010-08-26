@@ -14,6 +14,7 @@ main(int argc, char** argv)
             printf("File '%s' not found.\n", argv[1]);
             return -1;
         }
+
     }
     const size_t   FileSize = get_file_size(argv[1]);
 
@@ -64,6 +65,13 @@ main(int argc, char** argv)
                  argv[1], FileSize, 
                  token_n, RepetitionN, 
                  get_file_size(argv[0], true));
+
+    {
+#       ifndef _POSIX_
+        printf("Warning: precise measurements can currently only be performed on POSIX systems.\n");
+#       endif
+    }
+
     return 0;
 } 
 

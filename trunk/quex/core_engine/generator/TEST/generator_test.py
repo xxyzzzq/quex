@@ -334,16 +334,19 @@ def action(PatternName):
     return txt
     
 test_program_common_declarations = """
-const int TKN_TERMINATION = 0;
 $$__QUEX_OPTION_PLAIN_C$$
 $$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     ((size_t)$$BUFFER_FALLBACK_N$$)
 #define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
-#define QUEX_TKN_ERROR_MISALIGNED_INDENTATION  777
 #define QUEX_OPTION_INCLUDE_STACK_DISABLED
+#define QUEX_OPTION_STRING_ACCUMULATOR_DISABLED
 
-#define QUEX_TKN_TERMINATION    0
-#define QUEX_TKN_UNINITIALIZED  1
+#define QUEX_TKN_TERMINATION       0
+#define QUEX_TKN_UNINITIALIZED     1
+#define QUEX_TKN_INDENTATION_ERROR 2
+#define QUEX_TKN_INDENT            3
+#define QUEX_TKN_DEDENT            4
+#define QUEX_TKN_NODENT            5
 
 #include <quex/code_base/test_environment/TestAnalyzer>
 

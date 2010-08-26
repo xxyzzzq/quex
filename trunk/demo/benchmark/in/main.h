@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <ctime>
 
-#ifndef NON_UNIX
+#if _POSIX_
 #  include <sys/resource.h>
 inline double my_time() 
 {
@@ -17,7 +17,7 @@ inline double my_time()
 }
 #else
 #  include <ctime>
-    #define  my_time() ((double)(clock())/(double)CLOCKS_PER_SEC)
+#  define  my_time() ((double)(clock())/(double)CLOCKS_PER_SEC)
 #endif
 
 using namespace std;
