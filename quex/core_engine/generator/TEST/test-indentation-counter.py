@@ -24,7 +24,7 @@ def test(TestStr, IndentationSetup):
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
                                               QuexBufferSize=1024, CommentTestStrF="", ShowPositionF=False, 
-                                              EndStr="", MarkerCharList="",
+                                              EndStr='printf("\\n<The End>\\n");', MarkerCharList="",
                                               LocalVariableDB=local_variable_db, 
                                               IndentationSupportF=True)
     compile_and_run(Language, txt)
