@@ -17,16 +17,23 @@ if len(sys.argv) < 2:
     print "Argument not acceptable, use --hwut-info"
     sys.exit(0)
 
-def test(TestStr, IndentationSetup):
-    end_sequence = map(ord, "*/")
+EndStr = \
+"""
+#   define self (*me)
+    self_send(QUEX_TKN_TERMINATION);
+    return;
+#   undef self
+"""
 
+def test(TestStr, IndentationSetup):
     code_str, local_variable_db = indentation_counter.do(IndentationSetup)
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
                                               QuexBufferSize=1024, CommentTestStrF="", ShowPositionF=False, 
-                                              EndStr='printf("\\n<The End>\\n");', MarkerCharList="",
+                                              EndStr=EndStr, MarkerCharList=map(ord, " :"),
                                               LocalVariableDB=local_variable_db, 
-                                              IndentationSupportF=True)
+                                              IndentationSupportF=True,
+                                              TokenQueueF=True)
     compile_and_run(Language, txt)
 
 indentation_setup = IndentationSetup()
@@ -41,7 +48,13 @@ TestStr  = "    :   :"
 Language = "Cpp"
 code_str = indentation_counter.do(indentation_setup)
 
-test("   :   ", indentation_setup)
+test("\n"
+     "   :   a\n"
+     "         b\n"
+     "         c\n"
+     "       d\n"
+     "       e\n"
+     "       h\n", indentation_setup)
 # test("\t", indentation_setup)
 # test("\t\t", indentation_setup)
 # test("\t\t", indentation_setup)
