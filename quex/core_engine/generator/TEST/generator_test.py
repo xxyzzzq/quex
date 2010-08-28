@@ -221,7 +221,7 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
 
     return txt
 
-def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN=-1, BufferLimitCode=0, IndentationSupportF=False):
+def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN=-1, BufferLimitCode=0, IndentationSupportF=False, TokenQueueF=False):
     # Determine the 'fallback' region size in the buffer
     if QuexBufferFallbackN == -1: 
         QuexBufferFallbackN = QuexBufferSize - 3
@@ -237,6 +237,11 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
     if not IndentationSupportF: replace_str = "/* %s */" % replace_str
     txt = txt.replace("$$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$", replace_str)
        
+    replace_str = "#define QUEX_OPTION_TOKEN_POLICY_SINGLE_DISABLED\n" + \
+                  "#define QUEX_OPTION_TOKEN_POLICY_QUEUE"
+    if not TokenQueueF: replace_str = "/* %s */" % replace_str.replace("\n", "\n * ")
+    txt = txt.replace("$$__QUEX_OPTION_TOKEN_QUEUE$$", replace_str)
+
 
     replace_str = "#define __QUEX_OPTION_PLAIN_C"
     if Language not in ["ANSI-C", "ANSI-C-PlainMemory"]: replace_str = "/* %s */" % replace_str
@@ -280,10 +285,11 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,
-                                        LocalVariableDB, IndentationSupportF=False):
+                                        LocalVariableDB, IndentationSupportF=False, TokenQueueF=False):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
-                                      IndentationSupportF=IndentationSupportF)
+                                      IndentationSupportF=IndentationSupportF, 
+                                      TokenQueueF=TokenQueueF)
     txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, EndStr, LocalVariableDB)
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
@@ -336,6 +342,8 @@ def action(PatternName):
 test_program_common_declarations = """
 $$__QUEX_OPTION_PLAIN_C$$
 $$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$
+$$__QUEX_OPTION_TOKEN_QUEUE$$
+#define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     ((size_t)$$BUFFER_FALLBACK_N$$)
 #define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
 #define QUEX_OPTION_INCLUDE_STACK_DISABLED
@@ -349,6 +357,10 @@ $$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$
 #define QUEX_TKN_NODENT            5
 
 #include <quex/code_base/test_environment/TestAnalyzer>
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   include <quex/code_base/token/TokenQueue.i>
+#endif
+
 
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;
@@ -364,6 +376,43 @@ static           __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_UnitTest_analyz
 /* NOT static */ __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER*);
 /* Do not declare Mrs as 'static' otherwise there might be complaints if it
  * is never defined.                                                          */
+
+static int
+run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
+{
+    lexer->current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
+
+    printf("(*) test string: \\n'%s'%s\\n", TestString, Comment);
+    printf("(*) result:\\n");
+
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+
+    while( lexer->current_analyzer_function(lexer) == true );
+
+#   else
+
+    while( 1 + 1 == 2 ) {
+        lexer->current_analyzer_function(lexer);
+        printf("---\\n");
+
+        /* Print the token queue */
+        while( QUEX_NAME(TokenQueue_is_empty)(&lexer->_token_queue) == false ) {        
+            switch( QUEX_NAME(TokenQueue_pop)(&lexer->_token_queue)->_id ) {
+            case QUEX_TKN_INDENT:      printf("INDENT\\n"); break;
+            case QUEX_TKN_DEDENT:      printf("DEDENT\\n"); break;
+            case QUEX_TKN_NODENT:      printf("NODENT\\n"); break;
+            case QUEX_TKN_TERMINATION: return 0;
+            default:                   printf("Unknown Token ID\\n"); break;
+            }
+        }
+        QUEX_NAME(TokenQueue_reset)(&lexer->_token_queue);
+    }
+
+#   endif
+
+    printf("  ''\\n");
+    return 0;
+}
 """
 
 def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={}):
@@ -459,7 +508,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        TestAnalyzer   lexer_state;
+        TestAnalyzer         lexer_state;
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
@@ -469,11 +518,7 @@ test_program_db = {
         lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
-        printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
-        printf("(*) result:\\n");
-        while( lexer_state.current_analyzer_function(&lexer_state) == true );
-        printf("  ''\\n");
-        return 0;
+        return run_test((const char*)(TestString + 1), "$$COMMENT$$", &lexer_state);
     }\n""",
 
     "ANSI-C": """
@@ -482,7 +527,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        TestAnalyzer lexer_state;
+        TestAnalyzer      lexer_state;
         /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
@@ -494,12 +539,8 @@ test_program_db = {
         QUEX_NAME(construct_basic)(&lexer_state, fh, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0,
                                     /* No translation, no translation buffer */0x0, false);
-        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
         /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
-        printf("(*) result:\\n");
-        while( lexer_state.current_analyzer_function(&lexer_state) == true );
-        printf("  ''\\n");
+        (void)run_test(test_string, "$$COMMENT$$", &lexer_state);
 
         fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
         return 0;
@@ -517,18 +558,12 @@ test_program_db = {
 
         TestAnalyzer  lexer_state;
         /**/
-        istringstream      istr("$$TEST_STRING$$");
+        istringstream istr("$$TEST_STRING$$");
 
         QUEX_NAME(construct_basic)(&lexer_state, &istr, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
 
-        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
-        /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
-        printf("(*) result:\\n");
-        while( lexer_state.current_analyzer_function(&lexer_state) == true );
-        printf("  ''\\n");
-        return 0;
+        return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
     }\n""",
 
     "Cpp_StrangeStream": """
@@ -550,13 +585,7 @@ test_program_db = {
 
         QUEX_NAME(construct_basic)(&lexer_state, &strange_stream, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
-        lexer_state.current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);
-        /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
-        printf("(*) result:\\n");
-        while( lexer_state.current_analyzer_function(&lexer_state) == true );
-        printf("  ''\\n");
-        return 0;
+        return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
     }\n""",
 }
 
