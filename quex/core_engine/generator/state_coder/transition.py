@@ -24,13 +24,13 @@ def __indentation_count_action(Info, SMD):
     if Info.type == "space": 
         if Info.number != -1: add_str = "%i" % Info.number
         else:                 add_str = Infor.variable_name
-        return "self.counter.base._indentation += %s;" % add_str
+        return "self.counter._indentation += %s;" % add_str
     
     # Grids lie on a grid:
     elif Info.type == "grid":
         if Info.number != -1: add_str = "%i" % Info.number
         else:                 add_str = Infor.variable_name
-        return "self.counter.base._indentation = (self.counter.base._indentation - (self.counter.base._indentation %% %s)) + %s;" \
+        return "self.counter._indentation = (self.counter._indentation - (self.counter._indentation %% %s)) + %s;" \
                % (add_str, add_str)
 
     else:

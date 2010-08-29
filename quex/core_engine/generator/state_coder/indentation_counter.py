@@ -2,14 +2,26 @@ from   quex.frs_py.string_handling                   import blue_print
 from   quex.input.setup                              import setup as Setup
 import quex.core_engine.state_machine.index          as     sm_index
 import quex.core_engine.generator.state_coder.transition_block as transition_block
+from   quex.core_engine.interval_handling            import Interval
+
+import sys
 
 class IndentationCounter:
     def __init__(self, Type, Number):
         self.type   = Type
         self.number = Number
 
+    def __eq__(self, Other):
+        if Other.__class__ != IndentationCounter: return False
+        return self.type == Other.type and self.number == Other.number
+
+    def __ne__(self, Other):
+        return not self.__eq__(Other)
+
+
 template_str = """
 { 
+#   define self (*me)
     $$DELIMITER_COMMENT$$
 $$INIT_REFERENCE_POINTER$$
 
@@ -48,6 +60,8 @@ $$DROP_OUT_DIRECT$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
 $$END_PROCEDURE$$                           
     $$GOTO_START$$                           
+
+#undef self
 }
 """
 
@@ -78,9 +92,6 @@ def do(IndentationSetup):
             trigger_map.append([interval, counter_index])
 
         # Reference Pointer: Define Variable, Initialize, determine how to subtact.
-        local_variable_db = { "reference_p" : 
-                              [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
-        init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);"
         end_procedure     = \
         "    me->counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n" 
     else:
@@ -97,9 +108,16 @@ def do(IndentationSetup):
 
         # Reference Pointer: Not required.
         #                    No subtraction 'current_position - reference_p'.
-        local_variable_db = {}
+        #                    (however, we pass 'reference_p' to indentation handler)
         end_procedure     = "" 
-        init_reference_p  = "" 
+
+    # Since we do not use a 'TransitionMap', there are some things we need 
+    # to som certain things by hand.
+    arrange_trigger_map(trigger_map)
+
+    local_variable_db = { "reference_p" : 
+                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
+    init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);"
 
     iteration_code = "".join(transition_block.do(trigger_map, counter_index, DSM=None))
 
@@ -143,4 +161,29 @@ def do(IndentationSetup):
                      [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
 
     return txt, local_variable_db
+
+def arrange_trigger_map(trigger_map):
+     """Arrange the trigger map: Sort, and insert 'drop-out-regions'
+     """
+     #  -- sort by interval
+     trigger_map.sort(lambda x, y: cmp(x[0].begin, y[0].begin))
+     
+     #  -- insert lower and upper 'drop-out-transitions'
+     if trigger_map[0][0].begin != -sys.maxint: 
+         trigger_map.insert(0, [Interval(-sys.maxint, trigger_map[0][0].begin), None])
+     if trigger_map[-1][0].end != sys.maxint: 
+         trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), None])
+
+     #  -- fill gaps
+     previous_end = -sys.maxint
+     i    = 0
+     size = len(trigger_map)
+     while i < size:
+         interval = trigger_map[i][0]
+         if interval.begin != previous_end: 
+             trigger_map.insert(i, [Interval(previous_end, interval.begin), None])
+             i    += 1
+             size += 1
+         i += 1
+         previous_end = interval.end
 

@@ -158,7 +158,9 @@ def __try_very_simplest_case(TriggerMap, info):
         # All must have the same target state
         if common_target_state_index == -1:
             common_target_state_index = target_state_index
-        elif common_target_state_index != target_state_index: 
+        # Make sure, you call the target_state_index's comparison operator.
+        # (The index might actually be a real object, e.g. an IndentationCounter)
+        elif target_state_index != common_target_state_index: 
             return None
 
         # Because of memory reasons, it is not wise to try to extend sys.maxint number
