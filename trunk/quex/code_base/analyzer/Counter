@@ -13,8 +13,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
     typedef struct {
-        QUEX_TYPE_INDENTATION   begin[QUEX_SETTING_INDENTATION_STACK_SIZE];
-        QUEX_TYPE_INDENTATION*  end;
+        QUEX_TYPE_INDENTATION   front[QUEX_SETTING_INDENTATION_STACK_SIZE];
+        QUEX_TYPE_INDENTATION*  back;         /* pointer to last element */
         QUEX_TYPE_INDENTATION*  memory_end;
     } QUEX_NAME(IndentationStack);
 

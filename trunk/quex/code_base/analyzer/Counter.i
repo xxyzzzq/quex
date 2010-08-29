@@ -145,7 +145,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef  __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
         __QUEX_STD_printf("   _indentation = %i;\n", (int)me->_indentation);
         __QUEX_STD_printf("   _indentation_stack = {");
-        for(iterator = me->_indentation_stack.begin; iterator != me->_indentation_stack.end; ++iterator) {
+        for(iterator = me->_indentation_stack.front; iterator != me->_indentation_stack.back + 1; ++iterator) {
             __QUEX_STD_printf("%i, ", (int)me->_indentation);
         }
         __QUEX_STD_printf("}");

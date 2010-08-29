@@ -309,7 +309,7 @@ def get_character_set_skipper(TriggerSet, LanguageDB):
     skipper_index = sm_index.get()
     # Mini trigger map:  [ trigger set ] --> loop start
     # That means: As long as characters of the trigger set appear, we go to the loop start.
-    transition_map = TransitionMap()
+    transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
     transition_map.add_transition(TriggerSet, skipper_index)
     iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), skipper_index, DSM=None))
 

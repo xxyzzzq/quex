@@ -473,7 +473,7 @@ ENTRY:
     /* Skip irrelevant characters */
     while(1 + 1 == 2) { 
         input = QUEX_NAME(Buffer_input_get)(&me->buffer);
-    $$MARKER_LIST$$
+$$MARKER_LIST$$
         if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
             QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {

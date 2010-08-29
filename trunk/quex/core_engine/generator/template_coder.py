@@ -224,6 +224,18 @@ class TemplateTarget:
         self.target_index   = TargetIndex
         self.__uniform_state_entries_f = UniformStateEntriesF
 
+    def __eq__(self, Other):
+        """Equal/Not Equal comparison operators are required for effective 
+           transition code generation.
+        """
+        if Other.__class__ != TemplateTarget: return False
+        return     self.template_index == Other.template_index \
+               and self.target_index   == Other.target_index \
+               and self.__uniform_state_entries_f == Other.__uniform_state_entries_f
+
+    def __ne__(self, Other):
+        return not self.__eq__(Other)
+
     def recursive(self):
         return self.target_index == None
 

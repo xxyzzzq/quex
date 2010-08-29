@@ -8,9 +8,8 @@ from   quex.input.indentation_setup       import IndentationSetup
 import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
 
 if "--hwut-info" in sys.argv:
-    print "Indentation Count: Different Buffer Sizes"
-    print "CHOICES: Uniform, Non-Uniform;"
-    print "SAME;"
+    print "Indentation Count: Uniform Indention (no 'tabulators')"
+    print "CHOICES: Uniform, NonUniform;"
     sys.exit(0)
 
 if len(sys.argv) < 2: 
@@ -26,6 +25,7 @@ EndStr = \
 """
 
 def test(TestStr, IndentationSetup):
+    Language = "Cpp"
     code_str, local_variable_db = indentation_counter.do(IndentationSetup)
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
@@ -39,27 +39,31 @@ def test(TestStr, IndentationSetup):
 indentation_setup = IndentationSetup()
 
 if "Uniform" in sys.argv:
+
     indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+
+    test("\n"
+         "  a\n"
+         "  :    b\n"
+         "  :      c\n"
+         "  :    d\n"
+         "  :    e\n"
+         "  :    h\n"
+         "  i\n"
+         "  j\n"
+         , indentation_setup)
+
 else:
-    indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 4)
-    indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 8)
+    indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+    indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
 
-TestStr  = "    :   :"
-Language = "Cpp"
-code_str = indentation_counter.do(indentation_setup)
+    test("\n"
+         "    a\n"
+         "\tb\n"
+         " \tc\n"
+         "  \td\n"
+         "   \td\n"
+         , indentation_setup)
 
-test("\n"
-     "   :   a\n"
-     "         b\n"
-     "         c\n"
-     "       d\n"
-     "       e\n"
-     "       h\n", indentation_setup)
-# test("\t", indentation_setup)
-# test("\t\t", indentation_setup)
-# test("\t\t", indentation_setup)
-
-# print "##", code_str
-# compile_and_run(Language, code_str)
 
 
