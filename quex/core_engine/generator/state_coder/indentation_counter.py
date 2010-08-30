@@ -117,7 +117,8 @@ def do(IndentationSetup):
 
     local_variable_db = { "reference_p" : 
                           [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
-    init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);"
+    init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
+                        "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"
 
     iteration_code = "".join(transition_block.do(trigger_map, counter_index, DSM=None))
 
