@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include "converter-tester.h"
 
 int

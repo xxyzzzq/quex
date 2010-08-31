@@ -6,7 +6,7 @@
 #define QUEX_TYPE_ANALYZER   TestAnalyzer
 #define QUEX_OPTION_STRING_ACCUMULATOR
 
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
 
 #include <quex/code_base/definitions>
 

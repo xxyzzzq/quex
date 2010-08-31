@@ -1,7 +1,7 @@
 #include<iostream>
 #include<fstream>
 
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include ___HEADER___
 

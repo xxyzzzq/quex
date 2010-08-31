@@ -2,7 +2,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__TEST__BUFFER_TEST_COMMON_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__TEST__BUFFER_TEST_COMMON_I
 
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/analyzertest_environment/TestAnalyzer-onfiguration>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/MemoryManager>
