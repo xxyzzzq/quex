@@ -1,5 +1,5 @@
 #include <cstring>
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include ___HEADER___
 #include <quex/code_base/unicode>
 #include <quex/code_base/unicode.i>

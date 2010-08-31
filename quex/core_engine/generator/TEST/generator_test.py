@@ -152,6 +152,7 @@ def run_this(Str):
         for line in txt.split("\n"):
             if    line.find("defined but not used") != -1 \
                or line.find("but never defined") != -1 \
+               or line.find("t global scope") != -1 \
                or     (line.find("warning: unused variable") != -1 )          \
                   and (line.find("path_") != -1 or line.find("pathwalker_") != -1) \
                or (line.find("In function") != -1 and line.lower().find("error") == -1):

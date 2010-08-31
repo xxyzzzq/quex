@@ -1,4 +1,4 @@
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>

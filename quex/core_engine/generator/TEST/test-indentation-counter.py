@@ -9,7 +9,7 @@ import quex.core_engine.generator.state_coder.indentation_counter as indentation
 
 if "--hwut-info" in sys.argv:
     print "Indentation Count: Uniform Indention (no 'tabulators')"
-    print "CHOICES: Uniform, NonUniform;"
+    print "CHOICES: Uniform, NonUniform, NonUniform-2;"
     sys.exit(0)
 
 if len(sys.argv) < 2: 
@@ -30,7 +30,7 @@ def test(TestStr, IndentationSetup):
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
                                               QuexBufferSize=1024, CommentTestStrF="", ShowPositionF=False, 
-                                              EndStr=EndStr, MarkerCharList=map(ord, " :"),
+                                              EndStr=EndStr, MarkerCharList=map(ord, " :\t"),
                                               LocalVariableDB=local_variable_db, 
                                               IndentationSupportF=True,
                                               TokenQueueF=True)
@@ -53,17 +53,31 @@ if "Uniform" in sys.argv:
          "  j\n"
          , indentation_setup)
 
-else:
+elif "NonUniform" in sys.argv:
     indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
     indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
 
     test("\n"
-         "    a\n"
-         "\tb\n"
-         " \tc\n"
-         "  \td\n"
-         "   \td\n"
+         "    a\n"     # 4 spaces
+         "\tb\n"       # 0 space  + 1 tab = 4
+         " \tc\n"      # 1 spaces + 1 tab = 4
+         "  \td\n"     # 2 spaces + 1 tab = 4
+         "   \te\n"    # 3 spaces + 1 tab = 4
+         "    \tf\n"   # 4 spaces + 1 tab = 8
+         "        g\n" # 8 spaces         = 8
          , indentation_setup)
 
+
+elif "NonUniform-2" in sys.argv:
+    indentation_setup.specify_space("[ \\:]", NumberSet([Interval(ord(" ")), Interval(ord(":"))]), 1)
+    indentation_setup.specify_grid("[\\t]", NumberSet(ord("\t")), 4)
+
+    test("\n"
+         "        a\n" # 8 spaces
+         "\t \tb\n"    # tab + 1 + tab = 8
+         "\t  \tc\n"   # tab + 2 + tab = 8
+         "\t   \td\n"  # tab + 3 + tab = 8
+         "\t    e\n"   # tab + 4       = 8
+         , indentation_setup)
 
 

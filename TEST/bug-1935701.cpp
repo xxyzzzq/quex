@@ -2,7 +2,7 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/analyzer/configuration/default>
+#include<quex/code_base/test_environment/TestAnalyzer-configuration>
 #include<quex/code_base/buffer/BufferFiller>
 #include<quex/code_base/buffer/plain/BufferFiller_Plain>
 #include<quex/code_base/buffer/plain/BufferFiller_Plain.i>

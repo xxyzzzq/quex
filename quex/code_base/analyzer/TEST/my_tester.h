@@ -13,7 +13,7 @@ namespace quex {
     typedef int       CounterLineColumnIndentation;
 }
 #define  QUEX_TYPE_ANALYZER my_tester
-#include <quex/code_base/analyzer/configuration/default>
+#include <quex/code_base/test_environment/TestAnalyzer-configuration>
 namespace quex {
     typedef void      (*QUEX_NAME(AnalyzerFunctionP))(struct my_tester*);
 }
