@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.51.1-prerelease"
-#define QUEX_SETTING_BUILD_DATE        "Fri Aug 27 08:15:30 2010"
+#define QUEX_SETTING_BUILD_DATE        "Thu Sep  2 07:57:15 2010"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -114,10 +114,10 @@
  * -- Line Number / Column Number Counting:
  *    Turning counting off may result in engine speed-up.                      */
 #ifndef    QUEX_OPTION_LINE_NUMBER_COUNTING            
-/* #define QUEX_OPTION_LINE_NUMBER_COUNTING */         
+#define    QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
 #ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
-/* #define QUEX_OPTION_COLUMN_NUMBER_COUNTING */       
+#define    QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 #endif
 
 #ifndef QUEX_OPTION_POST_CATEGORIZER

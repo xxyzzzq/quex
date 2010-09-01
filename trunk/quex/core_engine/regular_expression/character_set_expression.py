@@ -47,6 +47,7 @@ __special_character_set_db = None
 
 def special_character_set_db():
     """This is an 'access' function. It defines the dictionary only if it is required."""
+    global __special_character_set_db
 
     if __special_character_set_db == None:
         __special_character_set_db = {
