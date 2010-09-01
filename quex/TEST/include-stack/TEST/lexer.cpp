@@ -18,7 +18,7 @@ void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const
 //#    define RECEIVE(Token)   get_token_from_users_queue(qlex, Token)
 #endif
 #ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
-#    define RECEIVE(TokenP)   TokenP = qlex.receive()
+#    define RECEIVE(TokenP)   (void)qlex.receive(&TokenP)
 #else
 #    define RECEIVE(TokenP)   (void)qlex.receive()
 #endif
