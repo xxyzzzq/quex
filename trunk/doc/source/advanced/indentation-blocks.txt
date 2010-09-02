@@ -5,11 +5,102 @@ Indentation Blocks
 
 With the rise of the Python programming language, the use of indentation as the
 scope delimiter has become popular. Indeed, it may be the most efficient method
-to delimit scope with the least amount of additional characters provides a
-convenient mechanism to handle indentations which runs quasi-parallel to the
-pattern matching: indentation events. As mentioned in
+to delimit scope, i.e. with the least amount of additional characters. 
+
+Quex provides a convenient mechanism to handle indentations which runs in
+parallel to the pattern matching: indentation detection. The detection
+mechanism can have different 'flavors' that can be configured as a mode option
+
+.. code-block:: cpp
+
+   mode X :
+   <indentation:
+       [ ]        => space 1;
+       [\t]       => grid 4;
+       (\r\n)|\n  => newline;
+       \\[ \t]*   => suppressor;
+   >
+
+As soon as a mode contains an indentation tag, indentation is enabled. Inside
+the tag its character can be specified. The general scheme is
+
+.. code-block:: cpp
+
+       pattern '=>' specifier ';'
+
+The different specifiers are the following:
+
+   .. describe :: space [number]
+
+      This defines what characters are accepted as a 'space'. A space is
+      something that always increments the column counter by a distinct number.
+      Optionally, a number can be specified that determines the increment.
+
+   .. describe :: grid [number]
+
+      Characters associated with a 'grid' set the column number according to a
+      grid of a certain width. Tabulators are modelled by grids. For example,
+      if the grid width is four and the current indentation count is 5, then a
+      tabulator will set the column count to 8, because 8 is the closest grid
+      value ahead.
+
+   .. describe :: bad
+
+      By this specifier characters can be defined which are explicitly 'bad'.
+      There are very rational arguments for 'spaces are bad' and so there
+      are arguments for 'tabulators are bad'. The latter philosophy can be 
+      expressed by
+
+      .. code-block:: cpp
+         
+             [\t]  =>  bad; 
+
+   .. describe :: newline
+
+      Indentation count is triggered by 'newline'. By this specifier it
+      can be determined what character or character sequence triggers the
+      indentation count. For example,
+
+      .. code-block:: cpp
+
+           (\r\n)|\n  => newline;
+
+      matches newlines under DOS (0x0D, 0x0A) and under Unix (0x0A).  All
+      specifiers before only accept character sets as input. Clearly, the
+      newline specifier accepts a full regular expression. 
+
+   .. describe :: suppressor
+
+      The newline event can be suppressed by a subsequent suppressor. When it
+      is suppressed the subsequent line is not going to be subject to
+      indentation count. Famous suppressors are the backslash, as in Python, C,
+      and Makefiles, or the underline '_' as in some Basic dialects. For example,
+      the backslash in
+
+      .. code-block :: Python
+
+         if    db.out_of_date() \
+            or db.disconnected(): 
+                ...
+
+      prevents the python interpreter to consider indentation before the 'or'
+      which is now grouped into the if-condition.
+      
+      Many times interpreters are sensitive to whitespace that follows these. 
+      Quex allows to be less sensitive by defining the suppressor as a regular
+      expression, e.g.
+
+      .. code-block:: cpp
+
+         \\[ \t]*   => suppressor;
+
+      eats any amount of non-newline whitespace after the suppressor '\\'.
+      
+
+       
+As mentioned in
 :ref:`sec-usage-modes-characteristics-event-handlers` the user may define the
-event handler ``on_indentation`` to handle those events.
+event handler ``on_indentation`` to handle any indentation event, or 
 
 Figure :ref:`Triggering indentation events <fig-indentation-events>`  displays
 an example of the principle of indentation events.  Whenever the lexical

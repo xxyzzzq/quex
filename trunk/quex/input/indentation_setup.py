@@ -180,12 +180,11 @@ class IndentationSetup:
 
         return txt
 
-
 def do(fh):
     """Parses pattern definitions of the form:
    
           [ \t]                                       => grid 4;
-          [:intersection([:alpha:], [\X064-\X066]):]  => spaces 1;
+          [:intersection([:alpha:], [\X064-\X066]):]  => space 1;
 
        In other words the right hand side *must* be a character set.
           
