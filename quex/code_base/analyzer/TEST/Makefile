@@ -23,7 +23,6 @@ CC = g++ \
 	 -Wall \
      -DQUEX_OPTION_LINE_NUMBER_COUNTING  \
      -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
-	 -D__QUEX_OPTION_COUNTER \
      -D__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT 
 
 post-categorizer-%.exe:   post-categorizer-%.cpp $(QUEX_CORE)
