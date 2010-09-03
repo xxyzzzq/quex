@@ -12,12 +12,12 @@ namespace quex {
     typedef struct {} Token;
     typedef int       CounterLineColumnIndentation;
 }
-#define  QUEX_TYPE_ANALYZER my_tester
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
-namespace quex {
-    typedef void      (*QUEX_NAME(AnalyzerFunctionP))(struct my_tester*);
-}
-#include <quex/code_base/analyzer/counter/LineColumn>
+#undef   QUEX_TYPE_ANALYZER
+#undef   QUEX_TYPE0_ANALYZER
+#define  QUEX_TYPE_ANALYZER  my_tester
+#define  QUEX_TYPE0_ANALYZER my_tester
+#include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/Mode>
 #include <quex/code_base/test_environment/TestAnalyzer>
 #include <quex/code_base/analyzer/member/basic>
@@ -45,8 +45,7 @@ my_tester::my_tester()
     __current_mode_p = &tester_mini_mode; 
 }
 
-#include <../counter/LineColumnIndentation.i>
-#include <../counter/LineColumn.i>
+#include <../Counter.i>
 #include <../../MemoryManager.i>
 
 #endif // __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
