@@ -1,12 +1,5 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_ID  int
-#define QUEX_OPTION_POST_CATEGORIZER
-#include <quex/code_base/test_environment/TestAnalyzer-configuration>
-#include <quex/code_base/analyzer/PostCategorizer.i>
-#include <quex/code_base/aux-string.i>
+#include <quex/code_base/analyzer/TEST/post-categorizer-common.h>
+
 
 using namespace quex;
 void post_categorizer_setup(QUEX_NAME(Dictionary)* me, int Seed);

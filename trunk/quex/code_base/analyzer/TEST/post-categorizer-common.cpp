@@ -1,11 +1,4 @@
-#define QUEX_TYPE_CHARACTER char
-#define QUEX_TYPE_TOKEN_ID  int
-#define QUEX_OPTION_POST_CATEGORIZER
-#include <quex/code_base/test_environment/TestAnalyzer-configuration>
-#include <quex/code_base/definitions>
-#include <quex/code_base/analyzer/PostCategorizer>
-#include <quex/code_base/analyzer/PostCategorizer.i>
-#include <quex/code_base/aux-string.i>
+#include <quex/code_base/analyzer/TEST/post-categorizer-common.h>
 
 using namespace quex;
 
