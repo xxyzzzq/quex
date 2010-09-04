@@ -28,19 +28,19 @@
 
 #include <quex/code_base/definitions>
 
-QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAMESPACE_MAIN_OPEN 
+    struct QUEX_NAME(Engine_tag);
+    struct QUEX_NAME(Memento_tag);
+    
+    class  QUEX_TYPE0_ANALYZER;    /* Simple */
     typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
 QUEX_NAMESPACE_TOKEN_OPEN
-    class  Token;
+    class  QUEX_TYPE0_TOKEN;
 QUEX_NAMESPACE_TOKEN_CLOSE
-
-QUEX_NAMESPACE_MAIN_OPEN
-    class Simple;
-QUEX_NAMESPACE_MAIN_CLOSE
 
 /* START: User defined header content _________________________________________
  *        Must come before token class definition, since the token class 
@@ -52,11 +52,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include "Simple-token_ids"
 #include "Simple-token"
-
-/* START: User's derived class declaration (if there is one) __________________*/
-
-/* END: _______________________________________________________________________*/
-
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
@@ -347,6 +342,7 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
      QUEX_NAME(ONE_AND_ONLY).analyzer_function = QUEX_NAME(ONE_AND_ONLY_analyzer_function);
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
      QUEX_NAME(ONE_AND_ONLY).on_indent      = QUEX_NAME(Mode_on_indent_dedent_null_function);
+     QUEX_NAME(ONE_AND_ONLY).on_nodent      = QUEX_NAME(Mode_on_nodent_null_function);
      QUEX_NAME(ONE_AND_ONLY).on_dedent      = QUEX_NAME(Mode_on_indent_dedent_null_function);
 #    endif
      QUEX_NAME(ONE_AND_ONLY).on_entry       = QUEX_NAME(Mode_on_entry_exit_null_function);
@@ -502,11 +498,18 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    QUEX_NAME(ONE_AND_ONLY_on_indent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation) {
+    QUEX_NAME(ONE_AND_ONLY_on_indent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation, 
+                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
 __quex_assert((long)Indentation >= 0);
     }
     void
-    QUEX_NAME(ONE_AND_ONLY_on_dedent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation) {
+    QUEX_NAME(ONE_AND_ONLY_on_nodent)(QUEX_TYPE_ANALYZER* me, 
+                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
+__quex_assert((long)Indentation >= 0);
+    }
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_dedent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation,
+                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
 __quex_assert((long)Indentation >= 0);
     }
 #endif

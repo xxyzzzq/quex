@@ -1,6 +1,6 @@
-<test-database execution-time-sec="5.29" date="Wed Sep  1 08:15:13 2010">
+<test-database execution-time-sec="5.29" date="Sun Sep  5 08:00:53 2010">
     <last-used-diff-display-program name=""/>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.35"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.36"> 
         <application file-name="unvalid-marks.sh" info-request-time="1264886931L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.46" crc="1735324169"/>

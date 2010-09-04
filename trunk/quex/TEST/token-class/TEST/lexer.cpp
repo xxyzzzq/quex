@@ -11,9 +11,9 @@ int
 main(int argc, char** argv) 
 {        
     if( argc > 1 && strcmp("--hwut-info", argv[1]) == 0 ) {
-#       if   defined(TEST_simple)
+#       if   defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
         printf("With token policy 'simple'.\n");
-#       elif defined(TEST_simple_queue)
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
         printf("With token policy 'queue'.\n");
 #       else
         printf("ERROR - unreviewed compilation - ERROR.\n");
@@ -31,10 +31,10 @@ main(int argc, char** argv)
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
     do {
-#       if   defined(TEST_simple)
+#       if   defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
         (void)qlex.receive();
-#       else
-        token_p = qlex.receive();
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        qlex.receive(&token_p);
 #       endif
         cout << token_p->type_id_name() << " ";
 

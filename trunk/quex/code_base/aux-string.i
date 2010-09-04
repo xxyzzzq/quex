@@ -4,6 +4,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__AUX_STRING_I
 #define __QUEX_INCLUDE_GUARD__AUX_STRING_I
 
+#include <quex/code_base/definitions>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE size_t 

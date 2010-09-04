@@ -4,9 +4,9 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-#include <cstddef> 
+#   include <cstddef> 
 #else
-#include <stddef.h>
+#   include <stddef.h>
 #endif
 #include <quex/code_base/definitions>
 
@@ -21,10 +21,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 	QUEX_INLINE void
 	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me);
-	QUEX_INLINE void
-	QUEX_NAME(IndentationStack_push)(QUEX_NAME(IndentationStack)* me, QUEX_TYPE_INDENTATION Indentation);
-	QUEX_INLINE QUEX_TYPE_INDENTATION
-	QUEX_NAME(IndentationStack_pop)(QUEX_NAME(IndentationStack)* me);
 #   endif
 
     typedef struct {

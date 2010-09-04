@@ -7,7 +7,7 @@ using namespace quex;
 
 char total_string[65536];
 
-int    indentation[64];
+int  indentation[64];
 
 void test(const char* TestString, QUEX_NAME(CounterLineColumn)& x)
 {

@@ -29,4 +29,7 @@ mode SIMPLE :
     ^NEVER_THERE         => QUEX_TKN_NEVER_TOKEN;
 }
 
-mode EXTRA { a => QUEX_TKN_MINE(Lexeme); }
+mode EXTRA { 
+    on_failure => QUEX_TKN_ERROR(Lexeme);
+    a          => QUEX_TKN_MINE(Lexeme); 
+}

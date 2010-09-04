@@ -20,4 +20,5 @@ received: TWO
 received: THREE
 received: FOUR
 received: FIVE
+received: ERROR
 received: <TERMINATION>

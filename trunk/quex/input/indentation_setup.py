@@ -30,11 +30,11 @@ class IndentationSetup:
 
     def seal(self):
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
-            self.specify_space(NumberSet(ord(' ')), 1)
-            self.specify_grid(NumberSet(ord('\t')), 4)
+            self.specify_space("[ ]", NumberSet(ord(' ')), 1)
+            self.specify_grid("[\\t]", NumberSet(ord('\t')), 4)
 
         if self.newline_state_machine.get().is_empty():
-            self.specify_newline(NumberSet(ord('\n')))
+            self.specify_newline("\\n", NumberSet(ord('\n')))
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
         """If Key != None, than 'Before' is a database."""
@@ -51,34 +51,38 @@ class IndentationSetup:
         if not CharSet.is_empty(): return
         error_msg("Empty character set found.", FH)
 
-    def __error_if_intersection(self, CharSet, FH, Name):
+    def __error_if_intersection(self, Setting, FH, Name):
         def __error_msg(Before):
             error_msg("Character set specification '%s' intersects" % Name, FH, 
                       DontExitF=True, WarningF=False)
             error_msg("with definition for '%s' at this place." % Before.name, 
                       Before.file_name, Before.line_n)
 
+        if Setting.__class__.__name__ == StateMachine:
+            Setting = Setting.get_init_state().transitions()±²
+
         for character_set in self.space_db.values():
-            if character_set.get().has_intersection(CharSet): 
+            if character_set.get().has_intersection(Setting): 
                 __error_msg(character_set)
 
         for character_set in self.grid_db.values():
-            if character_set.get().has_intersection(CharSet):
+            if character_set.get().has_intersection(Setting):
                 __error_msg(character_set)
 
-        if self.bad_character_set.get().has_intersection(CharSet):                
+        if self.bad_character_set.get().has_intersection(Setting):                
             __error_msg(self.bad_character_set)
 
-        if self.newline_state_machine.get().has_intersection(CharSet):            
+        if self.newline_state_machine.get().has_intersection(Setting):            
             __error_msg(self.newline_state_machine)
 
-        if self.newline_suppressor_state_machine.get().has_intersection(CharSet): 
+        if self.newline_suppressor_state_machine.get().has_intersection(Setting): 
             __error_msg(self.newline_suppressor_state_machine)
 
-    def __check(self, Name, Before, CharSet, FH, Key=None):
+    def __check(self, Name, Before, Setting, FH, Key=None):
         self.__error_msg_if_defined_earlier(Before, FH, Key=Key, Name=Name)
-        self.__error_msg_if_character_set_empty(CharSet, FH)
-        self.__error_if_intersection(CharSet, FH, Name)
+        if Setting.__class__ == NumberSet: 
+            self.__error_msg_if_character_set_empty(Setting, FH)
+        self.__error_if_intersection(Setting, FH, Name)
 
     def specify_space(self, PatternStr, CharSet, Count, FH=-1):
         self.__check("space", self.space_db, CharSet, FH, Key=Count)
@@ -105,14 +109,14 @@ class IndentationSetup:
         self.bad_character_set = LocalizedParameter("bad", CharSet, FH)
         self.bad_character_set.pattern_str = PatternStr
 
-    def specify_newline(self, PatternStr, CharSet, FH=-1):
-        self.__check("newline", self.newline_state_machine, CharSet, FH)
-        self.newline_state_machine = LocalizedParameter("newline", CharSet, FH)
+    def specify_newline(self, PatternStr, SM, FH=-1):
+        self.__check("newline", self.newline_state_machine, SM, FH)
+        self.newline_state_machine = LocalizedParameter("newline", SM, FH)
         self.newline_state_machine.pattern_str = PatternStr
 
-    def specify_suppressor(self, PatternStr, CharSet, FH=-1):
-        self.__check("suppressor", self.newline_suppressor_state_machine, CharSet, FH)
-        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", CharSet, FH)
+    def specify_suppressor(self, PatternStr, SM, FH=-1):
+        self.__check("suppressor", self.newline_suppressor_state_machine, SM, FH)
+        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", SM, FH)
         self.newline_suppressor_state_machine.pattern_str = PatternStr
 
     def has_only_single_spaces(self):
@@ -224,7 +228,7 @@ def do(fh):
             if len(state_machine.states) != 2:
                 error_msg("For indentation '%s' only patterns are addmissible which\n" % identifier + \
                           "can be matched by a single character, e.g. \" \" or [a-z].", fh)
-            transition_map = state_machine.get_init_state().transition_map().get_map()
+            transition_map = state_machine.get_init_state().transitions().get_map()
             assert len(transition_map) == 1
             trigger_set = transition_map.values()[0]
 
@@ -232,21 +236,21 @@ def do(fh):
         if identifier == "space":
             value = read_integer(fh)
             if value == None: value = 1
-            indentation_setup.specify_space(pattern_set, trigger_set, value, fh)
+            indentation_setup.specify_space(pattern_str, trigger_set, value, fh)
 
         elif identifier == "grid":
             value = read_integer(fh)
             if value == None: error_msg("Missing integer after keyword 'grid'.", fh) 
-            indentation_setup.specify_grid(pattern_set, trigger_set, value, fh)
+            indentation_setup.specify_grid(pattern_str, trigger_set, value, fh)
 
         elif identifier == "bad":
-            indentation_setup.specify_bad(pattern_set, trigger_set, fh)
+            indentation_setup.specify_bad(pattern_str, trigger_set, fh)
 
         elif identifier == "newline":
-            indentation_setup.specify_newline(pattern_set, state_machine, fh)
+            indentation_setup.specify_newline(pattern_str, state_machine, fh)
 
         elif identifier == "suppressor":
-            indentation_setup.specify_suppressor(pattern_set, state_machine, fh)
+            indentation_setup.specify_suppressor(pattern_str, state_machine, fh)
 
         else:
             assert False, "Unreachable code reached."

@@ -18,11 +18,15 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void
 QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me) 
 {
-    me->text.begin      = \
-        QUEX_NAME(MemoryManager_Text_allocate)(
-           QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE * sizeof(QUEX_TYPE_CHARACTER));
-    if( me->text.begin == 0x0 ) {
-        QUEX_ERROR_EXIT("Quex engine: out of memory--cannot allocate Accumulator.");
+    if( QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE == 0 ) {
+        me->text.begin = 0x0;
+    } else {
+        me->text.begin = \
+            QUEX_NAME(MemoryManager_Text_allocate)(
+                      QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE * sizeof(QUEX_TYPE_CHARACTER));
+        if( me->text.begin == 0x0 ) {
+            QUEX_ERROR_EXIT("Quex engine: out of memory--cannot allocate Accumulator.");
+        }
     }
     me->text.end        = me->text.begin;
     me->text.memory_end = me->text.begin + QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE;

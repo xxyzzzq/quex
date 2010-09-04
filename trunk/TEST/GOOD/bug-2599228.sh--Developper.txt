@@ -59,7 +59,6 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/constructor.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/misc.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/CppTemplate.txt
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/default
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/validation
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/undefine
 /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_off
