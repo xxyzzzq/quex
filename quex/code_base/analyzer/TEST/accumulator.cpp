@@ -1,19 +1,29 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#define QUEX_TYPE_CHARACTER  char
-#define QUEX_TYPE_TOKEN_ID   int
-#define QUEX_TYPE_ANALYZER   TestAnalyzer
-#define QUEX_OPTION_STRING_ACCUMULATOR
-
+#define  QUEX_TYPE_CHARACTER            char
+#define  QUEX_TKN_UNINITIALIZED         1
+#define  QUEX_OPTION_TOKEN_POLICY_QUEUE
+#define  QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE       0
+#define  QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR 1
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
-
+#ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#   undef  QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#   define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+#else
+#   define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#   undef  QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+#endif
+#undef   QUEX_OPTION_INCLUDE_STACK
+#define  QUEX_OPTION_STRING_ACCUMULATOR
+#include <quex/code_base/aux-string.i>
 #include <quex/code_base/definitions>
 
 QUEX_NAMESPACE_MAIN_OPEN
 class TestAnalyzer;
 QUEX_NAMESPACE_MAIN_CLOSE
 
+#include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/Accumulator>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -21,7 +31,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 //#define QUEX_TOKEN_POLICY_SET_ID()       /* empty */
 //#define QUEX_TOKEN_POLICY_PREPARE_NEXT() /* empty */
 
-typedef struct { int _id; } Token;
+typedef struct { QUEX_TYPE_TOKEN_ID _id; } Token;
 
 QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
 
@@ -33,12 +43,8 @@ public:
         QUEX_TYPE_TOKEN*  read_iterator;
         QUEX_TYPE_TOKEN*  memory_end;
     } _token_queue;
-    struct {
-        struct {
-            size_t  _column_number_at_begin;
-            size_t  _line_number_at_begin;
-        } base;
-    } counter;
+
+    QUEX_NAME(Counter)     counter;
 
     QUEX_NAME(Accumulator) accumulator;
 };
@@ -60,9 +66,9 @@ QUEX_NAMESPACE_MAIN_CLOSE
 //#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
 //#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING_I
 //#define  __INCLUDE_INDICATOR_QUEX__TOKEN_POLICY__
-#include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/analyzer/C-adaptions.h>
 #include <quex/code_base/analyzer/Accumulator.i>
+#include <quex/code_base/analyzer/Counter.i>
 
 int
 main(int argc, char** argv)
@@ -70,7 +76,6 @@ main(int argc, char** argv)
     using namespace quex;
 
     char  TestString0[] = "AsSalaamu Alaikum";
-
 
     /* Ensure some settings that cause the accumulator to extend its memory */
     __quex_assert(QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE == 0);

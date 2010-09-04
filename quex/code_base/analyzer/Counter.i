@@ -152,6 +152,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
     }
 
+#if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+	QUEX_INLINE void
+	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me)
+	{
+        *(me->front)   = 0;          /* first indentation at column = 0 */
+        me->back       = me->front;
+        me->memory_end = me->front + QUEX_SETTING_INDENTATION_STACK_SIZE;
+	}
+#endif
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I */

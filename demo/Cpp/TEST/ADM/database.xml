@@ -1,4 +1,4 @@
-<test-database execution-time-sec="294.37" date="Thu Sep  2 08:15:21 2010">
+<test-database execution-time-sec="294.36" date="Sun Sep  5 08:00:53 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -68,7 +68,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="4.27" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="23.18"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="23.17"> 
             <application file-name="003-icu.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="6.34" crc="1977270883"/>
@@ -118,7 +118,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="10.02"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="10.01"> 
             <application file-name="008.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="5.23" crc="335189180"/>

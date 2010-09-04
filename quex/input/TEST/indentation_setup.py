@@ -30,7 +30,7 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    # descr = indentation.do(sh)
+    descr = indentation.do(sh)
     try:    
         descr = indentation.do(sh)
         pass
@@ -45,6 +45,8 @@ def test(Text):
     print
 
 if "basic" in sys.argv:
+    test("[\\r\\a] => newline;>")
+
     test("[\\r\\a]")
     test("[\\r\\a] >")
     test("[\\r\\a] => grid")

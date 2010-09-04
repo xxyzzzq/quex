@@ -70,7 +70,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
     }
 #   endif
 
-    token_p = qlex.receive();
+    qlex.receive(&token_p);
 
     printf("received: %s\n", token_p->type_id_name().c_str());
     QUEX_TYPE_TOKEN_ID token_id = token_p->type_id();

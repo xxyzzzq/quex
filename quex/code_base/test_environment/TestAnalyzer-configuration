@@ -17,14 +17,14 @@
  *       from a configuration file. This allows users to define some
  *       configuration options on the command line without being immediately
  *       deleted by "configuration/undefine".                                  */
-#ifdef     __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
-#   include   <quex/code_base/analyzer/configuration/undefine>
+#ifdef __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
+#   include <quex/code_base/analyzer/configuration/undefine>
 #else
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
 #define QUEX_SETTING_VERSION           "0.51.1-prerelease"
-#define QUEX_SETTING_BUILD_DATE        "Thu Sep  2 07:57:15 2010"
+#define QUEX_SETTING_BUILD_DATE        "Sun Sep  5 08:29:36 2010"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -199,14 +199,18 @@
 #define    QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
 /* Initial size of the character accumulator. */
-#define  QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE        (256)
+#ifndef     QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE
+#   define  QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE        (256)
+#endif
 /* Granularity, if new memory has to be allocated. The new
  * memory will be by this factor greater than the previous.
  * Example: At start, memory contains 256 characters; then 
  * new allocation becomes necessary; if factor = 0.5, then
  * the new memory will contain (256 + 128) = 384 characters. The
  * next time, the new memory of size (384 + 192) = 576 characters.      */
-#define  QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (0.8)
+#ifndef     QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR
+#   define  QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (0.8)
+#endif
 
 /* If one mode requires indentation support, then the lexical analyser
  * class must be setup for indentation counting. The following flag is
@@ -249,7 +253,9 @@
  * if no begin of line pre-condition is required.                            */
 #define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
-#define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
+#ifndef    QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE 
+#   define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
+#endif
 
 #if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
 #   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
@@ -325,7 +331,9 @@
 
 /* For the utf8 printing: Name the function that converts the 
  * specific codec to utf8 representation.                       */
-#define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
+#ifndef    QUEX_CONVERTER_OF_TEXT_TO_UTF8   
+#   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
+#endif
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
  * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
@@ -349,9 +357,15 @@
 #   define QUEX_TYPE0_TOKEN                  Token
 #endif
 
-#define QUEX_TYPE_TOKEN_ID                   uint32_t
-#define QUEX_TYPE_TOKEN_LINE_N               size_t
-#define QUEX_TYPE_TOKEN_COLUMN_N             size_t
+#ifndef    QUEX_TYPE_TOKEN_ID
+#   define QUEX_TYPE_TOKEN_ID        uint32_t
+#endif
+#ifndef    QUEX_TYPE_TOKEN_LINE_N
+#   define QUEX_TYPE_TOKEN_LINE_N    size_t
+#endif
+#ifndef    QUEX_TYPE_TOKEN_COLUMN_N
+#   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
+#endif
 
 #include <quex/code_base/analyzer/configuration/derived>
 
