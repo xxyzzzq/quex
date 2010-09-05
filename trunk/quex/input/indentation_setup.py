@@ -9,9 +9,10 @@ from quex.frs_py.file_in import get_current_line_info_number, \
                                 read_until_whitespace, \
                                 read_integer
 
-from   quex.lexer_mode                    import LocalizedParameter
-from   quex.core_engine.interval_handling import NumberSet
-import quex.input.regular_expression      as regular_expression
+from   quex.lexer_mode                     import LocalizedParameter
+from   quex.core_engine.interval_handling  import NumberSet
+from   quex.core_engine.state_machine.core import StateMachine
+import quex.input.regular_expression       as     regular_expression
 
 class IndentationSetup:
     def __init__(self, fh=-1):
@@ -25,21 +26,26 @@ class IndentationSetup:
         self.space_db = {}  # Maps: space width --> character_set
         self.grid_db  = {}  # Maps: grid width  --> character_set
         self.bad_character_set                = LocalizedParameter("bad",        NumberSet())
-        self.newline_state_machine            = LocalizedParameter("newline",    NumberSet())
-        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", NumberSet())
+        self.newline_state_machine            = LocalizedParameter("newline",    None)
+        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", None)
 
     def seal(self):
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
             self.specify_space("[ ]", NumberSet(ord(' ')), 1)
             self.specify_grid("[\\t]", NumberSet(ord('\t')), 4)
 
-        if self.newline_state_machine.get().is_empty():
-            self.specify_newline("\\n", NumberSet(ord('\n')))
+        if self.newline_state_machine.get() == None:
+            sm = StateMachine()
+            sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
+            self.specify_newline("\\n", sm)
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
         """If Key != None, than 'Before' is a database."""
+
+        if Name in ["newline", "suppressor"] and Before.get() == None: return
+
         if Key == None:
-            if Before.get().is_empty():      return
+            if Before.get().is_empty(): return
             error_msg("'" + Before.name + "' has been defined before;", FH, DontExitF=True, WarningF=False)
             error_msg("at this place.", Before.file_name, Before.line_n)
         if Key != None:
@@ -51,32 +57,77 @@ class IndentationSetup:
         if not CharSet.is_empty(): return
         error_msg("Empty character set found.", FH)
 
+    def __get_ending_character_set(self, SM):
+        """Returns the union of all characters that trigger to an acceptance
+           state in the given state machine. This is to detect whether the
+           newline or suppressor end with an indentation character (grid or space).
+        """
+        assert SM.__class__ == StateMachine
+        result = NumberSet()
+        for end_state_index in SM.get_acceptance_state_index_list():
+            for state in SM.states.values():
+                if state.transitions().has_target(end_state_index) == False: continue
+                result.unite_with(state.transitions().get_trigger_set_to_target(end_state_index))
+        return result
+
     def __error_if_intersection(self, Setting, FH, Name):
-        def __error_msg(Before):
+        def __error_character_set_intersection(Before):
             error_msg("Character set specification '%s' intersects" % Name, FH, 
                       DontExitF=True, WarningF=False)
             error_msg("with definition for '%s' at this place." % Before.name, 
                       Before.file_name, Before.line_n)
 
-        if Setting.__class__.__name__ == StateMachine:
-            Setting = Setting.get_init_state().transitions()±²
+        def __error_state_machine_intersection(Before):
+            error_msg("Character set specification '%s' intersects" % Name, FH, 
+                      DontExitF=True, WarningF=False)
+            error_msg("the ending of the pattern for '%s' at this place." % Before.name, 
+                      Before.file_name, Before.line_n,
+                      DontExitF=True, WarningF=False)
+            error_msg("Note, that 'newline' and cannot end with a character which is subject\n"
+                      "to indentation counting (i.e. 'space' or 'grid').", FH)
 
+        if Name == "suppressor":
+            # Newline suppressors are totally free. They can contain newlines, indentation count
+            # characters and whatsoever. They are not subject to intersection check.
+            return
+
+        if Name == "newline":
+            assert Setting.__class__ == StateMachine
+            assert Setting != None
+            candidate = self.__get_ending_character_set(Setting)
+        else:
+            assert Setting.__class__ == NumberSet
+            candidate = Setting
+
+        # 'space'
         for character_set in self.space_db.values():
-            if character_set.get().has_intersection(Setting): 
-                __error_msg(character_set)
+            if character_set.get().has_intersection(candidate): 
+                __error_character_set_intersection(character_set)
 
+        # 'grid'
         for character_set in self.grid_db.values():
-            if character_set.get().has_intersection(Setting):
-                __error_msg(character_set)
+            if character_set.get().has_intersection(candidate):
+                __error_character_set_intersection(character_set)
 
-        if self.bad_character_set.get().has_intersection(Setting):                
-            __error_msg(self.bad_character_set)
+        # 'bad'
+        if Name != "newline":
+            # 'bad' indentation characters are not subject to indentation counting so they
+            # very well intersect with newline or suppressor.
+            if self.bad_character_set.get().has_intersection(candidate):                
+                __error_character_set_intersection(self.bad_character_set)
 
-        if self.newline_state_machine.get().has_intersection(Setting):            
-            __error_msg(self.newline_state_machine)
+        # 'newline'
+        if Name != "bad" and self.newline_state_machine.get() != None:
+            # The 'bad' character set can very well appear as the end of newline, since it is
+            # not used for indentation counting.
+            ending_character_set = self.__get_ending_character_set(self.newline_state_machine.get())
+            if ending_character_set.has_intersection(candidate):            
+                __error_state_machine_intersection(self.newline_state_machine)
 
-        if self.newline_suppressor_state_machine.get().has_intersection(Setting): 
-            __error_msg(self.newline_suppressor_state_machine)
+        # 'suppressor'
+        # Note, the suppressor pattern is free. No indentation is counted after it. Thus if
+        # it ends with characters which are subject to indentation counting, then there is
+        # no harm or confusion.
 
     def __check(self, Name, Before, Setting, FH, Key=None):
         self.__error_msg_if_defined_earlier(Before, FH, Key=Key, Name=Name)
@@ -177,10 +228,14 @@ class IndentationSetup:
         txt += "    %s\n" % self.bad_character_set.get().get_utf8_string()
 
         txt += "Newline:\n"
-        txt += "    %s\n" % self.newline_state_machine.get().get_utf8_string()
+        sm = self.newline_state_machine.get()
+        if sm == None: txt += "    <none>\n"
+        else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
 
         txt += "Suppressor:\n"
-        txt += "    %s\n" % self.newline_suppressor_state_machine.get().get_utf8_string()
+        sm = self.newline_suppressor_state_machine.get()
+        if sm == None: txt += "    <none>\n"
+        else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
 
         return txt
 

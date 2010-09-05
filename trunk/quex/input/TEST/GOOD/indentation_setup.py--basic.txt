@@ -1,6 +1,7 @@
 (1) |[\r\a]|
 
-test_string:1:error: End of file reached while parsing 'indentation' section.
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
 
 (2) |[\r\a] >|
 
@@ -34,9 +35,15 @@ Grids:
 Bad:
     
 Newline:
-    '\n'
-Suppressor:
+    init-state = 25L
+    00025() <~ 
+          == '\n' ==> 00026
+          <no epsilon>
+    00026(A, S) <~ 
+          <no epsilon>
     
+Suppressor:
+    <none>
 
 
 (7) |[\r\a] => space;>|
@@ -47,9 +54,15 @@ Grids:
 Bad:
     
 Newline:
-    '\n'
-Suppressor:
+    init-state = 31L
+    00031() <~ 
+          == '\n' ==> 00032
+          <no epsilon>
+    00032(A, S) <~ 
+          <no epsilon>
     
+Suppressor:
+    <none>
 
 
 (8) |[\r\a] => space 0rXVI;>|
@@ -63,9 +76,15 @@ Grids:
 Bad:
     
 Newline:
-    '\n'
-Suppressor:
+    init-state = 37L
+    00037() <~ 
+          == '\n' ==> 00038
+          <no epsilon>
+    00038(A, S) <~ 
+          <no epsilon>
     
+Suppressor:
+    <none>
 
 
 (9) |[\r\a] => newline;>|
@@ -77,9 +96,15 @@ Grids:
 Bad:
     
 Newline:
-    '\a', '\r'
-Suppressor:
+    init-state = 41L
+    00041() <~ 
+          == '\a', '\r' ==> 00042
+          <no epsilon>
+    00042(A, S) <~ 
+          <no epsilon>
     
+Suppressor:
+    <none>
 
 
 (10) |[\r\a] => suppressor;>|
@@ -91,9 +116,21 @@ Grids:
 Bad:
     
 Newline:
-    '\n'
+    init-state = 47L
+    00047() <~ 
+          == '\n' ==> 00048
+          <no epsilon>
+    00048(A, S) <~ 
+          <no epsilon>
+    
 Suppressor:
-    '\a', '\r'
+    init-state = 45L
+    00045() <~ 
+          == '\a', '\r' ==> 00046
+          <no epsilon>
+    00046(A, S) <~ 
+          <no epsilon>
+    
 
 
 (11) |[\r\a] => bad;>|
@@ -105,9 +142,15 @@ Grids:
 Bad:
     '\a', '\r'
 Newline:
-    '\n'
-Suppressor:
+    init-state = 53L
+    00053() <~ 
+          == '\n' ==> 00054
+          <no epsilon>
+    00054(A, S) <~ 
+          <no epsilon>
     
+Suppressor:
+    <none>
 
 
 (12)
@@ -131,8 +174,14 @@ Grids:
 Bad:
     
 Newline:
-    '\n'
-Suppressor:
+    init-state = 71L
+    00071() <~ 
+          == '\n' ==> 00072
+          <no epsilon>
+    00072(A, S) <~ 
+          <no epsilon>
     
+Suppressor:
+    <none>
 
 
