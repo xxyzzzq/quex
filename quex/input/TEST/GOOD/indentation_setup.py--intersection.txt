@@ -24,9 +24,31 @@ Exception!
 [cde] => suppressor;>
 ::
 
-test_string:2:error: Character set specification 'suppressor' intersects
-test_string:1:error: with definition for 'space' at this place.
-Exception!
+test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 10.
+test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
+test_string:1:warning: of 1 are the fastest to compute.
+Spaces:
+     10 by ['a', 'c']
+Grids:
+Bad:
+    
+Newline:
+    init-state = 25L
+    00025() <~ 
+          == '\n' ==> 00026
+          <no epsilon>
+    00026(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 23L
+    00023() <~ 
+          == ['c', 'e'] ==> 00024
+          <no epsilon>
+    00024(A, S) <~ 
+          <no epsilon>
+    
+
 
 (4)
 ::
@@ -64,9 +86,32 @@ Exception!
 [cde] => suppressor;>
 ::
 
-test_string:2:error: Character set specification 'suppressor' intersects
-test_string:1:error: with definition for 'grid' at this place.
-Exception!
+test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:1:warning: widths are multiples of 10. The grid setup 10
+test_string:1:warning: is equivalent to a setup with space counts 1.
+test_string:1:warning: Space counts are faster to compute.
+Spaces:
+Grids:
+     10 by ['a', 'c']
+Bad:
+    
+Newline:
+    init-state = 59L
+    00059() <~ 
+          == '\n' ==> 00060
+          <no epsilon>
+    00060(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 57L
+    00057() <~ 
+          == ['c', 'e'] ==> 00058
+          <no epsilon>
+    00058(A, S) <~ 
+          <no epsilon>
+    
+
 
 (8)
 ::
@@ -94,9 +139,23 @@ Exception!
 [cde] => newline;>
 ::
 
-test_string:2:error: Character set specification 'newline' intersects
-test_string:1:error: with definition for 'bad' at this place.
-Exception!
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['a', 'c']
+Newline:
+    init-state = 83L
+    00083() <~ 
+          == ['c', 'e'] ==> 00084
+          <no epsilon>
+    00084(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
 
 (11)
 ::
@@ -104,9 +163,29 @@ Exception!
 [cde] => suppressor;>
 ::
 
-test_string:2:error: Character set specification 'suppressor' intersects
-test_string:1:error: with definition for 'bad' at this place.
-Exception!
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['a', 'c']
+Newline:
+    init-state = 93L
+    00093() <~ 
+          == '\n' ==> 00094
+          <no epsilon>
+    00094(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 91L
+    00091() <~ 
+          == ['c', 'e'] ==> 00092
+          <no epsilon>
+    00092(A, S) <~ 
+          <no epsilon>
+    
+
 
 (12)
 ::
@@ -125,7 +204,9 @@ Exception!
 ::
 
 test_string:2:error: Character set specification 'grid' intersects
-test_string:1:error: with definition for 'newline' at this place.
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
 Exception!
 
 (14)
@@ -135,7 +216,9 @@ Exception!
 ::
 
 test_string:2:error: Character set specification 'space' intersects
-test_string:1:error: with definition for 'newline' at this place.
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
 Exception!
 
 (15)
@@ -144,9 +227,29 @@ Exception!
 [cde] => suppressor;>
 ::
 
-test_string:2:error: Character set specification 'suppressor' intersects
-test_string:1:error: with definition for 'newline' at this place.
-Exception!
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    init-state = 121L
+    00121() <~ 
+          == ['a', 'c'] ==> 00122
+          <no epsilon>
+    00122(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 125L
+    00125() <~ 
+          == ['c', 'e'] ==> 00126
+          <no epsilon>
+    00126(A, S) <~ 
+          <no epsilon>
+    
+
 
 (16)
 ::
@@ -154,9 +257,23 @@ Exception!
 [cde] => bad;>
 ::
 
-test_string:2:error: Character set specification 'bad' intersects
-test_string:1:error: with definition for 'newline' at this place.
-Exception!
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['c', 'e']
+Newline:
+    init-state = 129L
+    00129() <~ 
+          == ['a', 'c'] ==> 00130
+          <no epsilon>
+    00130(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
 
 (17)
 ::
@@ -164,9 +281,32 @@ Exception!
 [cde] => grid  10;>
 ::
 
-test_string:2:error: Character set specification 'grid' intersects
-test_string:1:error: with definition for 'suppressor' at this place.
-Exception!
+test_string:2:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:2:warning: widths are multiples of 10. The grid setup 10
+test_string:2:warning: is equivalent to a setup with space counts 1.
+test_string:2:warning: Space counts are faster to compute.
+Spaces:
+Grids:
+     10 by ['c', 'e']
+Bad:
+    
+Newline:
+    init-state = 143L
+    00143() <~ 
+          == '\n' ==> 00144
+          <no epsilon>
+    00144(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 137L
+    00137() <~ 
+          == ['a', 'c'] ==> 00138
+          <no epsilon>
+    00138(A, S) <~ 
+          <no epsilon>
+    
+
 
 (18)
 ::
@@ -174,9 +314,29 @@ Exception!
 [cde] => newline;>
 ::
 
-test_string:2:error: Character set specification 'newline' intersects
-test_string:1:error: with definition for 'suppressor' at this place.
-Exception!
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    init-state = 151L
+    00151() <~ 
+          == ['c', 'e'] ==> 00152
+          <no epsilon>
+    00152(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 147L
+    00147() <~ 
+          == ['a', 'c'] ==> 00148
+          <no epsilon>
+    00148(A, S) <~ 
+          <no epsilon>
+    
+
 
 (19)
 ::
@@ -184,9 +344,28 @@ Exception!
 [cde] => space;>
 ::
 
-test_string:2:error: Character set specification 'space' intersects
-test_string:1:error: with definition for 'suppressor' at this place.
-Exception!
+Spaces:
+      1 by ['c', 'e']
+Grids:
+Bad:
+    
+Newline:
+    init-state = 161L
+    00161() <~ 
+          == '\n' ==> 00162
+          <no epsilon>
+    00162(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 155L
+    00155() <~ 
+          == ['a', 'c'] ==> 00156
+          <no epsilon>
+    00156(A, S) <~ 
+          <no epsilon>
+    
+
 
 (20)
 ::
@@ -194,7 +373,27 @@ Exception!
 [cde] => bad;>
 ::
 
-test_string:2:error: Character set specification 'bad' intersects
-test_string:1:error: with definition for 'suppressor' at this place.
-Exception!
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    ['c', 'e']
+Newline:
+    init-state = 171L
+    00171() <~ 
+          == '\n' ==> 00172
+          <no epsilon>
+    00172(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    init-state = 165L
+    00165() <~ 
+          == ['a', 'c'] ==> 00166
+          <no epsilon>
+    00166(A, S) <~ 
+          <no epsilon>
+    
+
 

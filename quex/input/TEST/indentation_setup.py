@@ -12,7 +12,7 @@ from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"
-    print "CHOICES: basic, twice, intersection;"
+    print "CHOICES: basic, twice, intersection, intersection-2;"
     sys.exit()
 
 # choice = sys.argv[1]
@@ -30,7 +30,7 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    descr = indentation.do(sh)
+    # descr = indentation.do(sh)
     try:    
         descr = indentation.do(sh)
         pass
@@ -45,7 +45,6 @@ def test(Text):
     print
 
 if "basic" in sys.argv:
-    test("[\\r\\a] => newline;>")
 
     test("[\\r\\a]")
     test("[\\r\\a] >")
@@ -94,3 +93,9 @@ elif "intersection" in sys.argv:
     test("[abc] => suppressor;\n[cde] => space;>")
     test("[abc] => suppressor;\n[cde] => bad;>")
 
+elif "intersection-2" in sys.argv:
+
+    test("abc* => newline;\n[ce] => space;>")
+    test("abc* => newline;\n[be] => space;>")
+    test("ac*b? => newline;\n[ce] => space;>")
+    test("ac*b => newline;\n[ce] => space;>")

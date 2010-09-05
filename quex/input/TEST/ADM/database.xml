@@ -1,4 +1,4 @@
-<test-database execution-time-sec="13.96" date="Sun Sep  5 09:11:59 2010">
+<test-database execution-time-sec="13.82" date="Mon Sep  6 09:08:34 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.05"> 
         <application file-name="nonsense.py" info-request-time="1279943722L" vanished="True"/>
@@ -6,12 +6,13 @@
            <choice name="" result="NO GOOD FILE" time_sec="2.05" crc="0"/>
         </choice-list>
     </test>
-    <test title="Parse Indentation Setup" time-sum-sec="0.19"> 
-        <application file-name="indentation_setup.py" info-request-time="1283670705L" vanished="False"/>
-        <choice-list number="3" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.06" crc="-199622544"/>
+    <test title="Parse Indentation Setup" time-sum-sec="0.05"> 
+        <application file-name="indentation_setup.py" info-request-time="1283756913L" vanished="False"/>
+        <choice-list number="4" same_result="False">
+           <choice name="basic" result="OK" time_sec="0.00" crc="149049849"/>
            <choice name="twice" result="FAIL" time_sec="0.05" crc="-2106786072"/>
-           <choice name="intersection" result="FAIL" time_sec="0.08" crc="1529104573"/>
+           <choice name="intersection" result="OK" time_sec="0.00" crc="739296252"/>
+           <choice name="intersection-2" result="OK" time_sec="0.00" crc="-1389949999"/>
         </choice-list>
     </test>
     <test title="Case Folding based on Unicode Database" time-sum-sec="0.37"> 
