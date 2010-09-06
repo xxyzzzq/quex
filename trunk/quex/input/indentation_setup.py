@@ -191,38 +191,53 @@ class IndentationSetup:
         # If there are no spaces and the grid is on a homogenous scale,
         # => then the grid can be transformed into 'easy-to-compute' spaces.
         if len(self.space_db) == 0:
-            grid_value_list = sorted(self.grid_db.keys())
-            min_grid_value  = min(self.grid_db.keys())
-            # Are all grid values a multiple of the minimum?
-            if len(filter(lambda x: x % min_grid_value == 0, grid_value_list)) == len(grid_value_list):
-                grid_def = self.grid_db[min_grid_value]
-                error_msg("Indentation setup does not contain spaces, only grids (tabulators). All grid\n" + \
-                          "widths are multiples of %i. The grid setup %s\n" \
-                          % (min_grid_value, repr(sorted(grid_value_list))[1:-1]) + \
-                          "is equivalent to a setup with space counts %s.\n" \
-                          % repr(map(lambda x: x / min_grid_value, sorted(grid_value_list)))[1:-1] + \
-                          "Space counts are faster to compute.", 
-                          grid_def.file_name, grid_def.line_n, DontExitF=True)
+            # If there is one single variable grid value, then no assumptions can be made
+            for value in self.grid_db.keys():
+                if type(value) in [str, unicode]: break
+            else:
+                grid_value_list = sorted(self.grid_db.keys())
+                min_grid_value  = min(grid_value_list)
+                # Are all grid values a multiple of the minimum?
+                if len(filter(lambda x: x % min_grid_value == 0, grid_value_list)) == len(grid_value_list):
+                    grid_def = self.grid_db[min_grid_value]
+                    error_msg("Indentation setup does not contain spaces, only grids (tabulators). All grid\n" + \
+                              "widths are multiples of %i. The grid setup %s\n" \
+                              % (min_grid_value, repr(sorted(grid_value_list))[1:-1]) + \
+                              "is equivalent to a setup with space counts %s.\n" \
+                              % repr(map(lambda x: x / min_grid_value, sorted(grid_value_list)))[1:-1] + \
+                              "Space counts are faster to compute.", 
+                              grid_def.file_name, grid_def.line_n, DontExitF=True)
 
         elif len(self.grid_db) == 0:
-            # If all space values are the same, then they can be replaced by '1' spaces
-            if len(self.space_db) == 1 and self.space_db.keys()[0] != 1:
-                space_count, space_def = self.space_db.items()[0]
-                error_msg("Indentation does not contain a grid but only homogenous space counts of %i.\n" % space_count + \
-                          "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
-                          "of 1 are the fastest to compute.", 
-                          space_def.file_name, space_def.line_n, DontExitF=True)
+            # If there is one single space count depending on a variable, then no assumptions can be made
+            for value in self.space_db.keys():
+                if type(value) in [str, unicode]: break
+            else:
+                # If all space values are the same, then they can be replaced by '1' spaces
+                if len(self.space_db) == 1 and self.space_db.keys()[0] != 1:
+                    space_count, space_def = self.space_db.items()[0]
+                    error_msg("Indentation does not contain a grid but only homogenous space counts of %i.\n" \
+                              % space_count + \
+                              "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
+                              "of 1 are the fastest to compute.", 
+                              space_def.file_name, space_def.line_n, DontExitF=True)
 
     def __repr__(self):
 
         txt = ""
         txt += "Spaces:\n"
         for count, character_set in sorted(self.space_db.items()):
-            txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
+            if type(count) in [str, unicode]:
+                txt += "    %s by %s\n" % (count, character_set.get().get_utf8_string())
+            else:
+                txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
 
         txt += "Grids:\n"
         for count, character_set in sorted(self.grid_db.items()):
-            txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
+            if type(count) in [str, unicode]:
+                txt += "    %s by %s\n" % (count, character_set.get().get_utf8_string())
+            else:
+                txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
 
         txt += "Bad:\n"
         txt += "    %s\n" % self.bad_character_set.get().get_utf8_string()
@@ -290,13 +305,28 @@ def do(fh):
         skip_whitespace(fh)
         if identifier == "space":
             value = read_integer(fh)
-            if value == None: value = 1
-            indentation_setup.specify_space(pattern_str, trigger_set, value, fh)
+            if value != None: 
+                indentation_setup.specify_space(pattern_str, trigger_set, value, fh)
+            else:
+                # not a number received, is it an identifier?
+                variable = read_identifier(fh)
+                if variable != "":
+                    indentation_setup.specify_space(pattern_str, trigger_set, variable, fh)
+                else:
+                    indentation_setup.specify_space(pattern_str, trigger_set, 1, fh)
 
         elif identifier == "grid":
             value = read_integer(fh)
-            if value == None: error_msg("Missing integer after keyword 'grid'.", fh) 
-            indentation_setup.specify_grid(pattern_str, trigger_set, value, fh)
+            if value != None: 
+                indentation_setup.specify_grid(pattern_str, trigger_set, value, fh)
+            else:
+                # not a number received, is it an identifier?
+                skip_whitespace(fh)
+                variable = read_identifier(fh)
+                if variable != "":
+                    indentation_setup.specify_grid(pattern_str, trigger_set, variable, fh)
+                else:
+                    error_msg("Missing integer or variable name after keyword 'grid'.", fh) 
 
         elif identifier == "bad":
             indentation_setup.specify_bad(pattern_str, trigger_set, fh)
