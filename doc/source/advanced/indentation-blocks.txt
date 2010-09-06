@@ -30,19 +30,42 @@ the tag its character can be specified. The general scheme is
 
 The different specifiers are the following:
 
-   .. describe :: space [number]
+   .. describe :: space [number|variable]
 
       This defines what characters are accepted as a 'space'. A space is
       something that always increments the column counter by a distinct number.
       Optionally, a number can be specified that determines the increment.
 
-   .. describe :: grid [number]
+      If a valid identifier is specified, it will become a member of the 
+      lexical analyzer with the type 'size_t' as defined in 'stddef.h'. Then
+      the value can be changed at runtime by setting the member variable.
+
+   .. describe :: grid [number|variable]
 
       Characters associated with a 'grid' set the column number according to a
       grid of a certain width. Tabulators are modelled by grids. For example,
       if the grid width is four and the current indentation count is 5, then a
       tabulator will set the column count to 8, because 8 is the closest grid
       value ahead.
+
+      As with 'space', a run-time modification of the grid value is possible
+      by specifying a variable name instead of a number. For example,
+
+      .. code-block:: cpp
+
+         [\t]  => grid  tabulator_width;
+
+      results in a member variable ``tabulator_width`` inside the analyzer that
+      can be changed at run-time, e.g.
+
+      .. code-block:: cpp
+
+         ...
+         MyLexer   qlex(...);
+         ...
+         if( file_format == MSVC ) qlex.tabulator_width = 8;
+         else                      qlex.tabulator_width = 4;
+         ...
 
    .. describe :: bad
 

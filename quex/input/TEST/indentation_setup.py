@@ -12,7 +12,7 @@ from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"
-    print "CHOICES: basic, twice, intersection, intersection-2;"
+    print "CHOICES: basic, twice, intersection, intersection-2, non-numeric;"
     sys.exit()
 
 # choice = sys.argv[1]
@@ -99,3 +99,9 @@ elif "intersection-2" in sys.argv:
     test("abc* => newline;\n[be] => space;>")
     test("ac*b? => newline;\n[ce] => space;>")
     test("ac*b => newline;\n[ce] => space;>")
+
+elif "non-numeric" in sys.argv:
+    test("[\\r\\a] => grid variable;>")
+    test("[\\r\\a] => grid variable kongo;>")
+    test("[\\r\\a] => space variable2;>")
+    test("[\\r\\a] => space variable 2;>")

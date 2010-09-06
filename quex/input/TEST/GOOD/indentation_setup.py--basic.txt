@@ -20,7 +20,7 @@ Exception!
 
 (5) |[\r\a] => grid>|
 
-test_string:1:error: Missing integer after keyword 'grid'.
+test_string:1:error: Missing integer or variable name after keyword 'grid'.
 Exception!
 
 (6) |[\r\a] => grid 4;>|
