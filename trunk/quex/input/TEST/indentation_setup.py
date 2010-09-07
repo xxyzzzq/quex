@@ -46,26 +46,26 @@ def test(Text):
 
 if "basic" in sys.argv:
 
-    test("[\\r\\a]")
-    test("[\\r\\a] >")
-    test("[\\r\\a] => grid")
-    test("[\\r\\a] => trid")
-    test("[\\r\\a] => grid>")
-    test("[\\r\\a] => grid 4;>")
-    test("[\\r\\a] => space;>")
-    test("[\\r\\a] => space 0rXVI;>")
-    test("[\\r\\a] => newline;>")
-    test("[\\r\\a] => suppressor;>")
-    test("[\\r\\a] => bad;>")
-    test("[\\r\\a] => space;\n[\\t] => grid 10;")
-    test("[\\r\\a] => space;\n[\\t] => grid 10;>")
+    test("[\\v\\a]")
+    test("[\\v\\a] >")
+    test("[\\v\\a] => grid")
+    test("[\\v\\a] => trid")
+    test("[\\v\\a] => grid>")
+    test("[\\v\\a] => grid 4;>")
+    test("[\\v\\a] => space;>")
+    test("[\\v\\a] => space 0rXVI;>")
+    test("[\\v\\a] => newline;>")
+    test("[\\v\\a] => suppressor;>")
+    test("[\\v\\a] => bad;>")
+    test("[\\v\\a] => space;\n[\\t] => grid 10;")
+    test("[\\v\\a] => space;\n[\\t] => grid 10;>")
 
 elif "twice" in sys.argv:
-    test("[\\r\\a] => space 10;\n[\\t] => space 10;>")
-    test("[\\r\\a] => grid 10;\n[\\t] => grid 10;>")
-    test("[\\r\\a] => newline;\n[\\t] => newline;>")
-    test("[\\r\\a] => suppressor;\n[\\t] => suppressor;>")
-    test("[\\r\\a] => bad;\n[\\t] => bad;>")
+    test("[\\v\\a] => space 10;\n[\\t] => space 10;>")
+    test("[\\v\\a] => grid 10;\n[\\t] => grid 10;>")
+    test("[\\v\\a] => newline;\n[\\t] => newline;>")
+    test("[\\v\\a] => suppressor;\n[\\t] => suppressor;>")
+    test("[\\v\\a] => bad;\n[\\t] => bad;>")
 
 elif "intersection" in sys.argv:
     test("[abc] => space 10;\n[cde] => grid  4;>")
@@ -101,7 +101,9 @@ elif "intersection-2" in sys.argv:
     test("ac*b => newline;\n[ce] => space;>")
 
 elif "non-numeric" in sys.argv:
-    test("[\\r\\a] => grid variable;>")
-    test("[\\r\\a] => grid variable kongo;>")
-    test("[\\r\\a] => space variable2;>")
-    test("[\\r\\a] => space variable 2;>")
+    test("[\\v\\a] => grid variable;>")
+    test("[\\v\\a] => grid variable kongo;>")
+    test("[\\v\\a] => space variable2;>")
+    test("[\\v\\a] => space variable 2;>")
+    test(">")
+    test("/* empty will do */>")

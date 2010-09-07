@@ -77,7 +77,7 @@ num:	TKN_NUM
 void Calc_yyerror(Calc_lexer *qlex, const char*  m)
 {
 	printf("Parsing error at %i:%i: %s", 
-           (int)qlex->counter.base._line_number_at_begin, (int)qlex->counter.base._column_number_at_begin, m);
+           (int)qlex->counter._line_number_at_begin, (int)qlex->counter._column_number_at_begin, m);
            
 }
 

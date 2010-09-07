@@ -1,6 +1,6 @@
 (1)
 ::
-[\r\a] => space 10;
+[\v\a] => space 10;
 [\t] => space 10;>
 ::
 
@@ -10,7 +10,7 @@ Exception!
 
 (2)
 ::
-[\r\a] => grid 10;
+[\v\a] => grid 10;
 [\t] => grid 10;>
 ::
 
@@ -20,7 +20,7 @@ Exception!
 
 (3)
 ::
-[\r\a] => newline;
+[\v\a] => newline;
 [\t] => newline;>
 ::
 
@@ -30,7 +30,7 @@ Exception!
 
 (4)
 ::
-[\r\a] => suppressor;
+[\v\a] => suppressor;
 [\t] => suppressor;>
 ::
 
@@ -40,7 +40,7 @@ Exception!
 
 (5)
 ::
-[\r\a] => bad;
+[\v\a] => bad;
 [\t] => bad;>
 ::
 

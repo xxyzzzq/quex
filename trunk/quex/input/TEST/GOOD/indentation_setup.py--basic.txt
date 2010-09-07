@@ -1,29 +1,29 @@
-(1) |[\r\a]|
+(1) |[\v\a]|
 
 test_string:1:error: Missing '=>' after character set definition.
 Exception!
 
-(2) |[\r\a] >|
+(2) |[\v\a] >|
 
 test_string:1:error: Missing '=>' after character set definition.
 Exception!
 
-(3) |[\r\a] => grid|
+(3) |[\v\a] => grid|
 
 test_string:1:error: End of file reached while parsing 'indentation' section.
 
-(4) |[\r\a] => trid|
+(4) |[\v\a] => trid|
 
 test_string:1:error: Unrecognized indentation specifier 'trid'.
 test_string:1:error: Did you mean 'grid'?
 Exception!
 
-(5) |[\r\a] => grid>|
+(5) |[\v\a] => grid>|
 
 test_string:1:error: Missing integer or variable name after keyword 'grid'.
 Exception!
 
-(6) |[\r\a] => grid 4;>|
+(6) |[\v\a] => grid 4;>|
 
 test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
 test_string:1:warning: widths are multiples of 4. The grid setup 4
@@ -31,13 +31,14 @@ test_string:1:warning: is equivalent to a setup with space counts 1.
 test_string:1:warning: Space counts are faster to compute.
 Spaces:
 Grids:
-      4 by '\a', '\r'
+      4 by '\a', '\v'
 Bad:
     
 Newline:
     init-state = 25L
-    00025() <~ 
+    00025(A, S) <~ 
           == '\n' ==> 00026
+          == '\r' ==> 00025
           <no epsilon>
     00026(A, S) <~ 
           <no epsilon>
@@ -46,17 +47,18 @@ Suppressor:
     <none>
 
 
-(7) |[\r\a] => space;>|
+(7) |[\v\a] => space;>|
 
 Spaces:
-      1 by '\a', '\r'
+      1 by '\a', '\v'
 Grids:
 Bad:
     
 Newline:
     init-state = 31L
-    00031() <~ 
+    00031(A, S) <~ 
           == '\n' ==> 00032
+          == '\r' ==> 00031
           <no epsilon>
     00032(A, S) <~ 
           <no epsilon>
@@ -65,20 +67,21 @@ Suppressor:
     <none>
 
 
-(8) |[\r\a] => space 0rXVI;>|
+(8) |[\v\a] => space 0rXVI;>|
 
 test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 16.
 test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
 test_string:1:warning: of 1 are the fastest to compute.
 Spaces:
-     16 by '\a', '\r'
+     16 by '\a', '\v'
 Grids:
 Bad:
     
 Newline:
     init-state = 37L
-    00037() <~ 
+    00037(A, S) <~ 
           == '\n' ==> 00038
+          == '\r' ==> 00037
           <no epsilon>
     00038(A, S) <~ 
           <no epsilon>
@@ -87,7 +90,7 @@ Suppressor:
     <none>
 
 
-(9) |[\r\a] => newline;>|
+(9) |[\v\a] => newline;>|
 
 Spaces:
       1 by ' '
@@ -98,7 +101,7 @@ Bad:
 Newline:
     init-state = 41L
     00041() <~ 
-          == '\a', '\r' ==> 00042
+          == '\a', '\v' ==> 00042
           <no epsilon>
     00042(A, S) <~ 
           <no epsilon>
@@ -107,7 +110,7 @@ Suppressor:
     <none>
 
 
-(10) |[\r\a] => suppressor;>|
+(10) |[\v\a] => suppressor;>|
 
 Spaces:
       1 by ' '
@@ -117,8 +120,9 @@ Bad:
     
 Newline:
     init-state = 47L
-    00047() <~ 
+    00047(A, S) <~ 
           == '\n' ==> 00048
+          == '\r' ==> 00047
           <no epsilon>
     00048(A, S) <~ 
           <no epsilon>
@@ -126,25 +130,26 @@ Newline:
 Suppressor:
     init-state = 45L
     00045() <~ 
-          == '\a', '\r' ==> 00046
+          == '\a', '\v' ==> 00046
           <no epsilon>
     00046(A, S) <~ 
           <no epsilon>
     
 
 
-(11) |[\r\a] => bad;>|
+(11) |[\v\a] => bad;>|
 
 Spaces:
       1 by ' '
 Grids:
       4 by '\t'
 Bad:
-    '\a', '\r'
+    '\a', '\v'
 Newline:
     init-state = 53L
-    00053() <~ 
+    00053(A, S) <~ 
           == '\n' ==> 00054
+          == '\r' ==> 00053
           <no epsilon>
     00054(A, S) <~ 
           <no epsilon>
@@ -155,7 +160,7 @@ Suppressor:
 
 (12)
 ::
-[\r\a] => space;
+[\v\a] => space;
 [\t] => grid 10;
 ::
 
@@ -163,20 +168,21 @@ test_string:2:error: End of file reached while parsing 'indentation' section.
 
 (13)
 ::
-[\r\a] => space;
+[\v\a] => space;
 [\t] => grid 10;>
 ::
 
 Spaces:
-      1 by '\a', '\r'
+      1 by '\a', '\v'
 Grids:
      10 by '\t'
 Bad:
     
 Newline:
     init-state = 71L
-    00071() <~ 
+    00071(A, S) <~ 
           == '\n' ==> 00072
+          == '\r' ==> 00071
           <no epsilon>
     00072(A, S) <~ 
           <no epsilon>
