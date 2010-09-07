@@ -37,7 +37,8 @@ class IndentationSetup:
         if self.newline_state_machine.get() == None:
             sm = StateMachine()
             sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
-            self.specify_newline("\\n", sm)
+            sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), sm.init_state_index, AcceptanceF=True)
+            self.specify_newline("(\\r\\n)|(\\n)", sm)
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
         """If Key != None, than 'Before' is a database."""

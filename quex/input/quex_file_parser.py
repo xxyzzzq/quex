@@ -283,6 +283,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
             if check(fh, ";") == False:
                 error_msg("Missing ';' after definition of token identifier '%s'.\n" % candidate + \
                           "This is mandatory since Quex version 0.50.1.", fh)
+            continue
 
         # Parse a possible numeric value after '='
         numeric_value = None
