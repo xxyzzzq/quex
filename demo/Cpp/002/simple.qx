@@ -35,10 +35,11 @@ define {
 }
 
 token {
+    INDENT;
+    DEDENT;
+    NODENT;
     BRACKET_O;
     BRACKET_C;
-    BLOCK_OPEN;
-    BLOCK_CLOSE;
     CURLY_BRACKET_O;
     CURLY_BRACKET_C;
     OP_EQUAL;
@@ -64,34 +65,13 @@ token {
 /* Enables token repetition and defines the token to be
  * potentially repeated.                                */
 repeated_token { 
-    BLOCK_CLOSE;
+    DEDENT;
 }
-
-body {
-    std::vector<size_t>  indentation_stack;
-    bool                 allow_opening_indentation_f;
-}
-
-init {
-    // first indentation at column = 0
-    self.indentation_stack.push_back(0);
-    // default: do not allow to open a sub-block.
-    // only function definitions, if statements, and for loops
-    // shoul allow to open a new indentation block in the next line.
-    self.allow_opening_indentation_f = false;
-}
-
 
 mode END_OF_FILE :
 <inheritable: only>  
 {    
     <<EOF>> {
-        if( 0 ) {
-            /* End of File closes any open indentation */
-            if( self.indentation_stack.size() > 1 ) {
-                self_send_n(self.indentation_stack.size()-1, QUEX_TKN_BLOCK_CLOSE);
-            }
-        }
         self_send(QUEX_TKN_TERMINATION);
     }
 }
@@ -103,11 +83,7 @@ mode PROGRAM :
 <exit:  STRING_READER>
 <indentation: /* the default setup will do */>
 {
-    {P_BACKSLASHED_NEWLINE} {
-        self.disable_next_indentation_event();
-    }
-    {P_WHITESPACE} {
-    }
+    {P_WHITESPACE} { }
     {P_CURLY_BRACKET_O} => QUEX_TKN_CURLY_BRACKET_O; 
     {P_CURLY_BRACKET_C} => QUEX_TKN_CURLY_BRACKET_C; 
     {P_BRACKET_O}       => QUEX_TKN_BRACKET_O;
@@ -121,28 +97,23 @@ mode PROGRAM :
 
     {P_KEY_STRUCT} {
         self_send(QUEX_TKN_STRUCT);
-        self.allow_opening_indentation_f = true;
         RETURN;
     }
 
     {P_KEY_IF} {
         self_send(QUEX_TKN_IF);
-        self.allow_opening_indentation_f = true;
         RETURN;
     }
     {P_KEY_ELSE} {
         self_send(QUEX_TKN_ELSE);
-        self.allow_opening_indentation_f = true;
         RETURN;
     }
     {P_KEY_FOR} {
         self_send(QUEX_TKN_FOR);
-        self.allow_opening_indentation_f = true;
         RETURN;
     }
     {P_KEY_DEF} {
         self_send(QUEX_TKN_FUNCTION_DEF);
-        self.allow_opening_indentation_f = true;
         RETURN;
     }
     {P_IDENTIFIER} {
