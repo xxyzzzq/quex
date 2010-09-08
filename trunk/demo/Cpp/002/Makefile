@@ -19,7 +19,7 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -std=c++0x -ggdb 
+COMPILER = g++ -ggdb 
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \

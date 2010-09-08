@@ -37,7 +37,7 @@ class IndentationSetup:
         if self.newline_state_machine.get() == None:
             sm = StateMachine()
             sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
-            sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), sm.init_state_index, AcceptanceF=True)
+            sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), sm.init_state_index, AcceptanceF=False)
             self.specify_newline("(\\r\\n)|(\\n)", sm)
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):

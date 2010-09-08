@@ -130,7 +130,7 @@ class ModeDescription:
         if option_info.type == "list":
             self.options.setdefault(Option, []).append(Value)
         else:
-            assert Value in option_info.domain
+            if option_info.domain != None: assert Value in option_info.domain
             self.options[Option] = Value
 
     def get_pattern_action_pair(self, PatternStr):

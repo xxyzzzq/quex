@@ -34,7 +34,7 @@ Bad:
     
 Newline:
     init-state = 25L
-    00025(A, S) <~ 
+    00025() <~ 
           == '\n' ==> 00026
           == '\r' ==> 00025
           <no epsilon>
@@ -98,7 +98,7 @@ Bad:
     
 Newline:
     init-state = 59L
-    00059(A, S) <~ 
+    00059() <~ 
           == '\n' ==> 00060
           == '\r' ==> 00059
           <no epsilon>
@@ -173,7 +173,7 @@ Bad:
     ['a', 'c']
 Newline:
     init-state = 93L
-    00093(A, S) <~ 
+    00093() <~ 
           == '\n' ==> 00094
           == '\r' ==> 00093
           <no epsilon>
@@ -295,7 +295,7 @@ Bad:
     
 Newline:
     init-state = 143L
-    00143(A, S) <~ 
+    00143() <~ 
           == '\n' ==> 00144
           == '\r' ==> 00143
           <no epsilon>
@@ -355,7 +355,7 @@ Bad:
     
 Newline:
     init-state = 161L
-    00161(A, S) <~ 
+    00161() <~ 
           == '\n' ==> 00162
           == '\r' ==> 00161
           <no epsilon>
@@ -386,7 +386,7 @@ Bad:
     ['c', 'e']
 Newline:
     init-state = 171L
-    00171(A, S) <~ 
+    00171() <~ 
           == '\n' ==> 00172
           == '\r' ==> 00171
           <no epsilon>
