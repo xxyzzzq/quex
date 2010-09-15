@@ -10,7 +10,7 @@ from   quex.frs_py.file_in     import open_file_or_die
 import quex.input.quex_file_parser as quex_file_parser
 
 
-setup_parser.do(["-i", "nothing", "-o", "TestAnalyzer", "--token-policy", "single"])
+setup_parser.do(["-i", "nothing", "-o", "TestAnalyzer", "--token-policy", "single", "--no-include-stack"])
 
 # Parse default token file
 fh = open_file_or_die(os.environ["QUEX_PATH"] 

@@ -64,21 +64,45 @@ $$ENTER-PROCEDURE$$
 $$EXIT-PROCEDURE$$
     }
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+#if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT) \
+    && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
     void
-    QUEX_NAME($$MODE_NAME$$_on_indent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation, 
-                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
+    QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
+                                            QUEX_TYPE_INDENTATION  Indentation, 
+                                            QUEX_TYPE_CHARACTER*   Begin) {
+#       define Lexeme    Begin
+#       define LexemeEnd (me->buffer._input_p)
+
+        QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
+        QUEX_TYPE_INDENTATION         i     = 0;
+
+        __quex_assert((long)Indentation >= 0);
+
+        if( Indentation > *(stack->back) ) {
+            ++(stack->back);
+            if( stack->back == me->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
+            *(stack->back) = Indentation;
 $$INDENT-PROCEDURE$$
-    }
-    void
-    QUEX_NAME($$MODE_NAME$$_on_nodent)(QUEX_TYPE_ANALYZER* me, 
-                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
+            __QUEX_RETURN;
+        }
+        else if( Indentation == *(stack->back) ) {
 $$NODENT-PROCEDURE$$
-    }
-    void
-    QUEX_NAME($$MODE_NAME$$_on_dedent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation,
-                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
+        }
+        else  {
+            while( Indentation < *(stack->back) ) {
+                ++i;
+                --(stack->back);
+            }
+
+#           define ClosedN (i)
 $$DEDENT-PROCEDURE$$
+#           undef ClosedN
+
+            if( Indentation != *(stack->back) ) { /* 'Landing' must happen on indentation border. */
+                self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
+            }
+        }
+        __QUEX_RETURN;
     }
 #endif
 
@@ -131,15 +155,15 @@ def  get_implementation_of_mode_functions(mode, Modes):
         on_exit_str += code_info.get_code()
 
     # (*) on indentation
-    on_indent_str = "__quex_assert((long)Indentation >= 0);" 
+    on_indent_str = ""
     for code_info in mode.get_code_fragment_list("on_indent"):
         on_indent_str += code_info.get_code()
         
-    on_nodent_str = "__quex_assert((long)Indentation >= 0);" 
+    on_nodent_str = ""
     for code_info in mode.get_code_fragment_list("on_nodent"):
         on_nodent_str += code_info.get_code()
 
-    on_dedent_str = "__quex_assert((long)Indentation >= 0);" 
+    on_dedent_str = ""
     for code_info in mode.get_code_fragment_list("on_dedent"):
         on_dedent_str += code_info.get_code()
         

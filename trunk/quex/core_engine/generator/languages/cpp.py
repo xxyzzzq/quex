@@ -329,9 +329,16 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 """
 
 def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset=4): 
-    code_str = action_info.action().get_code()
-    if code_str == "":
-        return ""
+
+    result = action_info.action().get_code()
+    if type(result) != tuple: 
+        code_str    = result
+        variable_db = {}
+    else:
+        code_str    = result[0]
+        variable_db = result[1]
+
+    if code_str == "": return "", variable_db
 
     indentation = " " * IndentationOffset 
     txt = ""
@@ -348,17 +355,21 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  
     txt += indentation + "}\n"
 
-    return txt
+    return txt, variable_db
 
 def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB):
     state_machine                  = SMD.sm()
     DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
 
     txt = ""
+    variable_db = {}
+
+
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
     #
-    action_code = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
+    action_code, db = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
+    variable_db.update(db)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -406,7 +417,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     txt += "    " + LanguageDB["$goto"]("$re-start") + "\n" 
     txt += "\n"
 
-    return txt
+    return txt, variable_db
 
 def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction, 
                       SupportBeginOfLineF, PreConditionIDList, LanguageDB):
@@ -420,8 +431,11 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     txt = ""
+    variable_db = {}
     for state_machine_id, pattern_action_info in action_db.items():
-        txt += get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
+        code, db = get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
+        txt += code
+        variable_db.update(db)
     specific_terminal_states_str = txt
 
     # (*) general terminal state (entered from non-acceptance state)    
@@ -458,8 +472,10 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF,
-                                                        IndentationOffset=16)
+    end_of_stream_code_action_str, db = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF,
+                                                            IndentationOffset=16)
+    variable_db.update(db)
+
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
     #                    HOWEVER, when end of file has been reached the 'current' pointer has to
@@ -476,8 +492,12 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     on_failure_str += "    " + LanguageDB["$comment"]("Step over nomatching character") + "\n"
     on_failure_str += "    " + LanguageDB["$input/increment"] + "\n"
     on_failure_str += LanguageDB["$endif"] + "\n"
-    on_failure_str += __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF,
-                                          IndentationOffset=16)
+
+
+    msg, db = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF,
+                                  IndentationOffset=16)
+    on_failure_str += msg
+    variable_db.update(db)
 
     # -- routing to states via switch statement
     #    (note, the gcc computed goto is implement, too)
@@ -522,7 +542,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                        ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
                        ])
 
-    return txt
+    return txt, variable_db
     
 def __frame_of_all(Code, Setup):
     LanguageDB = Setup.language_db

@@ -160,6 +160,29 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->back       = me->front;
         me->memory_end = me->front + QUEX_SETTING_INDENTATION_STACK_SIZE;
 	}
+
+	QUEX_INLINE void
+	QUEX_NAME(IndentationStack_flush)(QUEX_TYPE_ANALYZER* me)
+	{
+#       define self  (*me)
+        const QUEX_TYPE_INDENTATION*  Front    = me->counter._indentation_stack.front;
+        QUEX_TYPE_INDENTATION*        iterator = me->counter._indentation_stack.back;
+        __QUEX_IF_TOKEN_REPETITION_SUPPORT(QUEX_TYPE_INDENTATION  i = 0;)
+
+        while( iterator != Front ) {
+            __QUEX_IF_TOKEN_REPETITION_SUPPORT(++i);
+            __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(self_send(__QUEX_SETTING_TOKEN_ID_DEDENT));
+            --iterator;
+        }
+        __QUEX_IF_TOKEN_REPETITION_SUPPORT(self_send_n(i, __QUEX_SETTING_TOKEN_ID_DEDENT));     
+        me->counter._indentation_stack.back = iterator;
+
+        /* Check if the world is still in order. */
+        __quex_assert(*(me->counter._indentation_stack.front) == (QUEX_TYPE_INDENTATION)0);
+        __quex_assert(   me->counter._indentation_stack.memory_end 
+                      == me->counter._indentation_stack.front + QUEX_SETTING_INDENTATION_STACK_SIZE);
+#       undef self 
+	}
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

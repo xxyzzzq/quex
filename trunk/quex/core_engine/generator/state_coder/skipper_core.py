@@ -343,8 +343,9 @@ def get_character_set_skipper(TriggerSet, LanguageDB):
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
                       ])
 
-    code_str = blue_print(txt,
-                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
+    code_str = txt
+    # code_str = blue_print(txt,
+    #                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
     local_variable_db = { "reference_p" : 
                           [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }

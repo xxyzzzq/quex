@@ -31,10 +31,13 @@ class Generator(GeneratorBase):
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
 
+        txt         = ""
+        variable_db = {}
+
         assert self.sm.get_orphaned_state_index_list() == []
 
         #  -- comment all state machine transitions 
-        txt = "    " + LanguageDB["$comment"]("state machine") + "\n"
+        txt += "    " + LanguageDB["$comment"]("state machine") + "\n"
         if self.print_state_machine_f: 
             txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
 
@@ -44,18 +47,21 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=False, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg, variable_db = state_machine_coder.do(decorated_state_machine)
+        msg, db = state_machine_coder.do(decorated_state_machine)
         txt += msg
+        variable_db.update(db)
 
         
         #  -- terminal states: execution of pattern actions  
-        txt += LanguageDB["$terminal-code"](decorated_state_machine,
+        msg, db = LanguageDB["$terminal-code"](decorated_state_machine,
                                             self.action_db, 
                                             self.on_failure_action, 
                                             self.end_of_stream_action, 
                                             self.begin_of_line_condition_f, 
                                             self.pre_context_sm_id_list,
                                             self.language_db) 
+        txt += msg
+        variable_db.update(db)
 
         return txt, variable_db
 

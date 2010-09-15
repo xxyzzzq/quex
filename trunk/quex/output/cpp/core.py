@@ -248,10 +248,9 @@ quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);
      QUEX_NAME($$MN$$).name = "$$MN$$";
      QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
-#    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-     QUEX_NAME($$MN$$).on_indent      = $on_indent;
-     QUEX_NAME($$MN$$).on_nodent      = $on_nodent;
-     QUEX_NAME($$MN$$).on_dedent      = $on_dedent;
+#    if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT) \
+        && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+     QUEX_NAME($$MN$$).on_indentation = $on_indentation;
 #    endif
      QUEX_NAME($$MN$$).on_entry       = $on_entry;
      QUEX_NAME($$MN$$).on_exit        = $on_exit;
@@ -265,9 +264,7 @@ quex_mode_init_call_str = """
 def __get_mode_init_call(mode):
     
     analyzer_function = "QUEX_NAME(%s_analyzer_function)" % mode.name
-    on_indent         = "QUEX_NAME(%s_on_indent)"         % mode.name
-    on_nodent         = "QUEX_NAME(%s_on_nodent)"         % mode.name
-    on_dedent         = "QUEX_NAME(%s_on_dedent)"         % mode.name
+    on_indentation    = "QUEX_NAME(%s_on_indentation)"    % mode.name
     on_entry          = "QUEX_NAME(%s_on_entry)"          % mode.name
     on_exit           = "QUEX_NAME(%s_on_exit)"           % mode.name
     has_base          = "QUEX_NAME(%s_has_base)"          % mode.name
@@ -283,21 +280,13 @@ def __get_mode_init_call(mode):
     if mode.get_code_fragment_list("on_exit") == []:
         on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if mode.get_code_fragment_list("on_indent") == []:
-        on_indent = "QUEX_NAME(Mode_on_indent_dedent_null_function)"
-
-    if mode.get_code_fragment_list("on_nodent") == []:
-        on_nodent = "QUEX_NAME(Mode_on_nodent_null_function)"
-
-    if mode.get_code_fragment_list("on_dedent") == []:
-        on_dedent = "QUEX_NAME(Mode_on_indent_dedent_null_function)"
+    if mode.get_code_fragment_list("on_indentation") == []:
+        on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
 
     txt = blue_print(quex_mode_init_call_str,
                 [["$$MN$$",             mode.name],
                  ["$analyzer_function", analyzer_function],
-                 ["$on_indent",         on_indent],
-                 ["$on_nodent",         on_nodent],
-                 ["$on_dedent",         on_dedent],
+                 ["$on_indentation",    on_indentation],
                  ["$on_entry",          on_entry],
                  ["$on_exit",           on_exit],
                  ["$has_base",          has_base],
@@ -321,6 +310,7 @@ def __get_mode_function_declaration(Modes, FriendF=False):
         return txt
 
     txt = ""
+    on_indentation_txt = ""
     for mode in Modes:
         if mode.options["inheritable"] == "only": continue
 
@@ -328,10 +318,11 @@ def __get_mode_function_declaration(Modes, FriendF=False):
                                 ["analyzer_function"],
                                 "QUEX_TYPE_ANALYZER*")
 
-        for event_name in ["on_indent", "on_dedent", "on_nodent"]:
+        # If one of the following events is specified, then we need an 'on_indentation' handler
+        for event_name in ["on_indentation", "on_indent", "on_dedent", "on_nodent"]:
             if not mode.has_code_fragment_list(event_name): continue
-            txt += __mode_functions(prolog, "void", [event_name], 
-                                    "QUEX_TYPE_ANALYZER*, const size, const size_t")
+            on_indentation_txt = __mode_functions(prolog, "void", ["on_indentation"], 
+                                 "QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, QUEX_TYPE_CHARACTER*")
 
         for event_name in ["on_exit", "on_entry"]:
             if not mode.has_code_fragment_list(event_name): continue
@@ -342,6 +333,8 @@ def __get_mode_function_declaration(Modes, FriendF=False):
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
                                 "const QUEX_NAME(Mode)*")
         txt += "#endif\n"
+
+    txt += on_indentation_txt
     txt += "\n"
 
     return txt

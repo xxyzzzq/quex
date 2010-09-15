@@ -87,7 +87,6 @@ class UserCodeFragment(CodeFragment):
 def get_return_to_source_reference():
     return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"
 
-
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
     if Language not in UserCodeFragment_OpenLinePragma.keys():
         return
@@ -114,8 +113,17 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     write_safely_and_close(filename, new_content)
 
+class GeneratedCode(UserCodeFragment):
+    def __init__(self, GeneratorFunction, Argument, FileName=-1, LineN=None):
+        self.function = GeneratorFunction
+        self.argument = Argument
+        UserCodeFragment.__init__(self, "", FileName, LineN)
+
+    def get_code(self):
+        return self.function(self.argument)
+
 class PatternActionInfo:
-    def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName=""):
+    def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName="", Comment=""):
 
         assert Action == None or \
                issubclass(Action.__class__, CodeFragment) or \
@@ -123,12 +131,14 @@ class PatternActionInfo:
         assert PatternStateMachine.__class__.__name__ == "StateMachine" \
                or PatternStateMachine == None
 
+
         self.__pattern_state_machine = PatternStateMachine
         if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
         else:                              self.__action = Action
 
         self.pattern   = Pattern
         self.mode_name = ModeName
+        self.comment   = Comment
 
     def pattern_state_machine(self):
         return self.__pattern_state_machine
@@ -137,7 +147,21 @@ class PatternActionInfo:
         return self.__action
 
     def set_action(self, Action):
+        assert Action == None or \
+               issubclass(Action.__class__, CodeFragment) or \
+               type(Action) in [str, unicode]
         self.__action = Action
+
+    def get_action_location(self):
+        """RETURNS:  FileName, LineN   in case that it can be specified.
+                     -1, None          in case it cannot be specified.
+
+           This corresponds to the required input for 'error_msg'.
+        """
+        if hasattr(self.__action, "filename") and hasattr(self.__action, "line_n"):
+            return self.__action.filename, self.__action.line_n
+        else:
+            return -1, None
 
     def pattern_index(self):
         return self.pattern_state_machine().get_id()

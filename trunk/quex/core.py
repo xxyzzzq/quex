@@ -64,10 +64,12 @@ def do():
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
     for mode in mode_list:        
+
         generator.init_unused_labels()
 
         # accumulate inheritance information for comment
         code = get_code_for_mode(mode, mode_name_list, IndentationSupportF) 
+
         inheritance_info_str += mode.get_documentation()
 
         # Find unused labels
@@ -96,38 +98,52 @@ def do():
     assert lexer_mode.token_type_definition != None
     UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
 
-def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
-
-    required_local_variables_db = implement_skippers(Mode)
-
-    # -- some modes only define event handlers that are inherited
-    if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
-
-    # -- 'end of stream' action
+def __prepare_end_of_stream_action(Mode, IndentationSupportF):
     if not Mode.has_code_fragment_list("on_end_of_stream"):
         # We cannot make any assumptions about the token class, i.e. whether
         # it can take a lexeme or not. Thus, no passing of lexeme here.
         txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
         txt += "RETURN;\n"
+
         Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
 
-    end_of_stream_action = action_code_formatter.do(Mode, 
-                                                    Mode.get_code_fragment_list("on_end_of_stream"), 
-                                                    "on_end_of_stream", None, EOF_ActionF=True)
-    # -- 'on failure' action (nothing matched)
+    if IndentationSupportF:
+        code_fragment = CodeFragment("QUEX_NAME(IndentationStack_flush)(me);\n")
+        Mode.insert_code_fragment_at_front("on_end_of_stream", code_fragment)
+
+    # RETURNS: end_of_stream_action, db 
+    return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
+                                    "on_end_of_stream", None, EOF_ActionF=True)
+
+def __prepare_on_failure_action(Mode):
     if not Mode.has_code_fragment_list("on_failure"):
         txt  = "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % Mode.name 
         txt += "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
         txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 
-    on_failure_action = action_code_formatter.do(Mode, 
-                                              Mode.get_code_fragment_list("on_failure"), 
-                                              "on_failure", None, Default_ActionF=True) 
+    # RETURNS: on_failure_action, db 
+    return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_failure"), 
+                                    "on_failure", None, Default_ActionF=True) 
+
+def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
+    required_local_variables_db = {}
+   
+    # -- some modes only define event handlers that are inherited
+    if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
+
+    # -- 'end of stream' action
+    end_of_stream_action, db = __prepare_end_of_stream_action(Mode, IndentationSupportF)
+    required_local_variables_db.update(db)
+
+    # -- 'on failure' action (on the event that nothing matched)
+    on_failure_action, db = __prepare_on_failure_action(Mode)
+    required_local_variables_db.update(db)
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    pattern_action_pair_list = get_generator_input(Mode, IndentationSupportF)
+    pattern_action_pair_list, db = get_generator_input(Mode, IndentationSupportF)
+    required_local_variables_db.update(db)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
                                  OnFailureAction                = PatternActionInfo(None, on_failure_action), 
@@ -142,53 +158,6 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
     return analyzer_code
 
-
-from quex.core_engine.generator.state_coder.skipper_core import create_skip_character_set_code, \
-                                                                create_skip_range_code
-
-def implement_skippers(mode):
-    """Code generation for skippers.
-
-       The pattern-action pair for the skippers has been setup before.  This
-       function creates code for the skippers. The code is then assigned as
-       action for the skipper's pattern-action pair.
-
-       Also, the code generator keeps track of defined and unused labels per
-       mode. For this, the skipper code generation must happen together with
-       the code generation for the mode-- not as it was before when the
-       skippers are parsed.  
-    """
-    required_local_variable_db = {}
-    def get_action(Mode, PatternStr):
-        for x in Mode.get_pattern_action_pair_list():
-            if x.pattern == PatternStr:
-                return x.action()
-        assert False, \
-               "quex/core.py: implement_skippers() pattern string reference not found."
-
-    for info in mode.options["skip"]:
-        pattern_str = info[0]
-        trigger_set = info[1]
-
-        action  = get_action(mode, pattern_str)
-        txt, db = create_skip_character_set_code(trigger_set)
-        action.set_code(txt)
-        required_local_variable_db.update(db)
-
-    for info in mode.options["skip_range"]:
-        pattern_str     = info[0]
-        closer_sequence = info[1]
-
-        action  = get_action(mode, pattern_str)
-        txt, db = create_skip_range_code(closer_sequence)
-        action.set_code(txt)
-        required_local_variable_db.update(db)
-
-    return required_local_variable_db
-
-def implement_indentation_counter(mode):
-    pass
-
 def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
@@ -200,11 +169,10 @@ def get_generator_input(Mode, IndentationSupportF):
        -- (optional) for debug output that tells the line number and column number.
     """
     assert isinstance(Mode, lexer_mode.Mode)
+    variable_db = {}
     pattern_action_pair_list = Mode.get_pattern_action_pair_list()
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
-
-    ## prepared_pattern_action_pair_list = []
 
     for pattern_info in pattern_action_pair_list:
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
@@ -212,14 +180,15 @@ def get_generator_input(Mode, IndentationSupportF):
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
-        prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
-                                                   pattern_state_machine)
+        prepared_action, db = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
+                                                       pattern_state_machine)
+        variable_db.update(db)
 
         pattern_info.set_action(prepared_action)
 
         ## prepared_pattern_action_pair_list.append(action_info)
     
-    return pattern_action_pair_list
+    return pattern_action_pair_list, variable_db
 
 def __get_post_context_n(match_info_list):
     n = 0
@@ -239,7 +208,7 @@ def do_plot():
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
-        pattern_action_pair_list = get_generator_input(mode, IndentationSupportF)
+        pattern_action_pair_list, variable_db = get_generator_input(mode, IndentationSupportF)
 
         plotter = plot_generator.Generator(pattern_action_pair_list, 
                                            StateMachineName = mode.name,

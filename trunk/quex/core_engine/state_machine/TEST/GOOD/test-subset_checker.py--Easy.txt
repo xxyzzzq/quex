@@ -38,3 +38,11 @@ claim =  True
 super = "123"
 sub   = "123"|"ABC"
 claim =  False
+---------------------------
+super = \n
+sub   = (\r\n)|\n
+claim =  False
+
+super = (\r\n)|\n
+sub   = \n
+claim =  True

@@ -143,7 +143,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         return size;
     }
 
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     QUEX_INLINE void* 
     QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t ByteN)
     { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
@@ -153,7 +153,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #endif
 
-#if defined (QUEX_OPTION_INCLUDE_STACK)
+#if defined(QUEX_OPTION_INCLUDE_STACK)
     QUEX_INLINE QUEX_NAME(Memento)*
     QUEX_NAME(MemoryManager_Memento_allocate)()
     {
