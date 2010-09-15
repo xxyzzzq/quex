@@ -30,6 +30,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     lc_count_code       = ""
     debug_code          = ""
     user_code           = ""
+    variable_db         = {}
 
     # (*) Code to be performed on every match -- before the related action
     for code_info in Mode.get_code_fragment_list("on_match"):
@@ -51,7 +52,12 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     # (*) THE user defined action to be performed in case of a match
     require_terminating_zero_preparation_f = False
     for code_info in CodeFragmentList:
-        user_code += code_info.get_code()
+        result = code_info.get_code()
+        if type(result) != tuple: 
+            user_code += result
+        else:
+            user_code += result[0]
+            variable_db.update(result[1])
         if code_info.require_terminating_zero_f():
             require_terminating_zero_preparation_f = True
 
@@ -64,7 +70,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     txt += user_code
     txt += "\n}"
 
-    return CodeFragment(txt, require_terminating_zero_preparation_f)
+    return CodeFragment(txt, require_terminating_zero_preparation_f), variable_db
 
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 

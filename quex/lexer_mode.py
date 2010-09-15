@@ -25,7 +25,7 @@ from quex.frs_py.file_in import error_msg, verify_word_in_list, get_current_line
 from quex.core_engine.generator.action_info import *
 import quex.core_engine.state_machine.subset_checker   as subset_checker
 import quex.core_engine.state_machine.identity_checker as identity_checker
-import quex.core_engine.state_machine.transformation as transformation
+import quex.core_engine.state_machine.transformation   as transformation
 
 # ModeDescription/Mode Objects:
 #
@@ -50,10 +50,11 @@ mode_db = {}
 class OptionInfo:
     """This type is used only in context of a dictionary, the key
        to the dictionary is the option's name."""
-    def __init__(self, Type, Domain=None):
+    def __init__(self, Type, Domain=None, Default=-1):
         # self.name = Option see comment above
-        self.type   = Type
-        self.domain = Domain
+        self.type          = Type
+        self.domain        = Domain
+        self.default_value = Default
 
 class ModeDescription:
     def __init__(self, Name, Filename, LineN):
@@ -68,7 +69,7 @@ class ModeDescription:
         # (i)   inheritance of pattern behavior in different modes.
         # (ii)  'virtual' patterns in the sense that their behavior can be
         #       overwritten.
-        self.__matches = {}  # genuine patterns as specified in the mode declaration
+        self.__matches = {}            # genuine patterns as specified in the mode declaration
 
         self.__repriorization_db = {}  # patterns of the base class to be reprioritized
         #                              # map: pattern --> new pattern index
@@ -82,8 +83,8 @@ class ModeDescription:
         # (*) Default Options
         self.options = {}      
         for name, descr in mode_option_info_db.items():
-            if descr.type == "list": self.options[name] = []
-            else:                    self.options[name] = "yes"
+            # Not only copy the reference, copy the default value object!
+            self.options[name] = deepcopy(descr.default_value)
 
         # (*) Default Event Handler: Empty
         self.events = {}
@@ -93,14 +94,15 @@ class ModeDescription:
         # Register ModeDescription at the mode database
         mode_description_db[Name] = self
 
-    def add_match(self, Pattern, Action, PatternStateMachine):
+    def add_match(self, Pattern, Action, PatternStateMachine, Comment=""):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
         transformation.do(PatternStateMachine)
-        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, ModeName=self.name)
+        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, 
+                                                    ModeName=self.name, Comment=Comment)
 
     def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, FileName, LineN):
         if self.__matches.has_key(Pattern):
@@ -164,7 +166,6 @@ class ModeDescription:
 
         return False
 
-
 class Mode:
     def __init__(self, Other):
         """Translate a ModeDescription into a real Mode. Here is the place were 
@@ -191,16 +192,22 @@ class Mode:
         # (3) Collection Options
         self.__collect_options()
 
-    def set_code_fragment_list(self, EventName, CodeFragment):
-        assert CodeFragment.__class__.__name__ == "CodeFragment"
+    def insert_code_fragment_at_front(self, EventName, TheCodeFragment):
+        assert isinstance(TheCodeFragment, CodeFragment)
+        assert EventName == "on_end_of_stream"
+        self.__event_handler_code_fragment_list[EventName].insert(0, TheCodeFragment)
+
+    def set_code_fragment_list(self, EventName, TheCodeFragment):
+        assert isinstance(TheCodeFragment, CodeFragment)
         assert EventName in ["on_end_of_stream", "on_failure"]
         assert self.__event_handler_code_fragment_list[EventName] == []
-        self.__event_handler_code_fragment_list[EventName] = [CodeFragment]
+        self.__event_handler_code_fragment_list[EventName] = [TheCodeFragment]
 
     def has_base_mode(self):
         return len(self.__base_mode_sequence) != 1
 
     def has_code_fragment_list(self, EventName):
+        assert self.__event_handler_code_fragment_list.has_key(EventName)
         return len(self.__event_handler_code_fragment_list[EventName]) != 0
 
     def get_base_mode_sequence(self):
@@ -363,7 +370,6 @@ class Mode:
                                              
         def __handle_deletion_and_repriorization(CurrentModeName, pattern_action_pair_list, 
                                                  repriorization_db, deletion_db):
-
             def __validate_marks(DB, DoneDB, CommentStr):
                 ok_f = True
                 for pattern, info in DB.items():
@@ -426,17 +432,21 @@ class Mode:
             for earlier_match in pattern_action_pair_list:
                 if earlier_match.pattern_state_machine().get_id() > state_machine.get_id(): continue
                 if subset_checker.do(earlier_match.pattern_state_machine(), state_machine) == False: continue
+                file_name, line_n = earlier_match.get_action_location()
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 
-                          earlier_match.pattern, 
-                          earlier_match.action().filename, earlier_match.action().line_n,  
+                          earlier_match.pattern, file_name, line_n,
                           DontExitF=True, WarningF=False) 
+                file_name, line_n = PatternActionPair.get_action_location()
                 error_msg("pattern '%s' while the former has precedence.\n" % \
                           pattern + "The latter can never match.\n" + \
                           "You may switch the sequence of definition to avoid this error.",
-                          PatternActionPair.action().filename, PatternActionPair.action().line_n)
+                          file_name, line_n)
                 # Here we already quit by error_msg(...).
             else:
-                pattern_action_pair_list.append(PatternActionPair)
+                # Shallow copy is enough! Later on, there might be actions that 
+                # generate source code, and then the source code takes the place of
+                # the action. For this to work, inherited actions must be de-antangled.
+                pattern_action_pair_list.append(copy(PatternActionPair))
 
         result                 = []
         prev_max_pattern_index = -1
@@ -482,24 +492,23 @@ mode_option_info_db = {
    # -- a mode can be inheritable or not or only inheritable. if a mode
    #    is only inheritable it is not printed on its on, only as a base
    #    mode for another mode. default is 'yes'
-   "inheritable":       OptionInfo("single", ["no", "yes", "only"]),
+   "inheritable":       OptionInfo("single", ["no", "yes", "only"], Default="yes"),
    # -- a mode can restrict the possible modes to exit to. this for the
    #    sake of clarity. if no exit is explicitly mentioned all modes are
    #    possible. if it is tried to transit to a mode which is not in
    #    the list of explicitly stated exits, an error occurs.
    #    entrys work respectively.
-   "exit":              OptionInfo("list"),
-   "entry":             OptionInfo("list"),
+   "exit":              OptionInfo("list", Default=[]),
+   "entry":             OptionInfo("list", Default=[]),
    # -- a mode can restrict the exits and entrys explicitly mentioned
    #    then, a derived mode cannot add now exits or entrys
-   "restrict":          OptionInfo("list", ["exit", "entry"]),
+   "restrict":          OptionInfo("list", ["exit", "entry"], Default=[]),
    # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
-   "skip":              OptionInfo("list"), # "multiple: RE-character-set
-   "skip_range":        OptionInfo("list"), # "multiple: RE-character-string RE-character-string
-   "skip_nested_range": OptionInfo("list"), # "multiple: RE-character-string RE-character-string
+   "skip":              OptionInfo("list", Default=[]), # "multiple: RE-character-set
+   "skip_range":        OptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
+   "skip_nested_range": OptionInfo("list", Default=[]), # "multiple: RE-character-string RE-character-string
    # -- indentation setup information
-   "indentation":       OptionInfo("single"),
-   
+   "indentation":       OptionInfo("single", Default=None),
 }
 #-----------------------------------------------------------------------------------------
 # event handler list: 
@@ -507,6 +516,7 @@ mode_option_info_db = {
 event_handler_db = {
         "on_entry":         "Code executed on entry of a mode.",
         "on_exit":          "Code executed on exit of a mode.", 
+        "on_indentation":   "Code detecting indentation opening, closing, and error.",
         "on_indent":        "Code executed on the event of opening indentation.",
         "on_nodent":        "Code executed on the event of same indentation.",
         "on_dedent":        "Code executed on the event of closing indentation'.",
@@ -527,7 +537,6 @@ class LocalizedParameter:
             self.__value   = Default
             self.file_name = FH.name
             self.line_n    = get_current_line_info_number(FH)
-
 
     def set(self, Value, fh):
         if self.__value != None:
@@ -659,9 +668,14 @@ def requires_indentation_count(ModeDB):
        support must be provided.                                         
     """
     for mode in ModeDB.values():
-        if    mode.has_code_fragment_list("on_indent") \
-           or mode.has_code_fragment_list("on_nodent") \
+        if    mode.has_code_fragment_list("on_indent")      \
+           or mode.has_code_fragment_list("on_nodent")      \
+           or mode.has_code_fragment_list("on_indentation") \
            or mode.has_code_fragment_list("on_dedent"):
+            return True
+
+        if mode.options["indentation"] != None:
+            assert mode.options["indentation"].__class__.__name__ == "IndentationSetup"
             return True
 
     return False

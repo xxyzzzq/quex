@@ -92,6 +92,19 @@ The different specifiers are the following:
       specifiers before only accept character sets as input. Clearly, the
       newline specifier accepts a full regular expression. 
 
+
+      .. note::
+
+      The newline pattern will be used to trigger the indentation counting.
+      Actually, the newline pattern is automatically extended to the pattern::
+
+               newline [[ ispace ]* newline]*
+
+      and inserted into state machine. Here, ``ispace`` is any kind of
+      indentation counter mentioned in ``space`` or ``grid``. By means of this
+      construction empty lines are eaten silently. Thus, it is avoided that 
+      empty lines cause a DEDENT or NODENT events. 
+
    .. describe :: suppressor
 
       The newline event can be suppressed by a subsequent suppressor. When it

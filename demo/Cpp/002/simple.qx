@@ -1,15 +1,9 @@
 // -*- C++ -*-
 start = PROGRAM;
 
-header {
-#include <cstdlib>  // C++ adapted 'stdlib.h'
-//                  // gets:  atoi(const char*) 
-#include <vector>
-}
-
 define {
     // Pattern definitions for example application
-    P_WHITESPACE          [ \t\n]
+    P_WHITESPACE          [ \t]
     P_CURLY_BRACKET_O     "{"
     P_CURLY_BRACKET_C     "}"
     P_BRACKET_O           "("
@@ -71,9 +65,7 @@ repeated_token {
 mode END_OF_FILE :
 <inheritable: only>  
 {    
-    <<EOF>> {
-        self_send(QUEX_TKN_TERMINATION);
-    }
+    <<EOF>> => QUEX_TKN_TERMINATION;
 }
 
 
@@ -82,55 +74,28 @@ mode PROGRAM :
 <entry: STRING_READER>
 <exit:  STRING_READER>
 <indentation: /* the default setup will do */>
+<skip: {P_WHITESPACE}>
 {
-    {P_WHITESPACE} { }
-    {P_CURLY_BRACKET_O} => QUEX_TKN_CURLY_BRACKET_O; 
-    {P_CURLY_BRACKET_C} => QUEX_TKN_CURLY_BRACKET_C; 
-    {P_BRACKET_O}       => QUEX_TKN_BRACKET_O;
-    {P_BRACKET_C}       => QUEX_TKN_BRACKET_C;
-    {P_EQUAL}           => QUEX_TKN_OP_EQUAL;
-    {P_KEY_AND}         => QUEX_TKN_AND;
-    {P_PRINT}           => QUEX_TKN_PRINT;
-    {P_KEY_OR}          => QUEX_TKN_OR;
-    {P_COLON}           => QUEX_TKN_COLON;
-    {P_KEY_IN}          => QUEX_TKN_IN;
+    {P_CURLY_BRACKET_O} => QUEX_TKN_CURLY_BRACKET_O(Lexeme); 
+    {P_CURLY_BRACKET_C} => QUEX_TKN_CURLY_BRACKET_C(Lexeme); 
+    {P_BRACKET_O}       => QUEX_TKN_BRACKET_O(Lexeme);
+    {P_BRACKET_C}       => QUEX_TKN_BRACKET_C(Lexeme);
+    {P_EQUAL}           => QUEX_TKN_OP_EQUAL(Lexeme);
+    {P_KEY_AND}         => QUEX_TKN_AND(Lexeme);
+    {P_PRINT}           => QUEX_TKN_PRINT(Lexeme);
+    {P_KEY_OR}          => QUEX_TKN_OR(Lexeme);
+    {P_COLON}           => QUEX_TKN_COLON(Lexeme);
+    {P_KEY_IN}          => QUEX_TKN_IN(Lexeme);
 
-    {P_KEY_STRUCT} {
-        self_send(QUEX_TKN_STRUCT);
-        RETURN;
-    }
+    {P_KEY_STRUCT}      => QUEX_TKN_STRUCT(Lexeme);
+    {P_KEY_IF}          => QUEX_TKN_IF(Lexeme); 
+    {P_KEY_ELSE}        => QUEX_TKN_ELSE(Lexeme);
+    {P_KEY_FOR}         => QUEX_TKN_FOR(Lexeme); 
+    {P_KEY_DEF}         => QUEX_TKN_FUNCTION_DEF(Lexeme);
+    {P_IDENTIFIER}      => QUEX_TKN_IDENTIFIER(Lexeme);
+    {P_NUMBER}          => QUEX_TKN_NUMBER;
 
-    {P_KEY_IF} {
-        self_send(QUEX_TKN_IF);
-        RETURN;
-    }
-    {P_KEY_ELSE} {
-        self_send(QUEX_TKN_ELSE);
-        RETURN;
-    }
-    {P_KEY_FOR} {
-        self_send(QUEX_TKN_FOR);
-        RETURN;
-    }
-    {P_KEY_DEF} {
-        self_send(QUEX_TKN_FUNCTION_DEF);
-        RETURN;
-    }
-    {P_IDENTIFIER} {
-        self_send1(QUEX_TKN_IDENTIFIER, Lexeme);
-        RETURN;
-    }
-    {P_NUMBER} {
-        self_token_p()->set_number(atoi((const char*)Lexeme));
-        self_send(QUEX_TKN_NUMBER);
-        RETURN;
-    }
-
-    {P_STRING_DELIMITER} {
-        self << STRING_READER; 
-        self_send(QUEX_TKN_EVENT_MODE_CHANGE);
-        return;
-    }
+    {P_STRING_DELIMITER} => GOTO(STRING_READER, QUEX_TKN_EVENT_MODE_CHANGE);
 }
 
 mode STRING_READER :
@@ -138,29 +103,12 @@ mode STRING_READER :
     <entry: PROGRAM>
     <exit:  PROGRAM>
 {
-    on_entry {
-        self_accumulator_clear();
-    }
+    on_entry                         { self_accumulator_clear(); }
+    on_exit                          { self_accumulator_flush(QUEX_TKN_STRING); }
 
-    on_exit {
-        self_accumulator_flush(QUEX_TKN_STRING);
-    }
-
-    {P_BACKSLASHED_STRING_DELIMITER} {
-        self_accumulator_add(Lexeme, LexemeEnd);
-    }
-
-    {P_BACKSLASHED_BACKSLASH} {
-        self_accumulator_add(Lexeme, LexemeEnd);
-    }
-
-    {P_STRING_DELIMITER} {
-        /*........................................*/ self << PROGRAM;
-        self_send(QUEX_TKN_EVENT_MODE_CHANGE);
-        return;
-    }
-
-    . {
-        self_accumulator_add(Lexeme, LexemeEnd);
-    }
+    {P_BACKSLASHED_STRING_DELIMITER} { self_accumulator_add(Lexeme, LexemeEnd); }
+    {P_BACKSLASHED_BACKSLASH}        { self_accumulator_add(Lexeme, LexemeEnd); }
+    {P_STRING_DELIMITER} => GOTO(PROGRAM, QUEX_TKN_EVENT_MODE_CHANGE);
+    /* Default pattern must come last! */
+    .                                { self_accumulator_add(Lexeme, LexemeEnd); }
 }

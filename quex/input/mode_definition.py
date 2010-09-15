@@ -5,8 +5,16 @@ import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
 import quex.input.indentation_setup   as indentation_setup
-from   quex.core_engine.generator.action_info                    import CodeFragment
+from   quex.core_engine.generator.action_info                    import GeneratedCode, UserCodeFragment
+from   quex.core_engine.generator.state_coder.skipper_core import create_skip_character_set_code, \
+                                                                  create_skip_range_code
+import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
+
 import quex.core_engine.state_machine.index                      as index
+import quex.core_engine.state_machine.sequentialize              as sequentialize
+import quex.core_engine.state_machine.repeat                     as repeat
+import quex.core_engine.state_machine.nfa_to_dfa                 as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization      as hopcroft
 from   quex.core_engine.state_machine.core                       import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 from   quex.input.setup                                          import setup as Setup
@@ -64,16 +72,7 @@ def parse_mode_option_list(new_mode, fh):
         error_msg("End of file reached while parsing options of mode '%s'." % mode_name, fh)
 
 def parse_mode_option(fh, new_mode):
-
-    def __add_match(PatternStr, *TriggerSetList):
-        sm  = StateMachine()
-        idx = sm.init_state_index
-        for trigger_set in TriggerSetList:
-            idx = sm.add_transition(idx, trigger_set, AcceptanceF=False)
-        sm.states[idx].set_acceptance(True)
-
-        new_mode.add_match(PatternStr, CodeFragment(""), sm)
-                           
+    LanguageDB = Setup.language_db
 
     identifier = read_option_start(fh)
     if identifier == None: return False
@@ -99,11 +98,17 @@ def parse_mode_option(fh, new_mode):
         # trigger set appears, the state machine enters the 'trigger set skipper section'.
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         # NOTE: The correspondent CodeFragment for skipping is created in 'implement_skippers(...)'
-        __add_match(pattern_str, trigger_set)
+        pattern_sm  = StateMachine()
+        pattern_sm.add_transition(pattern_sm.init_state_index, trigger_set, AcceptanceF=True)
 
-        # The pattern_str will be used as key later to find the related action.
-        # It may appear in multiple modes due to inheritance.
-        value = [pattern_str, trigger_set]
+        # Skipper code is to be generated later
+        action = GeneratedCode(create_skip_character_set_code, trigger_set, 
+                               FileName = fh.name, 
+                               LineN    = get_current_line_info_number(fh))
+
+        new_mode.add_match(pattern_str, action, pattern_sm)
+
+        return True
 
     elif identifier == "skip_range":
         # A non-nesting skipper can contain a full fledged regular expression as opener,
@@ -122,13 +127,13 @@ def parse_mode_option(fh, new_mode):
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
-        # NOTE: The correspondent CodeFragment for skipping is created in 'implement_skippers(...)'
-        new_mode.add_match(opener_str, CodeFragment(""), opener_sm)
+        # Skipper code is to be generated later
+        action = GeneratedCode(create_skip_range_code, closer_sequence,
+                               FileName = fh.name, 
+                               LineN    = get_current_line_info_number(fh))
+        new_mode.add_match(opener_str, action, opener_sm)
 
-        # The opener_str will be used as key later to find the related action.
-        # It may appear in multiple modes due to inheritance.
-        value = [opener_str, closer_sequence]
+        return True
         
     elif identifier == "skip_nesting_range":
         error_msg("skip_nesting_range is not yet supported.", fh)
@@ -143,21 +148,50 @@ def parse_mode_option(fh, new_mode):
         suppressed_newline_pattern = ""
         if value.newline_suppressor_state_machine.get() != None:
             suppressed_newline_pattern = \
-                  value.newline_suppressor_state_machine.get().pattern_str \
-                + value.newline_state_machine.get().pattern_str
+                  "(" + value.newline_suppressor_state_machine.pattern_str + ")" \
+                + "(" + value.newline_state_machine.pattern_str + ")"
                                            
             suppressed_newline_sm = \
-                sequentialization.do([value.newline_state_machine.get(),
-                                      value.newline_suppressor_state_machine.get()])
+                sequentialize.do([value.newline_suppressor_state_machine.get(),
+                                  value.newline_state_machine.get()])
                  
-            new_mode.add_match(suppressed_newline_pattern,
-                               CodeFragment(LanguageDB["$goto"]("$start")), # Go back to start.
-                               suppressed_newline_sm)
+            FileName = value.newline_suppressor_state_machine.file_name
+            LineN    = value.newline_suppressor_state_machine.line_n
+            # Go back to start.
+            code_fragment = UserCodeFragment(LanguageDB["$goto"]("$start"), FileName, LineN)
+
+            new_mode.add_match(suppressed_newline_pattern, code_fragment, suppressed_newline_sm,
+                               Comment="indentation newline suppressor")
+
+        # When there is an empty line, then there shall be no indentation count on it.
+        # Here comes the trick: 
+        #
+        #      Let               newline         
+        #      be defined as:    newline ([space]* newline])*
+        # 
+        # This way empty lines are eating away before the indentation count is activated.
+
+        # -- 'space'
+        x0 = StateMachine()
+        x0.add_transition(x0.init_state_index, value.indentation_count_character_set(), 
+                          AcceptanceF=True)
+        # -- '[space]*'
+        x1 = repeat.do(x0)
+        # -- '[space]* newline'
+        x2 = sequentialize.do([x1, value.newline_state_machine.get()])
+        # -- '([space]* newline)*'
+        x3 = repeat.do(x2)
+        # -- 'newline ([space]* newline)*'
+        x4 = sequentialize.do([value.newline_state_machine.get(), x3])
+        # -- nfa to dfa; hopcroft optimization
+        sm = hopcroft.do(nfa_to_dfa.do(x4), CreateNewStateMachineF=False)
+
+        FileName = value.newline_state_machine.file_name
+        LineN    = value.newline_state_machine.line_n
+        action   = GeneratedCode(indentation_counter.do, value, FileName, LineN)
 
         new_mode.add_match(value.newline_state_machine.pattern_str,
-                           CodeFragment(""), 
-                           value.newline_state_machine.get())
-
+                           action, sm, Comment="indentation newline")
     else:
         value = read_option_value(fh)
 

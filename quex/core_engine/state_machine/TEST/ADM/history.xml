@@ -1,4 +1,4 @@
-<history date="Sun Sep  5 08:00:55 2010" element-n="454">
+<history date="Thu Sep 16 10:57:04 2010" element-n="455">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1108,5 +1108,8 @@
     <day year="2010" month="08" day="02">
         <crc-error time="05:15:44" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-744398143" real-crc="797490981"/>
         <crc-error time="05:15:49" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="792982194" real-crc="392262815"/>
+    </day>
+    <day year="2010" month="09" day="15">
+        <crc-error time="09:32:55" application="test-subset_checker.py" choice="Easy" database-crc="-1954154735" real-crc="-443130574"/>
     </day>
 </history>

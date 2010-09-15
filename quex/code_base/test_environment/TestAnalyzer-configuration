@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.51.1-prerelease"
-#define QUEX_SETTING_BUILD_DATE        "Sun Sep  5 08:29:36 2010"
+#define QUEX_SETTING_BUILD_DATE        "Tue Sep 14 12:43:25 2010"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -155,7 +155,7 @@
 
 /* Include Stack Support                                                  */
 #ifndef   QUEX_OPTION_INCLUDE_STACK
-#define    QUEX_OPTION_INCLUDE_STACK
+/* #define QUEX_OPTION_INCLUDE_STACK */
 #endif
 
 /* BLC -- Buffer Limit Code:

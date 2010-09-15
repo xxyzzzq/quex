@@ -8,7 +8,7 @@ from   quex.input.indentation_setup       import IndentationSetup
 import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
 
 if "--hwut-info" in sys.argv:
-    print "Indentation Count: Uniform Indention (no 'tabulators')"
+    print "Indentation Counting"
     print "CHOICES: Uniform, NonUniform, NonUniform-2;"
     sys.exit(0)
 

@@ -21,7 +21,6 @@ class IndentationCounter:
 
 template_str = """
 { 
-#   define self (*me)
     $$DELIMITER_COMMENT$$
 $$INIT_REFERENCE_POINTER$$
 
@@ -36,14 +35,13 @@ $$LOOP_REENTRANCE$$
     $$GOTO_LOOP_START$$
 
 $$DROP_OUT$$
-    /* -- When loading new content it is always taken care that the beginning of the lexeme
-     *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
-     *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
-     *    to the actual input position.                                                   
-     * -- The input_p will at this point in time always point to the buffer border.        */
+    /* -- In the case of 'skipping' we did not worry about the lexeme at all --
+     *    HERE, WE DO! We cannot set the lexeme start point to the current position!
+     *    The appplication might actuall do something with it.
+     *
+     * -- The input_p will at this point in time always point to the buffer border.  */
     if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        $$MARK_LEXEME_START$$
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
             $$GOTO_TERMINAL_EOF$$
         } else {
@@ -60,8 +58,6 @@ $$DROP_OUT_DIRECT$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
 $$END_PROCEDURE$$                           
     $$GOTO_START$$                           
-
-#undef self
 }
 """
 
@@ -152,7 +148,6 @@ def do(IndentationSetup):
                        # When things were skipped, no change to acceptance flags or modes has
                        # happend. One can jump immediately to the start without re-entry preparation.
                        ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
-                       ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
                        ["$$INIT_REFERENCE_POINTER$$",         init_reference_p],
                        ["$$END_PROCEDURE$$",                  end_procedure],

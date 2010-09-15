@@ -16,6 +16,7 @@ import quex.input.regular_expression       as     regular_expression
 
 class IndentationSetup:
     def __init__(self, fh=-1):
+        self.fh = fh
         if fh != -1:
             self.file_name = fh.name
             self.line_n    = get_current_line_info_number(fh)
@@ -31,14 +32,26 @@ class IndentationSetup:
 
     def seal(self):
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
-            self.specify_space("[ ]", NumberSet(ord(' ')), 1)
-            self.specify_grid("[\\t]", NumberSet(ord('\t')), 4)
+            default_space = ord(' ')
+            default_tab   = ord('\t')
+            bad = self.bad_character_set
+            if bad.get().contains(default_space) == False:
+                self.specify_space("[ ]", NumberSet(default_space), 1, self.fh)
+            if bad.get().contains(default_tab) == False:
+                self.specify_grid("[\\t]", NumberSet(default_tab), 4, self.fh)
+
+            if len(self.space_db) == 0 and len(self.grid_db) == 0:
+                error_msg("No space or grid defined for indentation counting. Default\n"
+                          "values ' ' and '\\t' could not be used since they are specified as 'bad'.",
+                          bad.file_name, bad.line_n)
+
 
         if self.newline_state_machine.get() == None:
-            sm = StateMachine()
-            sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
-            sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), sm.init_state_index, AcceptanceF=False)
-            self.specify_newline("(\\r\\n)|(\\n)", sm)
+            sm   = StateMachine()
+            end_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
+            mid_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), AcceptanceF=False)
+            sm.add_transition(mid_idx, NumberSet(ord('\n')), end_idx, AcceptanceF=False)
+            self.specify_newline("(\\r\\n)|(\\n)", sm, self.fh)
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
         """If Key != None, than 'Before' is a database."""
@@ -223,6 +236,18 @@ class IndentationSetup:
                               "of 1 are the fastest to compute.", 
                               space_def.file_name, space_def.line_n, DontExitF=True)
 
+    def indentation_count_character_set(self):
+        """Returns the superset of all characters that are involved in
+           indentation counting. That is the set of character that can
+           appear between newline and the first non whitespace character.
+        """
+        result = NumberSet()
+        for character_set in self.space_db.values():
+            result.unite_with(character_set.get())
+        for character_set in self.grid_db.values():
+            result.unite_with(character_set.get())
+        return result
+
     def __repr__(self):
 
         txt = ""
@@ -254,6 +279,7 @@ class IndentationSetup:
         else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
 
         return txt
+
 
 def do(fh):
     """Parses pattern definitions of the form:

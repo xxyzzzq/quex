@@ -29,6 +29,7 @@ if "Easy" in sys.argv:
     test('12', '1(2?)')
     test('1', '1(2?)')
     test('"123"|"ABC"', '"123"')
+    test('\\n', '(\\r\\n)|\\n')
 
 elif "FalseCases" in sys.argv:
     test('[a-n]', '[m-z]')

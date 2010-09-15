@@ -35,27 +35,42 @@ LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application
-lexer:          example.o EasyLexer.o
-	$(LD) -o $@ example.o EasyLexer.o 
+lexer:          exampleLexer.o EasyLexer.o
+	$(LD) -o $@ exampleLexer.o EasyLexer.o 
+         
+# A lexer where 'spaces' are considered bad
+lexer-bs:       exampleLexer_bad_space.o EasyLexer_bad_space.o
+	$(LD) -o $@ exampleLexer_bad_space.o EasyLexer_bad_space.o 
+          
+# A lexer where 'tabs' are considered bad
+lexer-bt:       exampleLexer_bad_tab.o EasyLexer_bad_tab.o
+	$(LD) -o $@ exampleLexer_bad_tab.o EasyLexer_bad_tab.o 
           
 # Object files:
-EasyLexer.o: EasyLexer.cpp 
+Easy%.o: Easy%.cpp 
 	$(CC) $< -o $@ 
 
-example.o: ../example.cpp  EasyLexer.cpp
-	$(CC) $< -o $@ 
+example%.o: ../example.cpp  Easy%.cpp
+	$(CC) $<  -o $@ 
 
 # Macro expansions (only for debugging):
 %.E: %.cpp    
 	$(CC) -E $< -o $@ 
 
 EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
-	quex -i simple.qx        \
-		 --engine EasyLexer  
+	quex -i simple.qx --engine EasyLexer  
+
+EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx $(QUEX_CORE)
+	quex -i simple_bad_space.qx --engine EasyLexer_bad_space  
+
+EasyLexer_bad_tab EasyLexer_bad_tab.cpp: simple.qx $(QUEX_CORE)
+	quex -i simple_bad_tab.qx --engine EasyLexer_bad_tab  
 
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f EasyLexer*
+	rm -f EasyLexer_bad_space*
+	rm -f EasyLexer_bad_tab*
 	rm -f *.o
 	rm -f *.bak
 	rm -f *.E
