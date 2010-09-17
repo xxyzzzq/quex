@@ -4,7 +4,7 @@ from   quex.core_engine.generator.action_info import *
 from   quex.input.setup                       import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
-       Default_ActionF=False, EOF_ActionF=False):
+       Default_ActionF=False, EOF_ActionF=False, SelfCountingActionF=False):
     """-- If there are multiple handlers for a single event they are combined
     
        -- Adding debug information printer (if desired)
@@ -37,7 +37,9 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
-    lc_count_code  = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+    if not SelfCountingActionF: 
+        lc_count_code  = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+
     if (not Default_ActionF) and (not EOF_ActionF):
         lc_count_code += "__QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n"
 
@@ -88,7 +90,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
 
     if   newline_n == -1:
-        # run the general algorithm, since not even the number of newlines in the 
+        # Run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
         return txt + "QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);\n"
 

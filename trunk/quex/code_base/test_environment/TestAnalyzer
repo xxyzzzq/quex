@@ -4,7 +4,7 @@
  *
  * __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
- *    QUEX_NAME(Accumulator) must be different.                             */
+ *    QUEX_NAME(Analyzer) must be different.                             */
 #ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER
 #undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER
 
@@ -95,6 +95,9 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 
+#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator.i>
+#endif
 #ifdef      __QUEX_OPTION_COUNTER
 #   include <quex/code_base/analyzer/Counter.i>
 #endif

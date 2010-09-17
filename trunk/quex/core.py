@@ -180,8 +180,12 @@ def get_generator_input(Mode, IndentationSupportF):
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
-        prepared_action, db = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
-                                                       pattern_state_machine)
+        action = pattern_info.action()
+        self_line_column_counting_f = False
+        if action.__class__.__name__ == "GeneratedCode": self_line_column_counting_f = True
+        prepared_action, db = action_code_formatter.do(Mode, action, safe_pattern_str,
+                                                       pattern_state_machine, 
+                                                       SelfCountingActionF=self_line_column_counting_f)
         variable_db.update(db)
 
         pattern_info.set_action(prepared_action)

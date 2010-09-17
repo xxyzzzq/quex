@@ -1,4 +1,4 @@
-<history date="Thu Sep 16 15:21:32 2010" element-n="339">
+<history date="Fri Sep 17 12:21:25 2010" element-n="343">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
@@ -973,5 +973,11 @@
     </day>
     <day year="2010" month="03" day="26">
         <crc-error time="05:17:54" application="test-coder-get_generator_input.py" choice="" database-crc="443378679" real-crc="2123277552"/>
+    </day>
+    <day year="2010" month="09" day="17">
+        <crc-error time="09:05:22" application="check-default-configuration.sh" choice="" database-crc="-1320589017" real-crc="-1269617406"/>
+        <crc-error time="09:06:11" application="include_guard.py" choice="convention" database-crc="-1609475582" real-crc="202994675"/>
+        <crc-error time="09:31:20" application="check-default-configuration.sh" choice="" database-crc="-1269617406" real-crc="755673744"/>
+        <crc-error time="09:33:42" application="check-default-configuration.sh" choice="" database-crc="755673744" real-crc="-195738850"/>
     </day>
 </history>
