@@ -340,10 +340,8 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
      QUEX_NAME(ONE_AND_ONLY).id   = QUEX_NAME(ModeID_ONE_AND_ONLY);
      QUEX_NAME(ONE_AND_ONLY).name = "ONE_AND_ONLY";
      QUEX_NAME(ONE_AND_ONLY).analyzer_function = QUEX_NAME(ONE_AND_ONLY_analyzer_function);
-#    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-     QUEX_NAME(ONE_AND_ONLY).on_indent      = QUEX_NAME(Mode_on_indent_dedent_null_function);
-     QUEX_NAME(ONE_AND_ONLY).on_nodent      = QUEX_NAME(Mode_on_nodent_null_function);
-     QUEX_NAME(ONE_AND_ONLY).on_dedent      = QUEX_NAME(Mode_on_indent_dedent_null_function);
+#    if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+     QUEX_NAME(ONE_AND_ONLY).on_indentation = QUEX_NAME(Mode_on_indentation_null_function);
 #    endif
      QUEX_NAME(ONE_AND_ONLY).on_entry       = QUEX_NAME(Mode_on_entry_exit_null_function);
      QUEX_NAME(ONE_AND_ONLY).on_exit        = QUEX_NAME(Mode_on_entry_exit_null_function);
@@ -496,21 +494,44 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 
     }
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+#if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)     && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
     void
-    QUEX_NAME(ONE_AND_ONLY_on_indent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation, 
-                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
-__quex_assert((long)Indentation >= 0);
-    }
-    void
-    QUEX_NAME(ONE_AND_ONLY_on_nodent)(QUEX_TYPE_ANALYZER* me, 
-                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
-__quex_assert((long)Indentation >= 0);
-    }
-    void
-    QUEX_NAME(ONE_AND_ONLY_on_dedent)(QUEX_TYPE_ANALYZER* me, const size_t N, const size_t Indentation,
-                                       QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd) {
-__quex_assert((long)Indentation >= 0);
+    QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
+                                            QUEX_TYPE_INDENTATION  Indentation, 
+                                            QUEX_TYPE_CHARACTER*   Begin) {
+#       define Lexeme    Begin
+#       define LexemeEnd (me->buffer._input_p)
+
+        QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
+        QUEX_TYPE_INDENTATION         i     = 0;
+
+        __quex_assert((long)Indentation >= 0);
+
+        if( Indentation > *(stack->back) ) {
+            ++(stack->back);
+            if( stack->back == me->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
+            *(stack->back) = Indentation;
+
+            __QUEX_RETURN;
+        }
+        else if( Indentation == *(stack->back) ) {
+
+        }
+        else  {
+            while( Indentation < *(stack->back) ) {
+                ++i;
+                --(stack->back);
+            }
+
+#           define ClosedN (i)
+
+#           undef ClosedN
+
+            if( Indentation != *(stack->back) ) { /* 'Landing' must happen on indentation border. */
+                self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
+            }
+        }
+        __QUEX_RETURN;
     }
 #endif
 

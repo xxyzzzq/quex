@@ -22,15 +22,17 @@ def extract_macro(LineStr):
 
 def get_defined_macro_list():
     result = []
-    FileName = BaseDir + "configuration/CppTemplate.txt"
-    for line in open(FileName, "rb").readlines():
-        line = line.strip()
-        if line == "": continue
-        line = line.replace("#", "#   ") # handle case safely where '#undef'
-        fields = line.split()
-        if   fields[0] == "$$SWITCH$$":                  result.append(extract_macro(line))
-        elif line[0] != "#":                             continue
-        elif len(fields) > 1 and fields[1] == "define":  result.append(extract_macro(line))
+    for file_name in ["CppTemplate.txt", "derived"]:
+        line_n = 0
+        for line in open(BaseDir + "configuration/" + file_name, "rb").readlines():
+            line_n += 1
+            line = line.strip()
+            if line == "": continue
+            line = line.replace("#", "#   ") # handle case safely where '#undef'
+            fields = line.split()
+            if   fields[0] == "$$SWITCH$$":                  result.append(extract_macro(line))
+            elif line[0] != "#":                             continue
+            elif len(fields) > 1 and fields[1] == "define":  result.append(extract_macro(line))
     return result
 
 def get_undef_macro_list():

@@ -1,14 +1,14 @@
-<test-database execution-time-sec="1.90" date="Thu Sep 16 15:21:58 2010">
+<test-database execution-time-sec="1.04" date="Fri Sep 17 12:21:41 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.90"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.04"> 
         <application file-name="commonalities.py" info-request-time="1284628341L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="1" result="OK" time_sec="0.32" crc="-1391501822"/>
-           <choice name="2" result="OK" time_sec="0.32" crc="970527046"/>
-           <choice name="3" result="OK" time_sec="0.32" crc="-1638526542"/>
-           <choice name="4" result="OK" time_sec="0.31" crc="1033537895"/>
-           <choice name="5" result="FAIL" time_sec="0.34" crc="-1084676981"/>
-           <choice name="6" result="OK" time_sec="0.29" crc="1833916996"/>
+           <choice name="1" result="OK" time_sec="0.17" crc="-1391501822"/>
+           <choice name="2" result="OK" time_sec="0.18" crc="970527046"/>
+           <choice name="3" result="OK" time_sec="0.18" crc="-1638526542"/>
+           <choice name="4" result="OK" time_sec="0.18" crc="1033537895"/>
+           <choice name="5" result="OK" time_sec="0.17" crc="640949708"/>
+           <choice name="6" result="OK" time_sec="0.16" crc="1833916996"/>
         </choice-list>
     </test>
 </test-database>

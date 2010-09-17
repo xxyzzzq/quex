@@ -1,154 +1,114 @@
-5,6c5,6
 < #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
 < #define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
----
-> #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____DEFAULT
-> #define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____DEFAULT
-26,28c26,28
+> #ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION
+> #define __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION
 < #define QUEX_SETTING_VERSION           "$$QUEX_VERSION$$"
-< #define QUEX_SETTING_BUILD_DATE        "$$LEXER_BUILD_DATE$$"
 < #define QUEX_SETTING_ANALYZER_VERSION  "$$USER_LEXER_VERSION$$"
----
 > #define QUEX_SETTING_VERSION           "0.51.1-prerelease"
-> #define QUEX_SETTING_BUILD_DATE        "Fri Aug 20 08:09:35 2010"
 > #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
-31c31
 < $$SWITCH$$ __QUEX_OPTION_PLAIN_C
----
 > /* #define __QUEX_OPTION_PLAIN_C */
-55,56c55,56
 < #define    __QUEX_SETTING_MAX_MODE_CLASS_N         ($$MAX_MODE_CLASS_N$$)
-< #define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID    ($$INITIAL_LEXER_MODE_ID$$)
----
 > #define    __QUEX_SETTING_MAX_MODE_CLASS_N         (0)
-> #define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID    (QUEX_NAME(ModeID_))
-58,61c58,61
+< #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID    ($$INITIAL_LEXER_MODE_ID$$)
+> #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID    (QUEX_NAME(ModeID_))
 < #define    __QUEX_SETTING_TOKEN_ID_TERMINATION       ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
 < #define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED     ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
 < #define    __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$INDENTATION_ERROR)
+< #define    __QUEX_SETTING_TOKEN_ID_INDENT            ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$INDENT)
+< #define    __QUEX_SETTING_TOKEN_ID_DEDENT            ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$DEDENT)
+< #define    __QUEX_SETTING_TOKEN_ID_NODENT            ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$NODENT)
 < #define    __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(TokenID) $$TOKEN_REPEAT_TEST$$
----
 > #define    __QUEX_SETTING_TOKEN_ID_TERMINATION       ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_TERMINATION)
 > #define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED     ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_UNINITIALIZED)
 > #define    __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_INDENTATION_ERROR)
+> #define    __QUEX_SETTING_TOKEN_ID_INDENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_INDENT)
+> #define    __QUEX_SETTING_TOKEN_ID_DEDENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_DEDENT)
+> #define    __QUEX_SETTING_TOKEN_ID_NODENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_NODENT)
 > #define    __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(TokenID) 
-64c64
 < $$SWITCH$$ __QUEX_OPTION_LITTLE_ENDIAN
----
 > #define    __QUEX_OPTION_LITTLE_ENDIAN
-67c67
 < $$SWITCH$$ __QUEX_OPTION_BIG_ENDIAN
----
 > /* #define __QUEX_OPTION_BIG_ENDIAN */
-70c70
 < $$SWITCH$$ __QUEX_OPTION_SYSTEM_ENDIAN
----
 > #define    __QUEX_OPTION_SYSTEM_ENDIAN
-74c74
 < $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_QUEUE
----
-> #define    QUEX_OPTION_TOKEN_POLICY_QUEUE
-77c77
+> /* #define QUEX_OPTION_TOKEN_POLICY_QUEUE */
 < $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_SINGLE
----
-> /* #define QUEX_OPTION_TOKEN_POLICY_SINGLE */
-81c81
+> #define    QUEX_OPTION_TOKEN_POLICY_SINGLE
 < $$SWITCH$$ QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY
----
 > /* #define QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY */
-86c86
 < #      define QUEX_SETTING_TOKEN_QUEUE_SIZE          ((size_t)$$TOKEN_QUEUE_SIZE$$)
----
 > #      define QUEX_SETTING_TOKEN_QUEUE_SIZE          ((size_t)64)
-89c89
 < #      define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)$$TOKEN_QUEUE_SAFETY_BORDER$$)
----
 > #      define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)16)
-99c99
 < $$SWITCH$$ QUEX_OPTION_TOKEN_REPETITION_SUPPORT
----
 > /* #define QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
-112c112
 < $$SWITCH$$ QUEX_OPTION_LINE_NUMBER_COUNTING         
----
-> /* #define QUEX_OPTION_LINE_NUMBER_COUNTING */         
-115c115
+> #define    QUEX_OPTION_LINE_NUMBER_COUNTING         
 < $$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING       
----
-> /* #define QUEX_OPTION_COLUMN_NUMBER_COUNTING */       
-119c119
+> #define    QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 < $$SWITCH$$ QUEX_OPTION_POST_CATEGORIZER
----
 > /* #define QUEX_OPTION_POST_CATEGORIZER */
-127c127
 < $$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
----
 > #define    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-142c142
 < $$SWITCH$$ QUEX_OPTION_DEBUG_TOKEN_SENDING
----
 > /* #define QUEX_OPTION_DEBUG_TOKEN_SENDING */
-145c145
 < $$SWITCH$$ QUEX_OPTION_DEBUG_MODE_TRANSITIONS
----
 > /* #define QUEX_OPTION_DEBUG_MODE_TRANSITIONS */
-148c148
 < $$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
----
 > /* #define QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES */
-153c153
 < $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
----
-> #define    QUEX_OPTION_INCLUDE_STACK
-164c164
+> /* #define QUEX_OPTION_INCLUDE_STACK */
 < #   define QUEX_SETTING_BUFFER_LIMIT_CODE  ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
----
 > #   define QUEX_SETTING_BUFFER_LIMIT_CODE  ((QUEX_TYPE_CHARACTER)0x0)
-177c177
 < #   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_CHARACTER)$$PATH_TERMINATION_CODE$$)
----
 > #   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_CHARACTER)0x1)
-194c194
 < $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
----
 > #define    QUEX_OPTION_STRING_ACCUMULATOR
-209c209
 < $$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
----
 > /* #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT */
-222,225c222,225
 < $$SWITCH$$ __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
 < $$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 < $$SWITCH$$ QUEX_OPTION_ENABLE_ICONV
 < $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
----
 > /* #define __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT */
 > /* #define __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT */
 > /* #define QUEX_OPTION_ENABLE_ICONV */
 > /* #define QUEX_OPTION_ENABLE_ICU */
-239c239
 < $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
----
 > /* #   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  */
-245c245
 < $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
----
 > #define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-271c271
+> #if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
+> #   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
+> #      error "QUEX_SETTING_BUFFER_SIZE not defined at this place."
+> #   endif
+>     /* If your compiler brings you here to this position, then this may be because
+>      * you defined the QUEX_SETTING_BUFFER_SIZE with something different than just
+>      * an integer number. Indeed something like
+>      *
+>      *   #define QUEX_SETTING_BUFFER_SIZE  (size_t)4096
+>      *
+>      * would be propper, but does not allow to do some math. So, please erase whatever
+>      * is not a number in the definition (e.g. delete the '(size_t)' type cast.        */
+> #   if   QUEX_SETTING_BUFFER_SIZE >= 1024
+> #      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (256)
+> #   elif QUEX_SETTING_BUFFER_SIZE >= 8
+> #      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (size_t)((float)(QUEX_SETTING_BUFFER_SIZE)/16.0)
+> #   else
+> #      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
+> #   endif
+> #endif
+> 
 < $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
----
 > /* #define __QUEX_OPTION_CONVERTER_ENABLED */
-290c290
 < #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
----
 > #   define QUEX_TYPE_CHARACTER       uint8_t 
-301,302c301,302
 < #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME_SAFE$$_ ## NAME
 < #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS_NAME_SAFE$$_ ## NAME
----
-> #   define QUEX_NAME(NAME)             Default_ ## NAME
+> #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 > #   define QUEX_NAME_TOKEN(NAME)       quex_Token_ ## NAME
-305,314c305,318
 < #   define QUEX_NAMESPACE_MAIN         $$NAMESPACE_MAIN$$
 < #   define QUEX_NAMESPACE_MAIN_OPEN    $$NAMESPACE_MAIN_OPEN$$
 < #   define QUEX_NAMESPACE_MAIN_CLOSE   $$NAMESPACE_MAIN_CLOSE$$
@@ -159,7 +119,6 @@
 < #   define QUEX_NAME(NAME)             $$LEXER_CLASS_NAME$$_ ## NAME
 < #   define QUEX_NAME_TOKEN(NAME)       $$TOKEN_CLASS$$_ ## NAME
 < #   define QUEX_MEMBER(NAME)           $$LEXER_CLASS_NAME$$::NAME                
----
 > #   define QUEX_NAMESPACE_MAIN         ::quex
 > #   define QUEX_NAMESPACE_MAIN_OPEN    namespace quex {\
 > 
@@ -171,60 +130,36 @@
 > #   define QUEX_NAMESPACE_TOKEN_CLOSE  } /* Closing Namespace 'quex' */\
 > 
 > 
-> #   define QUEX_NAME(NAME)             Default_ ## NAME
+> #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 > #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
-> #   define QUEX_MEMBER(NAME)           Default::NAME                
-319c323
-< #define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME($$CODEC_NAME$$_to_utf8_string)
----
-> #define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
-326,328c330,332
+> #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
+< #   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME($$CODEC_NAME$$_to_utf8_string)
+> #   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
 < #   define QUEX_TYPE_ANALYZER                struct $$LEXER_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE0_ANALYZER               struct $$LEXER_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE_DERIVED_ANALYZER        struct $$LEXER_CLASS_NAME_SAFE$$_tag
----
-> #   define QUEX_TYPE_ANALYZER                struct Default_tag
-> #   define QUEX_TYPE0_ANALYZER               struct Default_tag
-> #   define QUEX_TYPE_DERIVED_ANALYZER        struct Default_tag
-330,331c334,335
+> #   define QUEX_TYPE_ANALYZER                struct TestAnalyzer_tag
+> #   define QUEX_TYPE0_ANALYZER               struct TestAnalyzer_tag
+> #   define QUEX_TYPE_DERIVED_ANALYZER        struct TestAnalyzer_tag
 < #   define QUEX_TYPE_TOKEN                   struct $$TOKEN_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE0_TOKEN                  struct $$TOKEN_CLASS_NAME_SAFE$$_tag
----
 > #   define QUEX_TYPE_TOKEN                   struct quex_Token_tag
 > #   define QUEX_TYPE0_TOKEN                  struct quex_Token_tag
-335,337c339,341
 < #   define QUEX_TYPE_ANALYZER                $$NAMESPACE_MAIN$$::$$LEXER_CLASS_NAME$$
 < #   define QUEX_TYPE0_ANALYZER               $$LEXER_CLASS_NAME$$
 < #   define QUEX_TYPE_DERIVED_ANALYZER        $$LEXER_DERIVED_CLASS_NAME$$
----
-> #   define QUEX_TYPE_ANALYZER                ::quex::Default
-> #   define QUEX_TYPE0_ANALYZER               Default
+> #   define QUEX_TYPE_ANALYZER                ::quex::TestAnalyzer
+> #   define QUEX_TYPE0_ANALYZER               TestAnalyzer
 > #   define QUEX_TYPE_DERIVED_ANALYZER        
-339,340c343,344
 < #   define QUEX_TYPE_TOKEN                   $$NAMESPACE_TOKEN$$::$$TOKEN_CLASS$$
 < #   define QUEX_TYPE0_TOKEN                  $$TOKEN_CLASS$$
----
 > #   define QUEX_TYPE_TOKEN                   ::quex::Token
 > #   define QUEX_TYPE0_TOKEN                  Token
-343,345c347,349
-< #define QUEX_TYPE_TOKEN_ID                   $$TOKEN_ID_TYPE$$
-< #define QUEX_TYPE_TOKEN_LINE_N               $$TOKEN_LINE_N_TYPE$$
-< #define QUEX_TYPE_TOKEN_COLUMN_N             $$TOKEN_COLUMN_N_TYPE$$
----
-> #define QUEX_TYPE_TOKEN_ID                   uint32_t
-> #define QUEX_TYPE_TOKEN_LINE_N               size_t
-> #define QUEX_TYPE_TOKEN_COLUMN_N             size_t
-351c355
-<     struct $$LEXER_CLASS_NAME_SAFE$$_tag;
----
->     struct Default_tag;
-353,354c357,358
-<     class  $$LEXER_DERIVED_CLASS_NAME$$; /* Derived Class if different from lexer class. */
-<     class  $$LEXER_CLASS_NAME$$;
----
->     class  ; /* Derived Class if different from lexer class. */
->     class  Default;
-361c365
+< #   define QUEX_TYPE_TOKEN_ID        $$TOKEN_ID_TYPE$$
+> #   define QUEX_TYPE_TOKEN_ID        uint32_t
+< #   define QUEX_TYPE_TOKEN_LINE_N    $$TOKEN_LINE_N_TYPE$$
+> #   define QUEX_TYPE_TOKEN_LINE_N    size_t
+< #   define QUEX_TYPE_TOKEN_COLUMN_N  $$TOKEN_COLUMN_N_TYPE$$
+> #   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
 < #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */
----
-> #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____DEFAULT */
+> #endif /* __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION */

@@ -2,8 +2,8 @@
  *
  * (C) 2005-2009 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER
-#define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER
+#ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION
+#define __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION
 /* Additionally to the 'local' include guard, there is an include indicator 
  *
  *         __INCLUDE_INDICATOR_QUEX__CONFIGURATION
@@ -370,4 +370,4 @@
 #include <quex/code_base/analyzer/configuration/derived>
 
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER */
+#endif /* __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION */
