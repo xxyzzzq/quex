@@ -95,12 +95,16 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         return txt + "QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);\n"
 
     elif newline_n != 0:
-        # TODO: Try to determine number of characters backwards to newline directly
-        #       from the pattern state machine. (Those seldom cases won't bring much
-        #       speed-up)
-        return txt + \
-               "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);\n" % newline_n + \
-               "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, Lexeme, LexemeEnd);\n"
+        txt += "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);\n" % newline_n 
+        if PatternStateMachine.get_ending_character_set().contains_only(ord('\n')):
+            # A pattern that ends with newline, lets the next column start at zero.
+            txt += "__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n"
+        else:
+            # TODO: Try to determine number of characters backwards to newline directly
+            #       from the pattern state machine. (Those seldom cases won't bring much
+            #       speed-up)
+            txt += "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt
 
     else:
         if character_n == -1: incr_str = "LexemeL"

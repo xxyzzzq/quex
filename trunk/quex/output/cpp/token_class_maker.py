@@ -103,6 +103,8 @@ def _do(Descr):
                         ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                         ["$$FUNC_TAKE_TEXT$$",   take_text_str],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
+                        ["$$TOKEN_REPETITION_N_GET$$", Descr.repetition_get.get_code()],
+                        ["$$TOKEN_REPETITION_N_SET$$", Descr.repetition_set.get_code()],
                        ])
 
     # Return declaration and implementation as two strings

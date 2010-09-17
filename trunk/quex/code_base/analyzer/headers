@@ -26,9 +26,6 @@
 #ifdef      QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
-#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   include <quex/code_base/analyzer/IndentationHandler>
-#endif
 #ifdef      __QUEX_OPTION_COUNTER
 #include    <quex/code_base/analyzer/Counter>
 #endif

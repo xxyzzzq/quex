@@ -1,7 +1,21 @@
+import sys
 from copy import copy
 from quex.frs_py.file_in import error_msg
 
 import StringIO
+
+utf8_char_db = {
+    -sys.maxint:   "-oo",
+    sys.maxint:    "oo",            
+    ord(' '):      "' '",
+    ord('\n'):     "'\\n'",
+    ord('\t'):     "'\\t'",
+    ord('\r'):     "'\\r'",
+    ord('\a'):     "'\\a'",
+    ord('\b'):     "'\\b'",
+    ord('\f'):     "'\\f'",
+    ord('\v'):     "'\\v'",
+}
 
 def unicode_to_utf8(UnicodeValue):
     if UnicodeValue < 0x80:
@@ -20,6 +34,15 @@ def unicode_to_utf8(UnicodeValue):
                  0x80 | (UnicodeValue  & 0x3F)]
     else:
         error_msg("Unicode character > 0x10FFFF detected. Cannot be handled.")
+
+def unicode_to_pretty_utf8(Code):
+    global utf8_char_db
+    
+    if utf8_char_db.has_key(Code): return utf8_char_db[Code]
+    elif Code < ord(' '):          return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
+    else:
+        char_str = "".join(["'"] + map(chr, unicode_to_utf8(Code)) + ["'"])
+        return char_str
 
 def utf8_to_unicode(ByteSequence):
     """Unfortunately, there is no elegant way to do the utf8-decoding 

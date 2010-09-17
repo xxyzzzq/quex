@@ -5,11 +5,48 @@ Indentation Blocks
 
 With the rise of the Python programming language, the use of indentation as the
 scope delimiter has become popular. Indeed, it may be the most efficient method
-to delimit scope, i.e. with the least amount of additional characters. 
+to delimit scope, i.e. with the least amount of additional characters. Where
+classical programming languages rely on brackets, e.g. ``{`` and ``}`` 
+for opening and opening scopes indentation counting relies on more and
+lesser indented code fragments. For example the C-code fragment:
+
+.. code-block:: cpp
+
+   while( i < L ) 
+   {
+       if( check_this(i) ) 
+       {
+           do_something();
+       }
+   }
+   print("done")
+
+is equivalent to a Python-code fragment:
+        
+.. code-block:: python
+
+   while i < L:
+       if check_this(i): 
+           do_something()
+   print("done")
+
+The code in the second example, obviously looks much denser and contains a
+lesser visual noise. Since good indentation is a requirement for readability
+of code, the brackets can actually be considered to be redundant, if one is
+able to detect the indentation. Quex generated engines can.
+
+To communicate the opening and closing of indentation blocks the generated
+engine needs to send tokens on the particular event. In the classical approach
+no extra work is necessary since a detected bracket matches one to one
+with an opening or closing token. When indentation based scopes are applied
+the engine must generated things behind the scenes. For example, after the 
+function call ``do_something()``, two scopes close: the ``if`` block and the
+``while`` block. Thus, the engine needs to send to ``close`` events. Quex
+generated code takes care of this.
 
 Quex provides a convenient mechanism to handle indentations which runs in
-parallel to the pattern matching: indentation detection. The detection
-mechanism can have different 'flavors' that can be configured as a mode option
+parallel to the pattern matching: indentation detection. Its precise 
+behavior can be specified in an ``indentation`` mode option, for example:
 
 .. code-block:: cpp
 
@@ -20,9 +57,19 @@ mechanism can have different 'flavors' that can be configured as a mode option
        (\r\n)|\n  => newline;
        \\[ \t]*   => suppressor;
    >
+   ...
 
-As soon as a mode contains an indentation tag, indentation is enabled. Inside
-the tag its character can be specified. The general scheme is
+As soon as an indentation option is defined, the indentation counting 
+for a mode is enabled. Even an empty option will do, i.e.
+
+.. code-block:: cpp
+
+   mode X :
+   <indentation: >
+   ...
+
+will activate indentation detection with default settings. The default settings
+are actualy the ones mentioned in the first example.
 
 .. code-block:: cpp
 
@@ -113,7 +160,7 @@ The different specifiers are the following:
       and Makefiles, or the underline '_' as in some Basic dialects. For example,
       the backslash in
 
-      .. code-block :: Python
+      .. code-block :: python
 
          if    db.out_of_date() \
             or db.disconnected(): 

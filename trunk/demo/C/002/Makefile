@@ -36,28 +36,45 @@ LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application
-lexer:          example.o EasyLexer.o indentation_stack.o
-	$(LD) -o $@ example.o EasyLexer.o indentation_stack.o
+lexer:          exampleLexer.o EasyLexer.o
+	$(LD) -o $@ exampleLexer.o EasyLexer.o 
+         
+# A lexer where 'spaces' are considered bad
+lexer-bs:       exampleLexer_bad_space.o EasyLexer_bad_space.o
+	$(LD) -o $@ exampleLexer_bad_space.o EasyLexer_bad_space.o 
+          
+# A lexer where 'tabs' are considered bad
+lexer-bt:       exampleLexer_bad_tab.o EasyLexer_bad_tab.o
+	$(LD) -o $@ exampleLexer_bad_tab.o EasyLexer_bad_tab.o 
           
 # Object files:
-%.o: %.c 
+Easy%.o: Easy%.c
 	$(CC) $< -o $@ 
 
-example.o: ../example.c  EasyLexer.c
-	$(CC) $< -o $@ 
+example%.o: ../example.c  Easy%.c
+	$(CC) $<  -o $@ 
 
 # Macro expansions (only for debugging):
-%.E: %.cpp    
+%.E: %.c
 	$(CC) -E $< -o $@ 
 
 EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
-	quex -i simple.qx        \
-		 --language C        \
-		 --engine EasyLexer
+	quex -i simple.qx --engine EasyLexer \
+		 --language C
+
+EasyLexer_bad_space EasyLexer_bad_space.c: simple.qx $(QUEX_CORE)
+	quex -i simple_bad_space.qx --engine EasyLexer_bad_space \
+	     --language C
+
+EasyLexer_bad_tab EasyLexer_bad_tab.c: simple.qx $(QUEX_CORE)
+	quex -i simple_bad_tab.qx --engine EasyLexer_bad_tab \
+		 --language C
 
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f EasyLexer*
+	rm -f EasyLexer_bad_space*
+	rm -f EasyLexer_bad_tab*
 	rm -f *.o
 	rm -f *.bak
 	rm -f *.E

@@ -571,6 +571,19 @@ class StateMachine:
         # for the core pattern, not for pre-conditions and not for post-conditions.
         return self.__character_n
 
+
+    def get_ending_character_set(self):
+        """Returns the union of all characters that trigger to an acceptance
+           state in the given state machine. This is to detect whether the
+           newline or suppressor end with an indentation character (grid or space).
+        """
+        result = NumberSet()
+        for end_state_index in self.get_acceptance_state_index_list():
+            for state in self.states.values():
+                if state.transitions().has_target(end_state_index) == False: continue
+                result.unite_with(state.transitions().get_trigger_set_to_target(end_state_index))
+        return result
+
     def get_only_entry_to_state(self, TargetStateIndex):
         """Checks if the given state has only one entry from another state 
            and if so it returns the state index. Otherwise, it returns None.
