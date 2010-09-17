@@ -41,7 +41,7 @@ token_type {
    }
    distinct {
        text   :  const QUEX_TYPE_CHARACTER*;
-       number :  int;
+       number :  size_t;
    }
 
    inheritable;

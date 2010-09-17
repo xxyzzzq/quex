@@ -21,19 +21,6 @@ from   quex.frs_py.file_in                       import error_msg
 import sys
 import quex.core_engine.utf8 as utf8
 
-utf8_char_db = {
-    -sys.maxint:   "-oo",
-    sys.maxint:    "oo",            
-    ord(' '):      "' '",
-    ord('\n'):     "'\\n'",
-    ord('\t'):     "'\\t'",
-    ord('\r'):     "'\\r'",
-    ord('\a'):     "'\\a'",
-    ord('\b'):     "'\\b'",
-    ord('\f'):     "'\\f'",
-    ord('\v'):     "'\\v'",
-}
-
 class Interval:
     """Representing an interval with a minimum and a maximum border. Implements
     basic operations on intervals: union, intersection, and difference.
@@ -178,19 +165,10 @@ class Interval:
     def __repr__(self):
         return self.get_string(Option="")
 
-    def __utf8_char(self, Code):
-        global utf8_char_db
-        
-        if utf8_char_db.has_key(Code): return utf8_char_db[Code]
-        elif Code < ord(' '):          return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
-        else:
-            char_str = "".join(["'"] + map(chr, utf8.unicode_to_utf8(Code)) + ["'"])
-            return char_str
-
     def get_string(self, Option="", Delimiter=", "):
         assert self.end >= self.begin
         if Option == "hex":    __repr = lambda x: "%04X" % x
-        elif Option == "utf8": __repr = lambda x: self.__utf8_char(x)
+        elif Option == "utf8": __repr = lambda x: utf8.unicode_to_pretty_utf8(x)
         else:                  __repr = repr
         
         if self.begin == self.end:       return "[]"
@@ -204,12 +182,12 @@ class Interval:
         if self.begin == self.end: 
             return "''"
         elif self.end - self.begin == 1: 
-            return self.__utf8_char(self.begin) 
+            return utf8.unicode_to_pretty_utf8(self.begin) 
         else:                          
             if   self.end == -sys.maxint: end_char = "-oo"
             elif self.end == sys.maxint:  end_char = "oo"
-            else:                         end_char = self.__utf8_char(self.end-1)
-            return "[" + self.__utf8_char(self.begin) + ", " + end_char + "]"
+            else:                         end_char = utf8.unicode_to_pretty_utf8(self.end-1)
+            return "[" + utf8.unicode_to_pretty_utf8(self.begin) + ", " + end_char + "]"
 
     def gnuplot_string(self, y_coordinate):
         if self.begin == self.end: return ""

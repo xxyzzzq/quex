@@ -1,6 +1,6 @@
 import os
 import sys
-from   copy import deepcopy
+from   copy import deepcopy, copy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.frs_py.string_handling                   import blue_print
@@ -110,14 +110,11 @@ $$LC_COUNT_IN_LOOP$$
      *         (2.2) Start detection of tail of delimiter
      *
      */
-    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
-        /* (1) */
-        $$GOTO_DROP_OUT$$            
-    } 
-    else if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < Skipper$$SKIPPER_INDEX$$L ) {
-        /* (2.1) */
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < Skipper$$SKIPPER_INDEX$$L ) {
+        /* (2.1) Reload required. */
         $$GOTO_DROP_OUT$$            
     }
+    $$LC_ON_FIRST_DELIMITER$$
     /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
      *       if any later check fails.                                                              */
     $$INPUT_P_INCREMENT$$
@@ -128,7 +125,6 @@ $$LC_COUNT_IN_LOOP$$
      * (The whole discussion, of course, is superflous if the range delimiter has length 1.)  */
 $$DELIMITER_REMAINDER_TEST$$            
     {
-        $$SET_INPUT_P_BEHIND_DELIMITER$$ 
         /* NOTE: The initial state does not increment the input_p. When it detects that
          * it is located on a buffer border, it automatically triggers a reload. No 
          * need here to reload the buffer. */
@@ -182,7 +178,7 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
     delimiter_str = ""
     delimiter_comment_str = "                         Delimiter: "
     for letter in EndSequence:
-        delimiter_comment_str += "'%s', " % utf8.map_unicode_to_utf8(letter)
+        delimiter_comment_str += "%s, " % utf8.unicode_to_pretty_utf8(letter)
         delimiter_str += "0x%X, " % letter
     delimiter_length_str = "%i" % len(EndSequence)
     delimiter_comment_str = LanguageDB["$comment"](delimiter_comment_str) 
@@ -210,7 +206,6 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
                            ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
                            ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
                            ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
-                           ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB["$endif"]],
                            ["$$ENTRY$$",                          LanguageDB["$label-def"]("$entry", skipper_index)],
@@ -221,7 +216,6 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
                            ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
                            ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
-                           ["$$SET_INPUT_P_BEHIND_DELIMITER$$",   LanguageDB["$input/add"](len(EndSequence)-1)],
                            ["$$MISSING_CLOSING_DELIMITER$$",      MissingClosingDelimiterAction],
                           ])
 
@@ -389,11 +383,10 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
         msg += "            " + action_on_first_character_match
         msg += "        " + LanguageDB["$endif"]
 
-
 line_counter_in_loop = """
 #       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
         if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
-            ++(me->counter._line_number_at_end);
+            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
         }
 #       endif
 """
@@ -401,9 +394,9 @@ line_counter_in_loop = """
 line_column_counter_in_loop = """
 #       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
         if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
-            __QUEX_IF_COUNT_LINES(++(me->counter._line_number_at_end));
+            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+            __QUEX_IF_COUNT_COLUMNS_SET((size_t)0);
             __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
-            __QUEX_IF_COUNT_COLUMNS(me->counter._column_number_at_end = (size_t)0);
         }
 #       endif
 """
@@ -427,11 +420,14 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
     """
     LanguageDB = Setup.language_db
 
-    def last_newline_index(Sequence):
-        i = -1
-        while 1 + 1 == 2:
-            try:    i = Sequence.index(ord('\n'), i + 1)
-            except: return i
+
+    def get_character_n_after_last_newline(Sequence):
+        tmp = copy(Sequence)
+        tmp.reverse()
+        try:    return tmp.index(ord('\n'))
+        except: return -1
+
+    char_n_after_last_newline = get_character_n_after_last_newline(EndSequence)
 
     reference_p_def = ""
 
@@ -440,7 +436,8 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
     exit_loop       = ""
     before_reload   = ""
     after_reload    = ""
-    exit_loop       = LanguageDB["$break"]
+    exit_loop       = "            " + LanguageDB["$break"]
+    on_first_delimiter = ""
 
     reference_p_required_f = False
 
@@ -452,9 +449,7 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
         #      => there cannot appear a newline inside the comment
         #      => IN LOOP: no line number increment
         #                  no reference pointer required for column counting
-        column_n       = len(EndSequence) - (last_newline_index(EndSequence) + 1)
-     
-        end_procedure += "        __QUEX_IF_COUNT_COLUMNS_SET((size_t)%i);\n" % column_n 
+        end_procedure += "        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n" 
         end_procedure += "        __QUEX_IF_COUNT_LINES_ADD((size_t)1);\n"
 
     else:
@@ -470,16 +465,19 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
         else:
             # -- newline inside delimiter => line number must be counted
             #                                column number is fixed.
+            end_procedure = "        __QUEX_IF_COUNT_COLUMNS_SET((size_t)%i);\n" \
+                            % (char_n_after_last_newline + 1)
+
             if    EndSequence[0] == ord('\n') \
                or len(EndSequence) > 1 and EndSequence[0:2] == [ord('\r'), ord('\n')]: 
                 # If the first character in the sequence is newline, then the line counting
                 # may is prevented by the loop exit. Now, we need to count.
-               exit_loop = "__QUEX_IF_COUNT_LINES_ADD((size_t)1);\n" \
-                           + exit_loop
-            in_loop = line_counter_in_loop
-            column_n       = len(EndSequence) - (last_newline_index(EndSequence) + 1)
-            end_procedure += "        __QUEX_IF_COUNT_COLUMNS_SET((size_t)%i);\n" % column_n 
-            end_procedure += "        __QUEX_IF_COUNT_LINES_ADD((size_t)%i);\n"   % newline_number_in_delimiter
+                on_first_delimiter = "/* First delimiter char was a newline */\n" + \
+                                     "    __QUEX_IF_COUNT_LINES_ADD((size_t)1);\n" 
+                end_procedure += "        __QUEX_IF_COUNT_LINES_ADD((size_t)%i);\n" % (newline_number_in_delimiter - 1)
+            else:
+                in_loop        = line_counter_in_loop
+                end_procedure += "        __QUEX_IF_COUNT_LINES_ADD((size_t)%i);\n" % newline_number_in_delimiter
 
         
     if reference_p_required_f:
@@ -488,13 +486,18 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
                           "                                - reference_p));\n" 
         after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
+    if len(EndSequence) > 1:
+        end_procedure = LanguageDB["$input/add"](len(EndSequence)-1) + \
+                        "\n" + end_procedure
+
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
                       ["$$LC_COUNT_IN_LOOP$$",                     in_loop],
                       ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
                       ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
                       ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
-                      ["$$LC_COUNT_LOOP_EXIT$$",                exit_loop],
+                      ["$$LC_ON_FIRST_DELIMITER$$",                on_first_delimiter],
+                      ["$$LC_COUNT_LOOP_EXIT$$",                   exit_loop],
                       ]), \
            reference_p_required_f
 

@@ -182,7 +182,7 @@ def get_generator_input(Mode, IndentationSupportF):
         # are be added to the user's code.
         action = pattern_info.action()
         self_line_column_counting_f = False
-        if action.__class__.__name__ == "GeneratedCode": self_line_column_counting_f = True
+        ## if action.__class__.__name__ == "GeneratedCode": self_line_column_counting_f = True
         prepared_action, db = action_code_formatter.do(Mode, action, safe_pattern_str,
                                                        pattern_state_machine, 
                                                        SelfCountingActionF=self_line_column_counting_f)

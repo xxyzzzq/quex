@@ -71,19 +71,6 @@ class IndentationSetup:
         if not CharSet.is_empty(): return
         error_msg("Empty character set found.", FH)
 
-    def __get_ending_character_set(self, SM):
-        """Returns the union of all characters that trigger to an acceptance
-           state in the given state machine. This is to detect whether the
-           newline or suppressor end with an indentation character (grid or space).
-        """
-        assert SM.__class__ == StateMachine
-        result = NumberSet()
-        for end_state_index in SM.get_acceptance_state_index_list():
-            for state in SM.states.values():
-                if state.transitions().has_target(end_state_index) == False: continue
-                result.unite_with(state.transitions().get_trigger_set_to_target(end_state_index))
-        return result
-
     def __error_if_intersection(self, Setting, FH, Name):
         def __error_character_set_intersection(Before):
             error_msg("Character set specification '%s' intersects" % Name, FH, 
@@ -108,7 +95,7 @@ class IndentationSetup:
         if Name == "newline":
             assert Setting.__class__ == StateMachine
             assert Setting != None
-            candidate = self.__get_ending_character_set(Setting)
+            candidate = Setting.get_ending_character_set()
         else:
             assert Setting.__class__ == NumberSet
             candidate = Setting
@@ -134,7 +121,7 @@ class IndentationSetup:
         if Name != "bad" and self.newline_state_machine.get() != None:
             # The 'bad' character set can very well appear as the end of newline, since it is
             # not used for indentation counting.
-            ending_character_set = self.__get_ending_character_set(self.newline_state_machine.get())
+            ending_character_set = self.newline_state_machine.get().get_ending_character_set()
             if ending_character_set.has_intersection(candidate):            
                 __error_state_machine_intersection(self.newline_state_machine)
 

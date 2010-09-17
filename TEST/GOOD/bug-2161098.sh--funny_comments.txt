@@ -24,7 +24,9 @@ g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp ../lexer-simply.cpp -ggdb -o
 ##
 ###############################################################################
 ## An Assert-Abortion might be an intended element of the experiment.
-(1, 1)  	1 '' 
-(4, 3)  	3 '' 
-(10, 4)  	4 '' 
+(1, 1)  	1 '1' 
+(4, 3)  	3 '3' 
+(10, 3)  	WHITESPACE ' ' 
+(10, 4)  	4 '4' 
+(10, 5)  	WHITESPACE '\n' 
 (11, 1)  	<TERMINATION>
