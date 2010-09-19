@@ -51,10 +51,7 @@ multiple tokens may be sent. In the example above, after the function call
 ``do_something()``, two scopes close the ``if`` and the ``while`` block.
 Quex generated code takes care of this.
 
-Indentation based languages can follow different philosophies with respect to
-spaces, tabulators, and newline suppressors. Even the definition of the newline
-pattern may be subject to discussion (e.g. 0xA or 0xD, 0xA, or both). If 
-indentation counting is enabled, Quex generated engines send the following 
+If indentation counting is enabled, Quex generated engines send the following
 tokens:
 
  * ``INDENT`` if an indentation block opens.
@@ -66,49 +63,105 @@ tokens:
               indentation that is less than the current one, but does 
               not fit any open indentation level.
 
-Quex provides a convenient mechanism to handle indentations which runs in
-parallel to the pattern matching: indentation detection. Its precise 
-behavior can be specified in an ``indentation`` mode option, for example:
+An indentation counting framework is implemented for a mode as soon as a
+``indentation`` option is specified--even an empty option will do::
+
+  .. code-block:: cpp
+
+     mode X : 
+         <indentation: /* all default */> 
+     {
+        ...
+     }
+
+There are different philosophies around indentation based parsing with respect
+to spaces, tabulators, and newline suppressors. Even the definition of the
+newline pattern may be subject to discussion (e.g. 0xA or 0xD, 0xA, or both).
+Inside the ``indentation`` option the character of those can be specified, e.g.
 
 .. code-block:: cpp
 
-   mode X :
-   <indentation:
-       [ ]        => space 1;
-       [\t]       => grid 4;
-       (\r\n)|\n  => newline;
-       \\[ \t]*   => suppressor;
-   >
-   ...
+          <indentation:
+             [ ]        => space 1;
+             [\t]       => grid 4;
+             (\r\n)|\n  => newline;
+             \\[ \t]*   => suppressor;
+          >
 
-As soon as an indentation option is defined, the indentation counting 
-for a mode is enabled. Even an empty option will do, i.e.
+specifies that a normal space is counted as 1 ``space`` and tabulators span a
+``grid`` of width 4. Both, the Unix (``\\n``) and the DOS Version of newline
+(``\\r\\n``) are accepted as ``newline``. A newline suppressor is defined as a
+backslash. Since whitespace between the backslash and newline is hardly
+identified, possible whitespace is packed into the definition of the
+suppressor. The above setup is a *safe* setup to work on many environments
+and it helps to avoid confusion. It is indeed the default setup which is
+in place, if nothing is specified. The following section explains in detail
+the setting of the above parameters.
+
+Indentation Parameters
+======================
+
+The syntax of parameter settings in the ``indentation`` option follows
+the scheme:
 
 .. code-block:: cpp
 
-   mode X :
-   <indentation: >
-   ...
+       pattern '=>' parameter-name [argument] ';'
 
-will activate indentation detection with default settings. The default settings
-are actualy the ones mentioned in the first example.
-
-.. code-block:: cpp
-
-       pattern '=>' specifier ';'
-
-The different specifiers are the following:
+The allowed parameter names are ``space``, ``grid``, ``bad``, ``newline``, and
+``suppressor``. The first three parameter names allow only character sets as 
+pattern. For ``newline`` and ``suppressor`` any regular expression can 
+by given. The following list explains the different parameters.
 
    .. describe :: space [number|variable]
 
       This defines what characters are accepted as a 'space'. A space is
       something that always increments the column counter by a distinct number.
-      Optionally, a number can be specified that determines the increment.
+      The argument following ``space`` can either be a number or a variable
+      name is specified, it will become a member of the lexical analyzer with
+      the type 'size_t' as defined in 'stddef.h'. Then the increment value can
+      be changed at runtime by setting the member variable. 
+      
+      Multiple definitions of ``space`` are possible in order to define 
+      different space counts. Note, that in Unicode the following 
+      code points exist to represent different forms of whitespace:
 
-      If a valid identifier is specified, it will become a member of the 
-      lexical analyzer with the type 'size_t' as defined in 'stddef.h'. Then
-      the value can be changed at runtime by setting the member variable.
+          * ``0x0020``: Normal Space.
+          * ``0x00A0``: Normal space, no line break allowed after it.
+          * ``0x1680``: Ogham (Irish) Space Mark.
+          * ``0x2002``: Space of the width of the letter 'n': 'En Space'.
+                        This is half the size of an Em Space.
+          * ``0x2003``: Space of the widht of the letter 'm': 'Em Space'.
+          * ``0x2004``: 1/3 of the width of an 'm': 'Three-Per-Em Space'. 
+          * ``0x2005``: 1/4 of the width of an 'm': 'Four-Per-Em Space'.
+          * ``0x2006``: 1/6 of the width of an 'm': 'Six-Per-Em Space'. 
+          * ``0x2007``: Size of a digit (in fonts with fixed digit size). 
+          * ``0x2008``: Punctuation Space that follows a Comma.
+          * ``0x2009``: 1/5 of the width of an 'm': 'Thin Space'.
+          * ``0x200A``: Something thinner than 0x2009: 'Hair Space'.
+          * ``0x200B``: Zero-Width Space.
+          * ``0x202F``: Narrow No-Break Space, no line break allowed after it.
+          * ``0x205F``: Medium Mathematical Space.
+          * ``0x2060``: Word Joiner (similar to 0x200B)
+          * ``0x2422``: Blank Symbol (``␢``).
+          * ``0x2423``: Open Box Symbol (``␣``). 
+          * ``0x3000``: Ideographic Space, size of a Chinese, Japanese, 
+                        or Korean letter.
 
+      Provided that the editor supports it the 'm' based spaces could for 
+      example be parameterized as:
+
+      .. code-block:: cpp
+
+          <indentation:
+              [\X2003] => space 60; /* Em Space           */
+              [\X2002] => space 30; /* En Space           */
+              [\X2004] => space 20; /* Three-Per-Em Space */
+              [\X2005] => space 15; /* Four-Per-Em Space  */
+              [\X2009] => space 12; /* Thin Space         */
+              [\X2006] => space 10; /* Six-Per-Em Space   */
+          >
+      
    .. describe :: grid [number|variable]
 
       Characters associated with a 'grid' set the column number according to a
