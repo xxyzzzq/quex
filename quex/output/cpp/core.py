@@ -60,6 +60,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
                                    "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
 
     txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        Setup.count_column_number_f)        
+    txt = __switch(txt, "QUEX_OPTION_COMPUTED_GOTOS",                False)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_MODE_TRANSITIONS",        Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES",    Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_TOKEN_SENDING",           Setup.output_debug_f)
