@@ -44,7 +44,7 @@ $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
 #   ifdef     QUEX_OPTION_ASSERTS
-#      undef  QUEX_OPTION_ASSERTS
+#      undef  QUEX_OPTION_ASSERTSmacro-check.py
 #   endif
 #else
 #   ifndef    QUEX_OPTION_ASSERTS
@@ -53,7 +53,7 @@ $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 
 #ifndef  QUEX_OPTION_COMPUTED_GOTOS
-/*#   define QUEX_OPTION_COMPUTED_GOTOS*/
+$$SWITCH$$ QUEX_OPTION_COMPUTED_GOTOS
 #endif
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N         ($$MAX_MODE_CLASS_N$$)

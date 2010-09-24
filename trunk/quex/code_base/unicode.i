@@ -1,9 +1,11 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  * 
- * ACKNOWLEDGEMENT: The following functions have been derived from segments of the
- *                  utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.    
+ * ACKNOWLEDGEMENT: Parts of the following functions have been derived from 
+ *                  segments of the utf8 conversion library of Alexey 
+ *                  Vatchenko <av@bsdua.org>.    
  *
- * (C) 2005-2009 Frank-Rene Schaefer                                                */
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARANTY                                                      */
 
 #ifndef __QUEX_INCLUDE_GUARD__UNICODE_I
 #define __QUEX_INCLUDE_GUARD__UNICODE_I
@@ -25,15 +27,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          zero after the last byte of the representation.
          *
          * RETURNS: Pointer to the fist position after the last character.      */
-        const uint8_t NEXT	= 0x80;
-        const uint8_t LEN2	= 0xc0;
-        const uint8_t LEN3	= 0xe0;
-        const uint8_t LEN4	= 0xf0;
-        const uint8_t LEN5	= 0xf8;
-        const uint8_t LEN6	= 0xfc;
-        /**/
         uint8_t* p = utf8_result;
-        size_t   n = 0;
         /**/
         __quex_assert(UCS_CharacterCode >= (QUEX_TYPE_CHARACTER)0);
 
@@ -44,19 +38,19 @@ QUEX_NAMESPACE_MAIN_OPEN
             *p = (uint8_t)UCS_CharacterCode;
             return p + 1;
         } else if (UCS_CharacterCode <= 0x000007ff) {
-            p[0] = (uint8_t)(0xC0 | (UnicodeValue >> 6)); 
-            p[1] = (uint8_t)(0x80 | (UnicodeValue & 0x3f));
+            p[0] = (uint8_t)(0xC0 | (UCS_CharacterCode >> 6)); 
+            p[1] = (uint8_t)(0x80 | (UCS_CharacterCode & 0x3f));
             return p + 2;
         } else if (UCS_CharacterCode <= 0x0000ffff) {
-            p[0] = (uint8_t)(0xE0 | UnicodeValue           >> 12);
-            p[1] = (uint8_t)(0x80 | (UnicodeValue & 0xFFF) >> 6);
-            p[2] = (uint8_t)(0x80 | UnicodeValue & 0x3F);
+            p[0] = (uint8_t)(0xE0 | UCS_CharacterCode           >> 12);
+            p[1] = (uint8_t)(0x80 | (UCS_CharacterCode & 0xFFF) >> 6);
+            p[2] = (uint8_t)(0x80 | (UCS_CharacterCode & 0x3F));
             return p + 3;
         } else if (UCS_CharacterCode <= 0x001fffff) {
-            p[0] = (uint8_t)(0xF0 | UnicodeValue >> 18);
-            p[1] = (uint8_t)(0x80 | (UnicodeValue & 0x3FFFF) >> 12);
-            p[2] = (uint8_t)(0x80 | (UnicodeValue & 0xFFF)   >> 6);
-            p[3] = (uint8_t)(0x80 | UnicodeValue & 0x3F);
+            p[0] = (uint8_t)(0xF0 | UCS_CharacterCode >> 18);
+            p[1] = (uint8_t)(0x80 | (UCS_CharacterCode & 0x3FFFF) >> 12);
+            p[2] = (uint8_t)(0x80 | (UCS_CharacterCode & 0xFFF)   >> 6);
+            p[3] = (uint8_t)(0x80 | (UCS_CharacterCode & 0x3F));
             return p + 4;
         } else {
             QUEX_ERROR_EXIT("Unicode Character out of range (> 0x1FFFFF).");
