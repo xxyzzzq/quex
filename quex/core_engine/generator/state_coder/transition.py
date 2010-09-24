@@ -2,6 +2,8 @@ from   quex.core_engine.state_machine.core import State
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
 
+from math import log
+
 def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     LanguageDB = Setup.language_db
 
@@ -23,15 +25,30 @@ def __indentation_count_action(Info, SMD):
     # Spaces simply increment
     if Info.type == "space": 
         if Info.number != -1: add_str = "%i" % Info.number
-        else:                 add_str = Infor.variable_name
+        else:                 add_str = "me->" + Info.variable_name
         return "me->counter._indentation += %s;" % add_str
     
     # Grids lie on a grid:
     elif Info.type == "grid":
-        if Info.number != -1: add_str = "%i" % Info.number
-        else:                 add_str = Infor.variable_name
+        if Info.number != -1: 
+            log2 = log(Info.number)/log(2)
+            if log2.is_integer():
+                # For k = a potentials of 2, the expression 'x - x % k' can be written as: x & ~log2(mask) !
+                # Thus: x = x - x % k + k = x & mask + k
+                mask = (1 << int(log2)) - 1
+                return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
+                       "me->counter._indentation += %i;\n" % Info.number
+            else:
+                add_str = "%i" % Info.number
+        else:   
+            add_str = "me->" + Info.variable_name
+
         return "me->counter._indentation = (me->counter._indentation - (me->counter._indentation %% %s)) + %s;" \
                % (add_str, add_str)
+
+    elif Info.type == "bad":
+        assert Info.number != -1
+        return "goto INDENTATION_COUNTER_%i_BAD_CHARACTER;\n" % Info.number
 
     else:
         assert False, "Unreachable code has been reached."

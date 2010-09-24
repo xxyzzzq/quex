@@ -1,4 +1,4 @@
-<history date="Sat Sep 18 22:19:39 2010" element-n="989">
+<history date="Fri Sep 24 12:38:50 2010" element-n="994">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1761,5 +1761,12 @@
     </day>
     <day year="2010" month="09" day="15">
         <crc-error time="07:29:54" application="test-indentation-counter.py" choice="Uniform" database-crc="-2100611570" real-crc="440903486"/>
+    </day>
+    <day year="2010" month="09" day="24">
+        <crc-error time="10:32:00" application="test-paths.py" choice="Multiple" database-crc="-1165839455" real-crc="-1765020420"/>
+        <crc-error time="10:32:00" application="test-paths.py" choice="NonUniform" database-crc="1153923448" real-crc="-1887172892"/>
+        <crc-error time="10:32:00" application="test-paths.py" choice="NonUniform2" database-crc="1983809781" real-crc="1567985476"/>
+        <crc-error time="10:32:00" application="test-templates.py" choice="1" database-crc="-1243455079" real-crc="806467834"/>
+        <crc-error time="10:32:00" application="test-templates.py" choice="2" database-crc="1234954186" real-crc="-787029729"/>
     </day>
 </history>

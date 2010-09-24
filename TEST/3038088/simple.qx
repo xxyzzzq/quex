@@ -1,6 +1,5 @@
 token {
     UNINITIALIZED     = 111;
-    INDENTATION_ERROR = 113;
     A;
     B;
     C = 115;

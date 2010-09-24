@@ -34,7 +34,7 @@
 #ifdef      QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer.i>
 #endif
-#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#ifdef      QUEX_OPTION_INDENTATION_TRIGGER
 #   include <quex/code_base/analyzer/member/on_indentation.i>
 #endif
 

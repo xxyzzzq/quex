@@ -18,8 +18,9 @@ main(int argc, char** argv)
     const size_t BufferSize = 1024;
     char         buffer[1024];
 #   endif
+    const char*  FileName = (argc == 1) ? "example.txt" : argv[1];
 
-    QUEX_NAME(construct_file_name)(&qlex, "example.txt", ENCODING_NAME, false);
+    QUEX_NAME(construct_file_name)(&qlex, FileName, ENCODING_NAME, false);
     /* Alternatives:
      * QUEX_NAME(construct_memory)(&qlex, MemoryBegin, MemorySize,
      *                             CharacterEncodingName (default 0x0),

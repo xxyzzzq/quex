@@ -395,12 +395,12 @@ def __state_entries(txt, PathWalker, SMD):
                 txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
 
             if PathWalker.uniform_state_entries_f() and PathN != 1:
-                txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
+                txt.append("#ifdef QUEX_OPTION_COMPUTED_GOTOS\n")
                 end_state_index = path.sequence()[-1][0]
                 end_state_label = "&&%s" % transition.get_label(end_state_index, None, None, SMD)
                 txt.append("    " + LanguageDB["$assignment"]("path_end_state", 
                                                               end_state_label).replace("\n", "\n    ") + "\n")
-                txt.append("#endif  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+                txt.append("#endif  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
             txt.append("   ")
             txt.append(LanguageDB["$assignment"]("path_iterator", 
                                                  "path_%i + %i" % (path.index(), i)).replace("\n", "\n    "))
@@ -496,7 +496,7 @@ def __state_router(PathWalker, SMD):
     PathWalkerID = PathWalker.core().state_index
 
     # (1) 'Pure C Implementation' State Routing
-    txt = [ "#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n" ]
+    txt = [ "#ifndef QUEX_OPTION_COMPUTED_GOTOS\n" ]
     #    switch( path_iterator - path_walker_base ) {
     #         case 0:  STATE_341;
     #         case 1:  STATE_345;
@@ -505,9 +505,9 @@ def __state_router(PathWalker, SMD):
     __switch_case_state_router(txt, SMD, PathWalker)
 
     # (2) 'Computed Goto Implementation'
-    txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+    txt.append("#else  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
     txt.append("        goto *path_walker_%i_state[path_iterator - path_walker_%i_base];\n" % (PathWalkerID, PathWalkerID))
-    txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+    txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
 
     return "".join(txt)
 
@@ -538,13 +538,13 @@ def __end_state_router(txt, PathWalker, SMD):
         txt.append("        ")
         txt.append(LanguageDB["$input/decrement"] + "\n")
 
-        txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
+        txt.append("#ifdef QUEX_OPTION_COMPUTED_GOTOS\n")
         txt.append("        goto *path_end_state;\n")
-        txt.append("#else  /* not __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+        txt.append("#else  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
 
         state_index_list = map(lambda path: path.end_state_index(), PathList)
         __switch_case_state_router(txt, SMD, PathWalker, state_index_list)
-        txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+        txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
     txt.append("    ")
 
 def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):

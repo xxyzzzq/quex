@@ -36,7 +36,7 @@
 #   undef  self_column_number_at_begin 
 #   undef  self_column_number_at_end   
 #   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   ifdef QUEX_OPTION_INDENTATION_TRIGGER
 #   undef self_indentation                    
 #   undef self_disable_next_indentation_event 
 #   endif
@@ -67,7 +67,7 @@
 #define self_enter_mode(ModeP) \
         do {                                             \
            QUEX_NAME(enter_mode)(&self, (ModeP));        \
-           __self_result_token_id = self_token_p()->_id; \
+           __self_result_token_id = self_write_token_p()->_id; \
         } while(0)
 #endif
 
@@ -86,9 +86,8 @@
 #   define  self_column_number_at_end()   (self.counter.base._column_number_at_end)
 #   define  self_column_number()          (self_column_number_at_begin())
 #endif
-#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   define  self_indentation()                    (self.counter._indentation)
-#   define  self_disable_next_indentation_event() (self.counter._indentation_event_enabled_f = false)
+#ifdef      QUEX_OPTION_INDENTATION_TRIGGER
+#   define  self_indentation()            (self.counter._indentation)
 #endif
 
 /* Accumulator ______________________________________________________________*/

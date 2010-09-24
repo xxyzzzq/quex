@@ -30,6 +30,8 @@ class IndentationSetup:
         self.newline_state_machine            = LocalizedParameter("newline",    None)
         self.newline_suppressor_state_machine = LocalizedParameter("suppressor", None)
 
+        self.__containing_mode_name = ""
+
     def seal(self):
         if len(self.space_db) == 0 and len(self.grid_db) == 0:
             default_space = ord(' ')
@@ -52,6 +54,12 @@ class IndentationSetup:
             mid_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), AcceptanceF=False)
             sm.add_transition(mid_idx, NumberSet(ord('\n')), end_idx, AcceptanceF=False)
             self.specify_newline("(\\r\\n)|(\\n)", sm, self.fh)
+
+    def set_containing_mode_name(self, ModeName):
+        self.__containing_mode_name = ModeName
+
+    def containing_mode_name(self):
+        return self.__containing_mode_name
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
         """If Key != None, than 'Before' is a database."""

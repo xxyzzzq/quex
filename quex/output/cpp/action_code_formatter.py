@@ -52,16 +52,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         debug_code = txt
         
     # (*) THE user defined action to be performed in case of a match
-    require_terminating_zero_preparation_f = False
-    for code_info in CodeFragmentList:
-        result = code_info.get_code()
-        if type(result) != tuple: 
-            user_code += result
-        else:
-            user_code += result[0]
-            variable_db.update(result[1])
-        if code_info.require_terminating_zero_f():
-            require_terminating_zero_preparation_f = True
+    user_code, require_terminating_zero_preparation_f = get_code(CodeFragmentList, variable_db)
 
     txt  = "{\n"
     txt += on_every_match_code
@@ -73,6 +64,21 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     txt += "\n}"
 
     return CodeFragment(txt, require_terminating_zero_preparation_f), variable_db
+
+def get_code(CodeFragmentList, variable_db={}):
+    code_str = ""
+    require_terminating_zero_preparation_f = False
+    for code_info in CodeFragmentList:
+        result = code_info.get_code()
+        if type(result) != tuple: 
+            code_str += result
+        else:
+            code_str += result[0]
+            variable_db.update(result[1])
+        if code_info.require_terminating_zero_f():
+            require_terminating_zero_preparation_f = True
+    return code_str, require_terminating_zero_preparation_f
+
 
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 

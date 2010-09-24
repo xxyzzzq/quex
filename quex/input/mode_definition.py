@@ -192,6 +192,9 @@ def parse_mode_option(fh, new_mode):
 
         new_mode.add_match(value.newline_state_machine.pattern_str,
                            action, sm, Comment="indentation newline")
+
+        # Announce the mode to which the setup belongs
+        value.set_containing_mode_name(new_mode.name)
     else:
         value = read_option_value(fh)
 
@@ -304,34 +307,67 @@ def check_for_event_specification(word, fh, new_mode):
               "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
               "use double quotes to bracket patterns that start with 'on_'."
 
-    __check_for_deprecated_handler(word)
+    __general_validate(fh, new_mode, word, pos)
     verify_word_in_list(word, lexer_mode.event_handler_db.keys(), comment, fh)
+    __validate_required_token_policy_queue(word, fh, pos)
 
     continue_f = True
     if word == "on_end_of_stream":
-        # NOTE: The 'ContinueF' is turned of in this case, because when a termination
-        #       token is sent, no other token shall follow. Thus, we enforce the
-        #       return from the analyzer. Do not allow CONTINUE.
+        # When a termination token is sent, no other token shall follow. 
+        # => Enforce return from the analyzer! Do not allow CONTINUE!
         continue_f = False
-
-    if     word in ["on_entry", "on_exit", "on_indent", "on_dedent", "on_nodent"] \
-       and Setup.token_policy not in ["queue"] \
-       and not Setup.warning_disabled_no_token_queue_f:
-        fh.seek(pos)
-        error_msg("Using '%s' event handler, while the token queue is disabled.\n" % word + \
-                  "Use '--token-policy queue', so then tokens can be sent safer\n" + \
-                  "from inside this event handler. Disable this warning by command\n"
-                  "line option '--no-warning-on-no-token-queue'.", fh, DontExitF=True) 
 
     new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
                                                 ContinueF=continue_f)
 
     return True
 
-def __check_for_deprecated_handler(Name):
+def __general_validate(fh, Mode, Name, pos):
     if Name == "on_indentation":
         fh.seek(pos)
         error_msg("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
                   "Please, use 'on_indent' for the event of an opening indentation, 'on_dedent'\n"
                   "for closing indentation, and 'on_nodent' for no change in indentation.", fh) 
 
+
+    def error_dedent_and_ndedent(code_fragment, A, B):
+        filename = "(unknown)"
+        line_n   = "0"
+        if hasattr(code_fragment, "filename"): filename = code_fragment.filename
+        if hasattr(code_fragment, "line_n"): line_n = code_fragment.line_n
+        error_msg("Indentation event handler '%s' cannot be defined, because\n" % A,
+                  fh, DontExitF=True, WarningF=False)
+        error_msg("the alternative '%s' has already been defined." % B,
+                  filename, line_n)
+
+    if Name == "on_dedent" and Mode.events.has_key("on_n_dedent"):
+        fh.seek(pos)
+        code_fragment = Mode.events["on_n_dedent"]
+        if code_fragment.get_code() != "":
+            error_dedent_and_ndedent(code_fragment, "on_dedent", "on_n_dedent")
+                      
+    if Name == "on_n_dedent" and Mode.events.has_key("on_dedent"):
+        fh.seek(pos)
+        code_fragment = Mode.events["on_dedent"]
+        if code_fragment.get_code() != "":
+            error_dedent_and_ndedent(code_fragment, "on_n_dedent", "on_dedent")
+                      
+
+def __validate_required_token_policy_queue(Name, fh, pos):
+    """Some handlers are better only used with token policy 'queue'."""
+
+    if Name not in ["on_entry", "on_exit", 
+                    "on_indent", "on_n_dedent", "on_dedent", "on_nodent", 
+                    "on_indentation_bad", "on_indentation_error", 
+                    "on_indentation"]: 
+        return
+    if Setup.token_policy == "queue":
+        return
+    if Setup.warning_disabled_no_token_queue_f:
+        return
+
+    fh.seek(pos)
+    error_msg("Using '%s' event handler, while the token queue is disabled.\n" % Name + \
+              "Use '--token-policy queue', so then tokens can be sent safer\n" + \
+              "from inside this event handler. Disable this warning by command\n"
+              "line option '--no-warning-on-no-token-queue'.", fh, DontExitF=True) 

@@ -233,7 +233,7 @@ public:
     size_t      column_number_at_begin() const { return counter._column_number_at_begin; }
     size_t      column_number_at_end() const   { return counter._column_number_at_end; }
 #   endif
-#   ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   ifdef   QUEX_OPTION_INDENTATION_TRIGGER
     size_t      indentation()                    { return counter._indentation; }
 #   endif
 
@@ -340,7 +340,7 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
      QUEX_NAME(ONE_AND_ONLY).id   = QUEX_NAME(ModeID_ONE_AND_ONLY);
      QUEX_NAME(ONE_AND_ONLY).name = "ONE_AND_ONLY";
      QUEX_NAME(ONE_AND_ONLY).analyzer_function = QUEX_NAME(ONE_AND_ONLY_analyzer_function);
-#    if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+#    if      defined(QUEX_OPTION_INDENTATION_TRIGGER)         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
      QUEX_NAME(ONE_AND_ONLY).on_indentation = QUEX_NAME(Mode_on_indentation_null_function);
 #    endif
      QUEX_NAME(ONE_AND_ONLY).on_entry       = QUEX_NAME(Mode_on_entry_exit_null_function);
@@ -494,44 +494,17 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 
     }
 
-#if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)     && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+#if defined(QUEX_OPTION_INDENTATION_TRIGGER) 
     void
     QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                             QUEX_TYPE_INDENTATION  Indentation, 
                                             QUEX_TYPE_CHARACTER*   Begin) {
-#       define Lexeme    Begin
-#       define LexemeEnd (me->buffer._input_p)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+       return __self_result_token_id;
+#   else
+       return;
+#   endif
 
-        QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
-        QUEX_TYPE_INDENTATION         i     = 0;
-
-        __quex_assert((long)Indentation >= 0);
-
-        if( Indentation > *(stack->back) ) {
-            ++(stack->back);
-            if( stack->back == me->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
-            *(stack->back) = Indentation;
-
-            __QUEX_RETURN;
-        }
-        else if( Indentation == *(stack->back) ) {
-
-        }
-        else  {
-            while( Indentation < *(stack->back) ) {
-                ++i;
-                --(stack->back);
-            }
-
-#           define ClosedN (i)
-
-#           undef ClosedN
-
-            if( Indentation != *(stack->back) ) { /* 'Landing' must happen on indentation border. */
-                self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
-            }
-        }
-        __QUEX_RETURN;
     }
 #endif
 
@@ -561,21 +534,23 @@ const char*
 QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
-   static const char  uninitialized_string[]       = "<UNINITIALIZED>";
-   static const char  termination_string[]         = "<TERMINATION>";
-#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-   static const char  indentation_error_string[]   = "<INDENTATION_ERROR>";
+   static const char  uninitialized_string[] = "<UNINITIALIZED>";
+   static const char  termination_string[]   = "<TERMINATION>";
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   static const char  indent_string[]        = "<INDENT>";
+   static const char  dedent_string[]        = "<DEDENT>";
+   static const char  nodent_string[]        = "<NODENT>";
 #  endif
-   static const char  token_id_str_BRACKET_CLOSE[]     = "BRACKET_CLOSE";
-   static const char  token_id_str_BRACKET_OPEN[]      = "BRACKET_OPEN";
-   static const char  token_id_str_EXPECT[]            = "EXPECT";
-   static const char  token_id_str_IDENTIFIER[]        = "IDENTIFIER";
-   static const char  token_id_str_NUMBER[]            = "NUMBER";
-   static const char  token_id_str_SEMICOLON[]         = "SEMICOLON";
-   static const char  token_id_str_SEND[]              = "SEND";
-   static const char  token_id_str_STRUCT[]            = "STRUCT";
-   static const char  token_id_str_TYPE_DOUBLE[]       = "TYPE_DOUBLE";
-   static const char  token_id_str_TYPE_INT[]          = "TYPE_INT";
+   static const char  token_id_str_BRACKET_CLOSE[] = "BRACKET_CLOSE";
+   static const char  token_id_str_BRACKET_OPEN[]  = "BRACKET_OPEN";
+   static const char  token_id_str_EXPECT[]        = "EXPECT";
+   static const char  token_id_str_IDENTIFIER[]    = "IDENTIFIER";
+   static const char  token_id_str_NUMBER[]        = "NUMBER";
+   static const char  token_id_str_SEMICOLON[]     = "SEMICOLON";
+   static const char  token_id_str_SEND[]          = "SEND";
+   static const char  token_id_str_STRUCT[]        = "STRUCT";
+   static const char  token_id_str_TYPE_DOUBLE[]   = "TYPE_DOUBLE";
+   static const char  token_id_str_TYPE_INT[]      = "TYPE_INT";
        
 
    /* NOTE: This implementation works only for token id types that are 
@@ -588,19 +563,21 @@ QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
    }
    case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
    case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
-#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-   case __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR: return indentation_error_string;
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
+   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
+   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
 #  endif
-   case QUEX_TKN_BRACKET_CLOSE:     return token_id_str_BRACKET_CLOSE;
-   case QUEX_TKN_BRACKET_OPEN:      return token_id_str_BRACKET_OPEN;
-   case QUEX_TKN_EXPECT:            return token_id_str_EXPECT;
-   case QUEX_TKN_IDENTIFIER:        return token_id_str_IDENTIFIER;
-   case QUEX_TKN_NUMBER:            return token_id_str_NUMBER;
-   case QUEX_TKN_SEMICOLON:         return token_id_str_SEMICOLON;
-   case QUEX_TKN_SEND:              return token_id_str_SEND;
-   case QUEX_TKN_STRUCT:            return token_id_str_STRUCT;
-   case QUEX_TKN_TYPE_DOUBLE:       return token_id_str_TYPE_DOUBLE;
-   case QUEX_TKN_TYPE_INT:          return token_id_str_TYPE_INT;
+   case QUEX_TKN_BRACKET_CLOSE: return token_id_str_BRACKET_CLOSE;
+   case QUEX_TKN_BRACKET_OPEN:  return token_id_str_BRACKET_OPEN;
+   case QUEX_TKN_EXPECT:        return token_id_str_EXPECT;
+   case QUEX_TKN_IDENTIFIER:    return token_id_str_IDENTIFIER;
+   case QUEX_TKN_NUMBER:        return token_id_str_NUMBER;
+   case QUEX_TKN_SEMICOLON:     return token_id_str_SEMICOLON;
+   case QUEX_TKN_SEND:          return token_id_str_SEND;
+   case QUEX_TKN_STRUCT:        return token_id_str_STRUCT;
+   case QUEX_TKN_TYPE_DOUBLE:   return token_id_str_TYPE_DOUBLE;
+   case QUEX_TKN_TYPE_INT:      return token_id_str_TYPE_INT;
 
    }
 }
@@ -2331,7 +2308,7 @@ __TERMINAL_ROUTER: {
 QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
 
         }
-#ifdef  __QUEX_OPTION_USE_COMPUTED_GOTOS
+#ifdef  QUEX_OPTION_COMPUTED_GOTOS
         goto *last_acceptance;
 #else
         /* Route according variable 'last_acceptance'. */
@@ -2350,7 +2327,7 @@ QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
 
             default: goto TERMINAL_FAILURE;; /* nothing matched */
         }
-#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
     }
 
   /* (*) Terminal states _______________________________________________________*/
@@ -2601,7 +2578,7 @@ TERMINAL_25_DIRECT:
         __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
         #   endif
         
-        self_token_p()->number = atoi((char*)Lexeme);
+        self_write_token_p()->number = atoi((char*)Lexeme);
         self_send(QUEX_TKN_NUMBER);
         QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
         

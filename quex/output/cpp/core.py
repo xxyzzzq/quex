@@ -76,7 +76,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
-    txt = __switch(txt, "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT", IndentationSupportF)     
+    txt = __switch(txt, "QUEX_OPTION_INDENTATION_TRIGGER", IndentationSupportF)     
     txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
@@ -248,7 +248,7 @@ quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);
      QUEX_NAME($$MN$$).name = "$$MN$$";
      QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
-#    if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT) \
+#    if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \
         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
      QUEX_NAME($$MN$$).on_indentation = $on_indentation;
 #    endif
@@ -319,10 +319,10 @@ def __get_mode_function_declaration(Modes, FriendF=False):
                                 "QUEX_TYPE_ANALYZER*")
 
         # If one of the following events is specified, then we need an 'on_indentation' handler
-        for event_name in ["on_indentation", "on_indent", "on_dedent", "on_nodent"]:
+        for event_name in ["on_indentation"]:
             if not mode.has_code_fragment_list(event_name): continue
             on_indentation_txt = __mode_functions(prolog, "void", ["on_indentation"], 
-                                 "QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, QUEX_TYPE_CHARACTER*")
+                                 "QUEX_TYPE_ANALYZER*, QUEX_TYPE_INDENTATION, QUEX_TYPE_CHARACTER*")
 
         for event_name in ["on_exit", "on_entry"]:
             if not mode.has_code_fragment_list(event_name): continue

@@ -142,7 +142,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
         __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
 #       endif
-#       ifdef  __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#       ifdef  QUEX_OPTION_INDENTATION_TRIGGER
         __QUEX_STD_printf("   _indentation = %i;\n", (int)me->_indentation);
         __QUEX_STD_printf("   _indentation_stack = {");
         for(iterator = me->_indentation_stack.front; iterator != me->_indentation_stack.back + 1; ++iterator) {
@@ -152,36 +152,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
     }
 
-#if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#if defined(QUEX_OPTION_INDENTATION_TRIGGER)
 	QUEX_INLINE void
 	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me)
 	{
         *(me->front)   = 0;          /* first indentation at column = 0 */
         me->back       = me->front;
         me->memory_end = me->front + QUEX_SETTING_INDENTATION_STACK_SIZE;
-	}
-
-	QUEX_INLINE void
-	QUEX_NAME(IndentationStack_flush)(QUEX_TYPE_ANALYZER* me)
-	{
-#       define self  (*me)
-        const QUEX_TYPE_INDENTATION*  Front    = me->counter._indentation_stack.front;
-        QUEX_TYPE_INDENTATION*        iterator = me->counter._indentation_stack.back;
-        __QUEX_IF_TOKEN_REPETITION_SUPPORT(QUEX_TYPE_INDENTATION  i = 0;)
-
-        while( iterator != Front ) {
-            __QUEX_IF_TOKEN_REPETITION_SUPPORT(++i);
-            __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(self_send(__QUEX_SETTING_TOKEN_ID_DEDENT));
-            --iterator;
-        }
-        __QUEX_IF_TOKEN_REPETITION_SUPPORT(self_send_n(i, __QUEX_SETTING_TOKEN_ID_DEDENT));     
-        me->counter._indentation_stack.back = iterator;
-
-        /* Check if the world is still in order. */
-        __quex_assert(*(me->counter._indentation_stack.front) == (QUEX_TYPE_INDENTATION)0);
-        __quex_assert(   me->counter._indentation_stack.memory_end 
-                      == me->counter._indentation_stack.front + QUEX_SETTING_INDENTATION_STACK_SIZE);
-#       undef self 
 	}
 #endif
 

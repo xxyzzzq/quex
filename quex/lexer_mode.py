@@ -265,6 +265,16 @@ class Mode:
 
         return txt
 
+    def default_indentation_handler_sufficient(Mode):
+        """If no user defined indentation handler is defined, then the 
+           default token handler is sufficient.
+        """
+        return     not Mode.has_code_fragment_list("on_indentation_error") \
+               and not Mode.has_code_fragment_list("on_indentation_bad")   \
+               and not Mode.has_code_fragment_list("on_indent")            \
+               and not Mode.has_code_fragment_list("on_dedent")            \
+               and not Mode.has_code_fragment_list("on_nodent") 
+           
     def __determine_base_mode_sequence(self, ModeDescr, InheritancePath):
         """Determine the sequence of base modes. The type of sequencing determines
            also the pattern precedence. The 'deep first' scheme is chosen here. For
@@ -514,15 +524,18 @@ mode_option_info_db = {
 # event handler list: 
 #-----------------------------------------------------------------------------------------
 event_handler_db = {
-        "on_entry":         "Code executed on entry of a mode.",
-        "on_exit":          "Code executed on exit of a mode.", 
-        "on_indentation":   "Code detecting indentation opening, closing, and error.",
-        "on_indent":        "Code executed on the event of opening indentation.",
-        "on_nodent":        "Code executed on the event of same indentation.",
-        "on_dedent":        "Code executed on the event of closing indentation'.",
-        "on_match":         "Code executed on each match.",
-        "on_end_of_stream": "Code executed on end of file/stream.",
-        "on_failure":       "Code executed in case that no pattern matches.",
+        "on_entry":     "On entry of a mode.",
+        "on_exit":      "On exit of a mode.", 
+        "on_indent":              "On opening indentation.",
+        "on_nodent":              "On same indentation.",
+        "on_dedent":              "On closing indentation'.",
+        "on_n_dedent":            "On closing indentation'.",
+        "on_indentation_error":   "Closing indentation on non-border.",
+        "on_indentation_bad":     "On bad character in indentation.",
+        "on_indentation":         "General Indentation Handler.",
+        "on_match":          "On each match.",
+        "on_failure":        "In case that no pattern matches.",
+        "on_end_of_stream":  "On end of file/stream.",
         }
 
 class LocalizedParameter:

@@ -2,8 +2,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
-#define QUOTE_THIS(NAME) #NAME
+#define __QUOTE_THIS(NAME) # NAME
+#define QUOTE_THIS(NAME)   __QUOTE_THIS(NAME)
 
 #include "main.h"
 

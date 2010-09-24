@@ -226,7 +226,7 @@ public:
     size_t      column_number_at_begin() const { return counter._column_number_at_begin; }
     size_t      column_number_at_end() const   { return counter._column_number_at_end; }
 #   endif
-#   ifdef   __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   ifdef   QUEX_OPTION_INDENTATION_TRIGGER
     size_t      indentation()                    { return counter._indentation; }
 #   endif
 

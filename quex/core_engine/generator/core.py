@@ -213,7 +213,7 @@ def delete_unused_labels(Code):
 
     # (2) Replace labels that only appear in computed gotos
     fill_replacement_db(computed_goto_label_list, 
-                        lambda x: "#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n" + x + "#endif\n")
+                        lambda x: "#ifdef QUEX_OPTION_COMPUTED_GOTOS\n" + x + "#endif\n")
     
     for first_letter, replacement_list in replacement_db.items():
         code = blue_print(code, replacement_list, first_letter)
