@@ -67,7 +67,7 @@
 #endif
 
 /* Support of computed goto */
-#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
+#ifdef QUEX_OPTION_COMPUTED_GOTOS
     typedef  void*     QUEX_TYPE_GOTO_LABEL;
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE        (&&TERMINAL_FAILURE)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE           (QUEX_TYPE_GOTO_LABEL)(0x0)

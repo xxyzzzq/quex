@@ -101,7 +101,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #ifdef      __QUEX_OPTION_COUNTER
 #   include <quex/code_base/analyzer/Counter.i>
 #endif
-#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#ifdef      QUEX_OPTION_INDENTATION_TRIGGER
 #   include <quex/code_base/analyzer/member/on_indentation.i>
 #endif
 

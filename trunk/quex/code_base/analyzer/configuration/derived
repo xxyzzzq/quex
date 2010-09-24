@@ -1,3 +1,6 @@
+#ifndef   QUEX_OPTION_COMPUTED_GOTOS_DISABLED
+#   undef QUEX_OPTION_COMPUTED_GOTOS
+#endif
 #ifdef    __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
 #endif
@@ -122,7 +125,7 @@
 
 #if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
     || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
-    || defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)       
+    || defined(QUEX_OPTION_INDENTATION_TRIGGER)       
 #     define  __QUEX_OPTION_COUNTER
 #else
 #     if defined(__QUEX_OPTION_COUNTER)  
@@ -146,23 +149,13 @@
 #   define     __QUEX_IF_COUNT_COLUMNS_SET(X)         /* empty */
 #   define     __QUEX_IF_COUNT_COLUMNS_ADD(X)         /* empty */
 #endif
-#if defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#if defined(QUEX_OPTION_INDENTATION_TRIGGER)
 #   ifndef    QUEX_OPTION_INDENTATION_DEFAULT_HANDLER_DISABLED
 #      define QUEX_OPTION_INDENTATION_DEFAULT_HANDLER
 #   endif
 #   define    __QUEX_IF_COUNT_INDENTATION(EXPRESSION) EXPRESSION
 #else
 #   define    __QUEX_IF_COUNT_INDENTATION(EXPRESSION) /* empty */
-#endif
-
-/* Decide about computed gotos */
-#if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
-#   if    defined(__GNUC__) \
-       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
-#       if ! defined(__QUEX_OPTION_USE_COMPUTED_GOTOS)
-#           define __QUEX_OPTION_USE_COMPUTED_GOTOS
-#       endif
-#   endif
 #endif
 
 /* Special Case MinGW: At the time of this writing (2009y09m23d) it does 

@@ -653,7 +653,7 @@ __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT	/home/fschaef/prj/quex/trunk/quex/code_ba
 __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	184;"	d	file:
 __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	215;"	d	file:
 __QUEX_OPTION_SYSTEM_ENDIAN	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	10;"	d	file:
-__QUEX_OPTION_USE_COMPUTED_GOTOS	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	140;"	d	file:
+QUEX_OPTION_COMPUTED_GOTOS	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	140;"	d	file:
 __QUEX_PRINT_SOURCE_POSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	209;"	d	file:
 __QUEX_SETTING_DERIVED_CLASS_NAME	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	731;"	d	file:
 __QUEX_SETTING_DERIVED_CLASS_NAME	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	760;"	d	file:

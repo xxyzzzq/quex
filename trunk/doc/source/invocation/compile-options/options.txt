@@ -13,8 +13,14 @@ the suffix enables something, the option with the suffix disables the 'something
 
 .. cmacro:: QUEX_OPTION_COLUMN_NUMBER_COUNTING
 
-   Enables/disables column number counting. Respectively, ``QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED`` 
+   Enables column number counting. Respectively, 
+   ``QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED`` 
    disables it.
+
+.. cmacro:: QUEX_OPTION_COMPUTED_GOTOS
+
+   Enables/disables the usage of computed gotos. Use this option only if your
+   compiler supports it. For example, GNU's gcc does support it from version 2.3.
 
 .. cmacro:: QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 

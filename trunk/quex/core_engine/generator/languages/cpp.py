@@ -60,16 +60,16 @@ def __local_variable_definitions(VariableDB):
             value = " = " + info[1]
 
         if "ComputedGoto" in info:
-            txt.append("#ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
+            txt.append("#ifdef QUEX_OPTION_COMPUTED_GOTOS\n")
         if "CountColumns" in info:
             txt.append("#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n")
         if "NotComputedGoto" in info:
-            txt.append("#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS\n")
+            txt.append("#ifndef QUEX_OPTION_COMPUTED_GOTOS\n")
 
         txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
 
         if ("ComputedGoto" in info) or ("NotComputedGoto" in info):
-            txt.append("#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */\n")
+            txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
         if  "CountColumns" in info:
             txt.append("#endif /* QUEX_OPTION_COLUMN_NUMBER_COUNTING */\n")
 
@@ -273,7 +273,7 @@ __TERMINAL_ROUTER: {
         if(last_acceptance_input_position != 0x0) {
 $$RESTORE_LAST_ACCEPTANCE_POS$$
         }
-#ifdef  __QUEX_OPTION_USE_COMPUTED_GOTOS
+#ifdef  QUEX_OPTION_COMPUTED_GOTOS
         goto *last_acceptance;
 #else
         /* Route according variable 'last_acceptance'. */
@@ -281,7 +281,7 @@ $$RESTORE_LAST_ACCEPTANCE_POS$$
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_FAILURE-GOTO$$; /* nothing matched */
         }
-#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
     }
 """
 

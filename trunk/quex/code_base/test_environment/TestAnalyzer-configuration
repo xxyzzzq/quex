@@ -59,7 +59,6 @@
 /* NOTE: QUEX_TYPE_TOKEN_ID is later on defined inside the token class header. */
 #define    __QUEX_SETTING_TOKEN_ID_TERMINATION       ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_TERMINATION)
 #define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED     ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_UNINITIALIZED)
-#define    __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_INDENTATION_ERROR)
 #define    __QUEX_SETTING_TOKEN_ID_INDENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_INDENT)
 #define    __QUEX_SETTING_TOKEN_ID_DEDENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_DEDENT)
 #define    __QUEX_SETTING_TOKEN_ID_NODENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_NODENT)
@@ -215,8 +214,8 @@
 /* If one mode requires indentation support, then the lexical analyser
  * class must be setup for indentation counting. The following flag is
  * defined or undefined by the lexical analyser generator quex.         */
-/* #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT */
-#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+/* #define QUEX_OPTION_INDENTATION_TRIGGER */
+#if    defined(QUEX_OPTION_INDENTATION_TRIGGER)
 #   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
 #      define QUEX_SETTING_INDENTATION_STACK_SIZE  (64)
 #   endif

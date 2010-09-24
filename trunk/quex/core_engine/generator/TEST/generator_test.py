@@ -79,7 +79,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     if Language.find("-CG") != -1:
         Language = Language.replace("-CG", "")
-        CompileOptionStr += " -D__QUEX_OPTION_USE_COMPUTED_GOTOS "
+        CompileOptionStr += " -DQUEX_OPTION_COMPUTED_GOTOS "
 
     if Language == "Cpp-Template":
         Language = "Cpp"
@@ -234,9 +234,9 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
     txt = "#define QUEX_TYPE_CHARACTER unsigned char\n" + txt
     txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
 
-    replace_str = "#define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT"
+    replace_str = "#define QUEX_OPTION_INDENTATION_TRIGGER"
     if not IndentationSupportF: replace_str = "/* %s */" % replace_str
-    txt = txt.replace("$$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$", replace_str)
+    txt = txt.replace("$$QUEX_OPTION_INDENTATION_TRIGGER$$", replace_str)
        
     replace_str = "#define QUEX_OPTION_TOKEN_POLICY_SINGLE_DISABLED\n" + \
                   "#define QUEX_OPTION_TOKEN_POLICY_QUEUE"
@@ -343,7 +343,7 @@ def action(PatternName):
     
 test_program_common_declarations = """
 $$__QUEX_OPTION_PLAIN_C$$
-$$__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT$$
+$$QUEX_OPTION_INDENTATION_TRIGGER$$
 $$__QUEX_OPTION_TOKEN_QUEUE$$
 #define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
 #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
@@ -354,7 +354,6 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 
 #define QUEX_TKN_TERMINATION       0
 #define QUEX_TKN_UNINITIALIZED     1
-#define QUEX_TKN_INDENTATION_ERROR 2
 #define QUEX_TKN_INDENT            3
 #define QUEX_TKN_DEDENT            4
 #define QUEX_TKN_NODENT            5

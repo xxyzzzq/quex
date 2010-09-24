@@ -1,6 +1,7 @@
 from   quex.frs_py.string_handling import blue_print
 from   quex.frs_py.file_in         import write_safely_and_close
 from   quex.input.setup            import setup as Setup
+import quex.output.cpp.action_code_formatter    as action_code_formatter
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
@@ -34,7 +35,6 @@ def do(Modes):
 
 
 def write_member_functions(Modes):
-
     # -- get the implementation of mode class functions
     #    (on_entry, on_exit, on_indent, on_dedent, has_base, has_entry, has_exit, ...)
     txt  = ""
@@ -64,45 +64,12 @@ $$ENTER-PROCEDURE$$
 $$EXIT-PROCEDURE$$
     }
 
-#if      defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT) \
-    && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+#if defined(QUEX_OPTION_INDENTATION_TRIGGER) 
     void
     QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                             QUEX_TYPE_INDENTATION  Indentation, 
                                             QUEX_TYPE_CHARACTER*   Begin) {
-#       define Lexeme    Begin
-#       define LexemeEnd (me->buffer._input_p)
-
-        QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
-        QUEX_TYPE_INDENTATION         i     = 0;
-
-        __quex_assert((long)Indentation >= 0);
-
-        if( Indentation > *(stack->back) ) {
-            ++(stack->back);
-            if( stack->back == me->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
-            *(stack->back) = Indentation;
-$$INDENT-PROCEDURE$$
-            __QUEX_RETURN;
-        }
-        else if( Indentation == *(stack->back) ) {
-$$NODENT-PROCEDURE$$
-        }
-        else  {
-            while( Indentation < *(stack->back) ) {
-                ++i;
-                --(stack->back);
-            }
-
-#           define ClosedN (i)
-$$DEDENT-PROCEDURE$$
-#           undef ClosedN
-
-            if( Indentation != *(stack->back) ) { /* 'Landing' must happen on indentation border. */
-                self_send(__QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR);
-            }
-        }
-        __QUEX_RETURN;
+$$ON_INDENTATION-PROCEDURE$$
     }
 #endif
 
@@ -155,18 +122,8 @@ def  get_implementation_of_mode_functions(mode, Modes):
         on_exit_str += code_info.get_code()
 
     # (*) on indentation
-    on_indent_str = ""
-    for code_info in mode.get_code_fragment_list("on_indent"):
-        on_indent_str += code_info.get_code()
-        
-    on_nodent_str = ""
-    for code_info in mode.get_code_fragment_list("on_nodent"):
-        on_nodent_str += code_info.get_code()
+    on_indentation_str = get_on_indentation_handler(mode)
 
-    on_dedent_str = ""
-    for code_info in mode.get_code_fragment_list("on_dedent"):
-        on_dedent_str += code_info.get_code()
-        
     # (*) has base mode
     if mode.has_base_mode():
         base_mode_list    = __filter_out_inheritable_only(mode.get_base_mode_name_list())
@@ -193,14 +150,16 @@ def  get_implementation_of_mode_functions(mode, Modes):
 
     
     txt = blue_print(mode_function_implementation_str,
-                     [["$$ENTER-PROCEDURE$$",      on_entry_str],
+                     [
+                      ["$$ENTER-PROCEDURE$$",      on_entry_str],
                       ["$$EXIT-PROCEDURE$$",       on_exit_str],
-                      ["$$INDENT-PROCEDURE$$",     on_indent_str],
-                      ["$$NODENT-PROCEDURE$$",     on_nodent_str],
-                      ["$$DEDENT-PROCEDURE$$",     on_dedent_str],
+                      #
+                      ["$$ON_INDENTATION-PROCEDURE$$", on_indentation_str],
+                      #
                       ["$$HAS_BASE_MODE$$",        has_base_mode_str],
                       ["$$HAS_ENTRANCE_FROM$$",    has_entry_from_str],
                       ["$$HAS_EXIT_TO$$",          has_exit_to_str],
+                      #
                       ["$$MODE_NAME$$",            mode.name],
                       ])
     return txt
@@ -238,3 +197,121 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
 
     return txt.replace("\n", "\n" + Indentation)
 
+on_indentation_str = """
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#      define __QUEX_RETURN return __self_result_token_id
+#   else
+#      define __QUEX_RETURN return
+#   endif
+#   define Lexeme    Begin
+#   define LexemeEnd (me->buffer._input_p)
+
+    QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
+    QUEX_TYPE_INDENTATION*        start = 0x0;
+
+    __quex_assert((long)Indentation >= 0);
+
+    if( Indentation > *(stack->back) ) {
+        ++(stack->back);
+        if( stack->back == stack->memory_end ) QUEX_ERROR_EXIT("Indentation stack overflow.");
+        *(stack->back) = Indentation;
+$$INDENT-PROCEDURE$$
+        __QUEX_RETURN;
+    }
+    else if( Indentation == *(stack->back) ) {
+$$NODENT-PROCEDURE$$
+    }
+    else  {
+        start = stack->back;
+        --(stack->back);
+#       if ! defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
+#       define First true
+$$DEDENT-PROCEDURE$$
+#       undef  First
+#       endif
+        while( Indentation < *(stack->back) ) {
+            --(stack->back);
+#           if ! defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
+#           define First false
+$$DEDENT-PROCEDURE$$
+#           undef  First
+#           endif
+        }
+
+#       define ClosedN (start - stack->back)
+$$N-DEDENT-PROCEDURE$$
+#       undef  ClosedN
+
+        if( Indentation != *(stack->back) ) { /* 'Landing' must happen on indentation border. */
+$$INDENTATION-ERROR-PROCEDURE$$
+        }
+    }
+    __QUEX_RETURN;
+
+#   undef Lexeme    
+#   undef LexemeEnd 
+#   undef __QUEX_RETURN
+"""
+
+def get_on_indentation_handler(Mode):
+
+    # 'on_dedent' and 'on_n_dedent cannot be defined at the same time.
+    assert not (    Mode.has_code_fragment_list("on_dedent") \
+                and Mode.has_code_fragment_list("on_n_dedent"))
+
+
+    # A mode that deals only with the default indentation handler relies
+    # on what is defined in '$QUEX_PATH/analayzer/member/on_indentation.i'
+    if Mode.default_indentation_handler_sufficient():
+        return "#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)\n" + \
+               "       return __self_result_token_id;\n" + \
+               "#   else\n" + \
+               "       return;\n" + \
+               "#   endif\n"
+
+    if Mode.has_code_fragment_list("on_indent"):
+        on_indent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indent"))
+    else:
+        on_indent_str = "self_send(__QUEX_SETTING_TOKEN_ID_INDENT);"
+
+    if Mode.has_code_fragment_list("on_nodent"):
+        on_nodent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_nodent"))
+    else:
+        on_nodent_str = "self_send(__QUEX_SETTING_TOKEN_ID_NODENT);"
+
+    if Mode.has_code_fragment_list("on_dedent"):
+        assert not Mode.has_code_fragment_list("on_n_dedent")
+        on_dedent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_dedent"))
+        on_n_dedent_str      = ""
+
+    elif Mode.has_code_fragment_list("on_n_dedent"):
+        assert not Mode.has_code_fragment_list("on_dedent")
+        on_n_dedent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_n_dedent"))
+        on_dedent_str          = ""
+
+    else:
+        # If no 'on_dedent' and no 'on_n_dedent' is defined ... 
+        on_dedent_str    = ""
+        on_n_dedent_str  = "#if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)\n"
+        on_n_dedent_str += "    self_send_n(ClosedN, __QUEX_SETTING_TOKEN_ID_DEDENT);\n"
+        on_n_dedent_str += "#else\n"
+        on_n_dedent_str += "    while( start-- != stack->back ) self_send(__QUEX_SETTING_TOKEN_ID_DEDENT);\n"
+        on_n_dedent_str += "#endif\n"
+
+    if not Mode.has_code_fragment_list("on_indentation_error"):
+        # Default: Blow the program if there is an indentation error.
+        on_indentation_error = 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': indentation error detected!\\n"' \
+                               % Mode.name + \
+                               '                "No \'on_indentation_error\' handler has been specified.");'
+    else:
+        on_indentation_error = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_error"))
+
+    # Note: 'on_indentation_bad' is applied in code generation for 
+    #       indentation counter in 'indentation_counter.py'.
+    txt = blue_print(on_indentation_str,
+                     [["$$INDENT-PROCEDURE$$",            on_indent_str],
+                      ["$$NODENT-PROCEDURE$$",            on_nodent_str],
+                      ["$$DEDENT-PROCEDURE$$",            on_dedent_str],
+                      ["$$N-DEDENT-PROCEDURE$$",          on_n_dedent_str],
+                      ["$$INDENTATION-ERROR-PROCEDURE$$", on_indentation_error]])
+    return txt

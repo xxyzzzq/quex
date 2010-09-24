@@ -165,11 +165,11 @@ following command line options can be used.
         
         DEFAULT = ``10000``
 
-Certain token ids are standard, in a sense that they are required for a functioning lexical
-analyzer. Namely they are ``TERMINATION``, ``UNINITIALIZED``, and optionally
-``INDENTATION_ERROR`` if indentation support is enabled. The default values
-of those do not follow the token id offset, but are 0, 1, and 2. If they need
-to be different, they must be defined in the ``token { ... }`` section, e.g.:: 
+Certain token ids are standard, in a sense that they are required for a
+functioning lexical analyzer. Namely they are ``TERMINATION`` and
+``UNINITIALIZED`` The default values of those do not follow the token id
+offset, but are 0, 1, and 2. If they need to be different, they must be defined
+in the ``token { ... }`` section, e.g.:: 
 
     token {
         TERMINATION   = 10001;

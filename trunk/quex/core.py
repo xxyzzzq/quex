@@ -108,7 +108,12 @@ def __prepare_end_of_stream_action(Mode, IndentationSupportF):
         Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
 
     if IndentationSupportF:
-        code_fragment = CodeFragment("QUEX_NAME(IndentationStack_flush)(me);\n")
+        if Mode.default_indentation_handler_sufficient():
+            code = "QUEX_NAME(on_indentation)(me, /*Indentation*/0, LexemeNull);\n"
+        else:
+            code = "QUEX_NAME(%s_on_indentation)(me, /*Indentation*/0, LexemeNull);\n" % Mode.name
+
+        code_fragment = CodeFragment(code)
         Mode.insert_code_fragment_at_front("on_end_of_stream", code_fragment)
 
     # RETURNS: end_of_stream_action, db 

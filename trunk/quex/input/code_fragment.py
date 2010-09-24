@@ -235,16 +235,16 @@ def __create_token_sender_by_token_name(fh, TokenName):
         #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
         #  QUEX_TKN_XYZ(Begin, End) --> call to take_text(Begin, End)
         if   len(argument_list) == 2:
-            return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, (%s), (%s));\n" % \
+            return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, (%s), (%s));\n" % \
                    (argument_list[0], argument_list[1]) + \
                    "self_send(%s);\n" % (TokenName)
 
         elif len(argument_list) == 1:
             if argument_list[0] == "Lexeme":
-                return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeBegin, LexemeEnd);\n" \
+                return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, LexemeBegin, LexemeEnd);\n" \
                        "self_send(%s);\n" % (TokenName)
             elif argument_list[0] == "LexemeNull":
-                return "QUEX_NAME_TOKEN(take_text)(self_token_p(), &self, LexemeNull, LexemeNull);\n" \
+                return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, LexemeNull, LexemeNull);\n" \
                        "self_send(%s);\n" % (TokenName)
             else:
                 error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"
@@ -281,7 +281,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
                                 "No member:   '%s' in token type description." % member_name, 
                                 fh)
             access = lexer_mode.token_type_definition.get_member_access(member_name)
-            txt += "self_token_p()->%s = %s;\n" % (access, value.strip())
+            txt += "self_write_token_p()->%s = %s;\n" % (access, value.strip())
 
 
     # Box the token, stamp it with an id and 'send' it

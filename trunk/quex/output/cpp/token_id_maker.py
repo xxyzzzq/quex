@@ -72,10 +72,12 @@ const char*
 QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
 {
    static char  error_string[64];
-   static const char  uninitialized_string[]       = "<UNINITIALIZED>";
-   static const char  termination_string[]         = "<TERMINATION>";
-#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-   static const char  indentation_error_string[]   = "<INDENTATION_ERROR>";
+   static const char  uninitialized_string[] = "<UNINITIALIZED>";
+   static const char  termination_string[]   = "<TERMINATION>";
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   static const char  indent_string[]        = "<INDENT>";
+   static const char  dedent_string[]        = "<DEDENT>";
+   static const char  nodent_string[]        = "<NODENT>";
 #  endif
 $$TOKEN_NAMES$$       
 
@@ -89,8 +91,10 @@ $$TOKEN_NAMES$$
    }
    case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
    case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
-#  ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-   case __QUEX_SETTING_TOKEN_ID_INDENTATION_ERROR: return indentation_error_string;
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
+   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
+   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
 #  endif
 $$TOKEN_ID_CASES$$
    }
@@ -99,13 +103,21 @@ $$TOKEN_ID_CASES$$
 QUEX_NAMESPACE_TOKEN_CLOSE
 """
 
-standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENTATION_ERROR"]
+standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
 
 def prepare_default_standard_token_ids():
+    global standard_token_id_list
 
-    token_id_db["TERMINATION"]       = TokenInfo("TERMINATION",       ID=0)
-    token_id_db["UNINITIALIZED"]     = TokenInfo("UNINITIALIZED",     ID=1)
-    token_id_db["INDENTATION_ERROR"] = TokenInfo("INDENTATION_ERROR", ID=2)
+    token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=0)
+    token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=1)
+    # Indentation Tokens
+    token_id_db["INDENT"]        = TokenInfo("INDENT",        ID=2)
+    token_id_db["DEDENT"]        = TokenInfo("DEDENT",        ID=3)
+    token_id_db["NODENT"]        = TokenInfo("NODENT",        ID=4)
+
+    # Assert that every standard token id is in the database
+    for name in standard_token_id_list:
+        assert token_id_db.has_key(name)
 
 def __is_token_id_occupied(TokenID):
     return TokenID in map(lambda x: x.number, token_id_db.values())
@@ -141,7 +153,6 @@ def do(setup, IndentationSupportF):
     if len(token_id_db.keys()) == len(standard_token_id_list):
         token_id_str = "%sTERMINATION and %sUNINITIALIZED" % \
                        (setup.token_id_prefix, setup.token_id_prefix) 
-        if IndentationSupportF: token_id_str = "%sINDENTATION_ERROR, " + token_id_str
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
         error_msg("Only token ids %s are defined.\n" % token_id_str + \
                   "Quex refuses to proceed. Please, use the 'token { ... }' section to\n" + \

@@ -1,8 +1,10 @@
-from   quex.frs_py.string_handling                   import blue_print
-from   quex.input.setup                              import setup as Setup
-import quex.core_engine.state_machine.index          as     sm_index
+from   quex.frs_py.string_handling                   import       blue_print
+from   quex.input.setup                              import       setup as Setup
+import quex.core_engine.state_machine.index          as           sm_index
 import quex.core_engine.generator.state_coder.transition_block as transition_block
-from   quex.core_engine.interval_handling            import Interval
+from   quex.core_engine.interval_handling            import       Interval
+import quex.output.cpp.action_code_formatter         as           action_code_formatter
+import quex.lexer_mode                               as           lexer_mode
 
 import sys
 
@@ -18,6 +20,16 @@ class IndentationCounter:
     def __ne__(self, Other):
         return not self.__eq__(Other)
 
+class IndentationBadCharacter:
+    def __init__(self, StateIndex):
+        self.state_index = StateIndex
+
+    def __eq__(self, Other):
+        if Other.__class__ != IndentationBadCharacter: return False
+        return self.state_index == Other.state_index 
+
+    def __ne__(self, Other):
+        return not self.__eq__(Other)
 
 template_str = """
 { 
@@ -37,7 +49,7 @@ $$LOOP_REENTRANCE$$
 $$DROP_OUT$$
     /* -- In the case of 'skipping' we did not worry about the lexeme at all --
      *    HERE, WE DO! We cannot set the lexeme start point to the current position!
-     *    The appplication might actuall do something with it.
+     *    The appplication might actually do something with it.
      *
      * -- The input_p will at this point in time always point to the buffer border.  */
     if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
@@ -58,6 +70,7 @@ $$DROP_OUT_DIRECT$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
 $$END_PROCEDURE$$                           
     $$GOTO_START$$                           
+$$BAD_CHARACTER_HANDLING$$
 }
 """
 
@@ -70,7 +83,10 @@ def do(IndentationSetup):
     """
     assert IndentationSetup.__class__.__name__ == "IndentationSetup"
 
-    LanguageDB    = Setup.language_db
+    LanguageDB = Setup.language_db
+    Mode = None
+    if IndentationSetup.containing_mode_name() != "":
+        Mode = lexer_mode.mode_db[IndentationSetup.containing_mode_name()]
 
     counter_index = sm_index.get()
     
@@ -88,7 +104,7 @@ def do(IndentationSetup):
             trigger_map.append([interval, counter_index])
 
         # Reference Pointer: Define Variable, Initialize, determine how to subtact.
-        end_procedure     = \
+        end_procedure = \
         "    me->counter._indentation = (size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer) - reference_p);\n" 
     else:
         # Count the indentation/column during the 'run'
@@ -97,6 +113,7 @@ def do(IndentationSetup):
         for count, character_set in IndentationSetup.space_db.items():
             for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
                 trigger_map.append([interval, IndentationCounter("space", count)])
+
         # Add the grid counters
         for count, character_set in IndentationSetup.grid_db.items():
             for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
@@ -105,10 +122,15 @@ def do(IndentationSetup):
         # Reference Pointer: Not required.
         #                    No subtraction 'current_position - reference_p'.
         #                    (however, we pass 'reference_p' to indentation handler)
-        end_procedure     = "" 
+        end_procedure = "" 
+
+    # Bad character detection
+    if IndentationSetup.bad_character_set.get().is_empty() == False:
+        for interval in IndentationSetup.bad_character_set.get().get_intervals(PromiseToTreatWellF=True):
+            trigger_map.append([interval, IndentationCounter("bad", counter_index)])
 
     # Since we do not use a 'TransitionMap', there are some things we need 
-    # to som certain things by hand.
+    # to do by hand.
     arrange_trigger_map(trigger_map)
 
     local_variable_db = { "reference_p" : 
@@ -118,6 +140,7 @@ def do(IndentationSetup):
 
     iteration_code = "".join(transition_block.do(trigger_map, counter_index, DSM=None))
 
+
     comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
 
     # NOTE: Line and column number counting is off
@@ -125,7 +148,12 @@ def do(IndentationSetup):
     #       -- column number = indentation at the end of the process
 
     end_procedure += "    __QUEX_IF_COUNT_COLUMNS_ADD(me->counter._indentation);\n"
-    end_procedure += "    QUEX_NAME(on_indentation)(me, me->counter._indentation, reference_p);\n"
+    if Mode == None or Mode.default_indentation_handler_sufficient():
+        end_procedure += "    QUEX_NAME(on_indentation)(me, me->counter._indentation, reference_p);\n"
+    else:
+        # Definition of '%s_on_indentation' in mode_classes.py.
+        end_procedure += "    QUEX_NAME(%s_on_indentation)(me, me->counter._indentation, reference_p);\n" \
+                         % Mode.name
 
     # The finishing touch
     txt = blue_print(template_str,
@@ -149,8 +177,9 @@ def do(IndentationSetup):
                        # happend. One can jump immediately to the start without re-entry preparation.
                        ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
-                       ["$$INIT_REFERENCE_POINTER$$",         init_reference_p],
-                       ["$$END_PROCEDURE$$",                  end_procedure],
+                       ["$$INIT_REFERENCE_POINTER$$",   init_reference_p],
+                       ["$$END_PROCEDURE$$",            end_procedure],
+                       ["$$BAD_CHARACTER_HANDLING$$",   get_bad_character_handler(Mode, IndentationSetup, counter_index)],
                       ])
 
     txt = blue_print(txt,
@@ -182,4 +211,21 @@ def arrange_trigger_map(trigger_map):
              size += 1
          i += 1
          previous_end = interval.end
+
+def get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
+    if Mode == None: return ""
+    if IndentationSetup.bad_character_set.get().is_empty(): return ""
+
+    txt  = "INDENTATION_COUNTER_%i_BAD_CHARACTER:\n" % CounterIdx
+    if not Mode.has_code_fragment_list("on_indentation_bad"):
+        txt += 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': bad indentation character detected!\\n"' \
+                                % Mode.name + \
+               '                "No \'on_indentation_bad\' handler has been specified.");'
+    else:
+        code, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_bad"))
+        txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"
+        txt += code
+        txt += "#undef  BadCharacter\n"
+
+    return txt
 

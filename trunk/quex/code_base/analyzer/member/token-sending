@@ -10,9 +10,15 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   define self (*this)
 
-#   define self_token_p()      (__QUEX_CURRENT_TOKEN_P)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#      define self_token_p()        (__QUEX_CURRENT_TOKEN_P)
+#      define self_write_token_p()  (__QUEX_CURRENT_TOKEN_P)
+#   else
+#      define self_token_p()        (self._token_queue.read_iterator)
+#      define self_write_token_p()  (__QUEX_CURRENT_TOKEN_P)
+#   endif
 
-#   define self_send(ID)                    \
+#   define self_send(ID)                        \
         do {                                    \
             __QUEX_ASSERT_SEND_ENTRY();         \
             self_token_set_id(ID);              \
@@ -24,19 +30,20 @@ QUEX_NAMESPACE_MAIN_OPEN
 #      define self_send_n(RepetitionN, ID)     \
        do {                                                                 \
             if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(ID) == false ) {    \
-                QUEX_ERROR_EXIT("send_send_n() applied to token id which was not mentioned\n"      \
+                QUEX_ERROR_EXIT("send_send_n() applied to token id which was not mentioned\n" \
                                 "in a 'repeated_token { ... }' section.");  \
             }                                                               \
             self_token_set_id(ID);                                          \
-            QUEX_NAME_TOKEN(repetition_n_set)(self_token_p(), RepetitionN); \
+            __quex_assert(RepetitionN != 0);                                \
+            QUEX_NAME_TOKEN(repetition_n_set)(self_write_token_p(), RepetitionN); \
             QUEX_TOKEN_POLICY_PREPARE_NEXT();                               \
        } while ( 0 )
 #   else
 #      define self_send_n(RepetitionN, ID)     \
-       do {                                                                 \
-            self_token_set_id(ID);                                          \
-            QUEX_NAME_TOKEN(repetition_n_set)(self_token_p(), RepetitionN); \
-            QUEX_TOKEN_POLICY_PREPARE_NEXT();                               \
+       do {                                                                       \
+            self_token_set_id(ID);                                                \
+            QUEX_NAME_TOKEN(repetition_n_set)(self_write_token_p(), RepetitionN); \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();                                     \
        } while ( 0 )
 #   endif
 #else
@@ -50,7 +57,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         do {                                                  \
             __QUEX_ASSERT_SEND_ENTRY();                       \
             self_token_set_id(ID);                            \
-            QUEX_NAME_TOKEN(take_text)(self_token_p(), &self,           \
+            QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self,           \
                                        (Str),                           \
                                        (Str) + QUEX_NAME(strlen)(Str)); \
             QUEX_TOKEN_POLICY_PREPARE_NEXT();                           \
@@ -60,7 +67,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         do {                                      \
             __QUEX_ASSERT_SEND_ENTRY();           \
             self_token_set_id(ID);                             \
-            QUEX_NAME_TOKEN(take_text)(self_token_p(), &self,  \
+            QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self,  \
                                        (StrBegin), (StrEnd));  \
             QUEX_TOKEN_POLICY_PREPARE_NEXT();                  \
         } while ( 0 )

@@ -31,11 +31,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
-            __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
-            *result_pp = self_token_p();  
-            return;
-        } else
+        if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(self_token_p()->_id) ) {
+            if( QUEX_NAME_TOKEN(repetition_n_get)(self_token_p()) != 0 ) { 
+                __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
+                *result_pp = self_token_p();  
+                return;
+            } else { 
+                /* Pop the repeated token from the queue */
+                (void)QUEX_NAME(TokenQueue_pop)(&me->_token_queue);
+            }
+        }
 #       endif
         /* Tokens are in queue --> take next token from queue */ 
         if( QUEX_NAME(TokenQueue_is_empty)(&me->_token_queue) == false ) {        
@@ -54,7 +59,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        result_p = me->_token_queue.read_iterator;
+        result_p = self_token_p();
         if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(result_p->_id) ) {
             QUEX_ASSERT_REPEATED_TOKEN_NOT_ZERO(result_p);
             /* First rep. is sent below. */
@@ -88,7 +93,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
-        if( __QUEX_REPEATED_TOKEN_PRESENT(self_token_p()) ) {
+        if(    __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(self_token_p()->_id)
+            && (QUEX_NAME_TOKEN(repetition_n_get)(self_token_p()) != 0) ) { 
             __QUEX_REPEATED_TOKEN_DECREMENT_N(self_token_p());
             return self_token_p()->_id;  
         }

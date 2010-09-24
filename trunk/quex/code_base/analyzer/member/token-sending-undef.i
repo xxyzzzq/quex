@@ -4,6 +4,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #undef __QUEX_ASSERT_SEND_ENTRY 
 
+#undef  self_write_token_p
 #undef  self_token_p
 #undef  self_send
 #undef  self_send0
