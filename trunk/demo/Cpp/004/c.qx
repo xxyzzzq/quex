@@ -4,16 +4,17 @@ start = PROGRAM;
 
 define {
     // Pattern definitions for example application
-    P_WHITESPACE          [ \r\t\n]+
+    P_WHITESPACE          [ \t\n]+
     P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
     P_NUMBER              [0-9]+
     //
     // String: 
     //    Quote " followe by either \" or something different from " and then a final "
     P_STRING              "\""(\\"\""|[^"])*"\""
-    P_QUOTED_CHAR_1       ("'\\''")|("'"[^']?"'")
-    P_QUOTED_CHAR_2       "'\\"[0-9abcfnrtv\\]"'"
-    P_QUOTED_CHAR         ({P_QUOTED_CHAR_1}|{P_QUOTED_CHAR_2})
+    P_QUOTED_CHAR_1       ("'\\''")|("'"[^'\n\t]?"'")
+    P_QUOTED_CHAR_2       "'\\"([0-7]+|[abcfnrtv\\])"'"
+    P_QUOTED_CHAR_3       "'\\x"[0-9a-fA-F]+"'"
+    P_QUOTED_CHAR         ({P_QUOTED_CHAR_1}|{P_QUOTED_CHAR_2}|{P_QUOTED_CHAR_3})
     P_INCLUDE_FILE1       "<"[^>]+">"
     P_INCLUDE_FILE2       "\""[^"]+"\""
 }
