@@ -1,6 +1,8 @@
 .PHONY: clean
 TEST_FILES = transition.exe \
-			 transition-x.exe
+			 transition-x.exe \
+			 on_skip_range_open.exe \
+			 on_skip_range_open-customized.exe 
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
@@ -35,9 +37,24 @@ transit%.exe: transit%.qx lexer.cpp $(QUEX_CORE)
 		-D__TEST_DESCRIPTION='"Mode Transitions: $<"' \
 		-D__TEST_CHOICES='"1, 2, 3, error"'
 
+on_skip_range_open.exe: on_skip_range_open.qx $(QUEX_CORE)
+	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-policy single --token-prefix TK_
+	$(LD) ./lexer.cpp EHLexer.cpp -o $@ \
+		-D__TEST_DESCRIPTION='"Default 'on_skip_range_open' event."' \
+		-D__TEST_CHOICES='"default"' \
+          -DQUEX_SETTING_BUFFER_SIZE=4 \
+
+on_skip_range_open-customized.exe: on_skip_range_open-customized.qx $(QUEX_CORE)
+	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-policy single --token-prefix TK_
+	$(LD) ./lexer.cpp EHLexer.cpp -o $@ \
+		-D__TEST_DESCRIPTION='"Customized 'on_skip_range_open' event."' \
+		-D__TEST_CHOICES='"customized"' \
+          -DQUEX_SETTING_BUFFER_SIZE=4 \
+
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f EHLexer*
+	rm -f EasyLexer*
 	rm -f lexer.o
 	rm -f lexer
 	rm -f token_ids

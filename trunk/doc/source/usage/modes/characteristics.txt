@@ -123,6 +123,12 @@ The possible options for modes to be specified are the following.
           ...
       }
 
+   when the ``skip_range`` option is specified, there is an event handler
+   available that can catch the event of a missing delimiter, i.e. if an end of
+   file occurs while the range is not yet closed. The handler's name is
+   ``on_skip_range_open`` as described in
+   :ref:`_sec-usage-modes-characteristics-event-handlers`.
+
 .. data::   <skip_nested_range: start-string end-string> 
 
    This type of skipper is still in the implementation pipeline and not yet implemented.
@@ -168,16 +174,6 @@ in the event handler definition. The list of event handlers is the following:
     related to the matching pattern. The implicit arguments allow access to
     the matched lexeme and correspond to what is passed to pattern-actions.
 
-.. data:: on_indentation
-
-    Argument: ``Indentation``
-
-    The occurence of the first non-whitespace in a line triggers the ``on_indentation``
-    event handler. Note, that it is only executed at the moment where a pattern matches 
-    that eats part (or all) of the concerned part of the stream. This event handler 
-    facilitates the definition of languages that rely on indentation. ``Indentation``
-    provides the number of whitespace since the beginning of the line. Please,
-    refer to section :ref:`sec-advanced-indentation-blocks` for further information.
 
 .. data:: on_failure
 
@@ -196,6 +192,80 @@ in the event handler definition. The list of event handlers is the following:
    to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
    pattern.
 
-As it has been mentioned in any places before, event handlers are specified in the 
-same way like pattern-actions. 
+.. data:: on_skip_range_open
+
+   Implicit Arguments: ``Delimiter``
+
+   If a range skipper was specified, then it is possible that an end of stream
+   occurs without that the skipped range is actually terminated by the closing 
+   delimiter, for example
+
+       .. code-block:: cpp
+          mode X : <skip_range: "/*" "*/"> { 
+              ... 
+          }
+
+   skips over anything in between ``/*`` and ``*/``. However, if an analyzed
+   file contains:
+
+       .. code-block:: cpp
+
+          /* Some comment without a closing delimiter
+
+
+   where the closing ``*/`` is not present in the file, then the event
+   handler is called on the event of end of file. The parameter ``Delimiter`` 
+   contains the string of the missing delimiter. 
+      
+There are event handlers which are concerned with indentation detection, in
+case that the user wants to build indentation based languages. They are 
+discussed in detail in section :ref:`_sec-advanced-indentation-blocks`. 
+Here, there are listed only to provide in overview.
+
+.. data:: on_indentation
+
+    .. note:: Since version 0.51.1 this handler is very loosely supported since
+              indentation management has been improved heavily. It is likely
+              that it will be removed totally.
+
+    The occurence of the first non-whitespace in a line triggers the ``on_indentation``
+    event handler. Note, that it is only executed at the moment where a pattern matches 
+    that eats part (or all) of the concerned part of the stream. This event handler 
+    facilitates the definition of languages that rely on indentation. ``Indentation``
+    provides the number of whitespace since the beginning of the line. Please,
+    refer to section :ref:`sec-advanced-indentation-blocks` for further information.
+
+.. data:: on_indent
+
+   If an opening indentation event occurs. 
+
+.. data:: on_dedent
+
+   If an closing indentation event occurs. If a line closes
+   multiple indentation blocks, the handler is called *multiple*
+   times.
+
+.. data:: on_n_dedent
+
+   If an closing indentation event occurs. If a line closes
+   multiple indentation blocks, the handler is called only *once*
+   with the number of closed domains.
+
+.. data:: on_nodent
+
+   In case that the previous line had the same indentation as the 
+   current line.
+
+.. data:: on_indentation_error
+
+   In case that a indentation block was closed, but did not fit
+   any open indentation domains.
+
+.. data:: on_indentation_bad
+
+   In case that a character occured in the indentation which was
+   specified by the user as being *bad*.
+
+As it has been mentioned in many places before, event handlers are specified in
+the same way like pattern-actions. 
 

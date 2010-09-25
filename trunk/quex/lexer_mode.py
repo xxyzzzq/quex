@@ -526,16 +526,17 @@ mode_option_info_db = {
 event_handler_db = {
         "on_entry":     "On entry of a mode.",
         "on_exit":      "On exit of a mode.", 
-        "on_indent":              "On opening indentation.",
-        "on_nodent":              "On same indentation.",
-        "on_dedent":              "On closing indentation'.",
-        "on_n_dedent":            "On closing indentation'.",
-        "on_indentation_error":   "Closing indentation on non-border.",
-        "on_indentation_bad":     "On bad character in indentation.",
-        "on_indentation":         "General Indentation Handler.",
-        "on_match":          "On each match.",
-        "on_failure":        "In case that no pattern matches.",
-        "on_end_of_stream":  "On end of file/stream.",
+        "on_indent":                 "On opening indentation.",
+        "on_nodent":                 "On same indentation.",
+        "on_dedent":                 "On closing indentation'.",
+        "on_n_dedent":               "On closing indentation'.",
+        "on_indentation_error":      "Closing indentation on non-border.",
+        "on_indentation_bad":        "On bad character in indentation.",
+        "on_indentation":            "General Indentation Handler.",
+        "on_match":                  "On each match.",
+        "on_failure":                "In case that no pattern matches.",
+        "on_skip_range_open":        "On missing skip range delimiter.",
+        "on_end_of_stream":          "On end of file/stream.",
         }
 
 class LocalizedParameter:

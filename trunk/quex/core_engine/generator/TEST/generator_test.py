@@ -13,9 +13,11 @@ from quex.lexer_mode             import PatternShorthand
 from   quex.core_engine.generator.languages.core import db
 from   quex.core_engine.generator.languages.cpp  import  __local_variable_definitions
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
-import quex.core_engine.generator.core                     as generator
-import quex.core_engine.generator.state_coder.skipper_core as skipper
-import quex.core_engine.regular_expression.core            as regex
+import quex.core_engine.generator.core           as generator
+import quex.core_engine.generator.skipper.core          as skipper
+import quex.core_engine.generator.skipper.character_set as character_set_skipper
+import quex.core_engine.generator.skipper.range         as range_skipper
+import quex.core_engine.regular_expression.core  as regex
 #
 from   quex.input.setup import setup as Setup
 
@@ -301,7 +303,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    skipper_code, local_variable_db = skipper.get_character_set_skipper(TriggerSet)
+    skipper_code, local_variable_db = character_set_skipper.get_skipper(TriggerSet)
 
     marker_char_list = []
     for interval in TriggerSet.get_intervals():
@@ -321,7 +323,7 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
     end_str += '    return false;\n'
 
     Setup.language_db = db["C++"]
-    skipper_code, local_variable_db = skipper.get_range_skipper(EndSequence, end_str)
+    skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,

@@ -1,35 +1,27 @@
-import os
-import sys
-from   copy import deepcopy, copy
-sys.path.insert(0, os.environ["QUEX_PATH"])
+import quex.core_engine.state_machine.index      as     sm_index
+from   quex.core_engine.generator.skipper.common import *
+from   quex.core_engine.generator.languages.core import __nice
+import quex.output.cpp.action_code_formatter     as     action_code_formatter
+import quex.core_engine.utf8                     as     utf8
+from   quex.input.setup                          import setup as Setup
+from   quex.frs_py.string_handling               import blue_print
+import quex.lexer_mode                           as     lexer_mode
+from   copy import copy
 
-from   quex.frs_py.string_handling                   import blue_print
-from   quex.input.setup                              import setup as Setup
-import quex.core_engine.utf8                         as     utf8
-import quex.core_engine.state_machine.index          as     sm_index
-from   quex.core_engine.state_machine.transition_map import TransitionMap 
-from   quex.core_engine.generator.languages.core     import __nice
-import quex.core_engine.generator.state_coder.transition_block as transition_block
+def do(ArgumentList):
+    assert type(ArgumentList) == list
+    assert len(ArgumentList) == 2
+    assert type(ArgumentList[1]) in [str, unicode]
 
-def do(SkipperDescriptor):
-    """RETURNS: code_str --  a string containing source code of the skipper
-                db       --  database on required local variables
-    """
-    LanguageDB = Setup.language_db
-    skipper_class = SkipperDescriptor.__class__.__name__
-    assert skipper_class in ["SkipperRange", "SkipperCharacterSet"]
+    LanguageDB      = Setup.language_db
+    ClosingSequence = ArgumentList[0]
+    ModeName        = ArgumentList[1]
 
-    if skipper_class == "SkipperRange":
-        return  create_skip_range_code(SkipperDescriptor.get_closing_sequence())
-    elif skipper_class == "SkipperCharacterSet":
-        return  create_skip_character_set_code(SkipperDescriptor.get_character_set())
-    else:
-        assert None, None
+    Mode = None
+    if ModeName != "":
+        Mode = lexer_mode.mode_db[ModeName]
 
-def create_skip_range_code(ClosingSequence):
-    LanguageDB   = Setup.language_db
-
-    code_str, db = get_range_skipper(ClosingSequence) 
+    code_str, db = get_skipper(ClosingSequence, Mode) 
 
     txt =    "{\n"                                          \
            + LanguageDB["$comment"]("Range skipper state")  \
@@ -38,19 +30,7 @@ def create_skip_range_code(ClosingSequence):
 
     return code_str, db
 
-def create_skip_character_set_code(CharacterSet):
-    LanguageDB   = Setup.language_db
-
-    code_str, db = get_character_set_skipper(CharacterSet)   
-
-    txt =   "{\n"                                                 \
-          + LanguageDB["$comment"]("Character set skipper state") \
-          + code_str                                              \
-          + "\n}\n"
-
-    return txt, db
-
-range_skipper_template = """
+template_str = """
 {
     $$DELIMITER_COMMENT$$
     const QUEX_TYPE_CHARACTER   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
@@ -160,14 +140,16 @@ $$LC_COUNT_AFTER_RELOAD$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     me->buffer._input_p = me->buffer._lexeme_start_p;
-    $$MISSING_CLOSING_DELIMITER$$
+    $$ON_SKIP_RANGE_OPEN$$
 }
 """
 
-def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
+def get_skipper(EndSequence, Mode=None):
     assert EndSequence.__class__  == list
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
+
+    global template_str
 
     LanguageDB   = Setup.language_db
 
@@ -175,13 +157,13 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
     skipper_index = sm_index.get()
 
     # Determine the $$DELIMITER$$
-    delimiter_str = ""
-    delimiter_comment_str = "                         Delimiter: "
-    for letter in EndSequence:
-        delimiter_comment_str += "%s, " % utf8.unicode_to_pretty_utf8(letter)
-        delimiter_str += "0x%X, " % letter
-    delimiter_length_str = "%i" % len(EndSequence)
-    delimiter_comment_str = LanguageDB["$comment"](delimiter_comment_str) 
+    delimiter_str,        \
+    delimiter_length_str, \
+    delimiter_comment_str \
+                          = get_character_sequence(EndSequence)
+
+    delimiter_comment_str  = LanguageDB["$comment"]("                         Delimiter: " 
+                                                    + delimiter_comment_str)
 
     # Determine the check for the tail of the delimiter
     delimiter_remainder_test_str = ""
@@ -197,7 +179,7 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
         delimiter_remainder_test_str = txt
 
     # The main part
-    code_str = blue_print(range_skipper_template,
+    code_str = blue_print(template_str,
                           [["$$DELIMITER$$",                      delimiter_str],
                            ["$$DELIMITER_LENGTH$$",               delimiter_length_str],
                            ["$$DELIMITER_COMMENT$$",              delimiter_comment_str],
@@ -216,11 +198,11 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
                            ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
                            ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
-                           ["$$MISSING_CLOSING_DELIMITER$$",      MissingClosingDelimiterAction],
+                           ["$$ON_SKIP_RANGE_OPEN$$",             get_on_skip_range_open(Mode, EndSequence)],
                           ])
 
     # Line and column number counting
-    code_str, reference_p_f = __range_skipper_lc_counting_replacements(code_str, EndSequence)
+    code_str, reference_p_f = __lc_counting_replacements(code_str, EndSequence)
 
     # The finishing touch
     code_str = blue_print(code_str,
@@ -235,173 +217,7 @@ def get_range_skipper(EndSequence, MissingClosingDelimiterAction=""):
 
     return code_str, local_variable_db
 
-
-trigger_set_skipper_template = """
-{ 
-    $$DELIMITER_COMMENT$$
-$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
-
-    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
-#if 0
-    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
-        $$GOTO_DROP_OUT$$
-    }
-#endif
-
-    /* NOTE: For simple skippers the end of content does not have to be overwriten 
-     *       with anything (as done for range skippers). This is so, because the abort
-     *       criteria is that a character occurs which does not belong to the trigger 
-     *       set. The BufferLimitCode, though, does never belong to any trigger set and
-     *       thus, no special character is to be set.                                   */
-$$LOOP_START$$
-    $$INPUT_GET$$ 
-$$LC_COUNT_IN_LOOP$$
-$$ON_TRIGGER_SET_TO_LOOP_START$$
-$$LOOP_REENTRANCE$$
-    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    $$GOTO_LOOP_START$$
-
-$$DROP_OUT$$
-    /* -- When loading new content it is always taken care that the beginning of the lexeme
-     *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
-     *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
-     *    to the actual input position.                                                   
-     * -- The input_p will at this point in time always point to the buffer border.        */
-    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-$$LC_COUNT_BEFORE_RELOAD$$
-        $$MARK_LEXEME_START$$
-        if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-            $$GOTO_TERMINAL_EOF$$
-        } else {
-            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                                   post_context_start_position, PostContextStartPositionN);
-
-            QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-            $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-$$LC_COUNT_AFTER_RELOAD$$
-            $$GOTO_LOOP_START$$
-        } 
-    }
-
-$$DROP_OUT_DIRECT$$
-$$LC_COUNT_END_PROCEDURE$$
-    /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
-     * The character we just swallowed must be re-considered by the main state machine.
-     * But, note that the initial state does not increment '_input_p'!
-     */
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-    $$GOTO_START$$                           
-}
-"""
-
-def get_character_set_skipper(TriggerSet):
-    """This function implements simple 'skipping' in the sense of passing by
-       characters that belong to a given set of characters--the TriggerSet.
-    """
-    assert TriggerSet.__class__.__name__ == "NumberSet"
-    assert not TriggerSet.is_empty()
-
-    LanguageDB = Setup.language_db
-
-    skipper_index = sm_index.get()
-    # Mini trigger map:  [ trigger set ] --> loop start
-    # That means: As long as characters of the trigger set appear, we go to the loop start.
-    transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
-    transition_map.add_transition(TriggerSet, skipper_index)
-    iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), skipper_index, DSM=None))
-
-    comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
-
-    # Line and column number counting
-    code_str = __set_skipper_lc_counting_replacements(trigger_set_skipper_template, TriggerSet)
-
-    # The finishing touch
-    txt = blue_print(code_str,
-                      [
-                       ["$$DELIMITER_COMMENT$$",              comment_str],
-                       ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
-                       ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
-                       ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
-                       ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
-                       ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input", skipper_index)],
-                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input", skipper_index)],
-                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
-                       ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input", skipper_index)],
-                       ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                       ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
-                       ["$$SKIPPER_INDEX$$",                  repr(skipper_index)],
-                       ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
-                       # When things were skipped, no change to acceptance flags or modes has
-                       # happend. One can jump immediately to the start without re-entry preparation.
-                       ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
-                       ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
-                       ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
-                      ])
-
-    code_str = txt
-    # code_str = blue_print(txt,
-    #                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
-
-    local_variable_db = { "reference_p" : 
-                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
-
-    return code_str, local_variable_db
-
-def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferEndLimitCode):
-    assert StartSequence.__class__  == list
-    assert len(StartSequence)       >= 1
-    assert map(type, StartSequence) == [int] * len(StartSequence)
-    assert EndSequence.__class__  == list
-    assert len(EndSequence)       >= 1
-    assert map(type, EndSequence) == [int] * len(EndSequence)
-    assert StartSequence != EndSequence
-
-    # Identify the common start of 'StartSequence' and 'EndSequence'
-    CommonSequence    = []
-    StartSequenceTail = []  # 'un-common' tail of the start sequence
-    EndSequenceTail   = []  # 'un-common' tail of the end sequence
-    L_min             = min(len(StartSequence), len(EndSequence))
-    characters_from_begin_to_i_are_common_f = True
-    for i in range(L_min):
-        if (not characters_from_begin_to_i_are_common_f) or (StartSequence[i] != EndSequence[i]): 
-            StartSequenceTail.append(StartSequence[i])
-            EndSequenceTail.append(EndSequence[i])
-            characters_from_begin_to_i_are_common_f = False
-        else: 
-            CommonSequence.append(StartSequence[i])
-
-    if CommonSequence != []:
-        msg += "        " + LanguageDB["$if =="](repr(CommonSequence[0]))
-        msg += "            " + action_on_first_character_match
-        msg += "        " + LanguageDB["$endif"]
-    else:
-        msg += "        " + LanguageDB["$if =="](repr(StartSequenceTail[0]))
-        msg += "            " + action_on_first_character_match
-        msg += "        " + LanguageDB["$endif"]
-
-line_counter_in_loop = """
-#       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
-        if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
-            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-        }
-#       endif
-"""
-
-line_column_counter_in_loop = """
-#       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-        if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
-            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-            __QUEX_IF_COUNT_COLUMNS_SET((size_t)0);
-            __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
-        }
-#       endif
-"""
-
-def __range_skipper_lc_counting_replacements(code_str, EndSequence):
+def __lc_counting_replacements(code_str, EndSequence):
     """Line and Column Number Counting(Range Skipper):
      
          -- in loop if there appears a newline, then do:
@@ -501,40 +317,31 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
                       ]), \
            reference_p_required_f
 
-
-def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
-    """Line and Column Number Counting(Range Skipper):
-     
-         -- in loop if there appears a newline, then do:
-            increment line_n
-            set position from where to count column_n
-         -- at end of skipping do one of the following:
-            if end delimiter contains newline:
-               column_n = number of letters since last new line in end delimiter
-               increment line_n by number of newlines in end delimiter.
-               (NOTE: in this case the setting of the position from where to count
-                      the column_n can be omitted.)
-            else:
-               column_n = current_position - position from where to count column number.
-
-       NOTE: On reload we do count the column numbers and reset the column_p.
+def get_on_skip_range_open(Mode, CloserSequence):
+    """For unit tests 'Mode' may actually be a string, so that we do not
+       have to generate a whole mode just to get the 'on_skip_range_open' 
+       code fragment.
     """
-    variable_definition = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    if Mode == None: return ""
 
-    in_loop       = ""
-    # Does the end delimiter contain a newline?
-    if CharacterSet.contains(ord("\n")): in_loop = line_column_counter_in_loop
+    txt = ""
+    if type(Mode) in [str, unicode]:
+        txt += Mode
 
-    end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                    "                                    - reference_p));\n" 
-    before_reload  = "       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                     "                                   - reference_p));\n" 
-    after_reload   = "           __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n" 
+    elif not Mode.has_code_fragment_list("on_skip_range_open"):
+        txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % Mode.name + \
+               '                "End of file occured before closing skip range delimiter!\\n"' + \
+               '                "The \'on_skip_range_open\' handler has not been specified.");'
+    else:
+        closer_string = ""
+        for letter in CloserSequence:
+            closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
 
-    return blue_print(code_str,
-                     [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],
-                      ["$$LC_COUNT_IN_LOOP$$",                     in_loop],
-                      ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
-                      ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
-                      ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
-                      ])
+        code, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_skip_range_open"))
+        txt += "#define Closer \"%s\"\n" % closer_string
+        txt += code
+        txt += "#undef  Closer\n"
+        txt += "RETURN;\n"
+
+    return txt
+
