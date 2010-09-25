@@ -30,22 +30,37 @@ def do(X, TrafoInfo=None, FH=-1, LineN=None):
 
     if type(TrafoInfo) == str:
         if TrafoInfo == "utf8-state-split": 
-            pre_sm = X.core().pre_context_sm()
-            if pre_sm != None:
-                X.core().set_pre_context_sm(utf8_state_split.do(pre_sm))
-            return utf8_state_split.do(X)
+            return __split(X, utf8_state_split)
 
         elif TrafoInfo == "utf16-state-split":
-            pre_sm = X.core().pre_context_sm()
-            if pre_sm != None:
-                X.core().set_pre_context_sm(utf16_state_split.do(pre_sm))
-            return utf16_state_split.do(X)
+            return __split(X, utf16_state_split)
+
         # Other transformations are not supported
         assert False
     
     # Pre-condition SM is transformed inside the member function
     return X.transform(TrafoInfo)
         
+def __split(sm, splitter_module):
+    """sm              -- the state machine of which the state shall be split.
+       splitter_module -- the mode with the 'do' function that 
+                          performs the state split.
+    """
+    result = splitter_module.do(sm)
+    pre_sm = sm.core().pre_context_sm()
+    if pre_sm == None: return result
+
+    # There is a pre-context, state machine needs to be adapted
+    new_pre_sm = splitter_module.do(pre_sm)
+    result.core().set_pre_context_sm(new_pre_sm)
+
+    # Adapt all origins that depend on the old pre-context to the new context
+    for state in result.states.values():
+        for origin in state.origins().get_list():
+            if origin.pre_context_id() != pre_sm.core().get_id(): continue
+            origin.set_pre_context_id(new_pre_sm.get_id())
+    return result
+
 def do_set(number_set, TrafoInfo, FH=-1, LineN=None):
     """RETURNS: True  transformation successful
                 False transformation failed, number set possibly in inconsistent state!
