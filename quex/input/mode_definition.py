@@ -5,10 +5,10 @@ import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
 import quex.input.indentation_setup   as indentation_setup
-from   quex.core_engine.generator.action_info                    import GeneratedCode, UserCodeFragment
-from   quex.core_engine.generator.state_coder.skipper_core import create_skip_character_set_code, \
-                                                                  create_skip_range_code
-import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
+from   quex.core_engine.generator.action_info                     import GeneratedCode, UserCodeFragment
+import quex.core_engine.generator.skipper.character_set           as     skip_character_set
+import quex.core_engine.generator.skipper.range                   as     skip_range
+import quex.core_engine.generator.state_coder.indentation_counter as     indentation_counter
 
 import quex.core_engine.state_machine.index                      as index
 import quex.core_engine.state_machine.sequentialize              as sequentialize
@@ -102,7 +102,7 @@ def parse_mode_option(fh, new_mode):
         pattern_sm.add_transition(pattern_sm.init_state_index, trigger_set, AcceptanceF=True)
 
         # Skipper code is to be generated later
-        action = GeneratedCode(create_skip_character_set_code, trigger_set, 
+        action = GeneratedCode(skip_character_set.do, trigger_set, 
                                FileName = fh.name, 
                                LineN    = get_current_line_info_number(fh))
 
@@ -128,7 +128,7 @@ def parse_mode_option(fh, new_mode):
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
         # Skipper code is to be generated later
-        action = GeneratedCode(create_skip_range_code, closer_sequence,
+        action = GeneratedCode(skip_range.do, [closer_sequence, new_mode.name],
                                FileName = fh.name, 
                                LineN    = get_current_line_info_number(fh))
         new_mode.add_match(opener_str, action, opener_sm)

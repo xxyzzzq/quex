@@ -47,11 +47,13 @@ $$LOOP_REENTRANCE$$
     $$GOTO_LOOP_START$$
 
 $$DROP_OUT$$
-    /* -- In the case of 'skipping' we did not worry about the lexeme at all --
-     *    HERE, WE DO! We cannot set the lexeme start point to the current position!
-     *    The appplication might actually do something with it.
+    /* -- In the case of 'indentation counting' we do not worry about the lexeme at all --
+     *    HERE, WE DO! We can only set the lexeme start to the current reference_p, i.e.
+     *    the point of the last newline!
+     *    The appplication might actually do something with indented region.
      *
-     * -- The input_p will at this point in time always point to the buffer border.  */
+     * -- The input_p will at this point in time always point to the buffer border.     */
+    me->buffer._lexeme_start_p = reference_p;
     if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
@@ -177,7 +179,7 @@ def do(IndentationSetup):
                        # happend. One can jump immediately to the start without re-entry preparation.
                        ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
-                       ["$$INIT_REFERENCE_POINTER$$",   init_reference_p],
+                       ["$$INIT_REFERENCE_POINTER$$",         init_reference_p],
                        ["$$END_PROCEDURE$$",            end_procedure],
                        ["$$BAD_CHARACTER_HANDLING$$",   get_bad_character_handler(Mode, IndentationSetup, counter_index)],
                       ])
