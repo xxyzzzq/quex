@@ -1,0 +1,144 @@
+Installation
+============
+
+Before beginning the installation of quex, make sure that
+Python (http://www.python.org) is installed. Most linux distributions provide
+handy rpm packages--so this should not be an issue. 
+Once Python is isntalled, follow these steps: 
+
+.. note::
+
+   As for quex version 0.36.5 you cannot use Python version ≥ 3.0. Version 3.0
+   is not compatible with the 2.x versions. 
+
+* Extract the file ``quex-x.x.x.tar.gz`` into the desired directory.
+
+* Set the environment variable ``QUEX\_PATH`` in your system
+  environment to the place where you installed quex. If you are using
+  a Unix system and the bash-shell, add the following line to your
+  ``.bashrc``-file: ``export QUEX_PATH=the/directory/where/quex/was/installed/``
+  if you installed quex in the directory given on the right hand side of
+  the assignment.
+
+* Make a link from the file ``$QUEX_PATH/quex-exe.py`` to
+  ``$EXECUTABLE_PATH/quex`` where ``$EXECUTABLE_PATH`` is a path where executables
+  can be found by your system.  If you work on a unix system, you can
+  type ``ln -s $QUEX_PATH/quex-exe.py /usr/local/bin/quex`` You can
+  ensure executable rights with ``chmod a+rx $QUEX_PATH/quex-exe.py``, ``chmod a+rx
+  /usr/local/bin/quex``.
+
+* Supply your C\+\+ compiler with the include path '$QUEX_PATH'. For the
+  vast majority of compilers this means you must add ``-I$(QUEX_PATH)``
+  to the list of compiler flags. An example of how this is done can be observed
+  in the test applications which come with the quex distribution.
+
+* If you want to use character set conversion, you need to install one of the
+  supported libraries--currently IBM's ICU <http://icu-project.org/userguide/intro.html>
+  or GNU IConv <http://www.gnu.org/software/libiconv/>[#f1]_.
+
+
+That is all. Now, you should either copy the directories ``./demo/*`` to a
+place where you want to work on it, or simply change directory to there.  These
+directories contain sample applications 000, 001, $\ldots$. Change to the directory of the
+sample applications and type ``make``. If everything is setup properly,
+you will get your first quex-made lexical analyser executable in a matter
+of seconds. 
+
+.. note::
+
+   It was reported that a certain development environment called 'VisualStudio'
+   from a company called 'Microsoft' requires the path to python
+   to be set explicitly. Development environments may have their own set
+   of variables that need to be adapted.
+
+The example applications depict easy ways to specify
+traditional lexical analysers, they show some special features of quex such
+as mode transitions, and more. Each demo-application deals with a particular
+feature of quex: 
+
+.. data:: demo/000
+
+          shows how to setup a lexical analyzer very quickly.
+
+.. data:: demo/001
+
+          demonstrates basics on modes and mode transitions.
+
+.. data:: demo/002
+
+          contains a sample application for an indentation based language.
+
+.. data:: demo/003
+
+          implements a lexical analyzer handling UTF8 encoding. Quex creates an
+          engine that relies on *converters* ICU and IConv. The converters
+          are used to convert the incoming data stream to unicode. The internal
+          engine still runs on plain unicode code points.
+
+          In contrast, directory demo/011 an example is shown how quex creates
+          analyzer engines that do not need converters. The engine itself 
+          understands the codec and triggers on its code elements.
+
+.. data:: demo/004
+
+          contains a setup to generate a lexical analyser for the 'C' language.
+          Users are encouraged to submit other exciting examples of their language.
+
+.. data:: demo/005
+
+          explains how to do lexical analysis with files that include other files.
+
+.. data:: demo/006
+
+          contains an example that treats *pseudo ambiguous post contexts* (or,
+          'dangerous trailing contexts) which are difficult to deal with by
+          means of traditional lexical analyser generators.
+
+.. data:: demo/007
+
+          examples showing pattern priorization between base and derived modes as well as
+          applications of ``PRIORITY-MARK`` and ``DELETION``.
+
+.. data:: demo/008
+
+          shows how a quex generated lexer is linked to a bison generated parser. 
+
+.. data:: demo/009
+
+          shows how analyzers can be implemented for ``char`` and ``wchar_t`` string streams.
+
+.. data:: demo/010
+
+          shows how to access the analyzer's memory buffer directly. It also
+          contains an example, ``stdinlexer.cpp``, that shows how to parse the
+          standard input (i.e. the ``cin`` or ``stdin`` stream).
+
+.. data:: demo/011
+
+          provides an example of how to adapt the character encoding of the
+          lexical analyzer engine without using converters. Example codecs are 
+          iso8859-7 and utf8.
+
+.. data:: demo/012
+
+          gives an example of how to use multiple lexical analyzers in one single
+          application. 
+
+.. data:: benchmark
+
+          contains a benchmark suite to measure the performance of the lexical
+          analyzer. As an example a benchmark for a C-lexer is implemented. The
+          suite can build lexical analyzers based on quex, but also as a
+          comparison the same analyzers generated by flex and re2c.
+
+The author of this document suggests that the user looks at these sample
+applications first before continuing with the remainder of this text.  With the
+background of easy-to-use examples to serve as starting point for their own
+efforts, it should be natural to get a feeling for the ease of quex.
+
+.. rubric:: Footnotes
+
+.. [#f1] If you are glad to work on a Linux system, the probability that your 
+         distribution provides pre-configured installation packages for those 
+         libraries is very high. Nevertheless, there are also wellness packages for other
+         operating systems.

@@ -1,0 +1,30 @@
+<test-database execution-time-sec="11.07" date="Sun Sep 26 19:33:57 2010">
+    <last-used-diff-display-program name=""/>
+    <test title="Bad character detection." time-sum-sec="3.12"> 
+        <application file-name="bad.sh" info-request-time="1285403911L" vanished="False"/>
+        <choice-list number="2" same_result="False">
+           <choice name="default" result="OK" time_sec="1.47" crc="954811374"/>
+           <choice name="customized" result="OK" time_sec="1.66" crc="2010419295"/>
+        </choice-list>
+    </test>
+    <test title="Customized Event Handlers" time-sum-sec="6.03"> 
+        <application file-name="handlers.sh" info-request-time="1285403739L" vanished="False"/>
+        <choice-list number="4" same_result="False">
+           <choice name="check-eof" result="OK" time_sec="1.33" crc="-180552726"/>
+           <choice name="on_dedent" result="OK" time_sec="1.31" crc="-215364705"/>
+           <choice name="on_n_dedent" result="OK" time_sec="2.05" crc="-215364705"/>
+           <choice name="empty-lines" result="OK" time_sec="1.34" crc="-215364705"/>
+        </choice-list>
+    </test>
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.92"> 
+        <application file-name="commonalities.sh" info-request-time="1285145164L" vanished="False"/>
+        <choice-list number="6" same_result="False">
+           <choice name="1" result="OK" time_sec="0.32" crc="-1391501822"/>
+           <choice name="2" result="OK" time_sec="0.34" crc="970527046"/>
+           <choice name="3" result="OK" time_sec="0.32" crc="-1638526542"/>
+           <choice name="4" result="OK" time_sec="0.33" crc="1033537895"/>
+           <choice name="5" result="OK" time_sec="0.32" crc="640949708"/>
+           <choice name="6" result="OK" time_sec="0.30" crc="1833916996"/>
+        </choice-list>
+    </test>
+</test-database>

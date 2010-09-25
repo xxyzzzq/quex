@@ -1,0 +1,26 @@
+start = PROGRAM;
+
+header {
+#include <stdlib.h> // C++ adapted 'stdlib.h'
+}
+
+token {
+    NUM;
+    JUNK;
+    LETTER;
+}
+
+define {
+    DIGITS   [0-9]
+    A_Z      [a-z]
+    ALP_NUM  [: union({DIGITS}, {A_Z}) :]
+    SM_TEST  {A_Z}[a-z]
+}
+
+mode PROGRAM
+{
+    [ \t\n\r]+  {}
+    {DIGITS}+   => QUEX_TKN_NUM(Lexeme);
+    {A_Z}       => QUEX_TKN_LETTER(Lexeme);
+    <<FAIL>>    => QUEX_TKN_JUNK(Lexeme);
+}

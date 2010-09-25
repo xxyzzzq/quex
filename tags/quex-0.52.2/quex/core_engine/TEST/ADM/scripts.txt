@@ -1,0 +1,4 @@
+*.py
+--not filter_dominated_origins_test.py 
+--not test_NumberSet_base.py 
+

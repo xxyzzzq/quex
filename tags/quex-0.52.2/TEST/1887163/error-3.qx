@@ -1,0 +1,6 @@
+token {
+  A;
+}
+mode START {
+  "!" {
+}
