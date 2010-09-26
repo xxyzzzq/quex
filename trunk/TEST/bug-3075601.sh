@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-bug=open-issue
+bug=3075601
 if [[ $1 == "--hwut-info" ]]; then
     echo "otsakiridis: $bug 0.52.1 Pre-Context with Codec utf8;"
     echo "CHOICES: utf8, utf16;"

@@ -106,9 +106,9 @@ def do(argv):
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
 
     # (*) Classes and their namespace
-    setup.analyzer_class_name,      \
-    setup.analyzer_name_space,      \
-    setup.analyzer_name_safe = \
+    setup.analyzer_class_name, \
+    setup.analyzer_name_space, \
+    setup.analyzer_name_safe   = \
          read_namespaced_name(setup.analyzer_class_name, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
     if setup.analyzer_name_space == []:
