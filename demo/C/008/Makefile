@@ -14,10 +14,12 @@ LEXER_FILE		= Calc_lexer.qx
 
 # -- FILES PRODUCED BY QUEX
 LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
-LEXER_SOURCES	= $(LEXER_NAME)                     \
-                  $(LEXER_NAME).c                 \
-                  $(LEXER_NAME)-token_ids           \
-                  $(LEXER_NAME)-configuration       
+LEXER_SOURCES	= $(LEXER_NAME).c                 \
+                  $(LEXER_NAME).h                 \
+                  $(LEXER_NAME)-token_ids.h       \
+                  $(LEXER_NAME)-token.h           \
+                  $(LEXER_NAME)-token.c           \
+                  $(LEXER_NAME)-configuration.h       
 
 TOKEN_FILE		= Calc_token-ids
 

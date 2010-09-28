@@ -560,10 +560,10 @@ def __frame_of_all(Code, Setup):
         implementation_header_str = ""
 
     codec_header_str = ""
-    if Setup.engine_character_encoding_header != None:
-        codec_header_str = "#include \"%s\"\n" % Setup.engine_character_encoding_header
+    if Setup.output_engine_character_encoding_header != None:
+        codec_header_str = "#include \"%s\"\n" % Setup.output_engine_character_encoding_header
 
-    return "".join(["#include \"%s\"\n" % Setup.output_file_stem,
+    return "".join(["#include \"%s\"\n" % Setup.output_header_file,
                     implementation_header_str,
                     codec_header_str,
                     "QUEX_NAMESPACE_MAIN_OPEN\n",

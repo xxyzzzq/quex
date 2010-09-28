@@ -14,10 +14,11 @@ import quex.input.query as query
 import quex.input.codec_db as codec_db
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
-from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED
+from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED, HEADER, HEADER_IMPLEMTATION, SOURCE, global_extension_db
 from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
 from   quex.core_engine.generator.action_info import CodeFragment
+
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
@@ -148,16 +149,10 @@ def do(argv):
                         quex_core_engine_generator_languages_db.keys(),
                         "Programming language '%s' is not supported." % setup.language)
     setup.language_db = quex_core_engine_generator_languages_db[setup.language]
+    setup.extension_db = global_extension_db[setup.language]
 
     # (*) Output files
     prepare_file_names(setup)
-
-    if setup.engine_character_encoding != "":
-        # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
-        # See Internal engine character encoding'
-        setup.engine_character_encoding_header = __prepare_file_name("-converter-%s" % setup.engine_character_encoding)
-    else:
-        setup.engine_character_encoding_header = None
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 
@@ -337,12 +332,16 @@ def validate(setup, command_line, argv):
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)
 
     if setup.engine_character_encoding_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
-        setup.engine_character_encoding_header = None
+        setup.output_engine_character_encoding_header = None
 
     # Path Compression
     if setup.compression_path_uniform_f and setup.compression_path_f:
         error_msg("Both flags for path compression were set: '--path-compression' and\n" 
                   "'--path-compression-uniform'. Please, choose only one!")
+
+    # Is the output file naming scheme provided by the extension database
+    if setup.extension_db.has_key(setup.output_file_naming_scheme) == False:
+        error_msg("File extension scheme '%s' is not provided for language '%s'." % setup.language) 
                 
 def __check_file_name(setup, Candidate, Name):
     value             = setup.__dict__[Candidate]
@@ -390,11 +389,30 @@ def __get_float(MemberName):
         error_msg("Cannot convert '%s' into an floating point number for '%s'" % (ValueStr, option_name))
 
 def prepare_file_names(setup):
-    setup.output_code_file          = __prepare_file_name(setup.language_db["$file_extension"])
-    setup.output_file_stem          = __prepare_file_name("")
-    setup.output_configuration_file = __prepare_file_name("-configuration")
-    setup.output_token_id_file      = __prepare_file_name("-token_ids")
-    setup.output_token_class_file   = __prepare_file_name("-token")
+    setup.output_file_stem = ""
+    if setup.analyzer_name_space != ["quex"]:
+        for name in setup.analyzer_name_space:
+            setup.output_file_stem += name + "_"
+    setup.output_file_stem += setup.analyzer_class_name
+
+    setup.output_code_file          = __prepare_file_name("", SOURCE) # 
+    setup.output_header_file        = __prepare_file_name("", HEADER)
+    setup.output_configuration_file = __prepare_file_name("-configuration", HEADER)
+    setup.output_token_id_file      = __prepare_file_name("-token_ids", HEADER)
+    setup.output_token_class_file                = __prepare_file_name("-token", HEADER)
+    setup.output_token_class_file_implementation = __prepare_file_name("-token", HEADER_IMPLEMTATION)
+
+    if setup.engine_character_encoding != "":
+        # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
+        # See Internal engine character encoding'
+        setup.output_engine_character_encoding_header = \
+            __prepare_file_name("-converter-%s" % setup.engine_character_encoding, HEADER)
+        setup.output_engine_character_encoding_header_i = \
+            __prepare_file_name("-converter-%s" % setup.engine_character_encoding, HEADER_IMPLEMTATION)
+    else:
+        setup.output_engine_character_encoding_header   = None
+        setup.output_engine_character_encoding_header_i = None
+
 
 def make_numbers(setup):
     setup.compression_template_coef  = __get_float("compression_template_coef")
@@ -419,19 +437,21 @@ def __get_integer(MemberName):
                   "           and no prefix for decimal numbers.")
     return result
 
-def __prepare_file_name(Suffix, FileStemIncludedF=False):
+def __prepare_file_name(Suffix, ContentType):
+    global SOURCE
+    global HEADER_IMPLEMTATION
+    global HEADER
     global setup
-    if FileStemIncludedF: 
-        FileName = Suffix
-    else:          
-        prefix = ""
-        if setup.analyzer_name_space != ["quex"]:
-            for name in setup.analyzer_name_space:
-                prefix += name + "_"
-        FileName = prefix + setup.analyzer_class_name + Suffix
 
-    if setup.output_directory == "": return FileName
-    else:                            return os.path.normpath(setup.output_directory + "/" + FileName)
+    assert ContentType in [SOURCE, HEADER, HEADER_IMPLEMTATION]
+
+    # Language + Extenstion Scheme + ContentType --> name of extension
+    ext = setup.extension_db[setup.output_file_naming_scheme][ContentType]
+
+    file_name = setup.output_file_stem + Suffix + ext
+
+    if setup.output_directory == "": return file_name
+    else:                            return os.path.normpath(setup.output_directory + "/" + file_name)
 
 def __get_supported_command_line_option_description(NormalModeOptions):
     txt = "OPTIONS:\n"

@@ -16,7 +16,8 @@ class TokenTypeDescriptorCore:
     """Object used during the generation of the TokenTypeDescriptor."""
     def __init__(self, Core=None):
         if Core == None:
-            self._file_name            = Setup.output_token_class_file
+            self._file_name                = Setup.output_token_class_file
+            self._file_name_implementation = Setup.output_token_class_file_implementation
             if Setup.token_class_name.find("::") != -1:
                 Setup.token_class_name,       \
                 Setup.token_class_name_space, \
@@ -39,7 +40,8 @@ class TokenTypeDescriptorCore:
                 self.__dict__[name] = CodeFragment("")
 
         else:
-            self._file_name            = Core._file_name
+            self._file_name                = Core._file_name
+            self._file_name_implementation = Core._file_name_implementation
             self.class_name            = Core.class_name
             self.class_name_safe       = Core.class_name_safe
             self.name_space            = Core.name_space
@@ -58,6 +60,8 @@ class TokenTypeDescriptorCore:
 
     def set_file_name(self, FileName):
         self._file_name = FileName
+        ext = Setup.language_db[Setup.language].extension_db[Setup.output_file_naming_scheme][HEADER_IMPLEMTATION]
+        self._file_name_implementation = FileName + ext
 
     def __repr__(self):
         txt = ""
@@ -125,7 +129,6 @@ class TokenTypeDescriptorCore:
     def manually_written(self):
         return False
 
-
 class TokenTypeDescriptor(TokenTypeDescriptorCore):
     """The final product."""
     def __init__(self, Core, FileNameOfDefinition="", LineNOfDefinition=-1):
@@ -180,6 +183,9 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
 
     def get_file_name(self):
         return self._file_name
+
+    def get_file_name_implementation(self):
+        return self._file_name_implementation
 
     def type_name_length_max(self):
         return self.__type_name_length_max

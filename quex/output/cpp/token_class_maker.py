@@ -8,6 +8,7 @@ from   quex.frs_py.string_handling            import blue_print
 import quex.lexer_mode                        as lexer_mode
 import quex.core_engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup
+from   quex.input.setup                       import HEADER, HEADER_IMPLEMTATION
 from   quex.input.setup_parser                import __prepare_file_name
 
 
@@ -25,7 +26,7 @@ def do():
 
     # If the implementation happens in a separate file, write it!
     if txt_i != None:
-        file_name = lexer_mode.token_type_definition.get_file_name() + ".i"
+        file_name = lexer_mode.token_type_definition.get_file_name_implementation()
         write_safely_and_close(file_name, txt_i) 
 
 def _do(Descr):

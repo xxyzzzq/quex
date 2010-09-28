@@ -165,7 +165,7 @@ def write_engine_header(ModeDB):
     QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                                    + Setup.language_db["$code_base"] 
                                                    + Setup.language_db["$analyzer_template_file"]).replace("//","/")
-    LexerFileStem               = Setup.output_file_stem
+    LexerFileStem               = Setup.output_header_file
     LexerClassName              = Setup.analyzer_class_name
 
     #    are bytes of integers Setup 'little endian' or 'big endian' ?

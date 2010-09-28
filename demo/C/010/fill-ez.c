@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "tiny_lexer"
-#include "tiny_lexer-token.i"
+#include "tiny_lexer.h"
 #include "messaging-framework.h"
+#include "tiny_lexer-token.c"
 
 size_t 
 messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER*, size_t);

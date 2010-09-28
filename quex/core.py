@@ -84,7 +84,7 @@ def do():
     # write code to a header file
     write_safely_and_close(Setup.output_configuration_file,
                            header_configuration_txt)
-    write_safely_and_close(Setup.output_file_stem,
+    write_safely_and_close(Setup.output_header_file,
                            header_engine_txt)
     write_safely_and_close(Setup.output_code_file, 
                              mode_implementation_txt                    + "\n" 
@@ -92,7 +92,7 @@ def do():
                            + map_id_to_name_function_implementation_txt + "\n" 
                            + analyzer_code)
 
-    UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
+    UserCodeFragment_straighten_open_line_pragmas(Setup.output_header_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
     assert lexer_mode.token_type_definition != None
@@ -157,7 +157,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                  StateMachineName               = Mode.name,
                                  AnalyserStateClassName         = Setup.analyzer_class_name,
                                  StandAloneAnalyserF            = False, 
-                                 QuexEngineHeaderDefinitionFile = Setup.output_file_stem,
+                                 QuexEngineHeaderDefinitionFile = Setup.output_header_file,
                                  ModeNameList                   = ModeNameList,
                                  RequiredLocalVariablesDB       = required_local_variables_db)
 

@@ -431,8 +431,8 @@ setup. The handling of the loop exit is shown below.
                 "le monde" => QUEX_TKN_NEWSPAPER;
             }
 
-    Where the begin of the ``NEWSPAPER`` pattern ``le `` can be made
-    up of a sequence ``le``  (``ARTICLE``) and `` `` (``WHITESPACE``).
+    Where the begin of the ``NEWSPAPER`` pattern ``le`` can be made
+    up of a sequence ``le``  (as ``ARTICLE``) and `` `` (as ``WHITESPACE``).
     Consider the frame sequence::
 
         frame[time=0] [le ]
@@ -600,22 +600,35 @@ used by the lexical analyzer. A constructor call
 
 .. code-block:: cpp
 
-    quex::MyLexer   qlex((QUEX_TYPE_CHARACTER*)BUFFER_ADR, 
-                         BUFFER_SIZE,
-                         (QUEX_TYPE_CHARACTER*)END_OF_CONTENT); 
+    quex::MyLexer   qlex((QUEX_TYPE_CHARACTER*)BeginOfMemory, 
+                         MemorySize,
+                         (QUEX_TYPE_CHARACTER*)EndOfContent); 
 
 announces the memory to be used by the engine. Note, that the first position to
-be written to must be ``BUFFER_ADR + 1``, because the first element of the
-memory is filled with the buffer limit code. The buffer can be filled
-initially. The third argument to the constructor must tell the end of the
-content. If the buffer is empty at construction time the end of content
-must point to ``BUFFER_ADR + 1``. When the content of the buffer is filled
-a code fragment like
+be written to must be ``BeginOfMemory + 1``, because the first element of
+the memory is filled with the buffer limit code. The buffer can, but does
+not have to, be filled initially. The third argument to the constructor
+must tell the end of the content. If the buffer is empty at construction
+time the end of content must point to ``BeginOfMemory + 1``. The meaning
+of the arguments is again displayed in figure :ref:`fig-memory-pointing`.
+
+
+.. _fig-memory-pointing:
+
+.. figure:: ../figures/memory-pointing.* 
+   
+   User provided memory and its content.
+
+It is conceivable that the user fills this very same memory chunk with new
+content, so there must be a difference between the end of memory and the end of
+the content. The end of memory is communicated with the argument ``MemorySize``
+and the end of content via ``EndOfContent``.  When the content of the buffer is
+filled a code fragment like
 
 .. code-block:: cpp
 
     qlex.buffer_fill_region_finish(receive_n);
-    qlex.buffer_input_pointer_set(BUFFER_ADR + 1);
+    qlex.buffer_input_pointer_set(BeginOfMemory + 1);
 
 tells the analyzer about the number of characters that make up the content.
 Also, it resets the input position to the start of the buffer.  Now, the

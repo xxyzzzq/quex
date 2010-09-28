@@ -14,7 +14,7 @@ QUEX_INLINE void
 QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                             QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                             size_t               BufferMemorySize,
-                            QUEX_TYPE_CHARACTER* BufferEndOfFileP,     /* = 0x0   */
+                            QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0   */
                             const char*          CharacterEncodingName /* = 0x0   */,
                             bool                 ByteOrderReversionF   /* = false */)
 {
@@ -28,15 +28,15 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
     if( BufferMemoryBegin != 0x0 ) {
         /* End of File must be inside the buffer, because we assume that the buffer
          * contains all that is required.                                           */
-        __quex_assert(BufferEndOfFileP != 0x0);
+        __quex_assert(BufferEndOfContentP != 0x0);
     }
-    if( BufferEndOfFileP != 0x0 ) {
-        __quex_assert(BufferEndOfFileP >  BufferMemoryBegin);
-        __quex_assert(BufferEndOfFileP <= BufferMemoryBegin + memory_size - 1);
+    if( BufferEndOfContentP != 0x0 ) {
+        __quex_assert(BufferEndOfContentP >  BufferMemoryBegin);
+        __quex_assert(BufferEndOfContentP <= BufferMemoryBegin + memory_size - 1);
 
         /* The memory provided must be initialized. If it is not, then that's wrong.
          * Try to detect this by searching for BLC and PTC.                         */
-        for(iterator = BufferMemoryBegin + 1; iterator != BufferEndOfFileP; ++iterator) {
+        for(iterator = BufferMemoryBegin + 1; iterator != BufferEndOfContentP; ++iterator) {
             if(    *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE 
                 || *iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
                 QUEX_ERROR_EXIT("\nConstructor: Buffer limit code and/or path termination code appeared in buffer\n"
@@ -54,7 +54,7 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                                 (void*)0x0, 
 #   endif
                                 CharacterEncodingName, ByteOrderReversionF,
-                                BufferMemoryBegin, memory_size, BufferEndOfFileP);
+                                BufferMemoryBegin, memory_size, BufferEndOfContentP);
 }
 
 QUEX_INLINE void

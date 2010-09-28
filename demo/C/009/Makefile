@@ -11,10 +11,12 @@ endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
-SOURCES  = tiny_lexer  tiny_lexer.c  tiny_lexer-token_ids  \
-		   tiny_lexer-configuration
-WSOURCES = tiny_wlexer tiny_wlexer.c tiny_wlexer-token_ids \
-		   tiny_wlexer-configuration
+SOURCES  = tiny_lexer.h  tiny_lexer.c  tiny_lexer-token_ids.h  \
+		   tiny_lexer-token.h tiny_lexer-token.c \
+		   tiny_lexer-configuration.h
+WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
+		   tiny_wlexer-token.h tiny_wlexer-token.c \
+		   tiny_wlexer-configuration.h
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)

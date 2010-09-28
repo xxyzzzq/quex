@@ -1,17 +1,15 @@
 from   quex.frs_py.string_handling import blue_print
-from   quex.frs_py.file_in         import write_safely_and_close
 from   quex.input.setup            import setup as Setup
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
     TokenClassName              = Setup.token_class_name
-    OutputFilestem              = Setup.output_file_stem
     DerivedClassName            = Setup.analyzer_derived_class_name
     DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
 
     if DerivedClassHeaderFileName != "": txt = "#include<" + DerivedClassHeaderFileName +">\n"
-    else:                                txt = "#include\"" + OutputFilestem +"\"\n"
+    else:                                txt = "#include\"" + Setup.output_header_file +"\"\n"
 
     txt += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
 

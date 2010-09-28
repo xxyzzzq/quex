@@ -88,7 +88,7 @@ public:
     /* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);
 public:
     $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-    $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfFileP      = 0x0,
+    $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP   = 0x0,
     $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
     $$___SPACE___$$bool                 ByteOrderReversionF   = false);
     $$LEXER_CLASS_NAME$$(const std::string&   Filename,       

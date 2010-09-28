@@ -30,6 +30,50 @@ as described in :ref:`sec-number-format`.
         
         DEFAULT = ``lexer``
 
+.. cmdoption:: --output-dir, --odir directory
+
+        ``directory`` = name of the output directory where generated files are 
+        to be written.
+
+.. cmdoption:: ``--output-file-extension-scheme``, ``--ofes`` ext
+
+        Specifies the filestem and extensions of the output files. The provided
+        argument identifies the naming scheme. 
+
+        .. describe:: ``DEFAULT``
+
+           If the option is not provided, then the naming scheme depends on the 
+           ``--language`` command line option. That is:
+
+           .. describe:: C++
+
+              * No extension for header files that contain only declarations.
+              * ``.i`` for header files containing inline function implementation.
+              * ``.cpp`` for source files.
+
+           .. describe:: C
+
+              * ``.h`` for header files.
+              * ``.c`` for source files.
+
+        .. describe:: ``++``
+
+              * ``.h++`` for header files.
+              * ``.c++`` for source files.
+
+        .. describe:: ``pp``
+
+              * ``.hpp`` for header files.
+              * ``.cpp`` for source files.
+
+        .. describe:: ``xx``
+
+              * ``.hxx`` for header files.
+              * ``.cxx`` for source files.
+
+        For ``C`` there is currently no different naming scheme supported.
+
+
 .. cmdoption:: --language name
 
         Defines the programming language of the output. ``name`` can be 
@@ -217,11 +261,6 @@ The following options support the definition of a independently customized token
         Disable the 'stringless check' for customized token types. If the user
         defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then
         quex posts a warning. By means of this flag the warning is disabled.
-
-.. cmdoption:: --odir, --output-dir directory
-
-        ``directory`` = name of the output directory where generated files are 
-        to be written.
 
 There may be cases where the characters used to indicate buffer limit needs to
 be redefined, because the default value appear in a pattern footnote:[As for

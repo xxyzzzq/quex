@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "tiny_lexer"
-#include "tiny_lexer-token.i"
+#include "tiny_lexer.h"
 #include "messaging-framework.h"
+#include "tiny_lexer-token.c"
 
 typedef struct {
     uint8_t* begin;
