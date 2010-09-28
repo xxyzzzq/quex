@@ -1,6 +1,14 @@
+< LEXER_SOURCES	= $(LEXER_NAME)                     \
 <                   $(LEXER_NAME).cpp                 \
+<                   $(LEXER_NAME)-token_ids           \
+<                   $(LEXER_NAME)-configuration       
 ---
->                   $(LEXER_NAME).c                 \
+> LEXER_SOURCES	= $(LEXER_NAME).c                 \
+>                   $(LEXER_NAME).h                 \
+>                   $(LEXER_NAME)-token_ids.h       \
+>                   $(LEXER_NAME)-token.h           \
+>                   $(LEXER_NAME)-token.c           \
+>                   $(LEXER_NAME)-configuration.h       
 < PARSER_FILE		=	$(PARSER_NAME).ypp
 < PARSER_SOURCES	=	$(PARSER_NAME).tab.cpp	\
 < 					$(PARSER_NAME).tab.hpp

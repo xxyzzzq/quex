@@ -1,7 +1,7 @@
 #include <stdio.h>    
 
-#include "EasyLexer"
-#include "EasyLexer-token.i"
+#include "EasyLexer.h"
+#include "EasyLexer-token.c"
 
 
 #ifndef     ENCODING_NAME

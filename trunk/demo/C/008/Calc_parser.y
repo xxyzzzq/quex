@@ -8,7 +8,7 @@
 %name-prefix="Calc_yy"
 
 %{
-#include "Calc_lexer"
+#include "Calc_lexer.h"
 #include <stdio.h>
 #include <math.h>
 #include <errno.h>

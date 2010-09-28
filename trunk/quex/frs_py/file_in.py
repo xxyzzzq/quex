@@ -524,6 +524,7 @@ def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
         error_msg("Cannot open file '%s'" % FileName)
 
 def write_safely_and_close(FileName, txt):
+
     file_name = FileName.replace("//","/")
     fh = open_file_or_die(FileName, Mode="wb")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)

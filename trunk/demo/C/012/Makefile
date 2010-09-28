@@ -1,6 +1,6 @@
 ENGINE = \
-		boeck_Lexer.c              \
-		max_Lexer.c                \
+		boeck_Lexer.c    \
+		max_Lexer.c      \
 		moritz_Lexer.c             
 
 OBJS = $(ENGINE:.c=.o) lexer.o
@@ -45,12 +45,9 @@ boeck_Lexer.c: boeck.qx
 		 --no-warning-on-no-token-queue                
 
 clean:
-	rm -rf $(ENGINE)
-	rm -rf $(ENGINE:.c=.o)
-	rm -rf $(ENGINE:.c=)
-	rm -rf $(ENGINE:.c=-token_ids)
-	rm -rf $(ENGINE:.c=-token)
-	rm -rf $(ENGINE:.c=-configuration)
+	rm -rf boeck_Lexer*
+	rm -rf max_Lexer*
+	rm -rf moritz_Lexer*
 	rm -rf lexer
 	rm -rf *.E
 	rm -rf lexer.o

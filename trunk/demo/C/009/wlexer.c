@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include<assert.h>
 
-#include "tiny_wlexer"
-#include "tiny_wlexer-token.i"
+#include "tiny_wlexer.h"
+#include "tiny_wlexer-token.c"
 
 void
 get_wfile_input(tiny_wlexer* qlex);

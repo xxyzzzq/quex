@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "tiny_lexer"
-#include "tiny_lexer-token.i"
+#include "tiny_lexer.h"
+#include "tiny_lexer-token.c"
 
 int 
 main(int argc, char** argv) 

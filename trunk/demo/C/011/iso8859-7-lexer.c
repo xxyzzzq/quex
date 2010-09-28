@@ -1,9 +1,9 @@
 #include <stdio.h> 
 
 // (*) include lexical analyser header
-#include "ISO8859_7_Lex"
-#include "ISO8859_7_Lex-token.i"
-#include "ISO8859_7_Lex-converter-iso8859_7.i"
+#include "ISO8859_7_Lex.h"
+#include "ISO8859_7_Lex-token.c"
+#include "ISO8859_7_Lex-converter-iso8859_7.c"
 
 int 
 main(int argc, char** argv) 

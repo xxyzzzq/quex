@@ -1,11 +1,11 @@
 #include <stdio.h> 
 
-#include "moritz_Lexer"
-#include "moritz_Lexer-token.i"
-#include "max_Lexer"
-#include "max_Lexer-token.i"
-#include "boeck_Lexer"
-#include "boeck_Lexer-token.i"
+#include "moritz_Lexer.h"
+#include "moritz_Lexer-token.c"
+#include "max_Lexer.h"
+#include "max_Lexer-token.c"
+#include "boeck_Lexer.h"
+#include "boeck_Lexer-token.c"
 
 int 
 main(int argc, char** argv) 

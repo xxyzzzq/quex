@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "EasyLexer"
-#include "EasyLexer-token.i"
-#include "EasyLexer-token_ids"
+#include "EasyLexer.h"
+#include "EasyLexer-token_ids.h"
+#include "EasyLexer-token.c"
 
 int 
 main(int argc, char** argv) 

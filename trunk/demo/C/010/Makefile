@@ -79,3 +79,4 @@ clean:
 	rm -f *.E
 	rm -f copy fill point
 	rm -f *.bak
+	rm -f tmp*

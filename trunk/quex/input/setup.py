@@ -46,6 +46,7 @@ SETUP_INFO = {
     "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
     "language":                       [["--language", "-l"],                 "C++"],
     "output_debug_f":                 [["--debug"],                          FLAG],
+    "output_file_naming_scheme":      [["--output-file-extension-scheme", "--ofes"],  ""],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
     "plot_graphic_format":            [["--plot"],                           ""],
@@ -64,7 +65,15 @@ SETUP_INFO = {
     "analyzer_derived_class_name_safe":          None,
     "token_class_name_space":                    None,
     "token_class_name_safe":                     None,
-    "engine_character_encoding_header_file":     None,
+    "output_engine_character_encoding_header_file": None,
+    "output_header_file":                           None,
+    "output_configuration_file":                    None,
+    "output_code_file":                             None,
+    "output_token_id_file":                         None,
+    "output_token_class_file_implementation":       None,
+    "output_token_class_file":                      None,
+    "language_db":                                  None,
+    "extension_db":                                 None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
     "XX_bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
@@ -176,6 +185,41 @@ DEPRECATED = {
        "    }", "0.51.1"),
 }
  
+HEADER              = 0
+HEADER_IMPLEMTATION = 1
+SOURCE              = 2
+
+global_extension_db = {
+    "C++": {
+        "": { 
+              SOURCE:              ".cpp",
+              HEADER:              "",
+              HEADER_IMPLEMTATION: ".i",
+        },
+        "++": { 
+              SOURCE:              ".c++",
+              HEADER:              ".h++",
+              HEADER_IMPLEMTATION: ".h++",
+        },
+        "pp": { 
+              SOURCE:              ".cpp",
+              HEADER:              ".hpp",
+              HEADER_IMPLEMTATION: ".hpp",
+        },
+        "xx": { 
+              SOURCE:              ".cxx",
+              HEADER:              ".hxx",
+              HEADER_IMPLEMTATION: ".hxx",
+        },
+   },
+    "C": {
+        "": {
+              SOURCE:              ".c",
+              HEADER:              ".h",
+              HEADER_IMPLEMTATION: ".c",
+        }
+   }
+}
 
 setup = something()
 for key, entry in SETUP_INFO.items():
@@ -188,4 +232,5 @@ for key, entry in SETUP_INFO.items():
 
 # Default values, maybe overiden later on.
 setup.language_db = quex_core_engine_generator_languages_db["C++"]
+setup.language_db = global_extension_db["C++"]
 setup.engine_character_encoding_transformation_info = None

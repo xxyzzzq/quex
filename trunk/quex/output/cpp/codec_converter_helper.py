@@ -20,10 +20,10 @@ def do():
     if txt_i != None:
         # When we deal with 'C' we need to distinguish between declaration and
         # implementation, thus we need two headers.
-        write_safely_and_close(Setup.engine_character_encoding_header, txt) 
-        write_safely_and_close(Setup.engine_character_encoding_header + ".i", txt_i) 
+        write_safely_and_close(Setup.output_engine_character_encoding_header, txt) 
+        write_safely_and_close(Setup.output_engine_character_encoding_header_i, txt_i) 
     else:
-        write_safely_and_close(Setup.engine_character_encoding_header, txt) 
+        write_safely_and_close(Setup.output_engine_character_encoding_header, txt) 
 
 def _do(UnicodeTrafoInfo, CodecName):
     """

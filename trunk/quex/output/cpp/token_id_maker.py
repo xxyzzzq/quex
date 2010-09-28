@@ -18,8 +18,6 @@ from   quex.lexer_mode             import token_id_db
 from   quex.frs_py.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
 
-LanguageDB = Setup.language_db
-
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
         self.name         = Name
@@ -194,7 +192,9 @@ def do(setup, IndentationSupportF):
                 error_msg("and token id '%s' have same numeric value '%s'." \
                           % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
                           
-    tc_descr = lexer_mode.token_type_definition
+    tc_descr   = lexer_mode.token_type_definition
+    LanguageDB = Setup.language_db
+
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],

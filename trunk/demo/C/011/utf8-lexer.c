@@ -1,8 +1,8 @@
 #include <stdio.h> 
 
 // (*) include lexical analyser header
-#include "UTF8Lex"
-#include "UTF8Lex-token.i"
+#include "UTF8Lex.h"
+#include "UTF8Lex-token.c"
 
 int 
 main(int argc, char** argv) 
