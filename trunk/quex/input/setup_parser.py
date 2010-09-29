@@ -151,6 +151,13 @@ def do(argv):
     setup.language_db = quex_core_engine_generator_languages_db[setup.language]
     setup.extension_db = global_extension_db[setup.language]
 
+    # Is the output file naming scheme provided by the extension database
+    # (Validation must happen immediately)
+    if setup.extension_db.has_key(setup.output_file_naming_scheme) == False:
+        error_msg("File extension scheme '%s' is not provided for language '%s'.\n" \
+                  % (setup.output_file_naming_scheme, setup.language) + \
+                  "Available schemes are: %s." % repr(setup.extension_db.keys())[1:-1])
+
     # (*) Output files
     prepare_file_names(setup)
 
@@ -339,10 +346,6 @@ def validate(setup, command_line, argv):
         error_msg("Both flags for path compression were set: '--path-compression' and\n" 
                   "'--path-compression-uniform'. Please, choose only one!")
 
-    # Is the output file naming scheme provided by the extension database
-    if setup.extension_db.has_key(setup.output_file_naming_scheme) == False:
-        error_msg("File extension scheme '%s' is not provided for language '%s'." % setup.language) 
-                
 def __check_file_name(setup, Candidate, Name):
     value             = setup.__dict__[Candidate]
     CommandLineOption = SETUP_INFO[Candidate][0]

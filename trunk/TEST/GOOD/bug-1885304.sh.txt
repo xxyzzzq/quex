@@ -95,7 +95,7 @@ public:
     /* DISABLED */ Simple(const Simple&);
 public:
     Simple(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-           QUEX_TYPE_CHARACTER* BufferEndOfFileP      = 0x0,
+           QUEX_TYPE_CHARACTER* BufferEndOfContentP   = 0x0,
            const char*          CharacterEncodingName = 0x0,
            bool                 ByteOrderReversionF   = false);
     Simple(const std::string&   Filename,       

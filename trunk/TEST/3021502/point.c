@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "Simple"
-#include "Simple-token.i"
+#include "Simple.h"
+#include "Simple-token.c"
 
 int 
 main(int argc, char** argv) 

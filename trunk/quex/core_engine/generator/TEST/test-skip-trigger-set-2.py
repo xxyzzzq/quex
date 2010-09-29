@@ -6,7 +6,8 @@ from quex.core_engine.interval_handling import NumberSet, Interval
 from generator_test import create_main_function, \
                            create_range_skipper_code, \
                            create_character_set_skipper_code, \
-                           compile_and_run
+                           compile_and_run, \
+                           __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:
     print "Skip-Characters: Varrying Buffer Size"
@@ -28,6 +29,8 @@ trigger_set = NumberSet([Interval(ord('a'), ord('z') + 1),
                          Interval(ord('A'), ord('Z') + 1)])
 
 Language = "Cpp"
+__Setup_init_language_database(Language)
+
 
 TestStr  = "abcdefg_HIJKLMNOP-qrstuvw'XYZ12ok3"
 

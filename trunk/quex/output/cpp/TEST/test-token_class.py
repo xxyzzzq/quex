@@ -3,8 +3,9 @@ import sys
 import os
 from StringIO import StringIO
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.output.cpp.token_class_maker as token_class
-import quex.input.token_type             as parser
+import quex.output.cpp.token_class_maker         as token_class
+import quex.input.token_type                     as parser
+import quex.core_engine.generator.languages.core as languages
 import quex.input.setup         
 
 quex.input.setup.setup.QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
@@ -12,6 +13,7 @@ quex.input.setup.setup.bytes_per_ucs_code_point = 1
 quex.input.setup.setup.output_token_class_file = ""
 quex.input.setup.setup.token_class_name_space = ""
 quex.input.setup.setup.token_class_name_safe = ""
+quex.input.setup.setup.language_db = languages.db["C++"]
 
 if "--hwut-info" in sys.argv:
     print "Token Class Template"

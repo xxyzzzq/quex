@@ -67,6 +67,30 @@ def hwut_input(Title, Extra="", AddChoices=[], DeleteChoices=[]):
 
     return sys.argv[1]
 
+def __Setup_init_language_database(Language):
+    global Setup
+
+    try:
+        Setup.language = { 
+            "ANSI-C-PlainMemory": "C",
+            "ANSI-C":             "C",
+            "ANSI-C-CG":          "C",
+            "Cpp":                "C++", 
+            "Cpp_StrangeStream":  "C++", 
+            "Cpp-Template":       "C++", 
+            "Cpp-Template-CG":    "C++", 
+            "Cpp-Path":           "C++", 
+            "Cpp-PathUniform":    "C++", 
+            "Cpp-Path-CG":        "C++", 
+            "Cpp-PathUniform-CG": "C++",
+        }[Language]
+    except:
+        print "Error: missing language specifier: %s" % Language
+        sys.exit()
+
+    Setup.language_db = db[Setup.language]
+
+
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
@@ -74,6 +98,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     BufferLimitCode = 0
     Setup.buffer_limit_code = BufferLimitCode
+
+    __Setup_init_language_database(Language)
 
     CompileOptionStr = ""
     if Language.find("StrangeStream") != -1:
@@ -322,7 +348,7 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    Setup.language_db = db["C++"]
+    __Setup_init_language_database(Language)
     skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,

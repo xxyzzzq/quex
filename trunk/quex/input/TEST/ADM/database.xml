@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.79" date="Wed Sep 29 13:41:07 2010">
+<test-database execution-time-sec="14.82" date="Thu Sep 30 11:18:19 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.05"> 
         <application file-name="nonsense.py" info-request-time="1279943722L" vanished="True"/>
@@ -6,7 +6,7 @@
            <choice name="" result="NO GOOD FILE" time_sec="2.05" crc="0"/>
         </choice-list>
     </test>
-    <test title="Parse Indentation Setup" time-sum-sec="0.47"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.48"> 
         <application file-name="indentation_setup.py" info-request-time="1283925188L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="OK" time_sec="0.07" crc="-1318928622"/>
@@ -16,7 +16,7 @@
            <choice name="non-numeric" result="OK" time_sec="0.06" crc="654413883"/>
         </choice-list>
     </test>
-    <test title="Case Folding based on Unicode Database" time-sum-sec="0.37"> 
+    <test title="Case Folding based on Unicode Database" time-sum-sec="0.38"> 
         <application file-name="case_fold.py" info-request-time="1279826094L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="s_simple" result="OK" time_sec="0.06" crc="-612045726"/>
@@ -69,14 +69,14 @@
                <choice name="Twice-2" result="OK" time_sec="0.05" crc="1768785304"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" time-sum-sec="0.25"> 
-            <application file-name="token_type-4.py" info-request-time="1280661393L" vanished="False"/>
+        <test title="Constructor, Copy, Destructor" time-sum-sec="0.27"> 
+            <application file-name="token_type-4.py" info-request-time="1285838291L" vanished="False"/>
             <choice-list number="5" same_result="False">
-               <choice name="Constructor" result="FAIL" time_sec="0.05" crc="1233219576"/>
+               <choice name="Constructor" result="OK" time_sec="0.05" crc="1233219576"/>
                <choice name="Constructor-1" result="OK" time_sec="0.07" crc="-365070336"/>
-               <choice name="Constructor-2" result="FAIL" time_sec="0.04" crc="1092220819"/>
-               <choice name="Destructor" result="FAIL" time_sec="0.05" crc="1133266951"/>
-               <choice name="Copy" result="FAIL" time_sec="0.05" crc="-913011942"/>
+               <choice name="Constructor-2" result="OK" time_sec="0.05" crc="1092220819"/>
+               <choice name="Destructor" result="OK" time_sec="0.04" crc="1133266951"/>
+               <choice name="Copy" result="OK" time_sec="0.06" crc="-913011942"/>
             </choice-list>
         </test>
         <test title="Class Name and Namespace" time-sum-sec="0.32"> 

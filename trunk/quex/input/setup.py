@@ -46,7 +46,7 @@ SETUP_INFO = {
     "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
     "language":                       [["--language", "-l"],                 "C++"],
     "output_debug_f":                 [["--debug"],                          FLAG],
-    "output_file_naming_scheme":      [["--output-file-extension-scheme", "--ofes"],  ""],
+    "output_file_naming_scheme":      [["--file-extension-scheme", "--fes"],  ""],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
     "plot_graphic_format":            [["--plot"],                           ""],
@@ -205,6 +205,11 @@ global_extension_db = {
               SOURCE:              ".cpp",
               HEADER:              ".hpp",
               HEADER_IMPLEMTATION: ".hpp",
+        },
+        "cc": { 
+              SOURCE:              ".cc",
+              HEADER:              ".hh",
+              HEADER_IMPLEMTATION: ".hh",
         },
         "xx": { 
               SOURCE:              ".cxx",

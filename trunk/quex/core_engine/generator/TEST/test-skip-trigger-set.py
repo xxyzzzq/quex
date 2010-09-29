@@ -4,7 +4,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.core_engine.interval_handling import NumberSet, Interval
 from generator_test import create_character_set_skipper_code, \
-                           compile_and_run
+                           compile_and_run, \
+                           __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:
     print "Skip-Characters: Large Buffer"
@@ -17,6 +18,8 @@ if len(sys.argv) < 2 or not (sys.argv[1] in ["ANSI-C-PlainMemory", "ANSI-C", "Cp
     sys.exit(0)
 
 Language          = sys.argv[1]
+__Setup_init_language_database(Language)
+
 StrangeStream_str = ""
 if Language.find("StrangeStream") != -1:
     StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "

@@ -16,6 +16,11 @@ class Generator(GeneratorBase):
                  ModeNameList, 
                  PrintStateMachineF, StandAloneAnalyserF):
 
+        # Ensure that the language database as been setup propperly
+        assert type(Setup.language_db) == dict
+        assert len(Setup.language_db) != 0
+        assert Setup.language_db.has_key("$label")
+
         self.state_machine_name         = StateMachineName
         self.analyzer_state_class_name  = AnalyserStateClassName
         self.programming_language       = Language

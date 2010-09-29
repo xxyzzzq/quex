@@ -1,6 +1,6 @@
-<test-database execution-time-sec="184.75" date="Wed Sep 29 13:34:33 2010">
+<test-database execution-time-sec="184.70" date="Thu Sep 30 11:19:00 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.17"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.10"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.01" crc="-1839813089"/>
@@ -11,10 +11,10 @@
            <choice name="006" result="OK" time_sec="0.01" crc="378529984"/>
            <choice name="007" result="OK" time_sec="0.01" crc="2107947548"/>
            <choice name="008" result="OK" time_sec="0.01" crc="-722264087"/>
-           <choice name="009" result="FAIL" time_sec="0.01" crc="1969994702"/>
-           <choice name="010" result="FAIL" time_sec="0.02" crc="840943206"/>
+           <choice name="009" result="OK" time_sec="0.00" crc="1564633403"/>
+           <choice name="010" result="OK" time_sec="0.00" crc="-872874063"/>
            <choice name="011" result="OK" time_sec="0.01" crc="-1176696428"/>
-           <choice name="012" result="FAIL" time_sec="0.01" crc="-931800181"/>
+           <choice name="012" result="OK" time_sec="0.00" crc="-121149223"/>
         </choice-list>
     </test>
     <group name="demo/000">
@@ -45,7 +45,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="7.48"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="7.49"> 
             <application file-name="003.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="2.42" crc="766281751"/>
@@ -114,7 +114,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="2.41"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="2.42"> 
             <application file-name="009.sh" info-request-time="1278568378L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="1.20" crc="-1473894578"/>
@@ -136,7 +136,7 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="53.08"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="53.07"> 
             <application file-name="010.sh" info-request-time="1278914475L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="copy" result="OK" time_sec="8.38" crc="595815643"/>
@@ -160,7 +160,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="2.67"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="2.68"> 
             <application file-name="011.sh" info-request-time="1278689294L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="1.34" crc="-1827787599"/>
