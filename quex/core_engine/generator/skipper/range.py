@@ -110,7 +110,7 @@ $$DELIMITER_REMAINDER_TEST$$
          * need here to reload the buffer. */
 $$LC_COUNT_END_PROCEDURE$$
         /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-        $$GOTO_START$$ /* End of range reached. */
+        $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
     }
 
 $$DROP_OUT$$
@@ -149,6 +149,8 @@ def get_skipper(EndSequence, Mode=None):
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
 
+    local_variable_db = {}
+
     global template_str
 
     LanguageDB   = Setup.language_db
@@ -178,6 +180,14 @@ def get_skipper(EndSequence, Mode=None):
             txt += "    " + LanguageDB["$endif"]
         delimiter_remainder_test_str = txt
 
+    if not __end_delimiter_is_subset_of_indentation_counter_newline(EndSequence):
+        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$start")
+    else:
+        # If the ending delimiter is a subset of what the 'newline' pattern triggers 
+        #    in indentation counting => move on to the indentation counter.
+        terminal_idx == __get_terminal_index_of_indentation_counter(Mode)
+        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal", terminal_idx)
+
     # The main part
     code_str = blue_print(template_str,
                           [["$$DELIMITER$$",                      delimiter_str],
@@ -195,7 +205,7 @@ def get_skipper(EndSequence, Mode=None):
                            ["$$GOTO_ENTRY$$",                     LanguageDB["$goto"]("$entry", skipper_index)],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
-                           ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
+                           ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
                            ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
                            ["$$ON_SKIP_RANGE_OPEN$$",             get_on_skip_range_open(Mode, EndSequence)],
@@ -210,10 +220,8 @@ def get_skipper(EndSequence, Mode=None):
                            ["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
     if reference_p_f:
-        local_variable_db = { "reference_p" : 
-                              [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
-    else:
-        local_variable_db = {}
+        local_variable_db["reference_p"] = [ "QUEX_TYPE_CHARACTER_POSITION", 
+                                             "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"],
 
     return code_str, local_variable_db
 
@@ -344,4 +352,6 @@ def get_on_skip_range_open(Mode, CloserSequence):
         txt += "RETURN;\n"
 
     return txt
+
+
 
