@@ -26,7 +26,7 @@ messaging_framework_receive(ELEMENT_TYPE** rx_buffer)
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
     const size_t          remainder_size =   messaging_framework_data_size() - 1 
                                            - (iterator - messaging_framework_data);
-    size_t                size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
+    size_t                size = (size_t)(float(rand()) / float(RAND_MAX) * 5.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
 
@@ -51,7 +51,7 @@ messaging_framework_receive_whole_characters(ELEMENT_TYPE** rx_buffer)
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
     const size_t          remainder_size =   messaging_framework_data_size() - 1 
                                            - (iterator - messaging_framework_data);
-    size_t                size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
+    size_t                size = (size_t)(float(rand()) / float(RAND_MAX) * 5.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
 
@@ -111,7 +111,7 @@ messaging_framework_receive_into_buffer(ELEMENT_TYPE* BufferBegin, size_t Buffer
     /* Simulate a low lever driver that is able to fill a specified position in memory. */
 {
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
-    size_t                size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
+    size_t                size = (size_t)(float(rand()) / float(RAND_MAX) * 5.0) + 1;
 
     assert(iterator < messaging_framework_data + messaging_framework_data_size());
     if( iterator + size >= messaging_framework_data + messaging_framework_data_size() - 1 ) 

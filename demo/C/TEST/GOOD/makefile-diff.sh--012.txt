@@ -2,8 +2,8 @@
 < 		max_Lexer.cpp                \
 < 		moritz_Lexer.cpp             
 ---
-> 		boeck_Lexer.c              \
-> 		max_Lexer.c                \
+> 		boeck_Lexer.c    \
+> 		max_Lexer.c      \
 > 		moritz_Lexer.c             
 < OBJS = $(ENGINE:.cpp=.o) lexer.o
 ---
@@ -40,14 +40,13 @@
 ---
 > boeck_Lexer.c: boeck.qx
 > 		 --language C                                \
+< 	rm -rf $(ENGINE)
 < 	rm -rf $(ENGINE:.cpp=.o)
 < 	rm -rf $(ENGINE:.cpp=)
 < 	rm -rf $(ENGINE:.cpp=-token_ids)
 < 	rm -rf $(ENGINE:.cpp=-token)
 < 	rm -rf $(ENGINE:.cpp=-configuration)
 ---
-> 	rm -rf $(ENGINE:.c=.o)
-> 	rm -rf $(ENGINE:.c=)
-> 	rm -rf $(ENGINE:.c=-token_ids)
-> 	rm -rf $(ENGINE:.c=-token)
-> 	rm -rf $(ENGINE:.c=-configuration)
+> 	rm -rf boeck_Lexer*
+> 	rm -rf max_Lexer*
+> 	rm -rf moritz_Lexer*

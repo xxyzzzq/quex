@@ -8,6 +8,7 @@ import quex.core_engine.generator.template_coder            as coder
 import quex.core_engine.generator.languages.cpp             as cpp
 from   quex.core_engine.generator.state_machine_decorator   import StateMachineDecorator
 from   quex.input.setup import setup as Setup
+from   generator_test   import __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:
     print "Basic Template Compression Test;"
@@ -18,6 +19,7 @@ if "--hwut-info" in sys.argv:
 # 'direct drop out' and 'drop out' in state transition map.
 Setup.buffer_limit_code = 0
 Setup.path_limit_code   = 1
+__Setup_init_language_database("Cpp")
 
 # A state machine decorator is required for the code generation.
 # Create a default one

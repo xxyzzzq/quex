@@ -1,9 +1,14 @@
 < SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  \
----
-> SOURCES  = tiny_lexer  tiny_lexer.c  tiny_lexer-token_ids  \
+< 		   tiny_lexer-configuration
 < WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
+< 		   tiny_wlexer-configuration
 ---
-> WSOURCES = tiny_wlexer tiny_wlexer.c tiny_wlexer-token_ids \
+> SOURCES  = tiny_lexer.h  tiny_lexer.c  tiny_lexer-token_ids.h  \
+> 		   tiny_lexer-token.h tiny_lexer-token.c \
+> 		   tiny_lexer-configuration.h
+> WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
+> 		   tiny_wlexer-token.h tiny_wlexer-token.c \
+> 		   tiny_wlexer-configuration.h
 < COMPILER = g++ -ggdb -Wall -pedantic 
 ---
 > COMPILER = gcc -ggdb -Wall -pedantic 

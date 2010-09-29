@@ -3,10 +3,14 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.cpp.codec_converter_helper as codec_converter_helper
+import quex.core_engine.generator.languages.core as languages
+import quex.input.setup
 
 if "--hwut-info" in sys.argv:
     print "Converter: Determine UTF-8 Range Map for Codec"
     print "CHOICES:   1, 2, 3;"
+
+quex.input.setup.setup.language_db = languages.db["C++"]
 
 def test(Msg, ConversionInfoList):
     print

@@ -35,7 +35,7 @@ as described in :ref:`sec-number-format`.
         ``directory`` = name of the output directory where generated files are 
         to be written.
 
-.. cmdoption:: ``--output-file-extension-scheme``, ``--ofes`` ext
+.. cmdoption:: ``--file-extension-scheme``, ``--fes`` ext
 
         Specifies the filestem and extensions of the output files. The provided
         argument identifies the naming scheme. 
@@ -65,6 +65,11 @@ as described in :ref:`sec-number-format`.
 
               * ``.hpp`` for header files.
               * ``.cpp`` for source files.
+
+        .. describe:: ``cc``
+
+              * ``.hh`` for header files.
+              * ``.cc`` for source files.
 
         .. describe:: ``xx``
 
