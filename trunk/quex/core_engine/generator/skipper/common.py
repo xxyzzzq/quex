@@ -30,3 +30,20 @@ def get_character_sequence(Sequence):
     length_txt = "%i" % len(Sequence)
 
     return txt, length_txt, comment_txt
+
+def end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
+    indentation_setup = Mode.options().get("indentation")
+    if indentation_setup == None: return False
+
+    return indentation_setup.newline_state_machine().get().does_sequence_match(EndSequence)
+
+
+def get_terminal_index_of_indentation_counter(Mode):
+    """Returns the index of the terminal where the indentation counter 
+       is implemented.
+    """
+    for info in Mode.get_pattern_action_pair_list():
+        action = info.action()
+        if action.__class__.__name__ != "GeneratedCode": continue
+        action.function != indentation_counter.do: continue
+        if info.action

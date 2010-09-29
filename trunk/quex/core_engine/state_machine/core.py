@@ -571,6 +571,27 @@ class StateMachine:
         # for the core pattern, not for pre-conditions and not for post-conditions.
         return self.__character_n
 
+    def does_sequence_match(self, UserSequence):
+        """Returns: True, if the sequences ends in an acceptance state.
+                    False, if not.
+
+           Works for NFA and DFA.
+        """
+        assert type(UserSequence) == list
+
+        def recurse(StateIndex, Sequence):
+            if len(Sequence) == 0:
+                return self.statex[StateIndex].is_acceptance()
+
+            idx_list = self.states[StateIndex].transitions().get_resulting_target_state_index(Sequence[0])
+            for candidate in idx_list:
+                # One follow-up state could match the sequence
+                if dive(candidate, Sequence[1:]): return True
+            # No possible follow-up state could match the sequence
+            return False
+
+        # Walk with the sequence the state machine
+        return dive(self.init_state_index, UserSequence)
 
     def get_ending_character_set(self):
         """Returns the union of all characters that trigger to an acceptance

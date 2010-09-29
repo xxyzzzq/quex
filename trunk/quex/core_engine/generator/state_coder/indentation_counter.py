@@ -136,7 +136,10 @@ def do(IndentationSetup):
     arrange_trigger_map(trigger_map)
 
     local_variable_db = { "reference_p" : 
-                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
+                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None],
+                          "__QUEX_LABEL_%s_INDENTATION_COUNTER":
+                          [],
+    }
     init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                         "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"
 
