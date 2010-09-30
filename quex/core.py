@@ -9,6 +9,7 @@ import quex.lexer_mode                          as lexer_mode
 
 import quex.consistency_check                   as consistency_check
 import quex.core_engine.generator.core          as     generator
+import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
 from   quex.core_engine.generator.action_info   import PatternActionInfo, \
                                                        UserCodeFragment_straighten_open_line_pragmas, \
                                                        CodeFragment
@@ -163,6 +164,22 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
     return analyzer_code
 
+def __get_indentation_counter_terminal_index(PatterActionPairList):
+    """Under some circumstances a terminal code need to jump to the indentation
+       counter directly. Thus, it must be known in what terminal it is actually 
+       located.
+
+        RETURNS: None, if no indentation counter is involved.
+                 > 0,  terminal id of the terminal that contains the indentation
+                       counter.
+    """
+    for info in PatterActionPairList:
+        action = info.action()
+        if   action.__class__.__name__ != "GeneratedCode": continue
+        elif action.function != indentation_counter.do:    continue
+        return info.pattern_state_machine.get_id()
+    return None
+
 def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
@@ -176,6 +193,9 @@ def get_generator_input(Mode, IndentationSupportF):
     assert isinstance(Mode, lexer_mode.Mode)
     variable_db = {}
     pattern_action_pair_list = Mode.get_pattern_action_pair_list()
+
+    indentation_counter_terminal_id = __get_indentation_counter_terminal_index(pattern_action_pair_list)
+
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
 
@@ -185,12 +205,17 @@ def get_generator_input(Mode, IndentationSupportF):
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
-        action = pattern_info.action()
+        action                      = pattern_info.action()
         self_line_column_counting_f = False
-        ## if action.__class__.__name__ == "GeneratedCode": self_line_column_counting_f = True
+
+        # Generated code fragments may rely on some information about the generator
+        if hasattr(action, "data") and type(action.data) == dict:   
+            action.data["indentation_counter_terminal_id"] = indentation_counter_terminal_id
+
         prepared_action, db = action_code_formatter.do(Mode, action, safe_pattern_str,
                                                        pattern_state_machine, 
                                                        SelfCountingActionF=self_line_column_counting_f)
+
         variable_db.update(db)
 
         pattern_info.set_action(prepared_action)

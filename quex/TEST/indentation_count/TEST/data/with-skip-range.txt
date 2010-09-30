@@ -1,0 +1,10 @@
+first #  my comment
+    indented
+#   good
+    same # my comment
+        indented # my comment
+    # my comment
+#   
+        same
+    dedented
+dedented

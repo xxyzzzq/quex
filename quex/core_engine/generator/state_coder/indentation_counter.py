@@ -76,14 +76,16 @@ $$BAD_CHARACTER_HANDLING$$
 }
 """
 
-def do(IndentationSetup):
+def do(Data):
     """The generated code is very similar to the 'skipper' code. It is to be executed
        as soon as a 'real' newline arrived. Then it skips whitespace until the next 
        non-whitepace (also newline may trigger a 'stop'). 
 
        Dependent on the setup the indentation is determined.
     """
+    IndentationSetup = Data["indentation_setup"]
     assert IndentationSetup.__class__.__name__ == "IndentationSetup"
+
 
     LanguageDB = Setup.language_db
     Mode = None
@@ -137,8 +139,6 @@ def do(IndentationSetup):
 
     local_variable_db = { "reference_p" : 
                           [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None],
-                          "__QUEX_LABEL_%s_INDENTATION_COUNTER":
-                          [],
     }
     init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                         "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"

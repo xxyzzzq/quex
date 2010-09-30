@@ -1,0 +1,11 @@
+token { 
+    WORD;
+}
+
+mode X :
+<indentation: >
+<skip:       [ \t]>
+<skip_range: "#" "\n">
+{
+    [a-z]+ => QUEX_TKN_WORD(Lexeme);
+}

@@ -8,6 +8,7 @@ class CodeFragment:
     def __init__(self, Code="", RequireTerminatingZeroF=False):
         self.__code = Code
         self.__require_terminating_zero_f = RequireTerminatingZeroF
+        self.__related_generator = None
 
     def set_code(self, Code):
         self.__code = Code
@@ -23,6 +24,12 @@ class CodeFragment:
 
     def require_terminating_zero_f(self):
         return self.__require_terminating_zero_f
+    def set_related_generator(self, GeneratorRef):
+        self.__related_generator = GeneratorRef
+
+    def get_related_generator(self):
+        return self.__related_generator
+
 
 UserCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________
@@ -114,13 +121,13 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
     write_safely_and_close(filename, new_content)
 
 class GeneratedCode(UserCodeFragment):
-    def __init__(self, GeneratorFunction, Argument, FileName=-1, LineN=None):
+    def __init__(self, GeneratorFunction, FileName=-1, LineN=None):
         self.function = GeneratorFunction
-        self.argument = Argument
+        self.data     = { "indentation_counter_terminal_id": None, }
         UserCodeFragment.__init__(self, "", FileName, LineN)
 
     def get_code(self):
-        return self.function(self.argument)
+        return self.function(self.data)
 
 class PatternActionInfo:
     def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName="", Comment=""):

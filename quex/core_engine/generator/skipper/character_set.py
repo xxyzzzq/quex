@@ -5,10 +5,10 @@ from   quex.core_engine.state_machine.transition_map           import Transition
 from   quex.input.setup                                        import setup as Setup
 from   quex.frs_py.string_handling                             import blue_print
 
-def do(CharacterSet):
+def do(Data):
     LanguageDB   = Setup.language_db
 
-    code_str, db = get_skipper(CharacterSet)   
+    code_str, db = get_skipper(Data["character_set"])   
 
     txt =   "{\n"                                                 \
           + LanguageDB["$comment"]("Character set skipper state") \

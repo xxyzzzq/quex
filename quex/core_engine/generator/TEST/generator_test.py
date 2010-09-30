@@ -349,7 +349,7 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
-    skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, end_str)
+    skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, OnSkipRangeOpenStr=end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
