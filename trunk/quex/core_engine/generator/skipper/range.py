@@ -8,20 +8,22 @@ from   quex.frs_py.string_handling               import blue_print
 import quex.lexer_mode                           as     lexer_mode
 from   copy import copy
 
-def do(ArgumentList):
-    assert type(ArgumentList) == list
-    assert len(ArgumentList) == 2
-    assert type(ArgumentList[1]) in [str, unicode]
+def do(Data):
 
     LanguageDB      = Setup.language_db
-    ClosingSequence = ArgumentList[0]
-    ModeName        = ArgumentList[1]
+    ClosingSequence = Data["closer_sequence"]
+    ModeName        = Data["mode_name"]
+
+    assert type(ModeName) in [str, unicode]
+    assert Data.has_key("indentation_counter_terminal_id")
+    
+    indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
 
     Mode = None
     if ModeName != "":
         Mode = lexer_mode.mode_db[ModeName]
 
-    code_str, db = get_skipper(ClosingSequence, Mode) 
+    code_str, db = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
 
     txt =    "{\n"                                          \
            + LanguageDB["$comment"]("Range skipper state")  \
@@ -144,8 +146,8 @@ $$LC_COUNT_AFTER_RELOAD$$
 }
 """
 
-def get_skipper(EndSequence, Mode=None):
-    assert EndSequence.__class__  == list
+def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
+    assert type(EndSequence) == list
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
 
@@ -180,13 +182,20 @@ def get_skipper(EndSequence, Mode=None):
             txt += "    " + LanguageDB["$endif"]
         delimiter_remainder_test_str = txt
 
-    if not __end_delimiter_is_subset_of_indentation_counter_newline(EndSequence):
+    if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
         goto_after_end_of_skipping_str = LanguageDB["$goto"]("$start")
     else:
+        # If there is indentation counting involved, then the counter's terminal id must
+        # be determined at this place.
+        assert IndentationCounterTerminalID != None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
-        #    in indentation counting => move on to the indentation counter.
-        terminal_idx == __get_terminal_index_of_indentation_counter(Mode)
-        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal", terminal_idx)
+        # in indentation counting => move on to the indentation counter.
+        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal", IndentationCounterTerminalID)
+
+    if OnSkipRangeOpenStr != "":
+        on_skip_range_open_str = OnSkipRangeOpenStr
+    else:
+        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
 
     # The main part
     code_str = blue_print(template_str,
@@ -208,7 +217,7 @@ def get_skipper(EndSequence, Mode=None):
                            ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
                            ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
-                           ["$$ON_SKIP_RANGE_OPEN$$",             get_on_skip_range_open(Mode, EndSequence)],
+                           ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                           ])
 
     # Line and column number counting
@@ -221,7 +230,7 @@ def get_skipper(EndSequence, Mode=None):
 
     if reference_p_f:
         local_variable_db["reference_p"] = [ "QUEX_TYPE_CHARACTER_POSITION", 
-                                             "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"],
+                                             "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"]
 
     return code_str, local_variable_db
 
@@ -324,34 +333,5 @@ def __lc_counting_replacements(code_str, EndSequence):
                       ["$$LC_COUNT_LOOP_EXIT$$",                   exit_loop],
                       ]), \
            reference_p_required_f
-
-def get_on_skip_range_open(Mode, CloserSequence):
-    """For unit tests 'Mode' may actually be a string, so that we do not
-       have to generate a whole mode just to get the 'on_skip_range_open' 
-       code fragment.
-    """
-    if Mode == None: return ""
-
-    txt = ""
-    if type(Mode) in [str, unicode]:
-        txt += Mode
-
-    elif not Mode.has_code_fragment_list("on_skip_range_open"):
-        txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % Mode.name + \
-               '                "End of file occured before closing skip range delimiter!\\n"' + \
-               '                "The \'on_skip_range_open\' handler has not been specified.");'
-    else:
-        closer_string = ""
-        for letter in CloserSequence:
-            closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
-
-        code, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_skip_range_open"))
-        txt += "#define Closer \"%s\"\n" % closer_string
-        txt += code
-        txt += "#undef  Closer\n"
-        txt += "RETURN;\n"
-
-    return txt
-
 
 

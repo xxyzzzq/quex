@@ -579,11 +579,11 @@ class StateMachine:
         """
         assert type(UserSequence) == list
 
-        def recurse(StateIndex, Sequence):
+        def dive(StateIndex, Sequence):
             if len(Sequence) == 0:
-                return self.statex[StateIndex].is_acceptance()
+                return self.states[StateIndex].is_acceptance()
 
-            idx_list = self.states[StateIndex].transitions().get_resulting_target_state_index(Sequence[0])
+            idx_list = self.states[StateIndex].transitions().get_resulting_target_state_index_list(Sequence[0])
             for candidate in idx_list:
                 # One follow-up state could match the sequence
                 if dive(candidate, Sequence[1:]): return True

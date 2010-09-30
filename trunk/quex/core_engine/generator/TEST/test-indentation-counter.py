@@ -27,7 +27,7 @@ EndStr = \
 def test(TestStr, IndentationSetup):
     Language = "Cpp"
     __Setup_init_language_database("Cpp")
-    code_str, local_variable_db = indentation_counter.do(IndentationSetup)
+    code_str, local_variable_db = indentation_counter.do({"indentation_setup": IndentationSetup})
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
                                               QuexBufferSize=1024, CommentTestStrF="", ShowPositionF=False, 

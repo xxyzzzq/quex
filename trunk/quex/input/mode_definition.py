@@ -102,9 +102,10 @@ def parse_mode_option(fh, new_mode):
         pattern_sm.add_transition(pattern_sm.init_state_index, trigger_set, AcceptanceF=True)
 
         # Skipper code is to be generated later
-        action = GeneratedCode(skip_character_set.do, trigger_set, 
+        action = GeneratedCode(skip_character_set.do, 
                                FileName = fh.name, 
                                LineN    = get_current_line_info_number(fh))
+        action.data["character_set"] = trigger_set
 
         new_mode.add_match(pattern_str, action, pattern_sm)
 
@@ -128,9 +129,12 @@ def parse_mode_option(fh, new_mode):
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
         # Skipper code is to be generated later
-        action = GeneratedCode(skip_range.do, [closer_sequence, new_mode.name],
+        action = GeneratedCode(skip_range.do, 
                                FileName = fh.name, 
                                LineN    = get_current_line_info_number(fh))
+        action.data["closer_sequence"] = closer_sequence
+        action.data["mode_name"]       = new_mode.name
+
         new_mode.add_match(opener_str, action, opener_sm)
 
         return True
@@ -188,7 +192,9 @@ def parse_mode_option(fh, new_mode):
 
         FileName = value.newline_state_machine.file_name
         LineN    = value.newline_state_machine.line_n
-        action   = GeneratedCode(indentation_counter.do, value, FileName, LineN)
+        action   = GeneratedCode(indentation_counter.do, FileName, LineN)
+
+        action.data["indentation_setup"] = value
 
         new_mode.add_match(value.newline_state_machine.pattern_str,
                            action, sm, Comment="indentation newline")
