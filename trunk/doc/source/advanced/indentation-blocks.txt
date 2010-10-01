@@ -369,6 +369,32 @@ means of event handlers, as they are:
                              which does not fit the indentation borders of 
                              previous indentation blocks.
 
+     .. describe:: Indentation
+
+        The indentation that has occured.
+
+     .. describe:: IndentationStackSize
+
+        The number of currently open indentation blocks.
+
+     .. describe:: IndentationStack(i)
+
+        Delivers the indentation number 'i' from the current 
+        indentation blocks.
+
+     .. describe:: IndentationUpper
+
+        Delivers the smallest indentation level that is greater than the current.
+
+     .. describe:: IndentationLower
+
+        Delivers the greatest indentation level that is smaller than the current.
+
+     .. describe:: ClosedN
+
+        Number of closed indentation levels.
+
+
   * ``on_indentation_bad`` on the event that a *bad* indentation character 
                            occured. The argument to this handler is
 
@@ -422,10 +448,10 @@ the default behavior.
 .. note::
 
    The current indentation level can be accessed via the macro
-   ``self_indentation()``. It holds the same as for line and column
-   counting: The value is the current indentation level and not the
-   level of indentation of the current token. For token policy
-   ``token-queue`` this value might be stored inside the token itself.
+   ``self_indentation()``. For this, it holds the same as for line and column
+   counting: The value is the current indentation level and not the level of
+   indentation of the current token. For token policy ``token-queue`` this
+   value might be stored inside the token itself.
 
 Remarks on Hand-Written Indentation Management
 ==============================================

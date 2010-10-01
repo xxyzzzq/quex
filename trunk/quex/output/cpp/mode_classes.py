@@ -201,7 +201,9 @@ on_indentation_str = """
 #   else
 #      define __QUEX_RETURN return
 #   endif
-#   define Lexeme    Begin
+#   define RETURN    __QUEX_RETURN
+#   define CONTINUE  __QUEX_RETURN
+#   define Lexeme    LexemeBegin
 #   define LexemeEnd (me->buffer._input_p)
 
     QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
@@ -236,12 +238,23 @@ $$DEDENT-PROCEDURE$$
 #           endif
         }
 
-#       define ClosedN (start - stack->back)
+        if( Indentation == *(stack->back) ) { 
+            /* 'Landing' must happen on indentation border. */
+#           define ClosedN (start - stack->back)
 $$N-DEDENT-PROCEDURE$$
-#       undef  ClosedN
-
-        if( Indentation != *(stack->back) ) { /* 'Landing' must happen on indentation border. */
+#           undef  ClosedN
+        } else { 
+#            define IndentationStackSize ((size_t)(1 + start - stack->front))
+#            define IndentationStack(I)  (*(stack->front + I))
+#            define IndentationUpper     (*(stack->back))
+#            define IndentationLower     ((stack->back == stack->front) ? *(stack->front) : *(stack->back - 1))
+#            define ClosedN              (start - stack->back)
 $$INDENTATION-ERROR-PROCEDURE$$
+#            undef IndentationStackSize 
+#            undef IndentationStack  
+#            undef IndentationUpper     
+#            undef IndentationLower     
+#            undef ClosedN
         }
     }
     __QUEX_RETURN;
@@ -302,7 +315,7 @@ def get_on_indentation_handler(Mode):
                                % Mode.name + \
                                '                "No \'on_indentation_error\' handler has been specified.");'
     else:
-        on_indentation_error = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_error"))
+        on_indentation_error, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_error"))
 
     # Note: 'on_indentation_bad' is applied in code generation for 
     #       indentation counter in 'indentation_counter.py'.
