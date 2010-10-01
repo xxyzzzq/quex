@@ -1,10 +1,10 @@
-first #  my comment
-    indented
+one 
+    two#  my comment
 #   good
-    same # my comment
-        indented # my comment
+    three # my comment
+        four # my comment
     # my comment
 #   
-        same
-    dedented
-dedented
+        five
+    six
+seven

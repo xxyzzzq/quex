@@ -177,7 +177,7 @@ def __get_indentation_counter_terminal_index(PatterActionPairList):
         action = info.action()
         if   action.__class__.__name__ != "GeneratedCode": continue
         elif action.function != indentation_counter.do:    continue
-        return info.pattern_state_machine.get_id()
+        return info.pattern_state_machine().get_id()
     return None
 
 def get_generator_input(Mode, IndentationSupportF):
