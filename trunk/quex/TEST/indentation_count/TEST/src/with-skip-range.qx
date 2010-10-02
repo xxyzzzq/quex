@@ -8,9 +8,13 @@ mode X :
 <skip:        [ \t]>
 <skip_range:  "#" "\n">
 {
+    on_indent { 
+        printf("[[INDENT]] %i\n", (int)Indentation);
+        self_send(QUEX_TKN_INDENT);
+    }
     on_indentation_error {
         int i = 0;
-        printf("-- Indentation          = %i\n", (int)Indentation); 
+        printf("[[ERROR]] %i\n", (int)Indentation);
         printf("-- IndentationStackSize = %i\n", (int)IndentationStackSize); 
         for(i = 0; i < IndentationStackSize; ++i) {
             printf("--     IndentationStack(%i) = %i\n", (int)i, (int)IndentationStack(i));  
@@ -21,4 +25,5 @@ mode X :
         self_send(QUEX_TKN_INDENTATION_ERROR);
     }
     [a-z]+ => QUEX_TKN_WORD(Lexeme);
+
 }
