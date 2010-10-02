@@ -190,7 +190,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
         assert IndentationCounterTerminalID != None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal", IndentationCounterTerminalID)
+        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal-direct", IndentationCounterTerminalID)
 
     if OnSkipRangeOpenStr != "":
         on_skip_range_open_str = OnSkipRangeOpenStr
