@@ -1,5 +1,4 @@
 ## make lexer DEBUG   
-/home/fschaef/prj/quex/trunk/quex/code_base/analyzer/member/on_indentation.i:49: warning: conversion to ‘size_t’ from ‘int’ may change the sign of the result
 ,-----------------------------------------------------------------
 | [START]
 STRUCT
