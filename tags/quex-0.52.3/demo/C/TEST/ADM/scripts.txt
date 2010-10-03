@@ -1,0 +1,4 @@
+*.sh
+--not core.sh
+--not core-new.sh
+--not *-side-kick.sh
