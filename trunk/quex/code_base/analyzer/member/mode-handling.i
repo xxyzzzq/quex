@@ -26,10 +26,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     { 
 #   ifdef     QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("line = %i\n", (int)me->line_number_at_begin());
+        __QUEX_STD_printf("line = %i\n", (int)me->counter._line_number_at_begin);
 #       endif
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("column = %i\n", (int)me->column_number_at_begin();
+        __QUEX_STD_printf("column = %i\n", (int)me->counter._column_number_at_begin);
 #       endif
         if( me->__current_mode_p != 0x0 ) 
             __QUEX_STD_printf("FromMode: %s ", me->__current_mode_p->name);
