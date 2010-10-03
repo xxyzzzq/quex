@@ -1,37 +1,38 @@
-<test-database execution-time-sec="13.68" date="Sun Oct  3 11:38:03 2010">
+<test-database execution-time-sec="9.06" date="Mon Oct  4 09:29:52 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting and Range Skipper" time-sum-sec="1.49"> 
-        <application file-name="with-skip-range.sh" info-request-time="1286016315L" vanished="False"/>
-        <choice-list number="1" same_result="False">
-           <choice name="range" result="NO GOOD FILE" time_sec="1.49" crc="-578747669"/>
+    <test title="Indentation Counting and Range Skipper" time-sum-sec="1.57"> 
+        <application file-name="with-skip-range.sh" info-request-time="1286100513L" vanished="False"/>
+        <choice-list number="2" same_result="True">
+           <choice name="range" result="OK" time_sec="0.79" crc="1696144751"/>
+           <choice name="range-2" result="OK" time_sec="0.78" crc="1696144751"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="3.32"> 
+    <test title="Bad character detection." time-sum-sec="1.92"> 
         <application file-name="bad.sh" info-request-time="1285403911L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="default" result="OK" time_sec="1.83" crc="954811374"/>
-           <choice name="customized" result="OK" time_sec="1.49" crc="2010419295"/>
+           <choice name="default" result="OK" time_sec="1.03" crc="954811374"/>
+           <choice name="customized" result="OK" time_sec="0.89" crc="2010419295"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="6.84"> 
+    <test title="Customized Event Handlers" time-sum-sec="4.14"> 
         <application file-name="handlers.sh" info-request-time="1286013182L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="check-eof" result="OK" time_sec="1.57" crc="-180552726"/>
-           <choice name="on_dedent" result="OK" time_sec="1.31" crc="-215364705"/>
-           <choice name="on_n_dedent" result="OK" time_sec="1.32" crc="-215364705"/>
-           <choice name="empty-lines" result="OK" time_sec="1.32" crc="-215364705"/>
-           <choice name="on_indentation_error" result="OK" time_sec="1.31" crc="1111494244"/>
+           <choice name="check-eof" result="OK" time_sec="0.75" crc="-180552726"/>
+           <choice name="on_dedent" result="OK" time_sec="0.77" crc="-215364705"/>
+           <choice name="on_n_dedent" result="OK" time_sec="0.75" crc="-215364705"/>
+           <choice name="empty-lines" result="OK" time_sec="0.87" crc="-215364705"/>
+           <choice name="on_indentation_error" result="OK" time_sec="0.99" crc="1111494244"/>
         </choice-list>
     </test>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="2.03"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.44"> 
         <application file-name="commonalities.sh" info-request-time="1285145164L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="1" result="OK" time_sec="0.47" crc="-1391501822"/>
-           <choice name="2" result="OK" time_sec="0.32" crc="970527046"/>
-           <choice name="3" result="OK" time_sec="0.31" crc="-1638526542"/>
-           <choice name="4" result="OK" time_sec="0.32" crc="1033537895"/>
-           <choice name="5" result="OK" time_sec="0.32" crc="640949708"/>
-           <choice name="6" result="OK" time_sec="0.29" crc="1833916996"/>
+           <choice name="1" result="OK" time_sec="0.33" crc="-1391501822"/>
+           <choice name="2" result="OK" time_sec="0.34" crc="970527046"/>
+           <choice name="3" result="OK" time_sec="0.21" crc="-1638526542"/>
+           <choice name="4" result="OK" time_sec="0.19" crc="1033537895"/>
+           <choice name="5" result="OK" time_sec="0.19" crc="640949708"/>
+           <choice name="6" result="OK" time_sec="0.18" crc="1833916996"/>
         </choice-list>
     </test>
 </test-database>

@@ -1,12 +1,13 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "Indentation Counting and Range Skipper;"
-    echo "CHOICES: range;"
+    echo "CHOICES: range, range-2;"
+    echo "SAME;"
     exit
 fi
 
-qx_file=src/with-skip-range.qx
-txt_file=data/with-skip-range.txt
+qx_file=src/with-skip-$1.qx
+txt_file=data/with-skip-$1.txt
 buffer_size=1024
 
 quex -i $qx_file -o EasyLexer --language C
@@ -23,7 +24,7 @@ gcc \
 
 cat tmp.txt
 
-# rm -f ./EasyLexer*
+rm -f ./EasyLexer*
 rm -f ./lexer
 rm -f tmp.txt
 
