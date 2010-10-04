@@ -44,6 +44,16 @@ def __parse_normal(fh, code_fragment_name):
     code   = read_until_closing_bracket(fh, "{", "}")
     return UserCodeFragment(code, fh.name, line_n, LanguageDB)
 
+def __read_token_identifier(fh):
+    """Parses a token identifier that may contain a namespace specification.
+
+       Returns "", if no valid specification could be found.
+    """
+    identifier, name_space_list, dummy = read_namespaced_name(fh, "token identifier")
+    if identifier == "": return ""
+    if len(name_space_list) == 0: return identifier
+    return reduce(lambda x, y: x + "::" + y, name_space_list) 
+
 def __parse_brief_token_sender(fh, ContinueF):
     # shorthand for { self.send(TKN_SOMETHING); QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN(); }
     LanguageDB = Setup.language_db
@@ -59,7 +69,7 @@ def __parse_brief_token_sender(fh, ContinueF):
             code = __create_token_sender_by_character_code(fh, code)
         else:
             skip_whitespace(fh)
-            identifier = read_identifier(fh)
+            identifier = __read_token_identifier(fh)
             skip_whitespace(fh)
             if identifier in ["GOTO", "GOSUB", "GOUP"]:
                 code = __create_mode_transition_and_token_sender(fh, identifier)
@@ -108,7 +118,7 @@ def read_character_code(fh):
         # read Unicode Name 
         # Example: UC MATHEMATICAL_MONOSPACE_DIGIT_FIVE
         skip_whitespace(fh)
-        ucs_name = read_identifier(fh)
+        ucs_name = __read_token_identifier(fh)
         if ucs_name == "": seek(pos); return -1
         # Get the character set related to the given name. Note, the size of the set
         # is supposed to be one.
@@ -186,18 +196,22 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 
-def verify_token_prefix_or_die(fh, TokenName):
+def cut_token_prefix_or_die(fh, TokenName):
     global Setup
-    if TokenName.find(Setup.token_id_prefix) != 0:
-        error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
-                  "found: '%s'" % TokenName, fh)
+    if TokenName.find(Setup.token_id_prefix) == 0: 
+        return TokenName[len(Setup.token_id_prefix):]
+
+    if TokenName.find(Setup.token_id_prefix_plain) == 0:
+        return TokenName[len(Setup.token_id_prefix_plain):]
+
+    error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
+              "found: '%s'" % TokenName, fh)
 
 def token_id_db_verify_or_enter_token_id(fh, TokenName):
     global Setup
 
-    verify_token_prefix_or_die(fh, TokenName)
+    prefix_less_TokenName = cut_token_prefix_or_die(fh, TokenName)
 
-    prefix_less_TokenName = TokenName[len(Setup.token_id_prefix):]
     # Occasionally add token id automatically to database
     if not lexer_mode.token_id_db.has_key(prefix_less_TokenName):
         # DO NOT ENFORCE THE TOKEN ID TO BE DEFINED, BECAUSE WHEN THE TOKEN ID
@@ -298,7 +312,7 @@ def __create_mode_transition_and_token_sender(fh, Command):
     if check(fh, "("):
         skip_whitespace(fh)
         if Command != "GOUP":
-            target_mode = read_identifier(fh)
+            target_mode = __read_token_identifier(fh)
             skip_whitespace(fh)
 
         if check(fh, ")"):
@@ -306,7 +320,7 @@ def __create_mode_transition_and_token_sender(fh, Command):
 
         elif Command == "GOUP" or check(fh, ","):
             skip_whitespace(fh)
-            token_name = read_identifier(fh)
+            token_name = __read_token_identifier(fh)
             skip_whitespace(fh)
 
             if check(fh, ","):

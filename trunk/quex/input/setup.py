@@ -65,6 +65,8 @@ SETUP_INFO = {
     "analyzer_derived_class_name_safe":          None,
     "token_class_name_space":                    None,
     "token_class_name_safe":                     None,
+    "token_id_prefix_name_space":                None,
+    "token_id_prefix_plain":                     None,   # i.e. without the namespace specified.
     "output_engine_character_encoding_header_file": None,
     "output_header_file":                           None,
     "output_configuration_file":                    None,

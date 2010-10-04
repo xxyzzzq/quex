@@ -253,7 +253,9 @@ def parse_pattern_name_definitions(fh):
 def parse_token_id_definitions(fh, NamesOnlyF=False):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
-    token_prefix = Setup.token_id_prefix
+    token_prefix       = Setup.token_id_prefix
+    token_prefix_plain = Setup.token_id_prefix_plain # i.e. without name space included
+
     if NamesOnlyF: db = {}
     else:          db = lexer_mode.token_id_db
 
@@ -271,6 +273,11 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
 
         # -- check the name, if it starts with the token prefix paste a warning
         if candidate.find(token_prefix) == 0:
+            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (candidate, token_prefix) + \
+                      "Token prefix is mounted automatically. This token id appears in the source\n" + \
+                      "code as '%s%s'." % (token_prefix, candidate), \
+                      fh, DontExitF=True)
+        elif candidate.find(token_prefix_plain) == 0:
             error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (candidate, token_prefix) + \
                       "Token prefix is mounted automatically. This token id appears in the source\n" + \
                       "code as '%s%s'." % (token_prefix, candidate), \

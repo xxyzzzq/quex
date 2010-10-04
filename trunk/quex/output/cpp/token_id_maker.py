@@ -127,6 +127,7 @@ def do(setup, IndentationSupportF):
        const string& $$token$$::map_id_to_name().
     """
     global file_str
+    LanguageDB = Setup.language_db
 
     for standard_token_id in standard_token_id_list:
         assert token_id_db.has_key(standard_token_id)
@@ -150,7 +151,7 @@ def do(setup, IndentationSupportF):
     #
     if len(token_id_db.keys()) == len(standard_token_id_list):
         token_id_str = "%sTERMINATION and %sUNINITIALIZED" % \
-                       (setup.token_id_prefix, setup.token_id_prefix) 
+                       (setup.token_id_prefix_plain, setup.token_id_prefix_plain) 
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
         error_msg("Only token ids %s are defined.\n" % token_id_str + \
                   "Quex refuses to proceed. Please, use the 'token { ... }' section to\n" + \
@@ -162,9 +163,24 @@ def do(setup, IndentationSupportF):
         return " " * (L - len(Name))
 
     # -- define values for the token ids
-    token_id_txt = ""
+    def define_this(txt, token):
+        if setup.language == "C":
+            txt.append("#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" \
+                       % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
+        else:
+            txt.append("const QUEX_TYPE_TOKEN_ID %s%s = %s((QUEX_TYPE_TOKEN_ID)%i);\n" \
+                       % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
+
+    if setup.language == "C": 
+        prolog = ""
+        epilog = ""
+    else:
+        prolog = LanguageDB["$namespace-open"](setup.token_id_prefix_name_space)
+        epilog = LanguageDB["$namespace-close"](setup.token_id_prefix_name_space)
+
+    token_id_txt = [prolog]
     if setup.token_id_foreign_definition_file != "":
-        token_id_txt += "#include\"%s\"\n" % setup.token_id_foreign_definition_file
+        token_id_txt.append("#include\"%s\"\n" % setup.token_id_foreign_definition_file)
 
     else:
         # Assign values to tokens with no numeric identifier
@@ -178,10 +194,8 @@ def do(setup, IndentationSupportF):
                     i += 1
                 token.number = i; 
 
-            token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_id_prefix,
-                                                                           token.name, 
-                                                                           space(token.name), 
-                                                                           token.number)
+            define_this(token_id_txt, token)
+
         # Double check that no token id appears twice
         # Again, this can only happen, if quex itself produced the numeric values for the token
         token_list = token_id_db.values()
@@ -192,11 +206,12 @@ def do(setup, IndentationSupportF):
                 error_msg("and token id '%s' have same numeric value '%s'." \
                           % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
                           
+    token_id_txt.append(epilog)
+
     tc_descr   = lexer_mode.token_type_definition
-    LanguageDB = Setup.language_db
 
     content = blue_print(file_str,
-                         [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
+                         [["$$TOKEN_ID_DEFINITIONS$$",        "".join(token_id_txt)],
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.token_type_definition.get_file_name()],
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(

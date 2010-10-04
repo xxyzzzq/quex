@@ -112,8 +112,17 @@ def do(argv):
     setup.analyzer_name_safe   = \
          read_namespaced_name(setup.analyzer_class_name, 
                               "analyzer engine (options -o, --engine, --analyzer-class)")
+
+    setup.analyzer_derived_class_name,       \
+    setup.analyzer_derived_class_name_space, \
+    setup.analyzer_derived_class_name_safe = \
+         read_namespaced_name(setup.analyzer_derived_class_name, 
+                              "derived analyzer class (options --derived-class, --dc)",
+                              AllowEmptyF=True)
+
     if setup.analyzer_name_space == []:
         setup.analyzer_name_space = ["quex"]
+
     if setup.token_class_name == "":
         setup.token_class_name = "%s::Token" % reduce(lambda a, b: a + "::" + b, setup.analyzer_name_space)
 
@@ -136,12 +145,16 @@ def do(argv):
     if setup.token_class_name_space == []:
         setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
 
-    setup.analyzer_derived_class_name,       \
-    setup.analyzer_derived_class_name_space, \
-    setup.analyzer_derived_class_name_safe = \
-         read_namespaced_name(setup.analyzer_derived_class_name, 
-                              "derived analyzer class (options --derived-class, --dc)",
-                              AllowEmptyF=True)
+    setup.token_id_prefix_plain,      \
+    setup.token_id_prefix_name_space, \
+    dummy                           = \
+         read_namespaced_name(setup.token_id_prefix, 
+                              "token prefix (options --token-prefix)")
+
+    if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
+         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
+
+
 
     # (*) Output programming language        
     setup.language = setup.language.upper()
@@ -177,7 +190,8 @@ def do(argv):
         # in a 'group'. Note that '(' ')' cause the storage of parts of the match.
         IncludeRE            = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
         #
-        parse_token_id_file(setup.token_id_foreign_definition_file, setup.token_id_prefix, 
+        parse_token_id_file(setup.token_id_foreign_definition_file, 
+                            setup.token_id_prefix, 
                             CommentDelimiterList, IncludeRE)
 
     # (*) return setup ___________________________________________________________________
@@ -283,7 +297,7 @@ def validate(setup, command_line, argv):
                   "Set appropriate values with --token-queue-size and --token-queue-safety-border.")
 
     # Check that names are valid identifiers
-    __check_identifier(setup, "token_id_prefix",    "Token prefix")
+    __check_identifier(setup, "token_id_prefix_plain",    "Token prefix")
     __check_identifier(setup, "analyzer_class_name", "Engine name")
     if setup.analyzer_derived_class_name != "": 
         __check_identifier(setup, "analyzer_derived_class_name", "Derived class name")
@@ -415,7 +429,6 @@ def prepare_file_names(setup):
     else:
         setup.output_engine_character_encoding_header   = None
         setup.output_engine_character_encoding_header_i = None
-
 
 def make_numbers(setup):
     setup.compression_template_coef  = __get_float("compression_template_coef")
