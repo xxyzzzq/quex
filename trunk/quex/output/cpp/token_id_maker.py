@@ -168,7 +168,7 @@ def do(setup, IndentationSupportF):
             txt.append("#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" \
                        % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
         else:
-            txt.append("const QUEX_TYPE_TOKEN_ID %s%s = %s((QUEX_TYPE_TOKEN_ID)%i);\n" \
+            txt.append("const QUEX_TYPE_TOKEN_ID %s%s%s = ((QUEX_TYPE_TOKEN_ID)%i);\n" \
                        % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
 
     if setup.language == "C": 
