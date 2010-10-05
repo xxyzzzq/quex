@@ -28,7 +28,11 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
     if( BufferMemoryBegin != 0x0 ) {
         /* End of File must be inside the buffer, because we assume that the buffer
          * contains all that is required.                                           */
-        __quex_assert(BufferEndOfContentP != 0x0);
+        if(    BufferEndOfContentP < BufferMemoryBegin 
+            || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize)) {
+            QUEX_ERROR_EXIT("Constructor: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
+                            "Constructor: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').");
+        }
     }
     if( BufferEndOfContentP != 0x0 ) {
         __quex_assert(BufferEndOfContentP >  BufferMemoryBegin);
@@ -139,6 +143,19 @@ QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
                  const char*          CharacterEncodingName /* = 0x0 */) 
 {
     QUEX_NAME(reset_basic)(me, input_handle, CharacterEncodingName, 
+                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+}
+
+TEMPLATE_IN(InputHandleT) void
+QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
+                        QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                        size_t               BufferMemorySize,
+                        QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0   */
+                        const char*          CharacterEncodingName /* = 0x0 */) 
+{
+    QUEX_NAME(reset_basic)(me, 0x0, CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);

@@ -171,18 +171,19 @@ def do(setup, IndentationSupportF):
             txt.append("const QUEX_TYPE_TOKEN_ID %s%s%s = ((QUEX_TYPE_TOKEN_ID)%i);\n" \
                        % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
 
-    if setup.language == "C": 
-        prolog = ""
-        epilog = ""
-    else:
-        prolog = LanguageDB["$namespace-open"](setup.token_id_prefix_name_space)
-        epilog = LanguageDB["$namespace-close"](setup.token_id_prefix_name_space)
-
-    token_id_txt = [prolog]
     if setup.token_id_foreign_definition_file != "":
-        token_id_txt.append("#include\"%s\"\n" % setup.token_id_foreign_definition_file)
+        token_id_txt = ["#include\"%s\"\n" % setup.token_id_foreign_definition_file]
 
     else:
+        if setup.language == "C": 
+            prolog = ""
+            epilog = ""
+        else:
+            prolog = LanguageDB["$namespace-open"](setup.token_id_prefix_name_space)
+            epilog = LanguageDB["$namespace-close"](setup.token_id_prefix_name_space)
+
+        token_id_txt = [prolog]
+
         # Assign values to tokens with no numeric identifier
         # NOTE: This has not to happen if token's are defined by the user's provided file.
         i = setup.token_id_counter_offset
@@ -206,7 +207,7 @@ def do(setup, IndentationSupportF):
                 error_msg("and token id '%s' have same numeric value '%s'." \
                           % (y.name, x.number), y.file_name, y.line_n, DontExitF=True)
                           
-    token_id_txt.append(epilog)
+        token_id_txt.append(epilog)
 
     tc_descr   = lexer_mode.token_type_definition
 

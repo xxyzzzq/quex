@@ -99,7 +99,8 @@ QUEX_NAMESPACE_MAIN_OPEN
             }
             /* When working on plain memory, the '_end_of_file_p' must be set to indicate
              * the end of the content.                                                     */
-            __quex_assert(me->buffer._memory._end_of_file_p != 0x0);
+            __quex_assert(me->buffer._memory._end_of_file_p >  me->buffer._memory._front);
+            __quex_assert(me->buffer._memory._end_of_file_p <= me->buffer._memory._back);
         }
 
         me->__file_handle_allocated_by_constructor = 0x0;

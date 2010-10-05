@@ -193,6 +193,12 @@ def do(argv):
         parse_token_id_file(setup.token_id_foreign_definition_file, 
                             setup.token_id_prefix, 
                             CommentDelimiterList, IncludeRE)
+        if setup.token_id_prefix_plain != setup.token_id_prefix:
+            # The 'plain' name space less token indices are also supported
+            parse_token_id_file(setup.token_id_foreign_definition_file, 
+                                setup.token_id_prefix_plain, 
+                                CommentDelimiterList, IncludeRE)
+
 
     # (*) return setup ___________________________________________________________________
     return True

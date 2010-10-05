@@ -52,7 +52,7 @@ def __read_token_identifier(fh):
     identifier, name_space_list, dummy = read_namespaced_name(fh, "token identifier")
     if identifier == "": return ""
     if len(name_space_list) == 0: return identifier
-    return reduce(lambda x, y: x + "::" + y, name_space_list) 
+    return reduce(lambda x, y: x + "::" + y, name_space_list + [identifier])
 
 def __parse_brief_token_sender(fh, ContinueF):
     # shorthand for { self.send(TKN_SOMETHING); QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN(); }

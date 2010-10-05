@@ -10,7 +10,9 @@ cd $bug/
 make  >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 ./a.out
+rm -f tmp.txt
 
 # cleansening
 make clean >& /dev/null
+
 cd $tmp
