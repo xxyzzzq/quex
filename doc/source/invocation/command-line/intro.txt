@@ -170,6 +170,9 @@ following command line options can be used.
         given in the token-id files. For example, if a token section contains
         the name ``COMPLEX`` and the token-prefix is ``TOKEN\_PRE_``
         then the token-id inside the code will be ``TOKEN_PRE_COMPLEX``. 
+
+        The token prefix can contain namespace delimiters, i.e. ``::``. In
+        the brief token senders the namespace specifier can be left out.
         
         DEFAULT = ``QUEX_TKN_``
 
