@@ -67,6 +67,13 @@ QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
                  InputHandleT*        input_handle, 
                  const char*          CharacterEncodingName /* = 0x0 */);
 
+QUEX_INLINE QUEX_TYPE_CHARACTER*
+QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
+                        QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                        size_t               BufferMemorySize,
+                        QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0 */
+                        const char*          CharacterEncodingName /* = 0x0 */);
+
 QUEX_INLINE void 
 QUEX_NAME(reset_plain)(QUEX_TYPE_ANALYZER*  me,
                        const char*          CharacterEncodingName /* = 0x0 */);
