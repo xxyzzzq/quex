@@ -148,17 +148,25 @@ QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
     QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 }
 
-TEMPLATE_IN(InputHandleT) void
+QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
                         QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                         size_t               BufferMemorySize,
-                        QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0   */
+                        QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0 */
                         const char*          CharacterEncodingName /* = 0x0 */) 
 {
-    QUEX_NAME(reset_basic)(me, 0x0, CharacterEncodingName, 
+    /* reset_basic(...) does not reset the buffer memory itself. This must
+     * be done by hand.                                                    */
+    QUEX_TYPE_CHARACTER* old_memory = QUEX_NAME(BufferMemory_reset)(&me->buffer._memory,
+                                                                    BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP);
+
+    QUEX_NAME(reset_basic)(me, /* InputHandle */ (FILE*)0x0, CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+
     me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+
+    return old_memory;
 }
 
 QUEX_INLINE void 
@@ -223,6 +231,13 @@ QUEX_MEMBER(~QUEX_TYPE0_ANALYZER)()
 template<class InputHandleT> void
 QUEX_MEMBER(reset)(InputHandleT* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
 { QUEX_NAME(reset)(this, input_handle, CharacterEncodingName); }
+
+TEMPLATE_IN(InputHandleT) QUEX_TYPE_CHARACTER*
+QUEX_MEMBER(reset_buffer)(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                          size_t               BufferMemorySize,
+                          QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
+                          const char*          CharacterEncodingName /* = 0x0 */) 
+{ return QUEX_NAME(reset_buffer)(this, BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP, CharacterEncodingName); }
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

@@ -125,9 +125,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*    me, 
-                     InputHandleT*  input_handle, 
-                     const char*    CharacterEncodingName, 
-                     const size_t   TranslationBufferMemorySize)
+                            InputHandleT*  input_handle, 
+                            const char*    CharacterEncodingName, 
+                            const size_t   TranslationBufferMemorySize)
     /* NOTE:     me->_content_character_index_begin == 0 
      *       and me->_content_character_index_end   == 0 
      *       => buffer is filled the very first time.                                    
@@ -145,7 +145,11 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->filler->seek_character_index(me->filler, 0);
             me->filler->delete_self(me->filler);
         }
-        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+        if( CharacterEncodingName != 0x0 ) {
+            me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+        } else {
+            me->filler = 0x0;
+        }
 
         QUEX_NAME(Buffer_init_analyzis)(me, me->_byte_order_reversion_active_f);
 
@@ -574,6 +578,29 @@ QUEX_NAMESPACE_MAIN_OPEN
         } 
 
         QUEX_NAME(BufferMemory_init)(me, chunk, Size, end_of_file_p, external_f);
+    }
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER* 
+    QUEX_NAME(BufferMemory_reset)(QUEX_NAME(BufferMemory)*  me, 
+                                  QUEX_TYPE_CHARACTER*      Memory, 
+                                  const size_t              Size,
+                                  QUEX_TYPE_CHARACTER*      EndOfContentP)
+    {
+        QUEX_TYPE_CHARACTER* old_memory = (me->_external_owner_f) ? me->_front : 0x0;
+
+        /* Destruct the current memory (if it is not externally owned. */
+        QUEX_NAME(BufferMemory_destruct)(me);
+
+        /* It is assumed that if memory is reset, it is owned externally not by the engine. */
+        __quex_assert(Memory != 0x0);
+
+        /* Content must be provided (event empty will do, i.e. EndOfContentP = Memory + 1) */
+        __quex_assert(EndOfContentP > Memory);
+        __quex_assert(EndOfContentP <= Memory + Size);
+
+        QUEX_NAME(BufferMemory_init)(me, Memory, Size, EndOfContentP, /* ExternalOwnerF */ true);
+
+        return old_memory;
     }
 
     QUEX_INLINE void 
