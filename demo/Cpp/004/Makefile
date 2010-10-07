@@ -58,3 +58,4 @@ clean:
 	rm -f *.bak
 	rm -f *.E
 	rm -f lexer
+	rm -f *.svg
