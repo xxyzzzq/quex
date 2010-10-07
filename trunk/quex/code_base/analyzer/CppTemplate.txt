@@ -249,8 +249,7 @@ public:
     void                               reset(const char*    CharacterEncodingName = 0x0) 
     { reset<void>((void*)0x0, CharacterEncodingName); }
 
-    template <class InputHandleT> QUEX_TYPE_CHARACTER* 
-                                       reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    QUEX_TYPE_CHARACTER*               reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                                                     size_t               BufferMemorySize,
                                                     QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
                                                     const char*          CharacterEncodingName = 0x0);
