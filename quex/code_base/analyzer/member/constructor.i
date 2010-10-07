@@ -166,6 +166,10 @@ QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
 
     if( BufferMemoryBegin == 0x0 ) return old_memory;
 
+    /* End of Content **must** lie inside the provided buffer */
+    __quex_assert(BufferEndOfContentP > BufferMemoryBegin);
+    __quex_assert(BufferEndOfContentP < BufferMemoryBegin + BufferMemorySize);
+
     QUEX_NAME(reset_basic)(me, /* InputHandle */ (FILE*)0x0, CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 

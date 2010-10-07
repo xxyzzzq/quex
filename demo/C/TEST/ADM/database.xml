@@ -1,4 +1,4 @@
-<test-database execution-time-sec="190.67" date="Thu Oct  7 12:51:30 2010">
+<test-database execution-time-sec="205.70" date="Fri Oct  8 12:15:19 2010">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.15"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
@@ -136,9 +136,9 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="53.22"> 
-            <application file-name="010.sh" info-request-time="1278914475L" vanished="False"/>
-            <choice-list number="9" same_result="False">
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="68.25"> 
+            <application file-name="010.sh" info-request-time="1286532833L" vanished="False"/>
+            <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="8.53" crc="595815643"/>
                <choice name="fill" result="OK" time_sec="4.82" crc="595815643"/>
                <choice name="point" result="OK" time_sec="4.80" crc="-999766639"/>
@@ -148,6 +148,7 @@
                <choice name="copy-conversion-direct" result="OK" time_sec="6.69" crc="-470382527"/>
                <choice name="fill-conversion-direct" result="OK" time_sec="6.85" crc="-470382527"/>
                <choice name="stdinlexer" result="OK" time_sec="5.32" crc="-629023763"/>
+               <choice name="re-point" result="FAIL" time_sec="15.03" crc="None"/>
             </choice-list>
         </test>
         <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="36.63"> 

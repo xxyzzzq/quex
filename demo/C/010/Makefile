@@ -5,7 +5,7 @@
 .PHONY: clean
 
 FILES = copy.exe    fill.exe    point.exe \
-		copy-ez.exe fill-ez.exe
+		copy-ez.exe fill-ez.exe re-point.exe
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
@@ -26,7 +26,9 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-COMPILER = gcc -ggdb -Wall -pedantic 
+# Use 'C99' to avoid line number limit of 32767 in '#line' pragma
+COMPILER = gcc -ggdb -Wall -pedantic -std=c99
+
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
      # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
