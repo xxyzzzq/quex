@@ -27,6 +27,8 @@ main(int argc, char** argv)
         //    (Here, it is just to display the principle, ...)
         qlex.buffer_input_pointer_set(MESSAGING_FRAMEWORK_BUFFER + 1);
 
+        // QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);
+
         // -- Loop until the 'termination' token arrives
         (void)qlex.token_p_switch(&token);
         do {

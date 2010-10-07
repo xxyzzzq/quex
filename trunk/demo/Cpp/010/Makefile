@@ -5,7 +5,7 @@
 .PHONY: clean
 
 FILES = copy.exe    fill.exe    point.exe \
-		copy-ez.exe fill-ez.exe
+		copy-ez.exe fill-ez.exe re-point.exe
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
