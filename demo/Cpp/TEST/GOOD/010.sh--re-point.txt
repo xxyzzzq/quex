@@ -16,6 +16,7 @@ Consider: NUMBER '1212'
 Consider: HELLO 'hello' 
 Consider: BYE 'bye' 
 ##
+<<End of Run>>
 Consider: HELLO 'hello' 
 Consider: NUMBER '4711' 
 Consider: HELLO 'bonjour' 
@@ -34,6 +35,7 @@ Consider: NUMBER '1212'
 Consider: HELLO 'hello' 
 Consider: BYE 'bye' 
 ##
+<<End of Run>>
 Consider: HELLO 'hello' 
 Consider: NUMBER '4711' 
 Consider: HELLO 'bonjour' 
@@ -52,4 +54,5 @@ Consider: NUMBER '1212'
 Consider: HELLO 'hello' 
 Consider: BYE 'bye' 
 ##
+<<End of Run>>
 VALGRIND:   All heap blocks were freed -- no leaks are possible
