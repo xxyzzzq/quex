@@ -24,13 +24,17 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
     QUEX_TYPE_CHARACTER*   iterator = 0x0;
 
     __quex_assert(memory_size > 2);
-
     if( BufferMemoryBegin != 0x0 ) {
         /* End of File must be inside the buffer, because we assume that the buffer
          * contains all that is required.                                           */
+        if( BufferMemorySize <= QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2) {
+            QUEX_ERROR_EXIT("\nConstructor: Provided memory size must be more than 2 greater than\n"
+                            "Constructor: QUEX_SETTING_BUFFER_MIN_FALLBACK_N. If in doubt, specify\n"
+                            "Constructor: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 as compile option.");
+        }
         if(    BufferEndOfContentP < BufferMemoryBegin 
             || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize)) {
-            QUEX_ERROR_EXIT("Constructor: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
+            QUEX_ERROR_EXIT("\nConstructor: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
                             "Constructor: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').");
         }
     }
@@ -160,6 +164,8 @@ QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
     QUEX_TYPE_CHARACTER* old_memory = QUEX_NAME(BufferMemory_reset)(&me->buffer._memory,
                                                                     BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP);
 
+    if( BufferMemoryBegin == 0x0 ) return old_memory;
+
     QUEX_NAME(reset_basic)(me, /* InputHandle */ (FILE*)0x0, CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
@@ -232,7 +238,7 @@ template<class InputHandleT> void
 QUEX_MEMBER(reset)(InputHandleT* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
 { QUEX_NAME(reset)(this, input_handle, CharacterEncodingName); }
 
-TEMPLATE_IN(InputHandleT) QUEX_TYPE_CHARACTER*
+QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_MEMBER(reset_buffer)(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                           size_t               BufferMemorySize,
                           QUEX_TYPE_CHARACTER* BufferEndOfContentP,  

@@ -124,10 +124,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*    me, 
-                            InputHandleT*  input_handle, 
-                            const char*    CharacterEncodingName, 
-                            const size_t   TranslationBufferMemorySize)
+    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*  me, 
+                            InputHandleT*       input_handle, 
+                            const char*         CharacterEncodingName, 
+                            const size_t        TranslationBufferMemorySize)
     /* NOTE:     me->_content_character_index_begin == 0 
      *       and me->_content_character_index_end   == 0 
      *       => buffer is filled the very first time.                                    
@@ -585,8 +585,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                                   QUEX_TYPE_CHARACTER*      Memory, 
                                   const size_t              Size,
                                   QUEX_TYPE_CHARACTER*      EndOfContentP)
+    /* Memory == 0x0 => no initialization, only return current pointer to memory. */
     {
         QUEX_TYPE_CHARACTER* old_memory = (me->_external_owner_f) ? me->_front : 0x0;
+
+        if( Memory == 0x0 ) return old_memory;
 
         /* Destruct the current memory (if it is not externally owned. */
         QUEX_NAME(BufferMemory_destruct)(me);
