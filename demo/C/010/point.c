@@ -25,6 +25,8 @@ main(int argc, char** argv)
     /* Iterate 3 times doing the same thing in order to illustrate
      * the repeated activation of the same chunk of memory.        */
     for(i = 0; i < 3; ++i ) {
+        QUEX_NAME(buffer_fill_region_prepare(&qlex));
+
         /* -- Call the low lever driver to fill the fill region */
         receive_n = messaging_framework_receive_to_internal_buffer();
 

@@ -23,7 +23,7 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
 #   ifdef QUEX_OPTION_ASSERTS
     QUEX_TYPE_CHARACTER*   iterator = 0x0;
 
-    __quex_assert(memory_size > 2);
+    __quex_assert(memory_size == 0 || memory_size > 2);
     if( BufferMemoryBegin != 0x0 ) {
         /* End of File must be inside the buffer, because we assume that the buffer
          * contains all that is required.                                           */

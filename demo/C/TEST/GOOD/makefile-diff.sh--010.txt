@@ -1,6 +1,8 @@
 < COMPILER = g++ -ggdb -Wall -pedantic 
 ---
-> COMPILER = gcc -ggdb -Wall -pedantic 
+> # Use 'C99' to avoid line number limit of 32767 in '#line' pragma
+> COMPILER = gcc -ggdb -Wall -pedantic -std=c99
+> 
 < %-conversion-direct.exe: %-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
 ---
 > %-conversion-direct.exe: %-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 

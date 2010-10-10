@@ -9,7 +9,7 @@ IDENTIFIER 'World'
 <TERMINATION> '' 
 [[End of Input]]
 [[Received 4 characters in line.]]
-BYE '' 
+BYE 'bye' 
 [[End of Input]]
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 Please, type an arbitrary sequence of the following:
@@ -23,6 +23,6 @@ IDENTIFIER 'W32orld'
 <TERMINATION> '' 
 [[End of Input]]
 [[Received 4 characters in line.]]
-BYE '' 
+BYE 'bye' 
 [[End of Input]]
 VALGRIND:   All heap blocks were freed -- no leaks are possible

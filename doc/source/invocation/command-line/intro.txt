@@ -98,6 +98,11 @@ as described in :ref:`sec-number-format`.
         
         DEFAULT = `<disabled>`
 
+.. cmdoption:: `--buffer-based`, `--bb`
+
+        Turns on buffer based analyzis. If this option is not set, buffer based analyzis
+        can still be activated with the compile option ``QUEX_OPTION_BUFFER_BASED_ANALYZIS``.
+
 .. cmdoption:: --version-id name
 
        ``name`` = arbitrary name of the version that was generated. This string
