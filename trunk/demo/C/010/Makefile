@@ -51,6 +51,12 @@ all: $(FILES)
           
 %.exe:                   %.c $(OBJS) $(QUEX_CORE) 
 	$(CC)      -o $@ $< $(OBJS) 
+
+point.exe:               point.c $(OBJS) $(QUEX_CORE) 
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+          
+re-point.exe:            re-point.c $(OBJS) $(QUEX_CORE) 
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
           
 %-utf8.o:                %.c $(QUEX_CORE) tiny_lexer
 	$(CC_UTF8) -c $< -o $@  

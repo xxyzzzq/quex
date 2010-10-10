@@ -49,7 +49,6 @@ QUEX_NAMESPACE_MAIN_OPEN
          * InputMemory != 0x0  => run directly on specified memory.
          *             == 0x0  => get memory from memory manager.                              */ 
     {
-        __quex_assert(MemorySize > 2);
 #       ifdef QUEX_OPTION_ASSERTS
         if( input_handle != 0x0 ) __quex_assert(InputMemory == 0x0 );
         if( InputMemory  != 0x0 ) { 
@@ -145,11 +144,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->filler->seek_character_index(me->filler, 0);
             me->filler->delete_self(me->filler);
         }
-        if( CharacterEncodingName != 0x0 ) {
-            me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
-        } else {
-            me->filler = 0x0;
-        }
+        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 
         QUEX_NAME(Buffer_init_analyzis)(me, me->_byte_order_reversion_active_f);
 
@@ -615,7 +610,16 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
          * one character to be read in forward direction.                                   */
-        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
+        __quex_assert(Memory != 0x0);
+        __quex_assert(Size != 0);
+#       ifdef QUEX_OPTION_ASSERTS
+        if( Size <= QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2) {
+            QUEX_ERROR_EXIT("Error: Tried to initialize buffer memory with a size less or equal\n"
+                            "Error: to QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2. Maybe, define\n"
+                            "Error: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0, if no pre-contexts\n"
+                            "Error: are involved.");
+        }
+#       endif
 
         me->_front            = Memory;
         me->_end_of_file_p    = EndOfFileP;
@@ -631,15 +635,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( EndOfFileP != 0x0 ) {
             __quex_assert(EndOfFileP >  me->_front);
             __quex_assert(EndOfFileP <= me->_back);
-        }
 
-        if( EndOfFileP != 0x0 ) {
            if( EndOfFileP < me->_back - 1 ) {
                __QUEX_STD_memset(EndOfFileP + 1, 0xFF, (size_t)((me->_back - EndOfFileP) - (ptrdiff_t)(2)));
             }
-        } else {
-            __QUEX_STD_memset(me->_front + 1, 0xFF, (size_t)(Size - 2));
-        }
+        } 
 #       endif 
     }
 

@@ -187,6 +187,9 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
 
 /* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
  *       pre-processor comparisons.                                       */
+#ifndef    QUEX_OPTION_BUFFER_BASED_ANALYZIS
+$$SWITCH$$ QUEX_OPTION_BUFFER_BASED_ANALYZIS
+#endif
 #ifndef     QUEX_SETTING_BUFFER_SIZE
 #    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
 #endif

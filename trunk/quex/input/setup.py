@@ -16,6 +16,7 @@ SETUP_INFO = {
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "bytes_per_ucs_code_point":       [["--bytes-per-trigger", "-b"],          "1"],
+    "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
     "byte_order":                     [["--endian"],                           "<system>"],
     "compression_template_f":         [["--template-compression"],             FLAG],
     "compression_template_coef":      [["--template-compression-coefficient"], 1.0],

@@ -30,7 +30,7 @@ following signatures
 The first argument is an input handle of the user's like, i.e. either a
 ``FILE*``, ``istream*``, or ``wistream*`` pointer, or a pointer to a derived
 class' object. The second argument is character encoding name which is used for
-the input. If no converter is used, the ``CharacterEncodingName`` must be set
+the input. If *the same* converter is used, the ``CharacterEncodingName`` must be set
 to zero. If the analyzer works only on plain memory, the following
 reset function may be used
 

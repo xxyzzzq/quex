@@ -11,6 +11,11 @@ the suffix enables something, the option with the suffix disables the 'something
    More of use is the sibling ``QUEX_OPTION_ASSERTS_DISABLED``. Disabling
    asserts is key for getting reasonable performance.
 
+.. cmacro:: QUEX_OPTION_BUFFER_BASED_ANALYZIS
+
+   Turn on buffer based analyzis. In particular automatic buffer reload is
+   disabled. Also some consistency checks are disabled if asserts were enabled.
+
 .. cmacro:: QUEX_OPTION_COLUMN_NUMBER_COUNTING
 
    Enables column number counting. Respectively, 

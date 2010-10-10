@@ -6,11 +6,11 @@ if [[ $1 == "--hwut-info" ]]; then
 fi
 cd $QUEX_PATH/demo/Cpp/010
 
-if [[ $2 == "FIRST" ]]; then
-    make clean >& /dev/null
-fi
+# if [[ $2 == "FIRST" ]]; then
+make clean >& /dev/null
+# fi
 
-make  $1.exe >& tmp.txt
+make  $1.exe ASSERTS_ENABLED_F=YES >& tmp.txt
 
 cat tmp.txt | awk ' ! /g\+\+/' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/ { print; }' | awk ' !/out of range/'
 rm tmp.txt
