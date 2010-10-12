@@ -24,8 +24,8 @@ main(int argc, char** argv)
         size_t receive_n = messaging_framework_receive_to_internal_buffer();
 
         // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
-        // QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);
         qlex.buffer_fill_region_finish(receive_n-1);
+        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);
 
         // -- Loop until the 'termination' token arrives
         (void)qlex.token_p_switch(&token);

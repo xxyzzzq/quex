@@ -25,16 +25,14 @@ main(int argc, char** argv)
     /* Iterate 3 times doing the same thing in order to illustrate
      * the repeated activation of the same chunk of memory.        */
     for(i = 0; i < 3; ++i ) {
-        QUEX_NAME(buffer_fill_region_prepare(&qlex));
+        QUEX_NAME(buffer_fill_region_prepare)(&qlex);
 
         /* -- Call the low lever driver to fill the fill region */
         receive_n = messaging_framework_receive_to_internal_buffer();
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
         QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n-1);
-        /* -- Each time the buffer is filled, the input pointer must be reset
-         *    (Here, it is just to display the principle, ...)                */
-        QUEX_NAME(buffer_input_pointer_set)(&qlex, MESSAGING_FRAMEWORK_BUFFER + 1);
+        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);
 
         /* -- Loop until the 'termination' token arrives                      */
         QUEX_NAME(token_p_switch)(&qlex, &token);

@@ -619,6 +619,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                             "Error: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0, if no pre-contexts\n"
                             "Error: are involved.");
         }
+        else if( EndOfFileP != 0x0 ) {
+            __quex_assert(EndOfFileP > Memory);
+            __quex_assert(EndOfFileP < Memory + Size);
+        }
 #       endif
 
         me->_front            = Memory;
@@ -633,9 +637,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #       ifdef QUEX_OPTION_ASSERTS
         if( EndOfFileP != 0x0 ) {
-            __quex_assert(EndOfFileP >  me->_front);
-            __quex_assert(EndOfFileP <= me->_back);
-
            if( EndOfFileP < me->_back - 1 ) {
                __QUEX_STD_memset(EndOfFileP + 1, 0xFF, (size_t)((me->_back - EndOfFileP) - (ptrdiff_t)(2)));
             }

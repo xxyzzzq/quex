@@ -1,9 +1,32 @@
 import quex.core_engine.state_machine.core                    as state_machine
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 
-from   quex.input.setup import setup as Setup
+from   quex.input.setup            import setup as Setup
+from   quex.frs_py.string_handling import blue_print
 
 LanguageDB = None
+
+init_drop_out_template = """
+$$LABEL$$
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+$$LABEL_DIRECT$$
+        $$GOTO_FAILURE$$
+    } else if( $$LOAD_IMPOSSIBLE$$ ) {
+        $$GOTO_END_OF_STREAM$$
+    }
+    $$RELOAD_BUFFER$$
+    $$GOTO_INPUT$$
+"""
+
+normal_drop_out_template = """
+$$LABEL$$
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ($$LOAD_IMPOSSIBLE$$) ) {
+$$LABEL_DIRECT$$
+        $$GOTO_TERMINAL$$
+    }
+    $$RELOAD_BUFFER$$
+    $$GOTO_INPUT$$
+"""
 
 def do(State, StateIdx, SMD, StateRouterStr=None):
     """There are two reasons for drop out:
@@ -114,35 +137,29 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
 
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
-        txt = [ 
-            LanguageDB["$label-def"]("$drop-out", StateIdx),
-            "    ", LanguageDB["$if"], LanguageDB["$not BLC"],  LanguageDB["$then"], 
-            LanguageDB["$label-def"]("$drop-out-direct", StateIdx), 
-            "        ", LanguageDB["$goto"]("$terminal-FAILURE"),                   "\n",
-            "    ", LanguageDB["$elseif"], load_impossible_str, LanguageDB["$then"], 
-            "        ", LanguageDB["$goto"]("$terminal-EOF"),                       "\n",
-            "    ", LanguageDB["$endif"],                                           "\n",
-            "    ", reload_str,                                                     "\n",
-            "    ", goto_state_input_str,                                           "\n",
-        ]
+        txt = blue_print(init_drop_out_template,
+                         [["$$LABEL$$",              LanguageDB["$label-def"]("$drop-out", StateIdx)],
+                          ["$$LABEL_DIRECT$$",       LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
+                          ["$$LOAD_IMPOSSIBLE$$",    load_impossible_str],
+                          ["$$GOTO_FAILURE$$",       LanguageDB["$goto"]("$terminal-FAILURE")],
+                          ["$$GOTO_END_OF_STREAM$$", LanguageDB["$goto"]("$terminal-EOF")], 
+                          ["$$RELOAD_BUFFER$$",      reload_str], 
+                          ["$$GOTO_INPUT$$",         goto_state_input_str],
+                         ])
+
 
     else:
-        # Normal Drop-Out. See comments above!
-        txt = [ 
-            LanguageDB["$label-def"]("$drop-out", StateIdx),
-            "    ", LanguageDB["$if"], "   ", LanguageDB["$not BLC"], "\n",
-            "    ", " " * len(LanguageDB["$if"]), LanguageDB["$or"], 
-                    " ", load_impossible_str, " ", 
-                    LanguageDB["$then"],                            
-            LanguageDB["$label-def"]("$drop-out-direct", StateIdx), 
-            "        ", goto_terminal_str,                            "\n",
-            "    ",     LanguageDB["$endif"],                         "\n",
-            "    ", reload_str,                                       "\n",
-            "    ", goto_state_input_str,                             "\n",
-        ]
+        txt = blue_print(normal_drop_out_template,
+                         [["$$LABEL$$",           LanguageDB["$label-def"]("$drop-out", StateIdx)],
+                          ["$$LABEL_DIRECT$$",    LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
+                          ["$$LOAD_IMPOSSIBLE$$", load_impossible_str],
+                          ["$$GOTO_TERMINAL$$",   goto_terminal_str], 
+                          ["$$RELOAD_BUFFER$$",   reload_str], 
+                          ["$$GOTO_INPUT$$",      goto_state_input_str],
+                         ])
 
     # -- in case of the init state, the end of file has to be checked.
-    return txt
+    return [ txt ]
 
 def __reload_forward():
     # NOTE, extra four whitespace in second line by purpose.
