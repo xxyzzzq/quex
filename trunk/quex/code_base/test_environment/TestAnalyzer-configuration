@@ -2,8 +2,8 @@
  *
  * (C) 2005-2009 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION
-#define __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER
+#define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER
 /* Additionally to the 'local' include guard, there is an include indicator 
  *
  *         __INCLUDE_INDICATOR_QUEX__CONFIGURATION
@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.51.1-prerelease"
-#define QUEX_SETTING_BUILD_DATE        "Tue Sep 14 12:43:25 2010"
+#define QUEX_SETTING_VERSION           "0.52.4"
+#define QUEX_SETTING_BUILD_DATE        "Wed Oct 13 09:11:02 2010"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -44,12 +44,16 @@
 #
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
 #   ifdef     QUEX_OPTION_ASSERTS
-#      undef  QUEX_OPTION_ASSERTS
+#      undef  QUEX_OPTION_ASSERTSmacro-check.py
 #   endif
 #else
 #   ifndef    QUEX_OPTION_ASSERTS
 #      define QUEX_OPTION_ASSERTS
 #   endif
+#endif
+
+#ifndef  QUEX_OPTION_COMPUTED_GOTOS
+/* #define QUEX_OPTION_COMPUTED_GOTOS */
 #endif
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N         (0)
@@ -62,7 +66,7 @@
 #define    __QUEX_SETTING_TOKEN_ID_INDENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_INDENT)
 #define    __QUEX_SETTING_TOKEN_ID_DEDENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_DEDENT)
 #define    __QUEX_SETTING_TOKEN_ID_NODENT            ((QUEX_TYPE_TOKEN_ID)QUEX_TKN_NODENT)
-#define    __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(TokenID) 
+#define    __QUEX_SETTING_TOKEN_ID_REPETITION_TEST(TokenID) ()
 
 #ifndef    __QUEX_OPTION_LITTLE_ENDIAN
 #define    __QUEX_OPTION_LITTLE_ENDIAN
@@ -74,10 +78,10 @@
 #define    __QUEX_OPTION_SYSTEM_ENDIAN
 #endif
 
-#ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
+#ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE
 /* #define QUEX_OPTION_TOKEN_POLICY_QUEUE */
 #endif
-#ifndef QUEX_OPTION_TOKEN_POLICY_SINGLE_DISABLED
+#ifndef QUEX_OPTION_TOKEN_POLICY_SINGLE
 #define    QUEX_OPTION_TOKEN_POLICY_SINGLE
 #endif
 
@@ -99,7 +103,7 @@
 #   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() RETURN
 #endif
 
-#ifndef QUEX_OPTION_TOKEN_REPETITION_SUPPORT_DISABLED
+#ifndef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 /* #define QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 #endif
 
@@ -183,6 +187,9 @@
 
 /* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
  *       pre-processor comparisons.                                       */
+#ifndef    QUEX_OPTION_BUFFER_BASED_ANALYZIS
+/* #define QUEX_OPTION_BUFFER_BASED_ANALYZIS */
+#endif
 #ifndef     QUEX_SETTING_BUFFER_SIZE
 #    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
 #endif
@@ -254,27 +261,6 @@
 
 #ifndef    QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE 
 #   define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
-#endif
-
-#if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
-#   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
-#      error "QUEX_SETTING_BUFFER_SIZE not defined at this place."
-#   endif
-    /* If your compiler brings you here to this position, then this may be because
-     * you defined the QUEX_SETTING_BUFFER_SIZE with something different than just
-     * an integer number. Indeed something like
-     *
-     *   #define QUEX_SETTING_BUFFER_SIZE  (size_t)4096
-     *
-     * would be propper, but does not allow to do some math. So, please erase whatever
-     * is not a number in the definition (e.g. delete the '(size_t)' type cast.        */
-#   if   QUEX_SETTING_BUFFER_SIZE >= 1024
-#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (256)
-#   elif QUEX_SETTING_BUFFER_SIZE >= 8
-#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (size_t)((float)(QUEX_SETTING_BUFFER_SIZE)/16.0)
-#   else
-#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
-#   endif
 #endif
 
 /* Following switch is also set, if a user defined converter is defined.     */
@@ -369,4 +355,4 @@
 #include <quex/code_base/analyzer/configuration/derived>
 
 
-#endif /* __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__TEST_ANALYZER_CONFIGURATION */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER */

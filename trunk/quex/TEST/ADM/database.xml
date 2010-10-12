@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.96" date="Tue Oct 12 09:14:52 2010">
+<test-database execution-time-sec="0.95" date="Wed Oct 13 09:13:39 2010">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.39"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
@@ -21,7 +21,7 @@
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.02"> 
         <application file-name="macro-check.py" info-request-time="1285399005L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.02" crc="-1467740473"/>
+           <choice name="" result="OK" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
     <test title="Include Guards for C/C++" time-sum-sec="0.40"> 

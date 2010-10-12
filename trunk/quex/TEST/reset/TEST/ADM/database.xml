@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.63" date="Tue Oct 12 09:15:30 2010">
+<test-database execution-time-sec="0.59" date="Wed Oct 13 09:11:13 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.08"> 
+    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.07"> 
         <application file-name="lexer-x" info-request-time="1286549390L" vanished="False"/>
         <make-procedure success="True" time_sec="3.372258"/>
         <choice-list number="11" same_result="True">
@@ -18,7 +18,7 @@
         </choice-list>
     </test>
     <group name="Reset w/ QuexBufferFiller">
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.25"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.23"> 
             <application file-name="codec-lexer" info-request-time="1286549382L" vanished="False"/>
             <make-procedure success="True" time_sec="4.202269"/>
             <choice-list number="11" same_result="True">
@@ -35,7 +35,7 @@
                <choice name="136" result="OK" time_sec="0.00" crc="17735322"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.12"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.13"> 
             <application file-name="icu-lexer" info-request-time="1286549387L" vanished="False"/>
             <make-procedure success="True" time_sec="4.860804"/>
             <choice-list number="11" same_result="True">
@@ -52,7 +52,7 @@
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain" make-dependent="True" time-sum-sec="0.07"> 
+        <test title="Plain" make-dependent="True" time-sum-sec="0.05"> 
             <application file-name="lexer" info-request-time="1286549393L" vanished="False"/>
             <make-procedure success="True" time_sec="3.091180"/>
             <choice-list number="11" same_result="True">
