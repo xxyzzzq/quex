@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.04" date="Tue Oct 12 09:15:05 2010">
+<test-database execution-time-sec="0.02" date="Wed Oct 13 09:11:13 2010">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="on_skip_range_open-customized.exe" info-request-time="1286867698L" vanished="False"/>
@@ -15,7 +15,7 @@
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.02"> 
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="transition-x.exe" info-request-time="1286867701L" vanished="False"/>
             <make-procedure success="True" time_sec="2.386560"/>
             <choice-list number="4" same_result="False">
@@ -25,7 +25,7 @@
                <choice name="error" result="OK" time_sec="0.01" crc="-544814889"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.02"> 
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="transition.exe" info-request-time="1286867703L" vanished="False"/>
             <make-procedure success="True" time_sec="1.873325"/>
             <choice-list number="4" same_result="False">
