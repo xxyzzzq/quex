@@ -254,6 +254,11 @@ public:
     void                               reset(const char*    CharacterEncodingName = 0x0) 
     { reset<void>((void*)0x0, CharacterEncodingName); }
 
+    QUEX_TYPE_CHARACTER*               reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                                    size_t               BufferMemorySize,
+                                                    QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
+                                                    const char*          CharacterEncodingName = 0x0);
+
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 public:
     template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
@@ -882,16 +887,18 @@ STATE_207:
         }
     }
 
+
 STATE_207_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_DROP_OUT");
-    if((input != QUEX_SETTING_BUFFER_LIMIT_CODE) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_207_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_DROP_OUT_DIRECT");
+
         goto TERMINAL_FAILURE;
-    } else if((me->buffer._memory._end_of_file_p != 0x0)) {
+    } else if( (me->buffer._memory._end_of_file_p != 0x0) ) {
         goto TERMINAL_END_OF_STREAM;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_207_INPUT;
@@ -942,15 +949,16 @@ STATE_208_INPUT:
         }
     }
 
+
 STATE_208_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_208_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_208_INPUT;
@@ -998,15 +1006,16 @@ STATE_209_INPUT:
         }
     }
 
+
 STATE_209_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_209_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_209_INPUT;
@@ -1034,15 +1043,16 @@ STATE_210_INPUT:
         }
     }
 
+
 STATE_210_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
                           
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_DROP_OUT_DIRECT");
+
             goto TERMINAL_4_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_210_INPUT;
@@ -1090,15 +1100,16 @@ STATE_212_INPUT:
         }
     }
 
+
 STATE_212_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_212_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_212_INPUT;
@@ -1146,15 +1157,16 @@ STATE_213_INPUT:
         }
     }
 
+
 STATE_213_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_213_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_213_INPUT;
@@ -1174,15 +1186,16 @@ STATE_216_INPUT:
         goto STATE_216_DROP_OUT;    /* [-oo, '/'] */
     }
 
+
 STATE_216_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
                           
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_DROP_OUT_DIRECT");
+
             goto TERMINAL_25_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_216_INPUT;
@@ -1218,15 +1231,16 @@ STATE_217_INPUT:
         }
     }
 
+
 STATE_217_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_217_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_217_INPUT;
@@ -1274,15 +1288,16 @@ STATE_218_INPUT:
         }
     }
 
+
 STATE_218_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_218_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_218_INPUT;
@@ -1318,15 +1333,16 @@ STATE_219_INPUT:
         }
     }
 
+
 STATE_219_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_219_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_DROP_OUT_DIRECT");
+
             goto TERMINAL_8_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_219_INPUT;
@@ -1374,15 +1390,16 @@ STATE_220_INPUT:
         }
     }
 
+
 STATE_220_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_220_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_220_INPUT;
@@ -1430,15 +1447,16 @@ STATE_221_INPUT:
         }
     }
 
+
 STATE_221_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_221_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_221_INPUT;
@@ -1486,15 +1504,16 @@ STATE_222_INPUT:
         }
     }
 
+
 STATE_222_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_222_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_222_INPUT;
@@ -1530,15 +1549,16 @@ STATE_223_INPUT:
         }
     }
 
+
 STATE_223_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_223_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_DROP_OUT_DIRECT");
+
             goto TERMINAL_12_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_223_INPUT;
@@ -1586,15 +1606,16 @@ STATE_224_INPUT:
         }
     }
 
+
 STATE_224_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_224_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_224_INPUT;
@@ -1642,15 +1663,16 @@ STATE_225_INPUT:
         }
     }
 
+
 STATE_225_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_225_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_225_INPUT;
@@ -1698,15 +1720,16 @@ STATE_226_INPUT:
         }
     }
 
+
 STATE_226_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_226_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_226_INPUT;
@@ -1742,15 +1765,16 @@ STATE_227_INPUT:
         }
     }
 
+
 STATE_227_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_227_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_DROP_OUT_DIRECT");
+
             goto TERMINAL_6_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_227_INPUT;
@@ -1798,15 +1822,16 @@ STATE_228_INPUT:
         }
     }
 
+
 STATE_228_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_228_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_228_INPUT;
@@ -1854,15 +1879,16 @@ STATE_229_INPUT:
         }
     }
 
+
 STATE_229_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_229_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_229_INPUT;
@@ -1910,15 +1936,16 @@ STATE_230_INPUT:
         }
     }
 
+
 STATE_230_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_230_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_230_INPUT;
@@ -1966,15 +1993,16 @@ STATE_231_INPUT:
         }
     }
 
+
 STATE_231_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_231_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_231_INPUT;
@@ -2010,15 +2038,16 @@ STATE_232_INPUT:
         }
     }
 
+
 STATE_232_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_232_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_DROP_OUT_DIRECT");
+
             goto TERMINAL_14_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_232_INPUT;
@@ -2066,15 +2095,16 @@ STATE_233_INPUT:
         }
     }
 
+
 STATE_233_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_233_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_233_INPUT;
@@ -2122,15 +2152,16 @@ STATE_234_INPUT:
         }
     }
 
+
 STATE_234_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_234_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_234_INPUT;
@@ -2178,15 +2209,16 @@ STATE_235_INPUT:
         }
     }
 
+
 STATE_235_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_235_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_235_INPUT;
@@ -2234,15 +2266,16 @@ STATE_236_INPUT:
         }
     }
 
+
 STATE_236_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_236_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_DROP_OUT_DIRECT");
+
             goto TERMINAL_30_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_236_INPUT;
@@ -2278,15 +2311,16 @@ STATE_237_INPUT:
         }
     }
 
+
 STATE_237_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_237_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_DROP_OUT_DIRECT");
+
             goto TERMINAL_10_DIRECT;
     }
-
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_237_INPUT;

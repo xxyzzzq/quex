@@ -57,8 +57,7 @@ STATE_7_INPUT:
 
 STATE_7_DROP_OUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT");
-    if(   (input != QUEX_SETTING_BUFFER_LIMIT_CODE) 
-        ||  (me->buffer._memory._end_of_file_p != 0x0) ) {
+    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
 STATE_7_DROP_OUT_DIRECT:
         QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT_DIRECT");
         QUEX_GOTO_last_acceptance();

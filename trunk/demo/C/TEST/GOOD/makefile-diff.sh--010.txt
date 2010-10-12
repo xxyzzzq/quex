@@ -12,6 +12,12 @@
 < %.exe:                   %.cpp $(OBJS) $(QUEX_CORE) 
 ---
 > %.exe:                   %.c $(OBJS) $(QUEX_CORE) 
+< point.exe:               point.cpp $(OBJS) $(QUEX_CORE) 
+---
+> point.exe:               point.c $(OBJS) $(QUEX_CORE) 
+< re-point.exe:            re-point.cpp $(OBJS) $(QUEX_CORE) 
+---
+> re-point.exe:            re-point.c $(OBJS) $(QUEX_CORE) 
 < %-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
 ---
 > %-utf8.o:                %.c $(QUEX_CORE) tiny_lexer
