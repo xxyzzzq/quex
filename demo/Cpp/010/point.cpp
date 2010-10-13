@@ -25,7 +25,7 @@ main(int argc, char** argv)
 
         // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
         qlex.buffer_fill_region_finish(receive_n-1);
-        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);
+        /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
 
         // -- Loop until the 'termination' token arrives
         (void)qlex.token_p_switch(&token);

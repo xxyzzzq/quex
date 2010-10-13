@@ -57,15 +57,17 @@ test(tiny_lexer* qlex)
     QUEX_NAME_TOKEN(construct)(&token);
     get_new_memory_to_analyze(&buffer, &buffer_size);
 
-    /* Setup the memory to be analyzed (this is the 're-point' operation). */
+    /* Setup the memory to be analyzed (this is the 're-point' operation). 
+     * (buffer is one character larger than the content, so that it can contain the
+     *  buffer limit code at the end.)                                              */
     QUEX_TYPE_CHARACTER* prev_memory = QUEX_NAME(reset_buffer)(qlex, buffer, buffer_size, 
-                                                               /* End of Content */ buffer + buffer_size, 0x0); 
+                                                               /* End of Content */ buffer + buffer_size - 1, 0x0); 
     /* If there was some old memory, than delete it. */
     if( prev_memory != 0x0 ) free(prev_memory);
 
     /* QUEX_NAME(Buffer_show_byte_content)(&qlex->buffer, 5); */
 
-    /* -- Loop until the 'termination' token arrives                      */
+    /* -- Loop until the 'termination' token arrives */
     QUEX_NAME(token_p_switch)(qlex, &token);
     do {
         QUEX_NAME(receive)(qlex);

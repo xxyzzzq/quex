@@ -30,12 +30,14 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
         if( BufferMemorySize <= QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2) {
             QUEX_ERROR_EXIT("\nConstructor: Provided memory size must be more than 2 greater than\n"
                             "Constructor: QUEX_SETTING_BUFFER_MIN_FALLBACK_N. If in doubt, specify\n"
-                            "Constructor: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 as compile option.");
+                            "Constructor: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 as compile option.\n");
         }
         if(    BufferEndOfContentP < BufferMemoryBegin 
-            || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize)) {
+            || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize - 1)) {
             QUEX_ERROR_EXIT("\nConstructor: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
-                            "Constructor: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').");
+                            "Constructor: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').\n"
+                            "Constructor: Note, that the last element of the buffer is to be filled with\n"
+                            "Constructor: the buffer limit code character.\n");
         }
     }
     if( BufferEndOfContentP != 0x0 ) {
@@ -128,7 +130,7 @@ QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
                               bool                ByteOrderReversionF   /* = false */)
 {
     if( p_input_stream == NULL ) 
-        QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+        QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.\n");
     QUEX_NAME(constructor_core)(me, p_input_stream, 
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, QUEX_SETTING_BUFFER_SIZE, 0x0);
@@ -153,22 +155,30 @@ QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
 }
 
 QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
-                        QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                        size_t               BufferMemorySize,
-                        QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0 */
-                        const char*          CharacterEncodingName /* = 0x0 */) 
+QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*   me,
+                        QUEX_TYPE_CHARACTER*  BufferMemoryBegin, 
+                        size_t                BufferMemorySize,
+                        QUEX_TYPE_CHARACTER*  BufferEndOfContentP,  /* = 0x0 */
+                        const char*           CharacterEncodingName /* = 0x0 */) 
 {
+    /* End of Content **must** lie inside the provided buffer */
+#   if defined(QUEX_OPTION_ASSERTS)
+    if(    BufferEndOfContentP < BufferMemoryBegin 
+        || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize - 1)) {
+        QUEX_ERROR_EXIT("\nreset_buffer: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
+                        "reset_buffer: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').\n"
+                        "reset_buffer: Note, that the last element of the buffer is to be filled with\n"
+                        "reset_buffer: the buffer limit code character.\n");
+    }
+#   endif
+
     /* reset_basic(...) does not reset the buffer memory itself. This must
      * be done by hand.                                                    */
     QUEX_TYPE_CHARACTER* old_memory = QUEX_NAME(BufferMemory_reset)(&me->buffer._memory,
-                                                                    BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP);
+                                                                    BufferMemoryBegin, BufferMemorySize, 
+                                                                    BufferEndOfContentP);
 
     if( BufferMemoryBegin == 0x0 ) return old_memory;
-
-    /* End of Content **must** lie inside the provided buffer */
-    __quex_assert(BufferEndOfContentP > BufferMemoryBegin);
-    __quex_assert(BufferEndOfContentP <= BufferMemoryBegin + BufferMemorySize);
 
     QUEX_NAME(reset_basic)(me, /* InputHandle */ (FILE*)0x0, CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
