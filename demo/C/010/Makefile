@@ -15,6 +15,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 OBJS      = tiny_lexer.o      messaging-framework.o
+SRCS      = $(OBJS:.o=.c)
 UTF8_OBJS = tiny_lexer-utf8.o messaging-framework-utf8.o
 
 # (*) COMPILER SETTINGS ________________________________________________________
@@ -52,11 +53,11 @@ all: $(FILES)
 %.exe:                   %.c $(OBJS) $(QUEX_CORE) 
 	$(CC)      -o $@ $< $(OBJS) 
 
-point.exe:               point.c $(OBJS) $(QUEX_CORE) 
-	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+point.exe:               point.c $(SRCS) $(QUEX_CORE) 
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
           
-re-point.exe:            re-point.c $(OBJS) $(QUEX_CORE) 
-	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+re-point.exe:            re-point.c $(SRCS) $(QUEX_CORE) 
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
           
 %-utf8.o:                %.c $(QUEX_CORE) tiny_lexer
 	$(CC_UTF8) -c $< -o $@  
