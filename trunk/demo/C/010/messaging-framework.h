@@ -11,7 +11,7 @@
 
 /* Assume that some low level driver communicates the place where 
  * input is placed via macros.                                     */
-#define  MESSAGING_FRAMEWORK_BUFFER_SIZE  ((size_t)(65536))
+#define  MESSAGING_FRAMEWORK_BUFFER_SIZE  ((size_t)(512))
 extern ELEMENT_TYPE   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 extern size_t messaging_framework_receive(ELEMENT_TYPE** buffer);

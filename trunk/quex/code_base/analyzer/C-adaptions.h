@@ -94,27 +94,27 @@
 #   define self_accumulator_add(Begin, End)      QUEX_NAME(Accumulator_add)(&self.accumulator, Begin, End)
 #   define self_accumulator_add_character(Char)  QUEX_NAME(Accumulator_add_character)(&self.accumulator, Char)
 #   define self_accumulator_clear()              QUEX_NAME(Accumulator_clear)(&self.accumulator)
-#   define self_accumulator_flush(TokenID)                                            \
-    do {                                                                              \
-        /* All functions must ensure: there is one cell to store terminating zero. */ \
-        __quex_assert(self.accumulator.text.end < self.accumulator.text.memory_end);  \
-                                                                                      \
-        /* If no text is to be flushed, return undone */                              \
-        if( self.accumulator.text.begin == self.accumulator.text.end ) break;         \
-                                                                                      \
-        *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \
-                                                                                      \
-        self_token_set_id(TokenID);                                                   \
-        if( QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                 \
-                                       self.accumulator.text.begin,                   \
-                                       self.accumulator.text.end) == false ) {        \
-            /* The called function does not need the memory chunk, we reuse it. */    \
-            QUEX_NAME(Accumulator_clear)(&self.accumulator);                          \
-        } else {                                                                      \
-            /* The called function wants to use the memory, so we get some new. */    \
-            QUEX_NAME(Accumulator_init_memory)(&self.accumulator);                    \
-        }                                                                             \
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                             \
+#   define self_accumulator_flush(TokenID)                                                \
+    do {                                                                                  \
+        /* All functions must ensure: there is one cell to store terminating zero. */     \
+        __quex_assert(self.accumulator.text.end < self.accumulator.text.memory_end);      \
+                                                                                          \
+        self_token_set_id(TokenID) ;                                                      \
+        /* If no text is to be flushed, behave as self_send */                            \
+        if( self.accumulator.text.begin != self.accumulator.text.end ) {                  \
+            *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \
+                                                                                          \
+            if( QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                 \
+                                           self.accumulator.text.begin,                   \
+                                           self.accumulator.text.end) == false ) {        \
+                /* The called function does not need the memory chunk, we reuse it. */    \
+                QUEX_NAME(Accumulator_clear)(&self.accumulator);                          \
+            } else {                                                                      \
+                /* The called function wants to use the memory, so we get some new. */    \
+                QUEX_NAME(Accumulator_init_memory)(&self.accumulator);                    \
+            }                                                                             \
+        }                                                                                 \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                 \
     } while(0)
 
 

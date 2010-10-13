@@ -57,7 +57,7 @@ re-point.exe:            re-point.cpp $(OBJS) $(QUEX_CORE)
 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
           
 %-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
-	$(CC_UTF8) -c $< -o $@  
+	$(CC_UTF8) -c $< -o $@ -D__QUEX_OPTION_MESSAGE_UTF8 
           
 %.o:                     %.cpp $(QUEX_CORE) tiny_lexer
 	$(CC)      -c $< -o $@  

@@ -14,6 +14,11 @@ main(int argc, char** argv)
     size_t             receive_n = (size_t)-1;
     int                i = 0;
 
+    if( QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0 ) {
+        QUEX_ERROR_EXIT("This method fails if QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0\n"
+                        "Consider using the method described in 're-point.c'.");
+    }
+
     QUEX_NAME_TOKEN(construct)(&token);
     QUEX_NAME(construct_memory)(&qlex, 
                                 MESSAGING_FRAMEWORK_BUFFER, 
@@ -32,7 +37,7 @@ main(int argc, char** argv)
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
         QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n-1);
-        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);
+        /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
 
         /* -- Loop until the 'termination' token arrives                      */
         QUEX_NAME(token_p_switch)(&qlex, &token);
