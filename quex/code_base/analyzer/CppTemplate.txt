@@ -87,6 +87,10 @@ public:
 
     /* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);
 public:
+    typedef QUEX_TYPE_TOKEN      token_type;
+    typedef QUEX_TYPE_TOKEN_ID   token_id_type;
+    typedef QUEX_TYPE_CHARACTER  character_type;
+
     $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
     $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP   = 0x0,
     $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
