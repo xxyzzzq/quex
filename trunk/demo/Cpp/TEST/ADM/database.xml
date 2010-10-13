@@ -1,4 +1,4 @@
-<test-database execution-time-sec="286.20" date="Tue Oct 12 09:14:51 2010">
+<test-database execution-time-sec="330.05" date="Fri Oct 15 00:05:12 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -40,7 +40,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.59"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.60"> 
             <application file-name="001.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.44" crc="1133630677"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="13.03"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="13.02"> 
             <application file-name="003.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.54" crc="766281751"/>
@@ -127,7 +127,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="4.25"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="4.26"> 
             <application file-name="009.sh" info-request-time="1278568205L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="2.24" crc="13704092"/>
@@ -150,19 +150,19 @@
                <choice name="point" result="FAIL" time_sec="10.03" crc="None"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="74.93"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="118.80"> 
             <application file-name="010.sh" info-request-time="1286622169L" vanished="False"/>
             <choice-list number="10" same_result="False">
-               <choice name="copy" result="OK" time_sec="6.83" crc="1030682096"/>
-               <choice name="fill" result="OK" time_sec="6.93" crc="1030682096"/>
-               <choice name="point" result="OK" time_sec="6.99" crc="861795188"/>
-               <choice name="copy-ez" result="OK" time_sec="6.82" crc="-812025512"/>
-               <choice name="fill-ez" result="OK" time_sec="7.00" crc="-812025512"/>
-               <choice name="copy-conversion" result="OK" time_sec="8.75" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="OK" time_sec="8.55" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="OK" time_sec="8.55" crc="-470382527"/>
-               <choice name="stdinlexer" result="OK" time_sec="7.75" crc="248250308"/>
-               <choice name="re-point" result="FAIL" time_sec="6.76" crc="1228316465"/>
+               <choice name="copy" result="OK" time_sec="12.80" crc="1030682096"/>
+               <choice name="fill" result="OK" time_sec="12.20" crc="1030682096"/>
+               <choice name="point" result="OK" time_sec="7.00" crc="861795188"/>
+               <choice name="copy-ez" result="OK" time_sec="12.84" crc="-812025512"/>
+               <choice name="fill-ez" result="OK" time_sec="12.76" crc="-812025512"/>
+               <choice name="copy-conversion" result="OK" time_sec="17.31" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="15.72" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="10.39" crc="-470382527"/>
+               <choice name="stdinlexer" result="OK" time_sec="8.93" crc="248250308"/>
+               <choice name="re-point" result="OK" time_sec="8.85" crc="1228316465"/>
             </choice-list>
         </test>
         <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="18.03"> 

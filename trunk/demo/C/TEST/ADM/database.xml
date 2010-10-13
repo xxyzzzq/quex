@@ -1,4 +1,4 @@
-<test-database execution-time-sec="225.86" date="Thu Oct 14 08:53:36 2010">
+<test-database execution-time-sec="284.01" date="Thu Oct 14 23:48:35 2010">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.17"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
@@ -136,19 +136,19 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="91.90"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="150.05"> 
             <application file-name="010.sh" info-request-time="1286622283L" vanished="False"/>
             <choice-list number="10" same_result="False">
-               <choice name="copy" result="OK" time_sec="8.44" crc="595815643"/>
-               <choice name="fill" result="OK" time_sec="8.44" crc="595815643"/>
-               <choice name="point" result="OK" time_sec="9.03" crc="861795188"/>
-               <choice name="copy-ez" result="OK" time_sec="8.49" crc="-812025512"/>
-               <choice name="fill-ez" result="OK" time_sec="8.43" crc="-812025512"/>
-               <choice name="copy-conversion" result="OK" time_sec="10.16" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="OK" time_sec="10.36" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="OK" time_sec="10.36" crc="-470382527"/>
-               <choice name="stdinlexer" result="OK" time_sec="9.21" crc="-1782734641"/>
-               <choice name="re-point" result="FAIL" time_sec="8.98" crc="1228316465"/>
+               <choice name="copy" result="OK" time_sec="15.49" crc="595815643"/>
+               <choice name="fill" result="OK" time_sec="15.23" crc="595815643"/>
+               <choice name="point" result="OK" time_sec="8.94" crc="861795188"/>
+               <choice name="copy-ez" result="OK" time_sec="15.38" crc="-812025512"/>
+               <choice name="fill-ez" result="OK" time_sec="15.22" crc="-812025512"/>
+               <choice name="copy-conversion" result="OK" time_sec="18.25" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="18.21" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="18.26" crc="-470382527"/>
+               <choice name="stdinlexer" result="OK" time_sec="16.08" crc="-1782734641"/>
+               <choice name="re-point" result="OK" time_sec="8.99" crc="1228316465"/>
             </choice-list>
         </test>
         <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="36.63"> 
