@@ -1,6 +1,0 @@
-header { 
-#include <Parserbase.h>
-}
-mode lex { 
-    <<EOF>> => ParserBase::TKN_TERMINATION; [ \t\r\n]+ { /* no-op */ } ";" => ParserBase::TKN_SEMICOLON; "=" => ParserBase::TKN_OP_EQUAL; "+" => ParserBase::TKN_OP_PLUS; "(" => ParserBase::TKN_LPAREN; ")" => ParserBase::TKN_RPAREN; "int" => ParserBase::TKN_TYPE_INT; "print" => ParserBase::TKN_PRINT; [0-9]+ => ParserBase::TKN_INT; [_a-zA-Z][_a-zA-Z0-9]* => ParserBase::TKN_VAR; 
-} 
