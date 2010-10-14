@@ -13,11 +13,12 @@ from quex.lexer_mode             import PatternShorthand
 from   quex.core_engine.generator.languages.core import db
 from   quex.core_engine.generator.languages.cpp  import  __local_variable_definitions
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
-import quex.core_engine.generator.core           as generator
+import quex.core_engine.generator.core                  as generator
 import quex.core_engine.generator.skipper.core          as skipper
 import quex.core_engine.generator.skipper.character_set as character_set_skipper
 import quex.core_engine.generator.skipper.range         as range_skipper
-import quex.core_engine.regular_expression.core  as regex
+import quex.core_engine.generator.skipper.nested_range  as nested_range_skipper
+import quex.core_engine.regular_expression.core         as regex
 #
 from   quex.input.setup import setup as Setup
 
@@ -350,6 +351,21 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
 
     __Setup_init_language_database(Language)
     skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, OnSkipRangeOpenStr=end_str)
+
+    return create_customized_analyzer_function(Language, TestStr, skipper_code,
+                                               QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
+                                               MarkerCharList=[], LocalVariableDB=local_variable_db) 
+
+def create_nested_range_skipper_code(Language, TestStr, OpenSequence, CloseSequence, 
+                                     QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
+    assert QuexBufferSize >= len(CloseSequence) + 2
+
+    end_str  = '    printf("end\\n");'
+    end_str += '    return false;\n'
+
+    __Setup_init_language_database(Language)
+    skipper_code, local_variable_db = nested_range_skipper.get_skipper(OpenSequence, CloseSequence, 
+                                                                       OnSkipRangeOpenStr=end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,

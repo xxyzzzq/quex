@@ -22,12 +22,13 @@ if Language.find("StrangeStream") != -1:
 
 
 def test(TestStr):
-    end_sequence = map(ord, "*/")
-    code_str = create_nested_range_skipper_code(Language, TestStr, end_sequence)
+    open_sequence = map(ord, "/*")
+    close_sequence = map(ord, "*/")
+    code_str = create_nested_range_skipper_code(Language, TestStr, open_sequence, close_sequence)
     compile_and_run(Language, code_str,
                     StrangeStream_str=StrangeStream_str)
 
-test("abcdefg*/hijklmnop*/qrstuvw*/xyz*/ok")
+test("abcdefg/**/hijklmnop/**/qrstuvw/**/xyz*/ok")
 test("*/hijklmnop*/qrstuvw*/xyz*/")
 test("a*/h*/*/*/")
 
