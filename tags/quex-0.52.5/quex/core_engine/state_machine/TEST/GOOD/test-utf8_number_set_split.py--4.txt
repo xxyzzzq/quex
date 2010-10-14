@@ -1,0 +1,108 @@
+-------------------------
+Interval:     [10000]
+   .front --> F0.90.80.80.
+   .back  --> F0.90.80.80.
+
+Result:
+      [10000] 
+         .front --> F0.90.80.80.
+         .back  --> F0.90.80.80.
+-------------------------
+Interval:     [10000, 10001]
+   .front --> F0.90.80.80.
+   .back  --> F0.90.80.81.
+
+Result:
+      [10000, 10001] 
+         .front --> F0.90.80.80.
+         .back  --> F0.90.80.81.
+-------------------------
+Interval:     [10001]
+   .front --> F0.90.80.81.
+   .back  --> F0.90.80.81.
+
+Result:
+      [10001] 
+         .front --> F0.90.80.81.
+         .back  --> F0.90.80.81.
+-------------------------
+Interval:     [10FFFF]
+   .front --> F4.8F.BF.BF.
+   .back  --> F4.8F.BF.BF.
+
+Result:
+      [10FFFF] 
+         .front --> F4.8F.BF.BF.
+         .back  --> F4.8F.BF.BF.
+-------------------------
+Interval:     [10FFFE, 10FFFF]
+   .front --> F4.8F.BF.BE.
+   .back  --> F4.8F.BF.BF.
+
+Result:
+      [10FFFE, 10FFFF] 
+         .front --> F4.8F.BF.BE.
+         .back  --> F4.8F.BF.BF.
+-------------------------
+Interval:     [10FFFE]
+   .front --> F4.8F.BF.BE.
+   .back  --> F4.8F.BF.BE.
+
+Result:
+      [10FFFE] 
+         .front --> F4.8F.BF.BE.
+         .back  --> F4.8F.BF.BE.
+-------------------------
+Interval:     [10000, 10FFFF]
+   .front --> F0.90.80.80.
+   .back  --> F4.8F.BF.BF.
+
+Result:
+      [10000, 1003F] 
+         .front --> F0.90.80.80.
+         .back  --> F0.90.80.BF.
+      [10040, 10FFF] 
+         .front --> F0.90.81.80.
+         .back  --> F0.90.BF.BF.
+      [11000, 3FFFF] 
+         .front --> F0.91.80.80.
+         .back  --> F0.BF.BF.BF.
+      [40000, FFFFF] 
+         .front --> F1.80.80.80.
+         .back  --> F3.BF.BF.BF.
+      [100000, 10EFFF] 
+         .front --> F4.80.80.80.
+         .back  --> F4.8E.BF.BF.
+      [10F000, 10FFBF] 
+         .front --> F4.8F.80.80.
+         .back  --> F4.8F.BE.BF.
+      [10FFC0, 10FFFF] 
+         .front --> F4.8F.BF.80.
+         .back  --> F4.8F.BF.BF.
+-------------------------
+Interval:     [10001, 10FFFE]
+   .front --> F0.90.80.81.
+   .back  --> F4.8F.BF.BE.
+
+Result:
+      [10001, 1003F] 
+         .front --> F0.90.80.81.
+         .back  --> F0.90.80.BF.
+      [10040, 10FFF] 
+         .front --> F0.90.81.80.
+         .back  --> F0.90.BF.BF.
+      [11000, 3FFFF] 
+         .front --> F0.91.80.80.
+         .back  --> F0.BF.BF.BF.
+      [40000, FFFFF] 
+         .front --> F1.80.80.80.
+         .back  --> F3.BF.BF.BF.
+      [100000, 10EFFF] 
+         .front --> F4.80.80.80.
+         .back  --> F4.8E.BF.BF.
+      [10F000, 10FFBF] 
+         .front --> F4.8F.80.80.
+         .back  --> F4.8F.BE.BF.
+      [10FFC0, 10FFFE] 
+         .front --> F4.8F.BF.80.
+         .back  --> F4.8F.BF.BE.

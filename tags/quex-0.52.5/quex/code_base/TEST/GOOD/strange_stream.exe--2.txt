@@ -1,0 +1,25 @@
+position: 0
+content:  <Im>
+position: 6
+content:  < F>
+position: 11
+content:  <ru>
+position: 16
+content:  <et>
+position: 20
+content:  <au>
+position: 25
+content:  < z>
+Re-Do ---------------------------------------------
+position: 0
+content:  <Im>
+position: 6
+content:  < F>
+position: 11
+content:  <ru>
+position: 16
+content:  <et>
+position: 20
+content:  <au>
+position: 25
+content:  < z>
