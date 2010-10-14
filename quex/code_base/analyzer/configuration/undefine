@@ -291,4 +291,7 @@
 #ifdef    __QUEX_IF_COUNT_INDENTATION
 #   undef __QUEX_IF_COUNT_INDENTATION 
 #endif
+#ifdef    __QUEX_RETURN
+#   undef __QUEX_RETURN
+#endif
 
