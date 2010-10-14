@@ -50,7 +50,6 @@ QUEX_NAME(on_indentation)(QUEX_TYPE_ANALYZER*    me,
     __QUEX_RETURN;
 #   undef self 
 }
-#   undef __QUEX_RETURN
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__ON_INDENTATION_I */

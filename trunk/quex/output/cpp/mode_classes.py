@@ -261,7 +261,6 @@ $$INDENTATION-ERROR-PROCEDURE$$
 
 #   undef Lexeme    
 #   undef LexemeEnd 
-#   undef __QUEX_RETURN
 """
 
 def get_on_indentation_handler(Mode):
