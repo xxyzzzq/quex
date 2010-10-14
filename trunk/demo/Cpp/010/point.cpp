@@ -15,6 +15,11 @@ main(int argc, char** argv)
                             MESSAGING_FRAMEWORK_BUFFER_SIZE,
                             MESSAGING_FRAMEWORK_BUFFER + 1); 
 
+    if( QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0 ) {
+        QUEX_ERROR_EXIT("This method fails if QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0\n"
+                        "Consider using the method described in 're-point.c'.");
+    }
+
     // Iterate 3 times doing the same thing in order to illustrate
     // the repeated activation of the same chunk of memory.
     for(int i = 0; i < 3; ++i ) {
