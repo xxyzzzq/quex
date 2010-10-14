@@ -98,7 +98,7 @@ $$LC_COUNT_IN_LOOP$$
     }
     $$LC_ON_FIRST_DELIMITER$$
     /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
-     *       if any later check fails.                                                              */
+     *       if any later check fails. */
     $$INPUT_P_INCREMENT$$
     /* Example: Delimiter = '*', '/'; if we get ...[*][*][/]... then the the first "*" causes 
      *          a drop out out of the 'swallowing loop' and the second "*" will mismatch 
@@ -192,10 +192,8 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
         # in indentation counting => move on to the indentation counter.
         goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal-direct", IndentationCounterTerminalID)
 
-    if OnSkipRangeOpenStr != "":
-        on_skip_range_open_str = OnSkipRangeOpenStr
-    else:
-        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
+    if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
+    else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
 
     # The main part
     code_str = blue_print(template_str,
