@@ -103,6 +103,18 @@
 #   define __QUEX_IF_TOKEN_REPETITION_SUPPORT_DISABLED(EXPRESSION) EXPRESSION
 #endif
 
+#if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   define __QUEX_TYPE_ANALYZER_RETURN_VALUE            void
+#   define __QUEX_RETURN                                return
+#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() CONTINUE
+#else 
+#   define __QUEX_TYPE_ANALYZER_RETURN_VALUE            QUEX_TYPE_TOKEN_ID
+#   define __QUEX_RETURN                                return __self_result_token_id
+#   define QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN() RETURN
+#endif
+#if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#else
+#endif
 
 
 #if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)

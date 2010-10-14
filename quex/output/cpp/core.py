@@ -53,6 +53,8 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         token_repeat_test_txt += "TokenID == %s || " % token_id_str
     if token_repeat_test_txt != "":
         token_repeat_test_txt = token_repeat_test_txt[:-3]
+    else:
+        token_repeat_test_txt = "false"
 
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
@@ -73,7 +75,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            Setup.string_accumulator_f)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_SINGLE",           Setup.token_policy == "single")
-    txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "false")
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )

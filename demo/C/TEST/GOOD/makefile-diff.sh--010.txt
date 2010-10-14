@@ -1,3 +1,4 @@
+> SRCS      = $(OBJS:.o=.c)
 < COMPILER = g++ -ggdb -Wall -pedantic 
 ---
 > # Use 'C99' to avoid line number limit of 32767 in '#line' pragma
@@ -13,11 +14,15 @@
 ---
 > %.exe:                   %.c $(OBJS) $(QUEX_CORE) 
 < point.exe:               point.cpp $(OBJS) $(QUEX_CORE) 
+< 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
 ---
-> point.exe:               point.c $(OBJS) $(QUEX_CORE) 
+> point.exe:               point.c $(SRCS) $(QUEX_CORE) 
+> 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
 < re-point.exe:            re-point.cpp $(OBJS) $(QUEX_CORE) 
+< 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
 ---
-> re-point.exe:            re-point.c $(OBJS) $(QUEX_CORE) 
+> re-point.exe:            re-point.c $(SRCS) $(QUEX_CORE) 
+> 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
 < %-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
 ---
 > %-utf8.o:                %.c $(QUEX_CORE) tiny_lexer

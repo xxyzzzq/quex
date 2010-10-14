@@ -8,12 +8,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 #include <quex/code_base/analyzer/member/token-sending>
 #include <quex/code_base/analyzer/Counter>
 
-#if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
-#   define __QUEX_RETURN return __self_result_token_id
-#else
-#   define __QUEX_RETURN return
-#endif
-
 QUEX_INLINE __QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME(on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                           QUEX_TYPE_INDENTATION  Indentation, 
