@@ -1,7 +1,6 @@
 // -*- C++ -*- vim: set syntax=cpp:
 start = PROGRAM;
 
-
 define {
     // Pattern definitions for example application
     P_WHITESPACE          [ \r\t\n]+
@@ -37,41 +36,41 @@ mode EOF_AND_FAILURE:
 mode OPERATORS:
 <inheritable: only>
 {
-    "?"           => TKN_QUESTION_MARK();
-    "~"           => TKN_TILDE();
-    "("           => TKN_BRACKET_O();
-    ")"           => TKN_BRACKET_C();
-    "["           => TKN_CORNER_BRACKET_O();
-    "]"           => TKN_CORNER_BRACKET_C();
-    "{"           => TKN_CURLY_BRACKET_O();
-    "}"           => TKN_CURLY_BRACKET_C();
-    "="           => TKN_OP_ASSIGNMENT();
-    "+"           => TKN_PLUS();
-    "-"           => TKN_MINUS();
-    "*"           => TKN_MULT();
-    "/"           => TKN_DIV();
-    "%"           => TKN_MODULO();
-    "+="          => TKN_ASSIGN_PLUS();
-    "-="          => TKN_ASSIGN_MINUS();
-    "*="          => TKN_ASSIGN_MULT();
-    "/="          => TKN_ASSIGN_DIV();
-    "=="          => TKN_EQ();
-    "!="          => TKN_NOT_EQ();
-    ">"           => TKN_GREATER();
-    ">="          => TKN_GR_EQ();
-    "<"           => TKN_LESS();
-    "<="          => TKN_LE_EQ();
-    "!"           => TKN_NOT();
-    "|"           => TKN_LOGICAL_OR();
-    "^"           => TKN_EXCLUSIVE_OR();
-    "||"          => TKN_OR();
-    "&"           => TKN_AMPERSANT();
-    "&&"          => TKN_AND();
-    ":"           => TKN_COLON();
-	"::"          => TKN_DOUBLE_COLON();
-    ";"           => TKN_SEMICOLON();
-    "."           => TKN_DOT();
-    ","           => TKN_COMMA();
+    "?"   => TKN_QUESTION_MARK();
+    "~"   => TKN_TILDE();
+    "("   => TKN_BRACKET_O();
+    ")"   => TKN_BRACKET_C();
+    "["   => TKN_CORNER_BRACKET_O();
+    "]"   => TKN_CORNER_BRACKET_C();
+    "{"   => TKN_CURLY_BRACKET_O();
+    "}"   => TKN_CURLY_BRACKET_C();
+    "="   => TKN_OP_ASSIGNMENT();
+    "+"   => TKN_PLUS();
+    "-"   => TKN_MINUS();
+    "*"   => TKN_MULT();
+    "/"   => TKN_DIV();
+    "%"   => TKN_MODULO();
+    "+="  => TKN_ASSIGN_PLUS();
+    "-="  => TKN_ASSIGN_MINUS();
+    "*="  => TKN_ASSIGN_MULT();
+    "/="  => TKN_ASSIGN_DIV();
+    "=="  => TKN_EQ();
+    "!="  => TKN_NOT_EQ();
+    ">"   => TKN_GREATER();
+    ">="  => TKN_GR_EQ();
+    "<"   => TKN_LESS();
+    "<="  => TKN_LE_EQ();
+    "!"   => TKN_NOT();
+    "|"   => TKN_LOGICAL_OR();
+    "^"   => TKN_EXCLUSIVE_OR();
+    "||"  => TKN_OR();
+    "&"   => TKN_AMPERSANT();
+    "&&"  => TKN_AND();
+    ":"   => TKN_COLON();
+	"::"  => TKN_DOUBLE_COLON();
+    ";"   => TKN_SEMICOLON();
+    "."   => TKN_DOT();
+    ","   => TKN_COMMA();
 }
 
 mode VAR_LEXEMES :
