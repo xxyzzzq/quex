@@ -4,7 +4,7 @@ A;
 
 start = MODE;
 
-mode MODE : XXX A
+mode MODE : XXX, A
 {
 <<EOF>> => QUEX_TKN_TERMINATION;
 }

@@ -12,7 +12,7 @@ mode C {
     c => QUEX_TKN_THING;
 }
 
-mode X : A B C {
+mode X : A, B, C {
     x => QUEX_TKN_THING;
 }
 

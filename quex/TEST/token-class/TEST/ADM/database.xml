@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.36" date="Fri Oct 15 08:46:51 2010">
+<test-database execution-time-sec="0.35" date="Sun Oct 17 09:43:55 2010">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple-queue.exe" info-request-time="1287125207L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.812227"/>
+        <application file-name="simple-queue.exe" info-request-time="1287301433L" vanished="False"/>
+        <make-procedure success="True" time_sec="2.047802"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="0"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="0.36"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.34"> 
         <application file-name="misc.sh" info-request-time="1264886931L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="empty" result="OK" time_sec="0.08" crc="-1191820474"/>
            <choice name="no-namespace" result="OK" time_sec="0.10" crc="-517532967"/>
-           <choice name="double-colon" result="OK" time_sec="0.10" crc="-223322448"/>
+           <choice name="double-colon" result="OK" time_sec="0.08" crc="-223322448"/>
            <choice name="token" result="OK" time_sec="0.08" crc="-26357094"/>
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1287125209L" vanished="False"/>
-        <make-procedure success="True" time_sec="3.822507"/>
+        <application file-name="simple.exe" info-request-time="1287301434L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.783380"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
         </choice-list>
