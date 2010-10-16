@@ -56,20 +56,47 @@ def parse_mode_option_list(new_mode, fh):
         # ':' => inherited modes/options follow
         skip_whitespace(fh)
 
-        # (*) base modes 
-        base_modes, i = read_until_letter(fh, ["{", "<"], Verbose=1)
-        new_mode.base_modes = split(base_modes)
-
-        if i != 1: return
-        fh.seek(-1, 1)
-
-        # (*) options
+        parse_base_mode_list(fh, new_mode)
+        
         while parse_mode_option(fh, new_mode):
             pass
 
     except EndOfStreamException:
         fh.seek(position)
         error_msg("End of file reached while parsing options of mode '%s'." % mode_name, fh)
+
+def parse_base_mode_list(fh, new_mode):
+    new_mode.base_modes = []
+    trailing_comma_f    = False
+    while 1 + 1 == 2:
+        if   check(fh, "{"): fh.seek(-1, 1); break
+        elif check(fh, "<"): fh.seek(-1, 1); break
+
+        skip_whitespace(fh)
+        identifier = read_identifier(fh)
+        if identifier == "": break
+
+        new_mode.base_modes.append(identifier)
+        trailing_comma_f = False
+        if not check(fh, ","): break
+        trailing_comma_f = True
+
+
+    if trailing_comma_f:
+        error_msg("Trailing ',' after base mode '%s'." % new_mode.base_modes[-1], fh, 
+                  DontExitF=True, WarningF=True)
+        
+    elif len(new_mode.base_modes) != 0:
+        # This check is a 'service' -- for those who follow the old convention
+        pos = fh.tell()
+        skip_whitespace(fh)
+        dummy_identifier = read_identifier(fh)
+        if dummy_identifier != "":
+            error_msg("Missing separating ',' between base modes '%s' and '%s'.\n" \
+                      % (new_mode.base_modes[-1], dummy_identifier) + \
+                      "(The comma separator is mandatory since quex 0.53.1)", fh)
+        fh.seek(pos)
+
 
 def parse_mode_option(fh, new_mode):
     LanguageDB = Setup.language_db

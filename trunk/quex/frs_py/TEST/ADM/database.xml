@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.33" date="Fri Oct 15 08:51:48 2010">
+<test-database execution-time-sec="0.33" date="Sun Oct 17 09:49:03 2010">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.06"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.03" crc="-957083127"/>
             </choice-list>
         </test>
         <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.03"> 
@@ -21,7 +21,7 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.20"> 
+        <test title="read_integer(...)" time-sum-sec="0.21"> 
             <application file-name="test-read_integer.py" info-request-time="1280812457L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.03" crc="952788026"/>
@@ -29,7 +29,7 @@
                <choice name="decimal" result="OK" time_sec="0.03" crc="-1709956949"/>
                <choice name="binary" result="OK" time_sec="0.03" crc="245398371"/>
                <choice name="roman" result="OK" time_sec="0.03" crc="832665557"/>
-               <choice name="misc" result="OK" time_sec="0.04" crc="731748549"/>
+               <choice name="misc" result="OK" time_sec="0.05" crc="731748549"/>
             </choice-list>
         </test>
     </group>
