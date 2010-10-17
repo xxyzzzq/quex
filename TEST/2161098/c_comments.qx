@@ -1,7 +1,7 @@
 start = X;
 
 mode X :
-<skip_nested_range: "/*" "*/"> 
+<skip_range: "/*" "*/"> 
 {
     [ \n\t] {}
     1 => QUEX_TKN_1;
