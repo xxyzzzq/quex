@@ -1,8 +1,7 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "Indentation Counting and Range Skipper;"
-    echo "CHOICES: range, range-2, nested-range;"
-    echo "SAME;"
+    echo "CHOICES: range, range-2, nested_range;"
     exit
 fi
 
