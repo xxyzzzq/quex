@@ -1,0 +1,60 @@
+,------------------------------------------------------------------------------------
+| [START]
+1: (1)IDENTIFIER	'Avant'
+1: (7)IDENTIFIER	'la'
+1: (10)IDENTIFIER	'premiere'
+1: (19)IDENTIFIER	''include''
+2: (1)INCLUDE	''
+2: (9)IDENTIFIER	'auxiliary/hello.txt'
+>> including: auxiliary/hello.txt
+    1: (1)INCLUDE	''
+    1: (9)IDENTIFIER	'auxiliary/bonjour.txt'
+    >> including: auxiliary/bonjour.txt
+        1: (1)IDENTIFIER	'Bonjour'
+        1: (9)IDENTIFIER	'le'
+        1: (12)IDENTIFIER	'monde'
+        2: (1)INCLUDE	''
+        2: (9)IDENTIFIER	'auxiliary/moin.txt'
+        >> including: auxiliary/moin.txt
+            1: (1)IDENTIFIER	'Moin'
+            1: (6)IDENTIFIER	'Moin'
+            2: (1)INCLUDE	''
+            2: (9)IDENTIFIER	'auxiliary/hallo.txt'
+            >> including: auxiliary/hallo.txt
+                1: (1)IDENTIFIER	'Hallo'
+                Per File Letter Count = 5
+                2: (1)<TERMINATION>	''
+            << return from include
+
+            3: (1)IDENTIFIER	'Tschuess'
+            Per File Letter Count = 42
+            4: (1)<TERMINATION>	''
+        << return from include
+
+        3: (1)INCLUDE	''
+        3: (9)IDENTIFIER	'auxiliary/hallo.txt'
+        >> including: auxiliary/hallo.txt
+            1: (1)IDENTIFIER	'Hallo'
+            Per File Letter Count = 5
+            2: (1)<TERMINATION>	''
+        << return from include
+
+        Per File Letter Count = 65
+        5: (1)<TERMINATION>	''
+    << return from include
+
+    2: (1)IDENTIFIER	'Hello'
+    2: (7)IDENTIFIER	'World'
+    Per File Letter Count = 38
+    4: (1)<TERMINATION>	''
+<< return from include
+
+3: (1)IDENTIFIER	'Apres'
+3: (7)IDENTIFIER	'la'
+3: (10)IDENTIFIER	'premiere'
+3: (19)IDENTIFIER	''include''
+Per File Letter Count = 74
+4: (1)<TERMINATION>	''
+| [END] number of token = 29
+`------------------------------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible

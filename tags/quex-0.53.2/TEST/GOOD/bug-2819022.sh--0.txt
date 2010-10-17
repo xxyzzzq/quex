@@ -1,0 +1,15 @@
+quex -i error-0.qx -o Simple
+error-0.qx:11:warning: Token id 'QUEX_TKN_WORD_POST_COND' defined implicitly.
+error-0.qx:12:warning: Token id 'QUEX_TKN_QUOTE_S_PRE_COND' defined implicitly.
+error-0.qx:13:warning: Token id 'QUEX_TKN_WORD' defined implicitly.
+error-0.qx:14:warning: Token id 'QUEX_TKN_OTHER' defined implicitly.
+error-0.qx:15:warning: Token id 'QUEX_TKN_NEWLINE' defined implicitly.
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+----------------------------------
+dog's 'silly' 
+----------------------------------
+WORD_POST_COND 'dog' 
+QUOTE_S_PRE_COND ''s' 
+OTHER ''' 
+WORD 'silly' 
+OTHER ''' 

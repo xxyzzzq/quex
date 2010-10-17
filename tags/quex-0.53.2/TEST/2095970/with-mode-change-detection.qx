@@ -1,0 +1,32 @@
+// This file implements a lexer while relying on the internal ability of the 
+// lexer to detect mode changes and re-dive into analysis when a mode change has
+// been detected.
+token {
+   STRING_LITERAL;
+}
+
+start = MODULE;
+
+mode MODULE {
+    <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
+    "\"" { 
+        self << STRING; 
+    }
+    [ \t\n] {}
+}
+
+mode STRING {
+    on_entry { 
+        self_accumulator_clear(); 
+    }
+    on_exit {
+        self_accumulator_flush(QUEX_TKN_STRING_LITERAL);
+    }
+    <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull);
+    "\"" { 
+        self << MODULE; 
+    }
+    .    { 
+        self_accumulator_add(Lexeme, LexemeEnd); 
+    }
+}

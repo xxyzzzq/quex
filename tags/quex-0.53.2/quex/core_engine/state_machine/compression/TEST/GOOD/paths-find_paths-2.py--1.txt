@@ -1,0 +1,30 @@
+
+        digraph state_machine_1 {
+	       rankdir=LR;
+	       size="8,5"
+	       node [shape = doublecircle]; 9; 8;
+           node [shape = circle];
+           7777 -> 7 [label ="'0'"];
+7 -> 9 [label ="'a'"];
+7 -> 8 [label ="'b'"];
+8 -> 9 [label ="'a'"];
+8 -> 8 [label ="'b'"];
+
+        }
+        
+
+# start    = 7;
+# path     = (7)--'b'-->(8)--'b'-->(8)--'a'-->[9];
+# skeleton = (8) by 'b'; (9) by 'a'; 
+# wildcard = False;
+# 
+# start    = 7;
+# path     = (7)--'b'-->(8)--'a'-->[9];
+# skeleton = (8) by 'b'; (9) by 'a'; 
+# wildcard = False;
+# 
+## String paths were = ('b',)
+#
+# Some recursions are possible, if the skeleton contains them.
+# In this case, the path cannot contain but the 'iterative' char
+# plus some exit character.
