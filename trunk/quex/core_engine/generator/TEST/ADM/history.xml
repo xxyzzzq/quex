@@ -1,4 +1,4 @@
-<history date="Mon Oct 18 08:50:10 2010" element-n="1005">
+<history date="Mon Oct 18 10:25:29 2010" element-n="1008">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1783,5 +1783,10 @@
     <day year="2010" month="10" day="17">
         <crc-error time="11:18:50" application="test-skip-nested_range.py" choice="Cpp" database-crc="138635989" real-crc="2083045628"/>
         <crc-error time="11:40:55" application="test-skip-nested_range.py" choice="Cpp" database-crc="2083045628" real-crc="-1325625254"/>
+    </day>
+    <day year="2010" month="10" day="18">
+        <crc-error time="08:24:16" application="test-skip-nested_range.py" choice="ANSI-C-PlainMemory" database-crc="510117317" real-crc="-1325625254"/>
+        <crc-error time="08:24:20" application="test-skip-nested_range.py" choice="ANSI-C" database-crc="510117317" real-crc="-1325625254"/>
+        <crc-error time="08:24:36" application="test-skip-nested_range.py" choice="Cpp_StrangeStream" database-crc="-827548089" real-crc="-1325625254"/>
     </day>
 </history>

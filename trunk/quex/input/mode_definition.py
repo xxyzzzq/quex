@@ -193,8 +193,6 @@ def parse_mode_option(fh, new_mode):
                                FileName = fh.name, 
                                LineN    = get_current_line_info_number(fh))
 
-        print "##", opener_sequence, closer_sequence
-
         action.data["opener_sequence"] = opener_sequence
         action.data["closer_sequence"] = closer_sequence
         action.data["mode_name"]       = new_mode.name
