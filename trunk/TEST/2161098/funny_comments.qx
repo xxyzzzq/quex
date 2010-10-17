@@ -1,7 +1,7 @@
 start = X;
 
 mode X :
-<skip_nested_range: "#" "\nNO\nNO\nNO"> 
+<skip_range: "#" "\nNO\nNO\nNO"> 
 {
     [ \n\t] => QUEX_TKN_WHITESPACE(Lexeme);
     1 => QUEX_TKN_1(Lexeme);
