@@ -1,10 +1,11 @@
-<test-database execution-time-sec="9.20" date="Sun Oct 17 09:43:44 2010">
+<test-database execution-time-sec="7.43" date="Mon Oct 18 08:47:36 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting and Range Skipper" time-sum-sec="1.78"> 
-        <application file-name="with-skip-range.sh" info-request-time="1286100513L" vanished="False"/>
-        <choice-list number="2" same_result="True">
-           <choice name="range" result="OK" time_sec="0.99" crc="1696144751"/>
-           <choice name="range-2" result="OK" time_sec="0.78" crc="1696144751"/>
+    <test title="Indentation Counting and Range Skipper" time-sum-sec="0.00"> 
+        <application file-name="with-skip-range.sh" info-request-time="1287384394L" vanished="False"/>
+        <choice-list number="3" same_result="False">
+           <choice name="range" result="OK" time_sec="0.00" crc="-1124186354"/>
+           <choice name="range-2" result="OK" time_sec="0.00" crc="-1743780697"/>
+           <choice name="nested_range" result="OK" time_sec="0.00" crc="1419122518"/>
         </choice-list>
     </test>
     <test title="Bad character detection." time-sum-sec="2.18"> 
