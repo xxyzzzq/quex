@@ -3,23 +3,27 @@ import quex.core_engine.state_machine.index      as     sm_index
 from   quex.input.setup                          import setup as Setup
 from   quex.frs_py.string_handling               import blue_print
 from   quex.core_engine.generator.languages.core import __nice
+import quex.lexer_mode                           as     lexer_mode
 
-def do(SkipperDescriptor):
-    assert type(ArgumentList) == list
-    assert len(ArgumentList) == 2
-    assert type(ArgumentList[1]) in [str, unicode]
+def do(Data):
 
     LanguageDB      = Setup.language_db
-    OpeningSequence = ArgumentList[0]
-    ClosingSequence = ArgumentList[1]
-    ModeName        = ArgumentList[2]
+    OpeningSequence = Data["opener_sequence"]
+    ClosingSequence = Data["closer_sequence"]
+    ModeName        = Data["mode_name"]
+
+    assert type(ModeName) in [str, unicode]
+    assert Data.has_key("indentation_counter_terminal_id")
+    
+    indentation_counter_terminal_id = Data["indentation_counter_terminal_id"]
 
     Mode = None
     if ModeName != "":
         Mode = lexer_mode.mode_db[ModeName]
 
-    code_str, db = get_skipper(OpeningSequence, ClosingSequence, Mode) 
-
+    code_str, db = get_skipper(OpeningSequence, ClosingSequence, 
+                               Mode=Mode, 
+                               IndentationCounterTerminalID=indentation_counter_terminal_id) 
 
     txt =    "{\n"                                          \
            + LanguageDB["$comment"]("Range skipper state")  \
@@ -56,30 +60,41 @@ $$ENTRY$$
      * we are very fast, because we do not have to check for two different characters.  */
     while( 1 + 1 == 2 ) {
         $$INPUT_GET$$ 
-        if( input == *Opener$$SKIPPER_INDEX$$_it ) {
-            ++Opener$$SKIPPER_INDEX$$_it;
-            if( Opener$$SKIPPER_INDEX$$_it == Opener$$SKIPPER_INDEX$$End ) {
-                --counter;
+        if( input == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+            $$GOTO_DROP_OUT$$
+        }
+        if( input == *Closer$$SKIPPER_INDEX$$_it ) {
+            ++Closer$$SKIPPER_INDEX$$_it;
+            if( Closer$$SKIPPER_INDEX$$_it == Closer$$SKIPPER_INDEX$$End ) {
                 if( counter == 0 ) {
                     /* NOTE: The initial state does not increment the input_p. When it detects that
                      * it is located on a buffer border, it automatically triggers a reload. No 
                      * need here to reload the buffer. */
                     $$LC_COUNT_END_PROCEDURE$$
                     /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-                    $$GOTO_START$$ /* End of range reached. */
+                    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
+                    $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
                 }
+                --counter;
                 Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
-            }
-        }
-        if( input == *Closer$$SKIPPER_INDEX$$_it ) {
-            ++Closer$$SKIPPER_INDEX$$_it;
-            if( Closer$$SKIPPER_INDEX$$_it == Closer$$SKIPPER_INDEX$$End ) {
-                ++counter;
                 Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
+                $$INPUT_P_INCREMENT$$      /* Now, BLC cannot occur. See above. */
+                continue;
             }
+        } else {
+            Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
         }
-        if( input == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-            $$GOTO_DROP_OUT$$
+        if( input == *Opener$$SKIPPER_INDEX$$_it ) {
+            ++Opener$$SKIPPER_INDEX$$_it;
+            if( Opener$$SKIPPER_INDEX$$_it == Opener$$SKIPPER_INDEX$$End ) {
+                ++counter;
+                Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
+                Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
+                $$INPUT_P_INCREMENT$$      /* Now, BLC cannot occur. See above. */
+                continue;
+            }
+        } else {
+            Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
         }
 $$LC_COUNT_IN_LOOP$$
         $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
@@ -107,7 +122,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
+        $$GOTO_ENTRY$$          /* End of range reached.             */
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -115,7 +130,7 @@ $$LC_COUNT_AFTER_RELOAD$$
 }
 """
 
-def get_skipper(OpenerSequence, CloserSequence, Mode=None, OnSkipRangeOpenStr=""):
+def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
     assert OpenerSequence.__class__  == list
     assert len(OpenerSequence)       >= 1
     assert map(type, OpenerSequence) == [int] * len(OpenerSequence)
@@ -143,7 +158,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, OnSkipRangeOpenStr=""
                                                              IndentationCounterTerminalID)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
-    else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
+    else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
 
     local_variable_db = { 
         "counter":     [ "size_t", "0", None],
@@ -174,7 +189,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, OnSkipRangeOpenStr=""
                            ["$$GOTO_DROP_OUT$$",                  LanguageDB["$goto"]("$drop-out", skipper_index)],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
-                           ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
+                           ["$$GOTO_ENTRY$$",                     LanguageDB["$goto"]("$entry", skipper_index)],
                            ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                            ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                            #

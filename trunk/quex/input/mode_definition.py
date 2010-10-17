@@ -8,6 +8,7 @@ import quex.input.indentation_setup   as indentation_setup
 from   quex.core_engine.generator.action_info                     import GeneratedCode, UserCodeFragment
 import quex.core_engine.generator.skipper.character_set           as     skip_character_set
 import quex.core_engine.generator.skipper.range                   as     skip_range
+import quex.core_engine.generator.skipper.nested_range            as     skip_nested_range
 import quex.core_engine.generator.state_coder.indentation_counter as     indentation_counter
 
 import quex.core_engine.state_machine.index                      as index
@@ -18,6 +19,7 @@ import quex.core_engine.state_machine.hopcroft_minimization      as hopcroft
 from   quex.core_engine.state_machine.core                       import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 from   quex.input.setup                                          import setup as Setup
+import StringIO
 
 def parse(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
@@ -97,6 +99,21 @@ def parse_base_mode_list(fh, new_mode):
                       "(The comma separator is mandatory since quex 0.53.1)", fh)
         fh.seek(pos)
 
+def parse_string_constant(fh, Name):
+    pos = fh.tell()
+    if fh.read(1) != "\"":
+        pos = fh.tell()
+        msg = fh.read(5)
+        fh.seek(pos)
+        error_msg("%s can\n" % Name + 
+                  "only be a string and must start with a quote like \".\n" +
+                  "Found '%s'" % msg, fh)
+
+    sequence = snap_character_string.get_character_code_sequence(fh)
+    end_pos  = fh.tell()
+    fh.seek(pos)
+    msg      = fh.read(end_pos - pos)
+    return msg, sequence
 
 def parse_mode_option(fh, new_mode):
     LanguageDB = Setup.language_db
@@ -138,27 +155,47 @@ def parse_mode_option(fh, new_mode):
 
         return True
 
-    elif identifier == "skip_range":
+    elif identifier in ["skip_range", "skip_nested_range"]:
         # A non-nesting skipper can contain a full fledged regular expression as opener,
         # since it only effects the trigger. Not so the nested range skipper-see below.
 
         # -- opener
         skip_whitespace(fh)
-        opener_str, opener_sm = regular_expression.parse(fh)
+        if identifier == "skip_nested_range":
+            # Nested range state machines only accept 'strings' not state machines
+            opener_str, opener_sequence = parse_string_constant(fh, "Opener pattern for 'skip_nested_range'")
+            
+            opener_sm = StateMachine()
+            idx = opener_sm.init_state_index
+            for letter in opener_sequence:
+                idx = opener_sm.add_transition(idx, letter)
+            opener_sm.states[idx].set_acceptance(True)
+        else:
+            opener_str, opener_sm = regular_expression.parse(fh)
+            # For 'range skipping' the opener sequence is not needed, only the opener state
+            # machine is webbed into the pattern matching state machine.
+            opener_sequence       = None
+
         skip_whitespace(fh)
 
         # -- closer
-        if fh.read(1) != "\"":
-            error_msg("closing pattern for skip_range can only be a string and must start with a quote like \".", fh)
-        closer_sequence = snap_character_string.get_character_code_sequence(fh)
+        closer_str, closer_sequence = parse_string_constant(fh, "Closing pattern for 'skip_range' or 'skip_nested_range'")
         skip_whitespace(fh)
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
         # Skipper code is to be generated later
-        action = GeneratedCode(skip_range.do, 
+        generator_function = { 
+                "skip_range":        skip_range.do,
+                "skip_nested_range": skip_nested_range.do,
+        }[identifier]
+        action = GeneratedCode(generator_function,
                                FileName = fh.name, 
                                LineN    = get_current_line_info_number(fh))
+
+        print "##", opener_sequence, closer_sequence
+
+        action.data["opener_sequence"] = opener_sequence
         action.data["closer_sequence"] = closer_sequence
         action.data["mode_name"]       = new_mode.name
 
@@ -166,9 +203,6 @@ def parse_mode_option(fh, new_mode):
 
         return True
         
-    elif identifier == "skip_nesting_range":
-        error_msg("skip_nesting_range is not yet supported.", fh)
-
     elif identifier == "indentation":
         value = indentation_setup.do(fh)
 

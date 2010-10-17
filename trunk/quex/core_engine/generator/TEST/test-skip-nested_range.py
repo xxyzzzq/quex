@@ -6,7 +6,7 @@ from   generator_test import create_nested_range_skipper_code, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
-    print "Skip-NestedRange: DelimiterLength=2, Large Buffer"
+    print "Skip-NestedRange: Delimiter Sizes 1 and 2;"
     print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp, Cpp_StrangeStream;"
     print "SAME;"
     sys.exit(0)
@@ -21,15 +21,19 @@ if Language.find("StrangeStream") != -1:
     StrangeStream_str = " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
 
-def test(TestStr):
-    open_sequence = map(ord, "/*")
-    close_sequence = map(ord, "*/")
-    code_str = create_nested_range_skipper_code(Language, TestStr, open_sequence, close_sequence)
+def test(TestStr, Opener="/*", Closer="*/"):
+    open_sequence  = map(ord, Opener)
+    close_sequence = map(ord, Closer)
+    code_str = create_nested_range_skipper_code(Language, TestStr, open_sequence, close_sequence, QuexBufferSize=5)
     compile_and_run(Language, code_str,
                     StrangeStream_str=StrangeStream_str)
 
-test("abcdefg/**/hijklmnop/**/qrstuvw/**/xyz*/ok")
-test("*/hijklmnop*/qrstuvw*/xyz*/")
-test("a*/h*/*/*/")
+test("abc*/XYZ")
+test("abc/*1*/XYZ*/xyz")
+test("abc/*1/*2*/ABC*/DEF*/HIJ")
+test("abc/**/*/xyz")
+test("abc/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/xyz")
+test("abc(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))xyz", "(", ")")
+test("abc/**//**//**//**//**//**//**//**/*/xyz")
 
 

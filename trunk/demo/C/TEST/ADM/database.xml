@@ -1,6 +1,6 @@
-<test-database execution-time-sec="216.06" date="Sun Oct 17 09:39:59 2010">
+<test-database execution-time-sec="216.02" date="Mon Oct 18 08:50:09 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.15"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.13"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.01" crc="-1839813089"/>
@@ -36,7 +36,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="2.71"> 
+        <test title="Indentation Based Scopes" time-sum-sec="2.70"> 
             <application file-name="002.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="1.57" crc="29925504"/>
@@ -45,7 +45,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="7.86"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="7.85"> 
             <application file-name="003.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="2.41" crc="766281751"/>
@@ -96,7 +96,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="2.93"> 
+        <test title="Miscellaneous Features" time-sum-sec="2.94"> 
             <application file-name="007.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="1.65" crc="-375962478"/>
@@ -105,7 +105,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="2.80"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="2.79"> 
             <application file-name="008.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="1.54" crc="-789203780"/>
@@ -136,7 +136,7 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="84.24"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="84.25"> 
             <application file-name="010.sh" info-request-time="1286622283L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="8.36" crc="595815643"/>
@@ -179,7 +179,7 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="6.69"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="6.70"> 
             <application file-name="012.sh" info-request-time="1278831615L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.10" crc="-1785218323"/>
