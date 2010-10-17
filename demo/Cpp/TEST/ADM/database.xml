@@ -1,4 +1,4 @@
-<test-database execution-time-sec="283.22" date="Sun Oct 17 09:43:29 2010">
+<test-database execution-time-sec="283.25" date="Mon Oct 18 08:50:09 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -7,7 +7,7 @@
         </choice-list>
     </test>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" time-sum-sec="18.18"> 
+        <test title="Sun Microsystem's sunCC" time-sum-sec="18.17"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="2.74" crc="-240093176"/>
@@ -18,7 +18,7 @@
                <choice name="006" result="OK" time_sec="2.94" crc="293623846"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="20.40"> 
+        <test title="Intel's icpc" time-sum-sec="20.41"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="3.26" crc="-1285689249"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="13.01"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="13.02"> 
             <application file-name="003.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.54" crc="766281751"/>
@@ -68,7 +68,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.39" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="13.05"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="13.07"> 
             <application file-name="003-icu.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.53" crc="1977270883"/>
@@ -118,7 +118,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="5.70"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="5.69"> 
             <application file-name="008.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.95" crc="335189180"/>
