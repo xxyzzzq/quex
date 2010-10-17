@@ -111,7 +111,7 @@ The possible options for modes to be specified are the following.
     requirements on the buffer size. Skipped regions can be larger than
     the buffer size. Lexemes need be smaller or equal the buffer size.
 
-.. data:: <skip_range: start-string end-string>
+.. data:: <skip_range: start-re end-string>
 
    This option allows to define an optimized skipper for regions that are of no interest
    and which are determined by delimiters. In order to define a skipper for C/C++ comments
@@ -127,11 +127,71 @@ The possible options for modes to be specified are the following.
    available that can catch the event of a missing delimiter, i.e. if an end of
    file occurs while the range is not yet closed. The handler's name is
    ``on_skip_range_open`` as described in
-   :ref:`_sec-usage-modes-characteristics-event-handlers`.
+   :ref:`_sec-usage-modes-characteristics-event-handlers`. The ``start-re``
+   can be an arbitrary regular expression. The ``end-string`` must be a 
+   linear string.
 
 .. data::   <skip_nested_range: start-string end-string> 
 
-   This type of skipper is still in the implementation pipeline and not yet implemented.
+   With this option nested ranges can be skipped. Many programming languages 
+   do not allow nested ranges. As a consequence it can become very inconvenient
+   for the programmer to comment out larger regions of code. For example, the
+   C-statements 
+   
+   .. code-block:: cpp
+         /* Compare something_else */
+         if( something > something_else ) {        
+             /* Open new listener thread for reception */
+             open_thread(my_listener, new_port_n); 
+         } else { 
+             /* Close all listening threads. */
+             while( 1 + 1 == 2 ) { /* Forever */
+                 const int next_listener_id = get_open_listener();
+                 if( next_listener_id == 0 ) break;
+                 com_send(next_listener_id, PLEASE_RETURN); /* Ask thread to exit. */
+             }
+         }
+
+   Could only be commented out by ``/*`` ``*/`` comments if all closing ``*/``
+   are replaced by something else, e.g. ``*_/``. Thus
+   
+   .. code-block:: cpp
+         /*
+         /* Compare something_else *_/
+         if( something > something_else ) {        
+             /* Open new listener thread for reception *_/
+             open_thread(my_listener, new_port_n); 
+         } else { 
+             /* Close all listening threads. *_/
+             while( 1 + 1 == 2 ) { /* Forever *_/
+                 const int next_listener_id = get_open_listener();
+                 if( next_listener_id == 0 ) break;
+                 com_send(next_listener_id, PLEASE_RETURN); /* Ask thread to exit. *_/
+             }
+         }
+         */
+
+   and the compiler might still print a warning for each ``/*`` that opens inside
+   the outer comment. When the code fragment is uncommented, all ``*_/`` markers
+   must be replaced again with ``*/``. 
+   
+   All this fuss is not necessary, if the programming language supports nested comments.
+   Quex supports this with nested range skippers. When a nested range skip option such
+   as::
+
+      mode MINE : 
+      <skip_nested_range:  "/*" "*/"> {
+         ...
+      }
+
+   is specified, then the generated engine itself takes care of the 'commenting depth'.
+   No comment range specifiers need to be replaced in order to include commented regions
+   in greater outer commented regions.
+
+   .. warning:: Nested range skipping is a very nice feature for a programming
+      language.  However, when a lexical analyzer for an already existing language
+      is to be developped, e.g.  'C' or 'C++', make sure that this feature is not
+      used. Otherwise, the analyzer may produce undesired results.
 
 .. _sec-usage-modes-characteristics-event-handlers:
 

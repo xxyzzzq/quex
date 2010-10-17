@@ -70,16 +70,15 @@ $$ENTRY$$
                     /* NOTE: The initial state does not increment the input_p. When it detects that
                      * it is located on a buffer border, it automatically triggers a reload. No 
                      * need here to reload the buffer. */
+                    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
                     $$LC_COUNT_END_PROCEDURE$$
                     /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-                    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
                     $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
                 }
                 --counter;
                 Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
                 Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
-                $$INPUT_P_INCREMENT$$      /* Now, BLC cannot occur. See above. */
-                continue;
+                goto CONTINUE_$$SKIPPER_INDEX$$;
             }
         } else {
             Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
@@ -90,12 +89,12 @@ $$ENTRY$$
                 ++counter;
                 Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
                 Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
-                $$INPUT_P_INCREMENT$$      /* Now, BLC cannot occur. See above. */
-                continue;
+                goto CONTINUE_$$SKIPPER_INDEX$$;
             }
         } else {
             Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
         }
+CONTINUE_$$SKIPPER_INDEX$$:
 $$LC_COUNT_IN_LOOP$$
         $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     }
@@ -106,10 +105,8 @@ $$DROP_OUT$$
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                    */
-    /* -- According to case (2.1) is is possible that the _input_p does not point to the end
-     *    of the buffer, thus we record the current position in the lexeme start pointer and
-     *    recover it after the loading. */
     $$MARK_LEXEME_START$$
+
 $$LC_COUNT_BEFORE_RELOAD$$
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
         QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
@@ -167,6 +164,18 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     }
     reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
+    reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+                      "                                - reference_p));\n" 
+    after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+
+    if CloserSequence[-1] == ord('\n'):
+        end_procedure  = "       __QUEX_IF_COUNT_LINES_ADD((size_t)1);\n"
+        end_procedure += "       __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n"
+    else:
+        end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+                        "                                    - reference_p));\n" 
+
     code_str = blue_print(template_str,
                           [
                            ["$$SKIPPER_INDEX$$",   __nice(skipper_index)],
@@ -194,10 +203,12 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                            ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                            #
                            ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
-                           ["$$LC_COUNT_IN_LOOP$$",                     line_counter_in_loop],
-                           ["$$LC_COUNT_END_PROCEDURE$$",               ""],
-                           ["$$LC_COUNT_BEFORE_RELOAD$$",               ""],
-                           ["$$LC_COUNT_AFTER_RELOAD$$",                ""],
+                           ["$$LC_COUNT_IN_LOOP$$",                     line_column_counter_in_loop],
+                           ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
+                           ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
+                           ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
                           ])
 
     return code_str, local_variable_db
+
+

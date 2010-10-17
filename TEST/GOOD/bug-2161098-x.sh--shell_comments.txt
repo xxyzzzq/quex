@@ -1,5 +1,4 @@
 quex -i token.qx nested-shell_comments.qx -o Simple --token-policy single
-## [35] [10]
 g++ -I/home/fschaef/prj/quex/trunk -I./ -ggdb -o lexer Simple*.cpp ../lexer-simply.cpp \
 		-DPRINT_LINE_COLUMN -DQUEX_OPTION_LINE_NUMBER_COUNTING -DQUEX_OPTION_COLUMN_NUMBER_COUNTING  -DQUEX_SETTING_BUFFER_SIZE=4
 ## Disable this message by compile option
@@ -18,7 +17,6 @@ g++ -I/home/fschaef/prj/quex/trunk -I./ -ggdb -o lexer Simple*.cpp ../lexer-simp
 ## An Assert-Abortion might be an intended element of the experiment.
 (1, 1)  	1 '' 
 (2, 2)  	2 '' 
-(7, 1)  	1 '' 
 (8, 2)  	2 '' 
 (9, 3)  	3 '' 
 (10, 4)  	4 '' 

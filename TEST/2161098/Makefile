@@ -24,6 +24,8 @@ c_comments:
 	$(CC) Simple*.cpp ../lexer-simply.cpp \
 		$(DEFINES) -DQUEX_SETTING_BUFFER_SIZE=4
 
+## $(DEFINES) -DQUEX_SETTING_BUFFER_SIZE=1024
+
 clean:
 	rm -rf lexer
 	rm -rf Simple*

@@ -121,12 +121,13 @@ $$DROP_OUT$$
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
      *    to the actual input position.                                                    */
+    $$MARK_LEXEME_START$$
+
+$$LC_COUNT_BEFORE_RELOAD$$
     /* -- According to case (2.1) is is possible that the _input_p does not point to the end
      *    of the buffer, thus we record the current position in the lexeme start pointer and
      *    recover it after the loading. */
-    $$MARK_LEXEME_START$$
     me->buffer._input_p = text_end;
-$$LC_COUNT_BEFORE_RELOAD$$
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
         QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, PostContextStartPositionN);
