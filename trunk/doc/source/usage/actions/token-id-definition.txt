@@ -71,3 +71,27 @@ application that produces such an unexpected warning with the current version
 accessed directly from the foreign token identifier file and quex does not
 store or process them internally.
 
+Quex also allows to specify specific numbers for the token ids. This facilitates,
+for example, the definition of token id groups by means of a signal bit, e.g.
+
+.. code-block:: cpp
+
+   token { 
+        TERMINATION   = 0b0000.0000;
+        UNINITIALIZED = 0b1000.0000;
+        DIV           = 0b0000.0001;
+        MULTIPLY      = 0b0001.0001;
+        PLUS          = 0b0011.0001;
+        MINUS         = 0b0100.0001;
+   }
+
+By ensuring that only operators ``DIV``, ``MULTIPLY``, ``PLUS`` and ``MINUS``
+contain bit zero, the test for an operator token can happen by a simple
+binary 'and'
+
+.. code-block:: cpp
+
+   if( token_id & 0x1 ) {
+       /* 'token_id' is either DIV, MULTIPLY, PLUS, or MINUS */
+       ...
+   }

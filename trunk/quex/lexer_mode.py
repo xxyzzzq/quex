@@ -95,12 +95,27 @@ class ModeDescription:
         mode_description_db[Name] = self
 
     def add_match(self, Pattern, Action, PatternStateMachine, Comment=""):
+        assert PatternStateMachine.is_DFA_compliant()
+
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
-        transformation.do(PatternStateMachine)
+        if len(PatternStateMachine.get_orphaned_state_index_list()) != 0:
+            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % Pattern + \
+                      "(After Transformation to internal encoding).\n" + \
+                      "Please, submit a bug at quex.sourceforge.net.", 
+                      DontExitF=True, WarningF=True)
+
+        PatternStateMachine = transformation.do(PatternStateMachine)
+
+        if len(PatternStateMachine.get_orphaned_state_index_list()) != 0:
+            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % Pattern + \
+                      "(After Transformation to internal encoding).\n" + \
+                      "Please, submit a bug at quex.sourceforge.net.", 
+                      DontExitF=False, WarningF=True)
+
         self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, 
                                                     ModeName=self.name, Comment=Comment)
 
@@ -109,7 +124,7 @@ class ModeDescription:
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only this priority mark is considered.", FileName, LineN)
 
-        transformation.do(PatternStateMachine)
+        PatternStateMachine = transformation.do(PatternStateMachine)
         self.__repriorization_db[Pattern] = [PatternStateMachine, FileName, LineN, PatternIdx]
 
     def add_match_deletion(self, Pattern, PatternStateMachine, FileName, LineN):
@@ -117,7 +132,7 @@ class ModeDescription:
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", FileName, LineN)
 
-        transformation.do(PatternStateMachine)
+        PatternStateMachine = transformation.do(PatternStateMachine)
         self.__deletion_db[Pattern] = [PatternStateMachine, FileName, LineN]
 
     def add_option(self, Option, Value):

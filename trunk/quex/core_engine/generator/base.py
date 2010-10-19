@@ -157,6 +157,9 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     #     match the current input.   
     #
     map(lambda x: x.mark_state_origins(), StateMachine_List)
+
+    for sm in StateMachine_List:
+        assert sm.is_DFA_compliant(), repr(sm)
     
     # (2) setup all patterns in paralell 
     sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False)#, CloneF=False)

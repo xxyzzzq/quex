@@ -649,6 +649,13 @@ class StateMachine:
             if not state.origins().is_empty(): return True
         return False
 
+    def is_DFA_compliant(self):
+        for state in self.states.values():
+            if state.transitions().is_DFA_compliant() == False: 
+                print "##", state.transitions().get_map()
+                return False
+        return True
+
     def delete_meaningless_origins(self):
         """Delete origins that do not inform about acceptance, store input position,
            post context, pre context, and the like.
@@ -767,6 +774,19 @@ class StateMachine:
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.origins().delete_dominated()
+
+    def replace_pre_context_state_machine(self, NewPreContextSM):
+        OldPreContextID = self.core().pre_context_sm().get_id()
+        NewPreContextID = NewPreContextSM.get_id()
+
+        # Set the new pre-context state machine
+        self.core().set_pre_context_sm(NewPreContextSM)
+
+        # Adapt all origins that depend on the old pre-context to the new context
+        for state in self.states.values():
+            for origin in state.origins().get_list():
+                if origin.pre_context_id() != OldPreContextID: continue
+                origin.set_pre_context_id(NewPreContextID)
 
     def transform(self, TrafoInfo):
         """RETURNS: True  transformation successful

@@ -22,9 +22,9 @@ from   quex.core_engine.generator.action_info import CodeFragment
 SupportedCharacterTypeDB = {
         # Name:         Type:         LittleEndian     Big Endian
         #                             Converter Name:  Converter Name:
-        "1":          [ "uint8_t",    "ASCII",         "ASCII"],
-        "2":          [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
-        "4":          [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
+        1:            [ "uint8_t",    "ASCII",         "ASCII"],
+        2:            [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
+        4:            [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
         "uint8_t":    [ "uint8_t",    "ASCII",         "ASCII"],
         "uint16_t":   [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
         "uint32_t":   [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
