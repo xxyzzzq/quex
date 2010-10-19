@@ -118,6 +118,12 @@ def parse_string_constant(fh, Name):
 def parse_mode_option(fh, new_mode):
     LanguageDB = Setup.language_db
 
+    def fit_state_machine(SM):
+        if not SM.is_DFA_compliant(): result = nfa_to_dfa.do(SM)
+        else:                         result = SM
+        result = hopcroft.do(result, CreateNewStateMachineF=False)
+        return result
+
     identifier = read_option_start(fh)
     if identifier == None: return False
 
@@ -151,6 +157,7 @@ def parse_mode_option(fh, new_mode):
                                LineN    = get_current_line_info_number(fh))
         action.data["character_set"] = trigger_set
 
+        pattern_sm = fit_state_machine(pattern_sm)
         new_mode.add_match(pattern_str, action, pattern_sm)
 
         return True
@@ -197,6 +204,7 @@ def parse_mode_option(fh, new_mode):
         action.data["closer_sequence"] = closer_sequence
         action.data["mode_name"]       = new_mode.name
 
+        fit_state_machine(opener_sm)
         new_mode.add_match(opener_str, action, opener_sm)
 
         return True
@@ -223,6 +231,7 @@ def parse_mode_option(fh, new_mode):
             # Go back to start.
             code_fragment = UserCodeFragment(LanguageDB["$goto"]("$start"), FileName, LineN)
 
+            suppressed_newline_sm = fit_state_machine(suppressed_newline_sm)
             new_mode.add_match(suppressed_newline_pattern, code_fragment, suppressed_newline_sm,
                                Comment="indentation newline suppressor")
 
@@ -255,6 +264,7 @@ def parse_mode_option(fh, new_mode):
 
         action.data["indentation_setup"] = value
 
+        sm = fit_state_machine(sm)
         new_mode.add_match(value.newline_state_machine.pattern_str,
                            action, sm, Comment="indentation newline")
 
@@ -417,7 +427,6 @@ def __general_validate(fh, Mode, Name, pos):
         if code_fragment.get_code() != "":
             error_dedent_and_ndedent(code_fragment, "on_n_dedent", "on_dedent")
                       
-
 def __validate_required_token_policy_queue(Name, fh, pos):
     """Some handlers are better only used with token policy 'queue'."""
 

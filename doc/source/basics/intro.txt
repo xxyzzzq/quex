@@ -17,3 +17,4 @@ scenarios and how they are to be handled.
    event-handling.txt
    sections.txt
    usage-scenarios.txt
+   number_format.txt
