@@ -31,6 +31,7 @@ SETUP_INFO = {
     "converter_iconv_f":              [["--iconv"],                            FLAG],
     "converter_icu_f":                [["--icu"],                              FLAG],
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
+    "converter_ucs_coding_name":      [["--converter-ucs-coding-name", "--cucn"], ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       NEGATED_FLAG],
     "input_mode_files":               [["-i", "--mode-files"],                 LIST],
     "token_class_file":               [["--token-class-file"],                 ""],

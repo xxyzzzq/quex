@@ -19,6 +19,23 @@ from   quex.core_engine.generator.languages.core import db as quex_core_engine_g
 
 from   quex.core_engine.generator.action_info import CodeFragment
 
+SupportedCharacterTypeDB = {
+        # Name:         Type:         LittleEndian     Big Endian
+        #                             Converter Name:  Converter Name:
+        "1":          [ "uint8_t",    "ASCII",         "ASCII"],
+        "2":          [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
+        "4":          [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
+        "uint8_t":    [ "uint8_t",    "ASCII",         "ASCII"],
+        "uint16_t":   [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
+        "uint32_t":   [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
+        "u8":         [ "u8",         "ASCII",         "ASCII"],
+        "u16":        [ "u16",        "UCS-2LE",       "UCS-2BE"],
+        "u32":        [ "u32",        "UCS-4LE",       "UCS-4BE"],
+        "unsigned8":  [ "unsigned8",  "ASCII",         "ASCII"],
+        "unsigned16": [ "unsigned16", "UCS-2LE",       "UCS-2BE"],
+        "unsigned32": [ "unsigned32", "UCS-4LE",       "UCS-4BE"],
+        "wchar_t":    [ "wchar_t",    "WCHAR_T",       "WCHAR_T"],
+}
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
@@ -47,6 +64,7 @@ def do(argv):
                 False, if job is done.
     """
     global setup
+    global SupportedCharacterTypeDB
 
     # (*) Interpret Command Line (A) _____________________________________________________
     command_line = GetPot(argv)
@@ -180,6 +198,13 @@ def do(argv):
     else:
         setup.byte_order_is_that_of_current_system_f = False
 
+    if setup.converter_ucs_coding_name == "": 
+        if SupportedCharacterTypeDB.has_key(setup.bytes_per_ucs_code_point):
+            if setup.byte_order == "little": index = 1
+            else:                            index = 2
+            setup.converter_ucs_coding_name = SupportedCharacterTypeDB[setup.bytes_per_ucs_code_point][index]
+
+
     make_numbers(setup)
 
     validate(setup, command_line, argv)
@@ -206,6 +231,8 @@ def do(argv):
 def validate(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
     """
+    global SupportedCharacterTypeDB
+
     setup.output_directory = os.path.normpath(setup.output_directory)
     if setup.output_directory != "":
         # Check, if the output directory exists
@@ -326,6 +353,19 @@ def validate(setup, command_line, argv):
         error_msg("An engine that is to be generated for a specific codec cannot rely\n" + \
                   "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
                   "`--converter-new`.")
+
+    # If a user defined type is specified for 'bytes_per_ucs_code_point' and 
+    # a converter, then the name of the target type must be specified explicitly.
+    if     not SupportedCharacterTypeDB.has_key(setup.bytes_per_ucs_code_point) \
+       and not command_line.search("--converter-ucs-coding-name", "--cucn"):
+        tc = setup.bytes_per_ucs_code_point
+        error_msg("A character code converter has been specified. It is supposed to convert\n" + \
+                  "incoming data into an internal buffer of unicode characters. The size of\n" + \
+                  "each character is determined by '%s' which is a user defined type.\n" % tc  + \
+                  "\n" + \
+                  "Quex cannot determine automatically the name that the converter requires\n" + \
+                  "to produce unicode characters for type '%s'. It must be specified by the\n" % tc + \
+                  "command line option '--converter-ucs-coding-name' or '--cucn'.")
 
     # Token transmission policy
     token_policy_list = ["queue", "single", "users_token", "users_queue"]

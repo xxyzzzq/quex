@@ -173,11 +173,10 @@ def write_engine_header(ModeDB):
 
     #    are bytes of integers Setup 'little endian' or 'big endian' ?
     if Setup.byte_order == "little":
-        quex_coding_name_str = { 1: "ASCII", 2: "UCS-2LE", 4: "UCS-4LE", 
-                                    "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
+        db = { 1: "ASCII", 2: "UCS-2LE", 4: "UCS-4LE", "wchar_t": "WCHAR_T" }
     else:
-        quex_coding_name_str = { 1: "ASCII", 2: "UCS-2BE", 4: "UCS-4BE", 
-                                    "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
+        db = { 1: "ASCII", 2: "UCS-2BE", 4: "UCS-4BE", "wchar_t": "WCHAR_T" }
+    quex_converter_coding_name_str = db[Setup.bytes_per_ucs_code_point]
 
     mode_id_definition_str = "" 
     # NOTE: First mode-id needs to be '1' for compatibility with flex generated engines
@@ -237,7 +236,7 @@ def write_engine_header(ModeDB):
                 ["$$TOKEN_CLASS$$",                      token_class_name],
                 ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
-                ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
+                ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_converter_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
 
