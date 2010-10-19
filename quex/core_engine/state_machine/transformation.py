@@ -5,6 +5,8 @@ import codecs
 from copy import copy
 import quex.core_engine.state_machine.utf8_state_split  as utf8_state_split
 import quex.core_engine.state_machine.utf16_state_split as utf16_state_split
+import quex.core_engine.state_machine.nfa_to_dfa            as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 from   quex.frs_py.file_in                              import error_msg
 from   quex.input.setup                                 import setup as Setup
 
@@ -43,16 +45,23 @@ def do(X, TrafoInfo=None, FH=-1, LineN=None):
     # Pre-condition SM is transformed inside the member function
     X.transform(TrafoInfo)
 
-    # After transformation NFA to DFA and Hopcroft optimization must be performed
-    result = X
-    if not result.is_DFA_compliant(): result = nfa_to_dfa.do(result)
-    result = hopcroft.do(result, CreateNewStateMachineF=False)
+    return __get_DFA_compliant_state_machine(X)
+
+def __get_DFA_compliant_state_machine(SM):
+    result = SM
+    if not result.is_DFA_compliant(): 
+        result = nfa_to_dfa.do(result)
+        result = hopcroft.do(result, CreateNewStateMachineF=False)
 
     pre_sm = result.core().pre_context_sm()
     if pre_sm != None:
-        if not X.is_DFA_compliant(): pre_sm = nfa_to_dfa.do(pre_sm)
-        pre_sm = hopcroft.do(pre_sm, CreateNewStateMachineF=False)
-        result.replace_pre_context_state_machine(pre_sm)
+        # If pre-context state machine is not DFA compliant, 
+        # then make it compliant.
+        if not X.is_DFA_compliant(): 
+            pre_sm = nfa_to_dfa.do(pre_sm)
+            pre_sm = hopcroft.do(pre_sm, CreateNewStateMachineF=False)
+            result.replace_pre_context_state_machine(pre_sm)
+
     return result
 
         
@@ -69,7 +78,7 @@ def __split(sm, splitter_module):
     new_pre_sm = splitter_module.do(pre_sm)
     result.replace_pre_context_state_machine(new_pre_sm)
 
-    return result
+    return __get_DFA_compliant_state_machine(result)
 
 def do_set(number_set, TrafoInfo, FH=-1, LineN=None):
     """RETURNS: True  transformation successful
