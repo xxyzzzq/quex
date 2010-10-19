@@ -60,25 +60,23 @@ function collect_distribution_file_list()
     # -- filter out all files that are not directly required for 
     #    a working application.
     echo "-- Filter out redundant files"
-    awk ' ! /\/\.svn/ { print; }'  $input > $output; cp $output $input
-    awk ' ! /\/TEST\// { print; }' $input > $output; cp $output $input
-    awk ' ! /\.o$/ { print; }'     $input > $output; cp $output $input
-    awk ' ! /\.pyc$/ { print; }'   $input > $output; cp $output $input
-    awk ' ! /\.pdf$/ { print; }'   $input > $output; cp $output $input
-    awk ' ! /\~$/ { print; }'      $input > $output; cp $output $input
-    awk ' ! /\.bak$/ { print; }'   $input > $output; cp $output $input
-    awk ' ! /\.htm$/ { print; }'   $input > $output; cp $output $input
-    awk ' ! /\.html$/ { print; }'  $input > $output; cp $output $input
-    awk ' ! /\.swo$/ { print; }'   $input > $output; cp $output $input
-    awk ' ! /\.swp$/ { print; }'   $input > $output; cp $output $input
-    awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
-
-    # (*) create packages: .7z, .tar.gz
+    awk '   ! /\/\.svn/   \
+         && ! /\/TEST\//  \
+         && ! /\.o$/      \
+         && ! /\.pyc$/    \
+         && ! /\.pdf$/    \
+         && ! /\~$/       \
+         && ! /\.bak$/    \
+         && ! /\.htm$/    \
+         && ! /\.html$/   \
+         && ! /\.swo$/    \
+         && ! /\.swp$/    \
+         && ! /trunk\/quex\/data_base\/misc\// { print; }' $input > $QUEX_PATH/tmp-file-list.txt
+    mv -f tmp.txt $input
 
     # -- create tar file for ./trunk
     echo "-- Snapshot"
-    cp $output $QUEX_PATH/tmp-file-list.txt
-    tar cf /tmp/quex-$1.tar `cat $output` 
+    tar cf /tmp/quex-$1.tar `cat $QUEX_PATH/tmp-file-list.txt` 
     echo `ls -lh /tmp/quex-$1.tar`
 
     # -- change base directory from ./trunk to ./quex-$version
