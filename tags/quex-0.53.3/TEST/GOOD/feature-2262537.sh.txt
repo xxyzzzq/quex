@@ -1,0 +1,6 @@
+Error Case:\n
+error.qx:12:error: Pattern results in a 'nothing is acceptable' state machine.
+error.qx:12:error: This means, that no step forward in the input still sets the analyzer
+error.qx:12:error: into an acceptance state. Thus, as soon as no other input matches
+error.qx:12:error: the analyzer ends up in an infinite loop.
+Good Case:\n

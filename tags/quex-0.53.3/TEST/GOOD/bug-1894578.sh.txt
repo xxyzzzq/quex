@@ -1,0 +1,2 @@
+If no errors occur in compilation, then everything is fine
+Simlicism
