@@ -1,0 +1,7 @@
+token {
+A,;
+B;
+}
+mode START {
+"b" => QUEX_TKN_B;
+}
