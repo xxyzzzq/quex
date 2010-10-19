@@ -1,0 +1,31 @@
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+,-----------------------------------------------------------------
+| [START]
+Bad Char: ':'
+WORD 'otto' 
+WORD 'war' 
+WORD 'ein' 
+WORD 'kaiser' 
+<INDENT> '' 
+WORD 'heiser' 
+WORD 'manchmal' 
+<NODENT> '' 
+WORD 'leise' 
+WORD 'selten' 
+WORD 'hoho' 
+<DEDENT> '' 
+<TERMINATION> '' 
+| [END] number of token = 13
+`-----------------------------------------------------------------
