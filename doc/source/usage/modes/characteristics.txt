@@ -139,6 +139,7 @@ The possible options for modes to be specified are the following.
    C-statements 
    
    .. code-block:: cpp
+
          /* Compare something_else */
          if( something > something_else ) {        
              /* Open new listener thread for reception */
@@ -156,6 +157,7 @@ The possible options for modes to be specified are the following.
    are replaced by something else, e.g. ``*_/``. Thus
    
    .. code-block:: cpp
+
          /*
          /* Compare something_else *_/
          if( something > something_else ) {        

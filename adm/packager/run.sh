@@ -78,7 +78,7 @@ function collect_distribution_file_list()
     # -- create tar file for ./trunk
     echo "-- Snapshot"
     cp $output $QUEX_PATH/tmp-file-list.txt
-    tar cf /tmp/quex-$1.tar `cat $output`
+    tar cf /tmp/quex-$1.tar `cat $output` 
     echo `ls -lh /tmp/quex-$1.tar`
 
     # -- change base directory from ./trunk to ./quex-$version
@@ -121,23 +121,41 @@ function create_packages()
     gzip -9 quex-$1.tar
 }
 
+function validate_directory_tree()
+{
+    # In the past it happend multiple times that somehow other directories
+    # slipped into the packages. This is a basic check that only 'quex' and 'demo'
+    # are included.
+    cd /tmp/quex-$1
+
+    for d in `find -maxdepth 1 -type d`; do 
+        case $d in
+            .)      echo "directory .    [OK]";;
+            ./demo) echo "directory demo [OK]";;
+            ./quex) echo "directory quex [OK]";;
+            *)      echo "directory '$d' is not to be packed. Abort!"; exit;; 
+        esac
+    done
+}
+
 function collect_packages() 
 {
     rm -rf /tmp/quex-packages
     mkdir /tmp/quex-packages
 
-    mv /tmp/quex-$1.7z \
-       /tmp/quex-$1.tar.gz \
-       /tmp/quex-$1.zip    \
-       $INSTALLBUILDER_OUT/quex_$1*.deb                         \
-       $INSTALLBUILDER_OUT/quex-$1*.rpm                         \
-       $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe        \
-       $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin          \
-       $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip        \
-       $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin        \
-       $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin  \
-       $QUEX_PATH/tmp-file-list.txt                             \
-       /tmp/quex-packages
+    for file in {/tmp/quex-$1.7z,     \
+                 /tmp/quex-$1.tar.gz, \
+                 /tmp/quex-$1.zip,    \
+                 $INSTALLBUILDER_OUT/quex_$1*.deb,                         \
+                 $INSTALLBUILDER_OUT/quex-$1*.rpm,                         \
+                 $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe,        \
+                 $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin,          \
+                 $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip,        \
+                 $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin,        \
+                 $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin,  \
+                 $QUEX_PATH/tmp-file-list.txt}; do
+         mv -f $file /tmp/quex-packages
+    done
 
     # -- create the batch file for sftp
     scriptfile=
@@ -198,9 +216,13 @@ update_version_information $1
 
 collect_distribution_file_list $1
 
+validate_directory_tree $1
+
 create_packages $1
 
 collect_packages $1
+
+
 
 repository_update $1
 
