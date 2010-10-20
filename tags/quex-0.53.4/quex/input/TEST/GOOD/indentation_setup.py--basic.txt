@@ -1,0 +1,211 @@
+(1) |[\v\a]|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(2) |[\v\a] >|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(3) |[\v\a] => grid|
+
+test_string:1:error: End of file reached while parsing 'indentation' section.
+
+(4) |[\v\a] => trid|
+
+test_string:1:error: Unrecognized indentation specifier 'trid'.
+test_string:1:error: Did you mean 'grid'?
+Exception!
+
+(5) |[\v\a] => grid>|
+
+test_string:1:error: Missing integer or variable name after keyword 'grid'.
+Exception!
+
+(6) |[\v\a] => grid 4;>|
+
+test_string:1:warning: Indentation setup does not contain spaces, only grids (tabulators). All grid
+test_string:1:warning: widths are multiples of 4. The grid setup 4
+test_string:1:warning: is equivalent to a setup with space counts 1.
+test_string:1:warning: Space counts are faster to compute.
+Spaces:
+Grids:
+      4 by '\a', '\v'
+Bad:
+    
+Newline:
+    init-state = 25L
+    00025() <~ 
+          == '\n' ==> 00026
+          == '\r' ==> 00027
+          <no epsilon>
+    00026(A, S) <~ 
+          <no epsilon>
+    00027() <~ 
+          == '\n' ==> 00026
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(7) |[\v\a] => space;>|
+
+Spaces:
+      1 by '\a', '\v'
+Grids:
+Bad:
+    
+Newline:
+    init-state = 32L
+    00032() <~ 
+          == '\n' ==> 00033
+          == '\r' ==> 00034
+          <no epsilon>
+    00033(A, S) <~ 
+          <no epsilon>
+    00034() <~ 
+          == '\n' ==> 00033
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(8) |[\v\a] => space 0rXVI;>|
+
+test_string:1:warning: Indentation does not contain a grid but only homogenous space counts of 16.
+test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
+test_string:1:warning: of 1 are the fastest to compute.
+Spaces:
+     16 by '\a', '\v'
+Grids:
+Bad:
+    
+Newline:
+    init-state = 39L
+    00039() <~ 
+          == '\n' ==> 00040
+          == '\r' ==> 00041
+          <no epsilon>
+    00040(A, S) <~ 
+          <no epsilon>
+    00041() <~ 
+          == '\n' ==> 00040
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(9) |[\v\a] => newline;>|
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    init-state = 44L
+    00044() <~ 
+          == '\a', '\v' ==> 00045
+          <no epsilon>
+    00045(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(10) |[\v\a] => suppressor;>|
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    
+Newline:
+    init-state = 50L
+    00050() <~ 
+          == '\n' ==> 00051
+          == '\r' ==> 00052
+          <no epsilon>
+    00051(A, S) <~ 
+          <no epsilon>
+    00052() <~ 
+          == '\n' ==> 00051
+          <no epsilon>
+    
+Suppressor:
+    init-state = 48L
+    00048() <~ 
+          == '\a', '\v' ==> 00049
+          <no epsilon>
+    00049(A, S) <~ 
+          <no epsilon>
+    
+
+
+(11) |[\v\a] => bad;>|
+
+Spaces:
+      1 by ' '
+Grids:
+      4 by '\t'
+Bad:
+    '\a', '\v'
+Newline:
+    init-state = 57L
+    00057() <~ 
+          == '\n' ==> 00058
+          == '\r' ==> 00059
+          <no epsilon>
+    00058(A, S) <~ 
+          <no epsilon>
+    00059() <~ 
+          == '\n' ==> 00058
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
+(12)
+::
+[\v\a] => space;
+[\t] => grid 10;
+::
+
+test_string:2:error: End of file reached while parsing 'indentation' section.
+
+(13)
+::
+[\v\a] => space;
+[\t] => grid 10;>
+::
+
+Spaces:
+      1 by '\a', '\v'
+Grids:
+     10 by '\t'
+Bad:
+    
+Newline:
+    init-state = 76L
+    00076() <~ 
+          == '\n' ==> 00077
+          == '\r' ==> 00078
+          <no epsilon>
+    00077(A, S) <~ 
+          <no epsilon>
+    00078() <~ 
+          == '\n' ==> 00077
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+

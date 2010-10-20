@@ -1,0 +1,12 @@
+
+## Map: Target Index --> Trigger Set
+
+      1 <--- [[45], [47]]
+
+## Map: Trigger Intervals (sorted) --> Target Index
+
+    [-2147483647, 44] 	---> None
+    [45] 	---> 1L
+    [46] 	---> None
+    [47] 	---> 1L
+    [48, 2147483646] 	---> None

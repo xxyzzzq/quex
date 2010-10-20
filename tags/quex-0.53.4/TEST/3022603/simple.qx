@@ -1,0 +1,15 @@
+// -*- C++ -*- vim: set syntax=cpp:
+token {
+    BYE;
+    ERROR;
+}
+
+mode ONE_AND_ONLY :
+{
+    on_end_of_stream => QUEX_TKN_TERMINATION(LexemeNull);
+    on_failure  => QUEX_TKN_ERROR(Lexeme);
+    "bye"       => QUEX_TKN_BYE(Lexeme);
+}
+
+
+

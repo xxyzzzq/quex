@@ -1,0 +1,42 @@
+start = ONE;
+
+token {
+    LETTER;
+    ONE;
+    TWO;
+    THREE;
+    FOUR;
+}
+
+mode BASE :
+<skip: [ \n\t]> 
+{
+}
+mode ONE : BASE {
+    2|to2 => GOTO(TWO,   QUEX_TKN_TWO(Lexeme));
+    3|to3 => GOTO(THREE, QUEX_TKN_THREE(Lexeme));
+    4|to4 => GOTO(FOUR,  QUEX_TKN_FOUR(Lexeme));
+    .     => QUEX_TKN_LETTER(Lexeme);
+    
+}
+mode TWO : BASE {
+    1|to1 => GOTO(TWO,   QUEX_TKN_ONE(Lexeme));
+    3|to3 => GOTO(THREE, QUEX_TKN_THREE(Lexeme));
+    4|to4 => GOTO(FOUR,  QUEX_TKN_FOUR(Lexeme));
+    .     => QUEX_TKN_LETTER(Lexeme);
+    
+}
+mode THREE : BASE {
+    1|to1 => GOTO(TWO,   QUEX_TKN_ONE(Lexeme));
+    2|to2 => GOTO(TWO,   QUEX_TKN_TWO(Lexeme));
+    4|to4 => GOTO(FOUR,  QUEX_TKN_FOUR(Lexeme));
+    .     => QUEX_TKN_LETTER(Lexeme);
+    
+}
+mode FOUR : BASE {
+    1|to1 => GOTO(TWO,   QUEX_TKN_ONE(Lexeme));
+    2|to2 => GOTO(TWO,   QUEX_TKN_TWO(Lexeme));
+    3|to3 => GOTO(THREE, QUEX_TKN_THREE(Lexeme));
+    .     => QUEX_TKN_LETTER(Lexeme);
+    
+}

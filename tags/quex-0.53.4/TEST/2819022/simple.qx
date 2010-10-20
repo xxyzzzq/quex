@@ -1,0 +1,16 @@
+ 
+define { 
+WORD [A-Za-z0-9]+ 
+WHITESPACE [ \r\t\n]+ 
+} 
+ 
+mode standard 
+{  
+<<EOF>>      => QUEX_TKN_TERMINATION; 
+{WHITESPACE} {} 
+{WORD}/'s    => QUEX_TKN_WORD_POST_COND(Lexeme); 
+{WORD}/'s/   => QUEX_TKN_QUOTE_S_PRE_COND(Lexeme); 
+{WORD}       => QUEX_TKN_WORD(Lexeme); 
+.            => QUEX_TKN_OTHER(Lexeme); 
+\n           => QUEX_TKN_NEWLINE(Lexeme); 
+} 

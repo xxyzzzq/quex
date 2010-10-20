@@ -1,0 +1,20 @@
+#!/bin/sh
+UBUNTU=`cat /etc/lsb-release 2> /dev/null | grep -i "ubuntu"`
+if [ "$UBUNTU" ]; then
+ #Ubuntu
+ echo "#!/bin/bash
+export QUEX_PATH=/opt/quex/quex-##QUEX_VERSION/
+
+ "> /etc/profile.d/quex.sh
+ chmod 644 /etc/profile.d/quex.sh
+else
+ #Debian
+ echo "
+export QUEX_PATH=/opt/quex/quex-##QUEX_VERSION/ 
+ " >> /etc/profile
+fi
+
+#Create the link to the executable
+ln -s /opt/quex/quex-##QUEX_VERSION/quex-exe.py '##BIN_DIRECTORY/quex'
+
+exit 0

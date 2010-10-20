@@ -1,0 +1,1 @@
+start = WORD_SEPARATION; token { FOO; } mode WORD_SEPARATION { [ab]/[cd]/ => QUEX_TKN_FOO; } 
