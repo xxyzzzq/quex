@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env bash 
 # PURPOSE: Creating a release of Quex
 #   $1  version of the quex release
 #
@@ -141,19 +141,18 @@ function collect_packages()
     rm -rf /tmp/quex-packages
     mkdir /tmp/quex-packages
 
-    for file in `echo /tmp/quex-$1.7z,     \
-                 /tmp/quex-$1.tar.gz, \
-                 /tmp/quex-$1.zip,    \
-                 $INSTALLBUILDER_OUT/quex_$1*.deb,                         \
-                 $INSTALLBUILDER_OUT/quex-$1*.rpm,                         \
-                 $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe,        \
-                 $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin,          \
-                 $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip,        \
-                 $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin,        \
-                 $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin,  \
-                 $QUEX_PATH/tmp-file-list.txt`; do
-         mv -f $file /tmp/quex-packages
-    done
+    mv -f /tmp/quex-$1.7z     \
+          /tmp/quex-$1.tar.gz \
+          /tmp/quex-$1.zip    \
+          $INSTALLBUILDER_OUT/quex_$1*.deb                         \
+          $INSTALLBUILDER_OUT/quex-$1*.rpm                         \
+          $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe        \
+          $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin          \
+          $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip        \
+          $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin        \
+          $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin  \
+          $QUEX_PATH/tmp-file-list.txt                             \
+          /tmp/quex-packages
 
     # -- create the batch file for sftp
     scriptfile=
@@ -219,8 +218,6 @@ validate_directory_tree $1
 create_packages $1
 
 collect_packages $1
-
-
 
 repository_update $1
 
