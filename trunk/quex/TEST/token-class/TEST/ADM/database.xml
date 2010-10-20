@@ -1,26 +1,26 @@
-<test-database execution-time-sec="0.42" date="Thu Oct 21 00:55:38 2010">
+<test-database execution-time-sec="0.38" date="Thu Oct 21 08:33:25 2010">
     <last-used-diff-display-program name=""/>
-    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.00"> 
+    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="simple-queue.exe" info-request-time="1287389808L" vanished="False"/>
         <make-procedure success="True" time_sec="3.232235"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.00" crc="0"/>
+           <choice name="" result="OK" time_sec="0.01" crc="0"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="0.40"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.36"> 
         <application file-name="misc.sh" info-request-time="1264886931L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.09" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.11" crc="-517532967"/>
-           <choice name="double-colon" result="OK" time_sec="0.09" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.11" crc="-26357094"/>
+           <choice name="empty" result="OK" time_sec="0.08" crc="-1191820474"/>
+           <choice name="no-namespace" result="OK" time_sec="0.12" crc="-517532967"/>
+           <choice name="double-colon" result="OK" time_sec="0.08" crc="-223322448"/>
+           <choice name="token" result="OK" time_sec="0.08" crc="-26357094"/>
         </choice-list>
     </test>
-    <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.02"> 
+    <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="simple.exe" info-request-time="1287389812L" vanished="False"/>
         <make-procedure success="True" time_sec="3.105433"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.02" crc="1973324921"/>
+           <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
     </test>
 </test-database>
