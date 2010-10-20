@@ -1,0 +1,100 @@
+// -*- C++ -*- vim: set syntax=cpp: 
+start = MAIN;
+
+header {
+#include <fstream>
+}
+
+body {
+    std::string file_name;
+    std::string directory;
+    size_t      include_depth;
+
+    void  space(size_t Offset = 0) {
+        for(size_t i=0; i<self.include_depth + Offset; ++i) std::cout << "    ";
+    }
+}
+
+init {
+    self.include_depth = 0;
+    self.directory     = "example/";
+}
+
+memento {
+    std::string     file_name;
+    std::ifstream*  included_sh;
+}
+
+memento_pack {
+    std::string  Filename = self.directory + (const char*)InputName;
+    *input_handle = new std::ifstream(Filename.c_str(), std::ios::binary);
+
+    if( (*input_handle)->fail() ) {
+        delete *input_handle;
+        self.space(1);
+        printf("%s: file '%s' cannot be opened.\n", self.file_name.c_str(), Filename.c_str());
+        return 0x0;
+    }
+    memento->file_name = self.file_name;
+    self.space(1);
+    std::cout << ">> Memento " << std::endl;
+    self.include_depth += 1;
+
+    self.space(1);
+    printf("%s:%i: include '%s'.\n", self.file_name.c_str(), (int)self.line_number(), Filename.c_str());
+
+    self.file_name = Filename;
+    memento->included_sh = *input_handle;
+}
+
+memento_unpack {
+    self.file_name = memento->file_name;
+    self.space();
+    std::cout << "<< Memento " << std::endl;
+    self.include_depth -= 1;
+    /* 'close' on end of file */
+    memento->included_sh->close();
+    delete (memento->included_sh);
+}
+
+token {
+   INCLUDE;
+   IDENTIFIER;
+   STRING;
+}
+
+mode END_INCLUDED_FILE {
+    <<EOF>> { 
+       if( self.include_pop() ) RETURN;
+       self_send(QUEX_TKN_TERMINATION);
+       RETURN;
+    }
+
+    [ \t\r\n]+  { }
+}
+
+mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
+    [a-zA-Z0-9_.]+ { 
+        /* Pop the previous mode, so that the right mode is setup when one
+         * returns from the included file.                                 */
+        self.pop_mode();
+        self.include_push<std::ifstream>(Lexeme);
+        /* IMPORTANT */
+        RETURN;
+    }
+
+
+    . { 
+        printf("%s: missing file name after 'include'.", self.file_name.c_str());
+        exit(-1);
+    }
+}
+
+mode MAIN : END_INCLUDED_FILE
+{
+    "include"       => GOSUB(OPEN_INCLUDED_FILE); 
+    [_a-zA-Z0-9.]+  => QUEX_TKN_IDENTIFIER(Lexeme); 
+}
+
+
+
