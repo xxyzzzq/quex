@@ -141,7 +141,7 @@ function collect_packages()
     rm -rf /tmp/quex-packages
     mkdir /tmp/quex-packages
 
-    for file in {/tmp/quex-$1.7z,     \
+    for file in `echo /tmp/quex-$1.7z,     \
                  /tmp/quex-$1.tar.gz, \
                  /tmp/quex-$1.zip,    \
                  $INSTALLBUILDER_OUT/quex_$1*.deb,                         \
@@ -151,7 +151,7 @@ function collect_packages()
                  $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip,        \
                  $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin,        \
                  $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin,  \
-                 $QUEX_PATH/tmp-file-list.txt}; do
+                 $QUEX_PATH/tmp-file-list.txt`; do
          mv -f $file /tmp/quex-packages
     done
 
