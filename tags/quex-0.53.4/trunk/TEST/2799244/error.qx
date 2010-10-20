@@ -1,0 +1,14 @@
+
+token_type {
+name = Token;
+distinct {
+fred : int;
+}
+}
+token {
+A;
+}
+start = START;
+mode START {
+"A" => QUEX_TKN_A;
+}
