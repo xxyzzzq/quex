@@ -1,0 +1,51 @@
+token_type {
+    name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
+
+    standard {
+        id : unsigned;
+        line_number : unsigned;
+        column_number : unsigned;
+    }
+    union {
+        {
+            mini_x : int8_t;
+            mini_y : int8_t;
+        }
+        {
+            big_x : int16_t;
+            big_y : int16_t;
+        }
+        who_is_that : uint16_t;
+    }
+    inheritable;
+
+    constructor { std::cout << "Constructor\n"; }
+    destructor  { std::cout << "Destructor\n"; }
+    body        { int __nonsense__; }
+    copy {
+        std::cout << "Copy\n";
+        /* Copy core elements: id, line, and column number */
+        _id = That._id;
+    # ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    # ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        _line_n = That._line_n;
+    # endif
+    # ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        _column_n = That._column_n;
+    # endif
+    # endif
+        /* copy all members */
+        name = That.name;
+        number_list = That.number_list;
+        /* plain content copy of the union content */
+        content = That.content;
+    }
+}
+
+token {
+    A;
+}
+
+mode START {
+    "A" => QUEX_TKN_A;
+}

@@ -1,0 +1,214 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                */
+#ifndef __QUEX_INCLUDE_GUARD__DEFINITIONS
+#define __QUEX_INCLUDE_GUARD__DEFINITIONS
+
+#include<quex/code_base/asserts>
+#include<quex/code_base/compatibility/inttypes.h>
+#include<quex/code_base/compatibility/pseudo-stdbool.h>
+
+#if defined(_MSC_VER) && _MSC_VER >= 1600
+    /* Microsoft VisualStudio(tm) 2010, i.e. Version 1600:
+     *     Forget about the 'CRT security enhancements'
+     *     for sprintf, fopen, and setbuf.               */
+#   pragma warning(disable: 4996)
+#endif
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   include <cstddef>  /* gets: size_t, ptrdiff_t */
+#   include <cstring>  /* gets: memmove, memcpy   */
+#   include <cstdio>   /* gets: fprintf           */
+#   include <cstdlib>
+#   include <stdexcept>
+#   define __QUEX_STD_FILE     std::FILE
+#   define __QUEX_STD_STDIN    std::stdin
+#   define __QUEX_STD_fopen    std::fopen
+#   define __QUEX_STD_fclose   std::fclose
+#   define __QUEX_STD_fprintf  std::fprintf
+#   define __QUEX_STD_fread    std::fread 
+#   define __QUEX_STD_fseek    std::fseek 
+#   define __QUEX_STD_ftell    std::ftell 
+#   define __QUEX_STD_memcpy   std::memcpy
+#   define __QUEX_STD_memmove  std::memmove
+#   define __QUEX_STD_memset   std::memset
+#   define __QUEX_STD_printf   std::printf
+#   define __QUEX_STD_sprintf  std::sprintf
+#   define __QUEX_STD_strncat  std::strncat
+#   define __QUEX_STD_malloc   std::malloc
+#   define __QUEX_STD_free     std::free  
+
+#   define QUEX_INLINE     inline
+    /* Input handle type is determined automagically via templates */
+#else
+#   include <stddef.h>
+#   include <string.h>  /* gets: memmove, memcpy     */
+#   include <stdio.h>   /* gets: fprintf             */
+#   include <stdlib.h>
+#   define __QUEX_STD_FILE     FILE
+#   define __QUEX_STD_STDIN    stdin
+#   define __QUEX_STD_fopen    fopen
+#   define __QUEX_STD_fclose   fclose
+#   define __QUEX_STD_fprintf  fprintf
+#   define __QUEX_STD_fread    fread 
+#   define __QUEX_STD_fseek    fseek 
+#   define __QUEX_STD_ftell    ftell 
+#   define __QUEX_STD_memcpy   memcpy
+#   define __QUEX_STD_memmove  memmove
+#   define __QUEX_STD_memset   memset
+#   define __QUEX_STD_printf   printf
+#   define __QUEX_STD_sprintf  sprintf
+#   define __QUEX_STD_strncat  strncat
+#   define __QUEX_STD_malloc   malloc
+#   define __QUEX_STD_free     free  
+
+#   define QUEX_INLINE             /*static*/
+#   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
+#endif
+
+/* Support of computed goto */
+#ifdef QUEX_OPTION_COMPUTED_GOTOS
+    typedef  void*     QUEX_TYPE_GOTO_LABEL;
+#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE        (&&TERMINAL_FAILURE)
+#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE           (QUEX_TYPE_GOTO_LABEL)(0x0)
+#   define QUEX_SET_drop_out_state_index(StateIndex)  drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
+#   define QUEX_SET_last_acceptance(TerminalIndex)    last_acceptance      = &&TERMINAL_ ##TerminalIndex## _DIRECT; 
+#   define QUEX_GOTO_drop_out_state_index()           goto *drop_out_state_index;
+#   define QUEX_GOTO_last_acceptance()                goto __TERMINAL_ROUTER;
+
+    /* If no computed gotos are used, then there are two state routers, one for forward
+     * state routing and another for backward state routing. Thus, two macros for the same
+     * thing are required.                                                                 */
+#   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx, StateKey) \
+           goto *template_ ##TemplateIdx## _target_ ##TargetIdx## _cg[StateKey];
+#   define QUEX_TEMPLATE_GOTO_BACKWARD(TemplateIdx, TargetIdx, StateKey) \
+           QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx, StateKey) 
+
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx, StateKey) \
+           goto *template_ ##TemplateIdx## _map_state_key_to_state_index## _cg[StateKey];
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(TemplateIdx, StateKey) \
+           QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx, StateKey) 
+
+#else
+    typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
+#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (QUEX_TYPE_GOTO_LABEL)(-1)
+#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(-1)
+#   define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
+#   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
+#   define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
+#   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
+
+#   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx, StateKey) \
+           target_state_index = template_ ##TemplateIdx## _target_ ##TargetIdx[StateKey]; \
+           goto STATE_ROUTER;
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx, StateKey) \
+           target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[StateKey]; \
+           goto STATE_ROUTER;
+#   define QUEX_TEMPLATE_GOTO_BACKWARD(TemplateIdx, TargetIdx, StateKey) \
+           target_state_index = template_ ##TemplateIdx## _target_ ##TargetIdx[StateKey]; \
+           goto STATE_ROUTER_BACKWARD;
+#   define QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(TemplateIdx, StateKey) \
+           target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[StateKey]; \
+           goto STATE_ROUTER_BACKWARD;
+
+#endif
+
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { throw std::runtime_error(Msg); } while(0)
+#else
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { __QUEX_STD_fprintf(stderr, Msg); exit(-1); } while(0)
+#endif
+
+#if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
+#   define QUEX_DEBUG_PRINT(Buffer, FormatStr)       /* empty */
+#   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg) /* empty */
+#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character) /* empty */
+#else
+#   define __QUEX_PRINT_SOURCE_POSITION(Buffer)                              \
+           __QUEX_STD_fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, \
+                             (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
+
+#   define QUEX_DEBUG_PRINT(Buffer, FormatStr)        \
+           __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
+           __QUEX_STD_fprintf(stdout, FormatStr "\n")
+
+#   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg)       \
+           __QUEX_PRINT_SOURCE_POSITION(Buffer)            \
+           __QUEX_STD_fprintf(stdout, FormatStr "\n", Arg)
+
+#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)                             \
+           __QUEX_PRINT_SOURCE_POSITION(Buffer)                                  \
+             Character == '\n' ? __QUEX_STD_fprintf(stdout, "input:    '\\n'\n") \
+           : Character == '\t' ? __QUEX_STD_fprintf(stdout, "input:    '\\t'\n") \
+           :                     __QUEX_STD_fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
+#endif /* ! __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS */
+
+
+#if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
+#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
+        "\nThe provided input stream behaves strangely. Number of read\n"   \
+        "characters is not proportional to the stream position increase.\n" \
+        "The buffer filler type which you are using might be able to\n"     \
+        "deal with those cases. Try compile option:\n"                      \
+        "\n" \
+                  "-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n" \
+        "\n" \
+        "However, those mechanisms imply a tradeoff in terms of speed.\n"   \
+        "Please, consider using a 'binary' for your input stream, or use\n" \
+        "a different implementation of the standard I/O library (e.g.\n"    \
+        "not Microsoft(tm)).\n"
+#else
+#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
+        "\nThe macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \
+        "Nevertheless, the quex engine detected that the number of characters\n"   \
+        "is not proportional to the character position increase. The buffer\n"     \
+        "filler type which you are using **is not able** to deal with those\n"     \
+        "cases. You **must** use a binary mode of your input stream!\n"            
+#endif
+#define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD \
+        "Macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION enables strange stream\n" \
+        "handling. This functionality cannot be used in backward load. Either\n"    \
+        "renounce on pre-conditions or only use 'binary' file streams.\n"           \
+        
+
+#define __QUEX_MESSAGE_ASSERTS_INFO \
+        "## Disable this message by compile option\n"                               \
+        "##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'\n"              \
+        "##\n"                                                                      \
+        "## Asserts activated! Lexical analyzer is 'paranoid'!\n"                   \
+        "## => Even smallest misbehavior causes program exit.\n"                    \
+        "##    This helps to find subtile errors.\n"                                \
+        "##\n"                                                                      \
+        "## Note however: the paranoia is a heavy load on performance!\n"           \
+        "##\n"                                                                      \
+        "## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'\n"                  \
+        "##\n"                                                                      \
+        "## Report any bug at\n"                                                    \
+        "##        http://sourceforge.net/tracker/?group_id=168259&atid=846112\n" 
+
+#define __QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR \
+        "Error: Quex engine constructor has received a standard input handle!\n"   \
+        "Error: Standard input has to be treated like buffered input. Please,\n"   \
+        "Error: consult the documentation or the example 'stdinlexer.cpp' in\n"    \
+        "Error: directory $QUEX_PATH/demo/010 (> make stdinlexer.exe). Please,\n"  \
+        "Error: review the other (non-stdin) examples in this directory to\n"      \
+        "Error: conclude how to read encoded data via stdin.\n"
+
+#define __QUEX_MESSAGE_C_DOES_NOT_SUPPORT_MULTIPLE_IMPLICIT_TOKEN_ARGS \
+        "Error: Quex does not support unspecified multiple arguments for token\n" \
+        "Error: senders in plain 'C'. Please use something like\n\n"              \
+        "Error:           '=> TKN_MY_TOKEN(ID, text=Lexeme)\n\n"
+
+#define QUEX_ERROR_DEPRECATED(NAME, REPLACEMENT) \
+        QUEX_ERROR_EXIT(NAME " has been deprecated\n"   \
+                        "Please, use " REPLACEMENT ".")
+
+#define QUEX_STRING(X)            #X
+#define QUEX_NUMBER_TO_STRING(x)  QUEX_STRING(x)
+#define QUEX_SOURCE_POS()         __FILE__ ":" QUEX_NUMBER_TO_STRING(__LINE__) ": "
+
+
+#endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */

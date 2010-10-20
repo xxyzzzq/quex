@@ -1,0 +1,16 @@
+< COMPILER = g++ -ggdb 
+---
+> COMPILER = gcc -ggdb -std=c99
+< %.o: %.cpp EasyLexer
+---
+> %.o: %.c EasyLexer
+< %.E: %.cpp    
+---
+> %.E: %.c    
+< EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
+---
+> EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
+< 		 --token-policy single
+---
+> 		 --token-policy single           \
+> 		 --language C
