@@ -57,7 +57,7 @@ def __get_DFA_compliant_state_machine(SM):
     if pre_sm != None:
         # If pre-context state machine is not DFA compliant, 
         # then make it compliant.
-        if not X.is_DFA_compliant(): 
+        if not pre_sm.is_DFA_compliant(): 
             pre_sm = nfa_to_dfa.do(pre_sm)
             pre_sm = hopcroft.do(pre_sm, CreateNewStateMachineF=False)
             result.replace_pre_context_state_machine(pre_sm)
