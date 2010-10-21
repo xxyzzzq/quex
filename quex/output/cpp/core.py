@@ -121,7 +121,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
              ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
-             ["$$QUEX_TYPE_CHARACTER$$",        setup.engine_character_type],
+             ["$$QUEX_TYPE_CHARACTER$$",        Setup.engine_character_type],
              ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],
@@ -163,15 +163,10 @@ def write_engine_header(ModeDB):
     QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                                    + Setup.language_db["$code_base"] 
                                                    + Setup.language_db["$analyzer_template_file"]).replace("//","/")
-    LexerFileStem               = Setup.output_header_file
-    LexerClassName              = Setup.analyzer_class_name
+    LexerFileStem  = Setup.output_header_file
+    LexerClassName = Setup.analyzer_class_name
 
-    #    are bytes of integers Setup 'little endian' or 'big endian' ?
-    if Setup.byte_order == "little":
-        db = { 1: "ASCII", 2: "UCS-2LE", 4: "UCS-4LE", "wchar_t": "WCHAR_T" }
-    else:
-        db = { 1: "ASCII", 2: "UCS-2BE", 4: "UCS-4BE", "wchar_t": "WCHAR_T" }
-    quex_converter_coding_name_str = db[Setup.bytes_per_ucs_code_point]
+    quex_converter_coding_name_str = Setup.converter_ucs_coding_name
 
     mode_id_definition_str = "" 
     # NOTE: First mode-id needs to be '1' for compatibility with flex generated engines

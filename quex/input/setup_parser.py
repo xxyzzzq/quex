@@ -193,6 +193,12 @@ def do(argv):
     elif setup.engine_character_type == "":
         setup.engine_character_type = "uint8_t"
 
+    if setup.bytes_per_ucs_code_point == -1:
+        if global_character_type_db.has_key(setup.engine_character_type):
+            setup.bytes_per_ucs_code_point = global_character_type_db[setup.engine_character_type][3]
+        else:
+            setup.bytes_per_ucs_code_point = -1
+
     if setup.converter_ucs_coding_name == "": 
         if global_character_type_db.has_key(setup.engine_character_type):
             if setup.byte_order == "little": index = 1
@@ -287,7 +293,7 @@ def validate(setup, command_line, argv):
 
     # Check validity
     bpc = setup.bytes_per_ucs_code_point
-    if bpc != None:
+    if bpc != -1:
         # If the number of bytes per character is specified, then the name
         # for the encoding cannot be specified.
         if setup.engine_character_type != "":

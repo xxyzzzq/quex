@@ -1,3 +1,14 @@
+#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
+#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
+
+#ifndef _MSC_VER // [
+#error "Use this header only with Microsoft Visual C++ compilers!"
+#endif // _MSC_VER ]
+
+// Visual Studio 2010 _MSC_VER = 1600
+#if _MSC_VER >= 1600
+#   include "stdint.h"
+#else
 // ISO C9x  compliant stdint.h for Microsoft Visual Studio
 // Based on ISO/IEC 9899:TC2 Committee draft (May 6, 2005) WG14/N1124 
 // 
@@ -28,12 +39,6 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
-#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
-
-#ifndef _MSC_VER // [
-#error "Use this header only with Microsoft Visual C++ compilers!"
-#endif // _MSC_VER ]
 
 #if _MSC_VER > 1000
 #pragma once
@@ -216,5 +221,7 @@ typedef uint64_t  uintmax_t;
 #define UINTMAX_C  UINT64_C
 
 #endif // __STDC_CONSTANT_MACROS ]
+
+#endif // _MSC_VER < 1600 (Visual Studio 2010)
 
 #endif // __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
