@@ -15,7 +15,7 @@ SETUP_INFO = {
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
-    "bytes_per_ucs_code_point":       [["--bytes-per-trigger", "-b"],          None],
+    "bytes_per_ucs_code_point":       [["--bytes-per-trigger", "-b"],          -1],
     "engine_character_type":          [["--engine-character-type", "--ect"],   ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
     "byte_order":                     [["--endian"],                           "<system>"],
@@ -195,18 +195,18 @@ HEADER_IMPLEMTATION = 1
 SOURCE              = 2
 
 global_character_type_db = {
-        # Name:         Type:         LittleEndian     Big Endian
-        #                             Converter Name:  Converter Name:
-        "uint8_t":    [ "uint8_t",    "ASCII",         "ASCII"],
-        "uint16_t":   [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
-        "uint32_t":   [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
-        "u8":         [ "u8",         "ASCII",         "ASCII"],
-        "u16":        [ "u16",        "UCS-2LE",       "UCS-2BE"],
-        "u32":        [ "u32",        "UCS-4LE",       "UCS-4BE"],
-        "unsigned8":  [ "unsigned8",  "ASCII",         "ASCII"],
-        "unsigned16": [ "unsigned16", "UCS-2LE",       "UCS-2BE"],
-        "unsigned32": [ "unsigned32", "UCS-4LE",       "UCS-4BE"],
-        "wchar_t":    [ "wchar_t",    "WCHAR_T",       "WCHAR_T"],
+        # Name:         Type:         LittleEndian     Big Endian       Bytes per 
+        #                             Converter Name:  Converter Name:  engine character:
+        "uint8_t":    [ "uint8_t",    "ASCII",         "ASCII",         1],
+        "uint16_t":   [ "uint16_t",   "UCS-2LE",       "UCS-2BE",       2],
+        "uint32_t":   [ "uint32_t",   "UCS-4LE",       "UCS-4BE",       4],
+        "u8":         [ "u8",         "ASCII",         "ASCII",         1],
+        "u16":        [ "u16",        "UCS-2LE",       "UCS-2BE",       2],
+        "u32":        [ "u32",        "UCS-4LE",       "UCS-4BE",       4],
+        "unsigned8":  [ "unsigned8",  "ASCII",         "ASCII",         1],
+        "unsigned16": [ "unsigned16", "UCS-2LE",       "UCS-2BE",       2],
+        "unsigned32": [ "unsigned32", "UCS-4LE",       "UCS-4BE",       4],
+        "wchar_t":    [ "wchar_t",    "WCHAR_T",       "WCHAR_T",       -1],
 }
 
 global_extension_db = {
