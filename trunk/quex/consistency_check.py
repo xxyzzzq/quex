@@ -70,8 +70,10 @@ def do(ModeDB):
 
         newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
         if newline_suppressor_info.get() != None:
-            __commonality(mode, newline_suppressor_info, newline_suppressor_info.get(), 
-                          "indentation newline suppressor")
+            # Supressor *can* have commonalities with other patterns without confusion,
+            # since it does not trigger indentation handling.
+            # __commonality(mode, newline_suppressor_info, newline_suppressor_info.get(), 
+            #              "indentation newline suppressor")
 
             # Newline and newline suppressor should never have a superset/subset relation
             if    subset_checker.do(newline_info.get(), newline_suppressor_info.get()) \
