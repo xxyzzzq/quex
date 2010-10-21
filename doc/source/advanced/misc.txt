@@ -23,6 +23,24 @@ The ``flush()`` function sends a token with the accumulated string and the speci
 token-id. Finally, the ``clear()`` function clears the accumulated string without
 sending any token.
 
+.. warning:: If a dynamic length encoding is used (such as ``--codec utf8`` 
+             or ``--codec utf16``), then one *must not* use the function
+
+   .. code-block:: cpp
+
+      void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
+
+   Even if one really wants to add only a single character.
+   since it expects a fixed size character object. Instead, please use
+
+   .. code-block:: cpp
+
+      void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, 
+                                  const QUEX_TYPE_CHARACTER* End);
+
+   even if the added element is only one letter.
+
+
 
 The Post Categorizer
 --------------------

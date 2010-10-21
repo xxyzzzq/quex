@@ -58,7 +58,6 @@ class Interval:
 
     def is_all(self):
         return self.begin == -sys.maxint and self.end == sys.maxint   
-        print "##res:", result
 
     def is_equal(self, Other):
         return self.begin == Other.begin and self.end == Other.end

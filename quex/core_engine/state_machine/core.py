@@ -652,7 +652,6 @@ class StateMachine:
     def is_DFA_compliant(self):
         for state in self.states.values():
             if state.transitions().is_DFA_compliant() == False: 
-                print "##", state.transitions().get_map()
                 return False
         return True
 

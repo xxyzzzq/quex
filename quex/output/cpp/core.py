@@ -56,11 +56,6 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     else:
         token_repeat_test_txt = "false"
 
-    # -- determine character type according to number of bytes per ucs character code point
-    #    for the internal engine.
-    quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
-                                   "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
-
     txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        Setup.count_column_number_f)        
     txt = __switch(txt, "QUEX_OPTION_COMPUTED_GOTOS",                False)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_MODE_TRANSITIONS",        Setup.output_debug_f)
@@ -126,7 +121,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
              ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
-             ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
+             ["$$QUEX_TYPE_CHARACTER$$",        setup.engine_character_type],
              ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],

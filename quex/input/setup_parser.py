@@ -14,28 +14,10 @@ import quex.input.query as query
 import quex.input.codec_db as codec_db
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
-from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED, HEADER, HEADER_IMPLEMTATION, SOURCE, global_extension_db
+from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED, HEADER, HEADER_IMPLEMTATION, SOURCE, global_extension_db, global_character_type_db
 from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
 from   quex.core_engine.generator.action_info import CodeFragment
-
-SupportedCharacterTypeDB = {
-        # Name:         Type:         LittleEndian     Big Endian
-        #                             Converter Name:  Converter Name:
-        1:            [ "uint8_t",    "ASCII",         "ASCII"],
-        2:            [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
-        4:            [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
-        "uint8_t":    [ "uint8_t",    "ASCII",         "ASCII"],
-        "uint16_t":   [ "uint16_t",   "UCS-2LE",       "UCS-2BE"],
-        "uint32_t":   [ "uint32_t",   "UCS-4LE",       "UCS-4BE"],
-        "u8":         [ "u8",         "ASCII",         "ASCII"],
-        "u16":        [ "u16",        "UCS-2LE",       "UCS-2BE"],
-        "u32":        [ "u32",        "UCS-4LE",       "UCS-4BE"],
-        "unsigned8":  [ "unsigned8",  "ASCII",         "ASCII"],
-        "unsigned16": [ "unsigned16", "UCS-2LE",       "UCS-2BE"],
-        "unsigned32": [ "unsigned32", "UCS-4LE",       "UCS-4BE"],
-        "wchar_t":    [ "wchar_t",    "WCHAR_T",       "WCHAR_T"],
-}
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
@@ -64,7 +46,6 @@ def do(argv):
                 False, if job is done.
     """
     global setup
-    global SupportedCharacterTypeDB
 
     # (*) Interpret Command Line (A) _____________________________________________________
     command_line = GetPot(argv)
@@ -198,16 +179,26 @@ def do(argv):
     else:
         setup.byte_order_is_that_of_current_system_f = False
 
-    if setup.converter_ucs_coding_name == "": 
-        if SupportedCharacterTypeDB.has_key(setup.bytes_per_ucs_code_point):
-            if setup.byte_order == "little": index = 1
-            else:                            index = 2
-            setup.converter_ucs_coding_name = SupportedCharacterTypeDB[setup.bytes_per_ucs_code_point][index]
-
-
     make_numbers(setup)
 
     validate(setup, command_line, argv)
+
+    if setup.bytes_per_ucs_code_point in ["1", "2", "4"]:
+        # It has been checked that 'bytes_per_ucs_code_point' and 'engine_character_type'
+        # are mutually exclusive.
+        setup.engine_character_type = { 
+            "1": "uint8_t", "2": "uint16_t", "4": "uint32_t",
+        }[setup.bytes_per_ucs_code_point]
+
+    elif setup.engine_character_type == "":
+        setup.engine_character_type = "uint8_t"
+
+    if setup.converter_ucs_coding_name == "": 
+        if global_character_type_db.has_key(setup.engine_character_type):
+            if setup.byte_order == "little": index = 1
+            else:                            index = 2
+            setup.converter_ucs_coding_name = global_character_type_db[setup.engine_character_type][index]
+
 
     if setup.token_id_foreign_definition_file != "": 
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
@@ -231,7 +222,6 @@ def do(argv):
 def validate(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
     """
-    global SupportedCharacterTypeDB
 
     setup.output_directory = os.path.normpath(setup.output_directory)
     if setup.output_directory != "":
@@ -297,16 +287,17 @@ def validate(setup, command_line, argv):
 
     # Check validity
     bpc = setup.bytes_per_ucs_code_point
-    if bpc.isdigit():
-        if bpc not in ["1", "2", "4"]:
-            error_msg("choice for '--bytes-per-trigger': '%s'\n" % bpc + \
-                      "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
-        else:
-            setup.bytes_per_ucs_code_point = __get_integer("bytes_per_ucs_code_point")
-
-    elif bpc not in ["wchar_t", ""]:
-        error_msg("choice for '--bytes-per-trigger': '%s'\n" % bpc + \
-                  "quex only supports 1, 2, 4, or 'wchar_t' as setting for this parameter.")
+    if bpc != None:
+        # If the number of bytes per character is specified, then the name
+        # for the encoding cannot be specified.
+        if setup.engine_character_type != "":
+            error_msg("If number of bytes per UCS code point is defined, then the name\n"
+                      "for the internal engine character type cannot be specified.\n"
+                      "Option '--bytes-per-ucs-code-point' (or '-b') and option\n"
+                      "'--engine-character-type' (or '--ect') are mutually exclusive.")
+        if not bpc.isdigit() or bpc not in ["1", "2", "4"]:
+            error_msg("The setting of '--bytes-per-ucs-code-point' (or 'b') can only be\n" 
+                      "1, 2, or 4.")
 
     if setup.byte_order not in ["<system>", "little", "big"]:
         error_msg("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
@@ -347,23 +338,24 @@ def validate(setup, command_line, argv):
     if setup.converter_user_new_func != "": converter_n += 1
     if converter_n > 1:
         error_msg("More than one character converter has been specified. Note, that the\n" + \
-                  "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n" + \
+                  "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n"    + \
                   "to be used mutually exclusively.")
     if converter_n == 1 and setup.engine_character_encoding != "":  
-        error_msg("An engine that is to be generated for a specific codec cannot rely\n" + \
+        error_msg("An engine that is to be generated for a specific codec cannot rely\n"      + \
                   "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
                   "`--converter-new`.")
 
-    # If a user defined type is specified for 'bytes_per_ucs_code_point' and 
+    # If a user defined type is specified for 'engine character type' and 
     # a converter, then the name of the target type must be specified explicitly.
-    if     not SupportedCharacterTypeDB.has_key(setup.bytes_per_ucs_code_point) \
+    if         command_line.search("--engine-character-type", "--ect")           \
+       and not global_character_type_db.has_key(setup.engine_character_encoding) \
        and not command_line.search("--converter-ucs-coding-name", "--cucn"):
-        tc = setup.bytes_per_ucs_code_point
+        tc = setup.engine_character_encoding
         error_msg("A character code converter has been specified. It is supposed to convert\n" + \
                   "incoming data into an internal buffer of unicode characters. The size of\n" + \
                   "each character is determined by '%s' which is a user defined type.\n" % tc  + \
                   "\n" + \
-                  "Quex cannot determine automatically the name that the converter requires\n" + \
+                  "Quex cannot determine automatically the name that the converter requires\n" +      \
                   "to produce unicode characters for type '%s'. It must be specified by the\n" % tc + \
                   "command line option '--converter-ucs-coding-name' or '--cucn'.")
 

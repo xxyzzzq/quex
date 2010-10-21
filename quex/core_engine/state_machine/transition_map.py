@@ -58,8 +58,6 @@ class TransitionMap:
         all_trigger_sets = NumberSet()
         for trigger_set in self.__db.values():
             if all_trigger_sets.has_intersection(trigger_set): 
-                print "##1", all_trigger_sets
-                print "##2", trigger_set
                 return False
             else:
                 all_trigger_sets.unite_with(trigger_set)
