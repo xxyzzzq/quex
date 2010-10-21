@@ -14,3 +14,6 @@ rm tmp.txt
 # cleansening
 make clean >& /dev/null
 cd $tmp
+quex -i simple.qx -o EasyLexer
+awk ' /QUEX_TYPE_CHARACTER/ && /define/ && !/SETTING/ ' EasyLexer-configuration
+rm  EasyLexer*
