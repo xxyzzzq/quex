@@ -153,8 +153,6 @@ def do(argv):
     if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
          error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
 
-
-
     # (*) Output programming language        
     setup.language = setup.language.upper()
     verify_word_in_list(setup.language,
@@ -173,38 +171,46 @@ def do(argv):
     # (*) Output files
     prepare_file_names(setup)
 
-    if setup.byte_order == "<system>": 
-        setup.byte_order = sys.byteorder 
+    if setup.buffer_byte_order == "<system>": 
+        setup.buffer_byte_order = sys.byteorder 
         setup.byte_order_is_that_of_current_system_f = True
     else:
         setup.byte_order_is_that_of_current_system_f = False
 
+    if setup.buffer_element_size == "wchar_t":
+        error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
+                  "with option '--bytes-per-ucs-code-point' or '-b'. Please, specify\n"
+                  "'--enginge-character-type wchar_t' or '--ect'.")
+
+    if setup.buffer_element_type == "wchar_t":
+        setup.converter_ucs_coding_name = "WCHAR_T"
+    
     make_numbers(setup)
 
     # (*) Determine buffer element type and size (in bytes)
-    if setup.bytes_per_ucs_code_point == -1:
-        if global_character_type_db.has_key(setup.engine_character_type):
-            setup.bytes_per_ucs_code_point = global_character_type_db[setup.engine_character_type][3]
+    if setup.buffer_element_size == -1:
+        if global_character_type_db.has_key(setup.buffer_element_type):
+            setup.buffer_element_size = global_character_type_db[setup.buffer_element_type][3]
         else:
-            setup.bytes_per_ucs_code_point = 1
+            setup.buffer_element_size = 1
 
-    if setup.engine_character_type == "":
-        if setup.bytes_per_ucs_code_point in [1, 2, 4]:
-            setup.engine_character_type = { 
+    if setup.buffer_element_type == "":
+        if setup.buffer_element_size in [-1, 1, 2, 4]:
+            setup.buffer_element_type = { 
                 1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
-            }[setup.bytes_per_ucs_code_point]
+            }[setup.buffer_element_size]
         else:
             error_msg("Buffer element type cannot be determined for size '%i' which\n" \
-                      % setup.bytes_per_ucs_code_point + 
+                      % setup.buffer_element_size + 
                       "has been specified by '-b' or '--bytes-per-ucs-code-point'.")
 
     validate(setup, command_line, argv)
 
     if setup.converter_ucs_coding_name == "": 
-        if global_character_type_db.has_key(setup.engine_character_type):
-            if setup.byte_order == "little": index = 1
-            else:                            index = 2
-            setup.converter_ucs_coding_name = global_character_type_db[setup.engine_character_type][index]
+        if global_character_type_db.has_key(setup.buffer_element_type):
+            if setup.buffer_byte_order == "little": index = 1
+            else:                                   index = 2
+            setup.converter_ucs_coding_name = global_character_type_db[setup.buffer_element_type][index]
 
     if setup.token_id_foreign_definition_file != "": 
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
@@ -291,11 +297,11 @@ def validate(setup, command_line, argv):
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
-    if setup.bytes_per_ucs_code_point not in [1, 2, 4]:
+    if setup.buffer_element_size not in [-1, 1, 2, 4]:
         error_msg("The setting of '--bytes-per-ucs-code-point' (or 'b') can only be\n" 
-                  "1, 2, or 4 (found %s)." % repr(setup.bytes_per_ucs_code_point))
+                  "1, 2, or 4 (found %s)." % repr(setup.buffer_element_size))
 
-    if setup.byte_order not in ["<system>", "little", "big"]:
+    if setup.buffer_byte_order not in ["<system>", "little", "big"]:
         error_msg("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
                   "Note, that this option is only interesting for cross plattform development.\n" + \
                   "By default, quex automatically chooses the endian type of your system.")
@@ -336,7 +342,7 @@ def validate(setup, command_line, argv):
         error_msg("More than one character converter has been specified. Note, that the\n" + \
                   "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n"    + \
                   "to be used mutually exclusively.")
-    if converter_n == 1 and setup.engine_character_encoding != "":  
+    if converter_n == 1 and setup.buffer_codec != "":  
         error_msg("An engine that is to be generated for a specific codec cannot rely\n"      + \
                   "on converters. Do no use '--codec' together with '--icu', '--iconv', or\n" + \
                   "`--converter-new`.")
@@ -344,9 +350,9 @@ def validate(setup, command_line, argv):
     # If a user defined type is specified for 'engine character type' and 
     # a converter, then the name of the target type must be specified explicitly.
     if         command_line.search("--engine-character-type", "--ect")           \
-       and not global_character_type_db.has_key(setup.engine_character_encoding) \
-       and not command_line.search("--converter-ucs-coding-name", "--cucn"):
-        tc = setup.engine_character_encoding
+       and not global_character_type_db.has_key(setup.buffer_codec) \
+       and     setup.converter_ucs_coding_name == "":
+        tc = setup.buffer_codec
         error_msg("A character code converter has been specified. It is supposed to convert\n" + \
                   "incoming data into an internal buffer of unicode characters. The size of\n" + \
                   "each character is determined by '%s' which is a user defined type.\n" % tc  + \
@@ -367,29 +373,29 @@ def validate(setup, command_line, argv):
         error_msg("Token policy 'users_queue' has be deprecated since 0.49.1\n")
 
     # Internal engine character encoding
-    if setup.engine_character_encoding != "":
-        verify_word_in_list(setup.engine_character_encoding,
+    if setup.buffer_codec != "":
+        verify_word_in_list(setup.buffer_codec,
                             codec_db.get_supported_codec_list() + ["utf8", "utf16"],
-                            "Codec '%s' is not supported." % setup.engine_character_encoding)
-        if setup.engine_character_encoding in ["utf8", "utf16"]:
-            setup.engine_character_encoding_transformation_info = \
-                    setup.engine_character_encoding + "-state-split"
-            if setup.engine_character_encoding == "utf8":
-               if setup.bytes_per_ucs_code_point != 1:
+                            "Codec '%s' is not supported." % setup.buffer_codec)
+        if setup.buffer_codec in ["utf8", "utf16"]:
+            setup.buffer_codec_transformation_info = \
+                    setup.buffer_codec + "-state-split"
+            if setup.buffer_codec == "utf8":
+               if setup.buffer_element_size != 1:
                    error_msg("Using codec 'utf8' while bytes per trigger is != 1 (found %s).\n" 
-                             % repr(setup.bytes_per_ucs_code_point) + 
+                             % repr(setup.buffer_element_size) + 
                              "Consult command line argument '--bytes-per-trigger'.")
-            if setup.engine_character_encoding == "utf16":
-               if setup.bytes_per_ucs_code_point != 2:
+            if setup.buffer_codec == "utf16":
+               if setup.buffer_element_size != 2:
                    error_msg("Using codec 'utf16' while bytes per trigger is != 2 (found %s).\n"
-                             % repr(setup.bytes_per_ucs_code_point) + 
+                             % repr(setup.buffer_element_size) + 
                              "Consult command line argument '--bytes-per-trigger'.")
         else:
-            setup.engine_character_encoding_transformation_info = \
-                  codec_db.get_codec_transformation_info(setup.engine_character_encoding)
+            setup.buffer_codec_transformation_info = \
+                  codec_db.get_codec_transformation_info(setup.buffer_codec)
 
-    if setup.engine_character_encoding_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
-        setup.output_engine_character_encoding_header = None
+    if setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
+        setup.output_buffer_codec_header = None
 
     # Path Compression
     if setup.compression_path_uniform_f and setup.compression_path_f:
@@ -455,16 +461,16 @@ def prepare_file_names(setup):
     setup.output_token_class_file                = __prepare_file_name("-token", HEADER)
     setup.output_token_class_file_implementation = __prepare_file_name("-token", HEADER_IMPLEMTATION)
 
-    if setup.engine_character_encoding != "":
+    if setup.buffer_codec != "":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
         # See Internal engine character encoding'
-        setup.output_engine_character_encoding_header = \
-            __prepare_file_name("-converter-%s" % setup.engine_character_encoding, HEADER)
-        setup.output_engine_character_encoding_header_i = \
-            __prepare_file_name("-converter-%s" % setup.engine_character_encoding, HEADER_IMPLEMTATION)
+        setup.output_buffer_codec_header = \
+            __prepare_file_name("-converter-%s" % setup.buffer_codec, HEADER)
+        setup.output_buffer_codec_header_i = \
+            __prepare_file_name("-converter-%s" % setup.buffer_codec, HEADER_IMPLEMTATION)
     else:
-        setup.output_engine_character_encoding_header   = None
-        setup.output_engine_character_encoding_header_i = None
+        setup.output_buffer_codec_header   = None
+        setup.output_buffer_codec_header_i = None
 
 def make_numbers(setup):
     setup.compression_template_coef  = __get_float("compression_template_coef")
@@ -474,7 +480,7 @@ def make_numbers(setup):
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
-    setup.bytes_per_ucs_code_point   = __get_integer("bytes_per_ucs_code_point")
+    setup.buffer_element_size   = __get_integer("buffer_element_size")
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]

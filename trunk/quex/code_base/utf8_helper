@@ -1,0 +1,27 @@
+#ifndef __QUEX_INCLUDE_GUARD__UTF8_HELPER
+#define __QUEX_INCLUDE_GUARD__UTF8_HELPER
+/* -*- C++ -*- vim: set syntax=cpp:
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer                                                */
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+QUEX_INLINE uint16_t*
+QUEX_NAME(utf8_to_utf16_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
+                                uint16_t* Drain, size_t DrainSize);
+
+QUEX_INLINE uint32_t*
+QUEX_NAME(utf8_to_ucs4_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
+                               uint32_t* Drain, size_t DrainSize);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::basic_string<uint16_t>
+QUEX_NAME(utf8_to_utf16_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+
+QUEX_INLINE std::basic_string<uint32_t>
+QUEX_NAME(utf8_to_ucs4_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#endif /* __QUEX_OPTION_PLAIN_C */
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__UTF8_HELPER */

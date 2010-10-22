@@ -9,7 +9,7 @@ import quex.core_engine.generator.languages.core as languages
 import quex.input.setup         
 
 quex.input.setup.setup.QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
-quex.input.setup.setup.bytes_per_ucs_code_point = 1
+quex.input.setup.setup.buffer_element_size = 1
 quex.input.setup.setup.output_token_class_file = ""
 quex.input.setup.setup.token_class_name_space = ""
 quex.input.setup.setup.token_class_name_safe = ""
