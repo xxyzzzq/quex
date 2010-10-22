@@ -13,14 +13,14 @@ codec-lexer: lexer.cpp
 	      -D__QUEX_SETTING_TEST_UTF8 
 
 iconv-lexer: lexer.cpp 
-	quex -i simple-hindi.qx -o Simple --token-policy single --iconv -b wchar_t
+	quex -i simple-hindi.qx -o Simple --token-policy single --iconv --ect wchar_t
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		  -DQUEX_SETTING_BUFFER_SIZE=20                     \
 		  -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=20          \
 		  -D__QUEX_SETTING_TEST_UTF8           
 
 icu-lexer: lexer.cpp 
-	quex -i simple-hindi.qx -o Simple --token-policy single --icu -b wchar_t
+	quex -i simple-hindi.qx -o Simple --token-policy single --icu --ect wchar_t
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		  `icu-config --ldflags`                            \
 		  -DQUEX_SETTING_BUFFER_SIZE=20                     \

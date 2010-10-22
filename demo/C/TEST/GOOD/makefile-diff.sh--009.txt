@@ -12,16 +12,16 @@
 < COMPILER = g++ -ggdb -Wall -pedantic 
 ---
 > COMPILER = gcc -ggdb -Wall -pedantic 
-< 	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "-b wchar_t" 
+< 	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "--ect wchar_t" 
 ---
 > 	quex -i simple.qx --engine tiny_lexer \
 > 		 --language C                     \
-> 		 # CERTAINLY NOT: "-b wchar_t" 
-< 	quex -i simple.qx --engine tiny_wlexer -b wchar_t 
+> 		 # CERTAINLY NOT: "--ect wchar_t" 
+< 	quex -i simple.qx --engine tiny_wlexer --ect wchar_t 
 ---
 > 	quex -i simple.qx --engine tiny_wlexer \
 > 		 --language C                      \
-> 	  	 -b wchar_t 
+> 	  	 --ect wchar_t 
 < # -- The general way to get .o from .cpp
 < %.o: %.cpp $(SOURCES) $(WSOURCES)
 ---

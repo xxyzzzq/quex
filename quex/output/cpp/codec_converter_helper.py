@@ -9,21 +9,21 @@ from quex.input.setup                   import setup as Setup
 from quex.input.setup_parser            import __prepare_file_name
 
 def do():
-    if Setup.engine_character_encoding == "": return
-    if Setup.engine_character_encoding_transformation_info in ["utf8-state-split", "utf16-state-split"]: return
+    if Setup.buffer_codec == "": return
+    if Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: return
 
-    assert Setup.engine_character_encoding_transformation_info != None
+    assert Setup.buffer_codec_transformation_info != None
 
-    txt, txt_i = _do(Setup.engine_character_encoding_transformation_info, 
-                     Setup.engine_character_encoding)
+    txt, txt_i = _do(Setup.buffer_codec_transformation_info, 
+                     Setup.buffer_codec)
 
     if txt_i != None:
         # When we deal with 'C' we need to distinguish between declaration and
         # implementation, thus we need two headers.
-        write_safely_and_close(Setup.output_engine_character_encoding_header, txt) 
-        write_safely_and_close(Setup.output_engine_character_encoding_header_i, txt_i) 
+        write_safely_and_close(Setup.output_buffer_codec_header, txt) 
+        write_safely_and_close(Setup.output_buffer_codec_header_i, txt_i) 
     else:
-        write_safely_and_close(Setup.output_engine_character_encoding_header, txt) 
+        write_safely_and_close(Setup.output_buffer_codec_header, txt) 
 
 def _do(UnicodeTrafoInfo, CodecName):
     """

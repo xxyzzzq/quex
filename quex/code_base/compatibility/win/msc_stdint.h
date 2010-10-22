@@ -1,13 +1,20 @@
 #ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
 #define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
 
-#ifndef _MSC_VER // [
-#error "Use this header only with Microsoft Visual C++ compilers!"
-#endif // _MSC_VER ]
+#ifndef _MSC_VER 
+#   error "Use this header only with Microsoft Visual C++ compilers!"
+#endif          
 
-// Visual Studio 2010 _MSC_VER = 1600
 #if _MSC_VER >= 1600
+// VisualStudio(tm) 2010 _MSC_VER = 1600
+// Since this version, Visual Studio(tm) contains "stdint.h"
+#   ifdef __cplusplus
+extern "C" {
+#   endif
 #   include "stdint.h"
+#   ifdef __cplusplus
+}
+#   endif
 #else
 // ISO C9x  compliant stdint.h for Microsoft Visual Studio
 // Based on ISO/IEC 9899:TC2 Committee draft (May 6, 2005) WG14/N1124 

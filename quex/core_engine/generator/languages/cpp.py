@@ -560,8 +560,8 @@ def __frame_of_all(Code, Setup):
         implementation_header_str = ""
 
     codec_header_str = ""
-    if Setup.output_engine_character_encoding_header != None:
-        codec_header_str = "#include \"%s\"\n" % Setup.output_engine_character_encoding_header
+    if Setup.output_buffer_codec_header != None:
+        codec_header_str = "#include \"%s\"\n" % Setup.output_buffer_codec_header
 
     return "".join(["#include \"%s\"\n" % Setup.output_header_file,
                     implementation_header_str,

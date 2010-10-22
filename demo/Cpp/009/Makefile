@@ -41,14 +41,14 @@ stdinlexer: stdinlexer.o tiny_lexer.o
 	$(LD) -o $@  stdinlexer.o tiny_lexer.o 
           
 $(SOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "-b wchar_t" 
+	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "--ect wchar_t" 
 
 # -- wchar_t application
 wlexer: wlexer.o tiny_wlexer.o 
 	$(LD) -o $@  wlexer.o tiny_wlexer.o 
           
 $(WSOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_wlexer -b wchar_t 
+	quex -i simple.qx --engine tiny_wlexer --ect wchar_t 
 
 # -- The general way to get .o from .cpp
 %.o: %.cpp $(SOURCES) $(WSOURCES)

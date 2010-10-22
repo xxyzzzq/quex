@@ -14,11 +14,12 @@ SETUP_INFO = {
     "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "quex::lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
+    "buffer_codec":                   [["--codec"],                            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
-    "bytes_per_ucs_code_point":       [["--bytes-per-trigger", "-b"],          -1],
-    "engine_character_type":          [["--engine-character-type", "--ect"],   ""],
+    "buffer_element_size":            [["--bytes-per-trigger", "-b"],          -1],
+    "buffer_element_type":            [["--engine-character-type", "--ect"],   ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
-    "byte_order":                     [["--endian"],                           "<system>"],
+    "buffer_byte_order":              [["--endian"],                           "<system>"],
     "compression_template_f":         [["--template-compression"],             FLAG],
     "compression_template_coef":      [["--template-compression-coefficient"], 1.0],
     "compression_path_f":             [["--path-compression"],                 FLAG],
@@ -28,7 +29,6 @@ SETUP_INFO = {
     "path_limit_code":                [["--path-termination"],                 0x1],
     "dos_carriage_return_newline_f":  [["--no-DOS"],                           NEGATED_FLAG],
     "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], NEGATED_FLAG],
-    "engine_character_encoding":      [["--codec"],                            ""],
     "converter_iconv_f":              [["--iconv"],                            FLAG],
     "converter_icu_f":                [["--icu"],                              FLAG],
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
@@ -70,7 +70,7 @@ SETUP_INFO = {
     "token_class_name_safe":                     None,
     "token_id_prefix_name_space":                None,
     "token_id_prefix_plain":                     None,   # i.e. without the namespace specified.
-    "output_engine_character_encoding_header_file": None,
+    "output_buffer_codec_header_file": None,
     "output_header_file":                           None,
     "output_configuration_file":                    None,
     "output_code_file":                             None,
@@ -81,7 +81,7 @@ SETUP_INFO = {
     "extension_db":                                 None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
-    "XX_bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
+    "XX_buffer_element_size":       [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
     "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
     "XX_flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
     "XX_input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
@@ -160,7 +160,7 @@ DEPRECATED = {
       ("Command line options --token-type-no-stringless-check and --ttnsc are deprecated. Please,\n"
        "use --token-type-no-take_text-check or --ttnttc", 
        "0.48.1"), 
-  "XX_bytes_per_ucs_code_point": 
+  "XX_buffer_element_size": 
       ("The command line option '--bytes-per-ucs-code-point' has been renamed to\n"
        "'--bytes-per-trigger'. The old name causes heavy confusion when it was\n"
        "used in combination with dynamic length codecs (option --codec).", "0.49.1"),
@@ -258,4 +258,4 @@ for key, entry in SETUP_INFO.items():
 # Default values, maybe overiden later on.
 setup.language_db = quex_core_engine_generator_languages_db["C++"]
 setup.language_db = global_extension_db["C++"]
-setup.engine_character_encoding_transformation_info = None
+setup.buffer_codec_transformation_info = None

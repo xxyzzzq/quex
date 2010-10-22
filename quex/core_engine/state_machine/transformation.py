@@ -26,7 +26,7 @@ def do(X, TrafoInfo=None, FH=-1, LineN=None):
         assert X.is_DFA_compliant()
 
     if TrafoInfo == None:
-        TrafoInfo = Setup.engine_character_encoding_transformation_info
+        TrafoInfo = Setup.buffer_codec_transformation_info
         if TrafoInfo == None: return X
 
     assert TrafoInfo != None

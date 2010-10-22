@@ -72,10 +72,10 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_SINGLE",           Setup.token_policy == "single")
     txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "false")
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
-    txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
+    txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.buffer_byte_order == "big")
     txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
     txt = __switch(txt, "QUEX_OPTION_INDENTATION_TRIGGER", IndentationSupportF)     
-    txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.byte_order == "little")
+    txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.buffer_byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_PLAIN_C",                     Setup.language.upper() == "C")
@@ -89,8 +89,8 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
 
     # -- name of the character codec
     codec_name = "unicode"
-    if Setup.engine_character_encoding != "": 
-        codec_name = make_safe_identifier(Setup.engine_character_encoding).lower()
+    if Setup.buffer_codec != "": 
+        codec_name = make_safe_identifier(Setup.buffer_codec).lower()
 
     def namespace(NameSpaceList):
         result = Setup.language_db["$namespace-ref"](NameSpaceList)
@@ -121,7 +121,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
              ["$$NAMESPACE_TOKEN_OPEN$$",       Setup.language_db["$namespace-open"](token_descr.name_space).replace("\n", "\\\n")],
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
-             ["$$QUEX_TYPE_CHARACTER$$",        Setup.engine_character_type],
+             ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
              ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],

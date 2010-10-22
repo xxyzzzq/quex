@@ -19,7 +19,7 @@ lexer-icu: Simple.cpp text.345
 	@rm  tmp.txt
 
 Simple.cpp: simple.qx
-	@quex -i $< -o Simple -b wchar_t --iconv 
+	@quex -i $< -o Simple --ect wchar_t --iconv 
 
 text.345: 
 	@bzip2 -d text.345.bz2

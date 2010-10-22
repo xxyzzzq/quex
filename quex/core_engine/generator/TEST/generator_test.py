@@ -14,7 +14,7 @@ from   quex.core_engine.generator.languages.core import db
 from   quex.core_engine.generator.languages.cpp  import  __local_variable_definitions
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
 import quex.core_engine.generator.core                  as generator
-import quex.core_engine.generator.skipper.core          as skipper
+# import quex.core_engine.generator.skipper.core          as skipper
 import quex.core_engine.generator.skipper.character_set as character_set_skipper
 import quex.core_engine.generator.skipper.range         as range_skipper
 import quex.core_engine.generator.skipper.nested_range  as nested_range_skipper
