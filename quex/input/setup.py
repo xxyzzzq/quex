@@ -4,9 +4,9 @@ class something:
     pass
 
 
-LIST = -1
-FLAG = -2
-NEGATED_FLAG = -3
+LIST         = -1111
+FLAG         = -2222
+NEGATED_FLAG = -3333
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]

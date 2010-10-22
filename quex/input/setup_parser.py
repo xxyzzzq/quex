@@ -181,30 +181,30 @@ def do(argv):
 
     make_numbers(setup)
 
-    validate(setup, command_line, argv)
-
-    if setup.bytes_per_ucs_code_point in ["1", "2", "4"]:
-        # It has been checked that 'bytes_per_ucs_code_point' and 'engine_character_type'
-        # are mutually exclusive.
-        setup.engine_character_type = { 
-            "1": "uint8_t", "2": "uint16_t", "4": "uint32_t",
-        }[setup.bytes_per_ucs_code_point]
-
-    elif setup.engine_character_type == "":
-        setup.engine_character_type = "uint8_t"
-
+    # (*) Determine buffer element type and size (in bytes)
     if setup.bytes_per_ucs_code_point == -1:
         if global_character_type_db.has_key(setup.engine_character_type):
             setup.bytes_per_ucs_code_point = global_character_type_db[setup.engine_character_type][3]
         else:
-            setup.bytes_per_ucs_code_point = -1
+            setup.bytes_per_ucs_code_point = 1
+
+    if setup.engine_character_type == "":
+        if setup.bytes_per_ucs_code_point in [1, 2, 4]:
+            setup.engine_character_type = { 
+                1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
+            }[setup.bytes_per_ucs_code_point]
+        else:
+            error_msg("Buffer element type cannot be determined for size '%i' which\n" \
+                      % setup.bytes_per_ucs_code_point + 
+                      "has been specified by '-b' or '--bytes-per-ucs-code-point'.")
+
+    validate(setup, command_line, argv)
 
     if setup.converter_ucs_coding_name == "": 
         if global_character_type_db.has_key(setup.engine_character_type):
             if setup.byte_order == "little": index = 1
             else:                            index = 2
             setup.converter_ucs_coding_name = global_character_type_db[setup.engine_character_type][index]
-
 
     if setup.token_id_foreign_definition_file != "": 
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
@@ -291,19 +291,9 @@ def validate(setup, command_line, argv):
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
-    # Check validity
-    bpc = setup.bytes_per_ucs_code_point
-    if bpc != -1:
-        # If the number of bytes per character is specified, then the name
-        # for the encoding cannot be specified.
-        if setup.engine_character_type != "":
-            error_msg("If number of bytes per UCS code point is defined, then the name\n"
-                      "for the internal engine character type cannot be specified.\n"
-                      "Option '--bytes-per-ucs-code-point' (or '-b') and option\n"
-                      "'--engine-character-type' (or '--ect') are mutually exclusive.")
-        if not bpc.isdigit() or bpc not in ["1", "2", "4"]:
-            error_msg("The setting of '--bytes-per-ucs-code-point' (or 'b') can only be\n" 
-                      "1, 2, or 4.")
+    if setup.bytes_per_ucs_code_point not in [1, 2, 4]:
+        error_msg("The setting of '--bytes-per-ucs-code-point' (or 'b') can only be\n" 
+                  "1, 2, or 4 (found %s)." % repr(setup.bytes_per_ucs_code_point))
 
     if setup.byte_order not in ["<system>", "little", "big"]:
         error_msg("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
@@ -386,11 +376,13 @@ def validate(setup, command_line, argv):
                     setup.engine_character_encoding + "-state-split"
             if setup.engine_character_encoding == "utf8":
                if setup.bytes_per_ucs_code_point != 1:
-                   error_msg("Using codec 'utf8' while bytes per trigger is != 1.\n"
+                   error_msg("Using codec 'utf8' while bytes per trigger is != 1 (found %s).\n" 
+                             % repr(setup.bytes_per_ucs_code_point) + 
                              "Consult command line argument '--bytes-per-trigger'.")
             if setup.engine_character_encoding == "utf16":
                if setup.bytes_per_ucs_code_point != 2:
-                   error_msg("Using codec 'utf16' while bytes per trigger is != 2.\n"
+                   error_msg("Using codec 'utf16' while bytes per trigger is != 2 (found %s).\n"
+                             % repr(setup.bytes_per_ucs_code_point) + 
                              "Consult command line argument '--bytes-per-trigger'.")
         else:
             setup.engine_character_encoding_transformation_info = \
@@ -482,6 +474,7 @@ def make_numbers(setup):
     setup.token_id_counter_offset    = __get_integer("token_id_counter_offset")
     setup.token_queue_size           = __get_integer("token_queue_size")
     setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
+    setup.bytes_per_ucs_code_point   = __get_integer("bytes_per_ucs_code_point")
 
 def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]
