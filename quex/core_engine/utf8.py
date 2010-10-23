@@ -46,15 +46,15 @@ def unicode_to_pretty_utf8(Code):
 
 def utf8_to_unicode(ByteSequence):
     """Unfortunately, there is no elegant way to do the utf8-decoding 
-       safely, since due to strange behavior of a python narrow build
-       a character >= 0x10000 may appear as a 2 byte string and cannot
-       be handled by 'ord' in python 2.x.
+       safely in libPython, since due to strange behavior of a python 
+       narrow build a character >= 0x10000 may appear as a 2 byte string 
+       and cannot be handled by 'ord' in python 2.x.
 
        Thus: 
               utf8d = codecs.getdecoder("utf-8")
               return ord(utf8d("".join(map(chr, ByteSequence)))[0])
 
-       would be unsafe.
+       would be unsafe. That's why we do it by hand here
     """
     # Assume that the byte sequence is valid, thus a byte sequence of length 'N'
     # has a N - 1 leading ones in the header plus a zero. Remaining bits in the
