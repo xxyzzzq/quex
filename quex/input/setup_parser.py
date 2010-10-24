@@ -191,8 +191,12 @@ def do(argv):
     if setup.buffer_element_size == -1:
         if global_character_type_db.has_key(setup.buffer_element_type):
             setup.buffer_element_size = global_character_type_db[setup.buffer_element_type][3]
-        else:
+        elif setup.buffer_element_type == "":
             setup.buffer_element_size = 1
+        else:
+            # If the buffer element type is defined, then here we know that it is 'unknown'
+            # and Quex cannot know its size on its own.
+            setup.buffer_element_size = -1
 
     if setup.buffer_element_type == "":
         if setup.buffer_element_size in [-1, 1, 2, 4]:
@@ -205,6 +209,12 @@ def do(argv):
                       "has been specified by '-b' or '--bytes-per-ucs-code-point'.")
 
     validate(setup, command_line, argv)
+
+
+    if setup.buffer_codec in ["utf8", "utf16"]:
+        setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"
+    else:
+        setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
 
     if setup.converter_ucs_coding_name == "": 
         if global_character_type_db.has_key(setup.buffer_element_type):
@@ -276,7 +286,6 @@ def validate(setup, command_line, argv):
                           depreciated_since_version + \
                           "http://quex.org for further information.")
                           
-
     # (*) Check for 'Straying' Options ___________________________________________________
     options = []
     for key, info in SETUP_INFO.items():
@@ -349,10 +358,11 @@ def validate(setup, command_line, argv):
 
     # If a user defined type is specified for 'engine character type' and 
     # a converter, then the name of the target type must be specified explicitly.
-    if         command_line.search("--engine-character-type", "--ect")           \
-       and not global_character_type_db.has_key(setup.buffer_codec) \
-       and     setup.converter_ucs_coding_name == "":
-        tc = setup.buffer_codec
+    if         setup.buffer_element_type != "" \
+       and not global_character_type_db.has_key(setup.buffer_element_type) \
+       and     setup.converter_ucs_coding_name == "" \
+       and     converter_n != 0:
+        tc = setup.buffer_element_type
         error_msg("A character code converter has been specified. It is supposed to convert\n" + \
                   "incoming data into an internal buffer of unicode characters. The size of\n" + \
                   "each character is determined by '%s' which is a user defined type.\n" % tc  + \
@@ -373,26 +383,24 @@ def validate(setup, command_line, argv):
         error_msg("Token policy 'users_queue' has be deprecated since 0.49.1\n")
 
     # Internal engine character encoding
+    def __codec_vs_buffer_element_size(CodecName, RequiredBufferElementSize):
+        if   setup.buffer_codec        != CodecName:                 return
+        elif setup.buffer_element_size == RequiredBufferElementSize: return
+
+        if setup.buffer_element_size == -1: 
+            msg_str = "undetermined (found type '%s')" % setup.buffer_element_type
+        else:
+            msg_str = "is not %i (found %i)" % (RequiredBufferElementSize, setup.buffer_element_size)
+
+        error_msg("Using codec 'utf8' while buffer element size %s.\n" % msg_str + 
+                  "Consult command line argument '--bytes-per-trigger'.")
+
     if setup.buffer_codec != "":
         verify_word_in_list(setup.buffer_codec,
                             codec_db.get_supported_codec_list() + ["utf8", "utf16"],
                             "Codec '%s' is not supported." % setup.buffer_codec)
-        if setup.buffer_codec in ["utf8", "utf16"]:
-            setup.buffer_codec_transformation_info = \
-                    setup.buffer_codec + "-state-split"
-            if setup.buffer_codec == "utf8":
-               if setup.buffer_element_size != 1:
-                   error_msg("Using codec 'utf8' while bytes per trigger is != 1 (found %s).\n" 
-                             % repr(setup.buffer_element_size) + 
-                             "Consult command line argument '--bytes-per-trigger'.")
-            if setup.buffer_codec == "utf16":
-               if setup.buffer_element_size != 2:
-                   error_msg("Using codec 'utf16' while bytes per trigger is != 2 (found %s).\n"
-                             % repr(setup.buffer_element_size) + 
-                             "Consult command line argument '--bytes-per-trigger'.")
-        else:
-            setup.buffer_codec_transformation_info = \
-                  codec_db.get_codec_transformation_info(setup.buffer_codec)
+        __codec_vs_buffer_element_size("utf8", 1)
+        __codec_vs_buffer_element_size("utf16", 2)
 
     if setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
         setup.output_buffer_codec_header = None
