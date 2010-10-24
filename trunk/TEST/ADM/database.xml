@@ -1,4 +1,4 @@
-<test-database execution-time-sec="219.68" date="Sun Oct 24 10:03:37 2010">
+<test-database execution-time-sec="214.33" date="Mon Oct 25 09:16:04 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.53"> 
@@ -7,13 +7,12 @@
                <choice name="" result="OK" time_sec="1.53" crc="934358125"/>
             </choice-list>
         </test>
-        <test title="3032877 -b, --bytes-per-trigger enhancement" time-sum-sec="5.28"> 
-            <application file-name="feature-3032877.sh" info-request-time="1287725233L" vanished="False"/>
-            <choice-list number="4" same_result="False">
-               <choice name="normal" result="NO GOOD FILE" time_sec="1.28" crc="-607037525"/>
-               <choice name="icu" result="NO GOOD FILE" time_sec="1.34" crc="-607037525"/>
-               <choice name="iconv" result="NO GOOD FILE" time_sec="1.33" crc="-607037525"/>
-               <choice name="codec" result="NO GOOD FILE" time_sec="1.34" crc="-607037525"/>
+        <test title="3032877 -b, --bytes-per-trigger enhancement" time-sum-sec="0.00"> 
+            <application file-name="feature-3032877.sh" info-request-time="1287990715L" vanished="False"/>
+            <choice-list number="3" same_result="False">
+               <choice name="normal" result="OK" time_sec="0.00" crc="-1170858530"/>
+               <choice name="icu" result="OK" time_sec="0.00" crc="1724777837"/>
+               <choice name="codec" result="OK" time_sec="0.00" crc="-593407909"/>
             </choice-list>
         </test>
         <test title="3025173 0.49.2 Custom Token struct for quex" time-sum-sec="1.47"> 
@@ -38,7 +37,7 @@
                <choice name="codec" result="OK" time_sec="3.45" crc="-416551666"/>
             </choice-list>
         </test>
-        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.22"> 
+        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.21"> 
             <application file-name="bug-2599228.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Developper" result="OK" time_sec="0.03" crc="1553152748"/>
@@ -53,7 +52,7 @@
                <choice name="icu" result="OK" time_sec="1.55" crc="-1133373463"/>
             </choice-list>
         </test>
-        <test title="2001602 RE matching UTF8 l quote uno" time-sum-sec="13.34"> 
+        <test title="2001602 RE matching UTF8 l quote uno" time-sum-sec="13.33"> 
             <application file-name="bug-2001602.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="iconv" result="OK" time_sec="5.96" crc="60983025"/>
@@ -73,7 +72,7 @@
                <choice name="" result="OK" time_sec="2.90" crc="-1094321800"/>
             </choice-list>
         </test>
-        <test title="2002474 Segmentation Fault while UTF-8 Decoding" time-sum-sec="7.78"> 
+        <test title="2002474 Segmentation Fault while UTF-8 Decoding" time-sum-sec="7.79"> 
             <application file-name="bug-2002474.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="iconv" result="OK" time_sec="3.12" crc="1937036231"/>
@@ -81,7 +80,7 @@
                <choice name="codec" result="OK" time_sec="2.34" crc="1937036231"/>
             </choice-list>
         </test>
-        <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="1.57"> 
+        <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="1.56"> 
             <application file-name="bug-2937342.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.30" crc="299683308"/>
@@ -297,7 +296,7 @@
         </test>
     </group>
     <group name="rmanoj-oss">
-        <test title="3079986 Allow namespace delimiter in --token-prefix for C++" time-sum-sec="3.77"> 
+        <test title="3079986 Allow namespace delimiter in --token-prefix for C++" time-sum-sec="3.76"> 
             <application file-name="feature-3079986.sh" info-request-time="1287037547L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="nnn" result="OK" time_sec="1.04" crc="157612946"/>
@@ -371,7 +370,7 @@
                <choice name="" result="OK" time_sec="0.15" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="2796383 0.39.3 does not handle token_type without distinct section" time-sum-sec="0.68"> 
+        <test title="2796383 0.39.3 does not handle token_type without distinct section" time-sum-sec="0.67"> 
             <application file-name="bug-2796383.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="case-1" result="OK" time_sec="0.14" crc="-1829622869"/>
@@ -465,7 +464,7 @@
                <choice name="" result="OK" time_sec="0.46" crc="928715419"/>
             </choice-list>
         </test>
-        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bug-1935701.exe" info-request-time="1287907193L" vanished="False"/>
             <make-procedure success="True" time_sec="0.797729"/>
             <choice-list number="2" same_result="False">
@@ -501,7 +500,7 @@
                <choice name="NoModeDetection_ErrorCase" result="OK" time_sec="1.85" crc="-653972300"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" time-sum-sec="9.06"> 
+        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" time-sum-sec="9.05"> 
             <application file-name="bug-2095970-ntq.sh" info-request-time="1267966683L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Normal" result="OK" time_sec="1.79" crc="-1188795240"/>
@@ -583,7 +582,7 @@
         </test>
     </group>
     <group name="wryun">
-        <test title="2819022 0.41.2 Pre-condition match causes issues" time-sum-sec="7.49"> 
+        <test title="2819022 0.41.2 Pre-condition match causes issues" time-sum-sec="7.48"> 
             <application file-name="bug-2819022.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="1.99" crc="-1370866432"/>
@@ -604,7 +603,7 @@
                <choice name="" result="OK" time_sec="0.23" crc="-1660635643"/>
             </choice-list>
         </test>
-        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.58"> 
+        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.57"> 
             <application file-name="bug-2819045.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="0.22" crc="-424122349"/>
@@ -615,7 +614,7 @@
         </test>
     </group>
     <group name="yaroslav_xp">
-        <test title="2146712 (feature) output directory parameter for the command line" time-sum-sec="0.41"> 
+        <test title="2146712 (feature) output directory parameter for the command line" time-sum-sec="0.42"> 
             <application file-name="feature-2146712.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Normal" result="OK" time_sec="0.23" crc="-1629670224"/>
