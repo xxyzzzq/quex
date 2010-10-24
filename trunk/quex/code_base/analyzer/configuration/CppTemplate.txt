@@ -44,7 +44,7 @@ $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
 #   ifdef     QUEX_OPTION_ASSERTS
-#      undef  QUEX_OPTION_ASSERTSmacro-check.py
+#      undef  QUEX_OPTION_ASSERTS
 #   endif
 #else
 #   ifndef    QUEX_OPTION_ASSERTS

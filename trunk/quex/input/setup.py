@@ -16,8 +16,8 @@ SETUP_INFO = {
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
-    "buffer_element_size":            [["--bytes-per-trigger", "-b"],          -1],
-    "buffer_element_type":            [["--engine-character-type", "--ect"],   ""],
+    "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],
+    "buffer_element_type":            [["--buffer-element-type", "--bet"],       ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
     "compression_template_f":         [["--template-compression"],             FLAG],
@@ -81,7 +81,8 @@ SETUP_INFO = {
     "extension_db":                                 None,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
-    "XX_buffer_element_size":       [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
+    "XX_buffer_element_size":            [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
+    "XX_buffer_element_size2":           [["--bytes-per-trigger"],         -1],                  # DEPRECATED
     "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
     "XX_flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
     "XX_input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
@@ -162,8 +163,12 @@ DEPRECATED = {
        "0.48.1"), 
   "XX_buffer_element_size": 
       ("The command line option '--bytes-per-ucs-code-point' has been renamed to\n"
-       "'--bytes-per-trigger'. The old name causes heavy confusion when it was\n"
+       "'--buffer-element-size'. The old name causes heavy confusion when it was\n"
        "used in combination with dynamic length codecs (option --codec).", "0.49.1"),
+  "XX_buffer_element_size2": 
+      ("The command line option '--bytes-per-trigger' has been renamed to\n"
+       "'--buffer-element-size'. This naming was chose to harmonize with the\n"  
+       "new command line option '--buffer-element-type'.", "0.54.1"),
   "XX_token_id_counter_offset":
       ("The command line option '--token-offset' has been replaced by '--token-id-offset'."
        "0.51.1"),

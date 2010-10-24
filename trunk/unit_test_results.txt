@@ -10,7 +10,7 @@ TEST
         bug-3022603.sh ....................................................[OK]
     3025173 0.49.2 Custom Token struct for quex
         bug-3025173.sh ....................................................[OK]
-    3032877 -b, --bytes-per-trigger enhancement
+    3032877 -b, --buffer-element-size enhancement
         bug-3032877.sh ..........................................[NO GOOD FILE]
 
  -- attardi:

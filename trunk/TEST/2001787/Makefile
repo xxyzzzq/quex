@@ -25,7 +25,7 @@ lexer-icu: Simple.cpp
 
 
 Simple.cpp: simple.qx
-	@quex -i $< -o Simple --ect wchar_t --iconv --token-policy single
+	@quex -i $< -o Simple --bet wchar_t --iconv --token-policy single
 
 
 clean:

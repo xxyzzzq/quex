@@ -865,6 +865,8 @@ class StateMachine:
         return index_map, inverse_index_map, index_sequence
 
     def get_string(self, NormalizeF=False, Option="utf8"):
+        """Option is "utf8", or "hex"
+        """
 
         # (*) normalize the state indices
         index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)

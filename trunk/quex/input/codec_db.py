@@ -101,6 +101,7 @@ def get_codecs_for_language(Language):
 
 def __get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
     """Arguments FH and LineN correspond to the arguments of error_msg."""
+    assert len(CodecAlias) != 0
 
     for record in get_codec_list_db():
         if CodecAlias in record[1] or CodecAlias == record[0]: 

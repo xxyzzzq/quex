@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=3032877
 if [[ $1 == "--hwut-info" ]]; then
-    echo "alexeevm: $bug -b, --bytes-per-trigger enhancement"
+    echo "alexeevm: $bug -b, --buffer-element-size enhancement"
     # One converter is enough to test here
     echo "CHOICES: normal, icu, codec;"
     exit
@@ -30,16 +30,16 @@ function perform_test() {
 }
 
 for option in {u8,u16,u32,uint8_t,uint16_t,uint32_t,wchar_t,UChar}; do
-    argument_list="--ect $option $converter"
+    argument_list="--bet $option $converter"
     perform_test
 done
 
-argument_list="--ect $option $converter --converter-ucs-coding-name ASCII"
+argument_list="--bet $option $converter --converter-ucs-coding-name ASCII"
 perform_test
 
 if [[ $1 == "codec" ]]; then
     for bes in {1,2}; do
-        argument_list="--ect $option $converter -b $bes"
+        argument_list="--bet $option $converter -b $bes"
         perform_test
     done
 fi

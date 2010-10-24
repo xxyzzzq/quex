@@ -320,24 +320,24 @@ options:
         to be linked. A typical list is '-lpthread -lm -L/usr/lib -licui18n -licuuc 
         -licudata'. DEFAULT = `<disabled>` 
 
-.. cmdoption:: -b, --bytes-per-trigger [1, 2, 4, wchar_t]
+.. cmdoption:: -b, --bes, --buffer-element-size [1, 2, 4]
 
-        With this option the number of bytes are specified that carry a trigger
-        element of the generated state machine. As long fixed size encodings
-        are used, or as long as the used coding is converted (using ``--icu``
-        or ``--iconv``), the trigger elements are characters encoded in Unicode. 
-        Thus, the byte number should at least suffice to cover all characters of 
-        the desired input coding space. 
+        With this option the number of bytes are specified that a buffer 
+        element occupies. The buffer element is the 'trigger' on which the
+        analyzer's state machine triggers. Usually, a buffer element carries a
+        character. This is true for fixed size character encodings, or when
+        converters are used (see options ``--icu`` or ``--iconv``). In these
+        cases all characters are internally processed in Unicode.  Thus, the
+        size of a buffer element should be large enough so that it can carry 
+        the unicode value of any character of the desired input coding space. 
 
-        If ``--codec`` is used so that the internal engine runs on a different
-        codec then Unicode, then ``-b`` specifies the the number of bytes
-        occupied by a code element, e.g it should be '2' for UTF16. 
-
+        Dynamic size character encodings are available with the '--codec' option,
+        for example 'utf8' and 'utf16'. In this case, the buffer element carries
+        a 'character chunk'. UTF8 runs on chunks of one byte. UTF16 runs on two byte 
+        chunks. Respectively, UTF8 requires '-b 1' and UTF16 requires '-b 2'.
+        
         You can only specify ``1`` byte, ``2`` byte or ``4`` byte per
-        character. If ``wchar_t`` is specified quex automatically adapts to the
-        correspondent type of the operating system environment where the target
-        code is compiled.  Use this, if option ``--iconv`` or ``--icu`` is used
-        and you are in doubt. 
+        character. 
         
         DEFAULT = ``1``
 
@@ -346,6 +346,23 @@ options:
                      that particular type. This means, that ``.text().c_str()``
                      does not result in a nicely printable UTF8 string. Use
                      the member ``.utf8_text()`` instead.
+
+.. cmdoption:: --bet, --buffer-element-type  name
+
+       A flexible approach to specify the buffer element size and type is by
+       specifying the name of the buffer element's type, which is the purpose
+       of this option. Note, that there are some 'well-known' types such as
+       ``uint*_t`` (C99 Standard), ``u*`` (Linux Kernel), ``unsigned*`` (OSAL)
+       where the ``*`` stands for 8, 16, or 32. Quex can derive its size 
+       automatically.
+
+       Note, that if a converter is specified (``--iconv``, ``--icu``, or 
+       ``--converter-new``) and the buffer element type does not allow to 
+       deduce the unicode coding name that the converter requires, then it 
+       must be explicitly specified by '--converter-ucs-coding-name'.
+
+
+       DEFAULT: Determined by buffer element size.
 
 .. cmdoption:: --endian  [little, big, <system>]
         
@@ -378,6 +395,15 @@ options:
         option is set, automatically customized user conversion is turned
         on.
 
+.. cmdoption:: --converter-ucs-coding-name, --cucn
+
+        Determines what string is passed to the converter so that it converters
+        a codec into unicode. In general, this is not necessary. But, if a 
+        unknown user defined type is specified via '--buffer-element-type' then
+        this option must be specified.
+
+        DEFAULT: Determined by buffer element type.
+
 .. cmdoption:: --codec String
 
         Specifies a codec for the generated engine. By default the internal
@@ -390,7 +416,7 @@ options:
         .. note::
 
         When ``--codec`` is specified the command line flag ``-b`` or
-        ``--bytes-per-trigger`` does not represent the number of bytes
+        ``--buffer-element-size`` does not represent the number of bytes
         per character, but *the number of bytes per code element*. The
         codec UTF8, for example, is of dynamic length and its code elements
         are bytes, thus only ``-b 1`` makes sense. UTF16 triggers on elements
