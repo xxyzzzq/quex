@@ -66,7 +66,7 @@ the constructor.
 .. note::
 
    When ``--codec`` is used, then the command line flag
-   ``--bytes-per-trigger`` (respectively ``-b``), it does not stand for
+   ``--buffer-element-size`` (respectively ``-b``), it does not stand for
    the character's width. When quex generates an engine that actually
    understands the codec, this flag specifies the size of the code elements. 
    

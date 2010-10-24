@@ -6,13 +6,15 @@ define {
 token {
     WORD;
     NONE;
+    FAILURE;
 }
 
 mode ONE_AND_ONLY
 {
-<<EOF>> => QUEX_TKN_TERMINATION;
+    <<EOF>>    => QUEX_TKN_TERMINATION;
+    on_failure => QUEX_TKN_FAILURE(Lexeme);
 
-{P_WORD} => QUEX_TKN_WORD(Lexeme);
-. => QUEX_TKN_NONE(Lexeme);
-[\r\n] {}
+    {P_WORD}   => QUEX_TKN_WORD(Lexeme);
+    .          => QUEX_TKN_NONE(Lexeme);
+    [\r\n]     {}
 }

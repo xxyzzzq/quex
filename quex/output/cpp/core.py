@@ -39,6 +39,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
+    converter_f = False
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
     if Setup.converter_user_new_func != "": 
         converter_new_str += Setup.converter_user_new_func + "()"
@@ -46,6 +47,9 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     else: 
         converter_new_str = "/* " + converter_new_str + " */"
         user_defined_converter_f = False
+
+    if Setup.converter_iconv_f == True or Setup.converter_icu_f   == True:
+        converter_f = True
 
     # Token repetition support
     token_repeat_test_txt = ""
@@ -73,8 +77,8 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "false")
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.buffer_byte_order == "big")
-    txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
-    txt = __switch(txt, "QUEX_OPTION_INDENTATION_TRIGGER", IndentationSupportF)     
+    txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           converter_f)
+    txt = __switch(txt, "QUEX_OPTION_INDENTATION_TRIGGER",           IndentationSupportF)     
     txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.buffer_byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
     txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)

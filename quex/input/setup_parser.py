@@ -180,7 +180,7 @@ def do(argv):
     if setup.buffer_element_size == "wchar_t":
         error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
                   "with option '--bytes-per-ucs-code-point' or '-b'. Please, specify\n"
-                  "'--enginge-character-type wchar_t' or '--ect'.")
+                  "'--enginge-character-type wchar_t' or '--bet'.")
 
     if setup.buffer_element_type == "wchar_t":
         setup.converter_ucs_coding_name = "WCHAR_T"
@@ -208,13 +208,15 @@ def do(argv):
                       % setup.buffer_element_size + 
                       "has been specified by '-b' or '--bytes-per-ucs-code-point'.")
 
-    validate(setup, command_line, argv)
-
-
+    # The header
     if setup.buffer_codec in ["utf8", "utf16"]:
         setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"
-    else:
+        setup.output_buffer_codec_header       = None
+    elif setup.buffer_codec != "":
         setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
+
+
+    validate(setup, command_line, argv)
 
     if setup.converter_ucs_coding_name == "": 
         if global_character_type_db.has_key(setup.buffer_element_type):
@@ -393,7 +395,7 @@ def validate(setup, command_line, argv):
             msg_str = "is not %i (found %i)" % (RequiredBufferElementSize, setup.buffer_element_size)
 
         error_msg("Using codec 'utf8' while buffer element size %s.\n" % msg_str + 
-                  "Consult command line argument '--bytes-per-trigger'.")
+                  "Consult command line argument '--buffer-element-size'.")
 
     if setup.buffer_codec != "":
         verify_word_in_list(setup.buffer_codec,
@@ -401,9 +403,6 @@ def validate(setup, command_line, argv):
                             "Codec '%s' is not supported." % setup.buffer_codec)
         __codec_vs_buffer_element_size("utf8", 1)
         __codec_vs_buffer_element_size("utf16", 2)
-
-    if setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
-        setup.output_buffer_codec_header = None
 
     # Path Compression
     if setup.compression_path_uniform_f and setup.compression_path_f:
