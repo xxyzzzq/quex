@@ -1,0 +1,16 @@
+header { 
+#include <Parserbase-XXX.h>
+}
+mode lex { 
+    <<EOF>> => scope1::scope2::scope3::TKN_TERMINATION;
+    [ \t\r\n]+ { /* no-op */ } ";" => scope1::scope2::scope3::TKN_SEMICOLON;
+    "=" => scope1::scope2::scope3::TKN_OP_EQUAL;
+    "+" => scope1::scope2::scope3::TKN_OP_PLUS;
+    "(" => scope1::scope2::scope3::TKN_LPAREN;
+    ")" => scope1::scope2::scope3::TKN_RPAREN;
+    "int" => scope1::scope2::scope3::TKN_TYPE_INT;
+    "print" => scope1::scope2::scope3::TKN_PRINT;
+    [0-9]+ => scope1::scope2::scope3::TKN_INT;
+    [_a-zA-Z][_a-zA-Z0-9]* => scope1::scope2::scope3::TKN_VAR; 
+}
+

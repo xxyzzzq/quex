@@ -1,0 +1,18 @@
+class QToken;
+inline void  QUEX_NAME_TOKEN(copy)(QToken* me, const QToken* That);
+inline bool  QUEX_NAME_TOKEN(take_text)(QToken*            __this, 
+class QToken {
+    QToken();
+    QToken(const QToken& That);
+    QToken& operator=(const QToken& That) 
+    ~QToken();
+        friend void QUEX_NAME_TOKEN(copy)(QToken* me, const QToken* That);
+        friend bool QUEX_NAME_TOKEN(take_text)(QToken*            __this, 
+ *       file does not declare QUEX_TYPE0_TOKEN as QToken. 
+QToken::QUEX_TYPE0_TOKEN()
+QToken::QToken(const QToken& Other)
+QToken::~QToken()
+QUEX_NAME_TOKEN(construct)(QToken* __this)
+QUEX_NAME_TOKEN(destruct)(QToken* __this)
+QUEX_NAME_TOKEN(copy)(QToken* __this, const QToken* __That)
+QUEX_NAME_TOKEN(take_text)(QToken*           __this, 

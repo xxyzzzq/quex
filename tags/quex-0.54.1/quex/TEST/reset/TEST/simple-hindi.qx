@@ -1,0 +1,20 @@
+token {
+    IDENTIFIER;
+    MARK;
+    ERROR;
+}
+
+define {
+    ID_START    [: intersection([\X900-\X970], \P{ID_Start}) :]
+    ID_CONTINUE [: intersection([\X900-\X970], \P{ID_Continue}) :]
+    ID          {ID_START}{ID_CONTINUE}*
+}
+
+mode SIMPLE : 
+<skip: [ \t\n]> 
+{
+    on_failure        => QUEX_TKN_ERROR(Lexeme);
+    on_end_of_stream  => QUEX_TKN_TERMINATION(LexemeNull);
+    {ID}              => QUEX_TKN_IDENTIFIER(Lexeme);
+    [,.:]             => QUEX_TKN_MARK(Lexeme);
+}

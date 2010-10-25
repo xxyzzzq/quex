@@ -1,0 +1,16 @@
+  Frank    -->  None
+  0x       -->  None
+0x         -->  command line:1:error: Missing digits after '0x' base 16, found ''.
+0b         -->  command line:1:error: Missing digits after '0b' base 2, found ''.
+0o         -->  command line:1:error: Missing digits after '0o' base 8, found ''.
+0r         -->  command line:1:error: Missing digits after '0r' base 'roman', found ''.
+0x.        -->  command line:1:error: Missing digits after '0x' base 16, found ''.
+0b.        -->  command line:1:error: Missing digits after '0b' base 2, found ''.
+0o.        -->  command line:1:error: Missing digits after '0o' base 8, found ''.
+0r.        -->  command line:1:error: Missing digits after '0r' base 'roman', found '.'.
+0.1        -->  command line:1:error: Decimal integer number cannot contain '.'.
+0x4.       -->  4
+0b10.      -->  2
+0o77.      -->  63
+0rXII      -->  12
+0          -->  0

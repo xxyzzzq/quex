@@ -1,0 +1,24 @@
+** Please note, that '.' in an RE stands for 'anything but newline'   **
+** Thus, it does not match newline, and the lexer triggers on newline **
+** to the default terminal.                                           **
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+## An Assert-Abortion might be an intended element of the experiment.
+URL 'http://www.dog.com/get?q=food' 
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  
+    Match failure in mode 'ONE_AND_ONLY'.
+    No 'on_failure' section provided for this mode.
+    Proposal: Define 'on_failure' and analyze 'Lexeme'.
+
