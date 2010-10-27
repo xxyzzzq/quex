@@ -1,0 +1,159 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * 
+ * ACKNOWLEDGEMENT: Parts of the following utf8 conversion have been derived from 
+ *                  segments of the utf8 conversion library of Alexey Vatchenko 
+ *                  <av@bsdua.org>.    
+ *
+ * (C) 2005-2009 Frank-Rene Schaefer                                                */
+
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/asserts>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+QUEX_INLINE void
+QUEX_NAME($$CODEC$$_to_utf8)(QUEX_TYPE_CHARACTER  input, 
+                             uint8_t**            output_pp)
+{
+$$PROLOG_UTF8$$
+    uint32_t   unicode  = 0xFFFF;
+    uint8_t*   output   = *output_pp;
+    uint8_t*   p        = output;
+
+
+    /* The unicode range simply does not go beyond 0x10FFFF */
+    __quex_assert(input < 0x110000);
+    /* If the following assert fails, then QUEX_TYPE_CHARACTER needs to be chosen
+     * of 'unsigned' type, e.g. 'unsigned char' instead of 'char'.                */
+    __quex_assert(input >= 0);
+
+#if 0
+#   if defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#   define QUEX_BYTE_0  (*( ((uint8_t*)&unicode) + 3 ))
+#   define QUEX_BYTE_1  (*( ((uint8_t*)&unicode) + 2 ))
+#   define QUEX_BYTE_2  (*( ((uint8_t*)&unicode) + 1 ))
+#   define QUEX_BYTE_3  (*( ((uint8_t*)&unicode) + 0 ))
+#   else                             
+#   define QUEX_BYTE_0  (*( ((uint8_t*)&unicode) + 0 ))
+#   define QUEX_BYTE_1  (*( ((uint8_t*)&unicode) + 1 ))
+#   define QUEX_BYTE_2  (*( ((uint8_t*)&unicode) + 2 ))
+#   define QUEX_BYTE_3  (*( ((uint8_t*)&unicode) + 3 ))
+#   endif
+#else
+#   define QUEX_BYTE_0  ((uint8_t)((unicode & 0xFF)))
+#   define QUEX_BYTE_1  ((uint8_t)((unicode & 0xFF00) >> 8))
+#   define QUEX_BYTE_2  ((uint8_t)((unicode & 0xFF0000) >> 16))
+#   define QUEX_BYTE_3  ((uint8_t)((unicode & 0xFF000000) >> 24))
+#endif
+
+$$BODY_UTF8$$
+    __quex_assert(p - output < (ptrdiff_t)7);
+    __quex_assert(p > output);
+    *output_pp = p;
+
+#   undef QUEX_BYTE_0 
+#   undef QUEX_BYTE_1 
+#   undef QUEX_BYTE_2 
+#   undef QUEX_BYTE_3 
+}
+
+QUEX_INLINE void
+QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, 
+                                    uint8_t**                  Drain,  size_t DrainSize)
+{
+    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
+    uint8_t*                    drain_iterator, *drain_end;
+
+    __quex_assert(Source != 0x0);
+    __quex_assert(Drain != 0x0);
+
+    drain_iterator = Drain;
+    drain_end      = Drain  + DrainSize;
+    source_end     = Source + SourceSize;
+
+    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
+        QUEX_NAME($$CODEC$$_to_utf8)(*source_iterator, &drain_iterator);
+    }
+
+    Drain = drain_iterator;
+}
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::string
+QUEX_NAME($$CODEC$$_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+{
+    const QUEX_TYPE_CHARACTER*  source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    const QUEX_TYPE_CHARACTER*  source_end      = source_iterator + Source.length();
+    uint8_t                     drain[8];
+    uint8_t*                    drain_iterator = 0;
+    std::string                 result;
+
+    for(; source_iterator != source_end; ++source_iterator) {
+        drain = drain_iterator;
+        QUEX_NAME($$CODEC$$_to_utf8)(*source_iterator, &drain_iterator);
+        result.append(drain, (drain_iterator - drain));
+    }
+    return result;
+}
+
+#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+
+QUEX_INLINE __QUEX_STD_wchar_t
+/* DrainEnd pointer is not returned, since the increment is always '1' */
+QUEX_NAME($$CODEC$$_to_wchar)(QUEX_TYPE_CHARACTER input)
+{
+    uint32_t  unicode = 0L;
+$$BODY_UCS4$$
+}
+
+QUEX_INLINE __QUEX_STD_wchar_t*
+QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER*  Source, size_t SourceSize, 
+                                __QUEX_STD_wchar_t*         Drain, size_t  DrainSize)
+{
+    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
+    __QUEX_STD_wchar_t*         drain_iterator, *drain_end;
+
+    __quex_assert(Source != 0x0);
+    __quex_assert(Drain != 0x0);
+
+    drain_iterator = Drain;
+    drain_end      = Drain  + DrainSize;
+    source_end     = Source + SourceSize;
+
+    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        if( drain_end == drain_iterator ) break;
+        *drain_iterator++ = QUEX_NAME($$CODEC$$_to_wchar)(*source_iterator);
+    }
+
+    return drain_iterator;
+}
+
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::wstring
+QUEX_NAME($$CODEC$$_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+{
+    const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
+    std::wstring                 result;
+
+    for(; source_iterator != source_end; ++source_iterator) {
+        result.push_back(QUEX_NAME($$CODEC$$_to_wchar)(*source_iterator));
+    }
+    return result;
+}
+#endif
+
+#endif
+
+#endif /* __QUEX_OPTION_PLAIN_C */
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$ */
+

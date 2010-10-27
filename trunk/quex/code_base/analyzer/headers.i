@@ -9,7 +9,7 @@
 #endif
 
 #include    <quex/code_base/aux-string.i>
-#include    <quex/code_base/unicode.i>
+#include    <quex/code_base/converter_helper/unicode.i>
 
 /* Token sending happens only via macros, for flexibility. */
 #include    <quex/code_base/analyzer/member/token-receiving.i>
