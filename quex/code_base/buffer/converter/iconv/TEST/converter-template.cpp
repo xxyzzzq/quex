@@ -1,8 +1,8 @@
 #include <cstring>
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include ___HEADER___
-#include <quex/code_base/unicode>
-#include <quex/code_base/unicode.i>
+#include <quex/code_base/converter_helper/unicode>
+#include <quex/code_base/converter_helper/unicode.i>
 using namespace std;
 using namespace quex;
 
