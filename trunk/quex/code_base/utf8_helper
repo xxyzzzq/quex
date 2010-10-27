@@ -6,28 +6,24 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-QUEX_INLINE wchar_t
+#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-QUEX_NAME(utf8_to_wchar_t)(QUEX_TYPE_CHARACTER input);
+QUEX_NAME(utf8_to_wchar)(const QUEX_TYPE_CHARACTER** input,
+                         __QUEX_STD_wchar_t**        output);
 
-QUEX_INLINE uint16_t*
-QUEX_NAME(utf8_to_utf16)(QUEX_TYPE_CHARACTER input, uint16_t* p);
-
-QUEX_INLINE uint16_t*
-QUEX_NAME(utf8_to_utf16_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
-                                uint16_t* Drain, size_t DrainSize);
-
-QUEX_INLINE wchar_t*
-QUEX_NAME(utf8_to_wchar_t_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
-                                  wchar_t* Drain, size_t DrainSize);
+QUEX_INLINE void
+QUEX_NAME(utf8_to_wchar_string)(const QUEX_TYPE_CHARACTER** Source, 
+                                const QUEX_TYPE_CHARACTER*  SourceEnd, 
+                                __QUEX_STD_wchar_t**        Drain,
+                                __QUEX_STD_wchar_t*         DrainEnd);
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::basic_string<uint16_t>
-QUEX_NAME(utf8_to_utf16_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+QUEX_INLINE std::wstring
+QUEX_NAME(utf8_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#endif 
 
-QUEX_INLINE std::basic_string<wchar_t>
-QUEX_NAME(utf8_to_wchar_t_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif /* __QUEX_OPTION_PLAIN_C */
+#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

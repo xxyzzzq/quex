@@ -6,20 +6,31 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
+/* Big Endian UTF16 ________________________________________________________________*/
 QUEX_INLINE uint8_t*
-QUEX_NAME(utf16_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
-                                uint8_t* Drain, size_t DrainSize);
+QUEX_NAME(utf16_be_to_utf8)(const QUEX_TYPE_CHARACTER* input, uint8_t* output);
 
-QUEX_INLINE uint32_t*
-QUEX_NAME(utf16_to_ucs4_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
-                                uint32_t* Drain, size_t DrainSize);
+QUEX_INLINE uint8_t*
+QUEX_NAME(utf16_be_to_utf8_string)(const QUEX_TYPE_CHARACTER*  Source, size_t SourceSize,
+                                   uint8_t*                    Drain,  size_t DrainSize);
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::string
-QUEX_NAME(utf16_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+QUEX_NAME(utf16_be_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#endif
 
-QUEX_INLINE std::basic_string<uint32_t>
-QUEX_NAME(utf16_to_ucs4_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+
+#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+
+QUEX_INLINE uint8_t*
+QUEX_NAME(utf16_be_to_wchar)(const QUEX_TYPE_CHARACTER* input, uint8_t* output);
+
+QUEX_INLINE uint8_t*
+QUEX_NAME(utf16_be_to_wchar_string)(const QUEX_TYPE_CHARACTER*  Source, size_t SourceSize,
+                                    uint8_t*                    Drain,  size_t DrainSize);
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::wstring
+QUEX_NAME(utf16_be_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
 #endif /* __QUEX_OPTION_PLAIN_C */
 
 QUEX_NAMESPACE_MAIN_CLOSE
