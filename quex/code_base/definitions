@@ -37,6 +37,7 @@
 #   define __QUEX_STD_strncat  std::strncat
 #   define __QUEX_STD_malloc   std::malloc
 #   define __QUEX_STD_free     std::free  
+#   define __QUEX_STD_wchar_t  std::wchar_t  
 
 #   define QUEX_INLINE     inline
     /* Input handle type is determined automagically via templates */
@@ -61,6 +62,7 @@
 #   define __QUEX_STD_strncat  strncat
 #   define __QUEX_STD_malloc   malloc
 #   define __QUEX_STD_free     free  
+#   define __QUEX_STD_wchar_t  wchar_t  
 
 #   define QUEX_INLINE             /*static*/
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
