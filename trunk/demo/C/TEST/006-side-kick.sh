@@ -1,1 +1,1 @@
-awk "! (/:warning: Post context requires philo/)" $1
+awk "! (/:warning: Post context requires philo/ || /Proposal/)" $1

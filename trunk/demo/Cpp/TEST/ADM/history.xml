@@ -1,4 +1,4 @@
-<history date="Sat Oct 30 09:03:12 2010" element-n="758">
+<history date="Sun Oct 31 00:34:12 2010" element-n="763">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -1500,5 +1500,10 @@
         <crc-error time="06:44:47" application="009.sh" choice="lexer" database-crc="13704092" real-crc="-1369462576"/>
         <crc-error time="06:44:49" application="009.sh" choice="wlexer" database-crc="13704092" real-crc="-1369462576"/>
         <crc-error time="07:03:12" application="006.sh" choice="DEBUG" database-crc="991715077" real-crc="67355700"/>
+        <crc-error time="21:50:23" application="006.sh" choice="NDEBUG" database-crc="991715077" real-crc="67355700"/>
+        <crc-error time="22:33:19" application="other-compilers-intel.sh" choice="006" database-crc="672021507" real-crc="-1959846815"/>
+        <crc-error time="22:33:22" application="other-compilers-sun.sh" choice="006" database-crc="293623846" real-crc="1768577285"/>
+        <crc-error time="22:34:09" application="other-compilers-intel.sh" choice="006" database-crc="-1959846815" real-crc="-1363480285"/>
+        <crc-error time="22:34:12" application="other-compilers-sun.sh" choice="006" database-crc="1768577285" real-crc="-592177934"/>
     </day>
 </history>

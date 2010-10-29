@@ -185,6 +185,40 @@ class StateMachineCoreInfo:
         assert Value.__class__.__name__ == "StateMachine" or Value == None
         self.__post_context_backward_input_position_detector_sm = Value
 
+
+class SideInfo:
+    def __init__(self, NewlineN=-1, CharacterN=-1, OnlyWhiteSpaceF=False):
+        assert type(OnlyWhiteSpaceF) == bool
+
+        self.__newline_n         = NewlineN
+        self.__character_n       = CharacterN
+        self.__only_whitespace_f = OnlyWhiteSpaceF
+
+    def get_newline_n(self):
+        """  -1    => number of newlines in matching lexemes is not deterministic
+             N > 0 => number of newlines in matching lexemes is always 'N'.
+        """
+        # Value is to be computed by 'character_counter.get_newline_n()'
+        # for the core pattern, not for pre-conditions and not for post-conditions.
+        assert self.__newline_n != None, \
+               "Pattern state machine not constructed by regular_expresion.__construct(...)"
+        return self.__newline_n
+
+    def get_character_n(self):
+        """  -1    => length of lexemes that match pattern is not deterministic
+             N > 0 => length of lexemes that match is always 'N'.
+        """
+        # Value is to be computed by 'character_counter.get_newline_n()'
+        # for the core pattern, not for pre-conditions and not for post-conditions.
+        assert self.__character_n != None, \
+               "Pattern state machine not constructed by regular_expresion.__construct(...)"
+        return self.__character_n
+
+    def get_only_whitespace_f(self):
+        assert self.__only_whitespace_f != None, \
+               "Pattern state machine not constructed by regular_expresion.__construct(...)"
+        return self.__only_whitespace_f
+
 class StateMachine:
 
     def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None):
@@ -206,11 +240,7 @@ class StateMachine:
         else:            
             self.__core = StateMachineCoreInfo(id)
 
-        # By default the number of newlines / characters of 
-        # of matching lexemes is not deterministic.
-        self.__newline_n   = -1
-        self.__character_n = -1
-        self.__only_whitespace_f = False
+        self.side_info = None
 
     def core(self):
         return self.__core
@@ -543,34 +573,6 @@ class StateMachine:
         # -- for uniqueness of state ids, clone the result
         return result.clone()    
         
-    def set_newline_n(self, Value):
-        """This function is only to be called for core patterns before the
-           post condition is mounted.
-        """
-        self.__newline_n = Value
-
-    def get_newline_n(self):
-        """  -1    => number of newlines in matching lexemes is not deterministic
-             N > 0 => number of newlines in matching lexemes is always 'N'.
-        """
-        # Value is to be computed by 'character_counter.get_newline_n()'
-        # for the core pattern, not for pre-conditions and not for post-conditions.
-        return self.__newline_n
-
-    def set_character_n(self, Value):
-        """This function is only to be called for core patterns before the
-           post condition is mounted.
-        """
-        self.__character_n = Value
-
-    def get_character_n(self):
-        """  -1    => length of lexemes that match pattern is not deterministic
-             N > 0 => length of lexemes that match is always 'N'.
-        """
-        # Value is to be computed by 'character_counter.get_newline_n()'
-        # for the core pattern, not for pre-conditions and not for post-conditions.
-        return self.__character_n
-
     def does_sequence_match(self, UserSequence):
         """Returns: True, if the sequences ends in an acceptance state.
                     False, if not.
@@ -615,13 +617,6 @@ class StateMachine:
                 if result == None: result = state_index
                 else:              return None           # More than one state trigger to target
         return result
-
-    def set_only_whitespace_f(self, Value):
-        assert type(Value) == bool
-        self.__only_whitespace_f = Value
-
-    def get_only_whitespace_f(self):
-        return self.__only_whitespace_f
 
     def is_empty(self):
         """If state machine only contains the initial state that points nowhere,

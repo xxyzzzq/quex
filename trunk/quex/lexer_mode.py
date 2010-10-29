@@ -96,6 +96,8 @@ class ModeDescription:
 
     def add_match(self, Pattern, Action, PatternStateMachine, Comment=""):
         assert PatternStateMachine.is_DFA_compliant()
+        assert PatternStateMachine.side_info != None, \
+               "No side info for '%s'" % Pattern
 
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \

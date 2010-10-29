@@ -34,7 +34,7 @@ from quex.frs_py.file_in  import *
 
 from quex.exception                      import RegularExpressionException
 from quex.core_engine.interval_handling  import *
-from quex.core_engine.state_machine.core import StateMachine
+from quex.core_engine.state_machine.core import StateMachine, SideInfo
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
@@ -70,6 +70,10 @@ def __clean_and_validate(sm, AllowNothingIsFineF, fh):
 
        NOTE: The sequence of actions is important!
     """
+    # Anything produced by the parser must contain side information about
+    assert sm == None or sm.side_info != None, \
+           "Missing side info in " + repr(sm)
+
     # (*) double check for orphan states
     #
     #     THIS TEST HAS TO COME FIRST!
@@ -225,9 +229,11 @@ def do(UTF8_String_or_Stream, PatternDict,
 
     # -- set begin of line/end of line conditions
     if begin_of_line_f or end_of_line_f: 
+        side_info = sm.side_info
         sm = setup_border_conditions.do(sm, begin_of_line_f, end_of_line_f,
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
+        sm.side_info = side_info
 
     return __clean_and_validate(sm, AllowNothingIsFineF, stream)
 
@@ -256,7 +262,9 @@ def snap_conditional_expression(stream, PatternDict):
         
     # -- expression
     pattern_1 = snap_expression(stream, PatternDict) 
-    if pattern_1 == None: return __debug_exit(pattern_0, stream)
+    if pattern_1 == None: 
+        result = __construct(pattern_0, fh=stream)
+        return __debug_exit(result, stream)
     
     # -- '/'
     if not check(stream, '/'): 
@@ -504,9 +512,7 @@ def __construct(core_sm, pre_context=None, post_context=None, fh=-1):
     character_n  = character_counter.get_character_n(core_sm)
     only_space_f = character_counter.contains_only_spaces(core_sm)
 
-    core_sm.set_newline_n(newline_n)
-    core_sm.set_character_n(character_n)
-    core_sm.set_only_whitespace_f(only_space_f)
+    side_info    = SideInfo(newline_n, character_n, only_space_f)
 
     if   pre_context == None and post_context == None:
         result = core_sm
@@ -527,6 +533,8 @@ def __construct(core_sm, pre_context=None, post_context=None, fh=-1):
         result = setup_post_context.do(core_sm, post_context, fh=fh)
         result = setup_pre_context.do(result, pre_context)
         result = __beautify(result)
+
+    result.side_info = SideInfo(newline_n, character_n, only_space_f)
 
     return result
   
