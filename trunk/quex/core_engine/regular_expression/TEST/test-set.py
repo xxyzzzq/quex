@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from StringIO import StringIO
+from quex.exception import RegularExpressionException
 
 import quex.core_engine.regular_expression.traditional_character_set as character_set
 from   quex.core_engine.state_machine.core import StateMachine
@@ -14,9 +15,12 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "expression    = \"" + TestString + "\""
     sm = StateMachine()
-    trigger_set = character_set.do(StringIO(TestString + "]"))
-    sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
-    print "state machine\n", sm 
+    try:
+        trigger_set = character_set.do(StringIO(TestString + "]"))
+        sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
+        print "state machine\n", sm 
+    except RegularExpressionException, x:
+        print repr(x)
 
 test("a-z")
 test("ABCDE0-9")
@@ -25,3 +29,5 @@ test("A-Z\\n\\\"^CD")
 test("^a-z")
 test("^a")
 test("^ \\n")
+test("\"-\"")
+test("\\xA9-\\xA9")

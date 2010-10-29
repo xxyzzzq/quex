@@ -33,6 +33,7 @@ def test(CodecName):
     os.remove("./converter-tester")
 
 quex.input.setup.setup.language_db = languages.db["C"]
+quex.input.setup.setup.QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
 
 test(sys.argv[1])
 

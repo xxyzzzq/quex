@@ -13,23 +13,35 @@
 #include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/asserts>
 
+/* Converter Functions: ____________________________________________________________________
+ *
+ *   $$CODEC$$_to_utf8(...)         -- character to utf8
+ *   $$CODEC$$_to_utf8_string(...)  -- string to utf8
+ *   $$CODEC$$_to_utf8_string(C++)  -- C++ string to utf8 (std::string)
+ *
+ *   $$CODEC$$_to_wchar(...)        -- character to utf8
+ *   $$CODEC$$_to_wstring(...)      -- string to utf8
+ *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
+ *__________________________________________________________________________________________*/
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_utf8)(QUEX_TYPE_CHARACTER  input, 
-                             uint8_t**            output_pp)
+QUEX_NAME($$CODEC$$_to_utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+                             uint8_t**                    output_pp)
 {
 $$PROLOG_UTF8$$
     uint32_t   unicode  = 0xFFFF;
-    uint8_t*   output   = *output_pp;
-    uint8_t*   p        = output;
+    uint8_t*   output_p = *output_pp;
+    uint8_t*   p        = output_p;
 
-
+    QUEX_TYPE_CHARACTER input = **input_pp;
+    
     /* The unicode range simply does not go beyond 0x10FFFF */
     __quex_assert(input < 0x110000);
     /* If the following assert fails, then QUEX_TYPE_CHARACTER needs to be chosen
      * of 'unsigned' type, e.g. 'unsigned char' instead of 'char'.                */
-    __quex_assert(input >= 0);
+    /* __quex_assert(input >= 0); */
 
 #if 0
 #   if defined(__QUEX_OPTION_LITTLE_ENDIAN)
@@ -51,9 +63,10 @@ $$PROLOG_UTF8$$
 #endif
 
 $$BODY_UTF8$$
-    __quex_assert(p - output < (ptrdiff_t)7);
-    __quex_assert(p > output);
+    __quex_assert(p - output_p < (ptrdiff_t)7);
+    __quex_assert(p > output_p);
     *output_pp = p;
+    ++(*input_pp);
 
 #   undef QUEX_BYTE_0 
 #   undef QUEX_BYTE_1 
@@ -62,25 +75,30 @@ $$BODY_UTF8$$
 }
 
 QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize, 
-                                    uint8_t**                  Drain,  size_t DrainSize)
+QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER**  source_pp, 
+                                    const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                    uint8_t**                    drain_pp,  
+                                    uint8_t*                     DrainEnd)
 {
-    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
-    uint8_t*                    drain_iterator, *drain_end;
+    const QUEX_TYPE_CHARACTER*  source_iterator; 
+    uint8_t*                    drain_iterator;
 
-    __quex_assert(Source != 0x0);
-    __quex_assert(Drain != 0x0);
+    __quex_assert(source_pp != 0x0);
+    __quex_assert(*source_pp != 0x0);
+    __quex_assert(drain_pp != 0x0);
+    __quex_assert(*drain_pp != 0x0);
 
-    drain_iterator = Drain;
-    drain_end      = Drain  + DrainSize;
-    source_end     = Source + SourceSize;
+    drain_iterator  = *drain_pp;
+    source_iterator = *source_pp;
 
-    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
-        if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
-        QUEX_NAME($$CODEC$$_to_utf8)(*source_iterator, &drain_iterator);
+    while( 1 + 1 == 2 ) { 
+        if( source_iterator == SourceEnd ) break;
+        if( DrainEnd - drain_iterator < (ptrdiff_t)5 ) break;
+        QUEX_NAME($$CODEC$$_to_utf8)(&source_iterator, &drain_iterator);
     }
 
-    Drain = drain_iterator;
+    *drain_pp  = drain_iterator;
+    *source_pp = source_iterator;
 }
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
@@ -94,43 +112,51 @@ QUEX_NAME($$CODEC$$_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>
     std::string                 result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        drain = drain_iterator;
-        QUEX_NAME($$CODEC$$_to_utf8)(*source_iterator, &drain_iterator);
-        result.append(drain, (drain_iterator - drain));
+        drain_iterator = drain;
+        QUEX_NAME($$CODEC$$_to_utf8)(&source_iterator, &drain_iterator);
+        result.append((char*)drain, (drain_iterator - drain));
     }
     return result;
 }
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
 
-QUEX_INLINE __QUEX_STD_wchar_t
-/* DrainEnd pointer is not returned, since the increment is always '1' */
-QUEX_NAME($$CODEC$$_to_wchar)(QUEX_TYPE_CHARACTER input)
+QUEX_INLINE void
+QUEX_NAME($$CODEC$$_to_wchar)(const QUEX_TYPE_CHARACTER** input_pp,
+                              __QUEX_STD_wchar_t**        output_pp)
 {
-    uint32_t  unicode = 0L;
+    uint32_t             unicode = 0L;
+    QUEX_TYPE_CHARACTER  input = **input_pp;
 $$BODY_UCS4$$
+    ++(*input_pp);
+    ++(*output_pp);
 }
 
-QUEX_INLINE __QUEX_STD_wchar_t*
-QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER*  Source, size_t SourceSize, 
-                                __QUEX_STD_wchar_t*         Drain, size_t  DrainSize)
+QUEX_INLINE void
+QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER**  source_pp, 
+                                const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                uint8_t**                    drain_pp,  
+                                uint8_t*                     DrainEnd)
 {
-    const QUEX_TYPE_CHARACTER*  source_iterator, *source_end;
-    __QUEX_STD_wchar_t*         drain_iterator, *drain_end;
+    const QUEX_TYPE_CHARACTER*  source_iterator; 
+    uint8_t*                    drain_iterator;
 
-    __quex_assert(Source != 0x0);
-    __quex_assert(Drain != 0x0);
+    __quex_assert(source_pp != 0x0);
+    __quex_assert(*source_pp != 0x0);
+    __quex_assert(drain_pp != 0x0);
+    __quex_assert(*drain_pp != 0x0);
 
-    drain_iterator = Drain;
-    drain_end      = Drain  + DrainSize;
-    source_end     = Source + SourceSize;
+    drain_iterator  = *drain_pp;
+    source_iterator = *source_pp;
 
-    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
-        if( drain_end == drain_iterator ) break;
-        *drain_iterator++ = QUEX_NAME($$CODEC$$_to_wchar)(*source_iterator);
+    while( 1 + 1 == 2 ) { 
+        if( source_iterator == SourceEnd ) break;
+        if( drain_iterator == DrainEnd ) break;
+        QUEX_NAME($$CODEC$$_to_utf8)(&source_iterator, &drain_iterator);
     }
 
-    return drain_iterator;
+    *drain_pp  = drain_iterator;
+    *source_pp = source_iterator;
 }
 
 
@@ -140,10 +166,14 @@ QUEX_NAME($$CODEC$$_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& So
 {
     const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
     const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
+    __QUEX_STD_wchar_t           drain[1];
+    __QUEX_STD_wchar_t*          drain_iterator = 0x0;
     std::wstring                 result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        result.push_back(QUEX_NAME($$CODEC$$_to_wchar)(*source_iterator));
+        drain_iterator = (__QUEX_STD_wchar_t*)drain;
+        QUEX_NAME($$CODEC$$_to_wchar)(&source_iterator, &drain_iterator);
+        result.push_back(drain[0]);
     }
     return result;
 }
