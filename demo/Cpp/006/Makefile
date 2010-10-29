@@ -31,7 +31,8 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
-	 -DPRINT_TOKEN
+	 -DPRINT_TOKEN                                   \
+	 -DPRINT_LINE_COLUMN_NUMBER
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS

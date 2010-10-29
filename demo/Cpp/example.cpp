@@ -30,6 +30,9 @@ main(int argc, char** argv)
         qlex.receive(&token_p);
 
         // (*) print out token information
+#       ifdef PRINT_LINE_COLUMN_NUMBER
+        cout << "(" << token_p->line_number() << ", " << token_p->column_number() << ")  \t";
+#       endif
 #       ifdef PRINT_TOKEN
         cout << string(*token_p) << endl;
 #       else

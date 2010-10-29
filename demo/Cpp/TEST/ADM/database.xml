@@ -1,4 +1,4 @@
-<test-database execution-time-sec="300.20" date="Thu Oct 28 09:22:22 2010">
+<test-database execution-time-sec="300.22" date="Sat Oct 30 09:03:12 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -7,7 +7,7 @@
         </choice-list>
     </test>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" time-sum-sec="18.48"> 
+        <test title="Sun Microsystem's sunCC" time-sum-sec="18.49"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="2.96" crc="-240093176"/>
@@ -104,7 +104,7 @@
             <application file-name="006.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.65" crc="991715077"/>
-               <choice name="DEBUG" result="OK" time_sec="2.19" crc="991715077"/>
+               <choice name="DEBUG" result="OK" time_sec="2.19" crc="67355700"/>
             </choice-list>
         </test>
     </group>
@@ -130,8 +130,8 @@
         <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="4.02"> 
             <application file-name="009.sh" info-request-time="1278568205L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="lexer" result="OK" time_sec="2.08" crc="13704092"/>
-               <choice name="wlexer" result="OK" time_sec="1.94" crc="13704092"/>
+               <choice name="lexer" result="OK" time_sec="2.08" crc="-1369462576"/>
+               <choice name="wlexer" result="OK" time_sec="1.94" crc="-1369462576"/>
             </choice-list>
         </test>
     </group>
