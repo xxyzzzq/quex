@@ -71,7 +71,8 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
             if apc.detect_backward(the_state_machine, post_context_sm):
                 # -- for post contexts that are forward and backward ambiguous
                 #    a philosophical cut is necessary.
-                error_msg("Post context requires philosophical cut (handle with care).", fh, 
+                error_msg("Post context requires philosophical cut--handle with care!\n"
+                          "Proposal: Isolate pattern and ensure results are as expected!", fh, 
                           DontExitF=True)
                 post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
 

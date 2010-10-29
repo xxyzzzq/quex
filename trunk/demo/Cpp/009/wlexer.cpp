@@ -56,7 +56,7 @@ quex::tiny_wlexer*
 get_wfile_input()
 {
     /* We write the file ourselves so that there is never an issue about alignment */
-    wchar_t   original[] = L"bonjour le monde hello world hallo welt";
+    wchar_t   original[] = L"bonjour le monde\nhello world\nhallo welt\n";
     uint8_t*  End        = (uint8_t*)(original + wcslen(original));
     ofstream   ofile("wchar_t-example.txt");
 
