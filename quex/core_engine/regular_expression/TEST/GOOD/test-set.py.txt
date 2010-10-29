@@ -61,3 +61,12 @@ init-state = 0L
 00001(A, S) <~ 
       <no epsilon>
 
+expression    = ""-""
+QuexException:
+Character '"' appears twice in character range [ ... ] expression.
+You cannot exempt characters this way. Please, use backslash or
+split the character range expression.
+expression    = "\xA9-\xA9"
+QuexException:
+Character range '©-©' has only one element.
+In this case avoid range expression for clarity.

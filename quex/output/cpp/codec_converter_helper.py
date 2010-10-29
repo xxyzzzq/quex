@@ -4,7 +4,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
 from quex.core_engine.interval_handling import Interval
 from quex.frs_py.string_handling        import blue_print
-from quex.frs_py.file_in                import write_safely_and_close, make_safe_identifier
+from quex.frs_py.file_in                import write_safely_and_close, make_safe_identifier, get_file_content_or_die
 from quex.input.setup                   import setup as Setup
 from quex.input.setup_parser            import __prepare_file_name
 
@@ -55,8 +55,10 @@ def _do(UnicodeTrafoInfo, CodecName):
     else:                     implementation_str = ""
 
 
-    template_txt = get_file_content_or_die("quex/converter_helper/CodecITemplate.txt")
-    txt = blue_print(template_txt, 
+    FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+                                + Setup.language_db["$code_base"] 
+                                + "/converter_helper/CodecITemplate.txt")
+    txt = blue_print(get_file_content_or_die(FileName), 
                      [["$$CODEC$$",       codec_name],
                       ["$$I$$",           implementation_str],
                       ["$$PROLOG_UTF8$$", utf8_prolog],
@@ -66,7 +68,10 @@ def _do(UnicodeTrafoInfo, CodecName):
 
     if Setup.language == "C":
         # A separate declaration header is required
-        template_h_txt = get_file_content_or_die("quex/converter_helper/CodecTemplate.txt")
+        FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+                                    + Setup.language_db["$code_base"] 
+                                    + "/converter_helper/CodecTemplate.txt")
+        template_h_txt = get_file_content_or_die(FileName)
         txt_h = template_h_txt.replace("$$CODEC$$", codec_name)
         return txt_h, txt
     else:

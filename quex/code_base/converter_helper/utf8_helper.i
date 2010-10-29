@@ -20,15 +20,15 @@ QUEX_NAME(utf8_to_wchar_t)(QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
     else if( *iterator < 0xE0 ) { /* ... max: 1101.1111 --> 0xDF, next: 0xE0 */
         /*    110x.xxxx 10yy.yyyy 
          * => 0000.0xxx:xxyy.yyyy  */
-        **output_pp =    (( ((wchar_t)*(iterator++)) & 0x1F ) << 6) 
+        **output_pp =   (( ((wchar_t)*(iterator++)) & 0x1F ) << 6) 
                       | (( ((wchar_t)*(iterator++)) & 0x3F )     );
     }
     else if( *iterator < 0xF0 ) { /* ... max: 1110.1111 --> 0xEF, next: 0xF0 */
         /*    1110.xxxx 10yy.yyyy 10zz.zzzz
          * => xxxx.yyyy:yyzz.zzzz           */
         **output_pp =   (( ((wchar_t)*(iterator++)) & 0x0F ) << 12) 
-                     | (( ((wchar_t)*(iterator++)) & 0x3F ) << 6 ) 
-                     | (( ((wchar_t)*(iterator++)) & 0x3F )      );
+                      | (( ((wchar_t)*(iterator++)) & 0x3F ) << 6 ) 
+                      | (( ((wchar_t)*(iterator++)) & 0x3F )      );
     }
     else {
         /* Unicode standard defines only chars until 0x10ffff, so max(len(utf8char)) == 4.
@@ -45,7 +45,6 @@ QUEX_NAME(utf8_to_wchar_t)(QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
     ++(*output_pp);
     *input_pp = iterator;
 }
-#endif
 
 QUEX_INLINE void
 QUEX_NAME(utf8_to_wchar_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
