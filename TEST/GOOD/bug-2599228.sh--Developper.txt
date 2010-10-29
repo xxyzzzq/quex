@@ -38,7 +38,8 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain
 /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/asserts
-/home/fschaef/prj/quex/trunk/quex/code_base/./unicode
+/home/fschaef/prj/quex/trunk/quex/code_base/./converter_helper/unicode
+/home/fschaef/prj/quex/trunk/quex/code_base/./converter_helper/unicode.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./asserts
 /home/fschaef/prj/quex/trunk/quex/code_base/./definitions
 /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_on

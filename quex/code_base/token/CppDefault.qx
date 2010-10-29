@@ -69,6 +69,8 @@ token_type {
                 tmp.replace(pos, 1, std::string("\\n"));
             while( (pos = tmp.find("\t") ) != __string::npos ) 
                 tmp.replace(pos, 1, std::string("\\t"));
+            while( (pos = tmp.find("\r") ) != __string::npos ) 
+                tmp.replace(pos, 1, std::string("\\r"));
 
             return tmp;
         }
@@ -87,6 +89,8 @@ token_type {
                 tmp.replace(pos, 1, std::string("\\n"));
             while( (pos = tmp.find("\t") ) != __string::npos ) 
                 tmp.replace(pos, 1, std::string("\\t"));
+            while( (pos = tmp.find("\r") ) != __string::npos ) 
+                tmp.replace(pos, 1, std::string("\\r"));
 
             return tmp;
         }

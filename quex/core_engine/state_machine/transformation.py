@@ -13,6 +13,23 @@ from   quex.input.setup                                 import setup as Setup
 sys.path.append(os.environ["QUEX_PATH"])
 
 def do(X, TrafoInfo=None, FH=-1, LineN=None):
+    """The side info contains information about line number and
+       character number which has to be determined before the 
+       pre- and post- contexts are stuck to the state machine.
+
+       When we do a transformation the side information may get
+       lost, since we create a new state machine. Since we cannot
+       dissolve easily post contexts, we preserve the side info
+       and stick it to the result after the operation.
+    """
+             
+    side_info        = X.side_info
+    result           = _do(X, TrafoInfo, FH, LineN)
+    result.side_info = side_info
+
+    return result
+
+def _do(X, TrafoInfo, FH, LineN):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
     

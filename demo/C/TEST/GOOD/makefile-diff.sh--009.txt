@@ -12,12 +12,12 @@
 < COMPILER = g++ -ggdb -Wall -pedantic 
 ---
 > COMPILER = gcc -ggdb -Wall -pedantic 
-< 	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "--bet wchar_t" 
+< 	quex -i simple.qx --engine tiny_lexer --token-policy single
 ---
 > 	quex -i simple.qx --engine tiny_lexer \
 > 		 --language C                     \
 > 		 # CERTAINLY NOT: "--bet wchar_t" 
-< 	quex -i simple.qx --engine tiny_wlexer --bet wchar_t 
+< 	quex -i simple.qx --engine tiny_wlexer --bet wchar_t --token-policy single
 ---
 > 	quex -i simple.qx --engine tiny_wlexer \
 > 		 --language C                      \
