@@ -1,44 +1,9 @@
 #ifndef __QUEX_INCLUDE_GUARD__UTF16_HELPER
 #define __QUEX_INCLUDE_GUARD__UTF16_HELPER
-/* -*- C++ -*- vim: set syntax=cpp:
- *
- * (C) 2005-2010 Frank-Rene Schaefer                                                */
+/* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
-QUEX_NAMESPACE_MAIN_OPEN
-
-QUEX_INLINE void
-QUEX_NAME(utf16be_to_utf8)(const QUEX_TYPE_CHARACTER**  input, 
-                           uint8_t**                    output_pp);
-
-QUEX_INLINE void
-QUEX_NAME(utf16be_to_utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
-                                  const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                  uint8_t**                    drain,  
-                                  const uint8_t*               DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::string
-QUEX_NAME(utf16be_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-
-QUEX_INLINE void
-QUEX_NAME(utf16be_to_wchar)(QUEX_TYPE_CHARACTER** input_pp, 
-                            wchar_t**             output_pp);
-
-QUEX_INLINE void
-QUEX_NAME(utf16be_to_wstring)(const QUEX_TYPE_CHARACTER** Source, 
-                              const QUEX_TYPE_CHARACTER*  SourceEnd,
-                              wchar_t**                   drain,  
-                              const wchar_t*              DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::wstring
-QUEX_NAME(utf16be_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-QUEX_NAMESPACE_MAIN_CLOSE
+#define  __QUEX_CONVERTER_FROM         utf16be
+#include <quex/code_base/converter_helper/base.g>
 
 #endif /* __QUEX_INCLUDE_GUARD__UTF16_HELPER */
 

@@ -1,13 +1,7 @@
-/* -*- C++ -*- vim: set syntax=cpp:
- *
- * (C) 2005-2010 Frank-Rene Schaefer                                                         */
-
 #ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
 #define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
 
-#include <quex/code_base/definitions>
-
-QUEX_NAMESPACE_MAIN_OPEN
+/* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
 /* Converter Functions: ____________________________________________________________________
  *
@@ -20,41 +14,7 @@ QUEX_NAMESPACE_MAIN_OPEN
  *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
  *__________________________________________________________________________________________*/
 
-QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_utf8)(const QUEX_TYPE_CHARACTER**  input, 
-                             uint8_t**                    output_pp);
-
-QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
-                                    const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                    uint8_t**                    drain,  
-                                    const uint8_t*               DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::string
-QUEX_NAME($$CODEC$$_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-
-QUEX_INLINE void
-/* DrainEnd pointer is not returned, since the increment is always '1' */
-QUEX_NAME($$CODEC$$_to_wchar)(QUEX_TYPE_CHARACTER** input_pp, 
-                              wchar_t**             output_pp);
-
-QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER** Source, 
-                                const QUEX_TYPE_CHARACTER*  SourceEnd,
-                                wchar_t**                   drain,  
-                                const wchar_t*              DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::wstring
-QUEX_NAME($$CODEC$$_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-#endif
-
-QUEX_NAMESPACE_MAIN_CLOSE
+#define  __QUEX_CONVERTER_FROM         $$CODEC$$
+#include <quex/code_base/converter_helper/base.g>
 
 #endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__ */

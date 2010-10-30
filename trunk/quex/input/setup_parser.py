@@ -208,10 +208,8 @@ def do(argv):
                       % setup.buffer_element_size + 
                       "has been specified by '-b' or '--bytes-per-ucs-code-point'.")
 
-    # The header
     if setup.buffer_codec in ["utf8", "utf16"]:
         setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"
-        setup.output_buffer_codec_header       = None
     elif setup.buffer_codec != "":
         setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
 
@@ -468,7 +466,15 @@ def prepare_file_names(setup):
     setup.output_token_class_file                = __prepare_file_name("-token", HEADER)
     setup.output_token_class_file_implementation = __prepare_file_name("-token", HEADER_IMPLEMTATION)
 
-    if setup.buffer_codec != "":
+    if setup.buffer_codec == "utf8":
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/utf8"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/utf8.i"
+
+    elif setup.buffer_codec == "utf16":
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/utf16"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/utf16.i"
+
+    elif setup.buffer_codec != "":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
         # See Internal engine character encoding'
         setup.output_buffer_codec_header = \

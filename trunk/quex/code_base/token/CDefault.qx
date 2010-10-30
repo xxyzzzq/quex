@@ -5,7 +5,6 @@ token_type {
 
        #include <quex/code_base/definitions>
        #include <quex/code_base/asserts>
-       #include <quex/code_base/converter_helper/unicode>
        #include <quex/code_base/compatibility/inttypes.h>
 
        extern QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject);
@@ -25,14 +24,21 @@ token_type {
                                           char*                   buffer, 
                                           size_t                  BufferSize);
 
-       /* Different codecs may have different converters, the name of the converter
-        * is to be defined in the configuration file using the. All converters 
-        * follow the function signature below.                                       */
-       QUEX_INLINE uint8_t*
-       QUEX_CONVERTER_OF_TEXT_TO_UTF8(const QUEX_TYPE_CHARACTER*  Source, 
-                                      size_t                      SourceSize, 
-                                      uint8_t*                    Drain, 
-                                      size_t                      DrainSize);
+       /* The following function converts the engine's codec to utf8. */
+       QUEX_NAMESPACE_MAIN_OPEN
+       QUEX_INLINE void
+       __QUEX_CONVERTER_NAME_GENERATOR(QUEX_SETTING_CODEC, utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
+                                                                        const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                                                        uint8_t**                    Drain, 
+                                                                        const uint8_t*               DrainEnd);
+#      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+       QUEX_INLINE void
+       __QUEX_CONVERTER_NAME_GENERATOR(QUEX_SETTING_CODEC, wstring)(const QUEX_TYPE_CHARACTER**  Source, 
+                                                                    const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                                                    wchar_t**                    Drain, 
+                                                                    const wchar_t*               DrainEnd);
+#      endif
+       QUEX_NAMESPACE_MAIN_CLOSE
    }
    standard {
         id            : uint32_t;
@@ -166,21 +172,27 @@ token_type {
                                          char*                   buffer, 
                                          size_t                  BufferSize) 
         {
-            char*    iterator     = 0;
-            size_t   current_size = (size_t)-1;
+            const QUEX_TYPE_CHARACTER*    source       = 0;
+            char*                         drain        = 0;
+            const char*                   DrainEnd     = buffer + BufferSize;
+            size_t                        current_size = (size_t)-1;
 
             QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
 
             /* Get current size of the string. */
-            for(iterator = buffer; *iterator; ++iterator) ;
-            current_size = (size_t)(iterator - buffer);
+            for(drain = buffer; *drain; ++drain) ;
+            current_size = (size_t)(drain - buffer);
 
-            iterator = (char*)QUEX_CONVERTER_OF_TEXT_TO_UTF8(me->text, 
-                                                             QUEX_NAME(strlen)(me->text),
-                                                             (uint8_t*)iterator,
-                                                             BufferSize - current_size);
-            *iterator = '\0';
-            __QUEX_STD_strncat(buffer, "'", BufferSize);
+            source = me->text;
+            __QUEX_CONVERTER_NAME_GENERATOR(QUEX_SETTING_CODEC, utf8_string)(&source,
+                                                                             source + (size_t)(QUEX_NAME(strlen)(me->text)),
+                                                                             (uint8_t**)&drain,
+                                                                             DrainEnd);
+
+            if( drain != 0x0 ) {
+                *drain = '\0';
+                __QUEX_STD_strncat(buffer, "'", BufferSize);
+            }
             return buffer;
         }
 
