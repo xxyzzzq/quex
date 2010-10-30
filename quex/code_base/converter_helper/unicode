@@ -1,48 +1,8 @@
-/* -*- C++ -*- vim: set syntax=cpp:
- * 
- * (C) 2005-2009 Frank-Rene Schaefer                                                */
-
 #ifndef __QUEX_INCLUDE_GUARD__UNICODE
 #define __QUEX_INCLUDE_GUARD__UNICODE
+/* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
-#include <quex/code_base/definitions>
-
-QUEX_NAMESPACE_MAIN_OPEN
-
-QUEX_INLINE void
-QUEX_NAME(unicode_to_utf8)(const QUEX_TYPE_CHARACTER**  input, 
-                           uint8_t**                    output_pp);
-
-QUEX_INLINE void
-QUEX_NAME(unicode_to_utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
-                                  const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                  uint8_t**                    drain,  
-                                  const uint8_t*               DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::string
-QUEX_NAME(unicode_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-
-QUEX_INLINE void
-QUEX_NAME(unicode_to_wchar)(QUEX_TYPE_CHARACTER** input_pp, 
-                            wchar_t**             output_pp);
-
-QUEX_INLINE void
-QUEX_NAME(unicode_to_wstring)(const QUEX_TYPE_CHARACTER** Source, 
-                              const QUEX_TYPE_CHARACTER*  SourceEnd,
-                              wchar_t**                   drain,  
-                              const wchar_t*              DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::wstring
-QUEX_NAME(unicode_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-#endif
-
-QUEX_NAMESPACE_MAIN_CLOSE
+#define __QUEX_CONVERTER_FROM         unicode
+#include <quex/code_base/converter_helper/base.g>
 
 #endif /* __QUEX_INCLUDE_GUARD__UNICODE */

@@ -312,7 +312,7 @@ class ConverterWriterUCS4(ConverterWriter):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
-        return "return unicode;\n"
+        return "**output_pp = unicode;\n"
 
     def get_byte_format_range_border_list(self):
         """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""

@@ -74,6 +74,7 @@ utf16-lexer: utf16-lexer.cpp
 	
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+#
 
 clean:
 	rm -f ISO8859_7_Lex*
@@ -85,3 +86,10 @@ clean:
 	rm -f utf16-lexer
 	rm -f *.E
 	rm -f *.svg
+
+test-utf8: test-utf8.cpp
+		g++ -I$(QUEX_PATH) -I.  \
+		$<                      \
+		$(CCFLAG_ASSERTS)       \
+		-o $@ 
+

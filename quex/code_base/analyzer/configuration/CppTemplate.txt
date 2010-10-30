@@ -309,8 +309,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
 /* For the utf8 printing: Name the function that converts the 
  * specific codec to utf8 representation.                       */
-#ifndef    QUEX_CONVERTER_OF_TEXT_TO_UTF8   
-#   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME($$CODEC_NAME$$_to_utf8_string)
+#ifndef    QUEX_SETTING_CODEC   
+#   define QUEX_SETTING_CODEC          $$CODEC_NAME$$
 #endif
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
