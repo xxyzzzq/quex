@@ -1,8 +1,5 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  * 
- * ACKNOWLEDGEMENT: The following functions have been derived from segments of the
- *                  utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.    
- *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
 
 #ifndef __QUEX_INCLUDE_GUARD__UNICODE
@@ -12,22 +9,39 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-QUEX_INLINE uint8_t*
-QUEX_NAME(unicode_to_utf8)(QUEX_TYPE_CHARACTER  UCS_CharacterCode, 
-                           uint8_t*             utf8_result);
+QUEX_INLINE void
+QUEX_NAME(unicode_to_utf8)(const QUEX_TYPE_CHARACTER**  input, 
+                           uint8_t**                    output_pp);
 
-QUEX_INLINE uint8_t*
-QUEX_NAME(unicode_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, 
-                                  size_t                     SourceSize, 
-                                  uint8_t*                   Drain, 
-                                  size_t                     DrainSize);
+QUEX_INLINE void
+QUEX_NAME(unicode_to_utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
+                                  const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                  uint8_t**                    drain,  
+                                  const uint8_t*               DrainEnd);
 
-/* The following function exists for uniformity. */
-QUEX_INLINE uint8_t*
-QUEX_NAME(utf8_to_utf8_string)(const QUEX_TYPE_CHARACTER* Source, 
-                               size_t                     SourceSize, 
-                               uint8_t*                   Drain, 
-                               size_t                     DrainSize);
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::string
+QUEX_NAME(unicode_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#endif
+
+#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+
+QUEX_INLINE void
+QUEX_NAME(unicode_to_wchar)(QUEX_TYPE_CHARACTER** input_pp, 
+                            wchar_t**             output_pp);
+
+QUEX_INLINE void
+QUEX_NAME(unicode_to_wstring)(const QUEX_TYPE_CHARACTER** Source, 
+                              const QUEX_TYPE_CHARACTER*  SourceEnd,
+                              wchar_t**                   drain,  
+                              const wchar_t*              DrainEnd);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE std::wstring
+QUEX_NAME(unicode_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#endif
+
+#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

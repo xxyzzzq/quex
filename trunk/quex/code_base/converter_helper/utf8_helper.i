@@ -48,7 +48,7 @@ QUEX_NAME(utf8_to_wchar_t)(QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
 
 QUEX_INLINE void
 QUEX_NAME(utf8_to_wchar_string)(const QUEX_TYPE_CHARACTER* Source, size_t SourceSize,
-                                __QUEX_STD_wchar_t**       Drain, size_t  DrainSize);
+                                wchar_t**       Drain, size_t  DrainSize);
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::wstring

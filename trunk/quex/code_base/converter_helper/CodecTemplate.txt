@@ -5,6 +5,8 @@
 #ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
 #define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
 
+#include <quex/code_base/definitions>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 /* Converter Functions: ____________________________________________________________________
@@ -26,7 +28,7 @@ QUEX_INLINE void
 QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
                                     const QUEX_TYPE_CHARACTER*   SourceEnd, 
                                     uint8_t**                    drain,  
-                                    uint8_t*                     DrainEnd);
+                                    const uint8_t*               DrainEnd);
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::string
@@ -38,13 +40,13 @@ QUEX_NAME($$CODEC$$_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
 QUEX_NAME($$CODEC$$_to_wchar)(QUEX_TYPE_CHARACTER** input_pp, 
-                              __QUEX_STD_wchar_t**  output_pp);
+                              wchar_t**             output_pp);
 
 QUEX_INLINE void
 QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER** Source, 
                                 const QUEX_TYPE_CHARACTER*  SourceEnd,
-                                __QUEX_STD_wchar_t**        drain,  
-                                __QUEX_STD_wchar_t*         DrainEnd);
+                                wchar_t**                   drain,  
+                                const wchar_t*              DrainEnd);
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::wstring
