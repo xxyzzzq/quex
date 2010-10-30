@@ -78,7 +78,7 @@ QUEX_INLINE void
 QUEX_NAME($$CODEC$$_to_utf8_string)(const QUEX_TYPE_CHARACTER**  source_pp, 
                                     const QUEX_TYPE_CHARACTER*   SourceEnd, 
                                     uint8_t**                    drain_pp,  
-                                    uint8_t*                     DrainEnd)
+                                    const uint8_t*               DrainEnd)
 {
     const QUEX_TYPE_CHARACTER*  source_iterator; 
     uint8_t*                    drain_iterator;
@@ -123,7 +123,7 @@ QUEX_NAME($$CODEC$$_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>
 
 QUEX_INLINE void
 QUEX_NAME($$CODEC$$_to_wchar)(const QUEX_TYPE_CHARACTER** input_pp,
-                              __QUEX_STD_wchar_t**        output_pp)
+                              wchar_t**                   output_pp)
 {
     uint32_t             unicode = 0L;
     QUEX_TYPE_CHARACTER  input = **input_pp;
@@ -135,11 +135,11 @@ $$BODY_UCS4$$
 QUEX_INLINE void
 QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER**  source_pp, 
                                 const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                uint8_t**                    drain_pp,  
-                                uint8_t*                     DrainEnd)
+                                wchar_t**                    drain_pp,  
+                                const wchar_t*               DrainEnd)
 {
     const QUEX_TYPE_CHARACTER*  source_iterator; 
-    uint8_t*                    drain_iterator;
+    wchar_t*                    drain_iterator;
 
     __quex_assert(source_pp != 0x0);
     __quex_assert(*source_pp != 0x0);
@@ -152,7 +152,7 @@ QUEX_NAME($$CODEC$$_to_wstring)(const QUEX_TYPE_CHARACTER**  source_pp,
     while( 1 + 1 == 2 ) { 
         if( source_iterator == SourceEnd ) break;
         if( drain_iterator == DrainEnd ) break;
-        QUEX_NAME($$CODEC$$_to_utf8)(&source_iterator, &drain_iterator);
+        QUEX_NAME($$CODEC$$_to_wchar)(&source_iterator, &drain_iterator);
     }
 
     *drain_pp  = drain_iterator;
@@ -166,12 +166,12 @@ QUEX_NAME($$CODEC$$_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& So
 {
     const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
     const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
-    __QUEX_STD_wchar_t           drain[1];
-    __QUEX_STD_wchar_t*          drain_iterator = 0x0;
-    std::wstring                 result;
+    wchar_t           drain[1];
+    wchar_t*          drain_iterator = 0x0;
+    std::wstring      result;
 
     for(; source_iterator != source_end; ++source_iterator) {
-        drain_iterator = (__QUEX_STD_wchar_t*)drain;
+        drain_iterator = (wchar_t*)drain;
         QUEX_NAME($$CODEC$$_to_wchar)(&source_iterator, &drain_iterator);
         result.push_back(drain[0]);
     }
