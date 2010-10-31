@@ -49,7 +49,21 @@ utf8-lexer: utf8-lexer.cpp
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 utf16-lexer: utf16-lexer.cpp 
-	quex -i             greeky.qx  \
+	quex -i             greek.qx  \
+		 --codec        utf16     \
+		 --token-prefix TKN_      \
+		 -o             UTF16Lex  \
+	     -b             2
+	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
+		-Wall                   \
+		-I$(QUEX_PATH) -I.      \
+		$<                      \
+		$(CCFLAG_ASSERTS)       \
+		UTF16Lex.cpp            \
+		-o $@
+
+utf16-lexer-other: utf16-lexer-other.cpp 
+	quex -i             greek-other.qx  \
 		 --codec        utf16     \
 		 --token-prefix TKN_      \
 		 -o             UTF16Lex  \
@@ -84,8 +98,10 @@ clean:
 	rm -f utf8-lexer
 	rm -f UTF16Lex*
 	rm -f utf16-lexer
+	rm -f utf16-lexer-other
 	rm -f *.E
 	rm -f *.svg
+	rm -f *.o
 
 test-utf8: test-utf8.cpp
 		g++ -I$(QUEX_PATH) -I.  \
