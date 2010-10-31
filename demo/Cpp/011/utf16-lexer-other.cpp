@@ -17,7 +17,7 @@ main(int argc, char** argv)
 
     Token*       token;
     bool         BigEndianF = (strcmp(argv[1], "BE") == 0); 
-    const char*  file_name = BigEndianF ? "example-utf16be.txt" : "example-utf16le.txt";
+    const char*  file_name = BigEndianF ? "example-other-utf16be.txt" : "example-other-utf16le.txt";
    
     /* NOTE: On a big endian machine (e.g. PowerPC) the byte reversion flag
      *       might be set to 'not BigEndianF'                                */
@@ -29,8 +29,13 @@ main(int argc, char** argv)
     do {
         qlex.receive(&token);
 
-        /* Print the lexeme in utf8 format. */
-        printf("%s\n", (char*)(string(*token).c_str()));
+        /* Print the lexeme in hex format. */
+        printf("%s\t", (char*)token->type_id_name().c_str());
+        for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token->get_text()).c_str();
+            *iterator; ++iterator) {
+            printf("%04X.", *iterator);
+        }
+        printf("\n");
 
         // (*) check against 'termination'
     } while( token->type_id() != TKN_TERMINATION );
