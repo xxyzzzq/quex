@@ -4,7 +4,7 @@
 > #define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER
 < #define QUEX_SETTING_VERSION           "$$QUEX_VERSION$$"
 < #define QUEX_SETTING_ANALYZER_VERSION  "$$USER_LEXER_VERSION$$"
-> #define QUEX_SETTING_VERSION           "53.4"
+> #define QUEX_SETTING_VERSION           "0.54.1"
 > #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 < $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 > /* #define __QUEX_OPTION_PLAIN_C */
@@ -114,8 +114,8 @@
 > #   define QUEX_NAME(NAME)             TestAnalyzer_ ## NAME
 > #   define QUEX_NAME_TOKEN(NAME)       Token_ ## NAME
 > #   define QUEX_MEMBER(NAME)           TestAnalyzer::NAME                
-< #   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME($$CODEC_NAME$$_to_utf8_string)
-> #   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
+< #   define QUEX_SETTING_CODEC          $$CODEC_NAME$$
+> #   define QUEX_SETTING_CODEC          unicode
 < #   define QUEX_TYPE_ANALYZER                struct $$LEXER_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE0_ANALYZER               struct $$LEXER_CLASS_NAME_SAFE$$_tag
 < #   define QUEX_TYPE_DERIVED_ANALYZER        struct $$LEXER_CLASS_NAME_SAFE$$_tag
@@ -142,5 +142,7 @@
 > #   define QUEX_TYPE_TOKEN_LINE_N    size_t
 < #   define QUEX_TYPE_TOKEN_COLUMN_N  $$TOKEN_COLUMN_N_TYPE$$
 > #   define QUEX_TYPE_TOKEN_COLUMN_N  size_t
+< #   include "$$CONVERTER_HELPER_I$$"
+> #   include "quex/code_base/converter_helper/unicode.i"
 < #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */
 > #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER */

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="374.47" date="Mon Nov  1 23:58:18 2010">
+<test-database execution-time-sec="367.80" date="Tue Nov  2 11:02:03 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -49,7 +49,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="5.28"> 
+        <test title="Indentation Based Scopes" time-sum-sec="5.29"> 
             <application file-name="002.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.75" crc="-1626426563"/>
@@ -100,7 +100,7 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="8.09"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="8.10"> 
             <application file-name="006.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.57" crc="67355700"/>
@@ -109,7 +109,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="7.86"> 
+        <test title="Miscellaneous Features" time-sum-sec="7.87"> 
             <application file-name="007.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.76" crc="-375962478"/>
@@ -118,7 +118,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="8.86"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="8.85"> 
             <application file-name="008.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.97" crc="335189180"/>
@@ -201,11 +201,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="17.93"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="11.25"> 
             <application file-name="012.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="10.34" crc="-1785218323"/>
-               <choice name="DEBUG" result="FAIL" time_sec="7.59" crc="-1785218323"/>
+               <choice name="NDEBUG" result="OK" time_sec="6.57" crc="-1785218323"/>
+               <choice name="DEBUG" result="OK" time_sec="4.68" crc="-1785218323"/>
             </choice-list>
         </test>
     </group>
