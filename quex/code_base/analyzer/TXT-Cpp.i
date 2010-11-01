@@ -131,3 +131,5 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
+#include <quex/code_base/analyzer/headers.i>
+

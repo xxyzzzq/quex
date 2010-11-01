@@ -2,7 +2,6 @@
 
 #include "EasyLexer.h"
 #include "EasyLexer-token_ids.h"
-#include "EasyLexer-token.c"
 
 int 
 main(int argc, char** argv) 

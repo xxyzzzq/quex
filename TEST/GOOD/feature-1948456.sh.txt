@@ -1,5 +1,3 @@
-    *       some type of integer or enum. In case an alien type is to
-    *       used, this function needs to be redefined.                  */
      * MODE: FOUR
      * 
      *     BASE MODE SEQUENCE:

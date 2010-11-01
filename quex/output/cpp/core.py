@@ -27,7 +27,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
 
     ConfigurationTemplateFile = os.path.normpath(os.environ["QUEX_PATH"]
                                    + Setup.language_db["$code_base"] 
-                                   + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
+                                   + "/analyzer/configuration/TXT").replace("//","/")
 
     txt = get_file_content_or_die(ConfigurationTemplateFile)
 
@@ -151,7 +151,7 @@ def write_constructor_and_memento_functions(ModeDB):
 
     FileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                     + Setup.language_db["$code_base"] 
-                                    + "/analyzer/CppTemplate_functions.txt")
+                                    + "/analyzer/TXT-Cpp.i")
     func_txt = get_file_content_or_die(FileTemplate)
 
     func_txt = blue_print(func_txt,
@@ -212,7 +212,6 @@ def write_engine_header(ModeDB):
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
-                ["$$CLASS_FUNCTIONS$$",                  function_code_txt],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
                 ["$$LEXER_CLASS_NAME_SAFE$$",            Setup.analyzer_name_safe],
@@ -235,12 +234,7 @@ def write_engine_header(ModeDB):
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
 
-    if Setup.language != "C":
-        return txt, ""
-    else:
-        # In the 'C' case the class's constructor and memento functions must
-        # appear in a separate '.i' implementation file.
-        return txt, function_code_txt
+    return txt, function_code_txt
 
 quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);

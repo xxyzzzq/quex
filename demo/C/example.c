@@ -1,7 +1,6 @@
 #include <stdio.h>    
 
 #include "EasyLexer.h"
-#include "EasyLexer-token.c"
 
 
 #ifndef     ENCODING_NAME

@@ -2,7 +2,6 @@
 
 #include "tiny_lexer.h"
 #include "messaging-framework.h"
-#include "tiny_lexer-token.c"
 
 typedef struct {
     QUEX_TYPE_CHARACTER* begin;

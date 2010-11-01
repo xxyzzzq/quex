@@ -17,7 +17,10 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CppDefault.qx exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CDefault.qx exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-C exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-C.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-Cpp exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-Cpp.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenPolicy exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller exists
@@ -49,7 +52,7 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/dumpster.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator.i exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/TXT-Cpp exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Mode exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer exists
@@ -62,7 +65,7 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-receiving.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/constructor.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/misc.i exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/CppTemplate.txt exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/TXT exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/validation exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/undefine exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_off exists
