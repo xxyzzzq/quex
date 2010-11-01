@@ -1,5 +1,5 @@
-#ifndef __QUEX_INCLUDE_GUARD__UTF8_HELPER_I
-#define __QUEX_INCLUDE_GUARD__UTF8_HELPER_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I
 /* -*- C++ -*- vim: set syntax=cpp:
  *
  * (C) 2005-2010 Frank-Rene Schaefer                                                */
@@ -83,4 +83,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #define __QUEX_CONVERTER_FROM   utf8
 #include <quex/code_base/converter_helper/base.gi>
 
-#endif /* __QUEX_INCLUDE_GUARD__UTF8_HELPER_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */

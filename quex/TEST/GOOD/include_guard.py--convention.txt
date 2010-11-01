@@ -2,6 +2,8 @@ Following include guards do not follow convention:
 <<No INCLUDE_GUARD derective found>>                                       --> __QUEX_INCLUDE_GUARD__TEMPORARY_MACROS_ON
 <<No INCLUDE_GUARD derective found>>                                       --> __QUEX_INCLUDE_GUARD__INCLUDE_GUARD_UNDEF
 <<No INCLUDE_GUARD derective found>>                                       --> __QUEX_INCLUDE_GUARD__TEMPORARY_MACROS_OFF
+__INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__                      --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CODEC_TEMPLATE_TXT
+__INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__I                     --> __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CODEC_ITEMPLATE_TXT
 __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$        --> __QUEX_INCLUDE_GUARD__TOKEN__CTEMPLATE_TXT
 __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I      --> __QUEX_INCLUDE_GUARD__TOKEN__CTEMPLATE_I_TXT
 <<No INCLUDE_GUARD derective found>>                                       --> __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_POLICY

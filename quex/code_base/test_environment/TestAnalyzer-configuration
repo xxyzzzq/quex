@@ -23,8 +23,8 @@
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "53.4"
-#define QUEX_SETTING_BUILD_DATE        "Mon Oct 25 16:51:38 2010"
+#define QUEX_SETTING_VERSION           "0.54.1"
+#define QUEX_SETTING_BUILD_DATE        "Tue Nov  2 10:48:15 2010"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -256,10 +256,6 @@
  * if no begin of line pre-condition is required.                            */
 #define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
-#ifndef    QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE 
-#   define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
-#endif
-
 /* Following switch is also set, if a user defined converter is defined.     */
 /* #define __QUEX_OPTION_CONVERTER_ENABLED */
 
@@ -313,8 +309,8 @@
 
 /* For the utf8 printing: Name the function that converts the 
  * specific codec to utf8 representation.                       */
-#ifndef    QUEX_CONVERTER_OF_TEXT_TO_UTF8   
-#   define QUEX_CONVERTER_OF_TEXT_TO_UTF8   QUEX_NAME(unicode_to_utf8_string)
+#ifndef    QUEX_SETTING_CODEC   
+#   define QUEX_SETTING_CODEC          unicode
 #endif
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
@@ -351,5 +347,8 @@
 
 #include <quex/code_base/analyzer/configuration/derived>
 
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   include "quex/code_base/converter_helper/unicode.i"
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER */
