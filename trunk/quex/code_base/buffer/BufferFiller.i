@@ -572,9 +572,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         const size_t          MessageSize = (size_t)1024;
         uint8_t*              WEnd        = 0x0;
         uint8_t*              witerator   = 0x0; 
-        QUEX_TYPE_CHARACTER*  End         = 0x0; 
-        QUEX_TYPE_CHARACTER*  iterator    = 0x0; 
-        QUEX_TYPE_CHARACTER*  utf8_end    = 0x0; 
+        QUEX_TYPE_CHARACTER*        End         = 0x0; 
+        const QUEX_TYPE_CHARACTER*  iterator    = 0x0; 
+        QUEX_TYPE_CHARACTER*        utf8_end    = 0x0; 
 #       endif
 
         if(    me->_on_overflow == 0x0
@@ -586,14 +586,9 @@ QUEX_NAMESPACE_MAIN_OPEN
             witerator   = utf8_encoded_str; 
             End         = buffer->_memory._back; 
             iterator    = buffer->_lexeme_start_p; 
-            utf8_end    = iterator;
-            
-            for(; witerator < WEnd &&  iterator != End ; ++iterator) {
-                utf8_end = QUEX_NAME(unicode_to_utf8)(*iterator, witerator);
-                *utf8_end = '\0';
-                if( utf8_end == 0x0 || utf8_end > utf8_encoded_str + 512 ) continue;
-                witerator = utf8_end;
-            }
+
+            __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8_string)(&iterator, End,
+                                                                     &witerator, WEnd);
             message[0] = '\0';
             /* No use of 'snprintf()' because not all systems seem to support it propperly. */
             __QUEX_STD_strncat(message, 

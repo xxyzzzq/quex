@@ -1,16 +1,16 @@
-<test-database execution-time-sec="0.21" date="Sun Oct 31 00:17:18 2010">
+<test-database execution-time-sec="0.04" date="Mon Nov  1 23:59:35 2010">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.18"> 
-            <application file-name="queue.exe" info-request-time="1288477032L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.742201"/>
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.00"> 
+            <application file-name="queue.exe" info-request-time="1288652366L" vanished="False"/>
+            <make-procedure success="True" time_sec="3.234327"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.18" crc="721591502"/>
+               <choice name="" result="OK" time_sec="0.00" crc="721591502"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="queue-real.exe" info-request-time="1288477036L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.948703"/>
+            <application file-name="queue-real.exe" info-request-time="1288652372L" vanished="False"/>
+            <make-procedure success="True" time_sec="3.377350"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="178235029"/>
             </choice-list>
@@ -18,15 +18,15 @@
     </group>
     <group name="Token Policy 'single'">
         <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="users_token.exe" info-request-time="1288477034L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.506252"/>
+            <application file-name="users_token.exe" info-request-time="1288652369L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.613216"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="-1396014048"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="users_token-real.exe" info-request-time="1288477038L" vanished="False"/>
-            <make-procedure success="True" time_sec="1.586110"/>
+            <application file-name="users_token-real.exe" info-request-time="1288652375L" vanished="False"/>
+            <make-procedure success="True" time_sec="2.624406"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="178235029"/>
             </choice-list>

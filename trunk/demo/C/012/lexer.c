@@ -18,10 +18,11 @@ main(int argc, char** argv)
     moritz_Token* moritz_token = 0x0;
     boeck_Token*  boeck_token  = 0x0;
 
-    const size_t BufferSize = 1024;
-    char         buffer[1024];
-    char*        iterator = 0x0;
-    size_t       i = 0;
+    const size_t    BufferSize = 1024;
+    char            buffer[1024];
+    uint8_t*        buffer_p = (uint8_t*)buffer;
+    const uint8_t*  iterator = 0x0;
+    size_t          i = 0;
 
     max_Lexer_construct_file_name(&max_lex,       "example-utf16.txt", "UTF16", false);
     moritz_Lexer_construct_file_name(&moritz_lex, "example-ucs2.txt",  "UCS-2", false);
@@ -41,10 +42,12 @@ main(int argc, char** argv)
         (void)boeck_Lexer_receive(&boeck_lex);
 
         /* Lexeme is same for all three. */
-        iterator = (char*)boeck_Lexer_utf8_to_utf8_string(boeck_token->text, 
-                                                          boeck_Lexer_strlen(boeck_token->text),
-                                                          (uint8_t*)buffer,
-                                                          BufferSize);
+        iterator = boeck_token->text;
+        buffer_p = (uint8_t*)buffer;
+        boeck_Lexer_utf8_to_utf8_string(&iterator,
+                                        iterator + boeck_Lexer_strlen(boeck_token->text),
+                                        &buffer_p,
+                                        buffer_p + BufferSize);
         *iterator = '\0';
         const char* lexeme = (const char*)buffer;
         size_t      preL   = (size_t)strlen(lexeme);

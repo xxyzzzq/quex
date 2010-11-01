@@ -7,19 +7,23 @@ main(int argc, char** argv)
 {
     using namespace quex;
 
-    const size_t         Start      = 0x0;
-    const size_t         CharacterN = 255;
-    QUEX_TYPE_CHARACTER  source[256];
-    uint8_t              drain[4096];
-    uint8_t              drain_ref[4096];
+    const size_t               Start      = 0x0;
+    const size_t               CharacterN = 255;
+    QUEX_TYPE_CHARACTER        source[256];
+    const QUEX_TYPE_CHARACTER* source_p = source;
+    uint8_t                    drain[4096];
+    uint8_t*                   drain_p = drain;
+    uint8_t                    drain_ref[4096];
 
     /* Fill source buffer with all available characters */
     for(int i=Start; i < Start + CharacterN; ++i) source[i-Start] = i;
 
     /* Convert the whole array */
-    uint8_t*     drain_end = CONVERT_TO_UTF8(source, CharacterN, (uint8_t*)drain, 4095);
-    const int    Size = (int)(drain_end - (uint8_t*)drain);
-    *drain_end = '\0'; /* terminating zero */
+    CONVERT_TO_UTF8(&source_p, source_p + CharacterN, &drain_p, drain_p + 4095);
+
+    const int    Size = (int)(drain_p - (uint8_t*)drain);
+
+    *drain = '\0'; /* terminating zero */
 
     printf("Result (%i):\n", Size);
     for(int i=0; i<Size; ++i) {

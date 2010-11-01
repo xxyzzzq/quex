@@ -10,10 +10,9 @@ main(int argc, char** argv)
 {        
     QUEX_TYPE_TOKEN*      token_p    = 0x0;
     bool                  BigEndianF = (argc < 2 || (strcmp(argv[1], "BE") == 0)); 
-    const char*           file_name  = BigEndianF ? "example-utf16be.txt" : "example-utf16le.txt";
-    UTF16Lex              qlex;
-    size_t                BufferSize = 1024;
-    char                  buffer[1024];
+    const char*           file_name  = BigEndianF ? "example-other-utf16be.txt" : "example-other-utf16le.txt";
+    UTF16Lex                    qlex;
+    const QUEX_TYPE_CHARACTER*  iterator = 0x0;
 
     if( argc == 1 ) {
         printf("Required at least one argument: 'LE' or 'BE'.\n");
@@ -32,8 +31,11 @@ main(int argc, char** argv)
     do {
         QUEX_NAME(receive)(&qlex, &token_p);
 
-        /* Print the lexeme in utf8 format. */
-        printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
+        printf("%s\t", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
+        for(iterator = token_p->text; *iterator; ++iterator) {
+            printf("%04X.", (int)*iterator);
+        }
+        printf("\n");
 
         // (*) check against 'termination'
     } while( token_p->_id != TKN_TERMINATION );

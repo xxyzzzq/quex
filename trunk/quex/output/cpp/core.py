@@ -110,6 +110,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$CODEC_NAME$$",                 codec_name],
+             ["$$CONVERTER_HELPER_I$$",         Setup.output_buffer_codec_header_i],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension( Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
              ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],

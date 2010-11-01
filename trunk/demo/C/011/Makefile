@@ -41,11 +41,26 @@ utf8-lexer: utf8-lexer.c
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 utf16-lexer: utf16-lexer.c 
-	quex -i             greeky.qx \
+	quex -i             greek.qx  \
 		 --codec        utf16     \
 		 --token-prefix TKN_      \
 		 -o             UTF16Lex  \
 		 --language C             \
+	     -b             2
+	gcc -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
+		-Wall                   \
+		-I$(QUEX_PATH) -I.      \
+		$<                      \
+		$(CCFLAG_ASSERTS)       \
+		UTF16Lex.c              \
+		-o $@
+
+utf16-lexer-other: utf16-lexer-other.c 
+	quex -i             greek-other.qx  \
+		 --codec        utf16     \
+		 --token-prefix TKN_      \
+		 -o             UTF16Lex  \
+		 --language     C         \
 	     -b             2
 	gcc -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
 		-Wall                   \
@@ -78,3 +93,4 @@ clean:
 	rm -f utf16-lexer
 	rm -f *.E
 	rm -f *.svg
+	rm -f *.o

@@ -13,7 +13,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_NAME_GENERATOR(utf8, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
+__QUEX_CONVERTER_HELPER(utf8, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
 {
     /* Just for comformity with other encodings: Do nothing but copying. */
     if( (**input_pp & 0x80) == 0 ) {
@@ -40,7 +40,7 @@ __QUEX_CONVERTER_NAME_GENERATOR(utf8, utf8)(const QUEX_TYPE_CHARACTER** input_pp
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_NAME_GENERATOR(utf8, wchar)(const QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
+__QUEX_CONVERTER_HELPER(utf8, wchar)(const QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
 {
     const QUEX_TYPE_CHARACTER*  iterator = *input_pp;
 

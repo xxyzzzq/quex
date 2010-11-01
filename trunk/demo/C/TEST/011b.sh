@@ -5,12 +5,11 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "SAME;"
     exit
 fi
-cd ../011
-
+cd $QUEX_PATH/demo/C/011
 make clean >& /dev/null
-make utf16-lexer >& tmp.txt
+make utf16-lexer-other >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 rm tmp.txt
-valgrind --leak-check=full ./utf16-lexer $1 >& tmp.txt
+valgrind --leak-check=full ./utf16-lexer-other $1 >& tmp.txt
 python $QUEX_PATH/TEST/show-valgrind.py
 rm -f tmp.txt
