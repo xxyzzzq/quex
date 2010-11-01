@@ -214,6 +214,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
         for name in ModeNameList:
             txt += "#   undef %s\n" % name 
 
+    txt += "#undef self\n"
     txt += "}\n"
 
     # -- the name of the game
@@ -563,7 +564,7 @@ def __frame_of_all(Code, Setup):
     if Setup.language == "C":
          codec_header_str = "#include \"%s\"\n" % Setup.output_buffer_codec_header_i
 
-    return "".join(["#include \"%s\"\n" % Setup.output_header_file,
+    return "".join(["/* #include \"%s\"*/\n" % Setup.output_header_file,
                     implementation_header_str,
                     codec_header_str,
                     "QUEX_NAMESPACE_MAIN_OPEN\n",

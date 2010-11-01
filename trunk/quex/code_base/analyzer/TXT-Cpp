@@ -317,8 +317,5 @@ public:
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
-$$CLASS_FUNCTIONS$$
-
-#include <quex/code_base/analyzer/headers.i>
-
+$$ADDITIONAL_HEADER_CONTENT$$
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */

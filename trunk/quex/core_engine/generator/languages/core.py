@@ -224,8 +224,9 @@ db["C++"] = {
     "$goup-mode":            lambda Mode: "QUEX_NAME(pop_mode)(&self);",                  # Must be function, w/o arg
     "$code_base":               "/quex/code_base/",
     "$token-default-file":      "/token/CppDefault.qx",
-    "$token_template_file":     "/token/CppTemplate.txt",
-    "$analyzer_template_file":  "/analyzer/CppTemplate.txt",
+    "$token_template_file":     "/token/TXT-Cpp",
+    "$token_template_i_file":   "/token/TXT-Cpp.i",
+    "$analyzer_template_file":  "/analyzer/TXT-Cpp",
     "$file_extension":          ".cpp",
     }
 
@@ -234,9 +235,9 @@ db["C++"] = {
 #    
 db["C"] = copy(db["C++"])
 db["C"]["$token-default-file"]     = "/token/CDefault.qx"
-db["C"]["$token_template_file"]    = "/token/CTemplate.txt"
-db["C"]["$token_template_i_file"]  = "/token/CTemplateI.txt"
-db["C"]["$analyzer_template_file"] = "/analyzer/CTemplate.txt"
+db["C"]["$token_template_file"]    = "/token/TXT-C"
+db["C"]["$token_template_i_file"]  = "/token/TXT-C.i"
+db["C"]["$analyzer_template_file"] = "/analyzer/TXT-C"
 db["C"]["$file_extension"]         = ".c"
 
 #________________________________________________________________________________

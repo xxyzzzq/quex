@@ -2,7 +2,6 @@
 #include<assert.h>
 
 #include "tiny_wlexer.h"
-#include "tiny_wlexer-token.c"
 
 void
 get_wfile_input(tiny_wlexer* qlex);

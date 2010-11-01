@@ -109,7 +109,9 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
             for info in LinePragmaInfoList:
                 if line.find(info[0]) == -1: continue
                 line = info[1]
-                line = line.replace("NUMBER", repr(int(line_n + 1)))
+                # Since by some definition, line number pragmas < 32768; let us avoid
+                # compiler warnings by setting line_n = min(line_n, 32768)
+                line = line.replace("NUMBER", repr(int(min(line_n + 1, 32767))))
                 # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
                 norm_filename = filename.replace("\\", "/")
                 line = line.replace("FILENAME", norm_filename)

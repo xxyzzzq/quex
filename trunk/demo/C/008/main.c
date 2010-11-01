@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "Calc_parser.tab.h"
 #include "Calc_lexer.h"
-#include "Calc_lexer-token.c"
 
 int Calc_yyparse(Calc_lexer  *qlex);
 

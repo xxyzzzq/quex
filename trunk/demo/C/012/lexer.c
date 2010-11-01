@@ -1,11 +1,8 @@
 #include <stdio.h> 
 
 #include "moritz_Lexer.h"
-#include "moritz_Lexer-token.c"
 #include "max_Lexer.h"
-#include "max_Lexer-token.c"
 #include "boeck_Lexer.h"
-#include "boeck_Lexer-token.c"
 
 #include <quex/code_base/converter_helper/utf8.i>
 

@@ -2,7 +2,6 @@
 
 // (*) include lexical analyser header
 #include "UTF16Lex.h"
-#include "UTF16Lex-token.c"
 #include <quex/code_base/converter_helper/utf16.i>
 
 int 

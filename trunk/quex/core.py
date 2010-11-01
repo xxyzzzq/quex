@@ -39,8 +39,6 @@ def do():
     header_engine_txt,           \
     constructor_and_memento_txt, \
     header_configuration_txt = quex_class_out.do(mode_db, IndentationSupportF, BeginOfLineSupportF)
-    # NOTE: In C++, constructor_and_memento_txt == "" since the implementation of templates
-    #       needs to happen inside the header files.
     mode_implementation_txt  = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
@@ -50,7 +48,7 @@ def do():
     map_id_to_name_function_implementation_txt = token_id_maker.do_map_id_to_name_function()
 
     # (*) [Optional] Make a customized token class
-    token_class_maker.do()
+    token_class_h, token_class_txt = token_class_maker.do()
     
     # (*) [Optional] Generate a converter helper
     codec_converter_helper.do()
@@ -82,21 +80,34 @@ def do():
     # Bring the info about the patterns first
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
-    # write code to a header file
-    write_safely_and_close(Setup.output_configuration_file,
-                           header_configuration_txt)
-    write_safely_and_close(Setup.output_header_file,
-                           header_engine_txt)
-    write_safely_and_close(Setup.output_code_file, 
-                             mode_implementation_txt                    + "\n" 
-                           + constructor_and_memento_txt                + "\n" 
-                           + map_id_to_name_function_implementation_txt + "\n" 
-                           + analyzer_code)
+    # Implementation (Potential Inline Functions)
+    implemtation_txt =   constructor_and_memento_txt                + "\n" \
+                       + token_class_txt                            + "\n" 
+
+    # Engine (Source Code)
+    source_txt =   mode_implementation_txt + "\n" \
+                 + analyzer_code           + "\n" \
+                 + map_id_to_name_function_implementation_txt + "\n" 
+
+    # (*) Write Files
+    write_safely_and_close(Setup.output_configuration_file, header_configuration_txt)
+    if Setup.language == "C":
+        write_safely_and_close(Setup.output_header_file, header_engine_txt)
+        write_safely_and_close(Setup.output_code_file, source_txt + \
+                                                       implemtation_txt)
+    else:
+        header_txt = header_engine_txt.replace("$$ADDITIONAL_HEADER_CONTENT$$", implemtation_txt)
+        write_safely_and_close(Setup.output_header_file, header_txt)
+        write_safely_and_close(Setup.output_code_file, source_txt)
+
+    if token_class_h != "":
+        write_safely_and_close(lexer_mode.token_type_definition.get_file_name(), 
+                               token_class_h)
 
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_header_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
-    assert lexer_mode.token_type_definition != None
+    # assert lexer_mode.token_type_definition != None
     UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
 
 def __prepare_end_of_stream_action(Mode, IndentationSupportF):

@@ -3,7 +3,6 @@
 
 #include "tiny_lexer.h"
 #include "messaging-framework.h"
-#include "tiny_lexer-token.c"
 
 void test(tiny_lexer* qlex);
 

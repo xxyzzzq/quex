@@ -48,7 +48,7 @@ def _do(UnicodeTrafoInfo, CodecName):
     # Provide only the constant which are necessary
     FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                 + Setup.language_db["$code_base"] 
-                                + "/converter_helper/CodecITemplate.txt")
+                                + "/converter_helper/TXT-Codec.i")
     txt_i = blue_print(get_file_content_or_die(FileName), 
                        [["$$CODEC$$",       codec_name],
                         ["$$PROLOG_UTF8$$", utf8_prolog],
@@ -59,7 +59,7 @@ def _do(UnicodeTrafoInfo, CodecName):
     # A separate declaration header is required
     FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                 + Setup.language_db["$code_base"] 
-                                + "/converter_helper/CodecTemplate.txt")
+                                + "/converter_helper/TXT-Codec")
     template_h_txt = get_file_content_or_die(FileName)
     txt_h = template_h_txt.replace("$$CODEC$$", codec_name)
     return txt_h, txt_i

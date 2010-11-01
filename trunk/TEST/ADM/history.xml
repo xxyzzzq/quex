@@ -1,4 +1,4 @@
-<history date="Mon Nov  1 23:50:45 2010" element-n="792">
+<history date="Wed Nov  3 01:10:57 2010" element-n="802">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1546,5 +1546,17 @@
     <day year="2010" month="10" day="30">
         <crc-error time="22:37:17" application="bug-2599228.sh" choice="Developper" database-crc="1553152748" real-crc="411530463"/>
         <crc-error time="22:37:17" application="bug-2599228.sh" choice="FilesExist" database-crc="-1280778560" real-crc="1689946735"/>
+    </day>
+    <day year="2010" month="11" day="03">
+        <crc-error time="00:04:19" application="bug-2796383.sh" choice="case-1" database-crc="-1829622869" real-crc="-28827932"/>
+        <crc-error time="00:07:47" application="bug-2799244.sh" choice="good-2" database-crc="-1916167" real-crc="863943101"/>
+        <crc-error time="00:08:30" application="feature-3079986.sh" choice="nnn" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:08:31" application="feature-3079986.sh" choice="nnc" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:08:31" application="feature-3079986.sh" choice="ncc" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:08:32" application="feature-3079986.sh" choice="ccc" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:09:21" application="feature-3030640.sh" choice="PlainC" database-crc="826517308" real-crc="703520829"/>
+        <crc-error time="00:10:57" application="bug-2599228.sh" choice="Developper" database-crc="411530463" real-crc="1346908960"/>
+        <crc-error time="00:10:57" application="bug-2599228.sh" choice="FilesExist" database-crc="1689946735" real-crc="762666300"/>
+        <crc-error time="00:10:57" application="feature-1948456.sh" choice="" database-crc="1332949281" real-crc="-1132816517"/>
     </day>
 </history>

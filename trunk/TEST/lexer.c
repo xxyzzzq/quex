@@ -1,5 +1,4 @@
 #include "Simple.h"
-#include "Simple-token.c"
 
 int 
 main(int argc, char** argv) 

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <./tiny_lexer.h>
-#include <./tiny_lexer-token.c>
 
 int 
 main(int argc, char** argv) 
