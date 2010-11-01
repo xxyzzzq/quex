@@ -42,7 +42,10 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
         printf("%s= %i (--> '\\n')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
                Appendix);
     } else {
-        p = QUEX_NAME(unicode_to_utf8)(UC, utf8_char_str);
+        p = utf8_char_str;
+        const QUEX_TYPE_CHARACTER* input_p = Pos;
+
+        QUEX_NAME(unicode_to_utf8)(&input_p, &p);
         *p = '\0';
         printf("%s= %i (--> '%s')%c", 
                (char*)Name,

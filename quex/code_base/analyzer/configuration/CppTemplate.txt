@@ -256,10 +256,6 @@ $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
  * if no begin of line pre-condition is required.                            */
 $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
-#ifndef    QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE 
-#   define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
-#endif
-
 /* Following switch is also set, if a user defined converter is defined.     */
 $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
@@ -347,5 +343,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 
 #include <quex/code_base/analyzer/configuration/derived>
 
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   include "$$CONVERTER_HELPER_I$$"
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */

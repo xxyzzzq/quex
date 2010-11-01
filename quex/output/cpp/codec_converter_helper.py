@@ -17,13 +17,8 @@ def do():
     txt, txt_i = _do(Setup.buffer_codec_transformation_info, 
                      Setup.buffer_codec)
 
-    if txt_i != None:
-        # When we deal with 'C' we need to distinguish between declaration and
-        # implementation, thus we need two headers.
-        write_safely_and_close(Setup.output_buffer_codec_header, txt) 
-        write_safely_and_close(Setup.output_buffer_codec_header_i, txt_i) 
-    else:
-        write_safely_and_close(Setup.output_buffer_codec_header, txt) 
+    write_safely_and_close(Setup.output_buffer_codec_header, txt) 
+    write_safely_and_close(Setup.output_buffer_codec_header_i, txt_i) 
 
 def _do(UnicodeTrafoInfo, CodecName):
     """
@@ -51,31 +46,23 @@ def _do(UnicodeTrafoInfo, CodecName):
     dummy,        ucs4_function_body  = ConverterWriterUCS4().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
-    if Setup.language == "C": implementation_str = "I"
-    else:                     implementation_str = ""
-
-
     FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
                                 + Setup.language_db["$code_base"] 
                                 + "/converter_helper/CodecITemplate.txt")
-    txt = blue_print(get_file_content_or_die(FileName), 
-                     [["$$CODEC$$",       codec_name],
-                      ["$$I$$",           implementation_str],
-                      ["$$PROLOG_UTF8$$", utf8_prolog],
-                      ["$$BODY_UTF8$$",   utf8_function_body],
-                      ["$$BODY_UTF16$$",  utf16_function_body],
-                      ["$$BODY_UCS4$$",   ucs4_function_body]])
+    txt_i = blue_print(get_file_content_or_die(FileName), 
+                       [["$$CODEC$$",       codec_name],
+                        ["$$PROLOG_UTF8$$", utf8_prolog],
+                        ["$$BODY_UTF8$$",   utf8_function_body],
+                        ["$$BODY_UTF16$$",  utf16_function_body],
+                        ["$$BODY_UCS4$$",   ucs4_function_body]])
 
-    if Setup.language == "C":
-        # A separate declaration header is required
-        FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
-                                    + Setup.language_db["$code_base"] 
-                                    + "/converter_helper/CodecTemplate.txt")
-        template_h_txt = get_file_content_or_die(FileName)
-        txt_h = template_h_txt.replace("$$CODEC$$", codec_name)
-        return txt_h, txt
-    else:
-        return txt, None
+    # A separate declaration header is required
+    FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+                                + Setup.language_db["$code_base"] 
+                                + "/converter_helper/CodecTemplate.txt")
+    template_h_txt = get_file_content_or_die(FileName)
+    txt_h = template_h_txt.replace("$$CODEC$$", codec_name)
+    return txt_h, txt_i
 
 class ConverterWriter:
 

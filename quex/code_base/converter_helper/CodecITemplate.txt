@@ -6,8 +6,8 @@
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
 
-#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$
-#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__I
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>

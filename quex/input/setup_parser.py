@@ -482,8 +482,8 @@ def prepare_file_names(setup):
         setup.output_buffer_codec_header_i = \
             __prepare_file_name("-converter-%s" % setup.buffer_codec, HEADER_IMPLEMTATION)
     else:
-        setup.output_buffer_codec_header   = None
-        setup.output_buffer_codec_header_i = None
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/unicode"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/unicode.i"
 
 def make_numbers(setup):
     setup.compression_template_coef  = __get_float("compression_template_coef")

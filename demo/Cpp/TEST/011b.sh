@@ -7,9 +7,9 @@ if [[ $1 == "--hwut-info" ]]; then
 fi
 cd $QUEX_PATH/demo/Cpp/011
 make clean >& /dev/null
-make utf16-lexer >& tmp.txt
+make utf16-lexer-other >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 rm tmp.txt
-valgrind --leak-check=full ./utf16-lexer $1 >& tmp.txt
+valgrind --leak-check=full ./utf16-lexer-other $1 >& tmp.txt
 python ../TEST/show-valgrind.py
 rm -f tmp.txt

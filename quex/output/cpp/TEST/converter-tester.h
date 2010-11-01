@@ -1,3 +1,24 @@
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__
+
+/* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
+
+/* Converter Functions: ____________________________________________________________________
+ *
+ *   cp1256_to_utf8(...)         -- character to utf8
+ *   cp1256_to_utf8_string(...)  -- string to utf8
+ *   cp1256_to_utf8_string(C++)  -- C++ string to utf8 (std::string)
+ *
+ *   cp1256_to_wchar(...)        -- character to utf8
+ *   cp1256_to_wstring(...)      -- string to utf8
+ *   cp1256_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
+ *__________________________________________________________________________________________*/
+
+#define  __QUEX_CONVERTER_FROM         cp1256
+#include <quex/code_base/converter_helper/base.g>
+
+#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__ */
+
 /* -*- C++ -*- vim: set syntax=cpp:
  * 
  * ACKNOWLEDGEMENT: Parts of the following utf8 conversion have been derived from 
@@ -6,8 +27,8 @@
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
 
-#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__
-#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__I
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>
@@ -427,56 +448,11 @@ QUEX_NAME(cp1256_to_utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
 #   undef QUEX_BYTE_3 
 }
 
-QUEX_INLINE void
-QUEX_NAME(cp1256_to_utf8_string)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                    const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                    uint8_t**                    drain_pp,  
-                                    uint8_t*                     DrainEnd)
-{
-    const QUEX_TYPE_CHARACTER*  source_iterator; 
-    uint8_t*                    drain_iterator;
-
-    __quex_assert(source_pp != 0x0);
-    __quex_assert(*source_pp != 0x0);
-    __quex_assert(drain_pp != 0x0);
-    __quex_assert(*drain_pp != 0x0);
-
-    drain_iterator  = *drain_pp;
-    source_iterator = *source_pp;
-
-    while( 1 + 1 == 2 ) { 
-        if( source_iterator == SourceEnd ) break;
-        if( DrainEnd - drain_iterator < (ptrdiff_t)5 ) break;
-        QUEX_NAME(cp1256_to_utf8)(&source_iterator, &drain_iterator);
-    }
-
-    *drain_pp  = drain_iterator;
-    *source_pp = source_iterator;
-}
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::string
-QUEX_NAME(cp1256_to_utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
-{
-    const QUEX_TYPE_CHARACTER*  source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
-    const QUEX_TYPE_CHARACTER*  source_end      = source_iterator + Source.length();
-    uint8_t                     drain[8];
-    uint8_t*                    drain_iterator = 0;
-    std::string                 result;
-
-    for(; source_iterator != source_end; ++source_iterator) {
-        drain_iterator = drain;
-        QUEX_NAME(cp1256_to_utf8)(&source_iterator, &drain_iterator);
-        result.append((char*)drain, (drain_iterator - drain));
-    }
-    return result;
-}
-
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
 
 QUEX_INLINE void
 QUEX_NAME(cp1256_to_wchar)(const QUEX_TYPE_CHARACTER** input_pp,
-                              __QUEX_STD_wchar_t**        output_pp)
+                              wchar_t**                   output_pp)
 {
     uint32_t             unicode = 0L;
     QUEX_TYPE_CHARACTER  input = **input_pp;
@@ -766,64 +742,19 @@ QUEX_NAME(cp1256_to_wchar)(const QUEX_TYPE_CHARACTER** input_pp,
             }
         }
     }
-    return unicode;
+    **output_pp = unicode;
 
     ++(*input_pp);
     ++(*output_pp);
 }
-
-QUEX_INLINE void
-QUEX_NAME(cp1256_to_wstring)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                uint8_t**                    drain_pp,  
-                                uint8_t*                     DrainEnd)
-{
-    const QUEX_TYPE_CHARACTER*  source_iterator; 
-    uint8_t*                    drain_iterator;
-
-    __quex_assert(source_pp != 0x0);
-    __quex_assert(*source_pp != 0x0);
-    __quex_assert(drain_pp != 0x0);
-    __quex_assert(*drain_pp != 0x0);
-
-    drain_iterator  = *drain_pp;
-    source_iterator = *source_pp;
-
-    while( 1 + 1 == 2 ) { 
-        if( source_iterator == SourceEnd ) break;
-        if( drain_iterator == DrainEnd ) break;
-        QUEX_NAME(cp1256_to_utf8)(&source_iterator, &drain_iterator);
-    }
-
-    *drain_pp  = drain_iterator;
-    *source_pp = source_iterator;
-}
-
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::wstring
-QUEX_NAME(cp1256_to_wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
-{
-    const QUEX_TYPE_CHARACTER*   source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
-    const QUEX_TYPE_CHARACTER*   source_end      = source_iterator + Source.length();
-    __QUEX_STD_wchar_t           drain[1];
-    __QUEX_STD_wchar_t*          drain_iterator = 0x0;
-    std::wstring                 result;
-
-    for(; source_iterator != source_end; ++source_iterator) {
-        drain_iterator = (__QUEX_STD_wchar_t*)drain;
-        QUEX_NAME(cp1256_to_wchar)(&source_iterator, &drain_iterator);
-        result.push_back(drain[0]);
-    }
-    return result;
-}
 #endif
-
-#endif
-
-#endif /* __QUEX_OPTION_PLAIN_C */
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__ */
+#define __QUEX_CONVERTER_FROM     cp1256
+#include <quex/code_base/converter_helper/base.gi>
+
+
+
+#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__$$I$$ */
 

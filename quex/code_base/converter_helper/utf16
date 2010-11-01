@@ -2,7 +2,7 @@
 #define __QUEX_INCLUDE_GUARD__UTF16_HELPER
 /* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
-#define  __QUEX_CONVERTER_FROM         utf16be
+#define  __QUEX_CONVERTER_FROM         utf16
 #include <quex/code_base/converter_helper/base.g>
 
 #endif /* __QUEX_INCLUDE_GUARD__UTF16_HELPER */

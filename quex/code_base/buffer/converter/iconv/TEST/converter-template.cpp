@@ -95,13 +95,16 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 void 
 print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
 {
-    uint8_t      utf8_c[10];
-    uint8_t*     p = 0x0;
+    uint8_t              utf8_c[10];
+    uint8_t*             p     = 0x0;
+    QUEX_TYPE_CHARACTER  input = 0;
     assert(End > Begin);
 
     size_t    i = 0;
-    for(QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++iterator, ++i) {
-        p  = QUEX_NAME(unicode_to_utf8)(*iterator, utf8_c);
+    for(const QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++i) {
+        p     = utf8_c;
+        input = *iterator;
+        QUEX_NAME(unicode_to_utf8)(&iterator, &p);
         *p = '\0';
 
         printf("$%04X: ", (int)i * sizeof(QUEX_TYPE_CHARACTER));
@@ -110,12 +113,12 @@ print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
             assert(false);
         case 4:
             printf("%02X.%02X.",
-                   (int)((*iterator & 0xFF000000) >> 24),
-                   (int)((*iterator & 0x00FF0000) >> 16));
+                   (int)((input & 0xFF000000) >> 24),
+                   (int)((input & 0x00FF0000) >> 16));
         case 2:
-            printf("%02X.", (int)((*iterator & 0x0000FF00) >> 8));
+            printf("%02X.", (int)((input & 0x0000FF00) >> 8));
         case 1:
-            printf("%02X", (int)((*iterator & 0x000000FF)));
+            printf("%02X", (int)((input & 0x000000FF)));
         }
         printf(" ('%s')\n", utf8_c);
     }

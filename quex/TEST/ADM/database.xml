@@ -1,41 +1,41 @@
-<test-database execution-time-sec="1.69" date="Sun Oct 31 00:16:28 2010">
+<test-database execution-time-sec="1.60" date="Mon Nov  1 23:58:20 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.40"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.61"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.40" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.61" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check if the default configuration has been updated." time-sum-sec="0.02"> 
+    <test title="Check if the default configuration has been updated." time-sum-sec="0.07"> 
         <application file-name="check-default-configuration.sh" info-request-time="1284715936L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.02" crc="1559239149"/>
+           <choice name="" result="FAIL" time_sec="0.07" crc="1559239149"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.23"> 
+    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.10"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1276061838L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.23" crc="1976547117"/>
+           <choice name="" result="OK" time_sec="0.10" crc="1976547117"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.22"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.03"> 
         <application file-name="macro-check.py" info-request-time="1285399005L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.22" crc="-1467740473"/>
+           <choice name="" result="FAIL" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.62"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.70"> 
         <application file-name="include_guard.py" info-request-time="1267963690L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="FAIL" time_sec="0.40" crc="416290171"/>
-           <choice name="undefinition" result="OK" time_sec="0.22" crc="-1546884230"/>
+           <choice name="convention" result="FAIL" time_sec="0.36" crc="416290171"/>
+           <choice name="undefinition" result="OK" time_sec="0.34" crc="-1546884230"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.21"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.11"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1280814116L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.21" crc="-1492277791"/>
+               <choice name="" result="OK" time_sec="0.11" crc="-1492277791"/>
             </choice-list>
         </test>
     </group>

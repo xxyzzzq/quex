@@ -33,7 +33,7 @@ main(int argc, char** argv)
 
         /* Lexeme is same for all three. */
         char* lexeme = (char*)max_token->utf8_text().c_str();
-        int   L      = (int)std::strlen(lexeme);
+        int   L      = (int)max_token->text.length();
 
         printf(lexeme);
 
