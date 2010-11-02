@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__
-#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__
 
 /* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
@@ -17,7 +17,7 @@
 #define  __QUEX_CONVERTER_FROM         cp1256
 #include <quex/code_base/converter_helper/base.g>
 
-#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__ */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__ */
 
 /* -*- C++ -*- vim: set syntax=cpp:
  * 
@@ -26,9 +26,8 @@
  *                  <av@bsdua.org>.    
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
-
-#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__I
-#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__I
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>
@@ -756,5 +755,5 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 
 
-#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_cp1256__$$I$$ */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256_I */
 

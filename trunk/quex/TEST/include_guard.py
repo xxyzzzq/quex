@@ -48,7 +48,6 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
             ## print "##", file_name
             include_guard_list.append(info(file_name, -1, "<<No INCLUDE_GUARD derective found>>"))
 
-    
 def better_name(FileName):
     L = len(os.environ["QUEX_PATH"] + "/quex/code_base/")
     suffix  = FileName[L:]
@@ -109,7 +108,8 @@ def check_include_guard_undefinition():
     stranger_list.sort(lambda a,b: cmp(a.name, b.name))
     for x in stranger_list:
         ext = os.path.splitext(x.file_name)[1]
-        if ext == ".txt": continue
+        base_file_name = os.path.basename(x.file_name)
+        if ext == ".txt" or (len(base_file_name) >=3 and base_file_name[:3] == "TXT"): continue
         print "%s" % x.name
 
     include_guard_name_list = map(lambda x: x.name, include_guard_list)    

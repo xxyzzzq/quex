@@ -8,7 +8,7 @@ if [[ $1 == "--hwut-info" ]]; then
     #
     # to generate a new default configuration
 else
-    diff $QUEX_PATH/quex/code_base/analyzer/configuration/CppTemplate.txt \
+    diff $QUEX_PATH/quex/code_base/analyzer/configuration/TXT \
          $QUEX_PATH/quex/code_base/test_environment/TestAnalyzer-configuration \
     | awk ' ! /QUEX_SETTING_BUILD_DATE/ && (/>/ || /</)'
 fi

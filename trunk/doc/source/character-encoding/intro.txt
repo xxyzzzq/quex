@@ -42,6 +42,7 @@ generated converters can be plugged into the process.
    engine-codec.txt
    converter.txt
    user-defined.txt
+   converter_helper.txt
 
 .. rubric:: Footnotes
 
