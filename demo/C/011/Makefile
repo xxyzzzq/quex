@@ -10,8 +10,8 @@ iso8859-7-lexer: iso8859-7-lexer.c
 	quex -i greek.qx         \
 		 --codec iso8859_7   \
 		 --token-prefix TKN_ \
-		 --language C        \
-		 -o ISO8859_7_Lex
+		 -o ISO8859_7_Lex    \
+		 --language C 
 	gcc -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
 		-Wall              \
 		-I$(QUEX_PATH) -I. \
@@ -45,8 +45,8 @@ utf16-lexer: utf16-lexer.c
 		 --codec        utf16     \
 		 --token-prefix TKN_      \
 		 -o             UTF16Lex  \
-		 --language C             \
-	     -b             2
+	     -b             2         \
+		 --language C 
 	gcc -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \
@@ -60,8 +60,8 @@ utf16-lexer-other: utf16-lexer-other.c
 		 --codec        utf16     \
 		 --token-prefix TKN_      \
 		 -o             UTF16Lex  \
-		 --language     C         \
-	     -b             2
+	     -b             2         \
+		 --language     C  
 	gcc -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \

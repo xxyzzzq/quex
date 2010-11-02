@@ -4,8 +4,6 @@
 #include "max_Lexer.h"
 #include "boeck_Lexer.h"
 
-#include <quex/code_base/converter_helper/utf8.i>
-
 int 
 main(int argc, char** argv) 
 {        

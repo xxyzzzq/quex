@@ -5,9 +5,8 @@
  *                  <av@bsdua.org>.    
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
-
-#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__I
-#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__I
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>
@@ -95,5 +94,5 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 
 
-#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__$$I$$ */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$_I */
 

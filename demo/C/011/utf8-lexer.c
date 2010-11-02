@@ -2,7 +2,6 @@
 
 // (*) include lexical analyser header
 #include "UTF8Lex.h"
-#include <quex/code_base/converter_helper/utf8.i>
 
 int 
 main(int argc, char** argv) 

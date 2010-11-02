@@ -22,7 +22,7 @@ def extract_macro(LineStr):
 
 def get_defined_macro_list():
     result = []
-    for file_name in ["CppTemplate.txt", "derived"]:
+    for file_name in ["TXT", "derived"]:
         line_n = 0
         for line in open(BaseDir + "configuration/" + file_name, "rb").readlines():
             line_n += 1
