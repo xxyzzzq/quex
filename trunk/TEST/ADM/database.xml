@@ -1,4 +1,4 @@
-<test-database execution-time-sec="171.20" date="Wed Nov  3 09:52:08 2010">
+<test-database execution-time-sec="171.19" date="Wed Nov  3 23:09:42 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.40"> 
@@ -7,7 +7,7 @@
                <choice name="" result="OK" time_sec="1.40" crc="934358125"/>
             </choice-list>
         </test>
-        <test title="3032877 -b, --buffer-element-size enhancement" time-sum-sec="4.11"> 
+        <test title="3032877 -b, --buffer-element-size enhancement" time-sum-sec="4.12"> 
             <application file-name="feature-3032877.sh" info-request-time="1287993053L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="normal" result="OK" time_sec="1.54" crc="1770375190"/>
@@ -45,7 +45,7 @@
                <choice name="FilesExist" result="OK" time_sec="0.06" crc="762666300"/>
             </choice-list>
         </test>
-        <test title="2001787 RE Problem with inverted whitespace" time-sum-sec="2.92"> 
+        <test title="2001787 RE Problem with inverted whitespace" time-sum-sec="2.91"> 
             <application file-name="bug-2001787.sh" info-request-time="1281293832L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iconv" result="OK" time_sec="1.56" crc="-1133373463"/>
@@ -90,7 +90,7 @@
                <choice name="5" result="OK" time_sec="0.18" crc="436945311"/>
             </choice-list>
         </test>
-        <test title="2002070 Output buffer overflow" time-sum-sec="3.26"> 
+        <test title="2002070 Output buffer overflow" time-sum-sec="3.27"> 
             <application file-name="bug-2002070.sh" info-request-time="1267858506L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iconv" result="OK" time_sec="1.72" crc="-513261754"/>
@@ -257,7 +257,7 @@
                <choice name="" result="OK" time_sec="0.21" crc="-930753240"/>
             </choice-list>
         </test>
-        <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" time-sum-sec="3.61"> 
+        <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" time-sum-sec="3.60"> 
             <application file-name="bug-2395200.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="error-lexer" result="OK" time_sec="1.78" crc="-1622611652"/>
@@ -464,7 +464,7 @@
                <choice name="" result="OK" time_sec="0.40" crc="610877259"/>
             </choice-list>
         </test>
-        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bug-1935701.exe" info-request-time="1288772203L" vanished="False"/>
             <make-procedure success="True" time_sec="1.039406"/>
             <choice-list number="2" same_result="False">
@@ -490,7 +490,7 @@
                <choice name="" result="OK" time_sec="0.24" crc="1009222158"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change without immediate return" time-sum-sec="8.16"> 
+        <test title="2095970 0.31.3 Mode change without immediate return" time-sum-sec="8.15"> 
             <application file-name="bug-2095970.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Normal" result="OK" time_sec="1.70" crc="-1188795240"/>
@@ -540,7 +540,7 @@
                <choice name="" result="OK" time_sec="0.16" crc="-1144183572"/>
             </choice-list>
         </test>
-        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.30"> 
+        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.29"> 
             <application file-name="bug-2799244.sh" info-request-time="1288742840L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="error" result="OK" time_sec="0.18" crc="1053420069"/>
@@ -582,7 +582,7 @@
         </test>
     </group>
     <group name="wryun">
-        <test title="2819022 0.41.2 Pre-condition match causes issues" time-sum-sec="6.08"> 
+        <test title="2819022 0.41.2 Pre-condition match causes issues" time-sum-sec="6.09"> 
             <application file-name="bug-2819022.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="1.55" crc="-1370866432"/>
@@ -603,7 +603,7 @@
                <choice name="" result="OK" time_sec="0.23" crc="-1660635643"/>
             </choice-list>
         </test>
-        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.56"> 
+        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.57"> 
             <application file-name="bug-2819045.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="0.21" crc="-424122349"/>
@@ -626,6 +626,14 @@
             <application file-name="bug-2163753.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="1.66" crc="1958343215"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="yaroslavkrv">
+        <test title="3097431 0.54.1 Line-Column numbers" time-sum-sec="0.00"> 
+            <application file-name="bug-3097431.sh" info-request-time="1288822164L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="-700266794"/>
             </choice-list>
         </test>
     </group>

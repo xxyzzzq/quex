@@ -36,6 +36,9 @@ main(int argc, char** argv)
         QUEX_NAME(receive)(&qlex, &token_p);
 
         /* Print out token information            */
+#       ifdef PRINT_LINE_COLUMN_NUMBER
+        printf("(%i, %i)  \t", (int)token_p->_line_n, (int)token_p->_column_n);
+#       endif
 #       ifdef PRINT_TOKEN
         printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
 #       else
