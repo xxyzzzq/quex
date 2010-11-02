@@ -1,0 +1,12 @@
+token { 
+    A;
+    B;
+}
+
+mode X :
+<indentation: 
+   [ \ta-z] => bad;
+>
+{
+    _ => QUEX_TKN_A;
+}

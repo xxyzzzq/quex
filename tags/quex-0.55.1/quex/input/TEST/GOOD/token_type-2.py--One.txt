@@ -1,0 +1,17 @@
+-----------------------------
+IN:
+    [{ name : std::string; }]
+
+OUT:
+
+class:     'Token'
+namespace: ''
+type(token_id)      = size_t
+type(column_number) = size_t
+type(line_number)   = size_t
+distinct members {
+    std::string name
+}
+union members {
+}
+
