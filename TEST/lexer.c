@@ -29,6 +29,9 @@ main(int argc, char** argv)
 #       else
         QUEX_NAME(receive)(&qlex, &token_p);
 #       endif
+#       ifdef PRINT_LINE_COLUMN_NUMBER
+        printf("(%i, %i)  \t", (int)token_p->_line_n, (int)token_p->_column_n);
+#       endif
         /* Print out token information            */
         printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
         ++token_n;

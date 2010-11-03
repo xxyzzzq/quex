@@ -71,7 +71,12 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
         """Store the name of the winner pattern (last_acceptance) and the position
            where it has matched (use of $input/tell_position).
         """
+        if type(Origin) == type(None):
+            # Case if no un-conditional acceptance occured, then register nothing
+            return ""
+
         assert Origin.is_acceptance()
+
         info = LanguageDB["$set-last_acceptance"](__nice(Origin.state_machine_id))
         # NOTE: When a post conditioned pattern ends it does not need to store the input 
         #       position. Rather, the acceptance position of the core pattern is retrieved
@@ -181,6 +186,10 @@ def backward_lexing_find_core_pattern(OriginList):
 
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         
+    # Just try, to make sure that the function has thought about the case 
+    # 'no unconditional_case_treated_f' option.
+    assert get_on_detection_code_fragment(None) != None
+
     LanguageDB = Setup.language_db
 
     def indent_this(Fragment):
@@ -188,7 +197,8 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
 
     txt = []
-    first_if_statement_f = True
+    first_if_statement_f         = True
+    unconditional_case_treated_f = False
     OriginList.sort()
     for origin in OriginList:
         if not origin.is_acceptance(): continue
@@ -216,16 +226,17 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
                 txt.append("\n")
                 txt.append(indent_this(info))
                 txt.append(LanguageDB["$endif"])
-
+            unconditional_case_treated_f = True
             break  # no need for further pre-condition consideration
 
         first_if_statement_f = False
 
-    # (*) write code for the unconditional acceptance states
-    if len(txt) == 0: return ""
+    if unconditional_case_treated_f == False:
+        txt.append(get_on_detection_code_fragment(None))
 
     result = "".join(txt)
-    return "    " + result[:-1].replace("\n", "\n    ") + result[-1]
+    if len(result) == 0: return ""
+    else:                return "    " + result[:-1].replace("\n", "\n    ") + result[-1]
 
 def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     """For the 'longest match' approach it is generally necessary to store the last

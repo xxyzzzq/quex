@@ -15,7 +15,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = gcc # -ggdb # -Os
 
-CC = $(COMPILER) -c \
+CC = $(COMPILER) \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
@@ -31,17 +31,28 @@ LD = $(COMPILER)
 # -- application
 # Object files:
 Case%: Case%.c 
-	$(CC) $< -o $@ 
+	$(CC) -c $< -o $@.o
 
 # Macro expansions (only for debugging):
 %.E: %.c    
 	$(CC) -E $< -o $@ 
+
+Case4: $(QUEX_PATH)/TEST/lexer.c
+	quex -i case4.qx  --engine Simple --language C 
+	$(CC) $^ Simple.c -o $@ \
+		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+
+Case5: $(QUEX_PATH)/TEST/lexer.c
+	quex -i case5.qx  --engine Simple --language C 
+	$(CC) $^ Simple.c -o $@ \
+		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 Case%.c: case%.qx $(QUEX_CORE)
 	quex -i $<  --engine $(@:.c=) --language C 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
+	rm -f Simple*
 	rm -f Case*
 	rm -f *.o
 	rm -f *.bak

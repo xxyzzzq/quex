@@ -175,8 +175,10 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     global LanguageDB 
 
     def __goto_terminal(Origin):
-        assert Origin.is_acceptance()
         global LanguageDB 
+        # Case if no un-conditional acceptance, the goto general terminal
+        if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
+        assert Origin.is_acceptance()
         return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
     # (1) non-acceptance state drop-outs

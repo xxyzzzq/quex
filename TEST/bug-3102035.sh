@@ -2,7 +2,7 @@
 bug=3102035
 if [[ $1 == "--hwut-info" ]]; then
     echo "fschaef: $bug 0.55.1 Weird Setup causes Duplicate State Label"
-    echo "CHOICES: 1, 2, 3;"
+    echo "CHOICES: 1, 2, 3, 4, 5;"
     exit
 fi
 
@@ -19,6 +19,11 @@ EOF
 tmp=`pwd`
 cd $bug/ 
 make Case$1 >& tmp.txt
+
+case $1 in 
+    4) ./Case4 mini.txt >& tmp.txt;;
+    5) ./Case5 mini.txt >& tmp.txt;;
+esac
 
 cat tmp.txt
 rm tmp.txt
