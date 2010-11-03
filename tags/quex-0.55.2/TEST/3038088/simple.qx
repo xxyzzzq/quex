@@ -1,0 +1,14 @@
+token {
+    UNINITIALIZED     = 111;
+    A;
+    B;
+    C = 115;
+    D;
+    E = 115;
+    F = 111;
+}
+
+mode X { 
+    a => QUEX_TKN_A; 
+    z => QUEX_TKN_Z; 
+}

@@ -1,0 +1,8 @@
+#ifndef __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8
+#define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8
+/* 2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
+
+#define __QUEX_CONVERTER_FROM         utf8
+#include <quex/code_base/converter_helper/base.g>
+
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8 */
