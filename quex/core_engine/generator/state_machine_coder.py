@@ -31,11 +31,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     done_state_index_set = set([])
     local_variable_db    = {}
 
-    # -- treat initial state separately 
-    if state_machine.is_init_state_a_target_state():
-        # (only define the init state label, if it is really needed)
-        txt.extend([LanguageDB["$label-def"]("$entry", state_machine.init_state_index), "\n"])
-
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
     #       case, end of file needs to cause a drop out! After the drop out, lexing

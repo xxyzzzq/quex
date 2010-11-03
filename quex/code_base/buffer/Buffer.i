@@ -234,6 +234,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             __quex_assert(   me->_input_p == me->_memory._end_of_file_p 
                           || me->_input_p == me->_memory._back || me->_input_p == me->_memory._front);
 #       endif
+        /* std::fprintf(stderr, "## front = %08X; back = %08X; input_p = %08X;\n", (int)(me->_memory._front), (int)(me->_memory._back), (int)(me->_input_p)); */
         return *(me->_input_p); 
     }
 

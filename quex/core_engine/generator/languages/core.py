@@ -154,7 +154,7 @@ db["C++"] = {
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$if begin-of-line":      "if( me->buffer._character_before_lexeme_start == '\\n' ) {\n",
-    "$elseif begin-of-line":  "else if( me->begin_of_line_f ) {\n",
+    "$elseif begin-of-line":  "else if( me->buffer._character_before_lexeme_start == '\\n' ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if in-set":         cpp.__get_if_in_character_set,
     "$if in-interval":    cpp.__get_if_in_interval,

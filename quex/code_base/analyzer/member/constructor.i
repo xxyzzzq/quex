@@ -161,6 +161,7 @@ QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*   me,
                         QUEX_TYPE_CHARACTER*  BufferEndOfContentP,  /* = 0x0 */
                         const char*           CharacterEncodingName /* = 0x0 */) 
 {
+    QUEX_TYPE_CHARACTER* old_memory = 0x0;
     /* End of Content **must** lie inside the provided buffer */
 #   if defined(QUEX_OPTION_ASSERTS)
     if(    BufferEndOfContentP < BufferMemoryBegin 
@@ -174,9 +175,9 @@ QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*   me,
 
     /* reset_basic(...) does not reset the buffer memory itself. This must
      * be done by hand.                                                    */
-    QUEX_TYPE_CHARACTER* old_memory = QUEX_NAME(BufferMemory_reset)(&me->buffer._memory,
-                                                                    BufferMemoryBegin, BufferMemorySize, 
-                                                                    BufferEndOfContentP);
+    old_memory = QUEX_NAME(BufferMemory_reset)(&me->buffer._memory,
+                                               BufferMemoryBegin, BufferMemorySize, 
+                                               BufferEndOfContentP);
 
     if( BufferMemoryBegin == 0x0 ) return old_memory;
 
