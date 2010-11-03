@@ -1,0 +1,11 @@
+token
+{
+      TERMINATION;
+      FAILURE;
+      AB;
+}
+
+mode CODE :
+{
+    ^a*b  => QUEX_TKN_AB;
+}
