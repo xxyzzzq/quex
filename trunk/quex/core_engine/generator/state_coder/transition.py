@@ -187,9 +187,7 @@ def do_dead_end_state_stub(DeadEndStateInfo, SMD):
 
         else:
             return [ acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                            __goto_distinct_terminal),
-                    # Pre-conditions might not have their pre-condition fulfilled.
-                    LanguageDB["$goto-last_acceptance"],
+                                                             __goto_distinct_terminal),
                     "\n" ]
 
     elif SMD.backward_lexing_f():
@@ -221,6 +219,12 @@ def __label_distinct_terminal(Origin):
         return LanguageDB["$label"]("$terminal-direct", Origin.state_machine_id)
 
 def __goto_distinct_terminal(Origin):
+
+    # No unconditional case of acceptance 
+    if type(Origin) == type(None): 
+        LanguageDB = Setup.language_db
+        return LanguageDB["$goto-last_acceptance"]
+
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
     return LanguageDB["$goto-pure"](__label_distinct_terminal(Origin))
