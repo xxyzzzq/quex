@@ -6,18 +6,19 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
-# In this test we try to avoid issues with some 'weird' cases that
-# produced duplicate state labels. The the compiler warnings such as
-# 
-#   Case3.c:154: error: duplicate label ‘STATE_39’
-#   Case3.c:151: error: previous definition of ‘STATE_39’ was here
-#
-# would appear. If they do not, then everything is fine.
+cat << EOF
+## In this test we try to avoid issues with some 'weird' cases that
+## produced duplicate state labels. The the compiler warnings such as
+## 
+##   Case3.c:154: error: duplicate label ‘STATE_39’
+##   Case3.c:151: error: previous definition of ‘STATE_39’ was here
+##
+## would appear. If they do not, then everything is fine.
+EOF
 
 tmp=`pwd`
 cd $bug/ 
 make Case$1 >& tmp.txt
-echo "No Error, is good output!"
 
 cat tmp.txt
 rm tmp.txt
