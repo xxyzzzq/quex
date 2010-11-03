@@ -122,6 +122,14 @@ def __clean_and_validate(sm, AllowNothingIsFineF, fh):
                   "into an acceptance state. Thus, as soon as no other input matches\n" + \
                   "the analyzer ends up in an infinite loop.", fh)
 
+    # (*) Pre-conditions also, do not make sense if there is a 'Nothing is fine' path
+    if     sm.core().pre_context_sm() != None \
+       and sm.core().pre_context_sm().get_init_state().core().is_acceptance():
+        error_msg("Pre-context of pattern contained a 'nothing is necessary' path.\n" + \
+                  "For example, the pattern 'x*/y/' means that zero or more 'x' are a pre-\n" + \
+                  "condition for 'y'. If zero appearances of 'x' are enough, then obviously\n" + \
+                  "there is no pre-condition for 'y'! Most likely the author intended 'x+/y/'.", fh)
+
     # (*) Acceptance states shall not store the input position when they are 'normally'
     #     post-conditioned. Post-conditioning via the backward search is a different 
     #     ball-game.
@@ -182,7 +190,6 @@ def __delete_transitions_on_forbidden_code_points(sm, fh):
             # If the operation resulted in cutting the path to the target state, then delete it.
             if trigger_set.is_empty():
                 state.transitions().delete_transitions_to_target(target_state_index)
-
 
 def do(UTF8_String_or_Stream, PatternDict, 
        DOS_CarriageReturnNewlineF   = False, 
@@ -280,10 +287,10 @@ def snap_conditional_expression(stream, PatternDict):
         #     NOTE: setup_pre_context() marks the state origins!
         result = __construct(pattern_1, pre_context=pattern_0, fh=stream)
         return __debug_exit(result, stream)
-
-    # (4) expression with post and pre-condition
-    result = __construct(pattern_1, pre_context=pattern_0, post_context=pattern_2, fh=stream)
-    return __debug_exit(result, stream)
+    else:
+        # (4) expression with post and pre-condition
+        result = __construct(pattern_1, pre_context=pattern_0, post_context=pattern_2, fh=stream)
+        return __debug_exit(result, stream)
 
 def snap_expression(stream, PatternDict):
     """expression:  term
