@@ -103,9 +103,3 @@ clean:
 	rm -f *.svg
 	rm -f *.o
 
-test-utf8: test-utf8.cpp
-		g++ -I$(QUEX_PATH) -I.  \
-		$<                      \
-		$(CCFLAG_ASSERTS)       \
-		-o $@ 
-
