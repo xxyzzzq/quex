@@ -3,8 +3,6 @@ Source_Empty____________________________________________________
 ...to_utf8_string(... pointers ...)
     GOOD: Checked 0 elements.
 ...to_utf8_string(string<QUEX_TYPE_CHARACTER>)
-    [Size of drain is allocated dynamically. Possibly, more gets  ]
-    [converted, than expected. Then 'something != 0x0' is no error]
     GOOD: Checked 0 elements.
 
 Source_Empty____________________________________________________
@@ -12,7 +10,5 @@ Source_Empty____________________________________________________
 ...to_wstring(... pointers ...)
     GOOD: Checked 0 elements.
 ...to_wstring(string<QUEX_TYPE_CHARACTER>)
-    [Size of drain is allocated dynamically. Possibly, more gets  ]
-    [converted, than expected. Then 'something != 0x0' is no error]
     GOOD: Checked 0 elements.
 
