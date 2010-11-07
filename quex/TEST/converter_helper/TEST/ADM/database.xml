@@ -1,14 +1,14 @@
-<test-database execution-time-sec="0.01" date="Mon Nov  8 12:27:51 2010">
+<test-database execution-time-sec="0.04" date="Mon Nov  8 12:30:53 2010">
     <last-used-diff-display-program name=""/>
-    <test title="UTF8 to utf8 and wchar_t." make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="test-utf8" info-request-time="1289215635L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.809318"/>
+    <test title="UTF8 to utf8 and wchar_t." make-dependent="True" time-sum-sec="0.04"> 
+        <application file-name="test-utf8" info-request-time="1289215853L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.453982"/>
         <choice-list number="5" same_result="False">
            <choice name="Normal" result="OK" time_sec="0.00" crc="-1120039996"/>
-           <choice name="Source_Empty" result="OK" time_sec="0.00" crc="-1456007518"/>
+           <choice name="Source_Empty" result="OK" time_sec="0.01" crc="-1456007518"/>
            <choice name="Source_Incomplete" result="NO GOOD FILE" time_sec="0.01" crc="-1530932426"/>
-           <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="1407621739"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.00" crc="-607427135"/>
+           <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="1407621739"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="-607427135"/>
         </choice-list>
     </test>
 </test-database>
