@@ -60,9 +60,9 @@ main(int argc, char** argv)
         }
     }
     hwut_if_choice("Source_Incomplete") {
-        QUEX_TYPE_CHARACTER  source[] = { 0xe4, 0x9c, /* 0x91 (Unicode 0x4711) */ 0x0 }; 
+        QUEX_TYPE_CHARACTER  source[] = { 0xe4, 0x9c, /* 0x91 (Unicode 0x4711) */ 0x0, 0x0, 0x0, 0x0 }; 
         {
-            uint8_t  reference[] = { 0xe1, 0x89, 0x0 };
+            uint8_t  reference[] = { 0xe1, 0x89, 0x0, };
             test_utf8_string(argv[1], source, source + 2, 1024, reference);
         }
         {
