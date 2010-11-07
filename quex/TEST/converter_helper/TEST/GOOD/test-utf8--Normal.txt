@@ -1,0 +1,14 @@
+Normal____________________________________________________
+
+...to_utf8_string(... pointers ...)
+    GOOD: Checked 3 elements.
+...to_utf8_string(string<QUEX_TYPE_CHARACTER>)
+    GOOD: Checked 3 elements.
+
+Normal____________________________________________________
+
+...to_wstring(... pointers ...)
+    GOOD: Checked 1 elements.
+...to_wstring(string<QUEX_TYPE_CHARACTER>)
+    GOOD: Checked 1 elements.
+

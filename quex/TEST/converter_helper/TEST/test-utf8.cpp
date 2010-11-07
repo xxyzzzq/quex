@@ -3,6 +3,7 @@
 #endif
 #include "common.h"
 #include <support/C/hwut_unit.h>
+#include <cassert>
 
 #define test_this(NAME, SOURCE, REFERENCE, DRAIN_SIZE, W_REFERENCE, W_DRAIN_SIZE) \
         { \
@@ -18,31 +19,13 @@
             } \
         }
 
-template <class ElementT> void
-read_from_file(ElementT* Buffer, size_t Size, const char* FileName)
-{
-    ElementT*   iterator  = (ElementT*)source;
-    ElementT*   BufferEnd = (ElementT*)source + Size;
-
-    FILE*  fh = open(FileName, "rb");
-
-    do {
-        ElementT value = 0;
-        for(int i = 0; i < sizeof(ElementT); ++i) {
-            tmp = fgetc(fh);
-            if( tmp == EOF ) break;
-            value = (value << 8) | tmp;
-        }
-        *iterator++ = value;
-    } while( iterator < BufferEnd );
-}
-
 int
 main(int argc, char** argv)
 {
     hwut_info("UTF8 to utf8 and wchar_t.;\n"
               "CHOICES: Normal, Source_Empty, Source_Incomplete, Source_TestFile, Drain_ToSmall;\n");
 
+    assert( sizeof(QUEX_TYPE_CHARACTER) == 1 );
     
 #   if 0
     hwut_if_choice("Normal") {
@@ -102,16 +85,16 @@ main(int argc, char** argv)
     }
     hwut_if_choice("Source_TestFile") {
         QUEX_TYPE_CHARACTER  source[65536];
-        read_from_file(source, 65536, "example-utf8.txt");
+        QUEX_TYPE_CHARACTER* source_end = read_from_file(source, 65536, "example/utf8.txt");
         {
             uint8_t  reference[65536];
-            memcpy(reference, source, 65536);
-            test_utf8_string(argv[1], source, source + 6, 5, reference);
+            memcpy(reference, source, (source_end - source));
+            test_utf8_string(argv[1], source, source_end, 65536, reference);
         }
         {
             wchar_t  wreference[65536];
-            read_from_file(wreference, 65536, "example-ucs4le.txt");
-            test_wstring(argv[1], source, source + 6, 1, wreference);
+            read_from_file(wreference, 65536, "example/ucs4le.txt");
+            test_wstring(argv[1], source, source_end, 65536, wreference);
         }
     }
 }

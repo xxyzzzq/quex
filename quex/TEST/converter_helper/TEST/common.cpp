@@ -6,7 +6,7 @@ check(const DrainT* Drain, const DrainT* DrainEnd, const DrainT* ref_iterator)
 {
     const DrainT* iterator = Drain;
 
-    if( iterator > DrainEnd ) { cout << "Drain Distorted\n"; return; }
+    if( iterator > DrainEnd ) { cout << "    ERROR: Drain Distorted\n"; return; }
 
     for(; iterator != DrainEnd; ++iterator, ++ref_iterator) {
         if( *ref_iterator != *iterator ) { 
@@ -40,7 +40,9 @@ test_utf8_string(const char*                 TestName,
         uint8_t*         drain_p  = drain;
         const uint8_t*   DrainEnd = drain + DrainSize;
 
+        //printf("BEFORE: Source = %08X; SourceEnd = %08X; (Delta %i); Drain = %08X; DrainEnd = %08X\n", (int)source_p, (int)SourceEnd, (int)(SourceEnd - source_p), (int)drain_p, (int)DrainEnd);
         CONVERTER(utf8_string)(&source_p, SourceEnd, &drain_p,  DrainEnd);
+        //printf("AFTER:  Source = %08X; SourceEnd = %08X; (Delta %i); Drain = %08X; DrainEnd = %08X\n", (int)source_p, (int)SourceEnd, (int)(SourceEnd - source_p), (int)drain_p, (int)DrainEnd);
         check(drain, drain_p, reference);
         delete drain;
     }

@@ -36,6 +36,8 @@
 
 using namespace std;
 #include <iostream>
+#include <cstdio>
+#include <cstdlib>
 
 extern void 
 test_utf8_string(const char*                 TestName, 
@@ -45,5 +47,38 @@ extern void
 test_wstring(const char*                 TestName, 
              const QUEX_TYPE_CHARACTER*  source_p,  const QUEX_TYPE_CHARACTER*  SourceEnd,
              size_t                      DrainSize, const wchar_t*              reference);
+
+template <class ElementT> inline ElementT*
+read_from_file(ElementT* buffer, size_t Size, const char* FileName)
+{
+    using namespace std;
+
+    ElementT*   iterator  = buffer;
+    ElementT*   BufferEnd = buffer + Size;
+
+    FILE*  fh = fopen(FileName, "rb");
+    if( fh == NULL ) {
+        printf("File '%s' not found!", FileName);
+        exit(-1);
+    }
+
+    do {
+        uint8_t  bytes[sizeof(ElementT)]; 
+        for(int i = 0; i < sizeof(ElementT); ++i) {
+            int tmp = fgetc(fh);
+            if( tmp == EOF ) goto Exit;
+            bytes[sizeof(ElementT) - 1 - i] = (uint8_t)tmp;
+        }
+        ElementT value = 0;
+        for(int i = 0; i < sizeof(ElementT); ++i) {
+            value = (value << 8) | bytes[i];
+        }
+        *iterator++ = value;
+    } while( iterator < BufferEnd - 1 );
+
+Exit:
+    *iterator = 0x0; /* Terminating Zero */
+    return iterator;
+}
 
 #endif /* __INCLUDE_GUARD__COMMON_H */
