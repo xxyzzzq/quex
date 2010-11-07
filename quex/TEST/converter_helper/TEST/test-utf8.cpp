@@ -76,7 +76,7 @@ main(int argc, char** argv)
                                           0x0 }; 
         {
             uint8_t  reference[] = { 0xe4, 0x9c, 0x91 /* unicode 0x4711 */, 0x0 }; 
-            test_utf8_string(argv[1], source, source + 6, 5, reference);
+            test_utf8_string(argv[1], source, source + 6, 4, reference);
         }
         {
             wchar_t  wreference[] = { 0x4711, 0x0 };

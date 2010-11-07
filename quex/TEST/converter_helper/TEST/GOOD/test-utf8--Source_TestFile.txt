@@ -1,0 +1,14 @@
+Source_TestFile____________________________________________________
+
+...to_utf8_string(... pointers ...)
+    GOOD: Checked 196 elements.
+...to_utf8_string(string<QUEX_TYPE_CHARACTER>)
+    GOOD: Checked 196 elements.
+
+Source_TestFile____________________________________________________
+
+...to_wstring(... pointers ...)
+    GOOD: Checked 146 elements.
+...to_wstring(string<QUEX_TYPE_CHARACTER>)
+    GOOD: Checked 146 elements.
+
