@@ -46,7 +46,7 @@ __QUEX_CONVERTER_HELPER(utf8, wchar)(const QUEX_TYPE_CHARACTER** input_pp, wchar
 
     if( (*iterator & 0x80) == 0 ) {
         /* Header: 0xxx.xxxx */
-        **output_pp = (wchar_t)*iterator;
+        **output_pp = (wchar_t)*(iterator++);
     }
     else if( *iterator < 0xE0 ) { /* ... max: 1101.1111 --> 0xDF, next: 0xE0 */
         /*    110x.xxxx 10yy.yyyy 

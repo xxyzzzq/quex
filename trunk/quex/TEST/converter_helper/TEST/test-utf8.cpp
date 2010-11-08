@@ -5,25 +5,26 @@
 #include <support/C/hwut_unit.h>
 #include <cassert>
 
-#define test_this(NAME, SOURCE, REFERENCE, DRAIN_SIZE, W_REFERENCE, W_DRAIN_SIZE) \
-        { \
-            QUEX_TYPE_CHARACTER Source[] = { SOURCE }; \
-            size_t              SourceSize = sizeof(Source) / sizeof(QUEX_TYPE_CHARACTER); \
-            { \
-                uint8_t  reference[] = { REFERENCE }; \
-                test_utf8_string(NAME, Source, Source + SourceSize, DRAIN_SIZE, reference); \
-            } \
-            { \
-                wchar_t  wreference[] = { W_REFERENCE }; \
-                test_wstring(NAME, Source, Source + SourceSize, W_DRAIN_SIZE, wreference); \
-            } \
-        }
+void
+test_this(const char* Name, 
+          const QUEX_TYPE_CHARACTER*   Source,
+          const uint8_t*               UTF8_Expected,
+          const size_t                 UTF8_DrainSize,
+          const wchar_t*               WChar_Expected,
+          const size_t                 WChar_DrainSize)
+{
+    const QUEX_TYPE_CHARACTER*  source_end = Source;
+    for(; *source_end; ++source_end);
+
+    test_utf8_string(Name, Source, source_end, UTF8_DrainSize, UTF8_Expected); 
+    test_wstring(Name, Source, source_end, WChar_DrainSize, WChar_Expected); 
+}
 
 int
 main(int argc, char** argv)
 {
-    hwut_info("UTF8 to utf8 and wchar_t.;\n"
-              "CHOICES: Normal, Source_Empty, Source_Incomplete, Source_TestFile, Drain_ToSmall;\n");
+    hwut_info("UTF8 to utf8 and wchar_t.;n"
+              "CHOICES: Normal, Source_Empty, Source_TestFile, Drain_ToSmall;n"); // Source_Incomplete
 
     assert( sizeof(QUEX_TYPE_CHARACTER) == 1 );
     
@@ -38,15 +39,11 @@ main(int argc, char** argv)
     }
 #   endif
     hwut_if_choice("Normal") {
-        QUEX_TYPE_CHARACTER  source[] = { 0xe4, 0x9c, 0x91 /* Unicode 0x4711 */, 0x0 }; 
-        {
-            uint8_t  reference[] = { 0xe4, 0x9c, 0x91 /* Unicode 0x4711 */, 0x0 }; 
-            test_utf8_string(argv[1], source, source + 3, 1024, reference);
-        }
-        {
-            wchar_t  wreference[] = { 0x4711, 0x0 };
-            test_wstring(argv[1], source, source + 3, 1024, wreference);
-        }
+        QUEX_TYPE_CHARACTER  source[]         = { 0xe4, 0x9c, 0x91 /* Unicode 0x4711 */, 0x0 }; 
+        uint8_t              utf8_expected[]  = { 0xe4, 0x9c, 0x91 /* Unicode 0x4711 */, 0x0 }; 
+        wchar_t              wchar_expected[] = { 0x4711, 0x0 };
+
+        test_this(argv[1], source, utf8_expected, 1024, wchar_expected, 1024);
     }
     hwut_if_choice("Source_Empty") {
         QUEX_TYPE_CHARACTER  source = { 0x0 };
