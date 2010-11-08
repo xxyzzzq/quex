@@ -24,35 +24,18 @@
 #   error "__QUEX_CONVERTER_FROM must be defined."
 #endif
 
-QUEX_NAMESPACE_MAIN_OPEN
 
-QUEX_INLINE void
-__QUEX_CONVERTER_HELPER(__QUEX_CONVERTER_FROM, utf8_string)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                                            const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                            uint8_t**                    drain_pp,  
-                                                            const uint8_t*               DrainEnd);
+#define __QUEX_TYPE_DRAIN   uint8_t
+#define __QUEX_CONVERTER_TO utf8_string
+#include <quex/code_base/converter_helper/base-core.g>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::string
-__QUEX_CONVERTER_HELPER(__QUEX_CONVERTER_FROM, utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
+#define __QUEX_TYPE_DRAIN   uint16_t
+#define __QUEX_CONVERTER_TO utf16_string
+#include <quex/code_base/converter_helper/base-core.g>
 
+#define __QUEX_TYPE_DRAIN   uint32_t
+#define __QUEX_CONVERTER_TO utf32_string
+#include <quex/code_base/converter_helper/base-core.g>
 
-#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-
-QUEX_INLINE void
-__QUEX_CONVERTER_HELPER(__QUEX_CONVERTER_FROM, wstring)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                                        const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                        uint8_t**                    drain_pp,  
-                                                        const uint8_t*               DrainEnd);
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE std::wstring
-__QUEX_CONVERTER_HELPER(__QUEX_CONVERTER_FROM, wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
-#endif
-
-#endif
-
-QUEX_NAMESPACE_MAIN_CLOSE
 
 #undef __QUEX_CONVERTER_FROM

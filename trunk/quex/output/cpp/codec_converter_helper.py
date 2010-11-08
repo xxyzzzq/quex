@@ -43,7 +43,7 @@ def _do(UnicodeTrafoInfo, CodecName):
     #    print "##", info
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
     # print "##END"
-    dummy,        ucs4_function_body  = ConverterWriterUCS4().do(UnicodeTrafoInfo)
+    dummy,        ucs4_function_body  = ConverterWriterUTF32().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
     FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
@@ -294,7 +294,7 @@ class ConverterWriterUTF16(ConverterWriter):
         # Take the unicode value via the UCS4 converter
         return ""
 
-class ConverterWriterUCS4(ConverterWriter):
+class ConverterWriterUTF32(ConverterWriter):
     def get_prolog(self, ConvTable):
         return ""
 
