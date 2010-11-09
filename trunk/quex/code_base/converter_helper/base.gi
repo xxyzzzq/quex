@@ -21,17 +21,18 @@
 #endif
 
 #define __QUEX_TYPE_DRAIN    uint8_t
-#define __QUEX_CONVERTER_TO  utf8_string
+#define __QUEX_CONVERTER_TO  utf8
 #include <quex/code_base/converter_helper/base-core.gi>
 
 #define __QUEX_TYPE_DRAIN    uint16_t
-#define __QUEX_CONVERTER_TO  utf16_string
+#define __QUEX_CONVERTER_TO  utf16
 #include <quex/code_base/converter_helper/base-core.gi>
 
 #define __QUEX_TYPE_DRAIN    uint32_t
-#define __QUEX_CONVERTER_TO  utf32_string
+#define __QUEX_CONVERTER_TO  utf32
 #include <quex/code_base/converter_helper/base-core.gi>
 
+/* Adapt 'wchar_t' to utf16 or utf32 depending on its size. */
 QUEX_INLINE void
 __QUEX_CONVERTER_HELPER(__QUEX_CONVERTER_FROM, wstring)(const QUEX_TYPE_CHARACTER**  source_pp, 
                                                         const QUEX_TYPE_CHARACTER*   SourceEnd, 
