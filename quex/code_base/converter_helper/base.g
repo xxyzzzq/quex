@@ -15,9 +15,9 @@
  *   $$CODEC$$_to_utf8_string(...)  -- string to utf8
  *   $$CODEC$$_to_utf8_string(C++)  -- C++ string to utf8 (std::string)
  *
- *   $$CODEC$$_to_wchar(...)        -- character to utf8
- *   $$CODEC$$_to_wstring(...)      -- string to utf8
- *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
+ *   $$CODEC$$_to_wchar(...)        -- character to wchar
+ *   $$CODEC$$_to_wstring(...)      -- string to wchar
+ *   $$CODEC$$_to_wstring(C++)      -- C++ string to wchar (std::wstring)
  *__________________________________________________________________________________________*/
 
 #ifndef __QUEX_CONVERTER_FROM
@@ -37,5 +37,10 @@
 #define __QUEX_CONVERTER_TO utf32_string
 #include <quex/code_base/converter_helper/base-core.g>
 
+/* Note: 'wchar_t' is mapped to either utf16 or utf32 depending on
+ *       QUEX_SETTING_WCHAR_CODEC                                  */
+#define __QUEX_TYPE_DRAIN     wchar_t
+#define __QUEX_CONVERTER_TO   wstring
+#include <quex/code_base/converter_helper/base-core.g>
 
 #undef __QUEX_CONVERTER_FROM
