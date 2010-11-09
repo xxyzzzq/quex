@@ -11,7 +11,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(utf16_to_utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
+QUEX_NAME(utf16_to_utf8_character)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
 {
     wchar_t  x0      = (wchar_t)0;
     wchar_t  x1      = (wchar_t)0;
@@ -58,7 +58,7 @@ QUEX_NAME(utf16_to_utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
 
 QUEX_INLINE void
-QUEX_NAME(utf16_to_wchar)(const QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
+QUEX_NAME(utf16_to_wchar_character)(const QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
 {
     wchar_t  x0 = (wchar_t)0;
     wchar_t  x1 = (wchar_t)0;
