@@ -11,11 +11,11 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(utf16_to_utf8_character)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
+__QUEX_CONVERTER_CHAR(utf16, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
 {
-    wchar_t  x0      = (wchar_t)0;
-    wchar_t  x1      = (wchar_t)0;
-    wchar_t  unicode = (wchar_t)0;
+    uint16_t  x0      = (uint16_t)0;
+    uint16_t  x1      = (uint16_t)0;
+    uint32_t  unicode = (uint16_t)0;
 
     if ( **input_pp <= 0x7f ) {
         *(*output_pp)++ = (uint8_t)*(*input_pp);
@@ -55,13 +55,24 @@ QUEX_NAME(utf16_to_utf8_character)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t
     } 
 }
 
-#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+QUEX_INLINE void
+__QUEX_CONVERTER_CHAR(utf16, utf16)(const QUEX_TYPE_CHARACTER**  input_pp, 
+                                    uint16_t**                   output_pp)
+{
+    if( **input_pp < 0xD800 || **input_pp > 0xE000 ) {
+        *(*output_pp)++ = *(*input_pp)++;
+    } else { 
+        *(*output)++ = *(*input_pp)++ - 0xD800;
+        *(*output)++ = *(*input_pp)++ - 0xDC00;
+    }
+}
 
 QUEX_INLINE void
-QUEX_NAME(utf16_to_wchar_character)(const QUEX_TYPE_CHARACTER** input_pp, wchar_t** output_pp)
+__QUEX_CONVERTER_CHAR(utf16, utf32)(const QUEX_TYPE_CHARACTER**  input_pp, 
+                                    uint32_t**                   output_pp)
 {
-    wchar_t  x0 = (wchar_t)0;
-    wchar_t  x1 = (wchar_t)0;
+    uint32_t  x0 = (wchar_t)0;
+    uint32_t  x1 = (wchar_t)0;
 
     if( **input_pp < 0xD800 || **input_pp > 0xE000 ) {
         *(*output_pp)++ = *(*input_pp)++;
@@ -71,11 +82,10 @@ QUEX_NAME(utf16_to_wchar_character)(const QUEX_TYPE_CHARACTER** input_pp, wchar_
         *(*output_pp)++ = (x0 << 10) + x1 + 0x10000;
     }
 }
-#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_FROM              utf16
+#define __QUEX_FROM  utf16
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */

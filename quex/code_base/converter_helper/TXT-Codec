@@ -3,17 +3,6 @@
 
 /* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
-/* Converter Functions: ____________________________________________________________________
- *
- *   $$CODEC$$_to_utf8(...)         -- character to utf8
- *   $$CODEC$$_to_utf8_string(...)  -- string to utf8
- *   $$CODEC$$_to_utf8_string(C++)  -- C++ string to utf8 (std::string)
- *
- *   $$CODEC$$_to_wchar(...)        -- character to utf8
- *   $$CODEC$$_to_wstring(...)      -- string to utf8
- *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
- *__________________________________________________________________________________________*/
-
 #define  __QUEX_FROM         $$CODEC$$
 #include <quex/code_base/converter_helper/base.g>
 
