@@ -26,8 +26,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                             uint8_t**                    output_pp)
+__QUEX_CONVERTER_CHAR($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+                                       uint8_t**                    output_pp)
 {
 $$PROLOG_UTF8$$
     uint32_t   unicode  = 0xFFFF;
@@ -73,19 +73,27 @@ $$BODY_UTF8$$
 #   undef QUEX_BYTE_3 
 }
 
-#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-
 QUEX_INLINE void
-QUEX_NAME($$CODEC$$_to_wchar)(const QUEX_TYPE_CHARACTER** input_pp,
-                              wchar_t**                   output_pp)
+__QUEX_CONVERTER_CHAR($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
+                                        uint16_t**                  output_pp)
 {
-    uint32_t             unicode = 0L;
+    uint16_t             unicode = 0L;
     QUEX_TYPE_CHARACTER  input = **input_pp;
-$$BODY_UCS4$$
+$$BODY_UTF16$$
     ++(*input_pp);
     ++(*output_pp);
 }
-#endif
+
+QUEX_INLINE void
+__QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
+                                        uint16_t**                  output_pp)
+{
+    uint32_t             unicode = 0L;
+    QUEX_TYPE_CHARACTER  input = **input_pp;
+$$BODY_UTF32$$
+    ++(*input_pp);
+    ++(*output_pp);
+}
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
