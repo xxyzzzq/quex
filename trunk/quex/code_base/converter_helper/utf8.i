@@ -129,7 +129,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const QUEX_TYPE_CHARACTER** input_pp, uint32_
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_CONVERTER_FROM   utf8
+#define  __QUEX_FROM   utf8
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */

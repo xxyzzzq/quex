@@ -40,7 +40,7 @@ test_utf8_string(const char*                 TestName,
         uint8_t*         drain_p  = drain;
         const uint8_t*   DrainEnd = drain + DrainSize;
 
-        CONVERTER(utf8_string)(&source_p, SourceEnd, &drain_p,  DrainEnd);
+        CONVERTER(utf8)(&source_p, SourceEnd, &drain_p,  DrainEnd);
         check(drain, drain_p, reference);
         delete drain;
     }
@@ -50,7 +50,7 @@ test_utf8_string(const char*                 TestName,
         std::basic_string<QUEX_TYPE_CHARACTER>  source(SourceBegin);
         std::string                             drain;
 
-        drain = CONVERTER(utf8_string)(source);
+        drain = CONVERTER(utf8)(source);
         if( drain.length() > DrainSize ) {
             cout << "    ## Size of drain is allocated dynamically. Possibly, more gets   ##\n";
             cout << "    ## converted, than expected. Then 'something != 0x0' is no error ##\n";
@@ -78,7 +78,7 @@ test_wstring(const char*                 TestName,
          const wchar_t*   DrainEnd = drain + DrainSize;
 
          //printf("BEFORE: Source = %08X; SourceEnd = %08X; (Delta %i); Drain = %08X; DrainEnd = %08X\n", (int)source_p, (int)SourceEnd, (int)(SourceEnd - source_p), (int)drain_p, (int)DrainEnd);
-         CONVERTER(wstring)(&source_p, SourceEnd, &drain_p,  DrainEnd);
+         CONVERTER(wchar)(&source_p, SourceEnd, &drain_p,  DrainEnd);
          //printf("AFTER:  Source = %08X; SourceEnd = %08X; (Delta %i); Drain = %08X; DrainEnd = %08X\n", (int)source_p, (int)SourceEnd, (int)(SourceEnd - source_p), (int)drain_p, (int)DrainEnd);
          check(drain, drain_p, reference);
          delete drain;
@@ -89,7 +89,7 @@ test_wstring(const char*                 TestName,
         std::basic_string<QUEX_TYPE_CHARACTER>  source(SourceBegin);
         std::wstring                            drain;
 
-        drain = CONVERTER(wstring)(source);
+        drain = CONVERTER(wchar)(source);
         if( drain.length() > DrainSize ) {
             cout << "    ## Size of drain is allocated dynamically. Possibly, more gets   ##\n";
             cout << "    ## converted, than expected. Then 'something != 0x0' is no error ##\n";

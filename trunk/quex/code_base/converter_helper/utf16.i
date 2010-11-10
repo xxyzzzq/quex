@@ -75,7 +75,7 @@ QUEX_NAME(utf16_to_wchar_character)(const QUEX_TYPE_CHARACTER** input_pp, wchar_
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_CONVERTER_FROM              utf16
+#define __QUEX_FROM              utf16
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */

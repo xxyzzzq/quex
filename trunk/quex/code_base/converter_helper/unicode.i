@@ -67,7 +67,7 @@ QUEX_NAME(unicode_to_wchar)(const QUEX_TYPE_CHARACTER**  input_pp,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_CONVERTER_FROM   unicode
+#define __QUEX_FROM   unicode
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I */
