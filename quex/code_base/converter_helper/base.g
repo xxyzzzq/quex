@@ -8,6 +8,10 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/asserts>
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   include <string>
+#endif
+
 
 /* Converter Functions: ____________________________________________________________________
  *
@@ -20,27 +24,34 @@
  *   $$CODEC$$_to_wstring(C++)      -- C++ string to wchar (std::wstring)
  *__________________________________________________________________________________________*/
 
-#ifndef __QUEX_CONVERTER_FROM
-#   error "__QUEX_CONVERTER_FROM must be defined."
+#ifndef __QUEX_FROM
+#   error "__QUEX_FROM must be defined."
 #endif
 
-
 #define __QUEX_TYPE_DRAIN   uint8_t
-#define __QUEX_CONVERTER_TO utf8_string
+#define __QUEX_TO utf8
 #include <quex/code_base/converter_helper/base-core.g>
 
 #define __QUEX_TYPE_DRAIN   uint16_t
-#define __QUEX_CONVERTER_TO utf16_string
+#define __QUEX_TO utf16
 #include <quex/code_base/converter_helper/base-core.g>
 
 #define __QUEX_TYPE_DRAIN   uint32_t
-#define __QUEX_CONVERTER_TO utf32_string
+#define __QUEX_TO utf32
 #include <quex/code_base/converter_helper/base-core.g>
 
-/* Note: 'wchar_t' is mapped to either utf16 or utf32 depending on
- *       QUEX_SETTING_WCHAR_CODEC                                  */
-#define __QUEX_TYPE_DRAIN     wchar_t
-#define __QUEX_CONVERTER_TO   wstring
+/* Note: 'char' and 'wchar_t' are mapped to 'utf8', 'utf16', 'utf32'
+ *       depending on:
+ *                         QUEX_SETTING_WCHAR_CODEC              
+ *                         QUEX_SETTING_CHAR_CODEC                     */
+#define __QUEX_TYPE_DRAIN     char
+#define __QUEX_TO   char
 #include <quex/code_base/converter_helper/base-core.g>
 
-#undef __QUEX_CONVERTER_FROM
+#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+#   define __QUEX_TYPE_DRAIN     wchar_t
+#   define __QUEX_TO   wchar
+#   include <quex/code_base/converter_helper/base-core.g>
+#endif
+
+#undef __QUEX_FROM

@@ -8,8 +8,10 @@
 #define QUEX_NAMESPACE_MAIN_OPEN  namespace Tester {
 #define QUEX_NAMESPACE_MAIN_CLOSE }
 
-#define ____QUEX_CONVERTER_HELPER(A, B) Testy_from_ ## A ## _to_ ## B
-#define __QUEX_CONVERTER_HELPER(A, B)   ____QUEX_CONVERTER_HELPER(A, B)
+#define ____QUEX_CONVERTER_CHAR(FROM, TO)    Tester_ ## FROM ## _to_ ## TO ## _character
+#define __QUEX_CONVERTER_CHAR(FROM, TO)      ____QUEX_CONVERTER_CHAR(FROM, TO)
+#define ____QUEX_CONVERTER_STRING(FROM, TO)  Tester_ ## FROM ## _to_ ## TO
+#define __QUEX_CONVERTER_STRING(FROM, TO)    ____QUEX_CONVERTER_STRING(FROM, TO)
 
 #if   defined(TEST_UTF8)
 #  define  FROM_CODEC           utf8
@@ -32,7 +34,7 @@
 #  error "No test codec defined."
 #endif
 
-#define CONVERTER(OUTPUT)   Tester::__QUEX_CONVERTER_HELPER(FROM_CODEC, OUTPUT)
+#define CONVERTER(OUTPUT)   Tester::__QUEX_CONVERTER_STRING(FROM_CODEC, OUTPUT)
 
 using namespace std;
 #include <iostream>

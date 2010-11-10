@@ -239,10 +239,46 @@ def __print_set_character_names(CharSet, Display, ScreenWidth):
         for code_point in range(interval.begin, interval.end):
             print "%06X: %s" % (code_point, ucs_property_db.map_code_point_to_character_name(code_point))
 
+class CharacterList:
+    def __init__(self, CharacterSet):
+        interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
+        interval_list.sort(lambda x, y: cmp(x.begin, y.begin))
+
+        self.__interval_list      = interval_list
+        self.__interval_list_size = len(interval_list)
+
+        # No character below 0
+        self.__current_character  = 0
+        self.__current_interval_i = 0
+        # No character below 0 --> take first interval with .end > 0
+        while self.__interval_list[self.__current_interval_i].end <= 0:
+            self.__current_interval_i += 1
+
+    def is_empty(self):
+        return self.__interval_list_size == 0
+
+    def next(self):
+        tmp = self.__current_character
+
+        self.__current_character += 1
+        # No character beyond 0x10FFFF, as defined by Unicode
+        if tmp == 0x110000: return None
+
+        if self.__current_character < self.__interval_list[self.__current_interval_i].end: 
+            return tmp
+
+        self.__current_interval_i += 1
+        self.__current_character = self.__interval_list[self.__current_interval_i].begin
+        if self.__current_interval_i <= self.__interval_list_size: 
+            return tmp
+
+        # No more characters
+        return None
+
+
 def __print_set_single_characters(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]
 
-    interval_list = CharSet.get_intervals(PromiseToTreatWellF=True)
     if Display == "hex":
         CharactersPerLine = 8
         ColumnWidth       = 6
@@ -250,18 +286,20 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
         CharactersPerLine = 32
         ColumnWidth       = 2
 
-    txt = ""
-    line_size = 0
-    character_list = []
-    for interval in interval_list:
-        character_list.extend(range(interval.begin, interval.end))
-
     # just to make sure ...
-    character_list.sort()
 
+    character_list = CharacterList(CharSet)
+    if character_list.is_empty():
+        sys.write("<Result = Empty Character Set>\n")
+        return
+
+    # Avoid memory overflow for very large sets: get character by character 
     last_start_character_of_line = -1
     last_horizontal_offset       = 0
-    for character_code in character_list:
+    while 1 + 1 == 2:
+        character_code = character_list.next()
+        if character_code == None: break
+
         start_character_of_line = character_code - character_code % CharactersPerLine
         horizontal_offset       = character_code - start_character_of_line
 

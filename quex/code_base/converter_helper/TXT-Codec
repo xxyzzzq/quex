@@ -14,7 +14,7 @@
  *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
  *__________________________________________________________________________________________*/
 
-#define  __QUEX_CONVERTER_FROM         $$CODEC$$
+#define  __QUEX_FROM         $$CODEC$$
 #include <quex/code_base/converter_helper/base.g>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__$$CODEC$$__ */

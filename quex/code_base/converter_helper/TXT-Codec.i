@@ -89,7 +89,7 @@ $$BODY_UCS4$$
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_CONVERTER_FROM     $$CODEC$$
+#define __QUEX_FROM     $$CODEC$$
 #include <quex/code_base/converter_helper/base.gi>
 
 
