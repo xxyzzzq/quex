@@ -10,11 +10,11 @@ token_type {
        /* The following function converts the engine's codec to utf8. */
        QUEX_NAMESPACE_MAIN_OPEN
        QUEX_INLINE std::string
-       __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8_string)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
+       __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
 
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
        QUEX_INLINE std::wstring
-       __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, wstring)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
+       __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(const std::basic_string<QUEX_TYPE_CHARACTER>&);
 #      endif
        QUEX_NAMESPACE_MAIN_CLOSE
    }
@@ -97,7 +97,7 @@ token_type {
         const std::string 
         utf8_text() const
         {
-            return __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8_string)(self.text);
+            return __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
         }
    }
 

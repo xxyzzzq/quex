@@ -193,6 +193,7 @@
        /* Default: Map 'wchar' to 'utf32' */
 #      define QUEX_SETTING_WCHAR_CODEC  32
 #   endif
+#endif
 
 /* Default: Map 'char' to 'utf8' */
 #if ! defined(QUEX_SETTING_CHAR_CODEC)

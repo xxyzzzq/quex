@@ -6,18 +6,23 @@
 #include <cassert>
 
 void
-test_this(const char*                  Name, 
-          const QUEX_TYPE_CHARACTER*   Source,
-          const uint8_t*               UTF8_Expected,
-          const size_t                 UTF8_DrainSize,
-          const wchar_t*               WChar_Expected,
-          const size_t                 WChar_DrainSize)
+test_this(const QUEX_TYPE_CHARACTER*   Source,
+          const uint8_t*               UTF8_Expected,  const size_t  UTF8_DrainSize,
+          const uint16_t*              UTF16_Expected, const size_t  UTF16_DrainSize,
+          const uint32_t*              UTF32_Expected, const size_t  UTF32_DrainSize)
 {
     const QUEX_TYPE_CHARACTER*  source_end = Source;
     for(; *source_end; ++source_end);
 
-    test_utf8_string(Name, Source, source_end, UTF8_DrainSize, UTF8_Expected); 
-    test_wstring(Name, Source, source_end, WChar_DrainSize, WChar_Expected); 
+    test<uint8_t>("To UTF8", Source, source_end, 
+                  UTF8_DrainSize,  UTF8_Expected,
+                  CONVERTER(utf8), CONVERTER(utf8)); 
+    test<uint16_t>("To UTF16", Source, source_end, 
+                   UTF16_DrainSize, UTF16_Expected,
+                   CONVERTER(utf16), CONVERTER(utf16)); 
+    test<uint32_t>("To UTF32", Source, source_end, 
+                   UTF32_DrainSize, UTF32_Expected,
+                   CONVERTER(utf32), CONVERTER(utf32)); 
 }
 
 int
@@ -31,10 +36,12 @@ main(int argc, char** argv)
     hwut_if_choice("Normal") {
         QUEX_TYPE_CHARACTER  source[]         = { 0xe4, 0x9c, 0x91 /* Unicode 0x4711 */, 0x0 }; 
         uint8_t              utf8_expected[]  = { 0xe4, 0x9c, 0x91 /* Unicode 0x4711 */, 0x0 }; 
-        wchar_t              wchar_expected[] = { 0x4711, 0x0 };
+        uint16_t             utf16_expected[] = { 0x4711, 0x0 };
+        uint32_t             utf32_expected[] = { 0x00004711, 0x0 };
 
-        test_this(argv[1], source, utf8_expected, 1024, wchar_expected, 1024);
+        test_this(source, utf8_expected, 1024, utf16_expected, 1024, utf32_expected, 1024);
     }
+#   if 0
     hwut_if_choice("Source_Empty") {
         QUEX_TYPE_CHARACTER  source[]         = { 0x0 }; 
         uint8_t              utf8_expected[]  = { 0x0 }; 
@@ -69,5 +76,6 @@ main(int argc, char** argv)
 
         test_this(argv[1], source, utf8_expected, 65536, wchar_expected, 65536);
     }
+#   endif
 }
 
