@@ -18,9 +18,9 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const QUEX_TYPE_CHARACTER**  sou
 #elif __QUEX_MAP_TO_CODEC == 32
     __quex_assert(sizeof(__QUEX_TYPE_DRAIN) == 4);
     __QUEX_CONVERTER_STRING(__QUEX_FROM, utf32)(source_pp,            SourceEnd, 
-                                                (uint16_t**)drain_pp, (const uint16_t*)DrainEnd);
+                                                (uint32_t**)drain_pp, (const uint32_t*)DrainEnd);
 #else
-#     error "Codec of 'char' or 'wchar' must be either 'UTF8', 'UTF16' or 'UTF32' -> 8, 16, or 32."
+#     error "Codec of 'char' or 'wchar' must be either 'UTF8', 'UTF16' or 'UTF32' -> 8, 16, or 32. Define QUEX_SETTING_CHAR_CODEC and QUEX_SETTING_WCHAR_CODEC."
 #endif
 }
 
