@@ -3,6 +3,7 @@
 /* 2005-2010 (C) Frank-Rene Schaefer; ABSOLUTELY NO WARRANTY */
 
 #define __QUEX_FROM         utf32
+#define __QUEX_TYPE_SOURCE  uint32_t
 #include <quex/code_base/converter_helper/base.g>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE */
