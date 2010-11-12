@@ -15,8 +15,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf32, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                                   uint8_t**                    output_pp)
+__QUEX_CONVERTER_CHAR(utf32, utf8)(const uint32_t**  input_pp, 
+                                   uint8_t**         output_pp)
 {
     /* PURPOSE: This function converts the specified unicode character
      *          into its utf8 representation. The result is stored
@@ -42,7 +42,7 @@ __QUEX_CONVERTER_CHAR(utf32, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
         *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & 0x3F));
     } else { 
         /* Assume that only character appear, that are defined in unicode. */
-        __quex_assert(Unicode <= (QUEX_TYPE_CHARACTER)0x1FFFFF);
+        __quex_assert(Unicode <= (uint32_t)0x1FFFFF);
         /* No surrogate pairs (They are reserved even in non-utf16).       */
         __quex_assert(! (Unicode >= 0xd800 && Unicode <= 0xdfff) );
 
@@ -57,8 +57,8 @@ __QUEX_CONVERTER_CHAR(utf32, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf32, utf16)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                                    uint32_t**                   output_pp)
+__QUEX_CONVERTER_CHAR(utf32, utf16)(const uint32_t**  input_pp, 
+                                    uint32_t**        output_pp)
 {
     uint32_t   tmp = **input_pp;
     if( **input_pp < 0x10000 ) {
@@ -72,15 +72,16 @@ __QUEX_CONVERTER_CHAR(utf32, utf16)(const QUEX_TYPE_CHARACTER**  input_pp,
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf32, utf32)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                                    uint32_t**                   output_pp)
+__QUEX_CONVERTER_CHAR(utf32, utf32)(const uint32_t**  input_pp, 
+                                    uint32_t**        output_pp)
 {
     *(*output_pp)++ = (wchar_t)(*(*input_pp)++);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_FROM   utf32
+#define __QUEX_FROM         utf32
+#define __QUEX_TYPE_SOURCE  uint16_t
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I */

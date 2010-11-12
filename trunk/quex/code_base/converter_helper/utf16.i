@@ -11,7 +11,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
+__QUEX_CONVERTER_CHAR(utf16, utf8)(const uint16_t** input_pp, uint8_t** output_pp)
 {
     uint16_t  x0      = (uint16_t)0;
     uint16_t  x1      = (uint16_t)0;
@@ -39,7 +39,7 @@ __QUEX_CONVERTER_CHAR(utf16, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t
         unicode = (x0 << 10) + x1 + 0x10000;
 
         /* Assume that only character appear, that are defined in unicode. */
-        __quex_assert(unicode <= (QUEX_TYPE_CHARACTER)0x1FFFFF);
+        __quex_assert(unicode <= (uint16_t)0x1FFFFF);
 
         *(*output_pp)++ = (uint8_t)(0xF0 | unicode >> 18);
         *(*output_pp)++ = (uint8_t)(0x80 | (unicode & 0x3FFFF) >> 12);
@@ -56,8 +56,8 @@ __QUEX_CONVERTER_CHAR(utf16, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf16)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                                    uint16_t**                   output_pp)
+__QUEX_CONVERTER_CHAR(utf16, utf16)(const uint16_t**  input_pp, 
+                                    uint16_t**        output_pp)
 {
     if( **input_pp < 0xD800 || **input_pp > 0xE000 ) {
         *(*output_pp)++ = *(*input_pp)++;
@@ -68,8 +68,8 @@ __QUEX_CONVERTER_CHAR(utf16, utf16)(const QUEX_TYPE_CHARACTER**  input_pp,
 }
 
 QUEX_INLINE void
-__QUEX_CONVERTER_CHAR(utf16, utf32)(const QUEX_TYPE_CHARACTER**  input_pp, 
-                                    uint32_t**                   output_pp)
+__QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp, 
+                                    uint32_t**        output_pp)
 {
     uint32_t  x0 = (wchar_t)0;
     uint32_t  x1 = (wchar_t)0;
@@ -85,7 +85,8 @@ __QUEX_CONVERTER_CHAR(utf16, utf32)(const QUEX_TYPE_CHARACTER**  input_pp,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_FROM  utf16
+#define __QUEX_FROM         utf16
+#define __QUEX_TYPE_SOURCE  uint16_t
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF16_I */

@@ -13,7 +13,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_CHAR(utf8, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t** output_pp)
+__QUEX_CONVERTER_CHAR(utf8, utf8)(const uint8_t** input_pp, uint8_t** output_pp)
 {
     /* Just for comformity with other encodings: Do nothing but copying. */
     if( (**input_pp & 0x80) == 0 ) {
@@ -38,9 +38,9 @@ __QUEX_CONVERTER_CHAR(utf8, utf8)(const QUEX_TYPE_CHARACTER** input_pp, uint8_t*
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_CHAR(utf8, utf16)(const QUEX_TYPE_CHARACTER** input_pp, uint16_t** output_pp)
+__QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_pp)
 {
-    const QUEX_TYPE_CHARACTER*  iterator = *input_pp;
+    const uint8_t*  iterator = *input_pp;
     uint32_t                    tmp = 0;
 
     if( (*iterator & 0x80) == 0 ) {
@@ -90,9 +90,9 @@ __QUEX_CONVERTER_CHAR(utf8, utf16)(const QUEX_TYPE_CHARACTER** input_pp, uint16_
 
 QUEX_INLINE void
 /* DrainEnd pointer is not returned, since the increment is always '1' */
-__QUEX_CONVERTER_CHAR(utf8, utf32)(const QUEX_TYPE_CHARACTER** input_pp, uint32_t** output_pp)
+__QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_pp)
 {
-    const QUEX_TYPE_CHARACTER*  iterator = *input_pp;
+    const uint8_t*  iterator = *input_pp;
 
     if( (*iterator & 0x80) == 0 ) {
         /* Header: 0xxx.xxxx */
@@ -129,7 +129,8 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const QUEX_TYPE_CHARACTER** input_pp, uint32_
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define  __QUEX_FROM   utf8
+#define  __QUEX_FROM         utf8
+#define  __QUEX_TYPE_SOURCE  uint8_t
 #include <quex/code_base/converter_helper/base.gi>
 
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF8_I */
