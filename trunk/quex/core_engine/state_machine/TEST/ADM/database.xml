@@ -1,4 +1,4 @@
-<test-database execution-time-sec="11.68" date="Sun Nov 14 11:08:26 2010">
+<test-database execution-time-sec="11.75" date="Sun Nov 14 18:06:07 2010">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Subset Determination" time-sum-sec="1.51"> 
         <application file-name="test-subset_checker.py" info-request-time="1284543124L" vanished="False"/>
@@ -18,7 +18,7 @@
            <choice name="" result="OK" time_sec="1.09" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="0.95"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.96"> 
         <application file-name="test-identity_checker.py" info-request-time="1276059489L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="True" result="OK" time_sec="0.51" crc="-390242573"/>
@@ -41,7 +41,7 @@
                <choice name="ADAPT" result="OK" time_sec="0.05" crc="674118540"/>
             </choice-list>
         </test>
-        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.26"> 
+        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.28"> 
             <application file-name="test-get_trigger_map.py" info-request-time="1265839198L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="1903594752"/>
@@ -213,6 +213,12 @@
                <choice name="" result="OK" time_sec="0.04" crc="372081665"/>
             </choice-list>
         </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1264886941L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.04" crc="-1604145748"/>
+            </choice-list>
+        </test>
         <test title="Cloning" time-sum-sec="0.04"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -223,12 +229,6 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.04" crc="658399412"/>
-            </choice-list>
-        </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1264886941L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.06"> 
@@ -253,7 +253,7 @@
                <choice name="" result="OK" time_sec="2.61" crc="-603592541"/>
             </choice-list>
         </test>
-        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.24"> 
+        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.25"> 
             <application file-name="test-utf16_interval_split.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.06" crc="1196565311"/>
@@ -265,7 +265,7 @@
         </test>
     </group>
     <group name="UTF8 State Split">
-        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.22"> 
+        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.23"> 
             <application file-name="test-utf8_number_set_split.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="1765966415"/>
@@ -282,7 +282,7 @@
                <choice name="" result="OK" time_sec="0.70" crc="-1092922674"/>
             </choice-list>
         </test>
-        <test title="Intervals" time-sum-sec="0.17"> 
+        <test title="Intervals" time-sum-sec="0.18"> 
             <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1982649752"/>
@@ -291,7 +291,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.06" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" time-sum-sec="0.46"> 
+        <test title="Plug Intermediate States" time-sum-sec="0.47"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="1.1" result="OK" time_sec="0.04" crc="66719042"/>

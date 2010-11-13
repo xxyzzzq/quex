@@ -1,8 +1,8 @@
-<test-database execution-time-sec="0.02" date="Sun Nov 14 11:03:32 2010">
+<test-database execution-time-sec="0.01" date="Sun Nov 14 18:06:07 2010">
     <last-used-diff-display-program name=""/>
-    <test title="UTF8 to utf8 and wchar_t." make-dependent="True" time-sum-sec="0.02"> 
+    <test title="UTF8 to utf8 and wchar_t." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="test-utf8" info-request-time="1289676533L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.432221"/>
+        <make-procedure success="False" time_sec="1.432221"/>
         <choice-list number="4" same_result="False">
            <choice name="Normal" result="FAIL" time_sec="0.01" crc="-1120039996"/>
            <choice name="Source_Empty" result="FAIL" time_sec="0.00" crc="-1456007518"/>

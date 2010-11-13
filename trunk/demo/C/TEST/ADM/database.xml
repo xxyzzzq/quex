@@ -1,6 +1,6 @@
-<test-database execution-time-sec="340.65" date="Sun Nov 14 17:13:08 2010">
+<test-database execution-time-sec="340.61" date="Sun Nov 14 18:06:05 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.30"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.29"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.02" crc="-1839813089"/>
@@ -55,7 +55,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.36" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.05"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.04"> 
             <application file-name="003-icu.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="4.75" crc="-1292672989"/>
@@ -96,7 +96,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="5.56"> 
+        <test title="Miscellaneous Features" time-sum-sec="5.55"> 
             <application file-name="007.sh" info-request-time="1278564924L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.23" crc="-375962478"/>
@@ -136,7 +136,7 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="153.77"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="153.76"> 
             <application file-name="010.sh" info-request-time="1286622283L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="15.85" crc="595815643"/>
@@ -181,7 +181,7 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="12.52"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="12.53"> 
             <application file-name="012.sh" info-request-time="1278831615L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="7.73" crc="-1785218323"/>
