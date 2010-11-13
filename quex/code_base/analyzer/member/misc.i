@@ -109,6 +109,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 QUEX_INLINE const char* 
 QUEX_NAME(version)(QUEX_TYPE_ANALYZER* me)
 { 
+    (void)me;
     return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
            ": Version "         QUEX_SETTING_ANALYZER_VERSION \
            ". Date "            QUEX_SETTING_BUILD_DATE       \
