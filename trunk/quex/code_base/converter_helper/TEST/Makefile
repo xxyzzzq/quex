@@ -1,9 +1,11 @@
 FILES = test-utf8
 
-test-utf8: common.cpp test-utf8.cpp
+from-utf8: common.cpp basics.cpp
 		g++ -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
 		$^                      \
 		-DTEST_UTF8             \
+		-DSOURCE_NAME=utf8      \
+		-DSOURCE_TYPE=uint8_t   \
 		-ggdb                   \
 		-o $@ 
 
@@ -11,6 +13,8 @@ test-utf8: common.cpp test-utf8.cpp
 		g++ -E -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
 		$<                      \
 		-DTEST_UTF8             \
+		-DSOURCE_NAME=utf8      \
+		-DSOURCE_TYPE=uint8_t   \
 		-o $@ 
 
 hwut-info:
