@@ -1,6 +1,6 @@
-<test-database execution-time-sec="261.13" date="Sun Nov 14 11:08:09 2010">
+<test-database execution-time-sec="261.14" date="Sun Nov 14 18:06:07 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Basic Path Compression Test" time-sum-sec="0.33"> 
+    <test title="Basic Path Compression Test" time-sum-sec="0.34"> 
         <application file-name="test-paths.py" info-request-time="1285836708L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="Single" result="OK" time_sec="0.08" crc="-1908668816"/>
@@ -17,7 +17,7 @@
         </choice-list>
     </test>
     <group name="Buffer Reload">
-        <test title="Backwards" time-sum-sec="9.09"> 
+        <test title="Backwards" time-sum-sec="9.10"> 
             <application file-name="test-backward_loading.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.55" crc="-1584767564"/>
@@ -34,7 +34,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.86" crc="-1584767564"/>
             </choice-list>
         </test>
-        <test title="No Backward Reload -- Precondition at Border" time-sum-sec="10.31"> 
+        <test title="No Backward Reload -- Precondition at Border" time-sum-sec="10.32"> 
             <application file-name="test-no-backward-reloading.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="13" same_result="True">
                <choice name="Cpp" result="OK" time_sec="1.04" crc="-887225006"/>
@@ -52,7 +52,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.84" crc="-887225006"/>
             </choice-list>
         </test>
-        <test title="Forward Position Adaption" time-sum-sec="10.76"> 
+        <test title="Forward Position Adaption" time-sum-sec="10.77"> 
             <application file-name="test-position_adaption.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="13" same_result="True">
                <choice name="Cpp" result="OK" time_sec="0.91" crc="1319922986"/>
@@ -88,7 +88,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.84" crc="-1324080938"/>
             </choice-list>
         </test>
-        <test title="Mode Changes" time-sum-sec="8.06"> 
+        <test title="Mode Changes" time-sum-sec="8.04"> 
             <application file-name="test-mode-changes.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.51" crc="270103911"/>
@@ -122,7 +122,7 @@
         </test>
     </group>
     <group name="Indentation Count">
-        <test title="Indentation Counting" time-sum-sec="2.47"> 
+        <test title="Indentation Counting" time-sum-sec="2.48"> 
             <application file-name="test-indentation-counter.py" info-request-time="1285930427L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Uniform" result="OK" time_sec="0.83" crc="440903486"/>
@@ -132,7 +132,7 @@
         </test>
     </group>
     <group name="Post Conditions">
-        <test title="Part 1" time-sum-sec="8.87"> 
+        <test title="Part 1" time-sum-sec="8.86"> 
             <application file-name="test-post-conditions.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.53" crc="1338437579"/>
@@ -148,7 +148,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.83" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" time-sum-sec="8.52"> 
+        <test title="Part 2" time-sum-sec="8.51"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.54" crc="-1069020887"/>
@@ -164,7 +164,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.84" crc="-1069020887"/>
             </choice-list>
         </test>
-        <test title="Part 3" time-sum-sec="8.24"> 
+        <test title="Part 3" time-sum-sec="8.25"> 
             <application file-name="test-post-conditions-3.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.53" crc="-423588249"/>
@@ -182,7 +182,7 @@
         </test>
     </group>
     <group name="Pre Conditions">
-        <test title="Part 2" time-sum-sec="9.06"> 
+        <test title="Part 2" time-sum-sec="9.05"> 
             <application file-name="test-pre-conditions-2.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.57" crc="-2081003305"/>
@@ -198,7 +198,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="1.13" crc="-2081003305"/>
             </choice-list>
         </test>
-        <test title="Multiple Identical Pre-Conditions" time-sum-sec="11.83"> 
+        <test title="Multiple Identical Pre-Conditions" time-sum-sec="11.84"> 
             <application file-name="test-pre-conditions-3.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.81" crc="-1449812084"/>
@@ -214,7 +214,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="1.17" crc="-1449812084"/>
             </choice-list>
         </test>
-        <test title="Part 1" time-sum-sec="9.02"> 
+        <test title="Part 1" time-sum-sec="9.00"> 
             <application file-name="test-pre-conditions.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.53" crc="-524887799"/>
@@ -266,7 +266,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.88" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="8.31"> 
+        <test title="Part I" time-sum-sec="8.33"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.53" crc="1455270"/>
@@ -284,7 +284,7 @@
         </test>
     </group>
     <group name="Simple">
-        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" time-sum-sec="9.02"> 
+        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" time-sum-sec="9.03"> 
             <application file-name="test-simple-5.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.57" crc="-680455951"/>
@@ -316,7 +316,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.85" crc="-771053764"/>
             </choice-list>
         </test>
-        <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="7.92"> 
+        <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="7.91"> 
             <application file-name="test-simple-3.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.48" crc="-1792493362"/>
@@ -348,7 +348,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.85" crc="-1565444249"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" time-sum-sec="11.66"> 
+        <test title="Maximum Length Match" time-sum-sec="11.68"> 
             <application file-name="test-simple-2.py" info-request-time="1277034328L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.77" crc="-270685933"/>
@@ -418,7 +418,7 @@
                <choice name="DL=4" result="OK" time_sec="2.25" crc="2098906281"/>
             </choice-list>
         </test>
-        <test title="DelimiterLength=2, Large Buffer" time-sum-sec="7.37"> 
+        <test title="DelimiterLength=2, Large Buffer" time-sum-sec="7.36"> 
             <application file-name="test-skip-simple.py" info-request-time="1282024820L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.37" crc="-1090631127"/>
