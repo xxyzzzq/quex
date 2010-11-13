@@ -111,6 +111,24 @@ The possible options for modes to be specified are the following.
     requirements on the buffer size. Skipped regions can be larger than
     the buffer size. Lexemes need be smaller or equal the buffer size.
 
+    What happens behind the scenes is the following: The skipper enters the 
+    race as all patterns with a higher priority than any other pattern in the
+    mode. If it matches more characters than all other patterns, then it wins
+    the race and it enters the 'eating mode' where it eats everything until the
+    first character appears that does not fall into the specified skip character
+    set. Note, in particular that within a given mode
+
+    .. code-block:: cpp
+
+       mode X : <skip: [ \t\n] {
+           \\\n  => QUEX_TKN_BACKLASHED_NEWLINE;
+       }
+
+    The token ``QUEX_TKN_BACKLASHED_NEWLINE`` will be sent as soon as the lexeme
+    matches a backslash and a newline. The newline is not going to be eaten. If
+    the skipper dominates a pattern definition inside the mode, then quex is 
+    going to complain.
+
 .. data:: <skip_range: start-re end-string>
 
    This option allows to define an optimized skipper for regions that are of no interest

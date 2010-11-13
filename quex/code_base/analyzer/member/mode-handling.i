@@ -67,7 +67,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE int  
     QUEX_NAME(map_mode_to_mode_id)(const QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* Mode)
-    { return Mode->id; }
+    { (void)me; return Mode->id; }
 
     QUEX_INLINE void 
     QUEX_NAME(pop_mode)(QUEX_TYPE_ANALYZER* me) 

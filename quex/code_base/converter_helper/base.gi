@@ -8,19 +8,11 @@
 #   include <string>
 #endif
 
-/* Converter Functions: ____________________________________________________________________
- *
- *   $$CODEC$$_to_utf8(...)         -- character to utf8
- *   $$CODEC$$_to_utf8_string(...)  -- string to utf8
- *   $$CODEC$$_to_utf8_string(C++)  -- C++ string to utf8 (std::string)
- *
- *   $$CODEC$$_to_wchar(...)        -- character to utf8
- *   $$CODEC$$_to_wstring(...)      -- string to utf8
- *   $$CODEC$$_to_wstring(C++)      -- C++ string to utf8 (std::wstring)
- *__________________________________________________________________________________________*/
-
 #ifndef   __QUEX_FROM
 #   error "__QUEX_FROM must be defined."
+#endif
+#ifndef   __QUEX_TYPE_SOURCE
+#   error "__QUEX_TYPE_SOURCE must be defined."
 #endif
 
 #define __QUEX_TYPE_DRAIN    uint8_t
@@ -49,3 +41,5 @@
 #endif 
 
 #undef __QUEX_FROM
+#undef __QUEX_TYPE_SOURCE 
+

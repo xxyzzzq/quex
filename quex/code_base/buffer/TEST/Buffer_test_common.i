@@ -45,7 +45,12 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
         p = utf8_char_str;
         const QUEX_TYPE_CHARACTER* input_p = Pos;
 
-        QUEX_NAME(unicode_to_utf8)(&input_p, &p);
+        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+        case 1:  QUEX_NAME(utf8_to_utf8_character)((const uint8_t**)&input_p, &p); break;
+        case 2:  QUEX_NAME(utf16_to_utf8_character)((const uint16_t**)&input_p, &p); break;
+        case 4:  QUEX_NAME(utf32_to_utf8_character)((const uint32_t**)&input_p, &p); break;
+        default: assert(false);
+        }
         *p = '\0';
         printf("%s= %i (--> '%s')%c", 
                (char*)Name,

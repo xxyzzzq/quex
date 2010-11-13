@@ -27,16 +27,16 @@ token_type {
        /* The following function converts the engine's codec to utf8. */
        QUEX_NAMESPACE_MAIN_OPEN
        QUEX_INLINE void
-       __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8_string)(const QUEX_TYPE_CHARACTER**  Source, 
-                                                                const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                                uint8_t**                    Drain, 
-                                                                const uint8_t*               DrainEnd);
+       __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(const QUEX_TYPE_CHARACTER**  Source, 
+                                                         const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                                         char**                       Drain, 
+                                                         const char*                  DrainEnd);
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
        QUEX_INLINE void
-       __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, wstring)(const QUEX_TYPE_CHARACTER**  Source, 
-                                                            const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                            wchar_t**                    Drain, 
-                                                            const wchar_t*               DrainEnd);
+       __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  Source, 
+                                                          const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                                          wchar_t**                    Drain, 
+                                                          const wchar_t*               DrainEnd);
 #      endif
        QUEX_NAMESPACE_MAIN_CLOSE
    }
@@ -184,10 +184,10 @@ token_type {
             current_size = (size_t)(drain - buffer);
 
             source = me->text;
-            __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8_string)(&source,
-                                                                     source + (size_t)(QUEX_NAME(strlen)(me->text)),
-                                                                     (uint8_t**)&drain,
-                                                                     (uint8_t*)DrainEnd);
+            __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, utf8)(&source,
+                                                              source + (size_t)(QUEX_NAME(strlen)(me->text)),
+                                                              (uint8_t**)&drain,
+                                                              (uint8_t*)DrainEnd);
 
             if( drain != 0x0 ) {
                 *drain = '\0';
