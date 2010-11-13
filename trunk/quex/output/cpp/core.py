@@ -92,7 +92,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
     # -- name of the character codec
-    codec_name = "utf32"
+    codec_name = "unicode"
     if Setup.buffer_codec != "": 
         codec_name = make_safe_identifier(Setup.buffer_codec).lower()
 

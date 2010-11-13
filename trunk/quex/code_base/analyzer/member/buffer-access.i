@@ -18,6 +18,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         size_t CopiedByteN = 0;
 
+        (void)me;
+
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE((QUEX_TYPE_CHARACTER*)ContentBegin, (QUEX_TYPE_CHARACTER*)ContentEnd);
         CopiedByteN = QUEX_NAME(MemoryManager_insert)((uint8_t*)*insertion_p,  
                                                       (uint8_t*)BufferEnd,

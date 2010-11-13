@@ -97,7 +97,12 @@ print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     printf("%i: [", (int)(End-Begin));
     for(const QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++i) {
         p = utf8_c;
-        QUEX_NAME(unicode_to_utf8)(&iterator, &p);
+        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+        case 1:  QUEX_NAME(utf8_to_utf8_character)((const uint8_t**)&iterator, &p); break;
+        case 2:  QUEX_NAME(utf16_to_utf8_character)((const uint16_t**)&iterator, &p); break;
+        case 4:  QUEX_NAME(utf32_to_utf8_character)((const uint32_t**)&iterator, &p); break;
+        default: assert(false);
+        }
         *p = '\0';
         printf("%s", utf8_c);
     }

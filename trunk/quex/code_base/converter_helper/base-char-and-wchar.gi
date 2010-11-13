@@ -2,10 +2,10 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                                const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                __QUEX_TYPE_DRAIN**          drain_pp,  
-                                                const __QUEX_TYPE_DRAIN*     DrainEnd)
+__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_TYPE_SOURCE**  source_pp, 
+                                                const __QUEX_TYPE_SOURCE*   SourceEnd, 
+                                                __QUEX_TYPE_DRAIN**         drain_pp,  
+                                                const __QUEX_TYPE_DRAIN*    DrainEnd)
 {
 #if   __QUEX_MAP_TO_CODEC == 8
     __quex_assert(sizeof(__QUEX_TYPE_DRAIN) == 1);
@@ -26,7 +26,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const QUEX_TYPE_CHARACTER**  sou
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE std::basic_string<__QUEX_TYPE_DRAIN>
-__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+__QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const std::basic_string<__QUEX_TYPE_SOURCE>& Source)
 {
 #if   __QUEX_MAP_TO_CODEC == 8
     __quex_assert(sizeof(__QUEX_TYPE_DRAIN) == 1);

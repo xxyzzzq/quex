@@ -77,3 +77,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #undef  __QUEX_UNI_TO         
 #undef  __QUEX_UNI_TYPE_DRAIN 
+
+#include <quex/code_base/converter_helper/utf8.i>
+#include <quex/code_base/converter_helper/utf16.i>
+#include <quex/code_base/converter_helper/utf32.i>

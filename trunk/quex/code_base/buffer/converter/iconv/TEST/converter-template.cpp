@@ -37,11 +37,11 @@ main(int argc, char** argv)
     }
 
     /* (2.1) Load file content corresponding the input coding */
-    const size_t Size = 16384;
-    uint8_t      in[Size];
-    uint8_t*     in_iterator = in;
-    QUEX_TYPE_CHARACTER     out[Size];
-    QUEX_TYPE_CHARACTER*    out_iterator = out;
+    const size_t          Size = 16384;
+    uint8_t               in[Size];
+    uint8_t*              in_iterator = in;
+    QUEX_TYPE_CHARACTER   out[Size];
+    QUEX_TYPE_CHARACTER*  out_iterator = out;
 
     const size_t ContentSize = get_input(argv[1], in, Size);
     if( ContentSize == 0 ) return -1;
@@ -104,7 +104,13 @@ print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     for(const QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++i) {
         p     = utf8_c;
         input = *iterator;
-        QUEX_NAME(unicode_to_utf8)(&iterator, &p);
+
+        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+        case 1:  QUEX_NAME(utf8_to_utf8_character)((const uint8_t**)&iterator, &p); break;
+        case 2:  QUEX_NAME(utf16_to_utf8_character)((const uint16_t**)&iterator, &p); break;
+        case 4:  QUEX_NAME(utf32_to_utf8_character)((const uint32_t**)&iterator, &p); break;
+        default: assert(false);
+        }
         *p = '\0';
 
         printf("$%04X: ", (int)i * sizeof(QUEX_TYPE_CHARACTER));
