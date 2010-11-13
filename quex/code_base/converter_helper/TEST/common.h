@@ -45,13 +45,13 @@ using namespace std;
 #include <cstdlib>
 
 extern void 
-test_utf8_string(const char*                 TestName, 
-                 const QUEX_TYPE_CHARACTER*  source_p,  const QUEX_TYPE_CHARACTER*  SourceEnd,
-                 size_t                      DrainSize, const uint8_t*              reference);
+test_utf8_string(const char*         TestName, 
+                 const SOURCE_TYPE*  source_p,  const SOURCE_TYPE*  SourceEnd,
+                 size_t              DrainSize, const uint8_t*      reference);
 extern void 
-test_wstring(const char*                 TestName, 
-             const QUEX_TYPE_CHARACTER*  source_p,  const QUEX_TYPE_CHARACTER*  SourceEnd,
-             size_t                      DrainSize, const wchar_t*              reference);
+test_wstring(const char*         TestName, 
+             const SOURCE_TYPE*  source_p,  const SOURCE_TYPE*  SourceEnd,
+             size_t              DrainSize, const wchar_t*      reference);
 
 template <class ElementT> inline ElementT*
 read_from_file(ElementT* buffer, size_t Size, const char* FileName)
@@ -87,15 +87,15 @@ Exit:
 }
 
 
-template <class DrainT>
+template <class SourceT, class DrainT>
 struct converter {
     /* This class defines how a function signature of a converter function should look like
      * depending on the DrainT--for both the pointer version and the basic_string<...> version. */
-    typedef void                      (*with_pointers_t)(const QUEX_TYPE_CHARACTER**  source_pp, 
-                                                         const QUEX_TYPE_CHARACTER*   SourceEnd, 
-                                                         DrainT**                     drain_pp,  
-                                                         const DrainT*                DrainEnd);
-    typedef std::basic_string<DrainT> (*with_string_t)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+    typedef void                      (*with_pointers_t)(const SourceT**  source_pp, 
+                                                         const SourceT*   SourceEnd, 
+                                                         DrainT**         drain_pp,  
+                                                         const DrainT*    DrainEnd);
+    typedef std::basic_string<DrainT> (*with_string_t)(const std::basic_string<SourceT>& Source);
 
 };
 
@@ -122,20 +122,18 @@ check(const DrainT* Drain, const DrainT* DrainEnd, const DrainT* ref_iterator)
 }
 
 
-template <class DrainT> inline void 
-test(const char*                 TestName, 
-     const QUEX_TYPE_CHARACTER*  SourceBegin,
-     const QUEX_TYPE_CHARACTER*  SourceEnd,
-     size_t                      DrainSize,
-     const DrainT*               reference,
-     typename converter<DrainT>::with_pointers_t   converter_c_style,
-     typename converter<DrainT>::with_string_t     converter_cpp_style)
+template <class SourceT, class DrainT> inline void 
+test(const char*     TestName, 
+     const SourceT*  SourceBegin, const SourceT*  SourceEnd,
+     size_t          DrainSize,   const DrainT*   reference,
+     typename converter<SourceT, DrainT>::with_pointers_t   converter_c_style,
+     typename converter<SourceT, DrainT>::with_string_t     converter_cpp_style)
 {
     cout << TestName << "____________________________________________________\n";
     cout << endl;
     cout << "with pointers:\n";
     {
-        const QUEX_TYPE_CHARACTER*  source_p = SourceBegin;
+        const SOURCE_TYPE*  source_p = SourceBegin;
         DrainT*         drain    = new DrainT[DrainSize]; 
         DrainT*         drain_p  = drain;
         const DrainT*   DrainEnd = drain + DrainSize;
@@ -145,9 +143,9 @@ test(const char*                 TestName,
         delete drain;
     }
 
-    cout << "with basic_string<QUEX_TYPE_CHARACTER>:\n";
+    cout << "with basic_string<" __STRING(SOURCE_TYPE) ">:\n";
     {
-        std::basic_string<QUEX_TYPE_CHARACTER>  source(SourceBegin);
+        std::basic_string<SOURCE_TYPE>  source(SourceBegin);
         std::basic_string<DrainT>               drain;
 
         drain = converter_cpp_style(source);
