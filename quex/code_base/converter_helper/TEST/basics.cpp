@@ -89,9 +89,9 @@ main(int argc, char** argv)
         read_from_file(utf32_expected, 65536, "example/ucs4le.txt");
 
         test_this(source, 
-                  utf8_expected,  65536, 
-                  utf16_expected, 65536, 
-                  utf32_expected, 65536);
+                  utf8_expected,      65536, 
+                  utf16_expected + 1, 65536,  /* First word contains 'BOM', so skip that */
+                  utf32_expected,     65536);
     }
 
 }
