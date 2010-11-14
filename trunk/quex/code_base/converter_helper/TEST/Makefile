@@ -1,4 +1,4 @@
-FILES = test-utf8
+FILES = from-utf8
 
 from-utf8: common.cpp basics.cpp
 		g++ -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
@@ -7,6 +7,13 @@ from-utf8: common.cpp basics.cpp
 		-DSOURCE_NAME=utf8      \
 		-DSOURCE_TYPE=uint8_t   \
 		-ggdb                   \
+		-o $@ 
+
+characters: characters.cpp
+		g++ -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
+		$^                      \
+		-ggdb                   \
+		-liconv                 \
 		-o $@ 
 
 %.E: %.cpp

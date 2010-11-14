@@ -44,6 +44,9 @@ using namespace std;
 #include <cstdio>
 #include <cstdlib>
 
+#define ____MYSTRING(X) #X
+#define __MYSTRING(X) ____MYSTRING(X)
+
 extern void 
 test_utf8_string(const char*         TestName, 
                  const SOURCE_TYPE*  source_p,  const SOURCE_TYPE*  SourceEnd,
@@ -143,7 +146,7 @@ test(const char*     TestName,
         delete drain;
     }
 
-    cout << "with basic_string<" __STRING(SOURCE_TYPE) ">:\n";
+    cout << "with basic_string<" __MYSTRING(SOURCE_TYPE) ">:\n";
     {
         std::basic_string<SOURCE_TYPE>  source(SourceBegin);
         std::basic_string<DrainT>               drain;

@@ -1,14 +1,21 @@
-Source_Empty____________________________________________________
+to utf8____________________________________________________
 
-...to_utf8_string(... pointers ...)
+with pointers:
     GOOD: Checked 0 elements.
-...to_utf8_string(string<QUEX_TYPE_CHARACTER>)
+with basic_string<SOURCE_TYPE>:
     GOOD: Checked 0 elements.
 
-Source_Empty____________________________________________________
+to utf16____________________________________________________
 
-...to_wstring(... pointers ...)
+with pointers:
     GOOD: Checked 0 elements.
-...to_wstring(string<QUEX_TYPE_CHARACTER>)
+with basic_string<SOURCE_TYPE>:
+    GOOD: Checked 0 elements.
+
+to utf32____________________________________________________
+
+with pointers:
+    GOOD: Checked 0 elements.
+with basic_string<SOURCE_TYPE>:
     GOOD: Checked 0 elements.
 
