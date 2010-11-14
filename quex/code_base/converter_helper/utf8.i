@@ -53,7 +53,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_p
         /*    110x.xxxx 10yy.yyyy 
          * => 0000.0xxx:xxyy.yyyy                                                          */
         **output_pp = (uint16_t)(( ((uint16_t)*(iterator++)) & (uint16_t)0x1F ) << 6);
-        **output_pp = (uint16_t)((**output_pp) | (uint16_t)(( ((uint16_t)*(iterator++)) & (uint16_t)0x3F )));
+        **output_pp = (uint16_t)((**output_pp) | (( ((uint16_t)*(iterator++)) & (uint16_t)0x3F )));
 
         ++(*output_pp);
     }
@@ -61,8 +61,8 @@ __QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_p
         /*    1110.xxxx 10yy.yyyy 10zz.zzzz
          * => xxxx.yyyy:yyzz.zzzz                                                          */
         **output_pp = (uint16_t)(( ((uint16_t)*(iterator++)) & (uint16_t)0x0F ) << 12);
-        **output_pp = (uint16_t)((**output_pp) | (uint16_t)(( ((uint16_t)*(iterator++)) & (uint16_t)0x3F ) << 6)); 
-        **output_pp = (uint16_t)((**output_pp) | (uint16_t)(( ((uint16_t)*(iterator++)) & (uint16_t)0x3F )));
+        **output_pp = (uint16_t)((**output_pp) | (( ((uint16_t)*(iterator++)) & (uint16_t)0x3F ) << 6)); 
+        **output_pp = (uint16_t)((**output_pp) | (( ((uint16_t)*(iterator++)) & (uint16_t)0x3F )));
 
         ++(*output_pp);
     }
@@ -76,13 +76,14 @@ __QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_p
 
         /* It happens that the UTF8 domain with 4 bytes is >= 0x10000 which is the
          * starting domain for surrogates (i.e. what is mapped into 0xD800-0xE000         */
-        tmp = (uint32_t)(      ((uint32_t)*(iterator++)) & (uint32_t)0x07 )  << 18; 
+        tmp = (uint32_t)(      (((uint32_t)*(iterator++)) & (uint32_t)0x07 ) << 18); 
         tmp = (uint32_t)(tmp | (((uint32_t)*(iterator++)) & (uint32_t)0x3F ) << 12); 
         tmp = (uint32_t)(tmp | (((uint32_t)*(iterator++)) & (uint32_t)0x3F ) << 6); 
         tmp = (uint32_t)(tmp | (((uint32_t)*(iterator++)) & (uint32_t)0x3F ));
+
         tmp             = (uint32_t)(tmp - (uint32_t)0x10000);
-        *(*output_pp++) = (uint16_t)((uint16_t)(tmp >> 10)             | (uint16_t)0xD800);
-        *(*output_pp++) = (uint16_t)((uint16_t)(tmp & (uint32_t)0x3FF) | (uint16_t)0xDC00);
+        *(*output_pp++) = (uint16_t)((tmp >> 10)             | (uint32_t)0xD800);
+        *(*output_pp++) = (uint16_t)((tmp & (uint32_t)0x3FF) | (uint32_t)0xDC00);
     }
     *input_pp = iterator;
 }
@@ -100,13 +101,13 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_p
     else if( *iterator < (uint8_t)0xE0 ) { /* ... max: 1101.1111 --> 0xDF, next: 0xE0               */
         /*    110x.xxxx 10yy.yyyy 
          * => 0000.0xxx:xxyy.yyyy                                                          */
-        **output_pp = ( ((uint32_t)*(iterator++)) & (uint32_t)0x1F ) << 6;
+        **output_pp = (                          ( ((uint32_t)*(iterator++)) & (uint32_t)0x1F ) << 6);
         **output_pp = (uint32_t)((**output_pp) | ( ((uint32_t)*(iterator++)) & (uint32_t)0x3F ));
     }
     else if( *iterator < (uint8_t)0xF0 ) { /* ... max: 1110.1111 --> 0xEF, next: 0xF0               */
         /*    1110.xxxx 10yy.yyyy 10zz.zzzz
          * => xxxx.yyyy:yyzz.zzzz                                                          */
-        **output_pp = ( ((uint32_t)*(iterator++)) & (uint32_t)0x0F ) << 12;
+        **output_pp = (                          ( ((uint32_t)*(iterator++)) & (uint32_t)0x0F ) << 12);
         **output_pp = (uint32_t)((**output_pp) | ( ((uint32_t)*(iterator++)) & (uint32_t)0x3F ) << 6); 
         **output_pp = (uint32_t)((**output_pp) | ( ((uint32_t)*(iterator++)) & (uint32_t)0x3F ));
     }
@@ -117,7 +118,7 @@ __QUEX_CONVERTER_CHAR(utf8, utf32)(const uint8_t** input_pp, uint32_t** output_p
          *
          *    1111.0uuu 10xx.xxxx 10yy.yyyy 10zz.zzzz
          * => 000u.uuxx:xxxx.yyyy:yyzz.zzzz                                                */
-        **output_pp = ( ((uint32_t)*(iterator++)) & (uint32_t)0x07 ) << 18; 
+        **output_pp = (                          ( ((uint32_t)*(iterator++)) & (uint32_t)0x07 ) << 18); 
         **output_pp = (uint32_t)((**output_pp) | ( ((uint32_t)*(iterator++)) & (uint32_t)0x3F ) << 12); 
         **output_pp = (uint32_t)((**output_pp) | ( ((uint32_t)*(iterator++)) & (uint32_t)0x3F ) << 6); 
         **output_pp = (uint32_t)((**output_pp) | ( ((uint32_t)*(iterator++)) & (uint32_t)0x3F ));

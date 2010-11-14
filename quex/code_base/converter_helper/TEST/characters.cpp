@@ -1,43 +1,44 @@
-#ifndef  TEST_UTF8
-#   error "TEST_UTF8 must be defined here."
-#endif
+extern "C" { 
+#include <iconv.h>
+#include <inttypes.h>
+#include <stddef.h>
+#include <stdio.h>
+}
 #include "common.h"
-#include <support/C/hwut_unit.h>
-#include <cassert>
 
 
-
-struct Tester {
+struct UnicodeTester {
     iconv_t   to_utf8;
     iconv_t   to_utf16;
     size_t    error_n;
 
-    Tester() {
+    UnicodeTester() {
         to_utf8  = iconv_open("UTF8", "UCS4");  
 
         if( to_utf8 == (iconv_t)-1 ) { 
-            std::printf("Error no conversion handle."); std::exit(); 
+            std::printf("Error no conversion handle."); std::exit(0); 
         }
 
-        to_utf16 = iconv_open("UTF16", "UCS4") 
+        to_utf16 = iconv_open("UTF16", "UCS4");
         if( to_utf16 == (iconv_t)-1 ) { 
-            std::printf("Error no conversion handle."); std::exit(); 
+            std::printf("Error no conversion handle."); std::exit(0); 
         }
 
         error_n = 0;
     }
 
-    void get_utf8_and_utf16(uint32_t UTF32Source, uint8_t  utf8_source[5], uint16_t utf16_source[2]) 
+    bool get_utf8_and_utf16(uint32_t UTF32Source, uint8_t  utf8_source[5], uint16_t utf16_source[2]) 
     {
         size_t in_bytes_left  = sizeof(uint32_t);
         size_t out_bytes_left = 5;
         size_t report         = 0;
         
         memset((void*)utf8_source, 0x0, sizeof(utf8_source));
-        report = iconv(to_utf8, &UTF32Source, &in_bytes_left, utf8_source, &out_bytes_left);
+        report = iconv(to_utf8, (char**)&UTF32Source, &in_bytes_left, (char**)&utf8_source, &out_bytes_left);
 
         if( report == (size_t)-1 ) { 
             printf("UTF8 Conversion Error for Unicode 0x%06X.\n", (int)UTF32Source);
+            return false;
         }
 
         in_bytes_left  = sizeof(uint32_t);
@@ -45,12 +46,14 @@ struct Tester {
         report         = 0;
         
         memset((void*)utf16_source, 0x0, sizeof(utf16_source));
-        report = iconv(to_utf16, &UTF32Source, &in_bytes_left, utf16_source, &out_bytes_left);
+        report = iconv(to_utf16, (char**)&UTF32Source, &in_bytes_left, (char**)&utf16_source, &out_bytes_left);
 
         if( report == (size_t)-1 ) { 
             printf("UTF16 Conversion Error for Unicode 0x%06X.\n", (int)UTF32Source);
+            return false;
         }
 
+        return true;
     }
 
     void test_all()
@@ -92,16 +95,16 @@ struct Tester {
         uint8_t    utf8_source[5];
         uint16_t   utf16_source[2];
 
-        if( get_utf8_and_utf16(UTF32Source, utf8_source, utf16_source) == False ) {
+        if( get_utf8_and_utf16(UTF32Source, utf8_source, utf16_source) == false ) {
             return false;
         }
         {
             memset((void*)utf8_source, 0x0, sizeof(utf8_drain));
             memset((void*)utf16_drain, 0x0, sizeof(utf16_drain));
             utf32_drain = (uint32_t)0;
-            __quex_converter_char(utf8, utf8)(&utf8_source, &utf8_drain);
-            __quex_converter_char(utf8, utf16)(&utf8_source, &utf16_drain);
-            __quex_converter_char(utf8, utf32)(&utf8_source, &utf32_drain);
+            __QUEX_CONVERTER_CHAR(utf8, utf8)(&utf8_source, &utf8_drain);
+            __QUEX_CONVERTER_CHAR(utf8, utf16)(&utf8_source, &utf16_drain);
+            __QUEX_CONVERTER_CHAR(utf8, utf32)(&utf8_source, &utf32_drain);
 
             check("From UTF8 --> ", utf8_source,  utf8_drain, 
                   utf16_source, utf16_drain, UTF32_source, utf32_drain);
@@ -110,9 +113,9 @@ struct Tester {
             memset((void*)utf8_source, 0x0, sizeof(utf8_drain));
             memset((void*)utf16_drain, 0x0, sizeof(utf16_drain));
             utf32_drain = (uint32_t)0;
-            __quex_converter_char(utf16, utf8)(&utf16_source, &utf8_drain);
-            __quex_converter_char(utf16, utf16)(&utf16_source, &utf16_drain);
-            __quex_converter_char(utf16, utf32)(&utf16_source, &utf32_drain);
+            __QUEX_CONVERTER_CHAR(utf16, utf8)(&utf16_source, &utf8_drain);
+            __QUEX_CONVERTER_CHAR(utf16, utf16)(&utf16_source, &utf16_drain);
+            __QUEX_CONVERTER_CHAR(utf16, utf32)(&utf16_source, &utf32_drain);
 
             check("From UTF16 --> ", utf8_source,  utf8_drain, 
                   utf16_source, utf16_drain, UTF32_source, utf32_drain);
@@ -121,9 +124,9 @@ struct Tester {
             memset((void*)utf8_source, 0x0, sizeof(utf8_drain));
             memset((void*)utf16_drain, 0x0, sizeof(utf16_drain));
             utf32_drain = (uint32_t)0;
-            __quex_converter_char(utf32, utf8)(&UTF32Source, &utf8_drain);
-            __quex_converter_char(utf32, utf16)(&UTF32Source, &utf16_drain);
-            __quex_converter_char(utf32, utf32)(&UTF32Source, &utf32_drain);
+            __QUEX_CONVERTER_CHAR(utf32, utf8)(&UTF32Source, &utf8_drain);
+            __QUEX_CONVERTER_CHAR(utf32, utf16)(&UTF32Source, &utf16_drain);
+            __QUEX_CONVERTER_CHAR(utf32, utf32)(&UTF32Source, &utf32_drain);
 
             check("From UTF32 --> ", utf8_source,  utf8_drain, 
                   utf16_source, utf16_drain, UTF32_source, utf32_drain);
@@ -179,7 +182,7 @@ main(int argc, char** argv)
 {
     if( argc < 2 ) return 0;
 
-    Tester   tester();
+    UnicodeTester   tester();
             
     tester.test_all();
 }
