@@ -17,22 +17,22 @@ __QUEX_CONVERTER_CHAR(utf8, utf8)(const uint8_t** input_pp, uint8_t** output_pp)
 {
     /* Just for comformity with other encodings: Do nothing but copying. */
     if( (**input_pp & (uint8_t)0x80) == (uint8_t)0 ) {
-        *(*output_pp)++ = *(*input_pp)++;
+        *((*output_pp)++) = *(*input_pp)++;
     }
     else if( **input_pp < (uint8_t)0xE0 ) { 
-        *(*output_pp)++ = *(*input_pp)++;
-        *(*output_pp)++ = *(*input_pp)++;
+        *((*output_pp)++) = *(*input_pp)++;
+        *((*output_pp)++) = *(*input_pp)++;
     }
     else if( **input_pp < (uint8_t)0xF0 ) { 
-        *(*output_pp)++ = *(*input_pp)++;
-        *(*output_pp)++ = *(*input_pp)++; 
-        *(*output_pp)++ = *(*input_pp)++;
+        *((*output_pp)++) = *(*input_pp)++;
+        *((*output_pp)++) = *(*input_pp)++; 
+        *((*output_pp)++) = *(*input_pp)++;
     }
     else {
-        *(*output_pp)++ = *(*input_pp)++; 
-        *(*output_pp)++ = *(*input_pp)++; 
-        *(*output_pp)++ = *(*input_pp)++; 
-        *(*output_pp)++ = *(*input_pp)++;
+        *((*output_pp)++) = *(*input_pp)++; 
+        *((*output_pp)++) = *(*input_pp)++; 
+        *((*output_pp)++) = *(*input_pp)++; 
+        *((*output_pp)++) = *(*input_pp)++;
     }
 }
 
@@ -81,9 +81,9 @@ __QUEX_CONVERTER_CHAR(utf8, utf16)(const uint8_t** input_pp, uint16_t** output_p
         tmp = (uint32_t)(tmp | (((uint32_t)*(iterator++)) & (uint32_t)0x3F ) << 6); 
         tmp = (uint32_t)(tmp | (((uint32_t)*(iterator++)) & (uint32_t)0x3F ));
 
-        tmp             = (uint32_t)(tmp - (uint32_t)0x10000);
-        *(*output_pp++) = (uint16_t)((tmp >> 10)             | (uint32_t)0xD800);
-        *(*output_pp++) = (uint16_t)((tmp & (uint32_t)0x3FF) | (uint32_t)0xDC00);
+        tmp               = (uint32_t)(tmp - (uint32_t)0x10000);
+        *((*output_pp)++) = (uint16_t)((tmp >> 10)             | (uint32_t)0xD800);
+        *((*output_pp)++) = (uint16_t)((tmp & (uint32_t)0x3FF) | (uint32_t)0xDC00);
     }
     *input_pp = iterator;
 }

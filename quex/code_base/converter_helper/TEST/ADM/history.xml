@@ -1,6 +1,12 @@
-<history date="Sun Nov 14 22:45:13 2010" element-n="2">
+<history date="Wed Nov 17 00:32:21 2010" element-n="6">
     <day year="2010" month="11" day="07">
         <history-init time="11:07:19"/>
         <crc-error time="11:45:41" application="test-utf8" choice="Source_Empty" database-crc="-111483674" real-crc="-1971904517"/>
+    </day>
+    <day year="2010" month="11" day="16">
+        <crc-error time="22:34:23" application="from-utf8" choice="Normal" database-crc="2033684287" real-crc="-1857111717"/>
+        <crc-error time="22:34:23" application="from-utf8" choice="Source_Empty" database-crc="1272391215" real-crc="-975538654"/>
+        <crc-error time="23:31:51" application="from-utf32" choice="Source_Empty" database-crc="490986972" real-crc="-975538654"/>
+        <crc-error time="23:32:21" application="from-utf32" choice="Source_Empty" database-crc="-975538654" real-crc="490986972"/>
     </day>
 </history>

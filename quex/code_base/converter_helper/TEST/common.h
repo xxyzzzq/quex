@@ -20,8 +20,6 @@
 #include <quex/code_base/converter_helper/utf16.i>
 #include <quex/code_base/converter_helper/utf32.i>
 
-#define CONVERTER(OUTPUT)   Tester::__QUEX_CONVERTER_STRING(FROM_CODEC, OUTPUT)
-
 using namespace std;
 
 #define ____MYSTRING(X) #X

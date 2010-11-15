@@ -39,7 +39,7 @@ struct UnicodeTester {
         utf32_memory[3] = UTF32Source & 0xFF;
         utf32_memory[2] = (UTF32Source >> 8) & 0xFF;
         utf32_memory[1] = (UTF32Source >> 16) & 0xFF;
-        utf32_memory[0] = (UTF32Source >> 16) & 0xFF;
+        utf32_memory[0] = (UTF32Source >> 24) & 0xFF;
         {
             size_t    in_bytes_left  = 4;
             size_t    out_bytes_left = UTF8_STRING_SIZE;
@@ -89,6 +89,7 @@ struct UnicodeTester {
                     undone_front = (uint32_t)-1;
                 }
             }
+            if( this->error_n > 1000 ) break;
         }
         if( undone_front != (uint32_t)-1 ) {
             printf("No character in [0x%06X, 0x%06X]\n", (int)undone_front, (int)undone_back);
@@ -229,10 +230,12 @@ struct UnicodeTester {
 #endif
 };
 
+#include<support/C/hwut_unit.h>
+
 int
 main(int argc, char** argv)
 {
-    if( argc < 2 ) return 0;
+    hwut_info("Test of complete character set on base converters (utf8, utf16, utf32);");
 
     UnicodeTester   tester;
             
