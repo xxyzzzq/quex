@@ -32,24 +32,24 @@ __QUEX_CONVERTER_CHAR(utf32, utf8)(const uint32_t**  input_pp,
     /**/
 
     if (Unicode <= 0x0000007f) {
-        *(*output_pp)++ = (uint8_t)Unicode;
+        *((*output_pp)++) = (uint8_t)Unicode;
     } else if (Unicode <= 0x000007ff) {
-        *(*output_pp)++ = (uint8_t)(0xC0 | (Unicode >> 6)); 
-        *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3f));
+        *((*output_pp)++) = (uint8_t)(0xC0 | (Unicode >> 6)); 
+        *((*output_pp)++) = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3f));
     } else if (Unicode <= 0x0000ffff) {
-        *(*output_pp)++ = (uint8_t)(0xE0 | Unicode           >> 12);
-        *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & (uint32_t)0xFFF) >> 6);
-        *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3F));
+        *((*output_pp)++) = (uint8_t)(0xE0 | Unicode           >> 12);
+        *((*output_pp)++) = (uint8_t)(0x80 | (Unicode & (uint32_t)0xFFF) >> 6);
+        *((*output_pp)++) = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3F));
     } else { 
         /* Assume that only character appear, that are defined in unicode. */
         __quex_assert(Unicode <= (uint32_t)0x1FFFFF);
         /* No surrogate pairs (They are reserved even in non-utf16).       */
         __quex_assert(! (Unicode >= 0xd800 && Unicode <= 0xdfff) );
 
-        *(*output_pp)++ = (uint8_t)(0xF0 | Unicode >> 18);
-        *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3FFFF) >> 12);
-        *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & (uint32_t)0xFFF)   >> 6);
-        *(*output_pp)++ = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3F));
+        *((*output_pp)++) = (uint8_t)(0xF0 | Unicode >> 18);
+        *((*output_pp)++) = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3FFFF) >> 12);
+        *((*output_pp)++) = (uint8_t)(0x80 | (Unicode & (uint32_t)0xFFF)   >> 6);
+        *((*output_pp)++) = (uint8_t)(0x80 | (Unicode & (uint32_t)0x3F));
     }
     /* NOTE: Do not check here for forbitten UTF-8 characters.
      * They cannot appear here because we do proper conversion. */
@@ -63,12 +63,12 @@ __QUEX_CONVERTER_CHAR(utf32, utf16)(const uint32_t**  input_pp,
     uint32_t   tmp = 0;
 
     if( **input_pp < 0x10000 ) {
-        *(*output_pp)++ = (uint16_t)**input_pp;
+        *((*output_pp)++) = (uint16_t)**input_pp;
     } else { 
         tmp             = (uint32_t)(**input_pp - (uint32_t)0x10000);
 
-        *(*output_pp++) = (uint16_t)((tmp >> 10)             | (uint16_t)0xD800);
-        *(*output_pp++) = (uint16_t)((tmp & (uint32_t)0x3FF) | (uint16_t)0xDC00);
+        *(((*output_pp)++)) = (uint16_t)((tmp >> 10)             | (uint16_t)0xD800);
+        *(((*output_pp)++)) = (uint16_t)((tmp & (uint32_t)0x3FF) | (uint16_t)0xDC00);
     }
     ++(*input_pp);
 }
@@ -77,7 +77,7 @@ QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(utf32, utf32)(const uint32_t**  input_pp, 
                                     uint32_t**        output_pp)
 {
-    *(*output_pp)++ = (uint32_t)(*(*input_pp)++);
+    *((*output_pp)++) = (uint32_t)(*(*input_pp)++);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE
