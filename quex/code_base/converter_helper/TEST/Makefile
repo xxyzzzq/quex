@@ -1,4 +1,10 @@
-FILES = from-utf8
+FILES = characters
+
+characters: characters.cpp
+		g++ -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
+		$^                      \
+		-ggdb                   \
+		-o $@ 
 
 from-utf8: common.cpp basics.cpp
 		g++ -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
@@ -9,12 +15,6 @@ from-utf8: common.cpp basics.cpp
 		-ggdb                   \
 		-o $@ 
 
-characters: characters.cpp
-		g++ -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \
-		$^                      \
-		-ggdb                   \
-		-liconv                 \
-		-o $@ 
 
 %.E: %.cpp
 		g++ -E -I$(QUEX_PATH) -I. -I$(HWUT_PATH) \

@@ -59,7 +59,7 @@ QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(utf16, utf16)(const uint16_t**  input_pp, 
                                     uint16_t**        output_pp)
 {
-    if( **input_pp < (uint16_t)0xD800 || **input_pp > (uint16_t)0xE000 ) {
+    if( **input_pp < (uint16_t)0xD800 || **input_pp >= (uint16_t)0xE000 ) {
         *(*output_pp)++ = *(*input_pp)++;
     } else { 
         *(*output_pp)++ = (uint16_t)(*(*input_pp)++ - (uint16_t)0xD800);
@@ -74,7 +74,7 @@ __QUEX_CONVERTER_CHAR(utf16, utf32)(const uint16_t**  input_pp,
     uint32_t  x0 = (uint32_t)0;
     uint32_t  x1 = (uint32_t)0;
 
-    if( **input_pp < (uint16_t)0xD800 || **input_pp > (uint16_t)0xE000 ) {
+    if( **input_pp < (uint16_t)0xD800 || **input_pp >= (uint16_t)0xE000 ) {
         *(*output_pp)++ = *(*input_pp)++;
     } else { 
         x0 = (uint32_t)(*(*input_pp)++) - (uint32_t)0xD800;

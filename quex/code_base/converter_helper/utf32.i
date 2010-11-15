@@ -63,7 +63,7 @@ __QUEX_CONVERTER_CHAR(utf32, utf16)(const uint32_t**  input_pp,
     uint32_t   tmp = 0;
 
     if( **input_pp < 0x10000 ) {
-        *(*output_pp)++ = (uint16_t)tmp;
+        *(*output_pp)++ = (uint16_t)**input_pp;
     } else { 
         tmp             = (uint32_t)(**input_pp - (uint32_t)0x10000);
 
