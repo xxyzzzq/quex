@@ -149,6 +149,58 @@ The possible options for modes to be specified are the following.
    can be an arbitrary regular expression. The ``end-string`` must be a 
    linear string.
 
+   .. warning:: For 'real' C++ comments the ``skip_range`` cannot produce a behavior
+                that is conform to the standard. For this, the lexical analyzer must
+                be able to consider the following as a single comment line
+
+                .. code-block:: cpp
+
+                   // Hello \ this \
+                      is \
+                      a comment
+
+                where the end of comment can be suppressed by a backslashed followed
+                by whitespace. The ``skip_range`` option's efficiency is based on the
+                delimiter being a linear character sequence. For the above case a 
+                regular expression is required.
+
+    For more complex cases, such as a standard conform C++ comment skipping must be
+    replaced by a regular expression that triggers an empty action.
+
+    .. code-block:: cpp
+
+            mode X { 
+                ...
+                "//"([^\n]|(\\[ \t]*\r?\n))*\r?\n      { /* no action */ }
+                ...
+            }
+
+    In a more general form, the following scheme might be able to skip most conceivable
+    scenarios of range skipping:
+
+    .. code-block:: cpp
+
+            mode X { 
+                ...
+                {BEGIN}([:inverse({EOE}):]|({SUPPRESSOR}{WHITESPACE}*{END}))*{END}    { /* no action */ }
+                ...
+            }
+
+    In the C++ case the following definitions are required
+
+    .. code-block:: cpp
+
+            define { 
+                BEGIN        //
+                END          \r?\n
+                EOE          \n
+                WHITESPACE   [ \t]
+                SUPPRESSOR   \\
+            }
+
+    Where ``EOE`` stands for 'end of end', i.e. the last character of the ``END`` pattern.
+
+
 .. data::   <skip_nested_range: start-string end-string> 
 
    With this option nested ranges can be skipped. Many programming languages 
