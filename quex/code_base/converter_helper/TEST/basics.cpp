@@ -171,21 +171,23 @@ main(int argc, char** argv)
         SOURCE_TYPE  source_utf8[] = { 0xe4, 0x9c, 0x91, /* unicode 0x4711 */ 
                                        0xe0, 0xa0, 0x95, /* unicode 0x0815 */
                                        0x0 }; 
-        SOURCE_TYPE  source_utf16_utf32[] = { 0x4711, 0x0815 };
+        SOURCE_TYPE  source_utf16_utf32[] = { (SOURCE_TYPE)0x4711, 
+                                              (SOURCE_TYPE)0x0815, 
+                                              (SOURCE_TYPE)0x0  };
         SOURCE_TYPE* source = 0;
 
         switch( sizeof(SOURCE_TYPE) ) {
-        case 1:  source = source_utf8;
-        default: source = source_utf16_utf32;
+        case 1:  source = source_utf8; break;
+        default: source = source_utf16_utf32; break;
         }
 
-        uint8_t      utf8_expected[]  = { 0xe4, 0x9c, 0x91 /* unicode 0x4711 */, 0x0 };
-        uint16_t     utf16_expected[] = { 0x4711, 0x0 };
-        uint32_t     utf32_expected[] = { 0x4711, 0x0 };
+        uint8_t   utf8_expected[]  = { 0xe4, 0x9c, 0x91 /* unicode 0x4711 */, 0x0 };
+        uint16_t  utf16_expected[] = { 0x4711, 0x0 };
+        uint32_t  utf32_expected[] = { 0x4711, 0x0 };
 
         test_this<SOURCE_TYPE>(source, 
                                utf8_expected,  4, 
-                               utf16_expected, 1, 
+                               utf16_expected, 2, 
                                utf32_expected, 1);
     }
     hwut_if_choice("Source_TestFile") {
