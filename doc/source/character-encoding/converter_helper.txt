@@ -13,6 +13,13 @@ objects that are encoded in the buffer's character encoding. Note, that
 the following discussion is most likely pointless, if the analyzer 
 runs on plain ASCII files.
 
+
+.. note:: Depending on the drain's size the not all characters may be 
+          converted. A conversion for a character is not accomplished
+          if the remaining drain size is less than the maximum character
+          encoding. For UTF8 it is 8 bytes, for UTF16 4 bytes and for UTF32
+          for bytes.
+
 At least for debugging, a strange character coding might not be suitable for
 display on the debug terminal. When analyzers are to be plugged into larger
 software, it is likely that this software frame does not understand the very
@@ -30,7 +37,7 @@ for C++ are
 The name ``CODEC`` represents the name of the buffer's codec. It is ``unicode``
 in case of converters, or whenever the buffer's codec is normal unicode (i.e.
 also when it is ASCII). For ISO8859-7, it is ``iso8859_7``
-Both functions reside in the analyzer's namespace (by default ``::quex``).  The
+both functions reside in the analyzer's namespace (by default ``::quex``).  The
 type of argument ``Input`` is
 
 .. code-block:: cpp
