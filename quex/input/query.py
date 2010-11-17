@@ -8,9 +8,11 @@ from quex.core_engine.interval_handling     import NumberSet, Interval
 from quex.input.ucs_db_parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 
-from   quex.GetPot             import GetPot
+from   quex.GetPot                   import GetPot
 import quex.input.codec_db           as codec_db
 import quex.input.regular_expression as regular_expression
+
+from quex.input.setup import setup as Setup
 
 OPTION_DB = {
         "--codec-info":         ["Information about supported characters of a codec."],
@@ -52,6 +54,13 @@ def do(ARGV):
                 False if not query was requested.
     """
     cl = GetPot(ARGV, SectionsEnabledF=False)
+
+
+
+    # Regular Expressions extract the BufferLimitCode and the PathTerminatorCode
+    # from the sets. So let us define them outside the normal range.
+    Setup.buffer_limit_code = -1
+    Setup.path_limit_code   = -1
 
     try:
         if   search_and_validate(cl, "--codec-info"):         __handle_codec(cl)

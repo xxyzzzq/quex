@@ -1,4 +1,4 @@
-<test-database execution-time-sec="222.00" date="Thu Nov 18 23:17:59 2010">
+<test-database execution-time-sec="222.00" date="Thu Nov 18 23:42:58 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="3.23"> 
@@ -128,12 +128,6 @@
             <application file-name="bug-2277660.sh" info-request-time="1264886931L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="5.12" crc="-389983954"/>
-            </choice-list>
-        </test>
-        <test title="3110544 0.55.2 quex output --intervals with [...]" time-sum-sec="0.00"> 
-            <application file-name="bug-3110544.sh" info-request-time="1290118634L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="380829506"/>
             </choice-list>
         </test>
         <test title="OpenIssue 0.55.1 Duplicate State Label" time-sum-sec="0.00"> 
@@ -602,6 +596,14 @@
             <application file-name="bug-3021502.sh" info-request-time="1286359772L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.76" crc="-2142433527"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="timdawborn">
+        <test title="3106424 0.55.2 --set-by-expression with inverse fails" time-sum-sec="0.00"> 
+            <application file-name="bug-3106424.sh" info-request-time="1290120101L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="1603946015"/>
             </choice-list>
         </test>
     </group>
