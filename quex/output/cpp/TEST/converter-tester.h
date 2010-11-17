@@ -537,7 +537,8 @@ $$BODY_UTF32$$
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#define __QUEX_FROM     cp737
+#define __QUEX_FROM         cp737
+#define __QUEX_TYPE_SOURCE  QUEX_TYPE_CHARACTER
 #include <quex/code_base/converter_helper/base.gi>
 
 

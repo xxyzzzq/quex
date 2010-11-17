@@ -1,3 +1,6 @@
+#ifndef __QUEX_DRAIN_CODEC
+#   error "__QUEX_DRAIN_CODEC must be defined."
+#endif
 
 QUEX_NAMESPACE_MAIN_OPEN
 
