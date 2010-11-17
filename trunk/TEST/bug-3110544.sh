@@ -5,12 +5,27 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
-tmp=`pwd`
-cd $bug/ 
-make story >& tmp.txt
-cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
-rm tmp.txt
+echo "--------------------------------------------------------------------"
+echo "quex --set-by-expression [^a] --intervals"
+echo
+quex --set-by-expression [^a] --intervals
 
-# cleansening
-make clean >& /dev/null
-cd $tmp
+echo "--------------------------------------------------------------------"
+echo "quex --set-by-expression [^a] --intervals --numeric"
+echo
+quex --set-by-expression [^a] --intervals --numeric
+
+echo "--------------------------------------------------------------------"
+echo "quex --set-by-property Script=Greek --intervals"
+echo
+quex --set-by-property Script=Greek --intervals
+
+echo "--------------------------------------------------------------------"
+echo "quex --set-by-property Script=Greek --intervals --numeric"
+echo
+quex --set-by-property Script=Greek --intervals --numeric
+
+echo "--------------------------------------------------------------------"
+echo "quex --set-by-property Script=Greek "
+echo
+quex --set-by-property Script=Greek 

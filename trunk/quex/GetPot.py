@@ -35,7 +35,7 @@ class GetPot_variable:
         
 
 class GetPot:
-    def __init__(self, Argv=None, Filename=None):
+    def __init__(self, Argv=None, Filename=None, SectionsEnabledF=True):
         # Make the default argument for Argv=[], otherwise
         # strange things may occur, when somewhere the cursor
         # is set to len(Argv) - 1. Even if the user passes a dangerous
@@ -69,11 +69,11 @@ class GetPot:
             try:    Argv.extend(parsed_argv)
             except: pass
 
-        self.argv = self.__parse_argument_vector(Argv)
+        self.argv = self.__parse_argument_vector(Argv, SectionsEnabledF)
             
         if self.argv == []: self.argv = [""]
 
-    def __parse_argument_vector(self, argv_):
+    def __parse_argument_vector(self, argv_, SectionsEnabledF=True):
 
         self.section = ''
         section_stack = []
@@ -88,7 +88,7 @@ class GetPot:
             if i == 0:      arg_list.append(arg); continue
 
             # [section] ?
-            if len(arg) > 1 and arg[0] == '[' and arg[-1] == ']':
+            if SectionsEnabledF and len(arg) > 1 and arg[0] == '[' and arg[-1] == ']':
                 name = self.DBE_expand_string(arg[1:-1])
                 self.section = self.__process_section_label(name, section_stack)
                 if self.section not in self.section_list:
@@ -195,7 +195,6 @@ class GetPot:
 
             token += tmp
 
-
     def __get_string(self, FH):
         """Reads characters until the next un-backslashed quote."""
         str = ''; tmp = 0
@@ -207,7 +206,6 @@ class GetPot:
             elif tmp == '\\' and not last_letter == '\\':  continue # don't append 
 
             str += tmp
-
 
     def __get_until_closing_bracket(self, FH):
         """Reads characters until the next un-backslashed '}'."""
@@ -643,7 +641,6 @@ class GetPot:
 
         return new_string
 
-
     def DBE_get_expr_list(self, String, ExpectedNumber):
         """Separates expressions by non-bracketed whitespaces, expands them
         and puts them into a list."""
@@ -697,7 +694,6 @@ class GetPot:
 
         return expr_list
 
-
     def DBE_get_variable(self, VarName):
         SECURE_Prefix = self.__prefix
 
@@ -712,7 +708,6 @@ class GetPot:
 
         self.__prefix = SECURE_Prefix
         return "<<${ } variable '%s' undefined>>" % VarName
-
 
     def DBE_expand(self, Expr):
         # ${: } pure text
@@ -870,7 +865,6 @@ class GetPot:
 
         if type(B) == type(""): return B
         else:                   return B.original
-
 
     # (*) unidentified flying objects
     def unidentified_arguments(self, *Knowns):
