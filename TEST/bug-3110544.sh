@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
-bug=3110544
+bug=3106424
 if [[ $1 == "--hwut-info" ]]; then
-    echo "fschaef: $bug 0.55.2 quex output --intervals with [...]"
+    echo "timdawborn: $bug 0.55.2 --set-by-expression with inverse fails"
     exit
 fi
 
@@ -29,3 +29,8 @@ echo "--------------------------------------------------------------------"
 echo "quex --set-by-property Script=Greek "
 echo
 quex --set-by-property Script=Greek 
+
+echo "--------------------------------------------------------------------"
+echo quex --set-by-expression '[:inverse([\1-\U10FFFE]):]' --intervals --numeric
+echo
+quex --set-by-expression '[:inverse([\4-\U10FFFE]):]' --intervals --numeric
