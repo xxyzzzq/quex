@@ -29,9 +29,11 @@ Characters:
 ----------------------------------------------------------------------
 ARGS:  ['intersection(\\G{Nd}, \\P{Script=Runic})']
 Characters:
+<Result = Empty Character Set>
 
 
 Characters:
+<Result = Empty Character Set>
 
 
 Characters:

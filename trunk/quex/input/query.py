@@ -244,15 +244,22 @@ class CharacterList:
         interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
         interval_list.sort(lambda x, y: cmp(x.begin, y.begin))
 
+
         self.__interval_list      = interval_list
         self.__interval_list_size = len(interval_list)
 
-        # No character below 0
-        self.__current_character  = 0
-        self.__current_interval_i = 0
-        # No character below 0 --> take first interval with .end > 0
-        while self.__interval_list[self.__current_interval_i].end <= 0:
-            self.__current_interval_i += 1
+        if self.__interval_list_size == 0:
+            self.__current_character  = None
+            self.__current_interval_i = -1
+        else:
+            # No character below 0 --> take first interval with .end > 0
+            for i in range(self.__interval_list_size):
+                if self.__interval_list[i].end >= 0: break
+
+            self.__current_character  = max(0, self.__interval_list[i].begin)
+            self.__current_interval_i = i
+
+        
 
     def is_empty(self):
         return self.__interval_list_size == 0
@@ -260,21 +267,19 @@ class CharacterList:
     def next(self):
         tmp = self.__current_character
 
+        if tmp == None: return None
+
+        # Prepare the character for the next call
         self.__current_character += 1
-        # No character beyond 0x10FFFF, as defined by Unicode
-        if tmp == 0x110000: return None
+        if self.__current_character == self.__interval_list[self.__current_interval_i].end:
+            self.__current_interval_i += 1
+            if self.__current_interval_i == self.__interval_list_size:
+                self.__current_character = None # End reached
+            else:
+                self.__current_character = self.__interval_list[self.__current_interval_i].begin
 
-        if self.__current_character < self.__interval_list[self.__current_interval_i].end: 
-            return tmp
-
-        self.__current_interval_i += 1
-        self.__current_character = self.__interval_list[self.__current_interval_i].begin
-        if self.__current_interval_i <= self.__interval_list_size: 
-            return tmp
-
-        # No more characters
-        return None
-
+        # Return the character that is still now to treat
+        return tmp
 
 def __print_set_single_characters(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]
@@ -290,7 +295,7 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
 
     character_list = CharacterList(CharSet)
     if character_list.is_empty():
-        sys.write("<Result = Empty Character Set>\n")
+        sys.stdout.write("<Result = Empty Character Set>\n")
         return
 
     # Avoid memory overflow for very large sets: get character by character 
