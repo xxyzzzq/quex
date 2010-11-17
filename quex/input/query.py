@@ -4,6 +4,7 @@ from StringIO import StringIO
 
 from quex.frs_py.file_in       import error_msg
 from quex.core_engine.utf8     import map_unicode_to_utf8
+from quex.core_engine.interval_handling     import NumberSet, Interval
 from quex.input.ucs_db_parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 
@@ -50,7 +51,7 @@ def do(ARGV):
        RETURNS: True if a query was performed.
                 False if not query was requested.
     """
-    cl = GetPot(ARGV)
+    cl = GetPot(ARGV, SectionsEnabledF=False)
 
     try:
         if   search_and_validate(cl, "--codec-info"):         __handle_codec(cl)
@@ -188,6 +189,8 @@ def __handle_set_by_expression(cl):
 def __display_set(CharSet, cl):
     if cl.search("--numeric"): display = "hex"
     else:                      display = "utf8"
+
+    CharSet.intersect_with(NumberSet(Interval(0, 0x110000)))
 
     print "Characters:\n", 
     if cl.search("--intervals"): 
