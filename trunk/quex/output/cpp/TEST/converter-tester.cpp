@@ -2,6 +2,9 @@
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include "converter-tester.h"
 
+#define __MY_STRING(X)   # X
+#define MY_STRING(X)     __MY_STRING(X)
+
 int
 main(int argc, char** argv)
 {
@@ -19,7 +22,7 @@ main(int argc, char** argv)
     for(int i=Start; i < Start + CharacterN; ++i) source[i-Start] = i;
 
     /* Convert the whole array */
-    CONVERT_TO_UTF8(&source_p, source_p + CharacterN, &drain_p, drain_p + 4095);
+    __QUEX_CONVERTER_STRING(__QUEX_CODEC,utf8)(&source_p, source_p + CharacterN, &drain_p, drain_p + 4095);
 
     const int    Size = (int)(drain_p - (uint8_t*)drain);
 
@@ -42,7 +45,7 @@ main(int argc, char** argv)
     fclose(fh_out);
 #   endif
 
-    FILE* fh = fopen("reference-" __QUEX_CODEC "-to-utf8.txt", "rb");
+    FILE* fh = fopen("reference-" MY_STRING(__QUEX_CODEC) "-to-utf8.txt", "rb");
     const size_t RefSize = fread(drain_ref, 1, 4096, fh);
 
     if( RefSize != Size ) {

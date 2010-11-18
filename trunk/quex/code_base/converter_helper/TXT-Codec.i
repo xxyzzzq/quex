@@ -30,47 +30,37 @@ __QUEX_CONVERTER_CHAR($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                        uint8_t**                    output_pp)
 {
 $$PROLOG_UTF8$$
-    uint32_t   unicode  = 0xFFFF;
-    uint8_t*   output_p = *output_pp;
-    uint8_t*   p        = output_p;
+    uint32_t   unicode = (uint32_t)-1;
 
-    QUEX_TYPE_CHARACTER input = **input_pp;
+    QUEX_TYPE_CHARACTER input = *(*input_pp)++;
     
-    /* The unicode range simply does not go beyond 0x10FFFF */
-    __quex_assert(input < 0x110000);
-    /* If the following assert fails, then QUEX_TYPE_CHARACTER needs to be chosen
-     * of 'unsigned' type, e.g. 'unsigned char' instead of 'char'.                */
-    /* __quex_assert(input >= 0); */
-
-#if 0
-#   if defined(__QUEX_OPTION_LITTLE_ENDIAN)
-#   define QUEX_BYTE_0  (*( ((uint8_t*)&unicode) + 3 ))
-#   define QUEX_BYTE_1  (*( ((uint8_t*)&unicode) + 2 ))
-#   define QUEX_BYTE_2  (*( ((uint8_t*)&unicode) + 1 ))
-#   define QUEX_BYTE_3  (*( ((uint8_t*)&unicode) + 0 ))
-#   else                             
-#   define QUEX_BYTE_0  (*( ((uint8_t*)&unicode) + 0 ))
-#   define QUEX_BYTE_1  (*( ((uint8_t*)&unicode) + 1 ))
-#   define QUEX_BYTE_2  (*( ((uint8_t*)&unicode) + 2 ))
-#   define QUEX_BYTE_3  (*( ((uint8_t*)&unicode) + 3 ))
-#   endif
-#else
-#   define QUEX_BYTE_0  ((uint8_t)((unicode & 0xFF)))
-#   define QUEX_BYTE_1  ((uint8_t)((unicode & 0xFF00) >> 8))
-#   define QUEX_BYTE_2  ((uint8_t)((unicode & 0xFF0000) >> 16))
-#   define QUEX_BYTE_3  ((uint8_t)((unicode & 0xFF000000) >> 24))
-#endif
-
 $$BODY_UTF8$$
-    __quex_assert(p - output_p < (ptrdiff_t)7);
-    __quex_assert(p > output_p);
-    *output_pp = p;
-    ++(*input_pp);
 
-#   undef QUEX_BYTE_0 
-#   undef QUEX_BYTE_1 
-#   undef QUEX_BYTE_2 
-#   undef QUEX_BYTE_3 
+one_byte:
+    *((*output_pp)++) = (uint8_t)unicode;
+    return;
+
+two_bytes:
+    *((*output_pp)++) = (uint8_t)(0xC0 | (unicode >> 6)); 
+    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3f));
+    return;
+
+three_bytes:
+    *((*output_pp)++) = (uint8_t)(0xE0 | unicode           >> 12);
+    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF) >> 6);
+    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));
+    return;
+
+four_bytes:
+    /* Assume that only character appear, that are defined in unicode. */
+    __quex_assert(unicode <= (uint32_t)0x1FFFFF);
+    /* No surrogate pairs (They are reserved even in non-utf16).       */
+    __quex_assert(! (unicode >= 0xd800 && unicode <= 0xdfff) );
+
+    *((*output_pp)++) = (uint8_t)(0xF0 | unicode >> 18);
+    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3FFFF) >> 12);
+    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF)   >> 6);
+    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));
 }
 
 QUEX_INLINE void
@@ -78,21 +68,17 @@ __QUEX_CONVERTER_CHAR($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
                                         uint16_t**                  output_pp)
 {
     uint16_t             unicode = 0L;
-    QUEX_TYPE_CHARACTER  input = **input_pp;
+    QUEX_TYPE_CHARACTER  input = *(*input_pp)++;
 $$BODY_UTF16$$
-    ++(*input_pp);
-    ++(*output_pp);
 }
 
 QUEX_INLINE void
 __QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
-                                        uint16_t**                  output_pp)
+                                        uint32_t**                  output_pp)
 {
     uint32_t             unicode = 0L;
-    QUEX_TYPE_CHARACTER  input = **input_pp;
+    QUEX_TYPE_CHARACTER  input = *(*input_pp)++;
 $$BODY_UTF32$$
-    ++(*input_pp);
-    ++(*output_pp);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

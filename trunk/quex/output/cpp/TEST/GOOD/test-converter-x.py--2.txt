@@ -8,28 +8,22 @@
 
     if( input < 0x300000) {
         if( input < 0x200000) {
-            unicode = 0x000000 + (input - 0x100000);
-            *p = QUEX_BYTE_0; ++p;
+            unicode = (uint32_t)input - (uint32_t)0x100000;
+            goto one_byte;
         } else {
         
-            unicode = 0x000080 + (input - 0x200000);
-            *(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);
-            *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+            unicode = (uint32_t)input - (uint32_t)0x1FFF80;
+            goto two_bytes;
         }
     } else {
     
         if( input < 0x400000) {
-            unicode = 0x000800 + (input - 0x300000);
-            *(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);
-            *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-            *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+            unicode = (uint32_t)input - (uint32_t)0x2FF800;
+            goto three_bytes;
         } else {
         
-            unicode = 0x010000 + (input - 0x400000);
-            *(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);
-            *(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);
-            *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-            *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+            unicode = (uint32_t)input - (uint32_t)0x3F0000;
+            goto four_bytes;
         }
     }
 
