@@ -55,27 +55,31 @@ def do(ARGV):
     """
     cl = GetPot(ARGV, SectionsEnabledF=False)
 
-
+    success_f = False
 
     # Regular Expressions extract the BufferLimitCode and the PathTerminatorCode
     # from the sets. So let us define them outside the normal range.
+    backup_buffer_limit_code = Setup.buffer_limit_code
+    backup_path_limit_code   = Setup.path_limit_code
     Setup.buffer_limit_code = -1
     Setup.path_limit_code   = -1
 
     try:
+        success_f = True
         if   search_and_validate(cl, "--codec-info"):         __handle_codec(cl)
         elif search_and_validate(cl, "--codec-for-language"): __handle_codec_for_language(cl)
         elif search_and_validate(cl, "--property"):           __handle_property(cl)
         elif search_and_validate(cl, "--set-by-property"):    __handle_set_by_property(cl)
         elif search_and_validate(cl, "--set-by-expression"):  __handle_set_by_expression(cl)
         elif search_and_validate(cl, "--property-match"):     __handle_property_match(cl)
-        else:                                                 return False
-        return True
+        else:                                                 success_f = False
 
     except RegularExpressionException, x:
         error_msg(x.message)
 
-    return False
+    Setup.buffer_limit_code = backup_buffer_limit_code
+    Setup.path_limit_code   = backup_path_limit_code
+    return success_f
 
 def __handle_codec(cl):
     codec_name = cl.follow("", "--codec-info")

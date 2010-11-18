@@ -51,7 +51,6 @@ def _do(UnicodeTrafoInfo, CodecName):
                                 + "/converter_helper/TXT-Codec.i")
     txt_i = blue_print(get_file_content_or_die(FileName), 
                        [["$$CODEC$$",       codec_name],
-                        ["$$PROLOG_UTF8$$", utf8_prolog],
                         ["$$BODY_UTF8$$",   utf8_function_body],
                         ["$$BODY_UTF16$$",  utf16_function_body],
                         ["$$BODY_UTF32$$",  utf32_function_body]])

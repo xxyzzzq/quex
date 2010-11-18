@@ -29,7 +29,6 @@ QUEX_INLINE void
 __QUEX_CONVERTER_CHAR($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                        uint8_t**                    output_pp)
 {
-$$PROLOG_UTF8$$
     uint32_t   unicode = (uint32_t)-1;
 
     QUEX_TYPE_CHARACTER input = *(*input_pp)++;
