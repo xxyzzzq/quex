@@ -40,10 +40,6 @@ QUEX_INLINE void
 __QUEX_CONVERTER_CHAR(cp1256, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                        uint8_t**                    output_pp)
 {
-    const int NEXT = 0x80;
-    const int LEN2 = 0x0C0;
-    const int LEN3 = 0x0E0;
-
     uint32_t   unicode = (uint32_t)-1;
 
     QUEX_TYPE_CHARACTER input = *(*input_pp)++;

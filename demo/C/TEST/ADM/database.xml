@@ -1,6 +1,6 @@
-<test-database execution-time-sec="223.23" date="Fri Nov 19 10:03:52 2010">
+<test-database execution-time-sec="224.90" date="Sat Nov 20 00:41:10 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.19"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.18"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.01" crc="-1839813089"/>
@@ -13,7 +13,7 @@
            <choice name="008" result="OK" time_sec="0.01" crc="-722264087"/>
            <choice name="009" result="OK" time_sec="0.03" crc="935015182"/>
            <choice name="010" result="OK" time_sec="0.01" crc="1887966477"/>
-           <choice name="011" result="FAIL" time_sec="0.03" crc="-842424720"/>
+           <choice name="011" result="FAIL" time_sec="0.02" crc="-842424720"/>
            <choice name="012" result="OK" time_sec="0.01" crc="-121149223"/>
         </choice-list>
     </test>
@@ -161,10 +161,10 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="4.79"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="6.46"> 
             <application file-name="011.sh" info-request-time="1288623963L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="0.71" crc="-1827787599"/>
+               <choice name="iso8859-7" result="OK" time_sec="2.38" crc="-1827787599"/>
                <choice name="utf8" result="OK" time_sec="1.37" crc="-1827787599"/>
                <choice name="utf16-be" result="OK" time_sec="1.40" crc="-1827787599"/>
                <choice name="utf16-le" result="OK" time_sec="1.31" crc="-1827787599"/>

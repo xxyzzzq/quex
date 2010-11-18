@@ -37,7 +37,7 @@ def _do(UnicodeTrafoInfo, CodecName):
        ]
     """
     codec_name = make_safe_identifier(CodecName).lower()
-    utf8_prolog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
+    utf8_epilog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
     # print "##utf16ct:"
     # for info in ConverterWriterUTF16().get_conversion_table(UnicodeTrafoInfo):
     #    print "##", info
@@ -51,6 +51,7 @@ def _do(UnicodeTrafoInfo, CodecName):
                                 + "/converter_helper/TXT-Codec.i")
     txt_i = blue_print(get_file_content_or_die(FileName), 
                        [["$$CODEC$$",       codec_name],
+                        ["$$EPILOG$$",      utf8_epilog],
                         ["$$BODY_UTF8$$",   utf8_function_body],
                         ["$$BODY_UTF16$$",  utf16_function_body],
                         ["$$BODY_UTF32$$",  utf32_function_body]])
@@ -126,7 +127,7 @@ class ConverterWriter:
             else:
                 txt += formatter_txt[:-1].replace("\n", "\n    ") + "\n"
 
-        return self.get_prolog(conversion_table), txt
+        return self.get_epilog(), txt
 
     def get_unicode_range_conversion(self, Info):
         assert isinstance(Info, ConversionInfo)
@@ -208,25 +209,47 @@ class ConverterWriter:
         return info_list
 
 class ConverterWriterUTF8(ConverterWriter):
-    def get_prolog(self, ConvTable):
-        # Define Constants which are required as 'Byte Heads' for UTF8 Strings
-        unique_range_index_list = []
-        for info in ConvTable:
-            if info.byte_format_range_index not in unique_range_index_list:
-                unique_range_index_list.append(info.byte_format_range_index)
-        unique_range_index_list.sort()
 
-        db = { 2: 0xc0, 3: 0xe0, 4: 0xf0, 5: 0xf8, 6: 0xfc }
+    def __init__(self):
+        self.range_index_set = set([])
+
+    def get_epilog(self):
         txt = ""
-        if unique_range_index_list[-1] != 0:
-            txt += "    const int NEXT = 0x80;\n"
-        for index in unique_range_index_list:
-            if index > 0:
-                txt += "    const int LEN%i = 0x%03X;\n" % (index + 1, db[index + 1])
+        if 0 in self.range_index_set:
+            txt += "one_byte:\n"
+            txt += "*((*output_pp)++) = (uint8_t)unicode;\n"
+            txt += "return;\n"
+    
+        if 1 in self.range_index_set:
+            txt += "two_bytes:\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0xC0 | (unicode >> 6)); \n"
+            txt += "*((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3f));\n"
+            txt += "return;\n"
+
+        if 2 in self.range_index_set:
+            txt += "three_bytes:\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0xE0 | unicode           >> 12);\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF) >> 6);\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));\n"
+            txt += "return;\n"
+
+        if 3 in self.range_index_set:
+            txt += "four_bytes:\n"
+            txt += "/* Assume that only character appear, that are defined in unicode. */\n"
+            txt += "__quex_assert(unicode <= (uint32_t)0x1FFFFF);\n"
+            txt += "/* No surrogate pairs (They are reserved even in non-utf16).       */\n"
+            txt += "__quex_assert(! (unicode >= 0xd800 && unicode <= 0xdfff) );\n"
+
+            txt += "*((*output_pp)++) = (uint8_t)(0xF0 | unicode >> 18);\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3FFFF) >> 12);\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF)   >> 6);\n"
+            txt += "*((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));\n"
+
         return txt
 
     def get_byte_formatter(self, RangeIndex):
         # Byte Split
+        self.range_index_set.add(RangeIndex)
         return {
             0: "goto one_byte;\n",
             1: "goto two_bytes;\n",
@@ -249,7 +272,7 @@ class ConverterWriterUTF8(ConverterWriter):
         return [ 0x0, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, sys.maxint] 
 
 class ConverterWriterUTF16(ConverterWriter):
-    def get_prolog(self, ConvTable):
+    def get_epilog(self):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
@@ -269,7 +292,7 @@ class ConverterWriterUTF16(ConverterWriter):
         return ""
 
 class ConverterWriterUTF32(ConverterWriter):
-    def get_prolog(self, ConvTable):
+    def get_epilog(self):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
