@@ -26,6 +26,26 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
+__QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
+                                        uint32_t**                  output_pp)
+{
+    uint16_t             unicode = (uint32_t)0;
+    QUEX_TYPE_CHARACTER  input = *(*input_pp)++;
+$$BODY_UTF32$$
+}
+
+QUEX_INLINE void
+__QUEX_CONVERTER_CHAR($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
+                                        uint16_t**                  output_pp)
+{
+    uint32_t   unicode = (uint32_t)0;
+    uint32_t*  unicode_p = &unicode;
+
+    __QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(input_pp, &unicode_p);
+$$BODY_UTF16$$
+}
+
+QUEX_INLINE void
 __QUEX_CONVERTER_CHAR($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                        uint8_t**                    output_pp)
 {
@@ -35,49 +55,7 @@ __QUEX_CONVERTER_CHAR($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
     
 $$BODY_UTF8$$
 
-one_byte:
-    *((*output_pp)++) = (uint8_t)unicode;
-    return;
-
-two_bytes:
-    *((*output_pp)++) = (uint8_t)(0xC0 | (unicode >> 6)); 
-    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3f));
-    return;
-
-three_bytes:
-    *((*output_pp)++) = (uint8_t)(0xE0 | unicode           >> 12);
-    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF) >> 6);
-    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));
-    return;
-
-four_bytes:
-    /* Assume that only character appear, that are defined in unicode. */
-    __quex_assert(unicode <= (uint32_t)0x1FFFFF);
-    /* No surrogate pairs (They are reserved even in non-utf16).       */
-    __quex_assert(! (unicode >= 0xd800 && unicode <= 0xdfff) );
-
-    *((*output_pp)++) = (uint8_t)(0xF0 | unicode >> 18);
-    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3FFFF) >> 12);
-    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0xFFF)   >> 6);
-    *((*output_pp)++) = (uint8_t)(0x80 | (unicode & (uint32_t)0x3F));
-}
-
-QUEX_INLINE void
-__QUEX_CONVERTER_CHAR($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
-                                        uint16_t**                  output_pp)
-{
-    uint16_t             unicode = 0L;
-    QUEX_TYPE_CHARACTER  input = *(*input_pp)++;
-$$BODY_UTF16$$
-}
-
-QUEX_INLINE void
-__QUEX_CONVERTER_CHAR($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
-                                        uint32_t**                  output_pp)
-{
-    uint32_t             unicode = 0L;
-    QUEX_TYPE_CHARACTER  input = *(*input_pp)++;
-$$BODY_UTF32$$
+$$EPILOG$$
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

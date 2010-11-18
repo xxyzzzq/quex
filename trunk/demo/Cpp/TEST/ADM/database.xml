@@ -1,4 +1,4 @@
-<test-database execution-time-sec="294.40" date="Fri Nov 19 10:03:55 2010">
+<test-database execution-time-sec="311.99" date="Sat Nov 20 00:40:48 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -181,10 +181,10 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="9.30"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.83"> 
             <application file-name="011.sh" info-request-time="1288624002L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="0.76" crc="-1827787599"/>
+               <choice name="iso8859-7" result="OK" time_sec="4.29" crc="-1827787599"/>
                <choice name="utf8" result="OK" time_sec="3.55" crc="-1827787599"/>
                <choice name="utf16-be" result="OK" time_sec="2.44" crc="-1827787599"/>
                <choice name="utf16-le" result="OK" time_sec="2.55" crc="-1827787599"/>
@@ -201,11 +201,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="1.93"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="15.99"> 
             <application file-name="012.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.33" crc="-1785218323"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.60" crc="-1785218323"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="9.28" crc="-1785218323"/>
+               <choice name="DEBUG" result="FAIL" time_sec="6.71" crc="-1785218323"/>
             </choice-list>
         </test>
     </group>

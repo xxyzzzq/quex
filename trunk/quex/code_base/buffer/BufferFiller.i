@@ -587,8 +587,8 @@ QUEX_NAMESPACE_MAIN_OPEN
             End         = buffer->_memory._back; 
             iterator    = buffer->_lexeme_start_p; 
 
-            __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8_string)(&iterator, End,
-                                                                     &witerator, WEnd);
+            __QUEX_CONVERTER_HELPER(QUEX_SETTING_CODEC, utf8)(&iterator, End,
+                                                              &witerator, WEnd);
             message[0] = '\0';
             /* No use of 'snprintf()' because not all systems seem to support it propperly. */
             __QUEX_STD_strncat(message, 

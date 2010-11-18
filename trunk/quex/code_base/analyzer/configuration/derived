@@ -53,7 +53,6 @@
 #if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
 #   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
 #      error "QUEX_SETTING_BUFFER_SIZE not defined at this place."
-#   endif
     /* If your compiler brings you here to this position, then this may be because
      * you defined the QUEX_SETTING_BUFFER_SIZE with something different than just
      * an integer number. Indeed something like
@@ -62,9 +61,9 @@
      *
      * would be propper, but does not allow to do some math. So, please erase whatever
      * is not a number in the definition (e.g. delete the '(size_t)' type cast.        */
-#   if   QUEX_SETTING_BUFFER_SIZE >= 1024
+#   elif      QUEX_SETTING_BUFFER_SIZE >= 1024
 #      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (256)
-#   elif QUEX_SETTING_BUFFER_SIZE >= 16
+#   elif      QUEX_SETTING_BUFFER_SIZE >= 16
 #      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (size_t)(QUEX_SETTING_BUFFER_SIZE >> 5)
 #   else
 #      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
