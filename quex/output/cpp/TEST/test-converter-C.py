@@ -18,10 +18,9 @@ def test(CodecName):
     fh = open("converter-tester.h", "w")
     fh.write(code_str + "\n" + code0_str)
     fh.close()
-    define_str = "-DCONVERT_TO_UTF8='QUEX_NAME(%s_to_utf8_string)' " % CodecName + \
-                 "-DQUEX_TYPE_CHARACTER='unsigned char' " + \
+    define_str = "-DQUEX_TYPE_CHARACTER='unsigned char' " + \
                  "-DQUEX_INLINE=inline " + \
-                 "-D__QUEX_CODEC=\\\"%s\\\" " % CodecName + \
+                 ("-D__QUEX_CODEC=%s " % CodecName) + \
                  "-D__QUEX_OPTION_LITTLE_ENDIAN " 
 
     compile_str = "g++ -ggdb -I./ -I$QUEX_PATH %s converter-tester.cpp -o converter-tester" % define_str

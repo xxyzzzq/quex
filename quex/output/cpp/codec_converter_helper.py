@@ -43,7 +43,7 @@ def _do(UnicodeTrafoInfo, CodecName):
     #    print "##", info
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
     # print "##END"
-    dummy,        ucs4_function_body  = ConverterWriterUTF32().do(UnicodeTrafoInfo)
+    dummy,        utf32_function_body = ConverterWriterUTF32().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
     FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
@@ -54,7 +54,7 @@ def _do(UnicodeTrafoInfo, CodecName):
                         ["$$PROLOG_UTF8$$", utf8_prolog],
                         ["$$BODY_UTF8$$",   utf8_function_body],
                         ["$$BODY_UTF16$$",  utf16_function_body],
-                        ["$$BODY_UCS4$$",   ucs4_function_body]])
+                        ["$$BODY_UTF32$$",  utf32_function_body]])
 
     # A separate declaration header is required
     FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
@@ -133,8 +133,11 @@ class ConverterWriter:
         assert isinstance(Info, ConversionInfo)
 
         # Conversion to Unicode
-        return "unicode = 0x%06X + (input - 0x%06X);\n" % \
-               (Info.codec_interval_begin_unicode, Info.codec_interval_begin)
+        offset = Info.codec_interval_begin_unicode - Info.codec_interval_begin
+        if offset > 0:   return "unicode = (uint32_t)input + (uint32_t)0x%06X;\n" % offset
+        elif offset < 0: return "unicode = (uint32_t)input - (uint32_t)0x%06X;\n" % (-offset)
+        else:            return "unicode = (uint32_t)input;\n"
+               
 
     def same_byte_format_range(self, ConvInfoList):
         """RETURNS: >= 0   the common byte format range index.
@@ -226,38 +229,10 @@ class ConverterWriterUTF8(ConverterWriter):
     def get_byte_formatter(self, RangeIndex):
         # Byte Split
         return {
-                0: 
-                "*p = QUEX_BYTE_0; ++p;\n",
-                1:
-                "*(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-                2:
-                "*(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-                3:
-                "*(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);\n" + \
-                "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n", 
-
-                4:
-                "*(p++) = LEN5 | QUEX_BYTE_3 & 0x03;\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
-                "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-                5:
-                "*(p++) = LEN6 | ((QUEX_BYTE_3 & 0x40) >> 6);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_3 & 0x3f);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_1 >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
+            0: "goto one_byte;\n",
+            1: "goto two_bytes;\n",
+            2: "goto three_bytes;\n",
+            3: "goto four_bytes;\n",
         }[RangeIndex] 
 
     def get_byte_format_range_border_list(self):
@@ -267,7 +242,7 @@ class ConverterWriterUTF8(ConverterWriter):
              0x00000080 - 0x000007FF: 2 bytes - 110xxxxx 10xxxxxx
              0x00000800 - 0x0000FFFF: 3 bytes - 1110xxxx 10xxxxxx 10xxxxxx
              0x00010000 - 0x001FFFFF: 4 bytes - 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-             0x00200000 - 0x03FFFFFF: 5 bytes ... 
+             0x00200000 - 0x03FFFFFF: 5 bytes ... (not for unicode)
              0x04000000 - 0x7FFFFFFF: 
 
             The range borders are, therefore, as mentioned in the return value.
@@ -279,11 +254,11 @@ class ConverterWriterUTF16(ConverterWriter):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
-        return { 0: "*p++ = unicode;\n",
+        return { 0: "*(*output_pp)++ = unicode;\n",
                  1: "const uint16_t Offset_10bit_high = (uint16_t)((unicode - 0x10000) >> 10);\n"  + \
                     "const uint16_t Offset_10bit_low  = (uint16_t)((unicode - 0x10000) & 0x3FF);\n" + \
-                    "*p++ = 0xD800 | offset_10bit_high;\n"
-                    "*p++ = 0xDC00 | offset_10bit_low;\n",
+                    "*(*output_pp)++ = 0xD800 | offset_10bit_high;\n"
+                    "*(*output_pp)++ = 0xDC00 | offset_10bit_low;\n",
                     }[RangeIndex]
 
     def get_byte_format_range_border_list(self):
@@ -299,7 +274,7 @@ class ConverterWriterUTF32(ConverterWriter):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
-        return "**output_pp = unicode;\n"
+        return "*(*output_pp)++ = unicode;\n"
 
     def get_byte_format_range_border_list(self):
         """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
