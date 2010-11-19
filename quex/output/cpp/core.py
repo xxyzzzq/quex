@@ -110,7 +110,6 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$CODEC_NAME$$",                 codec_name],
-             ["$$CONVERTER_HELPER_I$$",         Setup.output_buffer_codec_header_i],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension( Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
              ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
@@ -157,6 +156,7 @@ def write_constructor_and_memento_functions(ModeDB):
     func_txt = blue_print(func_txt,
             [
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
+                ["$$CONVERTER_HELPER_I$$",                      Setup.output_buffer_codec_header_i],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values())],
                 ["$$MEMENTO_EXTENSIONS_PACK$$",                 lexer_mode.memento_pack_extension.get_code()],
                 ["$$MEMENTO_EXTENSIONS_UNPACK$$",               lexer_mode.memento_unpack_extension.get_code()],
@@ -212,6 +212,7 @@ def write_engine_header(ModeDB):
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
                 ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
+                ["$$CONVERTER_HELPER$$",                 Setup.output_buffer_codec_header],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
                 ["$$LEXER_CLASS_NAME_SAFE$$",            Setup.analyzer_name_safe],

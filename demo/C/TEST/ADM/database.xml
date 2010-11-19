@@ -1,4 +1,4 @@
-<test-database execution-time-sec="224.90" date="Sat Nov 20 00:41:10 2010">
+<test-database execution-time-sec="224.89" date="Sat Nov 20 09:42:15 2010">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.18"> 
         <application file-name="makefile-diff.sh" info-request-time="1278568463L" vanished="False"/>
@@ -13,7 +13,7 @@
            <choice name="008" result="OK" time_sec="0.01" crc="-722264087"/>
            <choice name="009" result="OK" time_sec="0.03" crc="935015182"/>
            <choice name="010" result="OK" time_sec="0.01" crc="1887966477"/>
-           <choice name="011" result="FAIL" time_sec="0.02" crc="-842424720"/>
+           <choice name="011" result="OK" time_sec="0.02" crc="1170439102"/>
            <choice name="012" result="OK" time_sec="0.01" crc="-121149223"/>
         </choice-list>
     </test>

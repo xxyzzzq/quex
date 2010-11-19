@@ -1,72 +1,49 @@
 
 (*) Intervals over borders (all)
 
-    [0] at 00000000: Codec Interval [1000000,1000080)
-    [1] at 00000080: Codec Interval [1000080,1000081)
-    [1] at 00000081: Codec Interval [2000081,2000800)
-    [2] at 00000800: Codec Interval [2000800,2000801)
-    [2] at 00000801: Codec Interval [3000801,3010000)
-    [3] at 00010000: Codec Interval [3010000,3010001)
-    [3] at 00010001: Codec Interval [4010001,4200000)
-    [4] at 00200000: Codec Interval [4200000,4200001)
+    [3] at 00010001: Codec Interval [1,F0001)
+    [1] at 00000081: Codec Interval [10081,10800)
+    [2] at 00000800: Codec Interval [10800,10801)
+    [2] at 00000801: Codec Interval [20000,2F7FF)
+    [3] at 00010000: Codec Interval [2F7FF,2F800)
+    [0] at 00000000: Codec Interval [110000,110080)
+    [1] at 00000080: Codec Interval [110080,110081)
 
-    if( input < 0x3000801) {
-        if( input < 0x2000081) {
-            if( input < 0x1000080) {
-                unicode = 0x000000 + (input - 0x1000000);
-                *p = QUEX_BYTE_0; ++p;
-            } else {
-            
-                unicode = 0x000080 + (input - 0x1000080);
-                *(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
-            }
+    if( input < 0x020000) {
+        if( input < 0x010081) {
+            unicode = (uint32_t)input + (uint32_t)0x010000;
+            goto four_bytes;
         } else {
         
-            if( input < 0x2000800) {
-                unicode = 0x000081 + (input - 0x2000081);
-                *(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+            if( input < 0x010800) {
+                unicode = (uint32_t)input - (uint32_t)0x010000;
+                goto two_bytes;
             } else {
             
-                unicode = 0x000800 + (input - 0x2000800);
-                *(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);
-                *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+                unicode = (uint32_t)input - (uint32_t)0x010000;
+                goto three_bytes;
             }
         }
     } else {
     
-        if( input < 0x4010001) {
-            if( input < 0x3010000) {
-                unicode = 0x000801 + (input - 0x3000801);
-                *(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);
-                *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+        if( input < 0x110000) {
+            if( input < 0x02F7FF) {
+                unicode = (uint32_t)input - (uint32_t)0x01F7FF;
+                goto three_bytes;
             } else {
             
-                unicode = 0x010000 + (input - 0x3010000);
-                *(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);
-                *(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);
-                *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+                unicode = (uint32_t)input - (uint32_t)0x01F7FF;
+                goto four_bytes;
             }
         } else {
         
-            if( input < 0x4200000) {
-                unicode = 0x010001 + (input - 0x4010001);
-                *(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);
-                *(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);
-                *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+            if( input < 0x110080) {
+                unicode = (uint32_t)input - (uint32_t)0x110000;
+                goto one_byte;
             } else {
             
-                unicode = 0x200000 + (input - 0x4200000);
-                *(p++) = LEN5 | QUEX_BYTE_3 & 0x03;
-                *(p++) = NEXT | (QUEX_BYTE_2 >> 2);
-                *(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);
-                *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-                *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
+                unicode = (uint32_t)input - (uint32_t)0x110000;
+                goto two_bytes;
             }
         }
     }

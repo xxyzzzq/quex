@@ -1,8 +1,8 @@
 /* -*- C++ -*- vim: set syntax=cpp:
  *
  * (C) 2005-2010 Frank-Rene Schaefer                                                */
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CONVERT_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CONVERT_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/inttypes.h>
@@ -40,4 +40,4 @@
 #undef __QUEX_FROM
 #undef __QUEX_TYPE_SOURCE
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__CONVERT_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I */

@@ -7,8 +7,8 @@
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARANTY                                                      */
 
-#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
-#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I
+#ifndef  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I
+#define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I
 
 #include <quex/code_base/definitions>
 
@@ -86,4 +86,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #define __QUEX_TYPE_SOURCE  uint32_t
 #include <quex/code_base/converter_helper/base.gi>
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UNICODE_I */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__UTF32_I */
