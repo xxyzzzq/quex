@@ -21,6 +21,6 @@ g++ -I$QUEX_PATH -I. EasyLexer.c $QUEX_PATH/demo/C/example.c -o lexer -DPRINT_TO
 cat out.txt err.txt
 
 
-# rm -f ./EasyLexer*
+rm -f ./EasyLexer*
 rm -f ./lexer
 rm -f out.txt err.txt

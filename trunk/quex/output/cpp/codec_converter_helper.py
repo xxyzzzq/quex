@@ -248,6 +248,8 @@ class ConverterWriterUTF8(ConverterWriter):
         return txt
 
     def get_byte_formatter(self, RangeIndex):
+        assert RangeIndex >= 0 
+        assert RangeIndex <= 3
         # Byte Split
         self.range_index_set.add(RangeIndex)
         return {

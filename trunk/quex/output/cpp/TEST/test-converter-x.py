@@ -46,10 +46,10 @@ elif "2" in sys.argv:
     test("4 Intervals", ConvInfo)
 
 elif "3" in sys.argv:
-    TrafoInfo = [ [0,       0x81,     0x1000000], 
-                  [0x81,    0x801,    0x2000081], 
-                  [0x801,   0x10001,  0x3000801], 
-                  [0x10001, 0x200001, 0x4010001] ]
+    TrafoInfo = [ [0,       0x81,     0x110000], 
+                  [0x81,    0x801,    0x010081], 
+                  [0x801,   0x10001,  0x020000], 
+                  [0x10001, 0x100001, 0x000001] ]
     ConvInfo = codec_converter_helper.ConverterWriterUTF8().get_conversion_table(TrafoInfo)
     ConvInfo = map(lambda x: [x.byte_format_range_index, 
                               x.codec_interval_begin_unicode, 

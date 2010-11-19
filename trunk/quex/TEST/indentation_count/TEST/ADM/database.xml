@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.41" date="Sat Nov 20 00:42:26 2010">
+<test-database execution-time-sec="12.23" date="Sat Nov 20 09:37:56 2010">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="3.11"> 
         <application file-name="with-skip-range.sh" info-request-time="1287384394L" vanished="False"/>
@@ -8,11 +8,11 @@
            <choice name="nested_range" result="OK" time_sec="1.09" crc="1419122518"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="1.70"> 
-        <application file-name="bad.sh" info-request-time="1285403911L" vanished="False"/>
+    <test title="Bad character detection." time-sum-sec="3.52"> 
+        <application file-name="bad.sh" info-request-time="1290241282L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="default" result="FAIL" time_sec="0.85" crc="954811374"/>
-           <choice name="customized" result="FAIL" time_sec="0.85" crc="2010419295"/>
+           <choice name="default" result="OK" time_sec="1.76" crc="954811374"/>
+           <choice name="customized" result="OK" time_sec="1.76" crc="2010419295"/>
         </choice-list>
     </test>
     <test title="Customized Event Handlers" time-sum-sec="4.47"> 

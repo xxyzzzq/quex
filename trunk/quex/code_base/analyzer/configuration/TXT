@@ -188,6 +188,8 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
 $$SWITCH$$ QUEX_OPTION_BUFFER_BASED_ANALYZIS
 #endif
 #ifndef     QUEX_SETTING_BUFFER_SIZE
+     /* This setting must be defined as plain number, since there might
+      * be some pre-processor comparison operations depending on it.      */
 #    define QUEX_SETTING_BUFFER_SIZE  65536
 #endif
 
@@ -342,9 +344,5 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #endif
 
 #include <quex/code_base/analyzer/configuration/derived>
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include "$$CONVERTER_HELPER_I$$"
-#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ */

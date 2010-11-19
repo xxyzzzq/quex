@@ -1,4 +1,4 @@
-<test-database execution-time-sec="311.99" date="Sat Nov 20 00:40:48 2010">
+<test-database execution-time-sec="316.56" date="Sat Nov 20 09:39:59 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -201,11 +201,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="15.99"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="20.56"> 
             <application file-name="012.sh" info-request-time="1278564824L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="9.28" crc="-1785218323"/>
-               <choice name="DEBUG" result="FAIL" time_sec="6.71" crc="-1785218323"/>
+               <choice name="NDEBUG" result="OK" time_sec="11.57" crc="-1785218323"/>
+               <choice name="DEBUG" result="OK" time_sec="8.99" crc="-1785218323"/>
             </choice-list>
         </test>
     </group>
