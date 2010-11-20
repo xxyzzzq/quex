@@ -12,7 +12,9 @@ make clean; make N=$1 >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 rm tmp.txt
 
-./lexer example$1.txt
+if [[ $1 == 3 || $1 == 4 ]]; then
+    ./lexer example$1.txt
+fi
 
 # cleansening
 make clean >& /dev/null
