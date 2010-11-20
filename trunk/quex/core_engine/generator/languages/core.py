@@ -177,6 +177,7 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
+    "$debug-print":         lambda txt: "QUEX_DEBUG_PRINT(&me->buffer, \"%s\");" % txt,
     "$mark-lexeme-start":   "QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);",
     "$input/increment":     "QUEX_NAME(Buffer_input_p_increment)(&me->buffer);",
     "$input/add":           lambda Offset:      "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset,
@@ -252,6 +253,7 @@ db["Perl"]["$function_def"] = "sub $$function_name$$ {\n    input = shift\n"
 db["Python"] = {
     "$function_def":  "def $$function_name$$(input):\n",
     "$function_end":  "\n",                                                  
+    "$debug-print":   lambda txt: "quex_debug_print(me.buffer, \"%s\")" % txt,
     "$if":     "if ",
     "$then":   ":",
     "$if EOF": "if True:\n",

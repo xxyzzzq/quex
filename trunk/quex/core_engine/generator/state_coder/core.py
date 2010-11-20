@@ -23,9 +23,9 @@ def do(state, StateIdx, SMD=False):
 
     LanguageDB = Setup.language_db
 
-    entry_str = ""
+    prolog = ""
     if not InitStateF: 
-        entry_str += "    __quex_assert(false); /* No drop-through between states */\n"
+        prolog += "    __quex_assert(false); /* No drop-through between states */\n"
 
     # Special handling of dead-end-states, i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
@@ -34,11 +34,11 @@ def do(state, StateIdx, SMD=False):
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
         if len(txt) == 0: return []
-        entry_str += LanguageDB["$label-def"]("$entry-stub", StateIdx)
-        txt.insert(0, entry_str)
+        prolog += LanguageDB["$label-def"]("$entry-stub", StateIdx)
+        txt.insert(0, prolog)
         return txt
 
-    entry_str += LanguageDB["$label-def"]("$entry", StateIdx)
+    prolog += LanguageDB["$label-def"]("$entry", StateIdx)
 
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -54,6 +54,6 @@ def do(state, StateIdx, SMD=False):
         # Comment see: do_init_state_input_epilog() function
         input_block.do_init_state_input_epilog(txt, SMD)
     
-    if len(txt) != 0: txt.insert(0, entry_str)
+    if len(txt) != 0: txt.insert(0, prolog)
     return txt 
 
