@@ -16,7 +16,12 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     if result != None: return result
 
     # All normal transitions can be handled by 'goto' plus 'label'
-    return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD))
+    # (The init state (forward) does not increment the input position. Thus, here we
+    #  need to transit to the position where the input position is incremented.)
+    if TargetStateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f():
+        return LanguageDB["$goto"]("$input", TargetStateIdx)
+    else:
+        return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD))
 
 def __indentation_count_action(Info, SMD):
     """Indentation counters may count as a consequence of a 'triggering'."""

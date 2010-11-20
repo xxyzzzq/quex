@@ -119,9 +119,10 @@ def __handle_post_conditioned_core_patterns(OriginList, SMD):
                     "    ", 
                     LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
                             (__nice(post_context_index), __nice(origin.state_machine_id))),
-                    "    ", 
-                    LanguageDB["$input/tell_position"]("post_context_start_position[%i]\n" % \
-                            post_context_index)
+                    "\n    ", 
+                    LanguageDB["$input/tell_position"]("post_context_start_position[%i]" % \
+                            post_context_index),
+                    "\n"
                     ]
 
     return txtl
