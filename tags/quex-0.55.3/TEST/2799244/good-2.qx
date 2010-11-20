@@ -1,0 +1,17 @@
+
+token_type {
+name = Token;
+distinct {
+fred : std::basic_string<QUEX_TYPE_CHARACTER>;
+}
+take_text {
+    return Token();
+}
+}
+token {
+A;
+}
+start = START;
+mode START {
+"A" => QUEX_TKN_A;
+}
