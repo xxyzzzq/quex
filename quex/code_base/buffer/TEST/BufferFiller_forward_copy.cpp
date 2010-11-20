@@ -15,10 +15,7 @@ main(int argc, char** argv)
         printf("Forward: Copy Fallback Region (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
         return 0;
     }
-    if( argc == 1 ) {
-        printf("Command line argument required.\n");
-        return 0;
-    }
+    /* if( argc == 1 ) { printf("Command line argument required.\n"); return 0; } */
 
     using namespace quex;
 

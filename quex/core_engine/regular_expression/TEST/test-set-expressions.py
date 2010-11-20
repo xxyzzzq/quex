@@ -40,3 +40,15 @@ print "And know something completely different ..."
 test("[: difference([0-9], union([1-3], intersection([0-7], [5-9]))) :]")    
 test("[: difference(alnum, digit) :]")    
 
+def test2(TestString):
+    stream = StringIO.StringIO(TestString)
+    result = character_set_expression.do(stream, {})
+
+    print "expression = \"" + TestString + "\""
+    print "result     = " + result.get_string(Option="hex")
+
+print 
+print "Check the range cut ..."
+
+test2("[^a]")
+test2("[:inverse([a]):]")
