@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.55.2"
-#define QUEX_SETTING_BUILD_DATE        "Thu Nov 18 10:16:18 2010"
+#define QUEX_SETTING_BUILD_DATE        "Sun Nov 21 23:15:55 2010"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -188,7 +188,9 @@
 /* #define QUEX_OPTION_BUFFER_BASED_ANALYZIS */
 #endif
 #ifndef     QUEX_SETTING_BUFFER_SIZE
-#    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
+     /* This setting must be defined as plain number, since there might
+      * be some pre-processor comparison operations depending on it.      */
+#    define QUEX_SETTING_BUFFER_SIZE  65536
 #endif
 
 #ifndef    QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
@@ -346,9 +348,5 @@
 #endif
 
 #include <quex/code_base/analyzer/configuration/derived>
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   include "quex/code_base/converter_helper/unicode.i"
-#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____TESTANALYZER */

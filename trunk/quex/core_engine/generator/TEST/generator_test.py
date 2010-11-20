@@ -223,9 +223,9 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
                   filename_tmp            + " " + \
                   "-I./. -I%s " % os.environ["QUEX_PATH"] + \
                   "-o %s "      % executable_name         + \
-                  "-ggdb"                 + " " + \
                   SHOW_TRANSITIONS_STR    + " " + \
                   SHOW_BUFFER_LOADS_STR
+                  # "-ggdb"                 + " " + \
 
     print compile_str + "##" # DEBUG
     run_this(compile_str)

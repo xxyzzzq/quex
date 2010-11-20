@@ -116,11 +116,23 @@ def __clean_and_validate(sm, AllowNothingIsFineF, fh):
 
     # (*) 'Nothing is fine' is not a pattern that we can accept. See the discussion
     #     in the module "quex.core_engine.generator.core.py"
-    if sm.get_init_state().core().is_acceptance() and AllowNothingIsFineF == False: 
-        error_msg("Pattern results in a 'nothing is acceptable' state machine.\n" + \
-                  "This means, that no step forward in the input still sets the analyzer\n" + \
-                  "into an acceptance state. Thus, as soon as no other input matches\n" + \
-                  "the analyzer ends up in an infinite loop.", fh)
+    if AllowNothingIsFineF == False:
+        msg = "Pattern results in a 'nothing is acceptable' state machine.\n" + \
+              "This means, that no step forward in the input still sets the analyzer\n" + \
+              "into an acceptance state. Thus, as soon as no other input matches\n" + \
+              "the analyzer ends up in an infinite loop."
+
+        init_state = sm.get_init_state()
+
+        if init_state.core().is_acceptance(): 
+            error_msg(msg, fh)
+
+        elif    init_state.origins().contains_store_input_position() \
+             or init_state.core().store_input_position_f(): 
+            error_msg(msg + \
+                      "\n" + \
+                      "Note: A post condition does not change anything in the fact that\n"
+                      "      the analyzer might possible not proceed on the core pattern.", fh)
 
     # (*) Pre-conditions also, do not make sense if there is a 'Nothing is fine' path
     if     sm.core().pre_context_sm() != None \

@@ -12,8 +12,6 @@ if "--hwut-info" in sys.argv:
     print "Conditional Analysis: End of Line '$' (with DOS/Windows '\\r\\n')"
     sys.exit(0)
 
-
-
 def test(TestString):
     test_core("^" + TestString + "$")
 
@@ -28,8 +26,8 @@ def test_core(TestString):
         print "begin of line = ", sm.core().pre_context_begin_of_line_f()
 
 test('[a-z]+')
-test('[a-z]*')
-test('[a-z]?')
+# test('[a-z]*')
+# test('[a-z]?')
 test("[a-z]?/[a-z]/")
 test("[a-b]/[c-z]")
 #test('[a-z]{2,5}')
