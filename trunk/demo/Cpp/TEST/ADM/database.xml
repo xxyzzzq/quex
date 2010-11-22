@@ -1,4 +1,4 @@
-<test-database execution-time-sec="305.32" date="Wed Nov 24 00:32:16 2010">
+<test-database execution-time-sec="305.32" date="Wed Nov 24 00:45:03 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
