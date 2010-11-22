@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.06" date="Mon Nov 22 20:28:35 2010">
+<test-database execution-time-sec="0.05" date="Tue Nov 23 22:17:53 2010">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="on_skip_range_open-customized.exe" info-request-time="1290386100L" vanished="False"/>
@@ -25,14 +25,14 @@
                <choice name="error" result="OK" time_sec="0.00" crc="-544814889"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="transition.exe" info-request-time="1290386096L" vanished="False"/>
             <make-procedure success="True" time_sec="2.128178"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="2085579180"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="741669396"/>
-               <choice name="error" result="OK" time_sec="0.01" crc="1220708930"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time_sec="0.00" crc="1220708930"/>
             </choice-list>
         </test>
     </group>

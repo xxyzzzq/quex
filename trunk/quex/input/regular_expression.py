@@ -17,7 +17,7 @@ def parse(fh, AllowNothingIsFineF=False):
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f,
-                                         AllowNothingIsFineF        = AllowNothingIsFineF)
+                                         AllowNothingIsNecessaryF   = AllowNothingIsFineF)
 
 
     except RegularExpressionException, x:
@@ -37,7 +37,7 @@ def parse_character_string(Txt_or_File, PatternStringF=False):
     try:
         # -- parse regular expression, build state machine
         state_machine = snap_character_string.do(sh)
-        state_machine = regex.__clean_and_validate(state_machine, AllowNothingIsFineF=False, fh=sh)
+        state_machine = regex.__clean_and_validate(state_machine, AllowNothingIsNecessaryF=False, fh=sh)
 
         if state_machine == None:
             error_msg("No valid regular character string expression detected.", sh_ref)
