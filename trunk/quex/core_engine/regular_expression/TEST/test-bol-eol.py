@@ -22,7 +22,7 @@ def test(TestString):
 def test_core(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString, {}, AllowNothingIsFineF=True)
+    sm = core.do(TestString, {}, AllowNothingIsNecessaryF=True)
     if sm == None: 
         print "pattern syntax error"
     else:

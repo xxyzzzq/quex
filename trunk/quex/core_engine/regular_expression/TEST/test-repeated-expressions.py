@@ -15,7 +15,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString.replace("\n", "\\n") + "\""
-    print "state machine\n", core.do(TestString, {}, AllowNothingIsFineF=True)
+    print "state machine\n", core.do(TestString, {}, AllowNothingIsNecessaryF=True)
 
 
 test("[a-z]")

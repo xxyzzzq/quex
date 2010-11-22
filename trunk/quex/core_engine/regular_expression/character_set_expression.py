@@ -31,8 +31,6 @@ import quex.core_engine.regular_expression.property                  as property
 import quex.core_engine.regular_expression.auxiliary                 as aux
 import quex.core_engine.regular_expression.case_fold_expression      as case_fold_expression
 #
-from quex.core_engine.interval_handling  import NumberSet, Interval
-#
 from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.file_in                 import read_until_letter, \
@@ -77,9 +75,6 @@ def do(stream, PatternDict):
                                          "that does not start with '[:', '[' or '\\P'")
     if trigger_set.is_empty():
         raise RegularExpressionException("Regular Expression: Character set expression results in empty set.")
-
-    # Inverssion etc. might create code points beyon [0, 0x110000)
-    trigger_set.intersect_with(NumberSet(Interval(0x0, 0x110000)))
 
     # Create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.
