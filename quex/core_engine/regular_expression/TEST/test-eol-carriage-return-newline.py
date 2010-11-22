@@ -28,7 +28,7 @@ def test_core(TestString):
 test('[a-z]+')
 # test('[a-z]*')
 # test('[a-z]?')
-test("[a-z]?/[a-z]/")
+# test("[a-z]?/[a-z]/")
 test("[a-b]/[c-z]")
 #test('[a-z]{2,5}')
 #test('[a-z]{3,}')

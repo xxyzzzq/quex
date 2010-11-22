@@ -304,22 +304,31 @@ class StateMachine:
             if init_state_index in target_state_index_list: return True
         return False
         
+    def has_orphaned_states(self):
+        """Detect whether there are states where there is no transition to them."""
+        unique = set([])
+        for state in self.states.values():
+            unique.update(state.transitions().get_target_state_index_list())
+
+        for state_index in self.states.keys():
+            # The init state is never considered to be an 'orphan'
+            if state_index not in unique and state_index != self.init_state_index: return True
+        return False
+
     def get_orphaned_state_index_list(self):
         """This function checks for states that are not targeted via any trigger
            by any other state. This indicates most likely a lack off efficiency 
            or an error in the algorithms.
         """
-        unique = {}
+        unique = set([])
         for state in self.states.values():
-            target_state_index_list = state.transitions().get_target_state_index_list()
-            for state_index in target_state_index_list:
-                if not unique.has_key(state_index): unique[state_index] = True
+            unique.update(state.transitions().get_target_state_index_list())
 
         result = []
         for state_index in self.states.keys():
             # The init state is never considered to be an 'orphan'
-            if state_index == self.init_state_index: continue
-            if not unique.has_key(state_index): result.append(state_index)
+            if state_index not in unique and state_index != self.init_state_index: 
+                result.append(state_index)
 
         return result
 

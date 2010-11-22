@@ -900,3 +900,6 @@ class NumberSet:
         # return program text for given language
         return languages.replace_keywords(txt, LanguageDB, NoIndentF)
 
+
+# Range of code points that are covered by Unicode
+UnicodeInterval = Interval(0x0, 0x110000)
