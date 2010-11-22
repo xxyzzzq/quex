@@ -1,0 +1,48 @@
+---------------------------
+super = [0-9]+
+sub   = [0-9]
+claim =  True
+
+super = [0-9]
+sub   = [0-9]+
+claim =  False
+---------------------------
+super = 123
+sub   = 123(4?)
+claim =  False
+
+super = 123(4?)
+sub   = 123
+claim =  True
+---------------------------
+super = 12
+sub   = 1(2?)
+claim =  False
+
+super = 1(2?)
+sub   = 12
+claim =  True
+---------------------------
+super = 1
+sub   = 1(2?)
+claim =  False
+
+super = 1(2?)
+sub   = 1
+claim =  True
+---------------------------
+super = "123"|"ABC"
+sub   = "123"
+claim =  True
+
+super = "123"
+sub   = "123"|"ABC"
+claim =  False
+---------------------------
+super = \n
+sub   = (\r\n)|\n
+claim =  False
+
+super = (\r\n)|\n
+sub   = \n
+claim =  True

@@ -1,0 +1,28 @@
+# Best To be Displayed by:
+#
+#  > ./test-utf8_state_split.py 4.2 | dot -Tsvg -o tmp.svg
+#
+# -------------------------
+# Byte Sequences:     
+# (0)      [00F1]     [0080]     [0080]     [0080, 00BF]
+# (1)      [00F1]     [0081]     [0081, 00BF]     [0080, 00BF]
+# (2)      [00F1]     [0082]     [0080, 0083]     [0080, 00BF]
+#    L    = 4
+#    DIdx = 1
+
+        digraph state_machine_0 {
+	       rankdir=LR;
+	       size="8,5"
+	       node [shape = doublecircle]; 
+           node [shape = circle];
+           0 -> 2 [label ="[00F1] "];
+2 -> 6 [label ="[0080] "];
+2 -> 7 [label ="[0081] "];
+2 -> 8 [label ="[0082] "];
+6 -> 5 [label ="[0080] "];
+5 -> 1 [label ="[0080, 00BF] "];
+7 -> 5 [label ="[0081, 00BF] "];
+8 -> 5 [label ="[0080, 0083] "];
+
+        }
+        

@@ -1,0 +1,84 @@
+-------------------------
+Interval:     [0080]
+   .front --> C2.80.
+   .back  --> C2.80.
+
+Result:
+      [0080] 
+         .front --> C2.80.
+         .back  --> C2.80.
+-------------------------
+Interval:     [0080, 0081]
+   .front --> C2.80.
+   .back  --> C2.81.
+
+Result:
+      [0080, 0081] 
+         .front --> C2.80.
+         .back  --> C2.81.
+-------------------------
+Interval:     [0081]
+   .front --> C2.81.
+   .back  --> C2.81.
+
+Result:
+      [0081] 
+         .front --> C2.81.
+         .back  --> C2.81.
+-------------------------
+Interval:     [07FF]
+   .front --> DF.BF.
+   .back  --> DF.BF.
+
+Result:
+      [07FF] 
+         .front --> DF.BF.
+         .back  --> DF.BF.
+-------------------------
+Interval:     [07FE, 07FF]
+   .front --> DF.BE.
+   .back  --> DF.BF.
+
+Result:
+      [07FE, 07FF] 
+         .front --> DF.BE.
+         .back  --> DF.BF.
+-------------------------
+Interval:     [07FE]
+   .front --> DF.BE.
+   .back  --> DF.BE.
+
+Result:
+      [07FE] 
+         .front --> DF.BE.
+         .back  --> DF.BE.
+-------------------------
+Interval:     [0080, 07FF]
+   .front --> C2.80.
+   .back  --> DF.BF.
+
+Result:
+      [0080, 00BF] 
+         .front --> C2.80.
+         .back  --> C2.BF.
+      [00C0, 07BF] 
+         .front --> C3.80.
+         .back  --> DE.BF.
+      [07C0, 07FF] 
+         .front --> DF.80.
+         .back  --> DF.BF.
+-------------------------
+Interval:     [0081, 07FE]
+   .front --> C2.81.
+   .back  --> DF.BE.
+
+Result:
+      [0081, 00BF] 
+         .front --> C2.81.
+         .back  --> C2.BF.
+      [00C0, 07BF] 
+         .front --> C3.80.
+         .back  --> DE.BF.
+      [07C0, 07FE] 
+         .front --> DF.80.
+         .back  --> DF.BE.

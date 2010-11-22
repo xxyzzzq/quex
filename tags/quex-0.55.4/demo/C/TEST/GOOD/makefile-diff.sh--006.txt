@@ -1,0 +1,20 @@
+< COMPILER = g++ -ggdb 
+---
+> COMPILER = gcc -ggdb 
+< 	 -DPRINT_TOKEN                                   \
+< 	 -DPRINT_LINE_COLUMN_NUMBER
+---
+> 	 -DPRINT_TOKEN
+< EasyLexer.o: EasyLexer.cpp 
+---
+> EasyLexer.o: EasyLexer.c 
+< example.o: ../example.cpp  EasyLexer.cpp
+---
+> example.o: ../example.c  EasyLexer.c
+< %.E: %.cpp    
+---
+> %.E: %.c    
+< EasyLexer.cpp: simple.qx $(QUEX_CORE)
+---
+> EasyLexer.c: simple.qx $(QUEX_CORE)
+> 		 --language         C          \

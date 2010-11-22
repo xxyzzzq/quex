@@ -1,0 +1,19 @@
+token {
+    ONE;
+    TWO;
+    THREE;
+    FOUR;
+    FIVE;
+    ERROR;
+}
+
+start = REAL;
+
+mode REAL : { 
+    on_failure => QUEX_TKN_ERROR(Lexeme);
+    1 => QUEX_TKN_ONE; 
+    2 => QUEX_TKN_TWO; 
+    3 => QUEX_TKN_THREE; 
+    4 => QUEX_TKN_FOUR; 
+    5 => QUEX_TKN_FIVE; 
+}
