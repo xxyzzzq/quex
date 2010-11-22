@@ -3,10 +3,8 @@ rm -f *.o
 rm -f *.bak
 rm -f *.E
 rm -f lexer
-test1.qx:2:error: Pattern results in a 'nothing is acceptable' state machine.
-test1.qx:2:error: This means, that no step forward in the input still sets the analyzer
-test1.qx:2:error: into an acceptance state. Thus, as soon as no other input matches
-test1.qx:2:error: the analyzer ends up in an infinite loop.
-test1.qx:2:error: Note: A post condition does not change anything in the fact that
-test1.qx:2:error:       the analyzer might possible not proceed on the core pattern.
+test1.qx:2:error: The core pattern contains in a 'nothing is necessary' path in the state machine.
+test1.qx:2:error: This means, that without reading a character the analyzer drops into
+test1.qx:2:error: an acceptance state. The analyzer would then stall.
+test1.qx:2:error: Note: A post context does not change anything to that fact.
 make: *** [Simple.c] Error 255

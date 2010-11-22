@@ -1,6 +1,5 @@
 Error Case:\n
-error.qx:12:error: Pattern results in a 'nothing is acceptable' state machine.
-error.qx:12:error: This means, that no step forward in the input still sets the analyzer
-error.qx:12:error: into an acceptance state. Thus, as soon as no other input matches
-error.qx:12:error: the analyzer ends up in an infinite loop.
+error.qx:12:error: The core pattern contains in a 'nothing is necessary' path in the state machine.
+error.qx:12:error: This means, that without reading a character the analyzer drops into
+error.qx:12:error: an acceptance state. The analyzer would then stall.
 Good Case:\n
