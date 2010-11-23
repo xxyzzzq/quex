@@ -234,11 +234,20 @@ __terminal_state_str  = """
 
 /* Lexeme descriptions: There is a temporary zero stored at the end of each
  * lexeme. A pointer to the zero provides the Null-lexeme.                     */
-#define Lexeme       (me->buffer._lexeme_start_p)
-#define LexemeBegin  (me->buffer._lexeme_start_p)
-#define LexemeEnd    (me->buffer._input_p)
+#if defined(QUEX_OPTION_ASSERTS)
+#   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeL      QUEX_NAME(access_LexemeL)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#else
+#   define Lexeme       (me->buffer._lexeme_start_p)
+#   define LexemeBegin  (me->buffer._lexeme_start_p)
+#   define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
+#   define LexemeEnd    (me->buffer._input_p)
+#endif
+
 #define LexemeNull   (&QUEX_NAME(LexemeNullObject))
-#define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
+
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$

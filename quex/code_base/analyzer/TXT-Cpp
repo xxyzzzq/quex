@@ -242,6 +242,7 @@ public:
     // (*) Tell/Seek/Move on basis of character index
     void        move_forward(const size_t);
     void        move_backward(const size_t);
+    void        undo();
     size_t      tell();
     void        seek(const size_t);
 
