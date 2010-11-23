@@ -5,6 +5,8 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
 
 #include    <quex/code_base/aux-string>
+#include    <quex/code_base/analyzer/asserts>
+
 #include    <quex/code_base/definitions>
 
 #ifdef      __QUEX_OPTION_UNIT_TEST
@@ -29,12 +31,13 @@
 #ifdef      __QUEX_OPTION_COUNTER
 #include    <quex/code_base/analyzer/Counter>
 #endif
-#
+
 #include    <quex/code_base/analyzer/member/basic>
 
 #include    <quex/code_base/analyzer/member/constructor>
 #include    <quex/code_base/analyzer/member/buffer-access>
 #include    <quex/code_base/analyzer/member/misc>
+#include    <quex/code_base/analyzer/member/navigation>
 #include    <quex/code_base/analyzer/member/mode-handling>
 #include    <quex/code_base/analyzer/member/token-receiving>
 #include    <quex/code_base/analyzer/member/token-sending>

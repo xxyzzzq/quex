@@ -93,7 +93,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
         return txt
 
     if PatternStateMachine == None:
-        return txt + "QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n"
 
     newline_n   = PatternStateMachine.side_info.get_newline_n()
     character_n = PatternStateMachine.side_info.get_character_n()
@@ -101,7 +101,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     if   newline_n == -1:
         # Run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
-        return txt + "QUEX_NAME(Counter_count)(&self.counter, Lexeme, LexemeEnd);\n"
+        return txt + "QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n"
 
     elif newline_n != 0:
         txt += "__QUEX_IF_COUNT_LINES(self.counter._line_number_at_end += %i);\n" % newline_n 
@@ -112,11 +112,11 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
             # TODO: Try to determine number of characters backwards to newline directly
             #       from the pattern state machine. (Those seldom cases won't bring much
             #       speed-up)
-            txt += "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, Lexeme, LexemeEnd);\n"
+            txt += "QUEX_NAME(Counter_count_chars_to_newline_backwards)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n"
         return txt
 
     else:
-        if character_n == -1: incr_str = "LexemeL"
+        if character_n == -1: incr_str = "((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p))"
         else:                 incr_str = "%i" % int(character_n)
 
         return txt + "__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += %s);\n" % incr_str

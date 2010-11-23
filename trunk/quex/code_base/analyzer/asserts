@@ -26,8 +26,18 @@
        /* or decrease. If a newline appearse, for example, the column number may decrease.   */
 #      define __QUEX_ASSERT_COUNTER_CONSISTENCY(ME) /* empty */
 #   endif
-#endif
 
+#   include <quex/code_base/buffer/Buffer>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(access_Lexeme)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t                QUEX_NAME(access_LexemeL)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(access_LexemeEnd)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)*);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif
 
 #endif /* __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_LINE_COLUMN_COMMON */
 

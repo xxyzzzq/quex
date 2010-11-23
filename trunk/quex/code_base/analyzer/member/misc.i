@@ -14,31 +14,6 @@ QUEX_NAME(set_callback_on_buffer_content_change)(QUEX_TYPE_ANALYZER*  me,
                                                                                 QUEX_TYPE_CHARACTER*))
 { me->buffer.on_buffer_content_change = callback; }
 
-QUEX_INLINE void    
-QUEX_NAME(move_forward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
-{
-    QUEX_NAME(Buffer_move_forward)(&me->buffer, CharacterN);
-}
-
-QUEX_INLINE void    
-QUEX_NAME(move_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
-{
-    QUEX_NAME(Buffer_move_backward)(&me->buffer, CharacterN);
-}
-
-
-QUEX_INLINE size_t  
-QUEX_NAME(tell)(QUEX_TYPE_ANALYZER* me)
-{
-    return QUEX_NAME(Buffer_tell)(&me->buffer);
-}
-
-QUEX_INLINE void    
-QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
-{
-    QUEX_NAME(Buffer_seek)(&me->buffer, CharacterIndex);
-}
-
 QUEX_INLINE QUEX_TYPE_TOKEN*  
 QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
 {
@@ -164,22 +139,6 @@ QUEX_MEMBER(set_callback_on_buffer_content_change)(void (*callback)(QUEX_TYPE_CH
                                                             QUEX_TYPE_CHARACTER*))
 { QUEX_NAME(set_callback_on_buffer_content_change)(this, callback); }
 
-QUEX_INLINE void    
-QUEX_MEMBER(move_forward)(const size_t CharacterN)
-{ QUEX_NAME(move_forward)(this, CharacterN); }
-
-QUEX_INLINE void    
-QUEX_MEMBER(move_backward)(const size_t CharacterN)
-{ QUEX_NAME(move_backward)(this, CharacterN); }
-
-QUEX_INLINE size_t  
-QUEX_MEMBER(tell)()
-{ return QUEX_NAME(tell)(this); }
-
-QUEX_INLINE void    
-QUEX_MEMBER(seek)(const size_t CharacterIndex)
-{ QUEX_NAME(seek)(this, CharacterIndex); }
-
 QUEX_INLINE QUEX_TYPE_TOKEN*  
 QUEX_MEMBER(token_p)()
 { return QUEX_NAME(token_p)(this); }
@@ -209,7 +168,6 @@ QUEX_MEMBER(token_p)()
 #   endif
 
 #endif
-
 
 QUEX_INLINE const char* 
 QUEX_MEMBER(version)() const

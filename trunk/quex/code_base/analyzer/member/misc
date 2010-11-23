@@ -19,12 +19,6 @@ QUEX_INLINE void        QUEX_NAME(byte_order_reversion_set)(QUEX_TYPE_ANALYZER* 
 /* Version information */
 QUEX_INLINE const char* QUEX_NAME(version)(QUEX_TYPE_ANALYZER* me); 
 
-/* Tell/Seek/Move on basis of character index */
-QUEX_INLINE void        QUEX_NAME(move_forward)(QUEX_TYPE_ANALYZER*  me, const size_t);
-QUEX_INLINE void        QUEX_NAME(move_backward)(QUEX_TYPE_ANALYZER* me, const size_t);
-QUEX_INLINE size_t      QUEX_NAME(tell)(QUEX_TYPE_ANALYZER* me);
-QUEX_INLINE void        QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t);
-
 /* Token handling. */
 QUEX_INLINE QUEX_TYPE_TOKEN*  QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me);
 

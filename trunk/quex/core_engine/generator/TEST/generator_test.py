@@ -403,6 +403,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 #define QUEX_TKN_NODENT            5
 
 #include <quex/code_base/test_environment/TestAnalyzer>
+#include <quex/code_base/analyzer/asserts.i>
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue.i>
 #endif

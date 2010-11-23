@@ -196,7 +196,7 @@ QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*       me,
 
 QUEX_INLINE QUEX_TYPE_TOKEN_ID 
 QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_NAME(Dictionary)*  me,
-                                          const QUEX_TYPE_CHARACTER*   Lexeme)
+                                        const QUEX_TYPE_CHARACTER*   Lexeme)
 {
     QUEX_NAME(DictionaryNode)* found = QUEX_NAME(PostCategorizer_find)(me, Lexeme);
     if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
