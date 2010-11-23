@@ -3,6 +3,10 @@
 int 
 main(int argc, char** argv) 
 {        
+#   ifdef PRINT_TOKEN
+    const size_t BufferSize = 1024;
+    char         buffer[1024];
+#   endif
     QUEX_TYPE_TOKEN*   token_p = 0x0;
     int                token_n = 0;
     Simple             qlex;
@@ -33,7 +37,13 @@ main(int argc, char** argv)
         printf("(%i, %i)  \t", (int)token_p->_line_n, (int)token_p->_column_n);
 #       endif
         /* Print out token information            */
-        printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
+#       ifdef PRINT_TOKEN
+        printf("%s", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
+#       else
+        printf("%s", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
+#       endif
+        printf("\n");
+
         ++token_n;
         /* Check against 'termination'            */
     } while( token_p->_id != QUEX_TKN_TERMINATION );

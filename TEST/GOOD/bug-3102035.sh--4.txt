@@ -7,25 +7,28 @@
 ## would appear. If they do not, then everything is fine.
 ,------------------------------------------------------------------------------------
 | [START]
-(1, 1)  	FAILURE
-(1, 2)  	FAILURE
-(2, 1)  	FAILURE
-(2, 2)  	FAILURE
-(2, 3)  	FAILURE
-(2, 4)  	FAILURE
-(2, 5)  	FAILURE
-(2, 6)  	FAILURE
-(2, 7)  	FAILURE
-(2, 8)  	FAILURE
-(2, 9)  	FAILURE
-(2, 10)  	FAILURE
-(2, 11)  	FAILURE
-(2, 12)  	FAILURE
-(2, 13)  	FAILURE
-(2, 14)  	FAILURE
-(3, 1)  	FAILURE
-(3, 2)  	FAILURE
-(3, 3)  	FAILURE
-(4, 1)  	<TERMINATION>
+(1, 1)  	FAILURE ''
+(1, 2)  	FAILURE '
+'
+(2, 1)  	FAILURE ';'
+(2, 2)  	FAILURE ' '
+(2, 3)  	FAILURE 'm'
+(2, 4)  	FAILURE 'a'
+(2, 5)  	FAILURE 't'
+(2, 6)  	FAILURE 'c'
+(2, 7)  	FAILURE 'h'
+(2, 8)  	FAILURE '.'
+(2, 9)  	FAILURE 'a'
+(2, 10)  	FAILURE 's'
+(2, 11)  	FAILURE 'm'
+(2, 12)  	FAILURE ' '
+(2, 13)  	FAILURE ''
+(2, 14)  	FAILURE '
+'
+(3, 1)  	FAILURE ';'
+(3, 2)  	FAILURE ''
+(3, 3)  	FAILURE '
+'
+(4, 1)  	<TERMINATION> ''
 | [END] number of token = 20
 `------------------------------------------------------------------------------------
