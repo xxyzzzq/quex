@@ -1,0 +1,72 @@
+The idea behind this test is to see wether the QUEX_CORE variable
+is propperly disabled on systems other then the developper\'s host.
+This variable ensures that the unit tests are re-compiled as soon
+as one of the quex headers changes. This is not necessary for
+installed versions of quex.
+
+This test checks wether all files in QUEX_CORE exist
+
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./MemoryManager exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/inttypes.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/iconv-argument-types.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/borland_inttypes.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_inttypes.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CppDefault.qx exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/CDefault.qx exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-C exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-C.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-Cpp exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TXT-Cpp.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenPolicy exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/Converter exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/icu/Converter_ICU exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/icu/special_headers.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/icu/Converter_ICU.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/iconv/Converter_IConv.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/iconv/Converter_IConv exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/iconv/special_headers.h exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/recode/Converter_Recode.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/recode/Converter_Recode exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer_debug.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/plain/BufferFiller_Plain.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./buffer/asserts exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./converter_helper/unicode exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./converter_helper/unicode.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./asserts exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./definitions exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_on exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/dumpster.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/TXT-Cpp exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Mode exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/basic exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/basic.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/asserts exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/include-stack.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/mode-handling.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/buffer-access.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/token-receiving.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/constructor.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/member/misc.i exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/TXT exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/validation exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/undefine exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_off exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./test_environment/StrangeStream exists

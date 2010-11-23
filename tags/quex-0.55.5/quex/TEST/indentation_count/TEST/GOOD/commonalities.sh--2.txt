@@ -1,0 +1,2 @@
+src/error-2.qx:14:error: The indentation newline pattern '(\r\n)|\n'
+src/error-2.qx:10:error: has commonalities with pattern '[\n]' defined here.

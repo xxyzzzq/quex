@@ -1,0 +1,22 @@
+,-----------------------------------------------------------------
+| [START]
+FISCHERS
+FRITZ
+GRABS
+SWORDFISH
+PERIOD
+FISCHERS
+FRITZ
+FISCHES
+TROUTS
+PERIOD
+FISCHERS
+FRITZ
+FISCHES
+FISCH
+PERIOD
+MATH_OPERATOR_LIST
+<TERMINATION>
+| [END] number of token = 17
+`-----------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible

@@ -1,0 +1,13 @@
+
+Output from constructed header:_______________________________________
+
+(standard input):51:#line 4 "error.qx"
+(standard input):55:#line 56 "Simple"
+(standard input):557:#line 33 "/home/fschaef/prj/quex/trunk/quex/code_base/token/CppDefault.qx"
+(standard input):572:#line 573 "Simple"
+(standard input):598:#line 104 "/home/fschaef/prj/quex/trunk/quex/code_base/token/CppDefault.qx"
+(standard input):632:#line 633 "Simple"
+(standard input):644:#line 141 "/home/fschaef/prj/quex/trunk/quex/code_base/token/CppDefault.qx"
+(standard input):649:#line 650 "Simple"
+(standard input):659:#line 137 "/home/fschaef/prj/quex/trunk/quex/code_base/token/CppDefault.qx"
+(standard input):664:#line 665 "Simple"
