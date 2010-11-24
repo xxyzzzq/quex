@@ -21,14 +21,14 @@ QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
 }
 
 QUEX_INLINE void    
-QUEX_NAME(move_forward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
+QUEX_NAME(seek_forward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
     QUEX_NAME(Buffer_move_forward)(&me->buffer, CharacterN);
 }
 
 QUEX_INLINE void    
-QUEX_NAME(move_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
+QUEX_NAME(seek_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
     QUEX_NAME(Buffer_move_backward)(&me->buffer, CharacterN);
@@ -37,7 +37,11 @@ QUEX_NAME(move_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 QUEX_INLINE void  
 QUEX_NAME(undo)(QUEX_TYPE_ANALYZER* me)
 {
+    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_end     = self.counter._line_number_at_begin);
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end = self.counter._column_number_at_begin);
+
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
+
     me->buffer._input_p = me->buffer._lexeme_start_p;
 }
 
@@ -51,11 +55,11 @@ QUEX_MEMBER(seek)(const size_t CharacterIndex)
 { QUEX_NAME(seek)(this, CharacterIndex); }
 
 QUEX_INLINE void    
-QUEX_MEMBER(move_forward)(const size_t CharacterN)
+QUEX_MEMBER(seek_forward)(const size_t CharacterN)
 { QUEX_NAME(move_forward)(this, CharacterN); }
 
 QUEX_INLINE void    
-QUEX_MEMBER(move_backward)(const size_t CharacterN)
+QUEX_MEMBER(seek_backward)(const size_t CharacterN)
 { QUEX_NAME(move_backward)(this, CharacterN); }
 
 QUEX_INLINE void  

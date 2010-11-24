@@ -18,8 +18,8 @@
     } else if( *(buffer->_input_p) != (QUEX_TYPE_CHARACTER)0 ) {                           \
         __QUEX_STD_printf("%s:%i:\n", FileName, (int)LineN);                               \
         QUEX_ERROR_EXIT("Tried to access lexeme while terminating zero was not set.\n"     \
-                        "This happens, for example, if navigation commands (seek, undo,\n" \
-                        "move_forward, or move_backward) are used **before** accessing\n"  \
+                        "This happens, for example, if navigation commands (undo, seek,\n" \
+                        "seek_forward, or seek_backward) are used **before** accessing\n"  \
                         "the lexeme via 'Lexeme' or 'LexemeBegin'.\n");                    \
     } 
 

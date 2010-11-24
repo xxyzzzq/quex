@@ -240,11 +240,15 @@ public:
     const char* version() const; // created by quex for version/date information
 
     // (*) Tell/Seek/Move on basis of character index
-    void        move_forward(const size_t);
-    void        move_backward(const size_t);
-    void        undo();
-    size_t      tell();
-    void        seek(const size_t);
+    size_t  tell();
+    void    seek(const size_t);
+    void    seek_forward(const size_t);
+    void    seek_backward(const size_t);
+
+    void    undo();
+
+    void    move_forward(const size_t) { QUEX_ERROR_EXIT("'move_forward()' has been renamed to 'seek_forward()'."); }
+    void    move_backward(const size_t){ QUEX_ERROR_EXIT("'move_backward()' has been renamed to 'seek_backward()'."); }
 
 public:
 
