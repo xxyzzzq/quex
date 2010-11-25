@@ -7,7 +7,7 @@ token {
 mode THE_MODE : <skip: [ \t\n]> {
   [:alnum:]+   { 
       self_send1(QUEX_TKN_A, Lexeme);
-      QUEX_NAME(move_backward)(&self, LexemeL - 1); 
+      QUEX_NAME(seek_backward)(&self, LexemeL - 1); 
   }
   <<EOF>> { 
       QUEX_NAME(seek)(&self, 0);
