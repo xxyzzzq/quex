@@ -44,6 +44,9 @@ position.
        self.column_number_set(column_n);
        self.line_number_set(line_n);
 
+   Note, that ``column_number_set(...)`` and ``line_number_set(...)`` define 
+   the column and line numbers of the next pattern to match.
+
 The reading of the current lexeme can be undone by
 
 .. code-block:: cpp
