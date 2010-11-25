@@ -10,6 +10,12 @@ endif
 
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
+ifeq ($(QX_FILE),example.qx)
+	ADD_DEFINES=-DQUEX_SETTING_BUFFER_SIZE=8
+else
+	ADD_DEFINES=-DQUEX_SETTING_BUFFER_SIZE=11 -DPRINT_LINE_COLUMN_NUMBER
+endif
+
 CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS
 
 # (*) COMPILER SETTINGS ________________________________________________________
@@ -17,25 +23,19 @@ CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = gcc -ggdb 
 
-QX_FILE=example.qx
-	
-
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                            \
 	 -Wall -Wconversion -pedantic                   \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -DPRINT_TOKEN                                  \
-	 -DQUEX_SETTING_BUFFER_SIZE=8
-     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
-	 $(CCFLAG_ASSERTS) 
-     # -DQUEX_OPTION_ASSERTS_DISABLED
-     # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+	 $(ADD_DEFINES)
    
 LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
 lexer:          example.o Simple.o
+	echo error $(QX_FILE)
 	$(LD) -o $@ example.o Simple.o 
           
 # Object files:

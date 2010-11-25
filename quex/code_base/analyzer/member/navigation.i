@@ -37,8 +37,8 @@ QUEX_NAME(seek_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 QUEX_INLINE void  
 QUEX_NAME(undo)(QUEX_TYPE_ANALYZER* me)
 {
-    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_end     = self.counter._line_number_at_begin);
-    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end = self.counter._column_number_at_begin);
+    __QUEX_IF_COUNT_LINES(me->counter._line_number_at_end     = me->counter._line_number_at_begin);
+    __QUEX_IF_COUNT_COLUMNS(me->counter._column_number_at_end = me->counter._column_number_at_begin);
 
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
 

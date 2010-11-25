@@ -1,4 +1,4 @@
-<test-database execution-time-sec="222.68" date="Tue Nov 23 22:03:44 2010">
+<test-database execution-time-sec="223.30" date="Thu Nov 25 02:26:55 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="2.76"> 
@@ -215,10 +215,11 @@
         </test>
     </group>
     <group name="jmarsik">
-        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="1.24"> 
-            <application file-name="bug-3115741.sh" info-request-time="1290636094L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.24" crc="-584745426"/>
+        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="1.86"> 
+            <application file-name="bug-3115741.sh" info-request-time="1290647772L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="general" result="FAIL" time_sec="1.86" crc="None"/>
+               <choice name="undo-line-colum-count" result="OK" time_sec="0.00" crc="-230296806"/>
             </choice-list>
         </test>
     </group>
