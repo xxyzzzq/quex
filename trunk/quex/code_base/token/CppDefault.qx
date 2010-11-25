@@ -49,10 +49,10 @@ token_type {
 
         operator 
         const std::string() const
-        { return get_char_string(); }
+        { return get_string(); }
 
         const std::string
-        get_char_string() const 
+        get_string() const 
         {
             std::string             tmp;
 
@@ -66,24 +66,28 @@ token_type {
         const std::string 
         pretty_char_text() const
         {
-            std::string             result = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
-            std::string::size_type  pos  = 0;
+            std::string             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
+            std::string::size_type  pos = 0;
 
             while( (pos = tmp.find("\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\n");
             while( (pos = tmp.find("\t") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\t");
             while( (pos = tmp.find("\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\r");
+
+            return tmp;
         }
 
 #       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
-        const std::string 
+        const std::wstring 
         pretty_wchar_text() const
         {
-            std::wstring             result = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(self.text);
-            std::wstring::size_type  pos  = 0;
+            std::wstring             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(self.text);
+            std::wstring::size_type  pos = 0;
 
             while( (pos = tmp.find(L"\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\n");
             while( (pos = tmp.find(L"\t") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\t");
             while( (pos = tmp.find(L"\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\r");
+
+            return tmp;
         }
 #       endif
    }

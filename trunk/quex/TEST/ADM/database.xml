@@ -1,15 +1,15 @@
-<test-database execution-time-sec="1.00" date="Thu Nov 25 07:22:57 2010">
+<test-database execution-time-sec="0.98" date="Thu Nov 25 23:02:07 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.40"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.39"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.40" crc="-1647352136"/>
+           <choice name="" result="OK" time_sec="0.39" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.02"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1290630049L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-855506886"/>
+           <choice name="" result="OK" time_sec="0.02" crc="-855506886"/>
         </choice-list>
     </test>
     <test title="Check if the default configuration has been updated." time-sum-sec="0.02"> 
@@ -38,10 +38,10 @@
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.04"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.05"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1280814116L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-1492277791"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-1492277791"/>
             </choice-list>
         </test>
     </group>
