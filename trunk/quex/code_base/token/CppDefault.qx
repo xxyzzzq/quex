@@ -49,56 +49,43 @@ token_type {
 
         operator 
         const std::string() const
-        { return get_utf8_string(); }
+        { return get_char_string(); }
 
         const std::string
-        get_string() const 
+        get_char_string() const 
         {
             std::string             tmp;
-            // The following conversion can go terribly wrong in case of 
-            // multi-byte encodings. For a safe ride, use: get_utf8_string().
-            std::string             tmp2((const char*)self.text.c_str());
-            std::string::size_type  pos  = 0;
 
             tmp = map_id_to_name(self._id);
 
-            tmp += " '" + tmp2 + "' ";
-
-            while( (pos = tmp.find("\n") ) != __string::npos )
-                tmp.replace(pos, 1, std::string("\\n"));
-            while( (pos = tmp.find("\t") ) != __string::npos ) 
-                tmp.replace(pos, 1, std::string("\\t"));
-            while( (pos = tmp.find("\r") ) != __string::npos ) 
-                tmp.replace(pos, 1, std::string("\\r"));
-
-            return tmp;
-        }
-
-        const std::string
-        get_utf8_string() const 
-        {
-            std::string             tmp;
-            std::string::size_type  pos  = 0;
-
-            tmp = map_id_to_name(self._id);
-
-            tmp += " '" + utf8_text() + "' ";
-
-            while( (pos = tmp.find("\n") ) != __string::npos )
-                tmp.replace(pos, 1, std::string("\\n"));
-            while( (pos = tmp.find("\t") ) != __string::npos ) 
-                tmp.replace(pos, 1, std::string("\\t"));
-            while( (pos = tmp.find("\r") ) != __string::npos ) 
-                tmp.replace(pos, 1, std::string("\\r"));
+            tmp += " '" + pretty_char_text() + "' ";
 
             return tmp;
         }
     
         const std::string 
-        utf8_text() const
+        pretty_char_text() const
         {
-            return __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
+            std::string             result = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
+            std::string::size_type  pos  = 0;
+
+            while( (pos = tmp.find("\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\n");
+            while( (pos = tmp.find("\t") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\t");
+            while( (pos = tmp.find("\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\r");
         }
+
+#       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+        const std::string 
+        pretty_wchar_text() const
+        {
+            std::wstring             result = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(self.text);
+            std::wstring::size_type  pos  = 0;
+
+            while( (pos = tmp.find(L"\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\n");
+            while( (pos = tmp.find(L"\t") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\t");
+            while( (pos = tmp.find(L"\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\r");
+        }
+#       endif
    }
 
    take_text {

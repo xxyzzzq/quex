@@ -56,11 +56,11 @@ QUEX_MEMBER(seek)(const size_t CharacterIndex)
 
 QUEX_INLINE void    
 QUEX_MEMBER(seek_forward)(const size_t CharacterN)
-{ QUEX_NAME(move_forward)(this, CharacterN); }
+{ QUEX_NAME(seek_forward)(this, CharacterN); }
 
 QUEX_INLINE void    
 QUEX_MEMBER(seek_backward)(const size_t CharacterN)
-{ QUEX_NAME(move_backward)(this, CharacterN); }
+{ QUEX_NAME(seek_backward)(this, CharacterN); }
 
 QUEX_INLINE void  
 QUEX_MEMBER(undo)()
