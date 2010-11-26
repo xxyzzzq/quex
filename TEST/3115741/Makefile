@@ -35,7 +35,6 @@ LD = $(COMPILER)
 # (*) RULES ____________________________________________________________________
 # -- application
 lexer:          example.o Simple.o
-	echo error $(QX_FILE)
 	$(LD) -o $@ example.o Simple.o 
           
 # Object files:

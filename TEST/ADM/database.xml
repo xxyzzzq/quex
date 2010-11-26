@@ -1,4 +1,4 @@
-<test-database execution-time-sec="204.89" date="Thu Nov 25 22:55:45 2010">
+<test-database execution-time-sec="206.13" date="Fri Nov 26 08:26:44 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.64"> 
@@ -37,7 +37,7 @@
                <choice name="codec" result="OK" time_sec="1.82" crc="-416551666"/>
             </choice-list>
         </test>
-        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.10"> 
+        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.11"> 
             <application file-name="bug-2599228.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Developper" result="OK" time_sec="0.03" crc="1346908960"/>
@@ -52,7 +52,7 @@
                <choice name="icu" result="OK" time_sec="1.70" crc="-1133373463"/>
             </choice-list>
         </test>
-        <test title="2001602 RE matching UTF8 l quote uno" time-sum-sec="10.72"> 
+        <test title="2001602 RE matching UTF8 l quote uno" time-sum-sec="10.73"> 
             <application file-name="bug-2001602.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="True">
                <choice name="iconv" result="OK" time_sec="3.41" crc="60983025"/>
@@ -90,7 +90,7 @@
                <choice name="5" result="OK" time_sec="0.17" crc="436945311"/>
             </choice-list>
         </test>
-        <test title="2002070 Output buffer overflow" time-sum-sec="7.56"> 
+        <test title="2002070 Output buffer overflow" time-sum-sec="7.55"> 
             <application file-name="bug-2002070.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iconv" result="OK" time_sec="5.18" crc="-513261754"/>
@@ -105,7 +105,7 @@
                <choice name="" result="OK" time_sec="3.12" crc="-306258998"/>
             </choice-list>
         </test>
-        <test title="3102035 0.55.1 Weird Setup causes Duplicate State Label" time-sum-sec="3.53"> 
+        <test title="3102035 0.55.1 Weird Setup causes Duplicate State Label" time-sum-sec="3.54"> 
             <application file-name="bug-3102035.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.80" crc="-1584378685"/>
@@ -115,7 +115,7 @@
                <choice name="5" result="OK" time_sec="0.83" crc="-2109073766"/>
             </choice-list>
         </test>
-        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="7.82"> 
+        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="7.83"> 
             <application file-name="feature-2078087.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="GOTO" result="OK" time_sec="1.92" crc="1277117499"/>
@@ -164,7 +164,7 @@
                <choice name="funny_comments" result="OK" time_sec="1.94" crc="497102226"/>
             </choice-list>
         </test>
-        <test title="2349109 0.33.5 Line and Column number counts with Set skippers" time-sum-sec="6.06"> 
+        <test title="2349109 0.33.5 Line and Column number counts with Set skippers" time-sum-sec="6.07"> 
             <application file-name="bug-2349109.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="newline-skipper" result="OK" time_sec="1.89" crc="-2019518639"/>
@@ -199,7 +199,7 @@
                <choice name="good" result="OK" time_sec="2.12" crc="-952518389"/>
             </choice-list>
         </test>
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="30.72"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="30.73"> 
             <application file-name="bug-1952133.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="29" result="OK" time_sec="4.13" crc="125506198"/>
@@ -215,11 +215,11 @@
         </test>
     </group>
     <group name="jmarsik">
-        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="2.07"> 
+        <test title="3115741 0.55.4 move_backward triggers assert" time-sum-sec="3.59"> 
             <application file-name="bug-3115741.sh" info-request-time="1290647772L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="general" result="FAIL" time_sec="1.07" crc="None"/>
-               <choice name="undo-line-colum-count" result="OK" time_sec="1.01" crc="-230296806"/>
+               <choice name="general" result="OK" time_sec="1.80" crc="-584745426"/>
+               <choice name="undo-line-colum-count" result="OK" time_sec="1.79" crc="-415264187"/>
             </choice-list>
         </test>
     </group>
@@ -232,7 +232,7 @@
         </test>
     </group>
     <group name="mabraham">
-        <test title="3109479 0.55.2 Error Transition to Forward Init State" time-sum-sec="2.51"> 
+        <test title="3109479 0.55.2 Error Transition to Forward Init State" time-sum-sec="2.50"> 
             <application file-name="bug-3109479.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.32" crc="818163954"/>
@@ -310,7 +310,7 @@
         </test>
     </group>
     <group name="otsakiridis">
-        <test title="3075601 0.52.1 Pre-Context with Codec utf8" time-sum-sec="0.75"> 
+        <test title="3075601 0.52.1 Pre-Context with Codec utf8" time-sum-sec="0.74"> 
             <application file-name="bug-3075601.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="utf8" result="OK" time_sec="0.37" crc="-1395126945"/>
@@ -334,7 +334,7 @@
         </test>
     </group>
     <group name="rmanoj-oss">
-        <test title="3079986 Allow namespace delimiter in --token-prefix for C++" time-sum-sec="4.09"> 
+        <test title="3079986 Allow namespace delimiter in --token-prefix for C++" time-sum-sec="4.08"> 
             <application file-name="feature-3079986.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="nnn" result="OK" time_sec="1.22" crc="-1425824638"/>
@@ -448,10 +448,10 @@
                <choice name="" result="OK" time_sec="0.08" crc="790597096"/>
             </choice-list>
         </test>
-        <test title="1895066 0.20.8 #line directive after header contents missing" time-sum-sec="0.17"> 
+        <test title="1895066 0.20.8 #line directive after header contents missing" time-sum-sec="0.31"> 
             <application file-name="bug-1895066.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.17" crc="1579031102"/>
+               <choice name="" result="OK" time_sec="0.31" crc="868616112"/>
             </choice-list>
         </test>
         <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" time-sum-sec="0.16"> 
@@ -496,13 +496,13 @@
                <choice name="" result="OK" time_sec="0.44" crc="52687214"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.41"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.41" crc="-921353429"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-494247725"/>
             </choice-list>
         </test>
-        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bug-1935701.exe" info-request-time="1290718624L" vanished="False"/>
             <make-procedure success="True" time_sec="0.987520"/>
             <choice-list number="2" same_result="False">
@@ -578,7 +578,7 @@
                <choice name="" result="OK" time_sec="0.15" crc="-1144183572"/>
             </choice-list>
         </test>
-        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.48"> 
+        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.49"> 
             <application file-name="bug-2799244.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="error" result="OK" time_sec="0.19" crc="1053420069"/>
@@ -649,7 +649,7 @@
                <choice name="" result="OK" time_sec="0.23" crc="-1660635643"/>
             </choice-list>
         </test>
-        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.55"> 
+        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.56"> 
             <application file-name="bug-2819045.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="0.22" crc="-424122349"/>
@@ -690,7 +690,7 @@
                <choice name="" result="OK" time_sec="0.73" crc="-417698345"/>
             </choice-list>
         </test>
-        <test title="3030640 0.50.1 Adding .hpp extension to generated headers" time-sum-sec="1.28"> 
+        <test title="3030640 0.50.1 Adding .hpp extension to generated headers" time-sum-sec="1.27"> 
             <application file-name="feature-3030640.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="pp" result="OK" time_sec="0.17" crc="-311783427"/>

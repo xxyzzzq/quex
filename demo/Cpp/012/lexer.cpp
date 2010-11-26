@@ -32,7 +32,7 @@ main(int argc, char** argv)
         (void)boeck_lex.receive();
 
         /* Lexeme is same for all three. */
-        char* lexeme = (char*)max_token->utf8_text().c_str();
+        char* lexeme = (char*)max_token->pretty_char_text().c_str();
         int   L      = (int)max_token->text.length();
 
         printf(lexeme);
