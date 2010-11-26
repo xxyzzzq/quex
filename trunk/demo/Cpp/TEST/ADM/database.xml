@@ -1,4 +1,4 @@
-<test-database execution-time-sec="303.33" date="Thu Nov 25 23:02:06 2010">
+<test-database execution-time-sec="316.04" date="Fri Nov 26 08:23:22 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -49,7 +49,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="5.35"> 
+        <test title="Indentation Based Scopes" time-sum-sec="5.36"> 
             <application file-name="002.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.86" crc="-1626426563"/>
@@ -68,7 +68,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.88" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.50"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.51"> 
             <application file-name="003-icu.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.86" crc="1977270883"/>
@@ -109,7 +109,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="5.23"> 
+        <test title="Miscellaneous Features" time-sum-sec="5.24"> 
             <application file-name="007.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.82" crc="-375962478"/>
@@ -150,7 +150,7 @@
                <choice name="point" result="FAIL" time_sec="10.03" crc="None"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="80.97"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="80.98"> 
             <application file-name="010.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="7.32" crc="1030682096"/>
@@ -201,11 +201,11 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="8.06"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="20.73"> 
             <application file-name="012.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="4.79" crc="-1785218323"/>
-               <choice name="DEBUG" result="FAIL" time_sec="3.26" crc="-1785218323"/>
+               <choice name="NDEBUG" result="OK" time_sec="11.69" crc="-1785218323"/>
+               <choice name="DEBUG" result="OK" time_sec="9.04" crc="-1785218323"/>
             </choice-list>
         </test>
     </group>
