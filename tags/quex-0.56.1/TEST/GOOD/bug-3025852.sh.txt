@@ -1,0 +1,12 @@
+Search for THE_INHERITABLE_ONLY_MODE_XYZ_4711 ___________________________
+ (No output is good output. '*' indicates that it appears in comment)
+Simple.cpp:     *       THE_INHERITABLE_ONLY_MODE_XYZ_4711
+Simple.cpp:     *       (  1) THE_INHERITABLE_ONLY_MODE_XYZ_4711:                                  z
+
+Compilation _____________________________________________________________
+ (No output is good output)
+
+Result of: > ls Simple.o ________________________________________________
+Simple.o
+
+_________________________________________________________________________
