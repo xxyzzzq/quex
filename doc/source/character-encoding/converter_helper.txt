@@ -49,8 +49,10 @@ appropriate. Where the exact signature of each function follows the scheme of
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   converter(const SourceT** source_pp, SourceT* SourceEnd, 
-                                 DrainT**        drain_pp,  DrainT*  DrainEnd);
+    QUEX_INLINE void   converter(const SourceT** source_pp, 
+                                 const SourceT*  SourceEnd, 
+                                 DrainT**        drain_pp,  
+                                 const DrainT*   DrainEnd);
 
 The converter tries to convert as many characters from source to drain
 as possible; until it eventually reaches ``SourceEnd`` or the drain pointer 

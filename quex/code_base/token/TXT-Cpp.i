@@ -55,6 +55,8 @@ QUEX_NAME_TOKEN(copy)($$TOKEN_CLASS$$* __this, const $$TOKEN_CLASS$$* __That)
 {
 #  define self  (*__this)
 #  define Other (*__That)
+    (void)__this;
+    (void)__That;
 $$COPY$$
 #  undef Other
 #  undef self
@@ -79,6 +81,8 @@ QUEX_NAME_TOKEN(take_text)($$TOKEN_CLASS$$*           __this,
 {
 #  define self      (*__this)
 #  define analyzer  (*__analyzer)
+    (void)__this;
+    (void)__analyzer;
 $$FUNC_TAKE_TEXT$$
 #  undef analyzer
 #  undef self
@@ -89,6 +93,7 @@ QUEX_INLINE size_t
 QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self      (*__this)
+    (void)__this;
     $$TOKEN_REPETITION_N_GET$$
 #   undef  self
 }
@@ -97,6 +102,8 @@ QUEX_INLINE void
 QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 {
 #   define self      (*__this)
+    (void)__this;
+    (void)N;
     $$TOKEN_REPETITION_N_SET$$
 #   undef  self
 }

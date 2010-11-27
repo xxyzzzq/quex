@@ -15,14 +15,9 @@ token_type {
                                    size_t                  BufferSize); 
 
        extern const char* 
-       QUEX_NAME_TOKEN(get_utf8_string)(const QUEX_TYPE_TOKEN*  me, 
+       QUEX_NAME_TOKEN(pretty_char_text)(const QUEX_TYPE_TOKEN*  me, 
                                         char*                   buffer, 
                                         size_t                  BufferSize); 
-
-       extern void
-       QUEX_NAME_TOKEN(__get_string_core)(const QUEX_TYPE_TOKEN*  me, 
-                                          char*                   buffer, 
-                                          size_t                  BufferSize);
 
        /* The following function converts the engine's codec to utf8. */
        QUEX_NAMESPACE_MAIN_OPEN
@@ -32,6 +27,11 @@ token_type {
                                                          char**                       Drain, 
                                                          const char*                  DrainEnd);
 #      if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+       extern const wchar_t* 
+       QUEX_NAME_TOKEN(pretty_wchar_text)(const QUEX_TYPE_TOKEN*  me, 
+                                          wchar_t*                buffer, 
+                                          size_t                  BufferSize); 
+
        QUEX_INLINE void
        __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(const QUEX_TYPE_CHARACTER**  Source, 
                                                           const QUEX_TYPE_CHARACTER*   SourceEnd, 
@@ -142,7 +142,6 @@ token_type {
    }
 
    body {
-
        /*
         */
    }
@@ -161,52 +160,70 @@ token_type {
                                     char*                   buffer, 
                                     size_t                  BufferSize) 
         {
-            QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
-            __QUEX_STD_strncat(buffer, (const char*)me->text, BufferSize);
-            __QUEX_STD_strncat(buffer, "'", BufferSize);
+            const char*  token_type_str = QUEX_NAME_TOKEN(map_id_to_name)(me->_id);
+            const char*  BufferEnd  = buffer + BufferSize;
+            const char*  iterator   = 0;
+            char*        writerator = 0;
+
+            /* Token Type */
+            iterator = token_type_str;
+            writerator = buffer; 
+            while( (*iterator) && writerator != BufferEnd ) {
+                *writerator++ = *iterator++;
+            }
+
+            /* Opening Quote */
+            if( BufferEnd - writerator > 2 ) {
+                *writerator++ = ' ';
+                *writerator++ = '\'';
+            }
+
+            /* The String */
+            QUEX_NAME_TOKEN(pretty_char_text)(me, writerator, (size_t)(BufferEnd - writerator));
+
+            while( *writerator ) {
+                ++writerator;
+            }
+
+            /* Closing Quote */
+            if( BufferEnd - writerator > 1 ) {
+                *writerator++ = '\'';
+            }
+            *writerator = '\0';
             return buffer;
         }
 
         const char* 
-        QUEX_NAME_TOKEN(get_utf8_string)(const QUEX_TYPE_TOKEN*  me, 
-                                         char*                   buffer, 
-                                         size_t                  BufferSize) 
+        QUEX_NAME_TOKEN(pretty_char_text)(const QUEX_TYPE_TOKEN*  me, 
+                                          char*                   buffer, 
+                                          size_t                  BufferSize) 
         {
-            const QUEX_TYPE_CHARACTER*    source       = 0;
-            char*                         drain        = 0;
-            const char*                   DrainEnd     = buffer + BufferSize;
-            size_t                        current_size = (size_t)-1;
+            const QUEX_TYPE_CHARACTER*  source    = me->text;
+            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
+            char*                       drain     = buffer;
+            const char*                 DrainEnd  = buffer + BufferSize;
 
-            QUEX_NAME_TOKEN(__get_string_core)(me, buffer, BufferSize);
+            __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(&source, SourceEnd, &drain, DrainEnd);
 
-            /* Get current size of the string. */
-            for(drain = buffer; *drain; ++drain) ;
-            current_size = (size_t)(drain - buffer);
-
-            source = me->text;
-            __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, utf8)(&source,
-                                                              source + (size_t)(QUEX_NAME(strlen)(me->text)),
-                                                              (uint8_t**)&drain,
-                                                              (uint8_t*)DrainEnd);
-
-            if( drain != 0x0 ) {
-                *drain = '\0';
-                __QUEX_STD_strncat(buffer, "'", BufferSize);
-            }
             return buffer;
         }
 
-        void
-        QUEX_NAME_TOKEN(__get_string_core)(const QUEX_TYPE_TOKEN*  me, 
-                                           char*                   buffer, 
+#       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+        const wchar_t* 
+        QUEX_NAME_TOKEN(pretty_wchar_text)(const QUEX_TYPE_TOKEN*  me, 
+                                           wchar_t*                buffer, 
                                            size_t                  BufferSize) 
         {
-            __quex_assert(BufferSize !=  0);
+            const QUEX_TYPE_CHARACTER*  source    = me->text;
+            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
+            wchar_t*                    drain     = buffer;
+            const wchar_t*              DrainEnd  = buffer + BufferSize;
 
-            *buffer = '\0';
-            __QUEX_STD_strncat(buffer, QUEX_NAME_TOKEN(map_id_to_name)(me->_id), BufferSize);
-            __QUEX_STD_strncat(buffer, " '", BufferSize);
+            __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(&source, SourceEnd, &drain, DrainEnd);
+
+            return buffer;
         }
+#       endif
    }
 }
 

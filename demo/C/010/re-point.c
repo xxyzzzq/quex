@@ -72,7 +72,7 @@ test(tiny_lexer* qlex)
         QUEX_NAME(receive)(qlex);
 
         if( token._id != QUEX_TKN_TERMINATION )
-            printf("Consider: %s \n", QUEX_NAME_TOKEN(get_utf8_string)(&token, utf8_buffer, UTF8BufferSize));
+            printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(&token, utf8_buffer, UTF8BufferSize));
 
         if( token._id == QUEX_TKN_BYE ) 
             printf("##\n");

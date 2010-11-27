@@ -54,11 +54,15 @@ mode_function_implementation_str = \
 """
     void
     QUEX_NAME($$MODE_NAME$$_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
+        (void)me;
+        (void)FromMode;
 $$ENTER-PROCEDURE$$
     }
 
     void
     QUEX_NAME($$MODE_NAME$$_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
+        (void)me;
+        (void)ToMode;
 $$EXIT-PROCEDURE$$
     }
 
@@ -67,6 +71,9 @@ $$EXIT-PROCEDURE$$
     QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                             QUEX_TYPE_INDENTATION  Indentation, 
                                             QUEX_TYPE_CHARACTER*   Begin) {
+        (void)me;
+        (void)Indentation;
+        (void)Begin;
 $$ON_INDENTATION-PROCEDURE$$
     }
 #endif
@@ -74,14 +81,17 @@ $$ON_INDENTATION-PROCEDURE$$
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
     QUEX_NAME($$MODE_NAME$$_has_base)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
 $$HAS_BASE_MODE$$
     }
     bool
     QUEX_NAME($$MODE_NAME$$_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
 $$HAS_ENTRANCE_FROM$$
     }
     bool
     QUEX_NAME($$MODE_NAME$$_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
 $$HAS_EXIT_TO$$
     }
 #endif    

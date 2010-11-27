@@ -42,7 +42,7 @@ main(int argc, char** argv)
         /* Loop until the 'termination' token arrives */
         do {
             QUEX_NAME(receive)(&qlex);
-            printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(&token, buffer, BufferSize));
+            printf("%s \n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
         } while( token._id != QUEX_TKN_TERMINATION && token._id != QUEX_TKN_BYE );
         
         printf("[[End of Input]]\n");

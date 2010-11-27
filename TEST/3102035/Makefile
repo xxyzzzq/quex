@@ -17,7 +17,7 @@ COMPILER = gcc # -ggdb # -Os
 
 CC = $(COMPILER) \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Wconversion -pedantic                    \
+	 -Wall -W -Wconversion -pedantic                 \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DPRINT_TOKEN                                   \
 	 -DPRINT_LINE_COLUMN_NUMBER

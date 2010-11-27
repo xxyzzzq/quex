@@ -251,6 +251,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(QUEX_NAME(Buffer)* me)
     { 
+        (void)me;
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = *(me->_input_p - 1); 
 #       endif
