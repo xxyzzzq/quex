@@ -45,6 +45,9 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 {
 #   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
+    
+    (void)InputName;
+    (void)input_handle;
 
 #   ifndef __QUEX_OPTION_PLAIN_C
     /* Use placement 'new' for explicit call of constructor. 

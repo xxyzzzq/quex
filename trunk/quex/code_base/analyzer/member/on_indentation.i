@@ -20,6 +20,7 @@ QUEX_NAME(on_indentation)(QUEX_TYPE_ANALYZER*    me,
            = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
 #   endif
     __QUEX_IF_TOKEN_REPETITION_SUPPORT(QUEX_TYPE_INDENTATION* start = 0);
+    (void)Begin;
 
     if( Indentation > *(stack->back) ) {
         self_send(__QUEX_SETTING_TOKEN_ID_INDENT);

@@ -125,6 +125,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void  
     QUEX_NAME(BufferFiller_Converter_reset)(TEMPLATED(BufferFiller_Converter)* me, InputHandleT* input_handle)
     {
+        (void)me;
+        (void)input_handle;
     }
 
     TEMPLATE_IN(InputHandleT) void   

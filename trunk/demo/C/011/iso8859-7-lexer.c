@@ -19,8 +19,8 @@ main(int argc, char** argv)
         QUEX_NAME(receive)(&qlex, &token_p);
 
         /* (*) print out token information
-         *     'get_utf8_string' automagically converts codec bytes into utf8 */
-        printf("%s \n", QUEX_NAME_TOKEN(get_utf8_string)(token_p, buffer, BufferSize));
+         *     'get_string' automagically converts codec bytes into utf8 */
+        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
 #       if 0
         cout << "\t\t plain bytes: ";
         for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {

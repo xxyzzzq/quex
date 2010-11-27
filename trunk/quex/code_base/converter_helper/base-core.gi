@@ -15,7 +15,7 @@ __QUEX_CONVERTER_STRING(__QUEX_FROM, __QUEX_TO)(const __QUEX_TYPE_SOURCE**  sour
                                                 const __QUEX_TYPE_DRAIN*     DrainEnd)
 {
     const __QUEX_TYPE_SOURCE*  source_iterator; 
-    __QUEX_TYPE_DRAIN*          drain_iterator;
+    __QUEX_TYPE_DRAIN*         drain_iterator;
 
     __quex_assert(source_pp != 0x0);
     __quex_assert(*source_pp != 0x0);

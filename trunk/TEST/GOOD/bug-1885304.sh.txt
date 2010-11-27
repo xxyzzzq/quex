@@ -401,6 +401,9 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 {
 #   define self  (*me)
     QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
+    
+    (void)InputName;
+    (void)input_handle;
 
 #   ifndef __QUEX_OPTION_PLAIN_C
     /* Use placement 'new' for explicit call of constructor. 
@@ -546,6 +549,8 @@ QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
 {
 #  define self  (*__this)
 #  define Other (*__That)
+    (void)__this;
+    (void)__That;
 
 
         self._id    = Other._id;
@@ -585,6 +590,8 @@ QUEX_NAME_TOKEN(take_text)(Token*           __this,
 {
 #  define self      (*__this)
 #  define analyzer  (*__analyzer)
+    (void)__this;
+    (void)__analyzer;
 
 
 #       if 0
@@ -629,6 +636,7 @@ QUEX_INLINE size_t
 QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self      (*__this)
+    (void)__this;
     
 
        return self.number;
@@ -642,6 +650,8 @@ QUEX_INLINE void
 QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 {
 #   define self      (*__this)
+    (void)__this;
+    (void)N;
     
 
        self.number = N;
@@ -669,6 +679,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     void
     QUEX_NAME(ONE_AND_ONLY_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
+        (void)me;
+        (void)FromMode;
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
 #endif
@@ -677,6 +689,8 @@ __quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
 
     void
     QUEX_NAME(ONE_AND_ONLY_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
+        (void)me;
+        (void)ToMode;
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #endif
@@ -688,6 +702,9 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
     QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                             QUEX_TYPE_INDENTATION  Indentation, 
                                             QUEX_TYPE_CHARACTER*   Begin) {
+        (void)me;
+        (void)Indentation;
+        (void)Begin;
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
        return __self_result_token_id;
 #   else
@@ -700,14 +717,17 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
     QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
     return false;
     }
     bool
     QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
     return true; /* default */
     }
     bool
     QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
     return true; /* default */
     }
 #endif    

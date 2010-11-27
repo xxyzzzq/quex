@@ -258,6 +258,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         size_t FallBackN = (size_t)-1;
 
+        (void)buffer;
         /* (1) Fallback: A certain region of the current buffer is copied in front such that
          *               if necessary the stream can go backwards without a backward load.
          *

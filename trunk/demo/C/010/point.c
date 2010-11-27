@@ -44,7 +44,7 @@ main(int argc, char** argv)
             QUEX_NAME(receive)(&qlex);
 
             if( token._id != QUEX_TKN_TERMINATION )
-                printf("Consider: %s \n", QUEX_NAME_TOKEN(get_utf8_string)(&token, buffer, BufferSize));
+                printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
 
             if( token._id == QUEX_TKN_BYE ) 
                 printf("##\n");

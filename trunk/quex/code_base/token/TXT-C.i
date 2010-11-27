@@ -22,6 +22,7 @@ QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+    (void)__this;
 $$CONSTRUCTOR$$
 #   undef  LexemeNull
 #   undef  self
@@ -40,6 +41,7 @@ QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+    (void)__this;
 $$DESTRUCTOR$$
 #   undef  LexemeNull
 #   undef  self
@@ -52,6 +54,8 @@ QUEX_NAME_TOKEN(copy)(QUEX_TYPE_TOKEN*       __this,
 #   define self  (*__this)
 #   define Other (*__That)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+    (void)__this;
+    (void)__That;
 $$COPY$$
 #   undef  LexemeNull
 #   undef  Other
@@ -81,6 +85,10 @@ QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*           __this,
 #   error  "Error LexemeNull shall not be defined here."
 #   endif
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+    (void)__this;
+    (void)__analyzer;
+    (void)Begin;
+    (void)End;
 $$FUNC_TAKE_TEXT$$
 #   undef  LexemeNull
 #   undef  analyzer
@@ -93,6 +101,7 @@ QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
 {
 #   define self        (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+    (void)__this;
     $$TOKEN_REPETITION_N_GET$$
 #   undef  LexemeNull
 #   undef  self
@@ -103,6 +112,8 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 {
 #   define self        (*__this)
 #   define LexemeNull  &QUEX_NAME(LexemeNullObject)
+    (void)__this;
+    (void)N;
     $$TOKEN_REPETITION_N_SET$$
 #   undef  LexemeNull
 #   undef  self

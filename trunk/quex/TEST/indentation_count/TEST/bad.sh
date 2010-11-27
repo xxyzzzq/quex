@@ -14,7 +14,7 @@ fi
 quex -i src/bad-$1.qx -o EasyLexer --language C
 g++ -I$QUEX_PATH -I. EasyLexer.c $QUEX_PATH/demo/C/example.c -o lexer -DPRINT_TOKEN \
      -DQUEX_SETTING_BUFFER_SIZE=$buffer_size \
-     -DQUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
+     -DQUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE -ggdb
 
 ./lexer data/bad.txt > out.txt 2> err.txt
 
