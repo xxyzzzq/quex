@@ -22,17 +22,17 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                 size_t            RawBufferSize);
     TEMPLATE_IN(InputHandleT) void  
     QUEX_NAME(BufferFiller_Converter_init)(TEMPLATED(BufferFiller_Converter)* me, 
-                                           InputHandleT*     input_handle,
-                                           QUEX_NAME(Converter)*    converter,
-                                           const char*       FromCoding,
-                                           const char*       ToCoding,
-                                           size_t            RawBufferSize);
-    TEMPLATE_IN(InputHandleT) size_t 
+                                           InputHandleT*          input_handle,
+                                           QUEX_NAME(Converter)*  converter,
+                                           const char*            FromCoding,
+                                           const char*            ToCoding,
+                                           size_t                 RawBufferSize);
+    TEMPLATE_IN(InputHandleT) ptrdiff_t 
     QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
     
     TEMPLATE_IN(InputHandleT) void   
     QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                           const size_t             CharacterIndex); 
+                                                           const ptrdiff_t          CharacterIndex); 
     TEMPLATE_IN(InputHandleT) size_t 
     QUEX_NAME(BufferFiller_Converter_read_characters)(QUEX_NAME(BufferFiller)* alter_ego,
                                                       QUEX_TYPE_CHARACTER*     start_of_buffer, 
@@ -77,10 +77,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                 size_t                 RawBufferSize)
     {
         QUEX_NAME(BufferFiller_setup_functions)(&me->base,
-                                           TEMPLATED(BufferFiller_Converter_tell_character_index),
-                                           TEMPLATED(BufferFiller_Converter_seek_character_index), 
-                                           TEMPLATED(BufferFiller_Converter_read_characters),
-                                           TEMPLATED(BufferFiller_Converter_delete_self));
+                                                TEMPLATED(BufferFiller_Converter_tell_character_index),
+                                                TEMPLATED(BufferFiller_Converter_seek_character_index), 
+                                                TEMPLATED(BufferFiller_Converter_read_characters),
+                                                TEMPLATED(BufferFiller_Converter_delete_self));
 
         QUEX_NAME(BufferFiller_Converter_init)(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
     }
@@ -222,7 +222,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         return ConvertedCharN;
     }
 
-    TEMPLATE_IN(InputHandleT) size_t 
+    TEMPLATE_IN(InputHandleT) ptrdiff_t 
     QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego)
     { 
         TEMPLATED(BufferFiller_Converter)* me = (TEMPLATED(BufferFiller_Converter)*)alter_ego;
@@ -236,7 +236,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void   
     QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
-                                                           const size_t              Index)
+                                                           const ptrdiff_t           Index)
     { 
         /* The goal of the 'seek' is that the next filling of the user buffer starts at 
          * the specified character index 'Index'. This can be achieved by setting the 
@@ -248,10 +248,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         TEMPLATED(BufferFiller_Converter)*  me     = (TEMPLATED(BufferFiller_Converter)*)alter_ego;
         TEMPLATED(RawBuffer)*               buffer = &me->raw_buffer;
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
-        const size_t     Hint_Index   = me->hint_begin_character_index;
+        const ptrdiff_t  Hint_Index   = me->hint_begin_character_index;
         uint8_t*         Hint_Pointer = buffer->begin;
         size_t           ContentSize  = 0;
-        size_t           EndIndex     = 0;
+        ptrdiff_t        EndIndex     = 0;
         uint8_t*         new_iterator = 0;
 
         __quex_assert(alter_ego != 0x0); 
@@ -287,7 +287,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             ContentSize = (size_t)(buffer->end - buffer->begin);
             EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_TYPE_CHARACTER));
             /* NOTE: the hint index must be valid (i.e. != -1) */
-            if( Index >= Hint_Index && Index < EndIndex && Hint_Index != (size_t)-1 ) {
+            if( Index >= Hint_Index && Index < EndIndex && Hint_Index != (ptrdiff_t)-1 ) {
                 new_iterator  = buffer->begin + (Index - Hint_Index) * sizeof(QUEX_TYPE_CHARACTER);
                 buffer->iterator                  = new_iterator;
                 buffer->iterators_character_index = Index;
@@ -311,20 +311,21 @@ QUEX_NAMESPACE_MAIN_OPEN
             /* Setting the iterator to the begin of the raw_buffer initiates a conversion
              * start from this point.                                                             */
             /* NOTE: the hint index must be valid (i.e. != -1) */
-            if( Index == Hint_Index && Hint_Index != (size_t)-1 ) { 
+            if( Index == Hint_Index && Hint_Index != (ptrdiff_t)-1 ) { 
                 /* The 'read_characters()' function works on the content of the bytes
                  * in the raw_buffer. The only thing that has to happen is to reset 
                  * the raw buffer's position pointer to '0'.                                      */
                 buffer->iterators_character_index = Index;
                 buffer->iterator                  = Hint_Pointer;
             }
-            else if( Index > Hint_Index && Hint_Index != (size_t)-1 ) { 
+            else if( Index > Hint_Index && Hint_Index != (ptrdiff_t)-1 ) { 
                 /* The searched index lies in the current raw_buffer or behind. Simply start 
                  * conversion from the current position until it is reached--but use the stuff 
                  * currently inside the buffer.                                                   */
                 buffer->iterators_character_index = Hint_Index;
                 buffer->iterator                  = Hint_Pointer;
-                QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, Index - Hint_Index);
+                QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, 
+                                                                  Index - Hint_Index);
                 /* assert on index position, see end of 'step_forward_n_characters(...)'.         */
             }
             else  /* Index < BeginIndex */ {

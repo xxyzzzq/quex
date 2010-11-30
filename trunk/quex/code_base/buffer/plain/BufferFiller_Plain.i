@@ -25,9 +25,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(BufferFiller_Plain_init)(TEMPLATED(BufferFiller_Plain)* me, InputHandleT*    input_handle);
 
-    TEMPLATE_IN(InputHandleT) size_t QUEX_NAME(__BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
-    TEMPLATE_IN(InputHandleT) void   QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                                               const size_t      CharacterIndex); 
+    TEMPLATE_IN(InputHandleT) ptrdiff_t QUEX_NAME(__BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QUEX_NAME(__BufferFiller_Plain_seek_character_index)(
+                                           QUEX_NAME(BufferFiller)*  alter_ego, 
+                                           const ptrdiff_t           CharacterIndex); 
     TEMPLATE_IN(InputHandleT) size_t QUEX_NAME(__BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*    alter_ego,
                                                                           QUEX_TYPE_CHARACTER* start_of_buffer, 
                                                                           const size_t         N);
@@ -52,10 +53,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_Plain_construct)(TEMPLATED(BufferFiller_Plain)* me, InputHandleT*    input_handle)
     {
         QUEX_NAME(BufferFiller_setup_functions)(&me->base,
-                                           TEMPLATED(__BufferFiller_Plain_tell_character_index),
-                                           TEMPLATED(__BufferFiller_Plain_seek_character_index), 
-                                           TEMPLATED(__BufferFiller_Plain_read_characters),
-                                           TEMPLATED(__BufferFiller_Plain_delete_self));
+                                   TEMPLATED(__BufferFiller_Plain_tell_character_index),
+                                   TEMPLATED(__BufferFiller_Plain_seek_character_index), 
+                                   TEMPLATED(__BufferFiller_Plain_read_characters),
+                                   TEMPLATED(__BufferFiller_Plain_delete_self));
 
         QUEX_NAME(BufferFiller_Plain_init)(me, input_handle);
     }
@@ -79,7 +80,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     }
 
-    TEMPLATE_IN(InputHandleT) size_t 
+    TEMPLATE_IN(InputHandleT) ptrdiff_t 
     QUEX_NAME(__BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego) 
     { 
        /* The type cast is necessary, since the function signature needs to 
@@ -95,7 +96,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
 #      else
-       return (size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_TYPE_CHARACTER);
+       return (ptrdiff_t)((size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_TYPE_CHARACTER));
 #      endif
     }
 
@@ -104,7 +105,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       stream to a particular position given by a character index. QuexBuffer_seek(..)
      *       sets the _input_p to a particular position.                                      */
     TEMPLATE_IN(InputHandleT) void 
-    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, const size_t CharacterIndex) 
+    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
+                                                         const ptrdiff_t          CharacterIndex) 
     { 
         TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
         long                           avoid_tmp_arg = -1;
@@ -125,7 +127,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      * necessarily proportional to the amount of read-in characters. Note, that the seek function is
      * the only function that is significantly different for this case.                           */
     TEMPLATE_IN(InputHandleT) void 
-    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, const size_t CharacterIndex) 
+    QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
+                                                         const ptrdiff_t i        CharacterIndex) 
     { 
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
