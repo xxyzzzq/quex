@@ -4,7 +4,7 @@
 
    For path compression it is necessary to identify traits of single character
    transitions while the remaining transitions of the involved states are the
-   same (or covered by what is trigger by the current path element). This
+   same (or covered by what is triggered by the current path element). This
    type of compression is useful in languages that contain keywords. Consider
    for example a state machine, containing the key-word 'for':
 
@@ -60,7 +60,7 @@
             start state indices <--> 'CharacterPath' objects. 
 
    A character path represents a single character sequence that was found in
-   the statemachine, together with the 'skeleton' which is the remaining
+   the state machine, together with the 'skeleton' which is the remaining
    trigger map. Concrete:
 
          .sequence()        --> The character sequence of the path
@@ -70,7 +70,7 @@
                                 applied after the single char check.
 
    There might be multiple pathes starting from the same start state. And,
-   start states might possible appear in other paths.
+   start states might possibly appear in other paths.
 
    Filtering Pathes ___________________________________________________________
 
@@ -432,7 +432,6 @@ class CharacterPath:
 
     def __len__(self):
         return len(self.__sequence)
-
 
 def find_paths(SM):
     """SM = state machine of analyzer.

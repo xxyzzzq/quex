@@ -110,7 +110,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         uint8_t*                             memory_end;
         
         uint8_t*                             iterator;
-        size_t                               iterators_character_index;
+        ptrdiff_t                            iterators_character_index;
         
         STREAM_POSITION_TYPE(InputHandleT)   end_stream_position;
 
@@ -131,7 +131,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Store information of the character index at the begin of the raw buffer. This 
          * may facilitate the 'seek' in some cases. See also [Ref 1] in the implementation. */
-        size_t             hint_begin_character_index;
+        ptrdiff_t                 hint_begin_character_index;
 
         /* Position where the whole analysis starts. It is the position '0' on reset.       */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  

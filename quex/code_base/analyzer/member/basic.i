@@ -221,7 +221,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const size_t                  LoadedCharacterN,
+    QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const ptrdiff_t               LoadedCharacterN,
                                                              QUEX_TYPE_CHARACTER_POSITION* pos)
     { 
         /* -- In general, there would be no harm if the last_acceptance_input_position
@@ -233,7 +233,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__buffer_adapt_post_context_start_positions)(const size_t                  LoadedCharacterN,
+    QUEX_NAME(__buffer_adapt_post_context_start_positions)(const ptrdiff_t               LoadedCharacterN,
                                                            QUEX_TYPE_CHARACTER_POSITION* pos_array,
                                                            const size_t                  N)
     {
@@ -252,9 +252,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                            QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                            const size_t                  PostContextN)
     {
-        size_t  loaded_character_n = (size_t)-1;    
+        ptrdiff_t  loaded_character_n = (ptrdiff_t)-1;    
 
-        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer);
+        loaded_character_n = (ptrdiff_t)(QUEX_NAME(buffer_reload_forward)(buffer));
 
         QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(loaded_character_n,
                                                                  last_acceptance_input_position); 
