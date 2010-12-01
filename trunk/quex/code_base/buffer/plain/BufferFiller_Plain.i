@@ -91,12 +91,15 @@ QUEX_NAMESPACE_MAIN_OPEN
        __quex_assert(me->ih != 0x0); 
        /* Ensure, that the stream position is only influenced by
         *    __read_characters(...) 
-        *    __seek_character_index(...)                                                          */
+        *    __seek_character_index(...)                                             */
        __quex_assert(me->_last_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
 #      else
-       return (ptrdiff_t)(((size_t)me->_last_stream_position - (size_t)me->start_position) / sizeof(QUEX_TYPE_CHARACTER));
+       /* The stream position type is most likely >= size_t >= ptrdiff_t so let the 
+        * computation happen with that type, then cast to what needs to be returned. */
+       return (ptrdiff_t)(  (me->_last_stream_position - me->start_position) 
+                          / (STREAM_POSITION_TYPE(InputHandleT))sizeof(QUEX_TYPE_CHARACTER));
 #      endif
     }
 
