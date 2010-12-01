@@ -23,7 +23,13 @@
 #include    <quex/code_base/analyzer/member/basic.i>
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/analyzer/Mode.i>
-#include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+
+#include    <quex/code_base/buffer/Buffer.i>
+#include    <quex/code_base/buffer/BufferFiller.i>
+
+#if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#   include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#endif
 
 #ifdef      __QUEX_OPTION_COUNTER
 #   include <quex/code_base/analyzer/Counter.i>

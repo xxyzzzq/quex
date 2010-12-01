@@ -3,6 +3,10 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 
+#if ! defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#   error "This file should only be included if __QUEX_OPTION_CONVERTER_ENABLED is defined!"
+#endif
+
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/BufferFiller>
@@ -116,7 +120,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                   me->start_position);
 
         /* Hint for relation between character index, raw buffer offset and stream position */
-        me->hint_begin_character_index = (size_t)-1;
+        me->hint_begin_character_index = (ptrdiff_t)-1;
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
@@ -176,8 +180,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_TYPE_CHARACTER*        user_buffer_iterator = user_memory_p;
         const QUEX_TYPE_CHARACTER*  UserBufferEnd        = user_memory_p + N;
-        const size_t                StartCharacterIndex  = me->raw_buffer.iterators_character_index;
-        size_t                      ConvertedCharN       = 0;
+        const ptrdiff_t             StartCharacterIndex  = me->raw_buffer.iterators_character_index;
+        ptrdiff_t                   ConvertedCharN       = 0;
 
         __quex_assert(me->converter != 0x0);
         __quex_assert(alter_ego != 0x0); 
@@ -196,7 +200,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
             /* The raw buffer filler requires the iterator's character index to be up-to-date. */
             me->raw_buffer.iterators_character_index =   StartCharacterIndex 
-                                                       + (size_t)(user_buffer_iterator - user_memory_p);
+                                                       + (user_buffer_iterator - user_memory_p);
 
             if( QUEX_NAME(__BufferFiller_Converter_fill_raw_buffer)(me) == 0 ) {
                 /* No bytes have been loaded. */
@@ -207,10 +211,10 @@ QUEX_NAMESPACE_MAIN_OPEN
             }
         }
 
-        ConvertedCharN = (size_t)(user_buffer_iterator - user_memory_p);
+        ConvertedCharN = user_buffer_iterator - user_memory_p;
         me->raw_buffer.iterators_character_index = StartCharacterIndex + ConvertedCharN;
 
-        if( ConvertedCharN != N ) {
+        if( ConvertedCharN != (ptrdiff_t)N ) {
             /* The buffer was not filled completely, because the end of the file was reached.   */
 #           ifdef QUEX_OPTION_ASSERTS
             __quex_assert(UserBufferEnd >= user_buffer_iterator);
@@ -219,7 +223,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                               (size_t)(UserBufferEnd - user_buffer_iterator) * sizeof(QUEX_TYPE_CHARACTER));
 #           endif
         }
-        return ConvertedCharN;
+        return (size_t)ConvertedCharN;
     }
 
     TEMPLATE_IN(InputHandleT) ptrdiff_t 
@@ -250,7 +254,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
         const ptrdiff_t  Hint_Index   = me->hint_begin_character_index;
         uint8_t*         Hint_Pointer = buffer->begin;
-        size_t           ContentSize  = 0;
+        ptrdiff_t        ContentSize  = 0;
         ptrdiff_t        EndIndex     = 0;
         uint8_t*         new_iterator = 0;
 
@@ -284,17 +288,17 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( me->converter->dynamic_character_size_f == false ) { 
             /* (1) Fixed Character Width */
             __quex_assert(buffer->end >= buffer->begin);
-            ContentSize = (size_t)(buffer->end - buffer->begin);
-            EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_TYPE_CHARACTER));
+            ContentSize = buffer->end - buffer->begin;
+            EndIndex    = Hint_Index + (ContentSize / (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER));
             /* NOTE: the hint index must be valid (i.e. != -1) */
             if( Index >= Hint_Index && Index < EndIndex && Hint_Index != (ptrdiff_t)-1 ) {
-                new_iterator  = buffer->begin + (Index - Hint_Index) * sizeof(QUEX_TYPE_CHARACTER);
+                new_iterator  = buffer->begin + (Index - Hint_Index) * (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER);
                 buffer->iterator                  = new_iterator;
                 buffer->iterators_character_index = Index;
             }
             else  /* Index not in [BeginIndex:EndIndex) */ {
                 STREAM_POSITION_TYPE(InputHandleT) avoid_tmp_arg =
-                    (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_TYPE_CHARACTER)) \
+                    (STREAM_POSITION_TYPE(InputHandleT))((size_t)Index * sizeof(QUEX_TYPE_CHARACTER)) \
                     + me->start_position;
                 /* Seek stream position cannot be handled when buffer based analyzis is on.       */
                 if( me->ih != 0x0 ) {

@@ -96,7 +96,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
 #      else
-       return (ptrdiff_t)((size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_TYPE_CHARACTER));
+       return (me->_last_stream_position - me->start_position) / (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER);
 #      endif
     }
 
@@ -116,7 +116,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * work with the first argument being of base class type. */
         __quex_assert(me->ih != 0x0); 
 
-        avoid_tmp_arg =   (long)(CharacterIndex * sizeof(QUEX_TYPE_CHARACTER)) \
+        avoid_tmp_arg =   (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER)) \
                         + (long)(me->start_position); 
 
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
@@ -128,7 +128,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      * the only function that is significantly different for this case.                           */
     TEMPLATE_IN(InputHandleT) void 
     QUEX_NAME(__BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                         const ptrdiff_t i        CharacterIndex) 
+                                                         const ptrdiff_t          CharacterIndex) 
     { 
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
@@ -152,11 +152,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 
     TEMPLATE_IN(InputHandleT) size_t   
-    QUEX_NAME(__BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*        alter_ego,
-                                                    QUEX_TYPE_CHARACTER* buffer_memory, const size_t N)  
+    QUEX_NAME(__BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
+                                                    QUEX_TYPE_CHARACTER*      buffer_memory, 
+                                                    const size_t              N)  
     { 
-        TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
-        size_t                         ByteN = (size_t)-1;
+        TEMPLATED(BufferFiller_Plain)* me         = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
+        size_t                         ByteN      = (size_t)-1;
         size_t                         CharacterN = (size_t)-1;
 
         __quex_assert(alter_ego != 0x0); 

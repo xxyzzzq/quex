@@ -4,12 +4,15 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
-#include <quex/code_base/buffer/converter/BufferFiller_Converter>
-#if defined (QUEX_OPTION_ENABLE_ICU)
-#   include <quex/code_base/buffer/converter/icu/Converter_ICU>
-#endif
-#if defined (QUEX_OPTION_ENABLE_ICONV)
-#   include <quex/code_base/buffer/converter/iconv/Converter_IConv>
+
+#if  defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#   include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#   if defined (QUEX_OPTION_ENABLE_ICU)
+#      include <quex/code_base/buffer/converter/icu/Converter_ICU>
+#   endif
+#   if defined (QUEX_OPTION_ENABLE_ICONV)
+#      include <quex/code_base/buffer/converter/iconv/Converter_IConv>
+#   endif
 #endif
 
 #include <quex/code_base/temporary_macros_on>
@@ -64,6 +67,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory)
     { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)(memory); }
 
+#if defined(__QUEX_OPTION_CONVERTER_ENABLED)
     QUEX_INLINE void*
     QUEX_NAME(MemoryManager_Converter_allocate)(const size_t ByteN)
     { return QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
@@ -71,6 +75,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(MemoryManager_Converter_free)(void* memory)
     { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
+#   endif
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     QUEX_INLINE QUEX_TYPE_CHARACTER*

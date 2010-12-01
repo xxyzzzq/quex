@@ -31,6 +31,124 @@ QUEX_NAMESPACE_MAIN_OPEN
         return CopiedByteN;
     }
 
+
+    QUEX_INLINE void*
+    QUEX_NAME(buffer_fill_region_append_core)(QUEX_TYPE_ANALYZER*    me, 
+                                              void*   ContentBegin, 
+                                              void*   ContentEnd,
+                                              size_t (*insert)(QUEX_NAME(BufferFiller)*   me,
+                                                               QUEX_TYPE_CHARACTER**      insertion_p,
+                                                               QUEX_TYPE_CHARACTER*  BufferEnd,
+                                                               void*                 ContentBegin,
+                                                               void*                 ContentEnd))
+    /* RETURNS: The position of the first character that could not be copied
+     *          into the fill region, because it did not have enough space.
+     *          If the whole content was copied, then the return value
+     *          is equal to BufferEnd.                                        */
+    {
+        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
+        size_t                CopiedByteN = 0;
+
+        /* Asserts ensure, that we are running in 'buffer-based-mode' */
+        __quex_assert(me->buffer._content_character_index_begin == 0); 
+        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
+        __quex_assert(ContentEnd > ContentBegin);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+
+        /* (1) Move away unused passed buffer content. */
+        QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
+
+        /* (2) Determine place to insert new content */
+        insertion_p = me->buffer._memory._end_of_file_p;
+
+        CopiedByteN = insert(me->buffer.filler, &insertion_p,
+                             me->buffer._memory._back + 1,
+                             ContentBegin, ContentEnd);
+
+        /* (3) If necessary perform a byte order inversion on the loaded content */
+        if( me->buffer._byte_order_reversion_active_f ) 
+            QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, insertion_p);
+
+        /* (4) When lexing directly on the buffer, the end of file pointer is always set. */
+        QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, insertion_p);
+
+        /* NOT:
+         *      buffer->_input_p        = front;
+         *      buffer->_lexeme_start_p = front;            
+         * We might want to allow to append during lexical analysis. */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+        return (uint8_t*)ContentBegin + CopiedByteN;
+    }
+
+    QUEX_INLINE void*
+    QUEX_NAME(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
+                                         void*                  ContentBegin, 
+                                         void*                  ContentEnd)
+    {
+        return QUEX_NAME(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
+                                                         QUEX_NAME(BufferFillerUser_Plain_insert));
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(buffer_fill_region_prepare)(QUEX_TYPE_ANALYZER* me)
+    {
+        /* Move away unused passed buffer content. */
+        QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
+    }
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  
+    QUEX_NAME(buffer_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
+    { 
+        return QUEX_NAME(Buffer_text_end)(&me->buffer); 
+    }
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  
+    QUEX_NAME(buffer_fill_region_end)(QUEX_TYPE_ANALYZER* me)
+    { 
+        return QUEX_NAME(Buffer_content_back)(&me->buffer) + 1; 
+    }
+
+    QUEX_INLINE size_t
+    QUEX_NAME(buffer_fill_region_size)(QUEX_TYPE_ANALYZER* me)
+    { 
+        __quex_assert(   QUEX_NAME(buffer_fill_region_end)(me) 
+                      >= QUEX_NAME(buffer_fill_region_begin)(me)); 
+
+        return (size_t)(  QUEX_NAME(buffer_fill_region_end)(me) 
+                        - QUEX_NAME(buffer_fill_region_begin)(me)); 
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(buffer_fill_region_finish)(QUEX_TYPE_ANALYZER*  me,
+                                         const size_t         CharacterN)
+    {
+        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
+        __quex_assert(me->buffer._memory._end_of_file_p + CharacterN <= me->buffer._memory._back);
+
+        /* We assume that the content from '_end_of_file_p' to '_end_of_file_p + CharacterN'
+         * has been filled with data.                                                        */
+        if( me->buffer._byte_order_reversion_active_f ) 
+            QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, 
+                                                 me->buffer._memory._end_of_file_p + CharacterN);
+
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(me->buffer._memory._end_of_file_p, 
+                                                me->buffer._memory._end_of_file_p + CharacterN);
+
+        /* When lexing directly on the buffer, the end of file pointer is always set.        */
+        QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, 
+                                          me->buffer._memory._end_of_file_p + CharacterN); 
+    }
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  
+    QUEX_NAME(buffer_lexeme_start_pointer_get)(QUEX_TYPE_ANALYZER* me) 
+    { return me->buffer._lexeme_start_p; }
+
+    QUEX_INLINE void
+    QUEX_NAME(buffer_input_pointer_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Adr)
+    { me->buffer._input_p = Adr; }
+
+
+#   if defined(__QUEX_OPTION_CONVERTER_ENABLED)
     QUEX_INLINE size_t 
     QUEX_NAME(BufferFillerUser_Converter_insert)(QUEX_NAME(BufferFiller)*  alter_ego,
                                                  QUEX_TYPE_CHARACTER**     insertion_p,
@@ -99,65 +217,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         return (size_t)(read_iterator - (uint8_t*)ContentBegin);
     }
 
-
-
-    QUEX_INLINE void*
-    QUEX_NAME(buffer_fill_region_append_core)(QUEX_TYPE_ANALYZER*    me, 
-                                              void*   ContentBegin, 
-                                              void*   ContentEnd,
-                                              size_t (*insert)(QUEX_NAME(BufferFiller)*   me,
-                                                               QUEX_TYPE_CHARACTER**      insertion_p,
-                                                               QUEX_TYPE_CHARACTER*  BufferEnd,
-                                                               void*                 ContentBegin,
-                                                               void*                 ContentEnd))
-    /* RETURNS: The position of the first character that could not be copied
-     *          into the fill region, because it did not have enough space.
-     *          If the whole content was copied, then the return value
-     *          is equal to BufferEnd.                                        */
-    {
-        QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
-        size_t                CopiedByteN = 0;
-
-        /* Asserts ensure, that we are running in 'buffer-based-mode' */
-        __quex_assert(me->buffer._content_character_index_begin == 0); 
-        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
-        __quex_assert(ContentEnd > ContentBegin);
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-
-        /* (1) Move away unused passed buffer content. */
-        QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
-
-        /* (2) Determine place to insert new content */
-        insertion_p = me->buffer._memory._end_of_file_p;
-
-        CopiedByteN = insert(me->buffer.filler, &insertion_p,
-                             me->buffer._memory._back + 1,
-                             ContentBegin, ContentEnd);
-
-        /* (3) If necessary perform a byte order inversion on the loaded content */
-        if( me->buffer._byte_order_reversion_active_f ) 
-            QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, insertion_p);
-
-        /* (4) When lexing directly on the buffer, the end of file pointer is always set. */
-        QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, insertion_p);
-
-        /* NOT:
-         *      buffer->_input_p        = front;
-         *      buffer->_lexeme_start_p = front;            
-         * We might want to allow to append during lexical analysis. */
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        return (uint8_t*)ContentBegin + CopiedByteN;
-    }
-
-    QUEX_INLINE void*
-    QUEX_NAME(buffer_fill_region_append)(QUEX_TYPE_ANALYZER*    me, 
-                                         void*                  ContentBegin, 
-                                         void*                  ContentEnd)
-    {
-        return QUEX_NAME(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
-                                                         QUEX_NAME(BufferFillerUser_Plain_insert));
-    }
-
     QUEX_INLINE void*
     QUEX_NAME(buffer_fill_region_append_conversion)(QUEX_TYPE_ANALYZER*  me,
                                                     void*                ContentBegin, 
@@ -181,56 +240,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         return QUEX_NAME(buffer_fill_region_append_core)(me, ContentBegin, ContentEnd,
                                                          QUEX_NAME(BufferFillerUser_Converter_insert_direct));
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(buffer_fill_region_prepare)(QUEX_TYPE_ANALYZER* me)
-    {
-        /* Move away unused passed buffer content. */
-        QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_NAME(buffer_fill_region_begin)(QUEX_TYPE_ANALYZER* me)
-    { 
-        return QUEX_NAME(Buffer_text_end)(&me->buffer); 
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_NAME(buffer_fill_region_end)(QUEX_TYPE_ANALYZER* me)
-    { 
-        return QUEX_NAME(Buffer_content_back)(&me->buffer) + 1; 
-    }
-
-    QUEX_INLINE size_t
-    QUEX_NAME(buffer_fill_region_size)(QUEX_TYPE_ANALYZER* me)
-    { 
-        __quex_assert(   QUEX_NAME(buffer_fill_region_end)(me) 
-                      >= QUEX_NAME(buffer_fill_region_begin)(me)); 
-
-        return (size_t)(  QUEX_NAME(buffer_fill_region_end)(me) 
-                        - QUEX_NAME(buffer_fill_region_begin)(me)); 
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(buffer_fill_region_finish)(QUEX_TYPE_ANALYZER*  me,
-                                         const size_t         CharacterN)
-    {
-        __quex_assert(me->buffer._memory._end_of_file_p != 0x0); 
-        __quex_assert(me->buffer._memory._end_of_file_p + CharacterN <= me->buffer._memory._back);
-
-        /* We assume that the content from '_end_of_file_p' to '_end_of_file_p + CharacterN'
-         * has been filled with data.                                                        */
-        if( me->buffer._byte_order_reversion_active_f ) 
-            QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, 
-                                                 me->buffer._memory._end_of_file_p + CharacterN);
-
-        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(me->buffer._memory._end_of_file_p, 
-                                                me->buffer._memory._end_of_file_p + CharacterN);
-
-        /* When lexing directly on the buffer, the end of file pointer is always set.        */
-        QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, 
-                                          me->buffer._memory._end_of_file_p + CharacterN); 
     }
 
     QUEX_INLINE void
@@ -316,28 +325,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, insertion_p);
     }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_NAME(buffer_lexeme_start_pointer_get)(QUEX_TYPE_ANALYZER* me) 
-    { return me->buffer._lexeme_start_p; }
-
-    QUEX_INLINE void
-    QUEX_NAME(buffer_input_pointer_set)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Adr)
-    { me->buffer._input_p = Adr; }
-
+#   endif
 
 #   ifndef __QUEX_OPTION_PLAIN_C
     QUEX_INLINE void*
     QUEX_MEMBER(buffer_fill_region_append)(void*  ContentBegin, void*  ContentEnd)
     { return QUEX_NAME(buffer_fill_region_append)(this, ContentBegin, ContentEnd); }
-
-    QUEX_INLINE void*
-    QUEX_MEMBER(buffer_fill_region_append_conversion)(void*  ContentBegin, void*  ContentEnd)
-    { return QUEX_NAME(buffer_fill_region_append_conversion)(this, ContentBegin, ContentEnd); }
-
-    QUEX_INLINE void*
-    QUEX_MEMBER(buffer_fill_region_append_conversion_direct)(void*  ContentBegin, void*  ContentEnd)
-    { return QUEX_NAME(buffer_fill_region_append_conversion_direct)(this, ContentBegin, ContentEnd); }
 
     QUEX_INLINE void
     QUEX_MEMBER(buffer_fill_region_prepare)()
@@ -359,6 +352,23 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_MEMBER(buffer_fill_region_finish)(const size_t CharacterN)
     { QUEX_NAME(buffer_fill_region_finish)(this, CharacterN); }
 
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  
+    QUEX_MEMBER(buffer_lexeme_start_pointer_get)() 
+    { return QUEX_NAME(buffer_lexeme_start_pointer_get)(this); }
+
+    QUEX_INLINE void
+    QUEX_MEMBER(buffer_input_pointer_set)(QUEX_TYPE_CHARACTER* Adr)
+    { QUEX_NAME(buffer_input_pointer_set)(this, Adr); }
+
+#   if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+    QUEX_INLINE void*
+    QUEX_MEMBER(buffer_fill_region_append_conversion)(void*  ContentBegin, void*  ContentEnd)
+    { return QUEX_NAME(buffer_fill_region_append_conversion)(this, ContentBegin, ContentEnd); }
+
+    QUEX_INLINE void*
+    QUEX_MEMBER(buffer_fill_region_append_conversion_direct)(void*  ContentBegin, void*  ContentEnd)
+    { return QUEX_NAME(buffer_fill_region_append_conversion_direct)(this, ContentBegin, ContentEnd); }
+
     QUEX_INLINE void
     QUEX_MEMBER(buffer_conversion_fill_region_prepare)() 
     { QUEX_NAME(buffer_fill_region_prepare)(this); }
@@ -378,14 +388,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_MEMBER(buffer_conversion_fill_region_finish)(const size_t ByteN)
     { QUEX_NAME(buffer_conversion_fill_region_finish)(this, ByteN); }
+#   endif
 
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_MEMBER(buffer_lexeme_start_pointer_get)() 
-    { return QUEX_NAME(buffer_lexeme_start_pointer_get)(this); }
-
-    QUEX_INLINE void
-    QUEX_MEMBER(buffer_input_pointer_set)(QUEX_TYPE_CHARACTER* Adr)
-    { QUEX_NAME(buffer_input_pointer_set)(this, Adr); }
 #   endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

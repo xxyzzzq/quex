@@ -10,28 +10,28 @@ QUEX_INLINE size_t
 QUEX_NAME(tell)(QUEX_TYPE_ANALYZER* me)
 {
     /* No 'undo terminating zero' -- we do not change the lexeme pointer here. */
-    return QUEX_NAME(Buffer_tell)(&me->buffer);
+    return (size_t)QUEX_NAME(Buffer_tell)(&me->buffer);
 }
 
 QUEX_INLINE void    
 QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t CharacterIndex)
 {
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
-    QUEX_NAME(Buffer_seek)(&me->buffer, CharacterIndex);
+    QUEX_NAME(Buffer_seek)(&me->buffer, (ptrdiff_t)CharacterIndex);
 }
 
 QUEX_INLINE void    
 QUEX_NAME(seek_forward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
-    QUEX_NAME(Buffer_move_forward)(&me->buffer, CharacterN);
+    QUEX_NAME(Buffer_move_forward)(&me->buffer, (ptrdiff_t)CharacterN);
 }
 
 QUEX_INLINE void    
 QUEX_NAME(seek_backward)(QUEX_TYPE_ANALYZER* me, const size_t CharacterN)
 {
     QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
-    QUEX_NAME(Buffer_move_backward)(&me->buffer, CharacterN);
+    QUEX_NAME(Buffer_move_backward)(&me->buffer, (ptrdiff_t)CharacterN);
 }
 
 QUEX_INLINE void  
