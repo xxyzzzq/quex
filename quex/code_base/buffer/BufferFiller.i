@@ -40,6 +40,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                 const char*    CharacterEncodingName,
                                 const size_t   TranslationBufferMemorySize)
     {
+        (void)TranslationBufferMemorySize;
         if( CharacterEncodingName != 0x0 ) {
 
 #           if defined(__QUEX_OPTION_CONVERTER_ENABLED)
@@ -317,10 +318,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef QUEX_OPTION_ASSERTS
         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
         __QUEX_STD_memset((uint8_t*)(drain + FallBackN), (uint8_t)(0xFF), 
-                          (QUEX_NAME(Buffer_content_size)(buffer) - FallBackN)*sizeof(QUEX_TYPE_CHARACTER)); 
+                          (QUEX_NAME(Buffer_content_size)(buffer) - (size_t)FallBackN)*sizeof(QUEX_TYPE_CHARACTER)); 
 #       endif
 
-        __quex_assert(FallBackN < QUEX_NAME(Buffer_content_size)(buffer));
+        __quex_assert((size_t)FallBackN < QUEX_NAME(Buffer_content_size)(buffer));
     }
 
     QUEX_INLINE void
@@ -333,7 +334,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER* ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
 
         __quex_assert(    buffer->_memory._end_of_file_p == 0x0 
-                       || LoadedN + FallBackN == QUEX_NAME(Buffer_content_size)(buffer) );
+                       || (LoadedN + (size_t)FallBackN) == QUEX_NAME(Buffer_content_size)(buffer) );
         __quex_assert( DesiredLoadN != 0 );
 
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
