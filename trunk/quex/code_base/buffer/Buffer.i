@@ -216,7 +216,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Check wether the memory_position is relative to the current start position   
          * of the stream. That means, that the tell_adr() command was called on the  
          * same buffer setting or the positions have been adapted using the += operator.*/
-        __quex_assert(Position.buffer_start_position == buffer->_content_character_index_begin);
+        __quex_assert(Position.buffer_start_position == (size_t)buffer->_content_character_index_begin);
         buffer->_input_p = Position.address;
 #       else
         buffer->_input_p = Position;

@@ -96,7 +96,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
 #      else
-       return (me->_last_stream_position - me->start_position) / (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER);
+       return (ptrdiff_t)(((size_t)me->_last_stream_position - (size_t)me->start_position) / sizeof(QUEX_TYPE_CHARACTER));
 #      endif
     }
 
