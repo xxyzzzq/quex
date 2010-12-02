@@ -92,7 +92,7 @@ $$LC_COUNT_IN_LOOP$$
      *         (2.2) Start detection of tail of delimiter
      *
      */
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < Skipper$$SKIPPER_INDEX$$L ) {
+    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < (ptrdiff_t)Skipper$$SKIPPER_INDEX$$L ) {
         /* (2.1) Reload required. */
         $$GOTO_DROP_OUT$$            
     }
