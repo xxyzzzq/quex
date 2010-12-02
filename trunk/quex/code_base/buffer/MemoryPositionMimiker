@@ -72,8 +72,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         // When loading forward from the stream, the pointers to memory_positions move backwards.
         // Thus, the signs in the operators are mirrored.
         // (operators not to be used in concatination -> void)
-        void operator+=(const int Value) { address += Value; buffer_start_position -= Value; }
-        void operator-=(const int Value) { address -= Value; buffer_start_position += Value; }
+        void operator+=(const ptrdiff_t Value) { address += Value; buffer_start_position -= (character_index)Value; }
+        void operator-=(const ptrdiff_t Value) { address -= Value; buffer_start_position += (character_index)Value; }
 
         // conversion operator, so that the object can be used at any place
         // where a normal provided_QUEX_TYPE_CHARACTER pointer is required (integrates seemingless)
