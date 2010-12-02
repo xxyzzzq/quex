@@ -14,6 +14,12 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
+#   ifdef __QUEX_OPTION_PLAIN_C
+    QUEX_TYPE0_ANALYZER;   
+#   else
+    class QUEX_TYPE0_ANALYZER;
+#   endif
+
     /* (*) pure text accumulation and flushing */
     typedef struct {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING

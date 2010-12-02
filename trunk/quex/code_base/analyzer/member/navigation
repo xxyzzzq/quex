@@ -4,6 +4,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAVIGATION
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAVIGATION
 
+#include <quex/code_base/definitions>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 /* Tell/Seek/Move on basis of character index */

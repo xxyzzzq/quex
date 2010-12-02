@@ -7,6 +7,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/asserts>
 
 
 #if ! defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 

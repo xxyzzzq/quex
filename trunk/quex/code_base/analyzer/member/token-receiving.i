@@ -7,6 +7,7 @@
 #endif
 
 #include <quex/code_base/token/TokenPolicy>
+#include <quex/code_base/definitions>
 
 QUEX_NAMESPACE_MAIN_OPEN
 

@@ -9,7 +9,9 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-/* NOTE: QUEX_TYPE_TOKEN must be defined at this place! */
+#ifndef QUEX_TYPE_TOKEN
+#    error "QUEX_TYPE_TOKEN must be defined before including this file."
+#endif
 
 
 QUEX_NAMESPACE_MAIN_OPEN
