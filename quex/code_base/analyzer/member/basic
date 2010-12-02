@@ -5,6 +5,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC
 
+#include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 
 #include <quex/code_base/temporary_macros_on>

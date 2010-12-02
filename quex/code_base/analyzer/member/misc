@@ -4,6 +4,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC
 
+#include <quex/code_base/definitions>
+
 QUEX_NAMESPACE_MAIN_OPEN
 
 /* Callback on buffer content change --> user may safe its lexeme's away. */
