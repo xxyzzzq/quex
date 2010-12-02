@@ -31,7 +31,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         STREAM_POSITION_TYPE(InputHandleT)  _last_stream_position;  
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         /* Index of the character where the next read will start */
-        size_t             _character_index;
+        ptrdiff_t                           _character_index;
 #       endif
     } TEMPLATIFIER_END(BufferFiller_Plain);
 

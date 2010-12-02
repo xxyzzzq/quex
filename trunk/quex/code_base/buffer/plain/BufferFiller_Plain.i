@@ -181,7 +181,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         CharacterN = ByteN / sizeof(QUEX_TYPE_CHARACTER); 
 
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-        me->_character_index += CharacterN;
+        me->_character_index += (ptrdiff_t)CharacterN;
 #       endif
 
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);

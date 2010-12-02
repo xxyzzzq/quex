@@ -221,7 +221,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const ptrdiff_t               LoadedCharacterN,
+    QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(const size_t                  LoadedCharacterN,
                                                              QUEX_TYPE_CHARACTER_POSITION* pos)
     { 
         /* -- In general, there would be no harm if the last_acceptance_input_position
@@ -229,20 +229,20 @@ QUEX_NAMESPACE_MAIN_OPEN
          * -- With template states, though, the value == 0 is used as a signal that 
          *    indicates that is has not been set, and thus, no seek has to happen.      
          * -- Thus, we better do not underflow.*/
-        if( *pos != 0x0 ) *pos -= LoadedCharacterN; 
+        if( *pos != 0x0 ) *pos -= (ptrdiff_t)LoadedCharacterN; 
     }
 
     QUEX_INLINE void
-    QUEX_NAME(__buffer_adapt_post_context_start_positions)(const ptrdiff_t               LoadedCharacterN,
+    QUEX_NAME(__buffer_adapt_post_context_start_positions)(const size_t                  LoadedCharacterN,
                                                            QUEX_TYPE_CHARACTER_POSITION* pos_array,
                                                            const size_t                  N)
     {
         QUEX_TYPE_CHARACTER_POSITION*  iterator = 0x0;
-        QUEX_TYPE_CHARACTER_POSITION*  End = pos_array + N;
+        QUEX_TYPE_CHARACTER_POSITION*  End = pos_array + (ptrdiff_t)N;
         for(iterator = pos_array; iterator != End; ++iterator) {
             /* NOTE: When the post_context_start_position is still undefined the following operation may
              *       underflow. But, do not care, once it is **assigned** to a meaningful value, it won't */
-            *iterator -= LoadedCharacterN;
+            *iterator -= (ptrdiff_t)LoadedCharacterN;
         }
     }
 
@@ -252,9 +252,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                            QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                            const size_t                  PostContextN)
     {
-        ptrdiff_t  loaded_character_n = (ptrdiff_t)-1;    
+        size_t  loaded_character_n = (size_t)-1;    
 
-        loaded_character_n = (ptrdiff_t)(QUEX_NAME(buffer_reload_forward)(buffer));
+        loaded_character_n = QUEX_NAME(buffer_reload_forward)(buffer);
 
         QUEX_NAME(__buffer_adapt_last_acceptance_input_position)(loaded_character_n,
                                                                  last_acceptance_input_position); 
