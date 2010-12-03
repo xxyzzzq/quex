@@ -56,7 +56,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             : address(Adr), buffer_start_position(Pos) {}
 
         QUEX_TYPE_CHARACTER*  address;
-        character_index  buffer_start_position;
+        character_index       buffer_start_position;
 
         bool operator==(const QUEX_NAME(MemoryPositionMimiker)& That)
         { 
