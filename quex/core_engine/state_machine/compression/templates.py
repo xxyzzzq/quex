@@ -141,8 +141,8 @@
 
 """
 import sys
-from copy import copy
-from quex.core_engine.interval_handling import Interval
+from   copy import copy
+from   quex.core_engine.interval_handling import Interval
 import quex.core_engine.state_machine.index as index
 import quex.core_engine.state_machine.core  as state_machine
 
