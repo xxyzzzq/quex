@@ -14,6 +14,7 @@
        \               \               \                                   |
         `--([a-eg-z])---`--([a-np-z])---`--([a-qs-z])-->(( 4 ))<-----------'
 
+
    The states 0, 1, and 2 can be implemented by a 'path walker', that is 
    a common transition map, that is preceeded by a single character check.
    The single character check changes along a fixed path: the sequence of
@@ -21,26 +22,27 @@
 
      PATH_WALKER_1:
         /* Single Character Check */
-        if   input == p: ++p; goto PATH_WALKER_1;
-        elif *p == 0:         goto STATE_3;
+        if   input == *p: ++p; goto PATH_WALKER_1;
+        elif *p == 0:          goto STATE_3;
 
         /* Common Transition Map */
         if   x < 'a': drop out
         elif x > 'z': drop out
         else:         goto STATE_4
 
-   It is assumed that the array with the character sequence ends with zero.
+   It is assumed that the array with the character sequence ends with a 
+   terminating charater (e.g. zero, but must be different from buffer limit code).
    This way it can be detected when to trigger to the correspondent end state.
 
    For a state that is part of a 'path', a 'goto state' is transformed into a
-   'set path_iterator' plus a 'goto path'. The path iterator determines the 
-   current character to be checked against. The 'path' determines the reminder
-   of the transition map. It holds
+   'set path_iterator' plus a 'goto path'. The path iterator determines the
+   current character to be checked. The 'path' determines the reminder of the
+   transition map. It holds
 
             path state <--> (path index, path iterator position)
 
-   Assume that in the above example the path is the 'PATH_WALKER_1' and the character
-   sequence is given by an array:
+   Assume that in the above example the path is the 'PATH_WALKER_1' and the 
+   character sequence is given by an array:
 
             path_1_sequence = { 'f', 'o', 'r', 0x0 };
             
@@ -79,7 +81,7 @@
 
 """
 from quex.core_engine.interval_handling import NumberSet, Interval
-from copy import deepcopy, copy
+from copy                               import deepcopy, copy
 
 
 def do(SM, UniformityF):
@@ -203,7 +205,13 @@ def filter_longest_options(path_list, equivalence_db):
     return
 
 class CharacterPath:
+    """Note: The CharacterPath class a lot in common with the BarrenTree.
+    """
     def __init__(self, StartStateIndex, Skeleton, StartCharacter):
+        """Skeleton = Transition map of the states in the path, i.e. a map
+
+                      target state index ---> trigger set
+        """
         assert isinstance(StartStateIndex, long)
         assert isinstance(Skeleton, dict)
         self.__start_state_index = StartStateIndex
@@ -315,8 +323,8 @@ class CharacterPath:
                              TransitionMap could match.
         """
         ## ?? The element of a path cannot be triggered by the skeleton! ??
-        ## ?? if self.__skeleton.has_key(TargetIdx): return False          ?? 
-        ## ?? Why? (fschaef9: 10y04m11d)
+        ## ?? if self.__skeleton.has_key(TargetIdx): return False        ?? 
+        ## ?? Why would it not? (fschaef9: 10y04m11d)
 
         if self.__wildcard != None: wildcard_plug = None # unused
         else:                       wildcard_plug = -1   # used before
@@ -436,14 +444,14 @@ class CharacterPath:
 def find_paths(SM):
     """SM = state machine of analyzer.
 
-       Try to identify 'pathes' that is state transitions in the state
-       machine so that a sequence of states can be combined into 
-       a single state of the shape:
+       Try to identify 'pathes' that is state transitions in the state machine
+       so that a sequence of states can be combined into a single state of the
+       shape:
 
            /* Pre-Test for walking on the path */
            if( input == path_element ) {
                ++path_element;
-               if( *path_element == 0 ) goto terminal_of_path;
+               if( *path_element == PATH_TERMINATING_CHARACTER ) goto terminal_of_path;
            }
            /* Skeleton (transitions that are common for all elements of path) */
     """
@@ -569,17 +577,3 @@ def can_plug_to_equal(Set0, Char, Set1):
     if delta.is_empty(): return False
 
     return delta.contains_only(Char)
-
-    
-
-
-        
-
-
-
-
-
-
-
-
-

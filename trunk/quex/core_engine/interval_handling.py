@@ -681,6 +681,30 @@ class NumberSet:
 
         return clone
 
+    def mutual_exclusive_set(self, Other):
+        """Finds the set of numbers that is either in self or in Other but not
+           in both. This corresponds to the operation 
+           
+                       (self union Other) - (self intersection Other)
+
+           EXAMPLE:
+
+              A     [--------------]    [-------]      [------------]
+              B               [--------------]
+          
+              A|B   [---------------------------]      [------------]
+              A&B             [----]    [----]
+              A^B   [--------]     [----]    [--]      [------------]
+        """
+        clone0 = deepcopy(self)
+        clone0.unite_with(Other)
+
+        clone1 = deepcopy(self)
+        clone1.intersect_with(Other)
+        
+        clone0.subtract(clone1)
+        return clone0
+
     def inverse(self):
         """Intersection of inverses of all intervals."""
         interval_list = []
