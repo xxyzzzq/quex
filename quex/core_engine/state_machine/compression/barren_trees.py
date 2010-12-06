@@ -114,36 +114,50 @@ def get_difference(self, A, B):
 
     return diff_in_A_not_in_B, diff_not_in_A_in_B, diff_in_both
 
-class BarrenTree:
-    """Note: The CharacterPath class a lot in common with the BarrenTree.
-    """
-    def __init__(self, StartStateIndex, DropOutInfo, FatTransitionMap):
-        """Skeleton = Transition map of the states in the path, i.e. a map
+class Info:
+    """Note: The path.CharacterPath class a lot in common with the Info.
 
-                      target state index ---> trigger set
-        """
+       The transitions of a state are categorized into 'barren' and 'fat'.
+
+       -- A barren transition is a transition to subsequent state on the 
+          bases of very few comparisons with respect to the input.
+       -- Also, the state to which the barren transition triggers must
+          fit, i.e. its 'fat transitions' and drop-out action must
+          correspond.
+
+       A transition that is not barren is fat.
+    """
+    def __init__(self, State, FatTransitionMap, BarrentTransitionMap):
         assert isinstance(StartStateIndex, long)
         assert isinstance(FatTransitionMap, dict)
 
-        self.__start_state_index = StartStateIndex
-        # The tree is described by means of a dictionary, i.e.
-        #      state index --> (follow state_index, a 'barren' trigger set)
-        # This does not include states which are reached via 'fat' transitions.
-        self.__tree_db = {}
+        self.__state  = State
+
+        self.__barren = BarrenTransitionMap
+        self.__fat    = FatTransitionMap
+
+        trigger_set = NumberSet()
+        for trigger_set in self.__barren.values():
+            self.__wildcard_set.unite_with(trigger_set)
 
         # The 'skeleton' is the map of transitions that is performed if the
         # above tree does not match. It has the form of a 'transition map', i.e.
         #      target state index --> trigger set that maps to target state
-        self.__skeleton = FatTransitionMap
 
         # Character that may trigger to any state. This character is
         # adapted when the first character of the path is different
         # from the wildcard character. Then it must trigger to whatever
         # the correspondent state triggers.
-        self.__wildcard_set = BarrenTriggerSet
 
-    def barren_transition_map(self):
-        return self.__tree_db
+    def barren(self):
+        return self.__barren
+
+    def fat(self):
+        return self.__fat
+
+    def move_to_fat(self, TargetIndex):
+        self.__fat[TargetIndex] = self.__barren[TargetIndex]
+        del self.__barren[TargetIndex]
 
     def match(self, CandidateFatTransitionMap, CandidateBarrenTriggerSet):
         """-- The candidate **needs** all transitions in the fat transition map
@@ -171,9 +185,9 @@ class BarrenTree:
         diff_in_A_not_in_B, \
         diff_not_in_A_in_B, \
         diff_in_both      = \
-                get_difference(self.__skeleton, CandidateFatTransitionMap)
+                get_difference(self.__fat, CandidateFatTransitionMap)
 
-        # (1) what is in 'skeleton' but not in 'fat transition' can be plugged
+        # (1) what is in 'fat' but not in candidate's 'fat transition' can be covered
         #     by barren transitions of candidate.
         if diff_in_A_not_in_B.is_empty() == False:
             diff_in_A_not_in_B.subtract(CandidateBarrenTriggerSet)
@@ -212,24 +226,33 @@ def absorb_subsequent_states(StateIndex, barren_tree):
 
 
 def categorize_all_states(SM, MaxComparisonN):
-    tree_db = {}
+
+    # A state can only by absorbed by one other state.
+    # => book keeping about each state that has been absorbed already.
+    done_set = set([])
+
+    tree_db  = {}
+    # Here, the loop determines the sequence of processing, therefore 
+    # determines the **priorization** of where states are absorbed. States that
+    # come first, can absorb a subsequent state, later states **must** transit
+    # to the subsequent state.
     for state_index, state in SM.items():
         barren, fat = categorize_transitions(State, MaxComparisonN)
-        tree_db[state_index] = (TreeBase(state.origin_list(), fat), barren)
+        for target_index, trigger_set in barren:
+            if target_index in done_set: 
+                # Move transition to 'fat transitions'
+                fat[target_index] = trigger_set
+                del barren[target_index]
+            else:
+                done_set.add(target_index)
 
+        if barren.is_empty(): barren = None
+        tree_db[state_index] = TreeBase(state, fat, barren)
 
-    # 'my_sort' determines the sequence of processing the states. That is, it 
-    # determines the **priorization** of where states are plugged. States that
-    # come first, can absorb a subsequent state, later states **must** transit
-    # to the absorbed state.
-    def my_sort(A, B):
-        return cmp(A.get_id(), B.get_id())
-
-    # Barren transitions to states that do not fit become part of the fat transitions.
+    # Barren transitions to states which misfit become part of the fat transitions.
     info_changed_f = False
     while 1 + 1 == 2:
 
-        done_set = set([])
         for state_index, info in sorted(tree_db.items(), my_sort):
 
             transition_change_f = False
@@ -238,31 +261,20 @@ def categorize_all_states(SM, MaxComparisonN):
                 backup = info.wildcard_set()
 
                 for target_index, trigger_set in info.barren_transition_map():
-                    # A target that is already in another branch can only be entered
-                    # via 'transition' not via 'absorbing in if-then clause'.
-                    if target_index in done_set: 
-                        # Misfit --> 'fat transition'
-                        info.move_to_fat_transition_map(target_index)
-                        transition_change_f = True
-                        info_changed_f      = True
-                        break
-
-                    done_set.add(target_index)
-
                     target_info        = tree_db[target_index]
                     required_wildcards = info.match(target_info)
                     #
                     if required_wildcards == None:
                         # Misfit --> 'fat transition'
-                        info.move_to_fat_transition_map(target_index)
+                        info.move_to_fat(target_index)
                         transition_change_f = True
                         info_changed_f      = True
                         break
                     else:
                         info.plug_wildcards(required_wildcards)
 
-                # While there was a change in the 'fat transitions' we need to check again
-                # if the fat transitions match.
+                # While there was a change in the 'fat transitions' we need to check
+                # again if the fat transitions match.
                 if not transition_change_f: break
                 
                 info.set_wildcard_set(backup)
