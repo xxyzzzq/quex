@@ -8,7 +8,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.core_engine.interval_handling import Interval, NumberSet
 
 A6 = None
-def do(Title, func):
+def do(Title, func, PlotF=True):
     global A6
 
     A0 = NumberSet([Interval(10,20), Interval(21,30)])
@@ -48,6 +48,7 @@ def do(Title, func):
     func("(e) all together",
          A6,B6)
 
+    if not PlotF: return
     print "# write output in temporary file: 'tmp'"    
     print "# plot with gnuplot:"
     print "# > plot \"tmp\" w l"
