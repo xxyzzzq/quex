@@ -492,6 +492,50 @@ class NumberSet:
             elif interval.end   != other.end:   return False
         return True
 
+    def is_superset(self, Other):
+        """True  -- if self covers Other
+           False -- if not
+        """
+        self_intervals  = self.__intervals
+        other_intervals = Other.__intervals
+
+        # Last index of each set
+        Li_self  = len(self_intervals) - 1
+        Li_other = len(other_intervals) - 1
+
+        if Li_self == -1:
+            if Li_other == -1: return True
+            else:              return False
+        elif Li_other == -1:   return True
+
+        # Step in a 'tolerant' manner, i.e. combine adjacent intervals
+        # (Even though, adjacent intervals should have been combined before)
+        i = 0
+        k = 0
+        other_begin = other_intervals[0].begin
+
+        while 1 + 1 == 2:
+            # Walk with 'i' in 'self' until we find something that intersects with the 
+            # other interval 'k'.
+            while self_intervals[i].end < other_begin:
+                if i == Li_self: return False
+                i += 1
+
+            if self_intervals[i].begin > other_begin:
+                return False
+
+            elif self_intervals[i].end >= other_intervals[k].end:
+                # Other interval is completely covered, next please.
+                if k == Li_other: return True
+                k += 1
+                other_begin = other_intervals[k].begin
+            else:
+                # The part in 'other' from self_intervals[i].end to other_intervals[k].end
+                # remains to be covered by the next intervals of 'self'.
+                other_begin = self_intervals[i].end
+                if i == Li_self: return False
+                i += 1
+
     def interval_number(self):
         """This value gives some information about the 'complexity' of the number set."""
         return len(self.__intervals)
@@ -706,13 +750,15 @@ class NumberSet:
         return clone0
 
     def inverse(self):
-        """Intersection of inverses of all intervals."""
+        """Intersection of inverse of all intervals."""
         interval_list = []
         begin = - sys.maxint
         for interval in self.__intervals:
-            interval_list.append(Interval(begin, interval.begin))
+            if interval.begin != - sys.maxint: 
+                interval_list.append(Interval(begin, interval.begin))
             begin = interval.end
-        interval_list.append(Interval(begin, sys.maxint))
+        if begin != sys.maxint:
+            interval_list.append(Interval(begin, sys.maxint))
 
         return NumberSet(interval_list, ArgumentIsYoursF=True)
         

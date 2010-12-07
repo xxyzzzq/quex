@@ -246,8 +246,7 @@ def parse_mode_option(fh, new_mode):
             # Analyze pattern for constant number of newlines, characters, etc.
             suppressed_newline_sm.side_info = SideInfo(
                     character_counter.get_newline_n(suppressed_newline_sm),
-                    character_counter.get_character_n(suppressed_newline_sm),
-                    character_counter.contains_only_spaces(suppressed_newline_sm))
+                    character_counter.get_character_n(suppressed_newline_sm))
 
             new_mode.add_match(suppressed_newline_pattern, code_fragment, suppressed_newline_sm,
                                Comment="indentation newline suppressor")
@@ -283,8 +282,7 @@ def parse_mode_option(fh, new_mode):
 
         sm = fit_state_machine(sm)
         sm.side_info = SideInfo(character_counter.get_newline_n(sm),
-                                character_counter.get_character_n(sm),
-                                character_counter.contains_only_spaces(sm))
+                                character_counter.get_character_n(sm))
         new_mode.add_match(value.newline_state_machine.pattern_str,
                            action, sm, Comment="indentation newline")
 

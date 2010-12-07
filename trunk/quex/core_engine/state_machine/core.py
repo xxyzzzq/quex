@@ -187,12 +187,9 @@ class StateMachineCoreInfo:
 
 
 class SideInfo:
-    def __init__(self, NewlineN=-1, CharacterN=-1, OnlyWhiteSpaceF=False):
-        assert type(OnlyWhiteSpaceF) == bool
-
+    def __init__(self, NewlineN=-1, CharacterN=-1):
         self.__newline_n         = NewlineN
         self.__character_n       = CharacterN
-        self.__only_whitespace_f = OnlyWhiteSpaceF
 
     def get_newline_n(self):
         """  -1    => number of newlines in matching lexemes is not deterministic
@@ -213,11 +210,6 @@ class SideInfo:
         assert self.__character_n != None, \
                "Pattern state machine not constructed by regular_expresion.__construct(...)"
         return self.__character_n
-
-    def get_only_whitespace_f(self):
-        assert self.__only_whitespace_f != None, \
-               "Pattern state machine not constructed by regular_expresion.__construct(...)"
-        return self.__only_whitespace_f
 
 class StateMachine:
 
