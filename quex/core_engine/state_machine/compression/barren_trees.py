@@ -133,21 +133,17 @@ class Info:
 
         self.__state  = State
 
+        # Transitions: target_index --> trigger set that triggers to target
+        #    barren transitions: transitions on small sets to small fitting states.
+        #    fat transitions:    remainder of transitions.
         self.__barren = BarrenTransitionMap
         self.__fat    = FatTransitionMap
 
+        # The trigger sets of 'barren' transitions can be occupied by 
+        # arbitrary values, let them be called 'wildcards'.
         trigger_set = NumberSet()
         for trigger_set in self.__barren.values():
             self.__wildcard_set.unite_with(trigger_set)
-
-        # The 'skeleton' is the map of transitions that is performed if the
-        # above tree does not match. It has the form of a 'transition map', i.e.
-        #      target state index --> trigger set that maps to target state
-
-        # Character that may trigger to any state. This character is
-        # adapted when the first character of the path is different
-        # from the wildcard character. Then it must trigger to whatever
-        # the correspondent state triggers.
 
     def barren(self):
         return self.__barren
@@ -156,8 +152,19 @@ class Info:
         return self.__fat
 
     def move_to_fat(self, TargetIndex):
-        self.__fat[TargetIndex] = self.__barren[TargetIndex]
+        trigger_set = self.__fat.get(TargetIndex)
+        if trigger_set == None: self.__fat[TargetIndex] = self.__barren[TargetIndex]
+        else:                   trigger_set.unite_with(self.__barren[TargetIndex])
         del self.__barren[TargetIndex]
+
+    def plug_wildcards(self, WildcardMap):
+        """The given wildcards become part of the fat transitions."""
+        for target_index, trigger_set in WildcardMap.items():
+            fat_trigger_set = self.__fat.get(target_index)
+            if fat_trigger_set == None: self.__fat[target_index] = trigger_set
+            else:                       fat_trigger_set.unite_with(trigger_set)
+
+            self.__wildcard_set.subtract(trigger_set)
 
     def match(self, CandidateFatTransitionMap, CandidateBarrenTriggerSet):
         """-- The candidate **needs** all transitions in the fat transition map
@@ -171,7 +178,6 @@ class Info:
                     empty set --> No wildcard necessary, but match is good.
                     None      --> No match possible.
         """
-        used_wildcard_set = NumberSet()
         # All transitions in the FatTransitionMap must appear in the Skeleton
         #
         #     [     5     ][2]     [    3    ][ 1 ]              skeleton
@@ -187,45 +193,28 @@ class Info:
         diff_in_both      = \
                 get_difference(self.__fat, CandidateFatTransitionMap)
 
-        # (1) what is in 'fat' but not in candidate's 'fat transition' can be covered
-        #     by barren transitions of candidate.
+        # (1) what is in self's 'fat' but not in candidate's 'fat transition' 
+        #     can **only** be covered by barren transitions of candidate.
         if diff_in_A_not_in_B.is_empty() == False:
-            diff_in_A_not_in_B.subtract(CandidateBarrenTriggerSet)
-            if diff_in_A_not_in_B.is_empty() == False: return None
+            if not CandidateFatTransitionMap.is_superset(diff_in_A_not_in_B): return None
 
-        # (2) what is in 'fat transition' but not in 'skeleton' can be plugged
-        #     by wild cards.
-        if diff_not_in_A_in_B.is_empty() == False:
-            diff_in_A_not_in_B.subtract(self.__wildcard_set)
-            if diff_in_A_not_in_B.is_empty() == False: return None
-            used_wildcard_set = diff_not_in_A_in_B.intersection(self.__wildcard_set)
-
-        # (3) What appears in both can be plugged either by (1) or by (2), preferable
-        #     by (1) because no wildcard is wasted.
+        # (2) If self and candidate transit to different states on the same trigger set, then
+        #     They can only be covered by barren trigger sets of the candidate.
         if diff_in_both.is_empty() == False:
-            diff_in_both.subtract(CandidateBarrenTriggerSet)
-            if diff_in_both.is_empty() == False:
-                diff_in_both.subtract(CandidateBarrenTriggerSet)
-                if diff_in_both.is_empty() == False: return None
-                used_wildcard_set.unite_with(diff_not_in_A_in_B.intersection(self.__wildcard_set))
+            if not CandidateFatTransitionMap.is_superset(diff_in_both): return None
+
+        # (3) what is in candidate's 'fat' but not in self's 'fat transition' 
+        #     can **only** be covered by wildcards.
+        used_wildcard_set = NumberSet()
+        if diff_not_in_A_in_B.is_empty() == False:
+            if not self.__wildcard_set.is_superset(diff_in_both): return None
+            # Take the reference to 'diff_not_in_A_in_B' to avoid object creation
+            used_wildcard_set = diff_not_in_A_in_B
+            used_wildcard_set.intersect_with(self.__wildcard_set)
 
         return used_wildcard_set
 
-def absorb_subsequent_states(StateIndex, barren_tree):
-    """A 'barren branch' is a state where some subsequent states are absorbed 
-       into the 'if-then' blocks, rathen than in separated state code fragments.
-
-       A subsequent state might be absorbed if it is small and fits the current
-       state.
-    """
-
-    current_state_info = info_db[StateIndex]
-
-    for target_index, trigger_set in current_state_info.barren_transition_map():
-
-
-
-def categorize_all_states(SM, MaxComparisonN):
+def categorize(SM, MaxComparisonN):
 
     # A state can only by absorbed by one other state.
     # => book keeping about each state that has been absorbed already.
@@ -238,7 +227,7 @@ def categorize_all_states(SM, MaxComparisonN):
     # to the subsequent state.
     for state_index, state in SM.items():
         barren, fat = categorize_transitions(State, MaxComparisonN)
-        for target_index, trigger_set in barren:
+        for target_index, trigger_set in barren.items():
             if target_index in done_set: 
                 # Move transition to 'fat transitions'
                 fat[target_index] = trigger_set
@@ -270,7 +259,8 @@ def categorize_all_states(SM, MaxComparisonN):
                         transition_change_f = True
                         info_changed_f      = True
                         break
-                    else:
+
+                    elif required_wildcards.is_empty() == False:
                         info.plug_wildcards(required_wildcards)
 
                 # While there was a change in the 'fat transitions' we need to check

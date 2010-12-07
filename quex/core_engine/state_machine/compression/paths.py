@@ -205,8 +205,6 @@ def filter_longest_options(path_list, equivalence_db):
     return
 
 class CharacterPath:
-    """Note: The CharacterPath class a lot in common with the BarrenTree.
-    """
     def __init__(self, StartStateIndex, Skeleton, StartCharacter):
         """Skeleton = Transition map of the states in the path, i.e. a map
 
@@ -570,10 +568,12 @@ def can_plug_to_equal(Set0, Char, Set1):
     if Set0.interval_number() - Set1.interval_number() > 1: return False
 
     # Does Set0 contain elements that are not in Set1?
-    if not Set0.difference(Set1).is_empty(): return False
+    # if not Set0.difference(Set1).is_empty(): return False
+    if not Set1.is_superset(Set0): return False
+
+    # If there is no difference to make up for, then no plugging possible.
+    # if Set1.difference(Set0).is_empty(): return False
+    if Set0.is_superset(Set1): return False
 
     delta = Set1.difference(Set0)
-    # If there is no difference to make up for, then no plugging possible.
-    if delta.is_empty(): return False
-
     return delta.contains_only(Char)

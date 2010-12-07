@@ -51,9 +51,8 @@ def do(core_sm,
     # of the core pattern.
     newline_n    = character_counter.get_newline_n(core_sm)
     character_n  = character_counter.get_character_n(core_sm)
-    only_space_f = character_counter.contains_only_spaces(core_sm)
 
-    side_info    = SideInfo(newline_n, character_n, only_space_f)
+    side_info    = SideInfo(newline_n, character_n)
 
     if   pre_context == None and post_context == None:
         result = core_sm

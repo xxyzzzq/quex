@@ -59,24 +59,6 @@ def get_character_n(state_machine):
     if result == None: return -1
     else:              return result
 
-def contains_only_spaces(state_machine):
-    """Determines wether there are only spaces on the way to the acceptance state.
-    """
-    for state in state_machine.states.values():
-        target_state_list = state.transitions().get_target_state_index_list()
-        # (1) if a pattern contains only ' ', then there is no place for more than
-        #     one target state, since every state has only one trigger and one target state
-        if len(target_state_list) > 1: return False
-
-        # (2) does state exclusively trigger on ' '?
-        #    (2a) does state trigger on ' '?
-        all_trigger_set = state.transitions().get_trigger_set_union()
-        if all_trigger_set.contains(ord(' ')) == False: return False
-        #    (2b) does state trigger on nothing else? 
-        if all_trigger_set.difference(NumberSet(ord(' '))).is_empty() == False: return False
-
-    return True
-
 def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx, Character):
     """Path      = list of state indices
        Character = character code of concern.
