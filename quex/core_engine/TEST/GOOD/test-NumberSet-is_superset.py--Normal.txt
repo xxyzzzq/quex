@@ -1,0 +1,42 @@
+#
+#(a) one interval overlaps all of the others
+#  A = [[10, 19], [21, 29]]
+#  B = [[0, 39]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = True
+#
+#(b) one interval overlaps the lower of the others
+#  A = [[50, 69], [71, 79]]
+#  B = [[40, 59]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = False
+#
+#(c) one interval overlaps the upper of the others
+#  A = [[11, 129]]
+#  B = [[120, 139]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = False
+#
+#(d) one interval overlaps the middle of the others
+#  A = [[150, 169], [171, 189]]
+#  B = [[160, 179]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = False
+#
+#(e) one interval overlaps the 1st a little, the second totally
+#  A = [[200, 229], [231, 239]]
+#  B = [[220, 249]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = False
+#
+#(d) one interval overlaps the 2nd a little, the first totally
+#  A = [[250, 259], [261, 279]]
+#  B = [[240, 269]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = False
+#
+#(e) all together
+#  A = [[10, 129], [150, 169], [171, 189], [200, 229], [231, 239], [250, 259], [261, 279]]
+#  B = [[0, 59], [120, 139], [160, 179], [220, 269]]
+#  A.is_superset(B) = False
+#  B.is_superset(A) = False

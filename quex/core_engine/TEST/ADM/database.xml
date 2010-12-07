@@ -1,6 +1,13 @@
-<test-database execution-time-sec="25.43" date="Sat Dec  4 08:47:36 2010">
+<test-database execution-time-sec="25.43" date="Tue Dec  7 08:10:37 2010">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
+        <test title="Super Set" time-sum-sec="0.00"> 
+            <application file-name="test-NumberSet-is_superset.py" info-request-time="1291705721L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="Normal" result="OK" time_sec="0.00" crc="801219498"/>
+               <choice name="Examples" result="OK" time_sec="0.00" crc="1223394206"/>
+            </choice-list>
+        </test>
         <test title="Cut Interval" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-cut_interval.py" info-request-time="1264886941L" vanished="False"/>
             <choice-list number="1" same_result="False">
