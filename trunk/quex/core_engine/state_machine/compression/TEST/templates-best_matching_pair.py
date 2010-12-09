@@ -31,7 +31,7 @@ def test(TriggerMapList):
 
     db = templates.TriggerMapDB(sm, 1.0)
 
-    print "Best matching pair: ", db.get_best_matching_pair()
+    print "Best matching pair: ", db.pop_best_matching_pair()
 
 
 if "0" in sys.argv:

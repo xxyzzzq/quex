@@ -103,12 +103,6 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Contains only Spaces" time-sum-sec="0.04"> 
-            <application file-name="test-count_contains_only_spaces.py" info-request-time="1276059594L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.04" crc="-881596759"/>
-            </choice-list>
-        </test>
         <test title="Newlines" time-sum-sec="0.66"> 
             <application file-name="test-count_newline_n.py" info-request-time="1288471434L" vanished="False"/>
             <choice-list number="1" same_result="False">
