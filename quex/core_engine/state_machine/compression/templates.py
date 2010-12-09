@@ -147,6 +147,7 @@ import quex.core_engine.state_machine.index as index
 import quex.core_engine.state_machine.core  as state_machine
 from   operator import itemgetter
 
+
 def do(sm, CostCoefficient):
     """
        sm:              StateMachine object containing all states
@@ -377,7 +378,7 @@ class TriggerMapDB:
                 q = p + 1
                 while q < L:
                     info = self.__delta_cost_list[q]
-                    if info[1] not in X or info[2] not in X: break
+                    if info[1] not in X and info[2] not in X: break
                     q += 1
                 del self.__delta_cost_list[p:q]
                 L -= (q - p)
