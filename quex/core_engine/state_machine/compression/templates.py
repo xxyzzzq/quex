@@ -145,6 +145,7 @@ from   copy import copy
 from   quex.core_engine.interval_handling import Interval
 import quex.core_engine.state_machine.index as index
 import quex.core_engine.state_machine.core  as state_machine
+from   operator import itemgetter
 
 def do(sm, CostCoefficient):
     """
@@ -167,17 +168,15 @@ def do(sm, CostCoefficient):
     # Build templated combinations by finding best pairs, until there is no meaningful way to
     # build any clusters. TemplateCombinations of states also take part in the race.
     while 1 + 1 == 2:
-        i, k = trigger_map_db.get_best_matching_pair()
+        i, i_trigger_map_db, k, k_trigger_map_db = trigger_map_db.pop_best_matching_pair()
         if i == None: break
 
         # Add new element: The combined pair
         new_sm_index = index.get_state_machine_id()
-        trigger_map_db[new_sm_index] = get_combined_trigger_map(trigger_map_db[i], 
-                                                                involved_state_list(trigger_map_db[i], i),
-                                                                trigger_map_db[k], 
-                                                                involved_state_list(trigger_map_db[k], k))
-        # Delete the two states that have now been combined.
-        trigger_map_db.delete_pair(i, k) 
+        trigger_map_db[new_sm_index] = get_combined_trigger_map(i_trigger_map_db, 
+                                                                involved_state_list(i_trigger_map_db, i),
+                                                                k_trigger_map_db, 
+                                                                involved_state_list(k_trigger_map_db, k))
 
     result = []
     for state_index, combination in trigger_map_db.items():
@@ -284,57 +283,53 @@ class TriggerMapDB:
 
         # (1) Get the trigger maps of all states of the state machine
         self.__db = {}
-        for index, state in SM.states.items():
+        for state_index, state in SM.states.items():
             trigger_map = state.transitions().get_trigger_map()
             # Dead ends, cannot be part of the code generation
             if trigger_map == []: continue
-            self.__db[index] = trigger_map
+            self.__db[state_index] = trigger_map
 
-        self.__delta_cost_cache = {}
         self.__cost_coefficient = float(CostCoefficient)
 
-        self.__states           = SM.states
         self.__init_state_index = SM.init_state_index
 
-    def get_best_matching_pair(self):
-        """Determines the two trigger maps that are closest to each
-           other. The consideration includes the trigger maps of
-           combined trigger maps. Thus this function supports the
-           clustering of the best trigger maps into combined trigger
-           maps.
+        self.__delta_cost_list  = self.__initial_delta_cost()
 
-           If no pair can be found with a gain > 0, then this function
-           returns 'None, None'.
-        """
-        best_a = None 
-        best_b = None
+    def __initial_delta_cost(self):
+        item_list  = self.__db.items()
+        L          = len(item_list)
+        result     = []
+        for i, info in enumerate(item_list):
+            a_state_index, a_trigger_map = info
+            if a_state_index == self.__init_state_index: continue
 
-        index_list = self.__db.keys()
-        L          = len(index_list)
-        max_gain   = 0                 # No negative cost allowed
-        for i in range(L):
-            StateIndexA = index_list[i]
-            if StateIndexA == self.__init_state_index: continue
+            for b_state_index, b_trigger_map in item_list[i+1:L]:
+                if b_state_index == self.__init_state_index: continue
 
-            for k in range(i + 1, L):
-                StateIndexB = index_list[k]
-                if StateIndexB == self.__init_state_index: continue
+                delta_cost = self.__get_delta_cost(a_state_index, a_trigger_map, 
+                                                   b_state_index, b_trigger_map)
+                if delta_cost > 0:
+                    result.append([delta_cost, a_state_index, b_state_index])
 
-                delta_cost = self.__get_delta_cost(StateIndexA, StateIndexB)
+        # Sort according to delta cost
+        result.sort(key=itemgetter(0))
+        return result
 
-                if delta_cost <= max_gain:  continue
-                max_gain = delta_cost
-                best_a = StateIndexA; best_b = StateIndexB;
+    def __adapt_delta_cost(self, NewStateIndex, NewTriggerMap):
+        """Adapt the delta cost list **before** adding the trigger map to __db!"""
+        assert isinstance(NewTriggerMap, TemplateCombination)
 
-        return best_a, best_b
+        for state_index, trigger_map in self.__db.items():
+            if state_index == self.__init_state_index: continue
+            delta_cost = self.__get_delta_cost(state_index,   trigger_map, 
+                                               NewStateIndex, NewTriggerMap)
+            if delta_cost > 0:
+                self.__delta_cost_list.append([delta_cost, state_index, NewStateIndex])
 
-    def __get_delta_cost(self, StateIndexA, StateIndexB):
-        delta_cost = self.__delta_cost_cache_get(StateIndexA, StateIndexB)
-        if delta_cost != None: return delta_cost
+        self.__delta_cost_list.sort(key=itemgetter(0))
 
-        TriggerMapA = self.__db[StateIndexA]
-        SizeA       = len(TriggerMapA)
-        TriggerMapB = self.__db[StateIndexB]
+    def __get_delta_cost(self, StateIndexA, TriggerMapA, StateIndexB, TriggerMapB):
+
         # Get border_n    = number of borders of combined map
         #     eq_target_n = number of equivalent targets, i.e. number of 
         #                   target combinations that need to be routed.
@@ -344,25 +339,52 @@ class TriggerMapDB:
                                            TriggerMapB, InvolvedStateListB)
         combined_state_n      = len(InvolvedStateListA) + len(InvolvedStateListB)
 
-        delta_cost = get_delta_cost(SizeA, len(TriggerMapB), combined_state_n, 
+        delta_cost = get_delta_cost(len(TriggerMapA), len(TriggerMapB), combined_state_n, 
                                     border_n, len(eq_target_n), 
                                     CX=self.__cost_coefficient)
 
-        self.__delta_cost_cache_set(StateIndexA, StateIndexB, delta_cost)
-
         return delta_cost
 
-    def __delta_cost_cache_get(self, I, K):
-        # Return 'None' if element '(I, K)' is not in cache
-        return self.__delta_cost_cache.get(I, {}).get(K)
+    def pop_best_matching_pair(self):
+        """Determines the two trigger maps that are closest to each
+           other. The consideration includes the trigger maps of
+           combined trigger maps. Thus this function supports the
+           clustering of the best trigger maps into combined trigger
+           maps.
 
-    def __delta_cost_cache_set(self, I, K, Value):
-        # Set dictionary[I][K] = Value
-        self.__delta_cost_cache.setdefault(I, {})[K] = Value
+           If no pair can be found with a gain > 0, then this function
+           returns 'None, None'.
+        """
+        if len(self.__delta_cost_list) == 0: return (None, None, None, None)
+        info = self.__delta_cost_list.pop()
+        i    = info[1]
+        i_tm = self.__db[i]
+        k    = info[2]
+        k_tm = self.__db[k]
 
-    def delete_pair(self, I, K):
-        del self.__db[I]
-        del self.__db[K]
+        # Delete both states from the database
+        del self.__db[i]
+        del self.__db[k]
+
+        X = [i, k]
+        # Knowing, that I comes from item 1 and K from item 2 in self.__delta_cost_list ...
+        L = len(self.__delta_cost_list)
+        p = 0
+        while p < L:
+            info = self.__delta_cost_list[p]
+            if info[1] in X or info[2] in X:
+                # Determine the end of the region to be deleted
+                q = p + 1
+                while q < L:
+                    info = self.__delta_cost_list[q]
+                    if info[1] not in X or info[2] not in X: break
+                    q += 1
+                del self.__delta_cost_list[p:q]
+                L -= (q - p)
+            else:
+                p += 1
+
+        return i, i_tm, k, k_tm
 
     def __len__(self):
         return len(self.__db)
@@ -373,20 +395,21 @@ class TriggerMapDB:
 
     def __setitem__(self, Key, Value):
         assert type(Key) == long
-        assert Value.__class__ == TemplateCombination
+        assert isinstance(Value, TemplateCombination)
+        self.__adapt_delta_cost(Key, Value)
         self.__db[Key] = Value
 
     def items(self):
         return self.__db.items()
 
 def involved_state_number(TM):
-    if TM.__class__ == TemplateCombination:
+    if isinstance(TM, TemplateCombination):
         return TM.involved_state_number()
     else:
         return 1
 
 def involved_state_list(TM, DefaultIfTriggerMapIsNotACombination):
-    if TM.__class__ == TemplateCombination:
+    if isinstance(TM, TemplateCombination):
         return TM.involved_state_list()
     else:
         return [ DefaultIfTriggerMapIsNotACombination ]
@@ -395,7 +418,7 @@ def is_recursive(TM, Target, InvolvedStateList):
     """Determine whether the target state indicates that the 
        state triggers to itself.
     """
-    if TM.__class__ != TemplateCombination:
+    if not isinstance(TM, TemplateCombination):
         # In a 'normal trigger map' the target needs to be equal to the
         # state that it contains.
         assert len(InvolvedStateList) == 1
