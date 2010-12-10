@@ -173,11 +173,11 @@ def do(sm, CostCoefficient):
         if i == None: break
 
         # Add new element: The combined pair
-        new_sm_index = index.get_state_machine_id()
-        trigger_map_db[new_sm_index] = get_combined_trigger_map(i_trigger_map_db, 
-                                                                involved_state_list(i_trigger_map_db, i),
-                                                                k_trigger_map_db, 
-                                                                involved_state_list(k_trigger_map_db, k))
+        new_index = index.get()
+        trigger_map_db[new_index] = get_combined_trigger_map(i_trigger_map_db, 
+                                                             involved_state_list(i_trigger_map_db, i),
+                                                             k_trigger_map_db, 
+                                                             involved_state_list(k_trigger_map_db, k))
 
     result = []
     for state_index, combination in trigger_map_db.items():
@@ -322,6 +322,7 @@ class TriggerMapDB:
 
         for state_index, trigger_map in self.__db.items():
             if state_index == self.__init_state_index: continue
+
             delta_cost = self.__get_delta_cost(state_index,   trigger_map, 
                                                NewStateIndex, NewTriggerMap)
             if delta_cost > 0:
@@ -343,8 +344,6 @@ class TriggerMapDB:
         delta_cost = get_delta_cost(len(TriggerMapA), len(TriggerMapB), combined_state_n, 
                                     border_n, len(eq_target_n), 
                                     CX=self.__cost_coefficient)
-
-        return delta_cost
 
     def pop_best_matching_pair(self):
         """Determines the two trigger maps that are closest to each
