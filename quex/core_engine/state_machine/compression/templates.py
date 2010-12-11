@@ -96,7 +96,7 @@
            set combinations, i.e. the number of X0, X1, X3 ...
            in the example above.
 
-       (2) get_delta_cost(...): computes a scalar value that indicates
+       (2) compute_combination_gain(...): computes a scalar value that indicates
            the 'gain' in terms of program space, if the two trigger
            maps are combined. This function is controlled by the
            coefficient 'CX' that indicates the ratio between the
@@ -226,7 +226,7 @@ class TemplateCombination:
     def get_trigger_map(self):
         return self.__trigger_map
 
-def get_delta_cost(SizeA, SizeB, N, CombinedBorderN, TargetCombinationN, CX=1):
+def compute_combination_gain(SizeA, SizeB, N, CombinedBorderN, TargetCombinationN, CX=1):
     """SizeA, SizeB       = number of borders in target map A and B
        N                  = total number of combined states.
        CombinedBorderN    = number of borders in the combined map.
@@ -294,9 +294,9 @@ class TriggerMapDB:
 
         self.__init_state_index = SM.init_state_index
 
-        self.__delta_cost_list  = self.__initial_delta_cost()
+        self.__combination_gain_list = self.__initial_combination_gain()
 
-    def __initial_delta_cost(self):
+    def __initial_combination_gain(self):
         item_list  = self.__db.items()
         L          = len(item_list)
 
@@ -313,69 +313,76 @@ class TriggerMapDB:
         #
         #       => division by two without remainder 
         MaxSize = (L * (L - 1)) / 2
-        result  = [[-1, -1, -1]] * MaxSize
+        result  = [None] * MaxSize
         n       = 0
         for i, info in enumerate(item_list):
             a_state_index, a_trigger_map = info
             if a_state_index == self.__init_state_index: continue
 
-            for b_state_index, b_trigger_map in item_list[i+1:L]:
+            for b_state_index, b_trigger_map in item_list[i+1:]:
                 if b_state_index == self.__init_state_index: continue
 
-                delta_cost = self.__get_delta_cost(a_state_index, a_trigger_map, 
-                                                   b_state_index, b_trigger_map)
-                if delta_cost > 0:
-                    result[n][0] = delta_cost
-                    result[n][1] = a_state_index
-                    result[n][2] = b_state_index 
+                combination_gain = self.__get_combination_gain(a_state_index, a_trigger_map, [a_state_index],
+                                                               b_state_index, b_trigger_map, [b_state_index])
+                if combination_gain > 0:
+                    result[n] = (combination_gain, a_state_index, b_state_index)
                     n += 1
 
         if n != MaxSize:
-            del result[n:MaxSize]
+            del result[n:]
 
         # Sort according to delta cost
         result.sort(key=itemgetter(0))
         return result
 
-    def __adapt_delta_cost(self, NewStateIndex, NewTriggerMap):
+    def __adapt_combination_gain(self, NewStateIndex, NewTriggerMap):
         """Adapt the delta cost list **before** adding the trigger map to __db!"""
         assert isinstance(NewTriggerMap, TemplateCombination)
 
+        InvolvedStateListB = involved_state_list(NewTriggerMap, NewStateIndex)
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
-        MaxSize = (L - 1)
-        self.__delta_cost_list.extend([[-1,-1,-1]]*MaxSize)
-        n       = len(self.__delta_cost_list)
+        MaxIncrease = (len(self.__db) - 1)
+        n           = len(self.__combination_gain_list)
+        MaxSize     = len(self.__combination_gain_list) + MaxIncrease
+        self.__combination_gain_list.extend([None] * MaxIncrease)
+
         for state_index, trigger_map in self.__db.items():
             if state_index == self.__init_state_index: continue
 
-            delta_cost = self.__get_delta_cost(state_index,   trigger_map, 
-                                               NewStateIndex, NewTriggerMap)
-            if delta_cost > 0:
-                result[n][0] = delta_cost
-                result[n][1] = a_state_index
-                result[n][2] = b_state_index 
+            InvolvedStateListA = involved_state_list(trigger_map, state_index)
+            combination_gain = self.__get_combination_gain(state_index,   trigger_map,   InvolvedStateListA,
+                                                           NewStateIndex, NewTriggerMap, InvolvedStateListB)
+            if combination_gain > 0:
+                self.__combination_gain_list[n] = (combination_gain, state_index, NewStateIndex)
                 n += 1
 
         if n != MaxSize:
-            del self.__delta_cost_list[n:MaxSize]
+            del self.__combination_gain_list[n:]
 
-        self.__delta_cost_list.sort(key=itemgetter(0))
+        #print "##__START___________________________________________________"
+        #print "## Initial;  n = %i" % (n)
+        #for i, info in enumerate(self.__combination_gain_list):
+        #    if info != None: print "[%03i] %04i %04i %f" % (i, info[1], info[2], info[0])
+        #    else:            print "[%03i] None"         % i
+        #print "##__END_____________________________________________________"
 
-    def __get_delta_cost(self, StateIndexA, TriggerMapA, StateIndexB, TriggerMapB):
+        self.__combination_gain_list.sort(key=itemgetter(0))
+
+    def __get_combination_gain(self, 
+                               StateIndexA, TriggerMapA, InvolvedStateListA, 
+                               StateIndexB, TriggerMapB, InvolvedStateListB):
 
         # Get border_n    = number of borders of combined map
         #     eq_target_n = number of equivalent targets, i.e. number of 
         #                   target combinations that need to be routed.
-        InvolvedStateListA = involved_state_list(TriggerMapA, StateIndexA)
-        InvolvedStateListB = involved_state_list(TriggerMapB, StateIndexB)
         border_n, eq_target_n = get_metric(TriggerMapA, InvolvedStateListA, 
                                            TriggerMapB, InvolvedStateListB)
         combined_state_n      = len(InvolvedStateListA) + len(InvolvedStateListB)
 
-        delta_cost = get_delta_cost(len(TriggerMapA), len(TriggerMapB), combined_state_n, 
-                                    border_n, len(eq_target_n), 
-                                    CX=self.__cost_coefficient)
+        return compute_combination_gain(len(TriggerMapA), len(TriggerMapB), 
+                                        combined_state_n, border_n, eq_target_n, 
+                                        CX=self.__cost_coefficient)
 
     def pop_best_matching_pair(self):
         """Determines the two trigger maps that are closest to each
@@ -387,8 +394,8 @@ class TriggerMapDB:
            If no pair can be found with a gain > 0, then this function
            returns 'None, None'.
         """
-        if len(self.__delta_cost_list) == 0: return (None, None, None, None)
-        info = self.__delta_cost_list.pop()
+        if len(self.__combination_gain_list) == 0: return (None, None, None, None)
+        info = self.__combination_gain_list.pop()
         i    = info[1]
         i_tm = self.__db[i]
         k    = info[2]
@@ -398,20 +405,20 @@ class TriggerMapDB:
         del self.__db[i]
         del self.__db[k]
 
-        X = [i, k]
-        # Knowing, that I comes from item 1 and K from item 2 in self.__delta_cost_list ...
-        L = len(self.__delta_cost_list)
+        X = (i, k)
+        # Knowing, that I comes from item 1 and K from item 2 in self.__combination_gain_list ...
+        L = len(self.__combination_gain_list)
         p = 0
         while p < L:
-            info = self.__delta_cost_list[p]
+            info = self.__combination_gain_list[p]
             if info[1] in X or info[2] in X:
                 # Determine the end of the region to be deleted
                 q = p + 1
                 while q < L:
-                    info = self.__delta_cost_list[q]
+                    info = self.__combination_gain_list[q]
                     if info[1] not in X and info[2] not in X: break
                     q += 1
-                del self.__delta_cost_list[p:q]
+                del self.__combination_gain_list[p:q]
                 L -= (q - p)
             else:
                 p += 1
@@ -428,28 +435,17 @@ class TriggerMapDB:
     def __setitem__(self, Key, Value):
         assert type(Key) == long
         assert isinstance(Value, TemplateCombination)
-        self.__adapt_delta_cost(Key, Value)
+        self.__adapt_combination_gain(Key, Value)
         self.__db[Key] = Value
 
     def items(self):
         return self.__db.items()
-
-def involved_state_number(TM):
-    if isinstance(TM, TemplateCombination):
-        return TM.involved_state_number()
-    else:
-        return 1
 
 def involved_state_list(TM, DefaultIfTriggerMapIsNotACombination):
     if isinstance(TM, TemplateCombination):
         return TM.involved_state_list()
     else:
         return [ DefaultIfTriggerMapIsNotACombination ]
-
-def is_recursive(TM, Target, InvolvedStateList):
-    """Determine whether the target state indicates that the 
-       state triggers to itself.
-    """
 
 def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
     """Assume that interval list 0 and 1 are sorted.
@@ -458,7 +454,7 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
                 -- Number of transitions that trigger to the same 
                    target state on the same interval in both maps.
 
-       The result of this function is later used to feed 'delta_cost' that
+       The result of this function is later used to feed 'combination_gain' that
        estimates the 'gain' of combining the two maps. 
 
        If both trigger maps trigger to itself, then this counted as a 
@@ -507,10 +503,13 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
 
         # The 'trigger map' may as well be a combination of trigger maps,
         # thus the 'target' may be a list of targets.
-        if type(T0) != list: combination = [T0]
-        else:                combination = copy(T0)
-        if type(T1) == list: combination.extend(T1)
-        else:                combination.append(T1)
+        if type(T0) == list: 
+            if type(T1) == list: combination = T0 + T1
+            else:                combination = T0 + [T1]
+        else:
+            if type(T1) == list: combination = [T0] + T1
+            else:                combination = [T0, T1]
+
         if combination not in equivalent_target_list:
             equivalent_target_list.append(combination)
 
@@ -556,8 +555,7 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
     # Treat the last trigger interval
     __check_targets(TriggerMap0[-1][1], TriggerMap1[-1][1])
 
-    return border_count_n, \
-           equivalent_target_list
+    return border_count_n, len(equivalent_target_list)
 
 def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
     Li = len(TriggerMap0)
@@ -634,9 +632,9 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
         k_target  = k_trigger[1]
 
         target    = __get_target(i_target, k_target)
-        end = min(i_end, k_end)
+        end       = min(i_end, k_end)
         result.append(prev_end, min(i_end, k_end), target)
-        prev_end = end
+        prev_end  = end
 
         if   i_end == k_end:  i += 1; k += 1;
         elif i_end < k_end:   i += 1;
