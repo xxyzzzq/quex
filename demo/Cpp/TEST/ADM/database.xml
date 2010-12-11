@@ -1,4 +1,4 @@
-<test-database execution-time-sec="330.55" date="Tue Dec  7 22:54:27 2010">
+<test-database execution-time-sec="330.53" date="Sat Dec 11 23:45:33 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -18,7 +18,7 @@
                <choice name="006" result="OK" time_sec="3.54" crc="-592177934"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="22.39"> 
+        <test title="Intel's icpc" time-sum-sec="22.41"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="3.57" crc="-1285689249"/>
@@ -31,7 +31,7 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="5.39"> 
+        <test title="Single Mode Example" time-sum-sec="5.38"> 
             <application file-name="000.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.88" crc="-584949883"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="16.31"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="16.30"> 
             <application file-name="003.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="4.74" crc="766281751"/>
@@ -100,7 +100,7 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="5.47"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="5.46"> 
             <application file-name="006.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.91" crc="67355700"/>

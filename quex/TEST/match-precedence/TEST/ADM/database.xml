@@ -1,4 +1,4 @@
-<test-database execution-time-sec="7.92" date="Tue Dec  7 22:54:57 2010">
+<test-database execution-time-sec="7.91" date="Sat Dec 11 23:45:34 2010">
     <last-used-diff-display-program name=""/>
     <test title="Local variables." time-sum-sec="1.53"> 
         <application file-name="local-variables.sh" info-request-time="1284635233L" vanished="False"/>
