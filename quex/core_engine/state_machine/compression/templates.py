@@ -299,7 +299,22 @@ class TriggerMapDB:
     def __initial_delta_cost(self):
         item_list  = self.__db.items()
         L          = len(item_list)
-        result     = []
+
+        # Pre-allocate the result array to avoid frequent allocations
+        #
+        # NOTE: L * (L - 1) is always even, i.e. dividable by 2.
+        #
+        #       (a) L even = k * 2:    L = k * 2 ( k * 2 - 1 )
+        #                                = k * k * 4 - k * 2
+        #                                = even - even = even
+        #       (b) L odd  = k * 2 + 1 L = (k * 2 + 1) * ( k * 2 + 1 - 1)
+        #                                = k * k * 4 + k * 2
+        #                                = even + even = even
+        #
+        #       => division by two without remainder 
+        MaxSize = (L * (L - 1)) / 2
+        result  = [[-1, -1, -1]] * MaxSize
+        n       = 0
         for i, info in enumerate(item_list):
             a_state_index, a_trigger_map = info
             if a_state_index == self.__init_state_index: continue
@@ -310,7 +325,13 @@ class TriggerMapDB:
                 delta_cost = self.__get_delta_cost(a_state_index, a_trigger_map, 
                                                    b_state_index, b_trigger_map)
                 if delta_cost > 0:
-                    result.append([delta_cost, a_state_index, b_state_index])
+                    result[n][0] = delta_cost
+                    result[n][1] = a_state_index
+                    result[n][2] = b_state_index 
+                    n += 1
+
+        if n != MaxSize:
+            del result[n:MaxSize]
 
         # Sort according to delta cost
         result.sort(key=itemgetter(0))
@@ -320,13 +341,24 @@ class TriggerMapDB:
         """Adapt the delta cost list **before** adding the trigger map to __db!"""
         assert isinstance(NewTriggerMap, TemplateCombination)
 
+
+        # Avoid extensive 'appends' by single allocation (see initial computation)
+        MaxSize = (L - 1)
+        self.__delta_cost_list.extend([[-1,-1,-1]]*MaxSize)
+        n       = len(self.__delta_cost_list)
         for state_index, trigger_map in self.__db.items():
             if state_index == self.__init_state_index: continue
 
             delta_cost = self.__get_delta_cost(state_index,   trigger_map, 
                                                NewStateIndex, NewTriggerMap)
             if delta_cost > 0:
-                self.__delta_cost_list.append([delta_cost, state_index, NewStateIndex])
+                result[n][0] = delta_cost
+                result[n][1] = a_state_index
+                result[n][2] = b_state_index 
+                n += 1
+
+        if n != MaxSize:
+            del self.__delta_cost_list[n:MaxSize]
 
         self.__delta_cost_list.sort(key=itemgetter(0))
 
@@ -418,15 +450,6 @@ def is_recursive(TM, Target, InvolvedStateList):
     """Determine whether the target state indicates that the 
        state triggers to itself.
     """
-    if not isinstance(TM, TemplateCombination):
-        # In a 'normal trigger map' the target needs to be equal to the
-        # state that it contains.
-        assert len(InvolvedStateList) == 1
-        return Target == InvolvedStateList[0]
-    else:
-        # In a trigger map combination, the recursive target is 
-        # identifier by the value 'TARGET_RECURSIVE'.
-        return Target == TARGET_RECURSIVE
 
 def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
     """Assume that interval list 0 and 1 are sorted.
@@ -467,11 +490,16 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
 
         # Both trigger to itself --> no adaption required.
         recursion_n = 0
-        if is_recursive(TriggerMap0, T0, InvolvedStateList0):
+        # IS RECURSIVE ?
+        # -- In a 'normal trigger map' the target needs to be equal to the
+        #   state that it contains.
+        # -- In a trigger map combination, the recursive target is 
+        #    identifier by the value 'TARGET_RECURSIVE'.
+        if T0 == InvolvedStateList0[0] or T0 == TARGET_RECURSIVE:
             T0 = InvolvedStateList0
             if len(T0) == 1: T0 = T0[0]
             recursion_n += 1
-        if is_recursive(TriggerMap1, T1, InvolvedStateList1): 
+        if T1 == InvolvedStateList1[0] or T1 == TARGET_RECURSIVE:
             T1 = InvolvedStateList1
             if len(T1) == 1: T1 = T1[0]
             recursion_n += 1
@@ -563,11 +591,16 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
            needs to be expanded, so that the above consensus holds.
         """
         recursion_n = 0
-        if is_recursive(TriggerMap0, T0, InvolvedStateList0):
+        # IS RECURSIVE ?
+        # -- In a 'normal trigger map' the target needs to be equal to the
+        #   state that it contains.
+        # -- In a trigger map combination, the recursive target is 
+        #    identifier by the value 'TARGET_RECURSIVE'.
+        if T0 == InvolvedStateList0[0] or T0 == TARGET_RECURSIVE:
             T0 = InvolvedStateList0
             if len(T0) == 1: T0 = T0[0]
             recursion_n += 1
-        if is_recursive(TriggerMap1, T1, InvolvedStateList1): 
+        if T1 == InvolvedStateList1[0] or T1 == TARGET_RECURSIVE:
             T1 = InvolvedStateList1
             if len(T1) == 1: T1 = T1[0]
             recursion_n += 1
