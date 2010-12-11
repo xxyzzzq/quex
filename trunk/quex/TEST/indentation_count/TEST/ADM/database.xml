@@ -1,4 +1,4 @@
-<test-database execution-time-sec="11.43" date="Tue Dec  7 22:54:49 2010">
+<test-database execution-time-sec="11.42" date="Sat Dec 11 23:45:34 2010">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="2.77"> 
         <application file-name="with-skip-range.sh" info-request-time="1287384394L" vanished="False"/>
@@ -21,7 +21,7 @@
            <choice name="" result="NO GOOD FILE" time_sec="0.00" crc="0"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="4.99"> 
+    <test title="Customized Event Handlers" time-sum-sec="4.98"> 
         <application file-name="handlers.sh" info-request-time="1287124087L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="check-eof" result="OK" time_sec="1.06" crc="-180552726"/>
@@ -31,7 +31,7 @@
            <choice name="on_indentation_error" result="OK" time_sec="0.92" crc="1111494244"/>
         </choice-list>
     </test>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.20"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.19"> 
         <application file-name="commonalities.sh" info-request-time="1287870857L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="1" result="OK" time_sec="0.17" crc="-1391501822"/>

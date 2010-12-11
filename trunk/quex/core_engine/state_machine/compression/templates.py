@@ -360,13 +360,6 @@ class TriggerMapDB:
         if n != MaxSize:
             del self.__combination_gain_list[n:]
 
-        #print "##__START___________________________________________________"
-        #print "## Initial;  n = %i" % (n)
-        #for i, info in enumerate(self.__combination_gain_list):
-        #    if info != None: print "[%03i] %04i %04i %f" % (i, info[1], info[2], info[0])
-        #    else:            print "[%03i] None"         % i
-        #print "##__END_____________________________________________________"
-
         self.__combination_gain_list.sort(key=itemgetter(0))
 
     def __get_combination_gain(self, 
@@ -376,8 +369,9 @@ class TriggerMapDB:
         # Get border_n    = number of borders of combined map
         #     eq_target_n = number of equivalent targets, i.e. number of 
         #                   target combinations that need to be routed.
-        border_n, eq_target_n = get_metric(TriggerMapA, InvolvedStateListA, 
-                                           TriggerMapB, InvolvedStateListB)
+        border_n, eq_target_list = get_metric(TriggerMapA, InvolvedStateListA, 
+                                              TriggerMapB, InvolvedStateListB)
+        eq_target_n = len(eq_target_list)
         combined_state_n      = len(InvolvedStateListA) + len(InvolvedStateListB)
 
         return compute_combination_gain(len(TriggerMapA), len(TriggerMapB), 
@@ -555,7 +549,7 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
     # Treat the last trigger interval
     __check_targets(TriggerMap0[-1][1], TriggerMap1[-1][1])
 
-    return border_count_n, len(equivalent_target_list)
+    return border_count_n, equivalent_target_list
 
 def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
     Li = len(TriggerMap0)
