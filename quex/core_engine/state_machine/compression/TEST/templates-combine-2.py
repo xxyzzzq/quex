@@ -88,5 +88,3 @@ elif "recursive-3" in sys.argv:
           ]
     test(tm0, 2, tm1, 1)
 
-
-
