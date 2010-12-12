@@ -303,14 +303,10 @@ class TriggerMapDB:
         # Pre-allocate the result array to avoid frequent allocations
         #
         # NOTE: L * (L - 1) is always even, i.e. dividable by 2.
-        #
-        #       (a) L even = k * 2:    L = k * 2 ( k * 2 - 1 )
-        #                                = k * k * 4 - k * 2
+        #       (a) L even = k * 2:     -> k * 2 ( k * 2 - 1 )            = k * k * 4 - k * 2
         #                                = even - even = even
-        #       (b) L odd  = k * 2 + 1 L = (k * 2 + 1) * ( k * 2 + 1 - 1)
-        #                                = k * k * 4 + k * 2
+        #       (b) L odd  = k * 2 + 1: -> (k * 2 + 1) * ( k * 2 + 1 - 1) = k * k * 4 + k * 2
         #                                = even + even = even
-        #
         #       => division by two without remainder 
         MaxSize = (L * (L - 1)) / 2
         result  = [None] * MaxSize
@@ -371,8 +367,8 @@ class TriggerMapDB:
         #                   target combinations that need to be routed.
         border_n, eq_target_list = get_metric(TriggerMapA, InvolvedStateListA, 
                                               TriggerMapB, InvolvedStateListB)
-        eq_target_n = len(eq_target_list)
-        combined_state_n      = len(InvolvedStateListA) + len(InvolvedStateListB)
+        eq_target_n      = len(eq_target_list)
+        combined_state_n = len(InvolvedStateListA) + len(InvolvedStateListB)
 
         return compute_combination_gain(len(TriggerMapA), len(TriggerMapB), 
                                         combined_state_n, border_n, eq_target_n, 
@@ -389,28 +385,36 @@ class TriggerMapDB:
            returns 'None, None'.
         """
         if len(self.__combination_gain_list) == 0: return (None, None, None, None)
-        info = self.__combination_gain_list.pop()
-        i    = info[1]
-        i_tm = self.__db[i]
-        k    = info[2]
-        k_tm = self.__db[k]
 
-        # Delete both states from the database
+        # (0) The entry with the highest gain is at the tail of the list.
+        #     Element 0 contains the combination gain.
+        #     Element 1 and 2 contain the state indices of the states to be combined
+        info = self.__combination_gain_list.pop()
+        i    = info[1]          # State Index A
+        i_tm = self.__db[i]     # Trigger map of State A
+        k    = info[2]          # State Index B
+        k_tm = self.__db[k]     # Trigger map of State B
+
+        # (1) Delete both states from the database: state-index  --> trigger_map
         del self.__db[i]
         del self.__db[k]
 
+        # (2) Delete all entries from the 'combination gain' list that relate
+        #     to the states 'i' and 'k'. They are no longer available.
         X = (i, k)
-        # Knowing, that I comes from item 1 and K from item 2 in self.__combination_gain_list ...
         L = len(self.__combination_gain_list)
         p = 0
         while p < L:
-            info = self.__combination_gain_list[p]
-            if info[1] in X or info[2] in X:
+            entry = self.__combination_gain_list[p]
+            # Does entry contain 'i' or 'k'? If so the subsequent entries are 
+            # likely to contain them two. Combine the 'del' for the chunk of
+            # adjacent entries.
+            if entry[1] in X or entry[2] in X:
                 # Determine the end of the region to be deleted
                 q = p + 1
                 while q < L:
-                    info = self.__combination_gain_list[q]
-                    if info[1] not in X and info[2] not in X: break
+                    entry = self.__combination_gain_list[q]
+                    if entry[1] not in X and entry[2] not in X: break
                     q += 1
                 del self.__combination_gain_list[p:q]
                 L -= (q - p)
@@ -455,8 +459,6 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
        'same target' since there is no change needed and the template
        triggers to itself.
     """
-    Li = len(TriggerMap0)
-    Lk = len(TriggerMap1)
     # Count the number of additional intervals if list 0 is combined with list 1
     # Each intersection requires the setup of new intervals, e.g.
     #
@@ -467,36 +469,61 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
     #
     #          |----|-----------|---|
     #
-
     assert TriggerMap0[0][0].begin == -sys.maxint
     assert TriggerMap1[0][0].begin == -sys.maxint
     assert TriggerMap0[-1][0].end  == sys.maxint
     assert TriggerMap1[-1][0].end  == sys.maxint
 
+    if len(InvolvedStateList0) == 1: PureStateIndex0 = InvolvedStateList0[0]
+    else:                            PureStateIndex0 = None
+    if len(InvolvedStateList1) == 0: PureStateIndex1 = InvolvedStateList1[0]
+    else:                            PureStateIndex1 = None
+
     equivalent_target_list = []
     def __check_targets(T0, T1):
-        # Both trigger to the same target --> no adaption required
+        """T0 and T1 are targets (being a single state or a 'state list') of two targets 
+           that belong to the same interval. 
+
+                    Interval --> T0   for trigger map 0
+                    Interval --> T1   for trigger map 1
+
+           Both can be either a scalar or a list. Let T be T0 or T1, then
+
+             T == list    Means that the trigger map is a TemplateCombination. The
+                          template needs to trigger on the given interval to T[i] 
+                          if it represents state 'i'.
+
+             T == scalar  Means that either:
+
+                          -- the trigger map belong to a 'pure state' which triggers 
+                             on an interval to a single target state. 
+                          -- or, it may be a TemplateCombination where all related states
+                             trigger on the given interval to the same target state.
+        """
+        # (0) Both trigger to the same target --> no adaption required
         if T0 == T1: return
 
+        # (1) Recursion?
         # Both trigger to itself --> no adaption required.
         recursion_n = 0
-        # IS RECURSIVE ?
-        # -- In a 'normal trigger map' the target needs to be equal to the
-        #   state that it contains.
-        # -- In a trigger map combination, the recursive target is 
-        #    identifier by the value 'TARGET_RECURSIVE'.
-        if T0 == InvolvedStateList0[0] or T0 == TARGET_RECURSIVE:
+        if   T0 == PureStateIndex0:   # impossible if 0 is not a 'pure' state, then PSI0 == None
+            recursion_n += 1
+        elif T0 == TARGET_RECURSIVE:  # impossible if 0 is a pure state, TARGET_RECURSIVE < 0
             T0 = InvolvedStateList0
-            if len(T0) == 1: T0 = T0[0]
             recursion_n += 1
-        if T1 == InvolvedStateList1[0] or T1 == TARGET_RECURSIVE:
+
+        if   T1 == PureStateIndex1:   # impossible if 1 is not a 'pure' state, then PSI1 == None
+            recursion_n += 1
+        elif T1 == TARGET_RECURSIVE:  # impossible if 1 is a pure state, TARGET_RECURSIVE < 0
             T1 = InvolvedStateList1
-            if len(T1) == 1: T1 = T1[0]
             recursion_n += 1
+
         if recursion_n == 2: return
 
-        # The 'trigger map' may as well be a combination of trigger maps,
-        # thus the 'target' may be a list of targets.
+        # (2) Add the combination to the list 
+        #     (later we will determine the 'unique entries')
+        # T = list   -> target state depends on template instantiation (T0[i] for state i)
+        # T = scalar -> same target state for TargetCombinationN in all cases.
         if type(T0) == list: 
             if type(T1) == list: combination = T0 + T1
             else:                combination = T0 + [T1]
@@ -507,10 +534,36 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
         if combination not in equivalent_target_list:
             equivalent_target_list.append(combination)
 
+    def __check_pure_targets(T0, T1):
+        """Simplification of '__check_targets' for the case that only pure 
+           states, not template combinations, are invovled.
+
+           Currently not used.
+        """
+        # (0) Both trigger to the same target --> no adaption required
+        if T0 == T1: return
+
+        # (1) Recursion?
+        # Both trigger to itself --> no adaption required.
+        if T0 == PureStateIndex0 and T1 == PureStateIndex1:
+            return
+
+        # (2) Add the combination to the list 
+        #     (later we will determine the 'unique entries')
+        # T = list   -> target state depends on template instantiation (T0[i] for state i)
+        # T = scalar -> same target state for TargetCombinationN in all cases.
+        combination = (T0, T1)
+        if combination not in equivalent_target_list:
+            equivalent_target_list.append(combination)
+
+    # if PureStateIndex0 != None and PureStateIndex1 != None: __check = __check_pure_targets
+    # else: __check = __check_targets
+
     i = 0 # iterator over interval list 0
     k = 0 # iterator over interval list 1
-
-    # Intervals in trigger map are always adjacent, so the '.end'
+    Li = len(TriggerMap0)
+    Lk = len(TriggerMap1)
+    # Intervals in trigger map are always adjacent, so the '.begin'
     # member is not required.
     border_count_n = 0
     while not (i == Li-1 and k == Lk-1):
@@ -552,9 +605,6 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
     return border_count_n, equivalent_target_list
 
 def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
-    Li = len(TriggerMap0)
-    Lk = len(TriggerMap1)
-
     InvolvedStateN0 = len(InvolvedStateList0)
     InvolvedStateN1 = len(InvolvedStateList1)
 
@@ -569,8 +619,12 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
             prev_end = x[0].end
         assert TM[-1][0].end  == sys.maxint
 
-    __asserts(TriggerMap0)
-    __asserts(TriggerMap1)
+    #__asserts(TriggerMap0)
+    #__asserts(TriggerMap1)
+    if len(InvolvedStateList0) == 1: PureStateIndex0 = InvolvedStateList0[0]
+    else:                            PureStateIndex0 = None
+    if len(InvolvedStateList1) == 0: PureStateIndex1 = InvolvedStateList1[0]
+    else:                            PureStateIndex1 = None
 
     def __get_target(T0, T1):
         """In the 'TemplateCombination' trigger map, a transition to the same
@@ -584,23 +638,24 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
         """
         recursion_n = 0
         # IS RECURSIVE ?
-        # -- In a 'normal trigger map' the target needs to be equal to the
-        #   state that it contains.
-        # -- In a trigger map combination, the recursive target is 
-        #    identifier by the value 'TARGET_RECURSIVE'.
-        if T0 == InvolvedStateList0[0] or T0 == TARGET_RECURSIVE:
-            T0 = InvolvedStateList0
-            if len(T0) == 1: T0 = T0[0]
+        if   T0 == PureStateIndex0:   # impossible if 0 is not a 'pure' state, then PSI0 == None
             recursion_n += 1
-        if T1 == InvolvedStateList1[0] or T1 == TARGET_RECURSIVE:
+        elif T0 == TARGET_RECURSIVE:  # impossible if 0 is a pure state, TARGET_RECURSIVE < 0
+            T0 = InvolvedStateList0
+            recursion_n += 1
+
+        if   T1 == PureStateIndex1:   # impossible if 1 is not a 'pure' state, then PSI1 == None
+            recursion_n += 1
+        elif T1 == TARGET_RECURSIVE:  # impossible if 1 is a pure state, TARGET_RECURSIVE < 0
             T1 = InvolvedStateList1
-            if len(T1) == 1: T1 = T1[0]
             recursion_n += 1
 
         # If both transitions are recursive, then the template will
         # contain only a 'recursion flag'. 
         if recursion_n == 2: return TARGET_RECURSIVE
 
+        # T = list   -> combination is a 'involved state list'.
+        # T = scalar -> same target state for TargetCombinationN in all cases.
         if type(T0) == list:
             if type(T1) == list: return T0 + T1
             else:                return T0 + [T1] * InvolvedStateN1
@@ -609,10 +664,12 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
             elif T0 != T1:       return [T0] * InvolvedStateN0 + [T1] * InvolvedStateN1
             else:                return T0                      # Same Target => Scalar Value
 
-    i = 0 # iterator over interval list 0
-    k = 0 # iterator over interval list 1
+    i  = 0 # iterator over interval list 0
+    k  = 0 # iterator over interval list 1
+    Li = len(TriggerMap0)
+    Lk = len(TriggerMap1)
 
-    # Intervals in trigger map are always adjacent, so the '.end'
+    # Intervals in trigger map are always adjacent, so the '.begin'
     # member is not required.
     result = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
     prev_end = - sys.maxint
