@@ -1,15 +1,15 @@
-<test-database execution-time-sec="3.01" date="Sat Dec 11 23:45:33 2010">
+<test-database execution-time-sec="2.99" date="Mon Dec 13 07:40:15 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.42"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.42" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.40" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.02"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1290630049L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-855506886"/>
+           <choice name="" result="OK" time_sec="0.02" crc="-855506886"/>
         </choice-list>
     </test>
     <test title="Check if the default configuration has been updated." time-sum-sec="0.02"> 
@@ -18,10 +18,10 @@
            <choice name="" result="FAIL" time_sec="0.02" crc="1146001507"/>
         </choice-list>
     </test>
-    <test title="" time-sum-sec="2.00"> 
+    <test title="" time-sum-sec="2.01"> 
         <application file-name="compilation-independence.sh" info-request-time="1291321337L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="NO GOOD FILE" time_sec="2.00" crc="0"/>
+           <choice name="" result="NO GOOD FILE" time_sec="2.01" crc="0"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.07"> 
