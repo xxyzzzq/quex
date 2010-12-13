@@ -160,7 +160,6 @@ import quex.core_engine.state_machine.index as index
 import quex.core_engine.state_machine.core  as state_machine
 from   operator import itemgetter
 
-
 def do(sm, CostCoefficient):
     """
        sm:              StateMachine object containing all states

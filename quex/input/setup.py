@@ -52,6 +52,7 @@ SETUP_INFO = {
     "output_file_naming_scheme":      [["--file-extension-scheme", "--fes"],  ""],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
+    "source_package":                 [["--source-package", "--sp"],         ""],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
