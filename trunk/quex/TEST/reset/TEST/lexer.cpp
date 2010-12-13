@@ -59,10 +59,10 @@ main(int argc, char** argv)
 
 #       if defined (__QUEX_OPTION_CONVERTER_ENABLED)
         printf("(%2i, %2i)   \t%s '%s' \n", (int)qlex.line_number(), (int)qlex.column_number(),
-               token_p->type_id_name().c_str(), token_p->utf8_text().c_str());
+               token_p->type_id_name().c_str(), token_p->pretty_char_text().c_str());
 #       else
         printf("(%2i, %2i)   \t%s '%s' \n", (int)qlex.line_number(), (int)qlex.column_number(),
-               token_p->type_id_name().c_str(), (const char*)token_p->get_text().c_str());
+               token_p->type_id_name().c_str(), (const char*)token_p->text.c_str());
 #       endif
 
     } while( token_p->type_id() != QUEX_TKN_TERMINATION );

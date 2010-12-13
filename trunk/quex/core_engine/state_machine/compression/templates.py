@@ -67,16 +67,26 @@
 
    Not necessarily all states can be combined efficiently with each other. The
    following algorithm finds successively best combinations and stops when no
-   further useful combinations can be found. The algorithm works as follows:
+   further useful combinations can be found. 
 
-      (1) Determine for each possible pair of transition maps a value that
-          represents the expected 'gain' if they were combined.
+   Each state has a transition map, i.e. an object that tells on what character
+   code intervals the analyzer jumpt to what states:
 
-      (2.a) If there is no possitive gain possible, break up.
+             transition map:  interval  --> target state
 
-      (2.b) Else, for the best pair, create a TemplateCombination that
-            incorporates both transition maps. Include the TemplateCombination
-            as transition map in the following considerations.
+   The algorithm works as follows:
+
+      (1) Compute for each combination candidate of two states the 
+          expected 'gain' if they were combined. This happens by 
+          comparison of the transition maps.
+
+      (2.a) Do not consider to combine states where the 'gain' is negative.
+
+      (2.b) Take the pair of states that provide the highest gain.
+            
+            Create a TemplateCombination object based on the two states.
+
+            Enter the TemplateCombination as a normal 'state' into the database.
 
             Goto (1)
 
@@ -84,7 +94,7 @@
 
    The 'gain' shall **represent** the amount of memory that can be spared if
    two trigger maps are combined. The number does not necessarily relate
-   directly to a physical byte consumption. Moreover, it is only required, that
+   directly to a physical byte consumption. It is only required, that
    if a combination of (A, B) spares more than a combination of (C, D) then
    the gain value of (A, B) must be greater than the gain value for (C, D).
 
@@ -112,7 +122,10 @@
    Combined trigger maps are stored in objects of type 'TemplateCombination'.
    As normal trigger maps they are built of a list of tuples:
 
-              (I0, TL0), (I1, TL1), .... (In, TLn)
+              (I0, TL0),       # meaning interval I0 triggers to TL0
+              (I1, TL1),       #                  I1 triggers to TL1
+              .... 
+              (In, TLn)        #                  In triggers to TLn
 
    where the intervals I0 to In are adjacent intervals starting with 
 
@@ -185,7 +198,8 @@ def do(sm, CostCoefficient):
 
     return result
 
-TARGET_RECURSIVE = -2L # 'Normal' targets are greater than zero
+TARGET_RECURSIVE  = -2L    # 'Normal' targets are greater than zero
+
 class TemplateCombination:
     def __init__(self, InvolvedStateList0,  InvolvedStateList1):
         self.__trigger_map         = []
@@ -474,11 +488,6 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
     assert TriggerMap0[-1][0].end  == sys.maxint
     assert TriggerMap1[-1][0].end  == sys.maxint
 
-    if len(InvolvedStateList0) == 1: PureStateIndex0 = InvolvedStateList0[0]
-    else:                            PureStateIndex0 = None
-    if len(InvolvedStateList1) == 0: PureStateIndex1 = InvolvedStateList1[0]
-    else:                            PureStateIndex1 = None
-
     equivalent_target_list = []
     def __check_targets(T0, T1):
         """T0 and T1 are targets (being a single state or a 'state list') of two targets 
@@ -506,18 +515,19 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
         # (1) Recursion?
         # Both trigger to itself --> no adaption required.
         recursion_n = 0
-        if   T0 == PureStateIndex0:   # impossible if 0 is not a 'pure' state, then PSI0 == None
-            recursion_n += 1
-        elif T0 == TARGET_RECURSIVE:  # impossible if 0 is a pure state, TARGET_RECURSIVE < 0
+        # IS RECURSIVE ?
+        # -- In a 'normal trigger map' the target needs to be equal to the
+        #   state that it contains.
+        # -- In a trigger map combination, the recursive target is 
+        #    identifier by the value 'TARGET_RECURSIVE'.
+        if (len(InvolvedStateList0) == 1 and T0 == InvolvedStateList0[0]) or T0 == TARGET_RECURSIVE:
             T0 = InvolvedStateList0
+            if len(T0) == 1: T0 = T0[0]
             recursion_n += 1
-
-        if   T1 == PureStateIndex1:   # impossible if 1 is not a 'pure' state, then PSI1 == None
-            recursion_n += 1
-        elif T1 == TARGET_RECURSIVE:  # impossible if 1 is a pure state, TARGET_RECURSIVE < 0
+        if (len(InvolvedStateList1) == 1 and T1 == InvolvedStateList1[0]) or T1 == TARGET_RECURSIVE:
             T1 = InvolvedStateList1
+            if len(T1) == 1: T1 = T1[0]
             recursion_n += 1
-
         if recursion_n == 2: return
 
         # (2) Add the combination to the list 
@@ -535,23 +545,12 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
             equivalent_target_list.append(combination)
 
     def __check_pure_targets(T0, T1):
-        """Simplification of '__check_targets' for the case that only pure 
-           states, not template combinations, are invovled.
-
-           Currently not used.
+        """Simple '__check_targets' for pure states--without template combinations.
+           ** CURRENTLY NOT USED **
         """
-        # (0) Both trigger to the same target --> no adaption required
-        if T0 == T1: return
-
-        # (1) Recursion?
-        # Both trigger to itself --> no adaption required.
-        if T0 == PureStateIndex0 and T1 == PureStateIndex1:
+        if   T0 == T1: return
+        elif T0 == PureStateIndex0 and T1 == PureStateIndex1: # Recursion on both
             return
-
-        # (2) Add the combination to the list 
-        #     (later we will determine the 'unique entries')
-        # T = list   -> target state depends on template instantiation (T0[i] for state i)
-        # T = scalar -> same target state for TargetCombinationN in all cases.
         combination = (T0, T1)
         if combination not in equivalent_target_list:
             equivalent_target_list.append(combination)
@@ -619,12 +618,8 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
             prev_end = x[0].end
         assert TM[-1][0].end  == sys.maxint
 
-    #__asserts(TriggerMap0)
-    #__asserts(TriggerMap1)
-    if len(InvolvedStateList0) == 1: PureStateIndex0 = InvolvedStateList0[0]
-    else:                            PureStateIndex0 = None
-    if len(InvolvedStateList1) == 0: PureStateIndex1 = InvolvedStateList1[0]
-    else:                            PureStateIndex1 = None
+    __asserts(TriggerMap0)
+    __asserts(TriggerMap1)
 
     def __get_target(T0, T1):
         """In the 'TemplateCombination' trigger map, a transition to the same
@@ -638,16 +633,17 @@ def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, Invol
         """
         recursion_n = 0
         # IS RECURSIVE ?
-        if   T0 == PureStateIndex0:   # impossible if 0 is not a 'pure' state, then PSI0 == None
-            recursion_n += 1
-        elif T0 == TARGET_RECURSIVE:  # impossible if 0 is a pure state, TARGET_RECURSIVE < 0
+        # -- In a 'normal trigger map' the target needs to be equal to the
+        #   state that it contains.
+        # -- In a trigger map combination, the recursive target is 
+        #    identifier by the value 'TARGET_RECURSIVE'.
+        if (len(InvolvedStateList0) == 1 and T0 == InvolvedStateList0[0]) or T0 == TARGET_RECURSIVE:
             T0 = InvolvedStateList0
+            if len(T0) == 1: T0 = T0[0]
             recursion_n += 1
-
-        if   T1 == PureStateIndex1:   # impossible if 1 is not a 'pure' state, then PSI1 == None
-            recursion_n += 1
-        elif T1 == TARGET_RECURSIVE:  # impossible if 1 is a pure state, TARGET_RECURSIVE < 0
+        if (len(InvolvedStateList1) == 1 and T1 == InvolvedStateList1[0]) or T1 == TARGET_RECURSIVE:
             T1 = InvolvedStateList1
+            if len(T1) == 1: T1 = T1[0]
             recursion_n += 1
 
         # If both transitions are recursive, then the template will
