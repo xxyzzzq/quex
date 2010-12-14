@@ -90,7 +90,7 @@ analyzer_post_categorizer = """
 /analyzer/PostCategorizer.i
 """
 
-analyzer_include_state = """
+analyzer_include_stack = """
 /analyzer/member/include-stack
 /analyzer/member/include-stack.i
 """
@@ -169,7 +169,9 @@ def do():
     if Setup.token_policy == "queue":
         txt += token_queue
 
-    if Setup.buffer_codec != "" or Converter:
+    ConverterF = Setup.converter_iconv_f or Setup.converter_iconv_f
+
+    if Setup.buffer_codec != "" or ConverterF:
         txt +=   converter_helper       \
                + converter_helper_utf8  \
                + converter_helper_utf16 \
@@ -177,17 +179,29 @@ def do():
 
     if FillerF:
         txt += buffer_filler
-        if ICU_F or IConv_F:   
+        if ConverterF:
             txt += buffer_filler_converter
-            if ICU_F: txt += buffer_filler_icu
-            else:     txt += buffer_filler_iconv
+            if   Setup.converter_icu_f:    txt += buffer_filler_icu
+            elif Setup.converter_iconv_f:  txt += buffer_filler_iconv
+            else:                          assert False
         else:
             txt += buffer_filler_plain
 
-    if   DefaultToken_C:   txt += token_default_C
-    elif DefaultToken_Cpp: txt += token_default_Cpp
+    if Setup.token_class_file != "":
+        if   Setup.language == "C":   txt += token_default_C
+        elif Setup.language == "C++": txt += token_default_Cpp
 
-    file_list = map(lambda x: x.strip(), txt.split())
+
+    if Setup.string_accumulator_f:                               txt += analyzer_accumulator
+    if Setup.count_column_number_f or Setup.count_line_number_f: txt += analyzer_counter 
+    if Setup.post_categorizer_f:                                 txt += analyzer_post_categorizer 
+    if Setup.include_stack_support_f:                            txt += analyzer_include_stack
+
+    __copy_files(txt)
+
+def __copy_files(FileTxt):
+
+    file_list = map(lambda x: x.strip(), FileTxt.split())
 
     # Ensure that all directories exist
     directory_list = []
