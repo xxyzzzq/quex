@@ -1,4 +1,6 @@
 from quex.input.setup import setup as Setup
+
+# Search for related files by:
 """
 find quex/code_base \
      -path "*.svn*"        -or -path "*TEST*" -or -name tags      \
@@ -10,27 +12,38 @@ find quex/code_base \
      -or -type f -print | sort
 """
 
-analyzer_accumulator = """
-/analyzer/Accumulator
-/analyzer/Accumulator.i
+base = """
+/asserts
+/aux-string
+/aux-string.i
+/core.mkd
+/definitions
+/include-guard-undef
+/MemoryManager
+/MemoryManager.i
+/temporary_macros_off
+/temporary_macros_on
 """
 
-analyzer_counter = """
-/analyzer/Counter
-/analyzer/Counter.i
+base_compatibility = """
+/compatibility/iconv-argument-types.h
+/compatibility/inttypes.h
+/compatibility/pseudo-stdbool.h
+/compatibility/stdbool.h
+/compatibility/win/borland_inttypes.h
+/compatibility/win/msc_inttypes.h
+/compatibility/win/msc_stdint.h
 """
 
-analyzer_post_categorizer = """
-/analyzer/PostCategorizer
-/analyzer/PostCategorizer.i
+base_buffer = """
+/buffer/asserts
+/buffer/Buffer
+/buffer/Buffer_debug.i
+/buffer/Buffer.i
+/buffer/MemoryPositionMimiker
 """
 
-analyzer_include_state = """
-/analyzer/member/include-stack
-/analyzer/member/include-stack.i
-"""
-
-analyzer_base = """
+base_analyzer = """
 /analyzer/C-adaptions.h
 /analyzer/Mode
 /analyzer/Mode.i
@@ -60,48 +73,35 @@ analyzer_base = """
 /analyzer/member/token-sending-undef.i
 """
 
-compatibility = """
-/compatibility/iconv-argument-types.h
-/compatibility/inttypes.h
-/compatibility/pseudo-stdbool.h
-/compatibility/stdbool.h
-/compatibility/win/borland_inttypes.h
-/compatibility/win/msc_inttypes.h
-/compatibility/win/msc_stdint.h
+analyzer_accumulator = """
+/analyzer/Accumulator
+/analyzer/Accumulator.i
 """
 
-converter_helper = """
-/converter_helper/base-char-and-wchar.gi
-/converter_helper/base-core.g
-/converter_helper/base-core.gi
-/converter_helper/base.g
-/converter_helper/base.gi
-/converter_helper/base-unicode.gi
-/converter_helper/unicode
-/converter_helper/unicode.i
-/converter_helper/utf16
-/converter_helper/utf16.i
-/converter_helper/utf32
-/converter_helper/utf32.i
-/converter_helper/utf8
-/converter_helper/utf8.i
+analyzer_counter = """
+/analyzer/Counter
+/analyzer/Counter.i
 """
 
-token = """
-/token/CDefault.qx
-/token/CppDefault.qx
-/token/TokenPolicy
+analyzer_post_categorizer = """
+/analyzer/PostCategorizer
+/analyzer/PostCategorizer.i
+"""
+
+analyzer_include_state = """
+/analyzer/member/include-stack
+/analyzer/member/include-stack.i
+"""
+
+token_policy = "/token/TokenPolicy"
+
+token_queue = """
 /token/TokenQueue
 /token/TokenQueue.i
 """
 
-buffer = """
-/buffer/asserts
-/buffer/Buffer
-/buffer/Buffer_debug.i
-/buffer/Buffer.i
-/buffer/MemoryPositionMimiker
-"""
+token_default_C = "/token/CDefault.qx"
+token_default_Cpp = "/token/CppDefault.qx"
 
 buffer_filler = """
 /buffer/BufferFiller
@@ -120,6 +120,17 @@ buffer_filler_converter = """
 /buffer/converter/Converter
 """
 
+converter_helper = """
+/converter_helper/base-char-and-wchar.gi
+/converter_helper/base-core.g
+/converter_helper/base-core.gi
+/converter_helper/base.g
+/converter_helper/base.gi
+/converter_helper/base-unicode.gi
+/converter_helper/unicode
+/converter_helper/unicode.i
+"""
+
 buffer_filler_iconv = """
 /buffer/converter/iconv/Converter_IConv
 /buffer/converter/iconv/Converter_IConv.i
@@ -132,18 +143,52 @@ buffer_filler_icu = """
 /buffer/converter/icu/special_headers.h
 """
 
-base = """
-/asserts
-/aux-string
-/aux-string.i
-/core.mkd
-/definitions
-/include-guard-undef
-/MemoryManager
-/MemoryManager.i
-/temporary_macros_off
-/temporary_macros_on
+converter_helper_utf16 = """
+/converter_helper/utf16
+/converter_helper/utf16.i
+"""
+converter_helper_utf32 = """
+/converter_helper/utf32
+/converter_helper/utf32.i
+"""
+converter_helper_utf8 = """
+/converter_helper/utf8
+/converter_helper/utf8.i
 """
 
+def listify(Txt):
+    return map(lambda x: x.strip(), Txt.split())
+
 def do():
-    pass
+    file_list = []
+
+    # Analyzer base file list (required by any analyzer)
+    txt =   base                   \
+          + base_compatibility     \
+          + base_buffer            \
+          + base_analyzer          \
+          + token_policy           
+
+    if TokenQueue:
+        txt += token_queue
+
+    if Codec or Converter:
+        txt +=   converter_helper       \
+               + converter_helper_utf8  \
+               + converter_helper_utf16 \
+               + converter_helper_utf32 
+
+    if FillerF:
+        txt += buffer_filler
+        if ICU_F or IConv_F:   
+            txt += buffer_filler_converter
+            if ICU_F: txt += buffer_filler_icu
+            else:     txt += buffer_filler_iconv
+        else:
+            txt += buffer_filler_plain
+
+    if   DefaultToken_C:   txt += token_default_C
+    elif DefaultToken_Cpp: txt += token_default_Cpp
+
+
+
