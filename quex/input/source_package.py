@@ -1,4 +1,6 @@
-from quex.input.setup import setup as Setup
+from quex.input.setup    import setup as Setup
+from quex.frs_py.file_in import open_file_or_die, error_msg
+from os.path             import path
 
 # Search for related files by:
 """
@@ -156,12 +158,7 @@ converter_helper_utf8 = """
 /converter_helper/utf8.i
 """
 
-def listify(Txt):
-    return map(lambda x: x.strip(), Txt.split())
-
 def do():
-    file_list = []
-
     # Analyzer base file list (required by any analyzer)
     txt =   base                   \
           + base_compatibility     \
@@ -169,10 +166,10 @@ def do():
           + base_analyzer          \
           + token_policy           
 
-    if TokenQueue:
+    if Setup.token_policy == "queue":
         txt += token_queue
 
-    if Codec or Converter:
+    if Setup.buffer_codec != "" or Converter:
         txt +=   converter_helper       \
                + converter_helper_utf8  \
                + converter_helper_utf16 \
@@ -190,5 +187,20 @@ def do():
     if   DefaultToken_C:   txt += token_default_C
     elif DefaultToken_Cpp: txt += token_default_Cpp
 
+    file_list = map(lambda x: x.strip(), txt.split())
 
+    # Ensure that all directories exist
+    directory_list = []
+    for file in file_list:
+        directory = Setup.output_directory + path.dirname(file))
+        if directory in directory_list: continue
+        directory_list.append(directory)
+
+    for directory in directory_set:
+        if os.access(directory, os.F_OK) == True: continue
+        os.mkdir(directory)
+
+    for file in file_list:
+        content = open_file_or_die(file, "r").read()
+        write_safely_and_close(output_file, content)
 

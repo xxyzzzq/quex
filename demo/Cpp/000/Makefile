@@ -53,6 +53,13 @@ EasyLexer.cpp: simple.qx $(QUEX_CORE)
 		 --token-id-offset  0x1000     \
 		 --post-categorizer
 
+source-package:
+	quex -i                 simple.qx  \
+	     --engine           EasyLexer  \
+		 --token-id-offset  0x1000     \
+		 --post-categorizer            \
+		 --source-package   EasyLexer
+
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f EasyLexer*

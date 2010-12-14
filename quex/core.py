@@ -5,6 +5,7 @@ import sys
 from   quex.frs_py.file_in import error_msg, write_safely_and_close, open_file_or_die
 
 from   quex.input.setup                         import setup as Setup
+import quex.output.cpp.source_package           as source_package
 import quex.lexer_mode                          as lexer_mode
 
 import quex.consistency_check                   as consistency_check
@@ -109,6 +110,9 @@ def do():
 
     # assert lexer_mode.token_type_definition != None
     UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
+
+    if Setup.source_package != "":
+        source_package.do()
 
 def __prepare_end_of_stream_action(Mode, IndentationSupportF):
     if not Mode.has_code_fragment_list("on_end_of_stream"):
