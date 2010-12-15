@@ -24,6 +24,9 @@ QUEX_VERSION = '0.56.1'
 
 try:
     QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
+    # Note, that windows can also deal with backslashes.
+    QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR.replace("\\", "/")
+    QUEX_PATH             = QUEX_INSTALLATION_DIR
 except:
     print "error: environment variable 'QUEX_PATH' is not defined."
     if os.name == "posix":

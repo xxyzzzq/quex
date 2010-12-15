@@ -1,3 +1,6 @@
+import os.path
+from   quex.input.setup    import SETUP_INFO, DEPRECATED, global_character_type_db
+from   quex.frs_py.file_in import is_identifier, error_msg
 
 def do(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
@@ -172,4 +175,48 @@ def do(setup, command_line, argv):
     if setup.compression_path_uniform_f and setup.compression_path_f:
         error_msg("Both flags for path compression were set: '--path-compression' and\n" 
                   "'--path-compression-uniform'. Please, choose only one!")
+
+def __check_identifier(setup, Candidate, Name):
+    value = setup.__dict__[Candidate]
+    if is_identifier(value): return
+
+    CommandLineOption = SETUP_INFO[Candidate][0]
+
+    error_msg("%s must be a valid identifier (%s).\n" % (Name, repr(CommandLineOption)[1:-1]) + \
+              "Received: '%s'" % value)
+
+def __get_supported_command_line_option_description(NormalModeOptions):
+    txt = "OPTIONS:\n"
+    for option in NormalModeOptions:
+        txt += "    " + option + "\n"
+
+    txt += "\nOPTIONS FOR QUERY MODE:\n"
+    txt += query.get_supported_command_line_option_description()
+    return txt
+
+def __check_file_name(setup, Candidate, Name):
+    value             = setup.__dict__[Candidate]
+    CommandLineOption = SETUP_INFO[Candidate][0]
+
+    if value == "": return
+
+    if type(value) == list:
+        for name in value:
+            if name != "" and name[0] == "-": 
+                error_msg("Quex refuses to work with file names that start with '-' (minus).\n"  + \
+                          "Received '%s' for %s (%s)" % (value, name, repr(CommandLineOption)[1:-1]))
+            if os.access(name, os.F_OK) == False:
+                # error_msg("File %s (%s)\ncannot be found." % (name, Name))
+                error_msg_file_not_found(name, Name)
+    else:
+        if value == "" or value[0] == "-":              return
+        if os.access(value, os.F_OK):                   return
+        if os.access(QUEX_PATH + "/" + value, os.F_OK): return
+        if     os.access(os.path.dirname(value), os.F_OK) == False \
+           and os.access(QUEX_PATH + "/" + os.path.dirname(value), os.F_OK) == False:
+            error_msg("File '%s' is supposed to be located in directory '%s' or\n" % \
+                      (os.path.basename(value), os.path.dirname(value)) + \
+                      "'%s'. No such directories exist." % \
+                      (QUEX_PATH + "/" + os.path.dirname(value)))
+        error_msg_file_not_found(value, Name)
 

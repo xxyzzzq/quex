@@ -8,6 +8,7 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import codecs
 
+from quex.DEFINITIONS     import QUEX_PATH
 from quex.frs_py.file_in                                            import get_file_content_or_die, \
                                                                            open_file_or_die, \
                                                                            error_msg, \
@@ -28,7 +29,7 @@ def get_codec_list_db():
     global __codec_list_db
     if __codec_list_db != []: return __codec_list_db
 
-    file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/00-ALL.txt"
+    file_name = QUEX_PATH + "/quex/data_base/codecs/00-ALL.txt"
     fh        = open_file_or_die(file_name, "rb")
     # FIELD SEPARATOR:  ';'
     # RECORD SEPARATOR: '\n'
@@ -58,7 +59,7 @@ def get_supported_codec_list(IncludeAliasesF=False):
         if IncludeAliasesF: return __supported_codec_list_plus_aliases
         else:               return __supported_codec_list
 
-    file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/00-SUPPORTED.txt"
+    file_name = QUEX_PATH + "/quex/data_base/codecs/00-SUPPORTED.txt"
     content   = get_file_content_or_die(file_name)
 
     __supported_codec_list = content.split()
@@ -126,7 +127,7 @@ def get_codec_transformation_info(Codec, FH=-1, LineN=None):
 
     """
     distinct_codec = __get_distinct_codec_name_for_alias(Codec)
-    file_name      = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/%s.dat" % distinct_codec
+    file_name      = QUEX_PATH + "/quex/data_base/codecs/%s.dat" % distinct_codec
 
     fh = open_file_or_die(file_name, "rb")
 
@@ -220,7 +221,7 @@ def __create_database_file(TargetEncoding, TargetEncodingName):
         input_interval.end = input
         self.__db.append((interval, target_interval_begin))
 
-    fh = open(os.environ["QUEX_PATH"] + "/quex/data_base/codecs/%s.dat" % TargetEncoding, "wb")
+    fh = open_file_or_die(QUEX_PATH + "/quex/data_base/codecs/%s.dat" % TargetEncoding, "wb")
     fh.write("# Describes mapping from Unicode Code pointer to Character code in %s (%s)\n" \
              % (TargetEncoding, TargetEncodingName))
     fh.write("# [SourceInterval.begin] [SourceInterval.Size]  [TargetInterval.begin] (all in hexidecimal)\n")
