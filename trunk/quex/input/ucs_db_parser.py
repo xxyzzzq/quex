@@ -5,12 +5,13 @@ import fnmatch
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from quex.DEFINITIONS            import QUEX_PATH
 from quex.frs_py.file_in         import *
 from quex.frs_py.string_handling import *
 
 from quex.core_engine.interval_handling import Interval, NumberSet
 
-unicode_db_directory = os.environ["QUEX_PATH"] + "/quex/data_base/unicode"
+unicode_db_directory = QUEX_PATH + "/quex/data_base/unicode"
 comment_deleter_re   = re.compile("#[^\n]*")
 
 def open_data_base_file(Filename):
@@ -18,7 +19,7 @@ def open_data_base_file(Filename):
         fh = open(unicode_db_directory + "/" + Filename, "rb")
     except:
         error_msg("Fatal---Unicode Database File '%s' not found!\n" % Filename + \
-                  "QUEX_PATH='%s'\n" % os.environ["QUEX_PATH"] + \
+                  "QUEX_PATH='%s'\n" % QUEX_PATH + \
                   "Unicode Database Directory: '%s'" % unicode_db_directory)
     return fh
 

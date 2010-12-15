@@ -4,7 +4,6 @@ import subprocess
 import tempfile
 
 from quex.frs_py.file_in             import error_msg
-from quex.DEFINITIONS                import QUEX_INSTALLATION_DIR
 from quex.core_engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):

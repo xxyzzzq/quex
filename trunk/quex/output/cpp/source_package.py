@@ -1,15 +1,15 @@
 from quex.input.setup    import setup as Setup
 from quex.frs_py.file_in import open_file_or_die, error_msg
-from os.path             import path
+import os.path           as     path
 
 # Search for related files by:
-"""
+dummy = """
 find quex/code_base \
      -path "*.svn*"        -or -path "*TEST*" -or -name tags      \
      -or -name "TXT*"      -or -name "*.txt"  -or -name "*.sw?"   \
      -or -path "*DESIGN*"  -or -name "*.7z"   -or -name "*ignore" \
      -or -name "*DELETED*" -or -name .        -or -name "*_body"  \
-     -or -name "[1-9]"     -or -name "°"      -or -name "*.o"     \
+     -or -name "[1-9]"     -or -name "circle"      -or -name "*.o"     \
      -or -name "*.exe"     -prune  \
      -or -type f -print | sort
 """
@@ -206,7 +206,7 @@ def __copy_files(FileTxt):
     # Ensure that all directories exist
     directory_list = []
     for file in file_list:
-        directory = Setup.output_directory + path.dirname(file))
+        directory = Setup.output_directory + path.dirname(file)
         if directory in directory_list: continue
         directory_list.append(directory)
 

@@ -4,11 +4,12 @@ from   copy import copy
 import time
 
 from quex.frs_py.string_handling import blue_print
-from quex.frs_py.file_in  import get_file_content_or_die, \
-                                 get_include_guard_extension, \
-                                 make_safe_identifier
+from quex.frs_py.file_in         import get_file_content_or_die, \
+                                        get_include_guard_extension, \
+                                        make_safe_identifier
 
-import quex.lexer_mode  as lexer_mode
+from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
+import quex.lexer_mode  as     lexer_mode
 from   quex.input.setup import setup as Setup
 
 def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
@@ -25,9 +26,9 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     LexerClassName = Setup.analyzer_class_name
     LanguageDB     = Setup.language_db
 
-    ConfigurationTemplateFile = os.path.normpath(os.environ["QUEX_PATH"]
-                                   + Setup.language_db["$code_base"] 
-                                   + "/analyzer/configuration/TXT").replace("//","/")
+    ConfigurationTemplateFile =(  QUEX_PATH \
+                                + Setup.language_db["$code_base"] \
+                                + "/analyzer/configuration/TXT").replace("//","/")
 
     txt = get_file_content_or_die(ConfigurationTemplateFile)
 
@@ -126,7 +127,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
              ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
-             ["$$QUEX_VERSION$$",               Setup.QUEX_VERSION],
+             ["$$QUEX_VERSION$$",               QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],
              ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
@@ -148,7 +149,7 @@ def __switch(txt, Name, SwitchF):
     
 def write_constructor_and_memento_functions(ModeDB):
 
-    FileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+    FileTemplate = os.path.normpath(QUEX_PATH
                                     + Setup.language_db["$code_base"] 
                                     + "/analyzer/TXT-Cpp.i")
     func_txt = get_file_content_or_die(FileTemplate)
@@ -165,7 +166,7 @@ def write_constructor_and_memento_functions(ModeDB):
 
 def write_engine_header(ModeDB):
 
-    QuexClassHeaderFileTemplate = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+    QuexClassHeaderFileTemplate = os.path.normpath(  QUEX_PATH
                                                    + Setup.language_db["$code_base"] 
                                                    + Setup.language_db["$analyzer_template_file"]).replace("//","/")
     LexerFileStem  = Setup.output_header_file
@@ -225,8 +226,8 @@ def write_engine_header(ModeDB):
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
-                ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_INSTALLATION_DIR + Setup.language_db["$code_base"]],
-                ["$$QUEX_VERSION$$",                     Setup.QUEX_VERSION],
+                ["$$QUEX_TEMPLATE_DIR$$",                QUEX_PATH + Setup.language_db["$code_base"]],
+                ["$$QUEX_VERSION$$",                     QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
                 ["$$TOKEN_CLASS$$",                      token_class_name],
                 ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],

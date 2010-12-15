@@ -1,5 +1,6 @@
 # (C) 2005-2010 Frank-Rene Schaefer
 # ABSOLUTELY NO WARANTY
+from   quex.DEFINITIONS                       import QUEX_PATH
 from   quex.frs_py.file_in                    import error_msg, \
                                                      get_include_guard_extension, \
                                                      write_safely_and_close, open_file_or_die, \
@@ -29,11 +30,11 @@ def _do(Descr):
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
     ## ALLOW: Descr.get_member_db().keys() == []
 
-    TemplateFile = Setup.QUEX_INSTALLATION_DIR \
+    TemplateFile = QUEX_PATH \
                    + Setup.language_db["$code_base"] \
                    + Setup.language_db["$token_template_file"]
 
-    TemplateIFile = Setup.QUEX_INSTALLATION_DIR \
+    TemplateIFile = QUEX_PATH \
                    + Setup.language_db["$code_base"] \
                    + Setup.language_db["$token_template_i_file"]
 

@@ -2,17 +2,18 @@ from   quex.DEFINITIONS import *
 from   copy import copy, deepcopy
 import sys
 import os
+sys.path.insert(0, os.environ["QUEX_PATH"])
 from   StringIO import StringIO
 
 from   quex.GetPot                 import GetPot
-from   quex.frs_py.file_in         import error_msg, error_msg_file_not_found, is_identifier, \
+from   quex.frs_py.file_in         import error_msg, error_msg_file_not_found, \
                                           extract_identifiers_with_specific_prefix, \
                                           delete_comment, verify_word_in_list, read_namespaced_name, \
                                           read_integer
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
-import quex.input.codec_db as codec_db
-import quex.input.generator.setup_validation import validation
+import quex.input.codec_db            as codec_db
+import quex.input.setup_validation    as validation
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED, HEADER, HEADER_IMPLEMTATION, SOURCE, global_extension_db, global_character_type_db
@@ -102,9 +103,6 @@ def do(argv):
                 if value == "--EMPTY--":
                     error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
                 setup.__dict__[variable_name] = value
-
-    setup.QUEX_VERSION          = QUEX_VERSION
-    setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
 
     # (*) Classes and their namespace
     setup.analyzer_class_name, \
@@ -242,42 +240,6 @@ def do(argv):
     # (*) return setup ___________________________________________________________________
     return True
 
-def __check_file_name(setup, Candidate, Name):
-    value             = setup.__dict__[Candidate]
-    CommandLineOption = SETUP_INFO[Candidate][0]
-
-    if value == "": return
-
-    if type(value) == list:
-        for name in value:
-            if name != "" and name[0] == "-": 
-                error_msg("Quex refuses to work with file names that start with '-' (minus).\n"  + \
-                          "Received '%s' for %s (%s)" % (value, name, repr(CommandLineOption)[1:-1]))
-            if os.access(name, os.F_OK) == False:
-                # error_msg("File %s (%s)\ncannot be found." % (name, Name))
-                error_msg_file_not_found(name, Name)
-    else:
-        QUEX_PATH = os.environ["QUEX_PATH"]
-        if value == "" or value[0] == "-":              return
-        if os.access(value, os.F_OK):                   return
-        if os.access(QUEX_PATH + "/" + value, os.F_OK): return
-        if     os.access(os.path.dirname(value), os.F_OK) == False \
-           and os.access(QUEX_PATH + "/" + os.path.dirname(value), os.F_OK) == False:
-            error_msg("File '%s' is supposed to be located in directory '%s' or\n" % \
-                      (os.path.basename(value), os.path.dirname(value)) + \
-                      "'%s'. No such directories exist." % \
-                      (QUEX_PATH + "/" + os.path.dirname(value)))
-        error_msg_file_not_found(value, Name)
-
-def __check_identifier(setup, Candidate, Name):
-    value = setup.__dict__[Candidate]
-    if is_identifier(value): return
-
-    CommandLineOption = SETUP_INFO[Candidate][0]
-
-    error_msg("%s must be a valid identifier (%s).\n" % (Name, repr(CommandLineOption)[1:-1]) + \
-              "Received: '%s'" % value)
-
 def __get_float(MemberName):
     ValueStr = setup.__dict__[MemberName]
     if type(ValueStr) == float: return ValueStr
@@ -359,13 +321,4 @@ def __prepare_file_name(Suffix, ContentType):
 
     if setup.output_directory == "": return file_name
     else:                            return os.path.normpath(setup.output_directory + "/" + file_name)
-
-def __get_supported_command_line_option_description(NormalModeOptions):
-    txt = "OPTIONS:\n"
-    for option in NormalModeOptions:
-        txt += "    " + option + "\n"
-
-    txt += "\nOPTIONS FOR QUERY MODE:\n"
-    txt += query.get_supported_command_line_option_description()
-    return txt
 

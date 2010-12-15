@@ -60,6 +60,16 @@ UserCodeFragment_OpenLinePragma = {
         ],
    }
 
+def get_file_reference(FileName):
+    """When a source package is specified, then the must be given
+       with 'relative coordinates' to the source package directory.
+       
+       if 'SourcePackager':
+           $QUEX_PATH/quex/code_base --> source-package-dir/quex/code_base
+           .  (current dir)          --> source-package-dir     
+    """
+    
+
 class UserCodeFragment(CodeFragment):
     def __init__(self, Code, Filename, LineN, LanguageDB=None):
         assert type(Code)       in [str, unicode]

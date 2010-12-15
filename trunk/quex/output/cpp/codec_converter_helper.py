@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
+from quex.DEFINITIONS                   import QUEX_PATH
 from quex.core_engine.interval_handling import Interval
 from quex.frs_py.string_handling        import blue_print
 from quex.frs_py.file_in                import write_safely_and_close, make_safe_identifier, get_file_content_or_die
@@ -46,7 +47,7 @@ def _do(UnicodeTrafoInfo, CodecName):
     dummy,        utf32_function_body = ConverterWriterUTF32().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
-    FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+    FileName = os.path.normpath(  QUEX_PATH
                                 + Setup.language_db["$code_base"] 
                                 + "/converter_helper/TXT-Codec.i")
     txt_i = blue_print(get_file_content_or_die(FileName), 
@@ -57,7 +58,7 @@ def _do(UnicodeTrafoInfo, CodecName):
                         ["$$BODY_UTF32$$",  utf32_function_body]])
 
     # A separate declaration header is required
-    FileName = os.path.normpath(Setup.QUEX_INSTALLATION_DIR
+    FileName = os.path.normpath(  QUEX_PATH
                                 + Setup.language_db["$code_base"] 
                                 + "/converter_helper/TXT-Codec")
     template_h_txt = get_file_content_or_die(FileName)
