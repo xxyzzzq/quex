@@ -1,18 +1,15 @@
 import os.path
+from   quex.DEFINITIONS    import QUEX_PATH
 from   quex.input.setup    import SETUP_INFO, DEPRECATED, global_character_type_db
-from   quex.frs_py.file_in import is_identifier, error_msg
+import quex.input.codec_db as     codec_db
+from   quex.frs_py.file_in import is_identifier, \
+                                  error_msg, \
+                                  verify_word_in_list, \
+                                  error_msg_file_not_found
 
 def do(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
     """
-
-    if setup.output_directory != "" and setup.source_package != "":
-        error_msg("Output directory (--output-directory, --odir) and source\n"
-                  "packagin (--source-package, --sp) cannot be defined at the\n"
-                  "same time.")
-
-    if setup.source_package != "":
-        setup.output_directory = setup.source_package
 
     setup.output_directory = os.path.normpath(setup.output_directory)
     if setup.output_directory != "":

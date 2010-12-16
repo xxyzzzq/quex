@@ -1,6 +1,10 @@
 from quex.input.setup    import setup as Setup
-from quex.frs_py.file_in import open_file_or_die, error_msg
+from quex.frs_py.file_in import open_file_or_die, \
+                                error_msg, \
+                                write_safely_and_close 
 import os.path           as     path
+import os
+from   quex.DEFINITIONS  import QUEX_PATH
 
 # Search for related files by:
 dummy = """
@@ -170,6 +174,7 @@ def do():
         txt += token_queue
 
     ConverterF = Setup.converter_iconv_f or Setup.converter_iconv_f
+    FillerF    = True # Change once we have 'buffer only' modes
 
     if Setup.buffer_codec != "" or ConverterF:
         txt +=   converter_helper       \
@@ -201,20 +206,28 @@ def do():
 
 def __copy_files(FileTxt):
 
-    file_list = map(lambda x: x.strip(), FileTxt.split())
+    input_directory  = QUEX_PATH               
+    output_directory = Setup.output_directory 
+
+    file_list = map(lambda x: Setup.language_db["$code_base"] + x.strip(), FileTxt.split())
 
     # Ensure that all directories exist
     directory_list = []
     for file in file_list:
-        directory = Setup.output_directory + path.dirname(file)
+        directory = path.dirname(output_directory + file)
         if directory in directory_list: continue
         directory_list.append(directory)
 
-    for directory in directory_set:
+    # Sort directories according to length --> create parent directories before child
+    for directory in sorted(directory_list, key=len):
         if os.access(directory, os.F_OK) == True: continue
-        os.mkdir(directory)
+        # Create also parent directories, if required
+        os.makedirs(directory)
 
     for file in file_list:
-        content = open_file_or_die(file, "r").read()
+        input_file  = input_directory + file
+        output_file = output_directory + file
+        # Copy
+        content     = open_file_or_die(input_file, "rb").read()
         write_safely_and_close(output_file, content)
 
