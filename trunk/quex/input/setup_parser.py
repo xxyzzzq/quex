@@ -6,9 +6,10 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   StringIO import StringIO
 
 from   quex.GetPot                 import GetPot
-from   quex.frs_py.file_in         import error_msg, error_msg_file_not_found, \
-                                          extract_identifiers_with_specific_prefix, \
-                                          delete_comment, verify_word_in_list, read_namespaced_name, \
+from   quex.frs_py.file_in         import error_msg,                \
+                                          error_msg_file_not_found, \
+                                          verify_word_in_list,      \
+                                          read_namespaced_name,     \
                                           read_integer
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
@@ -16,7 +17,12 @@ import quex.input.codec_db            as codec_db
 import quex.input.setup_validation    as validation
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
-from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, NEGATED_FLAG, DEPRECATED, HEADER, HEADER_IMPLEMTATION, SOURCE, global_extension_db, global_character_type_db
+from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG,    \
+                               NEGATED_FLAG, DEPRECATED, HEADER, \
+                               HEADER_IMPLEMTATION, SOURCE,      \
+                               global_extension_db,              \
+                               global_character_type_db
+
 from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
 from   quex.core_engine.generator.action_info import CodeFragment
@@ -166,6 +172,12 @@ def do(argv):
         error_msg("File extension scheme '%s' is not provided for language '%s'.\n" \
                   % (setup.output_file_naming_scheme, setup.language) + \
                   "Available schemes are: %s." % repr(setup.extension_db.keys())[1:-1])
+
+    # Before file names can be prepared, determine the output directory
+    # If 'source packaging' is enabled and no output directory is specified
+    # then take the directory of the source packaging.
+    if setup.source_package != "" and setup.output_directory == "":
+        setup.output_directory = setup.source_package
 
     # (*) Output files
     prepare_file_names(setup)

@@ -88,7 +88,6 @@ utf16-lexer-other: utf16-lexer-other.cpp
 	
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
-#
 
 clean:
 	rm -f ISO8859_7_Lex*

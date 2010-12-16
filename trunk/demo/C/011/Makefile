@@ -91,6 +91,8 @@ clean:
 	rm -f utf8-lexer
 	rm -f UTF16Lex*
 	rm -f utf16-lexer
+	rm -f utf16-lexer-other
 	rm -f *.E
 	rm -f *.svg
 	rm -f *.o
+
