@@ -76,9 +76,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#include <quex/code_base/buffer/plain/BufferFiller_Plain>
 #if defined(__QUEX_OPTION_CONVERTER_ENABLED)
 #   include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#else
+#   include <quex/code_base/buffer/plain/BufferFiller_Plain>
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER */

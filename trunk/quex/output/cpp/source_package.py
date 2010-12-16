@@ -60,6 +60,8 @@ base_analyzer = """
 /analyzer/configuration/validation
 /analyzer/headers
 /analyzer/headers.i
+/analyzer/EngineMemento_body
+/analyzer/Engine_body
 /analyzer/member/basic
 /analyzer/member/basic.i
 /analyzer/member/buffer-access
@@ -133,8 +135,6 @@ converter_helper = """
 /converter_helper/base.g
 /converter_helper/base.gi
 /converter_helper/base-unicode.gi
-/converter_helper/unicode
-/converter_helper/unicode.i
 """
 
 buffer_filler_iconv = """
@@ -149,6 +149,10 @@ buffer_filler_icu = """
 /buffer/converter/icu/special_headers.h
 """
 
+converter_helper_unicode = """
+/converter_helper/unicode
+/converter_helper/unicode.i
+"""
 converter_helper_utf16 = """
 /converter_helper/utf16
 /converter_helper/utf16.i

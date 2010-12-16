@@ -3,7 +3,6 @@
 #define __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
 #if  defined(__QUEX_OPTION_CONVERTER_ENABLED)
 #   include <quex/code_base/buffer/converter/BufferFiller_Converter>
@@ -13,6 +12,8 @@
 #   if defined (QUEX_OPTION_ENABLE_ICONV)
 #      include <quex/code_base/buffer/converter/iconv/Converter_IConv>
 #   endif
+#else
+#   include <quex/code_base/buffer/plain/BufferFiller_Plain>
 #endif
 
 #include <quex/code_base/temporary_macros_on>
