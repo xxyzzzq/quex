@@ -76,11 +76,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                               "Warning: this warning with the macro:\n" \
                               "Warning:     QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED\n");
 #           endif
-#           endif
+            return 0x0;
+#           else
             /* If no converter is required, it has to be considered whether the buffer needs
              * filling or not. If the input source is not memory, then the 'plain' buffer
              * filling is applied. If the input source is memory, no filler is required.   */
             return (input_handle == 0x0) ? 0x0 : (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Plain_new)(input_handle);
+#           endif
         }
     }
 
@@ -686,9 +688,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 #if defined(__QUEX_OPTION_CONVERTER_ENABLED)
 #   include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#else
+#   include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 #endif
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER_I */
