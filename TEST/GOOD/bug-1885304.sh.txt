@@ -49,7 +49,9 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 
 /* END: _______________________________________________________________________*/
 
-#include "quex/code_base/converter_helper/unicode"
+#if defined(__QUEX_OPTION_CONVERTER_HELPER)
+#   include "quex/code_base/converter_helper/unicode"
+#endif
 #include <quex/code_base/analyzer/headers>
 
 #include "Simple-token_ids"
@@ -488,7 +490,10 @@ QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
-#include "quex/code_base/converter_helper/unicode.i"
+
+#if defined(__QUEX_OPTION_CONVERTER_HELPER)
+#   include "quex/code_base/converter_helper/unicode.i"
+#endif
 #include <quex/code_base/analyzer/headers.i>
 
 

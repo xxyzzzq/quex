@@ -10,10 +10,6 @@
 < EasyLexer.cpp: simple.qx $(QUEX_CORE)
 ---
 > EasyLexer.c: simple.qx $(QUEX_CORE)
+---
+> 		 --language         C          
 > 		 --language         C          \
-< 
-< source-package:
-< 	quex -i                 simple.qx  \
-< 	     --engine           EasyLexer  \
-< 		 --post-categorizer            \
-< 		 --source-package   EasyLexer

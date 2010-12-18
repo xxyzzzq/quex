@@ -1,9 +1,9 @@
-<test-database execution-time-sec="235.62" date="Sat Dec 18 09:32:42 2010">
+<test-database execution-time-sec="261.11" date="Sat Dec 18 22:14:05 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.12"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.14"> 
         <application file-name="makefile-diff.sh" info-request-time="1290545571L" vanished="False"/>
         <choice-list number="12" same_result="False">
-           <choice name="000" result="FAIL" time_sec="0.01" crc="1973359755"/>
+           <choice name="000" result="OK" time_sec="0.02" crc="-543135376"/>
            <choice name="001" result="OK" time_sec="0.01" crc="151857720"/>
            <choice name="002" result="OK" time_sec="0.01" crc="1926288768"/>
            <choice name="003" result="OK" time_sec="0.01" crc="598216960"/>
@@ -13,7 +13,7 @@
            <choice name="008" result="OK" time_sec="0.01" crc="-722264087"/>
            <choice name="009" result="OK" time_sec="0.01" crc="935015182"/>
            <choice name="010" result="OK" time_sec="0.01" crc="1887966477"/>
-           <choice name="011" result="FAIL" time_sec="0.01" crc="1170439102"/>
+           <choice name="011" result="OK" time_sec="0.02" crc="-684471139"/>
            <choice name="012" result="OK" time_sec="0.01" crc="-121149223"/>
         </choice-list>
     </test>
@@ -67,7 +67,7 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="5.51"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="5.52"> 
             <application file-name="004.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.85" crc="-1383033063"/>
@@ -136,7 +136,7 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="91.83"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="117.31"> 
             <application file-name="010.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="10.99" crc="595815643"/>
@@ -144,9 +144,9 @@
                <choice name="point" result="OK" time_sec="5.06" crc="861795188"/>
                <choice name="copy-ez" result="OK" time_sec="8.97" crc="-812025512"/>
                <choice name="fill-ez" result="OK" time_sec="8.99" crc="-812025512"/>
-               <choice name="copy-conversion" result="FAIL" time_sec="10.77" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="FAIL" time_sec="10.83" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="FAIL" time_sec="10.86" crc="-470382527"/>
+               <choice name="copy-conversion" result="OK" time_sec="19.98" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="18.93" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="19.03" crc="-470382527"/>
                <choice name="stdinlexer" result="OK" time_sec="10.80" crc="-1782734641"/>
                <choice name="re-point" result="OK" time_sec="5.43" crc="1228316465"/>
             </choice-list>

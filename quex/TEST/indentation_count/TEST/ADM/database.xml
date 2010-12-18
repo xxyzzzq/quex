@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.67" date="Sat Dec 18 09:33:19 2010">
+<test-database execution-time-sec="10.66" date="Sat Dec 18 22:14:09 2010">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="2.82"> 
         <application file-name="with-skip-range.sh" info-request-time="1287384394L" vanished="False"/>
