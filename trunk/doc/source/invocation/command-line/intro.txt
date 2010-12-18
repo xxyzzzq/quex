@@ -147,6 +147,19 @@ as described in :ref:`sec-number-format`.
 
         Lets quex generate an analyzer without internal column counting.
 
+If an independent source package is required that can be compiled without an 
+installation of quex, the following option may be used
+
+.. cmdoption:: `--source-package` directory
+
+        Creates all source code that is required to compile the produced
+        lexical analyzer. Only those packages are included which are actually
+        required. Thus, when creating a source package the same command line
+        'as usual' must be used with the added `--source-package` option.
+
+        The string that follows is the directory where the source package is
+        to be put.
+            
 For the support of derivation from the generated lexical analyzer class the
 following command line options can be used.
 
@@ -544,3 +557,4 @@ this feature:
 
         Lists all possible graphic formats for which quex can produce transition
         graphs.
+

@@ -260,7 +260,11 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
 /* Following switch is also set, if a user defined converter is defined.     */
 $$SWITCH$$ __QUEX_OPTION_CONVERTER
+#if defined(QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE)
+#   define __QUEX_OPTION_CONVERTER_HELPER
+#else
 $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
+#endif
 
 /* Type Definitions 
  *
