@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "Source Packager: C++;"
-    echo "CHOICES: plain, iconv, icu, codec, codec-utf8, codec-utf16, post-categorizer, string-accumulator, include-stack, counter;"
+    echo "CHOICES: plain, iconv, icu, codec, codec-utf8, codec-utf16, post-categorizer, no-string-accumulator, no-include-stack, no-counter;"
     echo "SAME;"
     exit
 fi
@@ -29,14 +29,14 @@ case $1 in
     post-categorizer)
         option='--icu --post-categorizer'
         ;;
-    string-accumulator)
-        option='--icu --string-accumulator'
+    no-string-accumulator)
+        option='--no-string-accumulator'
         ;;
-    include-stack)
-        option='--icu --include-stack'
+    no-include-stack)
+        option='--icu --no-include-stack'
         ;;
-    counter)
-        option='--icu --no-count-lines --no-count-columns'
+    no-counter)
+        option='--no-count-lines --no-count-columns'
         ;;
 esac
 
