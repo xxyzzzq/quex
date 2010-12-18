@@ -80,7 +80,8 @@ the following command would create the executable of the lexical analyser:
 
 .. code-block:: bash
 
-   > $CC  lexer.cpp  tiny_lexer.cpp tiny_lexer-core-engine.cpp  -o lexer 
+   > $CC  lexer.cpp  tiny_lexer.cpp tiny_lexer-core-engine.cpp \
+          -I$QUEX_PATH -I. -o lexer 
 
 The `$CC` needs to be replaced by the compiler that you are using 
 (e.g g++, icpc, sunCC etc.).  The
@@ -127,4 +128,24 @@ Then, a call to `lexer` will produce something like the following output:
     BRACKET_CLOSE
 
 The example is self containing, you can either type it by hand or use the
-example in the demo/000 directory. 
+example in the demo/000 directory. If it is required that the produced lexical
+analyzer is to be distributed in source code then quex can create an 
+independent source package, by
+
+.. code-block:: bash
+
+   > quex -i simple.qx -o tiny_lexer --source-package my-package
+
+The source package and the generated lexical analyzer are then located in
+directory ``my-packager``. That for compiling the source package the
+location of the package has to be passed as an include path, i.e.
+
+.. code-block:: bash
+
+   > $CC  lexer.cpp  tiny_lexer.cpp tiny_lexer-core-engine.cpp \
+          -Imy-package -I. -o lexer 
+
+The source packager only collects those files which are actually required.
+Thus the command line instructs quex to create the independent source
+package should look exactly the same as the 'usual' command line plus
+the ``--source-package`` option.
