@@ -657,8 +657,8 @@ the name of the character set as the third argument, e.g.
         quex::MyLexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, "UTF-8");
 
 And the engine must be created with a converter flag (``--iconv`` or ``--icu``)
-or one of the macros ``-DQUEX_OPTION_ENABLE_ICONV`` or
-``-DQUEX_OPTION_ENABLE_ICU`` must be defined for compilation. Customized
+or one of the macros ``-DQUEX_OPTION_CONVERTER_ICONV`` or
+``-DQUEX_OPTION_CONVERTER_ICU`` must be defined for compilation. Customized
 converters might also be used (see section
                                :ref:`sec-customized-converters`). The
 process of analyzis is the same, except for one single line in the code.

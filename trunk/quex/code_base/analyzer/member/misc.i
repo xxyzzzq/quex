@@ -4,7 +4,9 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__MISC_I
 
-#include <quex/code_base/analyzer/Counter>
+#if defined(__QUEX_OPTION_COUNTER)
+#   include <quex/code_base/analyzer/Counter>
+#endif
 
 QUEX_NAMESPACE_MAIN_OPEN
 

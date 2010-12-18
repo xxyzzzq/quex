@@ -3,8 +3,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER
 
-#if ! defined(__QUEX_OPTION_CONVERTER_ENABLED)
-#   error "This file should only be included if __QUEX_OPTION_CONVERTER_ENABLED is defined!"
+#if ! defined(__QUEX_OPTION_CONVERTER)
+#   error "This file should only be included if __QUEX_OPTION_CONVERTER is defined!"
 #endif
 /*
  *  PURPOSE: (NOTE: This has to be reworked)
@@ -180,10 +180,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#ifdef QUEX_OPTION_ENABLE_ICONV
+#ifdef QUEX_OPTION_CONVERTER_ICONV
 #   include <quex/code_base/buffer/converter/iconv/Converter_IConv>
 #endif
-#ifdef QUEX_OPTION_ENABLE_ICU
+#ifdef QUEX_OPTION_CONVERTER_ICU
 #   include <quex/code_base/buffer/converter/icu/Converter_ICU>
 #endif
  

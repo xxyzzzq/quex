@@ -174,27 +174,31 @@ def do():
           + base_analyzer          \
           + token_policy           
 
-    if Setup.token_policy == "queue":
-        txt += token_queue
+    # Buffer Filler ___________________________________________________________
+    # 
+    # The instance that is responsible for filling a buffer with content
+    BufferFillerF = True # Change this once we have 'buffer only' modes
 
-    ConverterF = Setup.converter_iconv_f or Setup.converter_iconv_f
-    FillerF    = True # Change once we have 'buffer only' modes
-
-    if Setup.buffer_codec != "" or ConverterF:
-        txt +=   converter_helper       \
-               + converter_helper_utf8  \
-               + converter_helper_utf16 \
-               + converter_helper_utf32 
-
-    if FillerF:
+    if BufferFillerF:
         txt += buffer_filler
-        if ConverterF:
+        if Setup.converter_f:
             txt += buffer_filler_converter
             if   Setup.converter_icu_f:    txt += buffer_filler_icu
             elif Setup.converter_iconv_f:  txt += buffer_filler_iconv
             else:                          assert False
         else:
             txt += buffer_filler_plain
+
+    if Setup.converter_helper_required_f:
+        txt +=   converter_helper       \
+               + converter_helper_utf8  \
+               + converter_helper_utf16 \
+               + converter_helper_utf32 
+
+        if Setup.buffer_codec == "": txt += converter_helper_unicode
+
+    if Setup.token_policy == "queue":
+        txt += token_queue
 
     if Setup.token_class_file != "":
         if   Setup.language == "C":   txt += token_default_C

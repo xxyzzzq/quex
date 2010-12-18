@@ -38,7 +38,7 @@ CC = \
 		-ggdb  \
 		-Wall \
 		$(ICU_FLAGS) \
-		-DQUEX_OPTION_ENABLE_ICU
+		-DQUEX_OPTION_CONVERTER_ICU
 
 HEADER        = \<quex\/code_base\/buffer\/converter\/icu\/Converter_ICU\.i\>
 CONVERTER     = QUEX_NAME(Converter_ICU_convert)

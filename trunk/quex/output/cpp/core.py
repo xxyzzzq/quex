@@ -49,9 +49,6 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         converter_new_str = "/* " + converter_new_str + " */"
         user_defined_converter_f = False
 
-    if Setup.converter_iconv_f == True or Setup.converter_icu_f   == True:
-        converter_f = True
-
     # Token repetition support
     token_repeat_test_txt = ""
     for token_id_str in lexer_mode.token_repetition_token_id_list:
@@ -66,8 +63,8 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_MODE_TRANSITIONS",        Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES",    Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_DEBUG_TOKEN_SENDING",           Setup.output_debug_f)
-    txt = __switch(txt, "QUEX_OPTION_ENABLE_ICONV",                  Setup.converter_iconv_f)
-    txt = __switch(txt, "QUEX_OPTION_ENABLE_ICU",                    Setup.converter_icu_f)
+    txt = __switch(txt, "QUEX_OPTION_CONVERTER_ICONV",               Setup.converter_iconv_f)
+    txt = __switch(txt, "QUEX_OPTION_CONVERTER_ICU",                 Setup.converter_icu_f)
     txt = __switch(txt, "QUEX_OPTION_INCLUDE_STACK",                 Setup.include_stack_support_f)
     txt = __switch(txt, "QUEX_OPTION_LINE_NUMBER_COUNTING",          Setup.count_line_number_f)      
     txt = __switch(txt, "QUEX_OPTION_POST_CATEGORIZER",              Setup.post_categorizer_f)
@@ -78,7 +75,8 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_TOKEN_REPETITION_SUPPORT",      token_repeat_test_txt != "false")
     txt = __switch(txt, "QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY",     Setup.token_memory_management_by_user_f)
     txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.buffer_byte_order == "big")
-    txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           converter_f)
+    txt = __switch(txt, "__QUEX_OPTION_CONVERTER",                   Setup.converter_f)
+    txt = __switch(txt, "__QUEX_OPTION_CONVERTER_HELPER",            Setup.converter_helper_required_f)
     txt = __switch(txt, "QUEX_OPTION_INDENTATION_TRIGGER",           IndentationSupportF)     
     txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.buffer_byte_order == "little")
     txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)

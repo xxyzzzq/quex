@@ -1,5 +1,27 @@
-<history date="Sat Dec 18 05:15:56 2010" element-n="1">
+<history date="Sat Dec 18 05:42:58 2010" element-n="21">
     <day year="2010" month="12" day="17">
         <history-init time="06:48:46"/>
+    </day>
+    <day year="2010" month="12" day="18">
+        <crc-error time="04:27:57" application="test-c.sh" choice="plain" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:57" application="test-c.sh" choice="iconv" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:57" application="test-c.sh" choice="icu" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="codec" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="codec-utf8" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="codec-utf16" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:58" application="test-c.sh" choice="post-categorizer" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:59" application="test-c.sh" choice="no-string-accumulator" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:59" application="test-c.sh" choice="no-include-stack" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:27:59" application="test-c.sh" choice="no-counter" database-crc="691667453" real-crc="-359142566"/>
+        <crc-error time="04:42:35" application="test-c.sh" choice="plain" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:40" application="test-c.sh" choice="iconv" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:41" application="test-c.sh" choice="icu" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:41" application="test-c.sh" choice="codec" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:42" application="test-c.sh" choice="codec-utf8" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:42" application="test-c.sh" choice="codec-utf16" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:43" application="test-c.sh" choice="post-categorizer" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:44" application="test-c.sh" choice="no-string-accumulator" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:44" application="test-c.sh" choice="no-include-stack" database-crc="-359142566" real-crc="881272033"/>
+        <crc-error time="04:42:45" application="test-c.sh" choice="no-counter" database-crc="-359142566" real-crc="881272033"/>
     </day>
 </history>

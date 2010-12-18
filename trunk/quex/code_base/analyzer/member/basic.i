@@ -2,11 +2,13 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC_I
 
-#include <quex/code_base/definitions>
-#include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/asserts>
-#include <quex/code_base/analyzer/member/include-stack>
+#include    <quex/code_base/definitions>
+#include    <quex/code_base/buffer/Buffer>
+#include    <quex/code_base/buffer/BufferFiller>
+#include    <quex/code_base/buffer/asserts>
+#ifdef      QUEX_OPTION_INCLUDE_STACK
+#   include <quex/code_base/analyzer/member/include-stack>
+#endif
 
 #include <quex/code_base/temporary_macros_on>
 

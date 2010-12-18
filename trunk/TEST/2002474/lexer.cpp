@@ -26,7 +26,7 @@ main(int argc, char** argv)
     //     if no command line argument is specified user file 'example.txt'
     mystream  file("wiki.txt");
     file.seekg(65536 * 15); // atoi(argv[1]));
-#   if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
+#   if defined (QUEX_OPTION_CONVERTER_ICU) || defined (QUEX_OPTION_CONVERTER_ICONV)
     quex::Simple  qlex(&file, "UTF-8");
 #   else
     quex::Simple  qlex(&file);
@@ -45,7 +45,7 @@ main(int argc, char** argv)
         // (*) print out token information
         //     -- name of the token
         if( number_of_tokens > 212356 - 40 ) {
-#           if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
+#           if defined (QUEX_OPTION_CONVERTER_ICU) || defined (QUEX_OPTION_CONVERTER_ICONV)
             cout << *token << endl;
 #           else
             cout << (const char*)(token->type_id_name().c_str()) << " '" << (const char*)(token->get_text().c_str()) << "' " << endl;

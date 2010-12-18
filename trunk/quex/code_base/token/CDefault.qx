@@ -198,6 +198,7 @@ token_type {
                                           char*                   buffer, 
                                           size_t                  BufferSize) 
         {
+#           if defined(__QUEX_OPTION_CONVERTER_HELPER)
             const QUEX_TYPE_CHARACTER*  source    = me->text;
             const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
             char*                       drain     = buffer;
@@ -206,6 +207,15 @@ token_type {
             __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(&source, SourceEnd, &drain, DrainEnd);
 
             return buffer;
+#           else
+            (void)me;
+            (void)buffer;
+            (void)BufferSize;
+            /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
+             * is used and the character size is 1.                                          */
+            __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == 1);
+            return (const char*)me->text;
+#           endif
         }
 
 #       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
@@ -214,14 +224,25 @@ token_type {
                                            wchar_t*                buffer, 
                                            size_t                  BufferSize) 
         {
-            const QUEX_TYPE_CHARACTER*  source    = me->text;
-            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
             wchar_t*                    drain     = buffer;
-            const wchar_t*              DrainEnd  = buffer + BufferSize;
+            const wchar_t*              DrainEnd  = buffer + (ptrdiff_t)BufferSize;
+            const QUEX_TYPE_CHARACTER*  source    = me->text;
+#           if defined(__QUEX_OPTION_CONVERTER_HELPER)
+            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
 
             __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(&source, SourceEnd, &drain, DrainEnd);
 
             return buffer;
+#           else
+            /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
+             * is used and the character size is 1.                                          */
+            __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == 1);
+
+            while( *source && drain != DrainEnd ) {
+                *drain++ = (wchar_t)(*source++);
+            }
+            return buffer;
+#           endif
         }
 #       endif
    }

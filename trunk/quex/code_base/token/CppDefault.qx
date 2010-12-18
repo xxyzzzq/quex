@@ -66,6 +66,7 @@ token_type {
         const std::string 
         pretty_char_text() const
         {
+#           if defined(__QUEX_OPTION_CONVERTER_HELPER)
             std::string             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, char)(self.text);
             std::string::size_type  pos = 0;
 
@@ -74,12 +75,19 @@ token_type {
             while( (pos = tmp.find("\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\r");
 
             return tmp;
+#           else
+            /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
+             * is used and the character size is 1.                                          */
+            __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == 1);
+            return std::string((const char*)self.text.c_str());
+#           endif
         }
 
 #       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
         const std::wstring 
         pretty_wchar_text() const
         {
+#           if defined(__QUEX_OPTION_CONVERTER_HELPER)
             std::wstring             tmp = __QUEX_CONVERTER_STRING(QUEX_SETTING_CODEC, wchar)(self.text);
             std::wstring::size_type  pos = 0;
 
@@ -88,6 +96,16 @@ token_type {
             while( (pos = tmp.find(L"\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\r");
 
             return tmp;
+#           else
+            /* Converter helpers are only disabled automatically, if ASCII (Unicode in 0-FF)
+             * is used and the character size is 1.                                          */
+            std::wstring  tmp; 
+            for(std::basic_string<QUEX_TYPE_CHARACTER>::const_iterator it = self.text.begin(); 
+                it != self.text.end(); ++it) {
+                tmp += (wchar_t)*it;
+            }
+            return tmp;
+#           endif
         }
 #       endif
    }

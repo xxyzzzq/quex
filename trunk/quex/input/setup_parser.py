@@ -7,12 +7,10 @@ from   StringIO import StringIO
 
 from   quex.GetPot                 import GetPot
 from   quex.frs_py.file_in         import error_msg,                \
-                                          error_msg_file_not_found, \
                                           verify_word_in_list,      \
                                           read_namespaced_name,     \
                                           read_integer
 import quex.lexer_mode  as lexer_mode
-import quex.input.query as query
 import quex.input.codec_db            as codec_db
 import quex.input.setup_validation    as validation
 from   quex.output.cpp.token_id_maker import parse_token_id_file
@@ -191,7 +189,7 @@ def do(argv):
     if setup.buffer_element_size == "wchar_t":
         error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
                   "with option '--bytes-per-ucs-code-point' or '-b'. Please, specify\n"
-                  "'--enginge-character-type wchar_t' or '--bet'.")
+                  "'--buffer-element-type wchar_t' or '--bet'.")
 
     if setup.buffer_element_type == "wchar_t":
         setup.converter_ucs_coding_name = "WCHAR_T"
@@ -224,6 +222,15 @@ def do(argv):
     elif setup.buffer_codec != "":
         setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
 
+    setup.converter_f = False
+    if setup.converter_iconv_f or setup.converter_icu_f:
+        setup.converter_f = True
+
+    # The only case where no converter helper is required is where ASCII 
+    # (Unicode restricted to [0, FF] is used.
+    setup.converter_helper_required_f = True
+    if setup.converter_f == False and setup.buffer_element_size == 1 and setup.buffer_codec == "":
+        setup.converter_helper_required_f = False
 
     validation.do(setup, command_line, argv)
 
