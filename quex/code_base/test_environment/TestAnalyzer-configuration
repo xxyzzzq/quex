@@ -235,9 +235,9 @@
  * options out.                                                         */
 /* #define __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT */
 /* #define __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT */
-/* #define QUEX_OPTION_ENABLE_ICONV */
-/* #define QUEX_OPTION_ENABLE_ICU */
-#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
+/* #define QUEX_OPTION_CONVERTER_ICONV */
+/* #define QUEX_OPTION_CONVERTER_ICU */
+#if defined(QUEX_OPTION_CONVERTER_ICONV) || defined(QUEX_OPTION_CONVERTER_ICU)
 #    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
 #    endif
@@ -259,7 +259,7 @@
 #define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
 /* Following switch is also set, if a user defined converter is defined.     */
-/* #define __QUEX_OPTION_CONVERTER_ENABLED */
+/* #define __QUEX_OPTION_CONVERTER */
 
 /* Type Definitions 
  *

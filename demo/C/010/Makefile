@@ -37,7 +37,7 @@ CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 
 CC_UTF8 = $(CC) -D__QUEX_OPTION_MESSAGE_UTF8 \
 		        -DQUEX_TYPE_CHARACTER=wchar_t \
-		        -DQUEX_OPTION_ENABLE_ICONV 
+		        -DQUEX_OPTION_CONVERTER_ICONV 
 
 # (*) RULES ____________________________________________________________________
 all: $(FILES)
@@ -69,7 +69,7 @@ re-point.exe:            re-point.c $(SRCS) $(QUEX_CORE)
 	$(CC)      -E $< -o $@  
           
 tiny_lexer tiny_lexer.c: simple.qx $(QUEX_CORE)
-	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_ENABLE_ICONV'
+	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
 	quex -i simple.qx --engine tiny_lexer \
 		 --token-policy single \

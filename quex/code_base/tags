@@ -248,8 +248,8 @@ QUEX_OPTION_COLUMN_NUMBER_COUNTING	/home/fschaef/prj/quex/trunk/quex/code_base/.
 QUEX_OPTION_DEBUG_MODE_TRANSITIONS	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	136;"	d	file:
 QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	142;"	d	file:
 QUEX_OPTION_DEBUG_TOKEN_SENDING	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	127;"	d	file:
-QUEX_OPTION_ENABLE_ICONV	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	188;"	d	file:
-QUEX_OPTION_ENABLE_ICU	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	192;"	d	file:
+QUEX_OPTION_CONVERTER_ICONV	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	188;"	d	file:
+QUEX_OPTION_CONVERTER_ICU	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	192;"	d	file:
 QUEX_OPTION_INCLUDE_STACK	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	153;"	d	file:
 QUEX_OPTION_LINE_NUMBER_COUNTING	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	92;"	d	file:
 QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	109;"	d	file:

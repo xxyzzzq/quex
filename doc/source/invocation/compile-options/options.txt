@@ -39,11 +39,11 @@ the suffix enables something, the option with the suffix disables the 'something
 
    Enables/disables debug messages for each token to be sent.
 
-.. cmacro:: QUEX_OPTION_ENABLE_ICONV
+.. cmacro:: QUEX_OPTION_CONVERTER_ICONV
 
    Enables/disables the use of the GNU IConv library for conversion. This can also be set with the command line option ``--iconv``.
 
-.. cmacro:: QUEX_OPTION_ENABLE_ICU
+.. cmacro:: QUEX_OPTION_CONVERTER_ICU
 
    Enables/disables the use of the IBM's ICU library for conversion. This can also be
    set with the command line option ``--icu``. Note, that IConv and ICU are

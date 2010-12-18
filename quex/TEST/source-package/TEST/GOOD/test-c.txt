@@ -1,4 +1,0 @@
-(0) Running Quex (no output is good output)
-(1) Running g++ (no output is good output)
-(2) Double check that output file exists
-pkg/EasyLexer.o

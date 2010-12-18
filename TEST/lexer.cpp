@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     // (*) create token
     quex::Token*   token_p;
     // (*) create the lexical analyser
-#   if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
+#   if defined (QUEX_OPTION_CONVERTER_ICU) || defined (QUEX_OPTION_CONVERTER_ICONV)
     quex::Simple*  qlex = new quex::Simple(argv[1], "UTF-8");
 #   else
     quex::Simple*  qlex = new quex::Simple(argv[1]);
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
         if (token_p->type_id() == QUEX_TKN_TERMINATION)
             break;
         // (*) print out token information
-#   if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
+#   if defined (QUEX_OPTION_CONVERTER_ICU) || defined (QUEX_OPTION_CONVERTER_ICONV)
         cout << *token_p << endl;
 #   else
         cout << (const char*)(token_p->type_id_name().c_str());

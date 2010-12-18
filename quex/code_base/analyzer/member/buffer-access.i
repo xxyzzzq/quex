@@ -148,7 +148,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     { me->buffer._input_p = Adr; }
 
 
-#   if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#   if defined(__QUEX_OPTION_CONVERTER)
     QUEX_INLINE size_t 
     QUEX_NAME(BufferFillerUser_Converter_insert)(QUEX_NAME(BufferFiller)*  alter_ego,
                                                  QUEX_TYPE_CHARACTER**     insertion_p,
@@ -360,7 +360,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_MEMBER(buffer_input_pointer_set)(QUEX_TYPE_CHARACTER* Adr)
     { QUEX_NAME(buffer_input_pointer_set)(this, Adr); }
 
-#   if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#   if defined(__QUEX_OPTION_CONVERTER)
     QUEX_INLINE void*
     QUEX_MEMBER(buffer_fill_region_append_conversion)(void*  ContentBegin, void*  ContentEnd)
     { return QUEX_NAME(buffer_fill_region_append_conversion)(this, ContentBegin, ContentEnd); }

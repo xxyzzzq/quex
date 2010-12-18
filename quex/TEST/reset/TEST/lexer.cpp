@@ -15,7 +15,7 @@ main(int argc, char** argv)
 #   else
     FILE*          fh = fopen("example.txt", "r");
 #   endif
-#   ifdef __QUEX_OPTION_CONVERTER_ENABLED
+#   ifdef __QUEX_OPTION_CONVERTER
     quex::Simple   qlex(fh, "UTF8");
 #   else
     quex::Simple   qlex(fh);
@@ -47,7 +47,7 @@ main(int argc, char** argv)
         (void)qlex.receive();
     } 
 
-#   ifdef __QUEX_OPTION_CONVERTER_ENABLED
+#   ifdef __QUEX_OPTION_CONVERTER
     qlex.reset(fh, "UTF8");
 #   else
     qlex.reset(fh);
@@ -57,7 +57,7 @@ main(int argc, char** argv)
     do {
         (void)qlex.receive();
 
-#       if defined (__QUEX_OPTION_CONVERTER_ENABLED)
+#       if defined (__QUEX_OPTION_CONVERTER)
         printf("(%2i, %2i)   \t%s '%s' \n", (int)qlex.line_number(), (int)qlex.column_number(),
                token_p->type_id_name().c_str(), token_p->pretty_char_text().c_str());
 #       else

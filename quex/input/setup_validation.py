@@ -2,6 +2,7 @@ import os.path
 from   quex.DEFINITIONS    import QUEX_PATH
 from   quex.input.setup    import SETUP_INFO, DEPRECATED, global_character_type_db
 import quex.input.codec_db as     codec_db
+import quex.input.query    as     query
 from   quex.frs_py.file_in import is_identifier, \
                                   error_msg, \
                                   verify_word_in_list, \
@@ -158,7 +159,7 @@ def do(setup, command_line, argv):
         else:
             msg_str = "is not %i (found %i)" % (RequiredBufferElementSize, setup.buffer_element_size)
 
-        error_msg("Using codec 'utf8' while buffer element size %s.\n" % msg_str + 
+        error_msg("Using codec '%s' while buffer element size %s.\n" % (CodecName, msg_str) + 
                   "Consult command line argument '--buffer-element-size'.")
 
     if setup.buffer_codec != "":

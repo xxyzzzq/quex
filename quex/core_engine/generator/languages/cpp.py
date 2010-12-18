@@ -563,19 +563,16 @@ def __frame_of_all(Code, Setup):
     # if len(namespace_ref) > 2 and namespace_ref[-2:] == "::": namespace_ref = namespace_ref[:-2]
     # "using namespace " + namespace_ref + ";\n"       + \
 
-    if Setup.language != "C++":
-        implementation_header_str  = "#include <quex/code_base/analyzer/headers.i>\n"
-        implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
-    else:
-        implementation_header_str = ""
-
-    codec_header_str = ""
+    implementation_header_str = ""
     if Setup.language == "C":
-         codec_header_str = "#include \"%s\"\n" % Setup.output_buffer_codec_header_i
+        implementation_header_str += "#if defined(__QUEX_OPTION_CONVERTER_HELPER)\n"
+        implementation_header_str += "#   include \"%s\"\n" % Setup.output_buffer_codec_header_i
+        implementation_header_str += "#endif\n"
+        implementation_header_str += "#include <quex/code_base/analyzer/headers.i>\n"
+        implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
 
     return "".join(["/* #include \"%s\"*/\n" % Setup.output_header_file,
                     implementation_header_str,
-                    codec_header_str,
                     "QUEX_NAMESPACE_MAIN_OPEN\n",
                     "QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;\n",
                     Code,

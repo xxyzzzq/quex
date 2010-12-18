@@ -3,8 +3,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 
-#if ! defined(__QUEX_OPTION_CONVERTER_ENABLED)
-#   error "This file should only be included if __QUEX_OPTION_CONVERTER_ENABLED is defined!"
+#if ! defined(__QUEX_OPTION_CONVERTER)
+#   error "This file should only be included if __QUEX_OPTION_CONVERTER is defined!"
 #endif
 
 #include <quex/code_base/MemoryManager>
@@ -487,10 +487,10 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/buffer/BufferFiller.i>
 
-#ifdef QUEX_OPTION_ENABLE_ICONV
+#ifdef QUEX_OPTION_CONVERTER_ICONV
 #   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
 #endif
-#ifdef QUEX_OPTION_ENABLE_ICU
+#ifdef QUEX_OPTION_CONVERTER_ICU
 #   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #endif
 #include <quex/code_base/MemoryManager.i>

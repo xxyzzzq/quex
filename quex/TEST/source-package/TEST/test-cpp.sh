@@ -40,7 +40,11 @@ case $1 in
         ;;
 esac
 
-rm -rf pkg/*
+if [ -d pkg ]; then
+    rm -rf pkg/*
+else
+    mkdir pkg
+fi
 
 echo "(0) Running Quex (no output is good output)"
 quex -i simple.qx -o EasyLexer --source-package pkg $option

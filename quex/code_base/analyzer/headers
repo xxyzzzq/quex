@@ -19,6 +19,12 @@
 #include    <quex/code_base/MemoryManager>
 #include    <quex/code_base/analyzer/Mode>
 #
+#ifdef      __QUEX_OPTION_COUNTER
+#include    <quex/code_base/analyzer/Counter>
+#endif
+#ifdef      QUEX_OPTION_INCLUDE_STACK
+#   include <quex/code_base/analyzer/member/include-stack>
+#endif
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
@@ -27,9 +33,6 @@
 #endif
 #ifdef      QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer>
-#endif
-#ifdef      __QUEX_OPTION_COUNTER
-#include    <quex/code_base/analyzer/Counter>
 #endif
 
 #include    <quex/code_base/analyzer/member/basic>
@@ -41,6 +44,5 @@
 #include    <quex/code_base/analyzer/member/mode-handling>
 #include    <quex/code_base/analyzer/member/token-receiving>
 #include    <quex/code_base/analyzer/member/token-sending>
-#include    <quex/code_base/analyzer/member/include-stack>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS */

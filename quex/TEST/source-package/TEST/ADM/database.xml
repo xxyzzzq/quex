@@ -1,19 +1,34 @@
-<test-database execution-time-sec="0.90" date="Sat Dec 18 05:15:56 2010">
+<test-database execution-time-sec="13.99" date="Sat Dec 18 05:42:58 2010">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="0.90"> 
-            <application file-name="test-cpp.sh" info-request-time="1292645267L" vanished="False"/>
+        <test title="C++" time-sum-sec="7.36"> 
+            <application file-name="test-cpp.sh" info-request-time="1292646328L" vanished="False"/>
             <choice-list number="10" same_result="True">
-               <choice name="plain" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="iconv" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="icu" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="codec" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="codec-utf8" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="codec-utf16" result="FAIL" time_sec="0.10" crc="-359142566"/>
-               <choice name="post-categorizer" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="no-string-accumulator" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="no-include-stack" result="FAIL" time_sec="0.09" crc="-359142566"/>
-               <choice name="no-counter" result="FAIL" time_sec="0.08" crc="-359142566"/>
+               <choice name="plain" result="OK" time_sec="0.70" crc="-359142566"/>
+               <choice name="iconv" result="OK" time_sec="0.74" crc="-359142566"/>
+               <choice name="icu" result="OK" time_sec="0.79" crc="-359142566"/>
+               <choice name="codec" result="OK" time_sec="0.71" crc="-359142566"/>
+               <choice name="codec-utf8" result="OK" time_sec="0.73" crc="-359142566"/>
+               <choice name="codec-utf16" result="OK" time_sec="0.71" crc="-359142566"/>
+               <choice name="post-categorizer" result="OK" time_sec="0.77" crc="-359142566"/>
+               <choice name="no-string-accumulator" result="OK" time_sec="0.73" crc="-359142566"/>
+               <choice name="no-include-stack" result="OK" time_sec="0.78" crc="-359142566"/>
+               <choice name="no-counter" result="OK" time_sec="0.70" crc="-359142566"/>
+            </choice-list>
+        </test>
+        <test title="C" time-sum-sec="6.63"> 
+            <application file-name="test-c.sh" info-request-time="1292647350L" vanished="False"/>
+            <choice-list number="10" same_result="True">
+               <choice name="plain" result="OK" time_sec="0.63" crc="881272033"/>
+               <choice name="iconv" result="OK" time_sec="0.68" crc="881272033"/>
+               <choice name="icu" result="OK" time_sec="0.69" crc="881272033"/>
+               <choice name="codec" result="OK" time_sec="0.67" crc="881272033"/>
+               <choice name="codec-utf8" result="OK" time_sec="0.63" crc="881272033"/>
+               <choice name="codec-utf16" result="OK" time_sec="0.64" crc="881272033"/>
+               <choice name="post-categorizer" result="OK" time_sec="0.70" crc="881272033"/>
+               <choice name="no-string-accumulator" result="OK" time_sec="0.65" crc="881272033"/>
+               <choice name="no-include-stack" result="OK" time_sec="0.70" crc="881272033"/>
+               <choice name="no-counter" result="OK" time_sec="0.65" crc="881272033"/>
             </choice-list>
         </test>
     </group>

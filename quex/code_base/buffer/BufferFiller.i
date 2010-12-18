@@ -31,7 +31,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER*, 
                                                                      const ptrdiff_t);
 
-#   if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#   if defined(__QUEX_OPTION_CONVERTER)
     QUEX_INLINE QUEX_NAME(Converter)* QUEX_NAME(__Converter_EMPTY_new)() { return 0x0; }
 #   endif
 
@@ -43,7 +43,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         (void)TranslationBufferMemorySize;
         if( CharacterEncodingName != 0x0 ) {
 
-#           if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#           if defined(__QUEX_OPTION_CONVERTER)
             if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == QUEX_NAME(__Converter_EMPTY_new) ) {
                 QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
                                 "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
@@ -66,7 +66,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           endif
        
         } else {
-#           if defined(__QUEX_OPTION_CONVERTER_ENABLED) 
+#           if defined(__QUEX_OPTION_CONVERTER) 
 #           ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
             __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
                               "Warning: analyzer was generated for use with a converter.\n" \
@@ -688,7 +688,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#if defined(__QUEX_OPTION_CONVERTER_ENABLED)
+#if defined(__QUEX_OPTION_CONVERTER)
 #   include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #else
 #   include <quex/code_base/buffer/plain/BufferFiller_Plain.i>

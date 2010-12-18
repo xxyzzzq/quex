@@ -71,15 +71,16 @@ SETUP_INFO = {
     "token_class_name_safe":                     None,
     "token_id_prefix_name_space":                None,
     "token_id_prefix_plain":                     None,   # i.e. without the namespace specified.
-    "output_buffer_codec_header_file": None,
-    "output_header_file":                           None,
-    "output_configuration_file":                    None,
-    "output_code_file":                             None,
-    "output_token_id_file":                         None,
-    "output_token_class_file_implementation":       None,
-    "output_token_class_file":                      None,
-    "language_db":                                  None,
-    "extension_db":                                 None,
+    "output_buffer_codec_header_file":           None,
+    "output_header_file":                        None,
+    "output_configuration_file":                 None,
+    "output_code_file":                          None,
+    "output_token_id_file":                      None,
+    "output_token_class_file_implementation":    None,
+    "output_token_class_file":                   None,
+    "language_db":                               None,
+    "extension_db":                              None,
+    "converter_helper_required_f":               True,
     #______________________________________________________________________________________________________
     "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
     "XX_buffer_element_size":            [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
