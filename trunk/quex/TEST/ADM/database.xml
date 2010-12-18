@@ -1,21 +1,21 @@
-<test-database execution-time-sec="3.01" date="Sat Dec 18 09:33:11 2010">
+<test-database execution-time-sec="3.60" date="Sat Dec 18 22:14:09 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.41"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.71"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.41" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.71" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.10"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1290630049L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.03" crc="-855506886"/>
+           <choice name="" result="FAIL" time_sec="0.10" crc="-855506886"/>
         </choice-list>
     </test>
-    <test title="Check if the default configuration has been updated." time-sum-sec="0.01"> 
+    <test title="Check if the default configuration has been updated." time-sum-sec="0.03"> 
         <application file-name="check-default-configuration.sh" info-request-time="1288770751L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.01" crc="630411569"/>
+           <choice name="" result="FAIL" time_sec="0.03" crc="630411569"/>
         </choice-list>
     </test>
     <test title="" time-sum-sec="2.01"> 
@@ -30,17 +30,17 @@
            <choice name="" result="OK" time_sec="0.07" crc="-639186265"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.02"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.05"> 
         <application file-name="macro-check.py" info-request-time="1288770713L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.02" crc="-1467740473"/>
+           <choice name="" result="FAIL" time_sec="0.05" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.42"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.58"> 
         <application file-name="include_guard.py" info-request-time="1288771971L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="convention" result="OK" time_sec="0.21" crc="-1057591907"/>
-           <choice name="undefinition" result="FAIL" time_sec="0.21" crc="-1546884230"/>
+           <choice name="undefinition" result="FAIL" time_sec="0.37" crc="-1546884230"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

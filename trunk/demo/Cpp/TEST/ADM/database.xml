@@ -1,4 +1,4 @@
-<test-database execution-time-sec="298.41" date="Sat Dec 18 09:33:09 2010">
+<test-database execution-time-sec="320.94" date="Sat Dec 18 22:14:05 2010">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -150,7 +150,7 @@
                <choice name="point" result="FAIL" time_sec="10.03" crc="None"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="77.90"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="100.43"> 
             <application file-name="010.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="6.79" crc="1030682096"/>
@@ -158,9 +158,9 @@
                <choice name="point" result="OK" time_sec="7.91" crc="861795188"/>
                <choice name="copy-ez" result="OK" time_sec="6.74" crc="-812025512"/>
                <choice name="fill-ez" result="OK" time_sec="6.98" crc="-812025512"/>
-               <choice name="copy-conversion" result="FAIL" time_sec="8.81" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="FAIL" time_sec="8.76" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="FAIL" time_sec="8.97" crc="-470382527"/>
+               <choice name="copy-conversion" result="OK" time_sec="16.70" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="16.12" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="16.25" crc="-470382527"/>
                <choice name="stdinlexer" result="OK" time_sec="8.61" crc="248250308"/>
                <choice name="re-point" result="OK" time_sec="7.40" crc="1228316465"/>
             </choice-list>
