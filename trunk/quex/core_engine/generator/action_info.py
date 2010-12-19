@@ -3,6 +3,7 @@ from quex.frs_py.file_in import is_identifier_start, \
                                 is_identifier_continue, \
                                 open_file_or_die, \
                                 write_safely_and_close
+from quex.input.setup import setup as Setup
 
 class CodeFragment:
     def __init__(self, Code="", RequireTerminatingZeroF=False):
@@ -89,11 +90,25 @@ class UserCodeFragment(CodeFragment):
     def get_code(self):
         return self.adorn_with_source_reference(self.get_pure_code())
 
+    def adapt_reference(self, FileName):
+        global Setup
+        # If the source packager is active, then everything becomes relative
+        # to the new source package directory.
+        if Setup.source_package == "": return FileName
+
+        code_base_dir = Setup.language_db["$code_base"]
+        idx = FileName.find(code_base_dir)
+        if idx != -1:
+            return Setup.source_package + "/" + FileName[idx:]
+
+        return FileName
+
     def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
         if Code.strip() == "": return Code
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
         norm_filename = self.filename.replace("\\", "/")
+        norm_filename = self.adapt_reference(norm_filename) 
         txt  = '\n#line %i "%s"\n' % (self.line_n, norm_filename)
         txt += Code
         if ReturnToSourceF:
