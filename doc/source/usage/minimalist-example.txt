@@ -80,8 +80,7 @@ the following command would create the executable of the lexical analyser:
 
 .. code-block:: bash
 
-   > $CC  lexer.cpp  tiny_lexer.cpp tiny_lexer-core-engine.cpp \
-          -I$QUEX_PATH -I. -o lexer 
+   > $CC  lexer.cpp  tiny_lexer.cpp -I$QUEX_PATH -I. -o lexer 
 
 The `$CC` needs to be replaced by the compiler that you are using 
 (e.g g++, icpc, sunCC etc.).  The
@@ -142,10 +141,24 @@ location of the package has to be passed as an include path, i.e.
 
 .. code-block:: bash
 
-   > $CC  lexer.cpp  tiny_lexer.cpp tiny_lexer-core-engine.cpp \
-          -Imy-package -I. -o lexer 
+   > $CC  lexer.cpp  tiny_lexer.cpp -Imy-package -I. -o lexer 
 
 The source packager only collects those files which are actually required.
 Thus the command line instructs quex to create the independent source
 package should look exactly the same as the 'usual' command line plus
-the ``--source-package`` option.
+the ``--source-package`` option. Alternatively, the compiler's pre-process
+could be used to generated a macro-expanded, all-included source file.
+The GNU Compilers supports this via the '-E' command line option. The
+command line
+
+.. code-block:: bash
+
+   > cat lexer.cpp >> tiny_lexer.cpp
+   > g++ tiny_lexer.cpp -I$QUEX_PATH -I. -E -o my-packaged-lexer.cpp
+
+The first line appends the user's lexer to the generated engine so that
+all is together in one single file. The second line uses the compiler
+to expand all macros and include all include files into one single
+source file that can now be compiled independently. This, however, 
+might include also some standard library headers which under normal
+conditions are not required in an independent source package.
