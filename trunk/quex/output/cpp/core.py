@@ -3,10 +3,10 @@ import os
 from   copy import copy
 import time
 
-from quex.frs_py.string_handling import blue_print
-from quex.frs_py.file_in         import get_file_content_or_die, \
-                                        get_include_guard_extension, \
-                                        make_safe_identifier
+from   quex.frs_py.string_handling import blue_print
+from   quex.frs_py.file_in         import get_file_content_or_die, \
+                                          get_include_guard_extension, \
+                                          make_safe_identifier
 
 from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
 import quex.lexer_mode  as     lexer_mode

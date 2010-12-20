@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "Source Packager: C;"
-    echo "CHOICES: plain, iconv, icu, codec, codec-utf8, codec-utf16, post-categorizer, no-string-accumulator, no-include-stack, no-counter;"
+    echo "CHOICES: plain, iconv, icu, codec, codec-utf8, codec-utf16, post-categorizer, no-string-accumulator, no-include-stack, no-counter, manual-token-class, customized-token-class;"
     echo "SAME;"
     exit
 fi
@@ -9,34 +9,40 @@ fi
 
 case $1 in
     plain) 
-        option=''
+        option='-i simple.qx '
         ;;
     iconv)
-        option='--iconv'
+        option='-i simple.qx --iconv'
         ;;
     icu)
-        option='--icu'
+        option='-i simple.qx --icu'
         ;;
     codec)
-        option='--codec iso8859_7'
+        option='-i simple.qx --codec iso8859_7'
         ;;
     codec-utf8)
-        option='--codec utf8'
+        option='-i simple.qx --codec utf8'
         ;;
     codec-utf16)
-        option='--codec utf16 --bes 2'
+        option='-i simple.qx --codec utf16 --bes 2'
         ;;
     post-categorizer)
-        option='--icu --post-categorizer'
+        option='-i simple.qx --icu --post-categorizer'
         ;;
     no-string-accumulator)
-        option='--no-string-accumulator'
+        option='-i simple.qx --no-string-accumulator'
         ;;
     no-include-stack)
-        option='--icu --no-include-stack'
+        option='-i simple.qx --icu --no-include-stack'
         ;;
     no-counter)
-        option='--no-count-lines --no-count-columns'
+        option='-i simple.qx --no-count-lines --no-count-columns'
+        ;;
+    customized-token-class)
+        option='-i example_token-c.qx simple.qx'
+        ;;
+    manual-token-class)
+        option='-i simple.qx --token-class-file example_token.h --token-class blackray::token'
         ;;
 esac
 
@@ -48,7 +54,7 @@ fi
 
 
 echo "(0) Running Quex (no output is good output)"
-quex -i simple.qx -o EasyLexer --source-package pkg $option --language C
+quex -o EasyLexer --source-package pkg $option --language C
 
 echo "(1) Running gcc (no output is good output)"
 gcc  -Ipkg -I. pkg/EasyLexer.c -o pkg/EasyLexer.o -c -Wall -W
