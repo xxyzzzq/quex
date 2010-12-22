@@ -2,6 +2,7 @@ from   quex.frs_py.file_in import *
 import quex.lexer_mode     as     lexer_mode
 from   quex.output.cpp.token_id_maker         import TokenInfo
 from   quex.input.setup                       import setup as Setup
+from   quex.input.setup                       import QuexSetup
 from   quex.input.ucs_db_parser               import ucs_property_db
 from   quex.core_engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.core_engine.generator.action_info import *
@@ -16,7 +17,7 @@ def parse(fh, CodeFragmentName,
 
                 None in case of failure.
     """
-    assert Setup.__class__.__name__ == "something"
+    assert Setup.__class__ == QuexSetup
     assert type(ErrorOnFailureF)        == bool
     assert type(AllowBriefTokenSenderF) == bool
 

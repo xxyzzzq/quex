@@ -4,6 +4,7 @@ from quex.frs_py.file_in import is_identifier_start, \
                                 open_file_or_die, \
                                 write_safely_and_close
 from quex.input.setup import setup as Setup
+from quex.input.setup import get_file_reference
 
 class CodeFragment:
     def __init__(self, Code="", RequireTerminatingZeroF=False):
@@ -61,16 +62,6 @@ UserCodeFragment_OpenLinePragma = {
         ],
    }
 
-def get_file_reference(FileName):
-    """When a source package is specified, then the must be given
-       with 'relative coordinates' to the source package directory.
-       
-       if 'SourcePackager':
-           $QUEX_PATH/quex/code_base --> source-package-dir/quex/code_base
-           .  (current dir)          --> source-package-dir     
-    """
-    
-
 class UserCodeFragment(CodeFragment):
     def __init__(self, Code, Filename, LineN, LanguageDB=None):
         assert type(Code)       in [str, unicode]
@@ -90,25 +81,12 @@ class UserCodeFragment(CodeFragment):
     def get_code(self):
         return self.adorn_with_source_reference(self.get_pure_code())
 
-    def adapt_reference(self, FileName):
-        global Setup
-        # If the source packager is active, then everything becomes relative
-        # to the new source package directory.
-        if Setup.source_package == "": return FileName
-
-        code_base_dir = Setup.language_db["$code_base"]
-        idx = FileName.find(code_base_dir)
-        if idx != -1:
-            return Setup.source_package + "/" + FileName[idx:]
-
-        return FileName
-
     def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
         if Code.strip() == "": return Code
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
-        norm_filename = self.filename.replace("\\", "/")
-        norm_filename = self.adapt_reference(norm_filename) 
+        norm_filename = get_file_reference(self.filename) 
+        norm_filename = norm_filename.replace("\\", "/")
         txt  = '\n#line %i "%s"\n' % (self.line_n, norm_filename)
         txt += Code
         if ReturnToSourceF:
@@ -124,6 +102,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
         return
 
     fh = open_file_or_die(filename)
+    filename = get_file_reference(filename)
 
     new_content = ""
     line_n      = 0
