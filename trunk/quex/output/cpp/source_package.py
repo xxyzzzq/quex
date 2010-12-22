@@ -13,7 +13,7 @@ find quex/code_base \
      -or -name "TXT*"      -or -name "*.txt"  -or -name "*.sw?"   \
      -or -path "*DESIGN*"  -or -name "*.7z"   -or -name "*ignore" \
      -or -name "*DELETED*" -or -name .        -or -name "*_body"  \
-     -or -name "[1-9]"     -or -name "circle"      -or -name "*.o"     \
+     -or -name "[1-9]"     -or -name "circle" -or -name "*.o"     \
      -or -name "*.exe"     -prune  \
      -or -type f -print | sort
 """
@@ -22,7 +22,6 @@ base = """
 /asserts
 /aux-string
 /aux-string.i
-/core.mkd
 /definitions
 /include-guard-undef
 /MemoryManager

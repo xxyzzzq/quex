@@ -17,6 +17,7 @@ import quex.lexer_mode             as lexer_mode
 from   quex.lexer_mode             import token_id_db
 from   quex.frs_py.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
+from   quex.input.setup            import get_file_reference
 
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
@@ -172,7 +173,7 @@ def do(setup, IndentationSupportF):
                        % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
 
     if setup.token_id_foreign_definition_file != "":
-        token_id_txt = ["#include\"%s\"\n" % setup.token_id_foreign_definition_file]
+        token_id_txt = ["#include\"%s\"\n" % get_file_reference(setup.token_id_foreign_definition_file)]
 
     else:
         if setup.language == "C": 
@@ -214,7 +215,7 @@ def do(setup, IndentationSupportF):
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        "".join(token_id_txt)],
                           ["$$DATE$$",                        time.asctime()],
-                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.token_type_definition.get_file_name()],
+                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", get_file_reference(lexer_mode.token_type_definition.get_file_name())],
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(
                                                                   LanguageDB["$namespace-ref"](tc_descr.name_space) 
                                                                   + "__" + tc_descr.class_name)],

@@ -137,11 +137,11 @@ independent source package, by
 
 The source package and the generated lexical analyzer are then located in
 directory ``my-packager``. That for compiling the source package the
-location of the package has to be passed as an include path, i.e.
+location of the package has to be passed as an include path with ``-I``, i.e.
 
 .. code-block:: bash
 
-   > $CC  lexer.cpp  tiny_lexer.cpp -Imy-package -I. -o lexer 
+   > $CC  lexer.cpp  tiny_lexer.cpp -Imy-package -o lexer 
 
 The source packager only collects those files which are actually required.
 Thus the command line instructs quex to create the independent source

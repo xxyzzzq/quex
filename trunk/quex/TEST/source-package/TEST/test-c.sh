@@ -6,6 +6,11 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
+if [ -d pkg ]; then
+    rm -rf pkg/*
+else
+    mkdir pkg
+fi
 
 case $1 in
     plain) 
@@ -42,22 +47,16 @@ case $1 in
         option='-i example_token-c.qx simple.qx'
         ;;
     manual-token-class)
-        option='-i simple.qx --token-class-file example_token.h --token-class blackray::token'
+        cp example_token-c.h pkg/
+        option='-i simple.qx --token-class-file example_token-c.h --token-class Token'
         ;;
 esac
-
-if [ -d pkg ]; then
-    rm -rf pkg/*
-else
-    mkdir pkg
-fi
-
 
 echo "(0) Running Quex (no output is good output)"
 quex -o EasyLexer --source-package pkg $option --language C
 
 echo "(1) Running gcc (no output is good output)"
-gcc  -Ipkg -I. pkg/EasyLexer.c -o pkg/EasyLexer.o -c -Wall -W
+gcc  -Ipkg pkg/EasyLexer.c -o pkg/EasyLexer.o -c -Wall -W
 
 echo "(2) Double check that output file exists"
 ls    pkg/EasyLexer.o

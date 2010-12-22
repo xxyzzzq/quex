@@ -158,7 +158,7 @@ installation of quex, the following option may be used
         'as usual' must be used with the added `--source-package` option.
 
         The string that follows is the directory where the source package is
-        to be put.
+        to be located.
             
 For the support of derivation from the generated lexical analyzer class the
 following command line options can be used.
