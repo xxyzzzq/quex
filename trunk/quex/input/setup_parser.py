@@ -174,8 +174,8 @@ def do(argv):
     # Before file names can be prepared, determine the output directory
     # If 'source packaging' is enabled and no output directory is specified
     # then take the directory of the source packaging.
-    if setup.source_package != "" and setup.output_directory == "":
-        setup.output_directory = setup.source_package
+    if setup.source_package_directory != "" and setup.output_directory == "":
+        setup.output_directory = setup.source_package_directory
 
     # (*) Output files
     prepare_file_names(setup)
