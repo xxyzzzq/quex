@@ -1,4 +1,4 @@
-<test-database execution-time-sec="198.58" date="Thu Dec 23 07:57:55 2010">
+<test-database execution-time-sec="198.65" date="Thu Dec 23 21:23:54 2010">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.42"> 
@@ -37,7 +37,7 @@
                <choice name="codec" result="OK" time_sec="1.83" crc="-416551666"/>
             </choice-list>
         </test>
-        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.53"> 
+        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.54"> 
             <application file-name="bug-2599228.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Developper" result="OK" time_sec="0.26" crc="1346908960"/>
@@ -80,7 +80,7 @@
                <choice name="codec" result="OK" time_sec="2.80" crc="1937036231"/>
             </choice-list>
         </test>
-        <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="0.75"> 
+        <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="0.74"> 
             <application file-name="bug-2937342.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="299683308"/>
@@ -115,7 +115,7 @@
                <choice name="5" result="OK" time_sec="0.75" crc="-2109073766"/>
             </choice-list>
         </test>
-        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="7.52"> 
+        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="7.51"> 
             <application file-name="feature-2078087.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="GOTO" result="OK" time_sec="2.23" crc="1277117499"/>
@@ -156,7 +156,7 @@
                <choice name="" result="OK" time_sec="1.18" crc="-1678622511"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="4.94"> 
+        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="4.95"> 
             <application file-name="bug-2161098-x.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="c_comments" result="OK" time_sec="1.64" crc="-105643959"/>
@@ -255,7 +255,7 @@
                <choice name="" result="OK" time_sec="0.23" crc="776931317"/>
             </choice-list>
         </test>
-        <test title="2251359 (feature) Single-character token without name" time-sum-sec="2.12"> 
+        <test title="2251359 (feature) Single-character token without name" time-sum-sec="2.14"> 
             <application file-name="feature-2251359.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="good" result="OK" time_sec="0.81" crc="1728033802"/>
@@ -306,6 +306,14 @@
             <application file-name="bug-2841726.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.13" crc="1790920770"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="ollydbg">
+        <test title="3142578 Output token identifier definition" time-sum-sec="0.00"> 
+            <application file-name="feature-3142578.sh" info-request-time="1293135807L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="-1163110788"/>
             </choice-list>
         </test>
     </group>
@@ -377,7 +385,7 @@
                <choice name="" result="OK" time_sec="0.46" crc="649471339"/>
             </choice-list>
         </test>
-        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="4.38"> 
+        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="4.37"> 
             <application file-name="bug-1895500.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iconv" result="OK" time_sec="2.51" crc="-1482504339"/>
@@ -408,7 +416,7 @@
                <choice name="" result="OK" time_sec="0.32" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="2796383 0.39.3 does not handle token_type without distinct section" time-sum-sec="0.79"> 
+        <test title="2796383 0.39.3 does not handle token_type without distinct section" time-sum-sec="0.80"> 
             <application file-name="bug-2796383.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="case-1" result="OK" time_sec="0.15" crc="-28827932"/>
@@ -690,7 +698,7 @@
                <choice name="" result="OK" time_sec="0.65" crc="-417698345"/>
             </choice-list>
         </test>
-        <test title="3030640 0.50.1 Adding .hpp extension to generated headers" time-sum-sec="1.39"> 
+        <test title="3030640 0.50.1 Adding .hpp extension to generated headers" time-sum-sec="1.40"> 
             <application file-name="feature-3030640.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="pp" result="OK" time_sec="0.20" crc="-311783427"/>
