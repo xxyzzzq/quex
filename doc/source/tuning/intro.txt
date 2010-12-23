@@ -53,7 +53,11 @@ coefficient to be set by the command line argument::
 
 A meaningful setting for 'number' is in between 0 to 1.5. Especially for
 lexical analyzers for unicode with large transition maps can profit
-tremendously from template compression.
+tremendously from template compression. If your compiler supports computed
+gotos try to set ``QUEX_OPTION_COMPUTED_GOTOS`` on the compilers' command
+line, e.g. with GNU C++::
+
+   > g++ -DQUEX_OPTION_COMPUTED_GOTOS ... MyLexer.cpp -c -o MyLexer.o
 
 
 Principle of Template Compression
@@ -97,6 +101,7 @@ has been introduced that defines how aggressively states shall be combined.
 That means how much lack of similarity can is tolerated and states can still be
 combined into sets. 
 
+
 Path Compression
 ================
 
@@ -136,7 +141,10 @@ Instead of implementing for each state of the path a full state, only one state
 is implemented a so called 'pathwalker'. A pathwalker consists of the
 transition map which is common to all states of the path and the path itself. 
 
-Principle of Template Compression
+As with template compression using the computed feature of your compiler
+might improve performance and code size.
+
+Principle of Path Compression
 #################################
 
 .. _fig-path-compression-before:
@@ -193,3 +201,4 @@ It follows a list of general hints for performance tuning:
    between the two. Use ``memmove`` when source and destination may overlap.
 
 [to be continued]
+
