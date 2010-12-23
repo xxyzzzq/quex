@@ -509,21 +509,24 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     on_failure_str += msg
     variable_db.update(db)
 
-    # -- routing to states via switch statement
-    #    (note, the gcc computed goto is implement, too)
-    txt = ""
-    for state_index, state in sm.states.items():
-        if state.transitions().is_empty(): continue
-        txt += "            "
-        txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
-
-    if sm.core().pre_context_sm() != None:
-        for state_index, state in sm.core().pre_context_sm().states.items():
+    if False:
+        # TO BE DELETED ____________________________________________________________________________________
+        # -- routing to states via switch statement
+        #    (note, the gcc computed goto is implement, too)
+        txt = ""
+        for state_index, state in sm.states.items():
             if state.transitions().is_empty(): continue
             txt += "            "
             txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
 
-    switch_cases_drop_out_back_router_str = txt
+        if sm.core().pre_context_sm() != None:
+            for state_index, state in sm.core().pre_context_sm().states.items():
+                if state.transitions().is_empty(): continue
+                txt += "            "
+                txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
+
+        switch_cases_drop_out_back_router_str = txt
+        # TO BE DELETED ____________________________________________________________________________________
 
     if PreConditionIDList == []: precondition_involved_f = "0"
     else:                        precondition_involved_f = "1"
@@ -627,7 +630,7 @@ def __require_terminating_zero_preparation(LanguageDB, CodeStr):
                return True
 
 def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
-    __label_used_in_computed_goto_list_unique[PatternID] = True 
+    __label_used_in_computed_goto_list_unique.add(PatternID)
     return "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % PatternID + \
            "QUEX_SET_last_acceptance(%s);\n" % PatternID
 

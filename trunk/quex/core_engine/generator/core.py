@@ -202,7 +202,6 @@ def delete_unused_labels(Code):
             else:
                 replacement_db[first_letter].append([original, replacement])
 
-
     # Distinguish between:
     #   'nothing_labels' -- labels that can be replaced by nothing.
     #   'computed_goto_labels' -- labels that must be replaced by conditional compilation
@@ -239,6 +238,7 @@ def delete_unused_labels_FAST(Code, LabelList):
         length = len(original)
         if length < 4: return ""
         idx = Code.find(original)
+        # Replace label by spaces
         while idx != -1:
             i = idx
             while i < idx + length:

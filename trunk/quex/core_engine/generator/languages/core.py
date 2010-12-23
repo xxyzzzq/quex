@@ -42,9 +42,9 @@ __label_db = \
 }
 
 ## 
-__label_printed_list_unique = {}
-__label_used_list_unique    = {}
-__label_used_in_computed_goto_list_unique = {}
+__label_printed_list_unique               = set([])
+__label_used_list_unique                  = set([])
+__label_used_in_computed_goto_list_unique = set([])
 
 def label_db_marker_init():
     global __label_printed_list_unique
@@ -58,15 +58,15 @@ def label_db_get(Type, Index, GotoTargetF=False):
     global __label_printed_list_unique
     global __label_used_list_unique
     global __label_db
-    
+
     label = __label_db[Type](Index)
 
     if Type in ["$re-start", "$start"]: return label
 
     # Keep track of any label. Labels which are not used as goto targets
     # may be deleted later on.
-    if GotoTargetF: __label_used_list_unique[label]    = True
-    else:           __label_printed_list_unique[label] = True
+    if GotoTargetF: __label_used_list_unique.add(label)
+    else:           __label_printed_list_unique.add(label)
 
     return label
 
@@ -79,10 +79,10 @@ def label_db_marker_get_unused_label_list():
     computed_goto_label_set = []
 
     # print "##0", __label_used_list_unique.keys()
-    # print "##1", __label_printed_list_unique.keys()
-    printed       = __label_printed_list_unique.keys()
-    used          = __label_used_list_unique.keys()
-    computed_goto = __label_used_in_computed_goto_list_unique.keys()
+    # print "##1", __label_printed_list_unique
+    printed       = __label_printed_list_unique
+    used          = __label_used_list_unique
+    computed_goto = __label_used_in_computed_goto_list_unique
     for label in printed:
         if label not in used:
             if label in computed_goto:
