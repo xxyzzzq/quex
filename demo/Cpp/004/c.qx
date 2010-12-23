@@ -1,6 +1,77 @@
 // -*- C++ -*- vim: set syntax=cpp:
 start = PROGRAM;
 
+token {
+    PP_INCLUDE;
+    PP_DEFINE;
+    PP_IF;
+    PP_ELIF;
+    PP_IFDEF;
+    PP_IFNDEF;
+    PP_ENDIF;
+    PP_ELSE;
+    PP_PRAGMA;
+    PP_ERROR;
+    PP_DEFINED;
+    BACKLASHED_NEWLINE;
+    TYPE_UNSIGNED;
+    TYPE_INT;
+    TYPE_LONG;
+    TYPE_FLOAT;
+    TYPE_DOUBLE;
+    TYPE_CHAR;
+    HASH;
+    DOUBLE_HASH;
+    QUESTION_MARK;
+    TILDE;
+    BRACKET_O;
+    BRACKET_C;
+    CORNER_BRACKET_O;
+    CORNER_BRACKET_C;
+    CURLY_BRACKET_O;
+    CURLY_BRACKET_C;
+    OP_ASSIGNMENT;
+    PLUS;
+    MINUS;
+    MULT;
+    DIV;
+    MODULO;
+    ASSIGN_PLUS;
+    ASSIGN_MINUS;
+    ASSIGN_MULT;
+    ASSIGN_DIV;
+    EQ;
+    NOT_EQ;
+    GREATER;
+    GR_EQ;
+    LESS;
+    LE_EQ;
+    NOT;
+    LOGICAL_OR;
+    EXCLUSIVE_OR;
+    OR;
+    AMPERSANT;
+    AND;
+    COLON;
+    STRUCT;
+    CONST;
+    IF;
+    ELSE;
+    SWITCH;
+    FOR;
+    DO;
+    WHILE;
+    BREAK;
+    CONTINUE;
+    SEMICOLON;
+    DOT;
+    COMMA;
+    IDENTIFIER;
+    NUMBER;
+    STRING;
+    QUOTED_CHAR;
+}
+
 
 define {
     // Pattern definitions for example application

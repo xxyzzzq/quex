@@ -1,4 +1,9 @@
-simple.qx:13:warning: Token id 'QUEX_TKN_Z' defined implicitly.
+simple.qx:13:warning: There were implicit token identifier definitions. Quex proposes
+simple.qx:13:warning: to define them in a token { ... } section, i.e.
+simple.qx:13:warning: 
+simple.qx:13:warning:    token {
+simple.qx:13:warning:      Z;
+simple.qx:13:warning:    }
 simple.qx:2:warning: Token id 'UNINITIALIZED'
 simple.qx:8:warning: and token id 'F' have same numeric value '111'.
 simple.qx:5:warning: Token id 'C'

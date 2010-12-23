@@ -1,4 +1,9 @@
-simple.qx:9:warning: Token id 'QUEX_TKN_X' defined implicitly.
-simple.qx:10:warning: Token id 'QUEX_TKN_Y' defined implicitly.
+simple.qx:9:warning: There were implicit token identifier definitions. Quex proposes
+simple.qx:9:warning: to define them in a token { ... } section, i.e.
+simple.qx:9:warning: 
+simple.qx:9:warning:    token {
+simple.qx:9:warning:      X;
+simple.qx:10:warning:      Y;
+simple.qx:10:warning:    }
 No error -- is just fine
 Simple.o

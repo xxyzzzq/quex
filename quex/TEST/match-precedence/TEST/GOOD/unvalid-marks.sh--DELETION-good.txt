@@ -1,1 +1,6 @@
-data/DELETION-good.qx:4:warning: Token id 'QUEX_TKN_THING' defined implicitly.
+data/DELETION-good.qx:4:warning: There were implicit token identifier definitions. Quex proposes
+data/DELETION-good.qx:4:warning: to define them in a token { ... } section, i.e.
+data/DELETION-good.qx:4:warning: 
+data/DELETION-good.qx:4:warning:    token {
+data/DELETION-good.qx:4:warning:      THING;
+data/DELETION-good.qx:4:warning:    }

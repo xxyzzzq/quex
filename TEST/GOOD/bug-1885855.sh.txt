@@ -1,1 +1,6 @@
-error.qx:6:warning: Token id 'QUEX_TKN_WS' defined implicitly.
+error.qx:6:warning: There were implicit token identifier definitions. Quex proposes
+error.qx:6:warning: to define them in a token { ... } section, i.e.
+error.qx:6:warning: 
+error.qx:6:warning:    token {
+error.qx:6:warning:      WS;
+error.qx:6:warning:    }

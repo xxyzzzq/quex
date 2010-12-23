@@ -664,6 +664,15 @@ shorthand_db = {}
 #-----------------------------------------------------------------------------------------
 token_id_db = {}
 
+
+#-----------------------------------------------------------------------------------------
+# token_id_implicit_list: Keep track of all token identifiers that ware defined 
+#                         implicitly, i.e. not in a token section or in a token id file. 
+#                         Each list element has three cells:
+#                         [ Prefix-less Token ID, Line number in File, File Name]
+#-----------------------------------------------------------------------------------------
+token_id_implicit_list = []
+
 #-----------------------------------------------------------------------------------------
 # token_repetition_support: Quex can be told to return multiple times the same
 #                           token before further analyzsis happens. For this,
