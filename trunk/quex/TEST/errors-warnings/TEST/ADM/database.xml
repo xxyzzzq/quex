@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.18" date="Wed Dec 22 06:24:17 2010">
+<test-database execution-time-sec="0.42" date="Thu Dec 23 08:04:40 2010">
     <last-used-diff-display-program name=""/>
-    <test title="Token identifier definition and orthography." time-sum-sec="0.18"> 
+    <test title="Token identifier definition and orthography." time-sum-sec="0.42"> 
         <application file-name="token_identifier.sh" info-request-time="1266270614L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.18" crc="1792036181"/>
+           <choice name="" result="OK" time_sec="0.42" crc="1792036181"/>
         </choice-list>
     </test>
 </test-database>
