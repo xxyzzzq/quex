@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 from   quex.frs_py.file_in                       import get_propperly_slash_based_file_name
+from   quex.DEFINITIONS import QUEX_PATH
 
 import os.path as path
 
@@ -26,8 +27,9 @@ class QuexSetup:
             return clean(FileName)
 
         full_file_name          = clean(path.realpath(FileName))
-        full_source_package_dir = clean(path.realpath(self.source_package_directory))
-        full_code_base_dir      = clean(path.realpath(self.language_db["$code_base"]))
+        # Ensure that all directories end with '/'. The 'clean' will omit double slashes.
+        full_source_package_dir = clean(path.realpath(self.source_package_directory) + "/")
+        full_code_base_dir      = clean(path.realpath(QUEX_PATH + "/" + self.language_db["$code_base"]) + "/")
 
         print "##", full_file_name
         print "##", full_source_package_dir
@@ -36,7 +38,9 @@ class QuexSetup:
         idx = full_file_name.find(full_code_base_dir)
         if idx != -1:
             print "##2"
-            return clean(self.source_package_directory + "/" + full_file_name[idx:])
+            return clean(  self.source_package_directory 
+                         + "/" + self.language_db["$code_base"]
+                         + "/" + full_file_name[idx + len(self.source_package_directory):])
 
         elif self.source_package_directory != "" and self.output_directory == self.source_package_directory:
             print "##3"
@@ -44,8 +48,8 @@ class QuexSetup:
             # directory is specified, then the base directory is deleted from the FileName.
             idx = full_file_name.find(full_source_package_dir)
             if idx == 0: 
-                print "##4"
-                return clean(full_file_name[idx:])
+                print "##4", clean(full_file_name[len(full_source_package_dir):])
+                return clean(full_file_name[len(full_source_package_dir):])
 
         print "##5"
         return clean(FileName)
