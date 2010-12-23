@@ -222,7 +222,9 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
             msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
                    (Setup.token_id_prefix + TokenName)
             msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
-        error_msg(msg, fh, DontExitF=True)
+            error_msg(msg, fh, DontExitF=True)
+        else:
+            lexer_mode.token_id_implicit_list.append([prefix_less_TokenName, fh.name, get_current_line_info_number(fh)])
 
         # Enter the implicit token id definition in the database
         lexer_mode.token_id_db[prefix_less_TokenName] = \

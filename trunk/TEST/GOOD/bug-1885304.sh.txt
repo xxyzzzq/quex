@@ -674,7 +674,7 @@ QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
 
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED____QUEX____SIMPLE */
-#include"Simple"
+#include "Simple"
 #include <quex/code_base/analyzer/C-adaptions.h>
 QUEX_NAMESPACE_MAIN_OPEN
 /* Global */QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);

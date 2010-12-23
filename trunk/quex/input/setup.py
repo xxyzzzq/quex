@@ -19,11 +19,9 @@ class QuexSetup:
             return get_propperly_slash_based_file_name(X)
 
 
-        print "##0"
         # If the source packager is active, then everything becomes relative
         # to the new source package directory.
         if self.source_package_directory == "": 
-            print "##1"
             return clean(FileName)
 
         full_file_name          = clean(path.realpath(FileName))
@@ -31,27 +29,19 @@ class QuexSetup:
         full_source_package_dir = clean(path.realpath(self.source_package_directory) + "/")
         full_code_base_dir      = clean(path.realpath(QUEX_PATH + "/" + self.language_db["$code_base"]) + "/")
 
-        print "##", full_file_name
-        print "##", full_source_package_dir
-        print "##", full_code_base_dir
-
         idx = full_file_name.find(full_code_base_dir)
         if idx != -1:
-            print "##2"
             return clean(  self.source_package_directory 
                          + "/" + self.language_db["$code_base"]
                          + "/" + full_file_name[idx + len(self.source_package_directory):])
 
         elif self.source_package_directory != "" and self.output_directory == self.source_package_directory:
-            print "##3"
             # If we are in the process of 'source packaging' and no explicit output
             # directory is specified, then the base directory is deleted from the FileName.
             idx = full_file_name.find(full_source_package_dir)
             if idx == 0: 
-                print "##4", clean(full_file_name[len(full_source_package_dir):])
                 return clean(full_file_name[len(full_source_package_dir):])
 
-        print "##5"
         return clean(FileName)
 
 class something:

@@ -1,7 +1,12 @@
 quex -i error-3.qx -o Simple
-error-3.qx:5:warning: Token id 'QUEX_TKN_WORD' defined implicitly.
-error-3.qx:6:warning: Token id 'QUEX_TKN_QUOTE_S_PRE_COND' defined implicitly.
-error-3.qx:7:warning: Token id 'QUEX_TKN_OTHER' defined implicitly.
+error-3.qx:5:warning: There were implicit token identifier definitions. Quex proposes
+error-3.qx:5:warning: to define them in a token { ... } section, i.e.
+error-3.qx:5:warning: 
+error-3.qx:5:warning:    token {
+error-3.qx:5:warning:      WORD;
+error-3.qx:6:warning:      QUOTE_S_PRE_COND;
+error-3.qx:7:warning:      OTHER;
+error-3.qx:7:warning:    }
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 ----------------------------------
 'silly's

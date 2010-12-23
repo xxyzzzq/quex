@@ -121,6 +121,22 @@ def prepare_default_standard_token_ids():
 def __is_token_id_occupied(TokenID):
     return TokenID in map(lambda x: x.number, token_id_db.values())
 
+def __propose_implicit_token_definitions():
+    if len(lexer_mode.token_id_implicit_list) == 0: return
+
+    FileName = lexer_mode.token_id_implicit_list[0][1]
+    LineN    = lexer_mode.token_id_implicit_list[0][2]
+    error_msg("There were implicit token identifier definitions. Quex proposes\n"
+              "to define them in a token { ... } section, i.e.\n"
+              "\n"
+              "   token {" , FileName, LineN, 
+              DontExitF=True, WarningF=True)
+
+    for token_name, file_name, line_n in lexer_mode.token_id_implicit_list:
+        error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
+    error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
+
+
 def do(setup, IndentationSupportF):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
@@ -129,6 +145,8 @@ def do(setup, IndentationSupportF):
     """
     global file_str
     LanguageDB = Setup.language_db
+
+    __propose_implicit_token_definitions()
 
     for standard_token_id in standard_token_id_list:
         assert token_id_db.has_key(standard_token_id)

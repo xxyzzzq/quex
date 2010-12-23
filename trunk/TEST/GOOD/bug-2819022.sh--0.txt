@@ -1,9 +1,14 @@
 quex -i error-0.qx -o Simple
-error-0.qx:11:warning: Token id 'QUEX_TKN_WORD_POST_COND' defined implicitly.
-error-0.qx:12:warning: Token id 'QUEX_TKN_QUOTE_S_PRE_COND' defined implicitly.
-error-0.qx:13:warning: Token id 'QUEX_TKN_WORD' defined implicitly.
-error-0.qx:14:warning: Token id 'QUEX_TKN_OTHER' defined implicitly.
-error-0.qx:15:warning: Token id 'QUEX_TKN_NEWLINE' defined implicitly.
+error-0.qx:11:warning: There were implicit token identifier definitions. Quex proposes
+error-0.qx:11:warning: to define them in a token { ... } section, i.e.
+error-0.qx:11:warning: 
+error-0.qx:11:warning:    token {
+error-0.qx:11:warning:      WORD_POST_COND;
+error-0.qx:12:warning:      QUOTE_S_PRE_COND;
+error-0.qx:13:warning:      WORD;
+error-0.qx:14:warning:      OTHER;
+error-0.qx:15:warning:      NEWLINE;
+error-0.qx:15:warning:    }
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 ----------------------------------
 dog's 'silly' 

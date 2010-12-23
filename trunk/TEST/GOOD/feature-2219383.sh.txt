@@ -1,1 +1,6 @@
-simple.qx:3:warning: Token id 'TKN_2' defined implicitly.
+simple.qx:3:warning: There were implicit token identifier definitions. Quex proposes
+simple.qx:3:warning: to define them in a token { ... } section, i.e.
+simple.qx:3:warning: 
+simple.qx:3:warning:    token {
+simple.qx:3:warning:      2;
+simple.qx:3:warning:    }
