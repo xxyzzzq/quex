@@ -111,7 +111,7 @@ def do():
     # assert lexer_mode.token_type_definition != None
     UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
 
-    if Setup.source_package != "":
+    if Setup.source_package_directory != "":
         source_package.do()
 
 def __prepare_end_of_stream_action(Mode, IndentationSupportF):

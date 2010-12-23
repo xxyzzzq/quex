@@ -768,3 +768,11 @@ def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
     verify_word_in_list(FileName, files_in_directory, 
                         "File '%s' %snot found%s" % (FileName, comment, suffix), FH, LineN)
     
+def get_propperly_slash_based_file_name(PathName):
+    """Replaces backslashes '\\' by '/' and replaces adjacent
+       slashes by single slashes.
+    """
+    path = PathName.replace("\\", "/")
+    while path.find("//") != -1:
+        path = path.replace("//", "/")
+    return path

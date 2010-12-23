@@ -1,7 +1,11 @@
 #! /usr/bin/env python
-from quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
+from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
+from   quex.frs_py.file_in                       import get_propperly_slash_based_file_name
+
+import os.path as path
 
 class QuexSetup:
+
     def get_file_reference(self, FileName):
         """When a source package is specified, then the must be given
            with 'relative coordinates' to the source package directory.
@@ -10,27 +14,31 @@ class QuexSetup:
                $QUEX_PATH/quex/code_base --> source-package-dir/quex/code_base
                .  (current dir)          --> source-package-dir     
         """
+        def clean(X):
+            return get_propperly_slash_based_file_name(X)
+
+
         # If the source packager is active, then everything becomes relative
         # to the new source package directory.
-        if self.source_package == "": 
-            return FileName.replace("//","/")
+        if self.source_package_directory == "": 
+            return clean(FileName)
 
-        code_base_dir = self.language_db["$code_base"]
-        idx = FileName.find(code_base_dir)
+        full_file_name          = clean(path.realpath(FileName))
+        full_source_package_dir = clean(path.realpath(self.source_package_directory))
+        full_code_base_dir      = clean(path.realpath(self.language_db["$code_base"]))
+
+        idx = full_file_name.find(full_code_base_dir)
         if idx != -1:
-            return (self.source_package + "/" + FileName[idx:]).replace("//","/")
+            return clean(self.source_package_directory + "/" + full_file_name[idx:])
 
-        elif self.source_package != "" and self.output_directory == self.source_package:
+        elif self.source_package_directory != "" and self.output_directory == self.source_package_directory:
             # If we are in the process of 'source packaging' and no explicit output
             # directory is specified, then the base directory is deleted from the FileName.
-            idx = FileName.find(self.source_package)
+            idx = full_file_name.find(full_source_package_dir)
             if idx == 0: 
-                idx = len(self.source_package)
-                while FileName[idx] in ["/", "\\"]: 
-                    idx += 1
-                return FileName[idx:].replace("//","/")
+                return clean(full_file_name[idx:])
 
-        return FileName.replace("//","/")
+        return clean(FileName)
 
 class something:
     pass
@@ -83,7 +91,7 @@ SETUP_INFO = {
     "output_file_naming_scheme":      [["--file-extension-scheme", "--fes"],  ""],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
-    "source_package":                 [["--source-package", "--sp"],         ""],
+    "source_package_directory":       [["--source-package", "--sp"],         ""],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
@@ -299,35 +307,5 @@ setup.language_db = global_extension_db["C++"]
 setup.buffer_codec_transformation_info = None
 
 def get_file_reference(FileName):
-    setup.get_file_reference(FileName)
-
-    """When a source package is specified, then the must be given
-       with 'relative coordinates' to the source package directory.
-       
-       if 'SourcePackager':
-           $QUEX_PATH/quex/code_base --> source-package-dir/quex/code_base
-           .  (current dir)          --> source-package-dir     
-    """
-    global setup
-    # If the source packager is active, then everything becomes relative
-    # to the new source package directory.
-    if setup.source_package == "": 
-        return FileName.replace("//","/")
-
-    code_base_dir = setup.language_db["$code_base"]
-    idx = FileName.find(code_base_dir)
-    if idx != -1:
-        return (setup.source_package + "/" + FileName[idx:]).replace("//","/")
-
-    elif setup.source_package != "" and setup.output_directory == setup.source_package:
-        # If we are in the process of 'source packaging' and no explicit output
-        # directory is specified, then the base directory is deleted from the FileName.
-        idx = FileName.find(setup.source_package)
-        if idx == 0: 
-            idx = len(setup.source_package)
-            while FileName[idx] in ["/", "\\"]: 
-                idx += 1
-            return FileName[idx:].replace("//","/")
-
-    return FileName.replace("//","/")
+    return setup.get_file_reference(FileName)
 
