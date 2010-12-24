@@ -87,32 +87,39 @@ CHECK_IDENTIFIER:
 
    _____________________________________________________________________________
 """
-def get_difference(self, A, B):
+def get_metric(self, A, B):
     assert type(A) == dict
     assert type(B) == dict
 
     # Compute difference in transition maps
     #     --> table: [trigger_set, target state in skeleton, target state in candidate]
-    diff_in_A_not_in_B = NumberSet()
-    diff_not_in_A_in_B = NumberSet()
-    diff_in_both       = NumberSet()
+    only_in_A    = NumberSet()
+    only_in_B    = NumberSet()
+    diff_in_both = NumberSet()
 
     for A_target_index, A_trigger_set in A.items():
+        # If B does not trigger to the A_target_index at all, then the
+        # transition 'A_trigger_set --> A_target_index' is **only** in A.
         if B.has_key(target_index) == False:
-            diff_in_A_not_in_B.unite_with(A_trigger_set)
+            only_in_A.unite_with(A_trigger_set)
             continue
 
-        delta_set = B[A_target_index].mutual_exclusive_set(A_trigger_set)
+        # Collect triggers where A and B trigger to the same target index
+        # on different triggers. Symmetric difference = what is either in A
+        # or in B but not in both.
+        delta_set = B[A_target_index].symmetric_difference(A_trigger_set)
         if not delta_set.is_empty(): 
             diff_in_both.unite_with(delta_set)
             continue
 
     for B_target_index, B_trigger_set in B.items():
+        # If A does not trigger to B_target_index at all, then the
+        # transition 'B_trigger_set --> B_target_index' is **only** in B.
         if A.has_key(target_index) == False:
-            diff_not_in_A_in_B.unite_with(B_trigger_set)
+            only_in_B.unite_with(B_trigger_set)
             continue
 
-    return diff_in_A_not_in_B, diff_not_in_A_in_B, diff_in_both
+    return only_in_A, only_in_B, diff_in_both
 
 class Info:
     """Note: The path.CharacterPath class a lot in common with the Info.
@@ -121,6 +128,7 @@ class Info:
 
        -- A barren transition is a transition to subsequent state on the 
           bases of very few comparisons with respect to the input.
+
        -- Also, the state to which the barren transition triggers must
           fit, i.e. its 'fat transitions' and drop-out action must
           correspond.
@@ -152,9 +160,15 @@ class Info:
         return self.__fat
 
     def move_to_fat(self, TargetIndex):
+        """Moves a transition to TargetIndex from the set of barren
+           transitions to the set of 'fat' transitions.
+        """
+        assert self.__barren.has_key(TargetIndex)
+
         trigger_set = self.__fat.get(TargetIndex)
         if trigger_set == None: self.__fat[TargetIndex] = self.__barren[TargetIndex]
         else:                   trigger_set.unite_with(self.__barren[TargetIndex])
+
         del self.__barren[TargetIndex]
 
     def plug_wildcards(self, WildcardMap):
@@ -188,35 +202,34 @@ class Info:
         #     [     5     ][1]     [    3         ]              candidate OK
         #
         #     -- except for those covered by the wildcards.
-        diff_in_A_not_in_B, \
-        diff_not_in_A_in_B, \
+        only_in_A, \
+        only_in_B, \
         diff_in_both      = \
-                get_difference(self.__fat, CandidateFatTransitionMap)
+                get_metric(self.__fat, CandidateFatTransitionMap)
 
         # (1) what is in self's 'fat' but not in candidate's 'fat transition' 
         #     can **only** be covered by barren transitions of candidate.
-        if diff_in_A_not_in_B.is_empty() == False:
-            if not CandidateFatTransitionMap.is_superset(diff_in_A_not_in_B): return None
+        if not only_in_A.is_empty():
+            if not CandidateBarrenTriggerSet.is_superset(only_in_A): return None
 
         # (2) If self and candidate transit to different states on the same trigger set, then
         #     They can only be covered by barren trigger sets of the candidate.
-        if diff_in_both.is_empty() == False:
+        if not diff_in_both.is_empty():
             if not CandidateFatTransitionMap.is_superset(diff_in_both): return None
 
         # (3) what is in candidate's 'fat' but not in self's 'fat transition' 
         #     can **only** be covered by wildcards.
         used_wildcard_set = NumberSet()
-        if diff_not_in_A_in_B.is_empty() == False:
+        if not only_in_B.is_empty():
             if not self.__wildcard_set.is_superset(diff_in_both): return None
-            # Take the reference to 'diff_not_in_A_in_B' to avoid object creation
-            used_wildcard_set = diff_not_in_A_in_B
+            # Take the reference to 'only_in_B' to avoid object creation
+            used_wildcard_set = only_in_B
             used_wildcard_set.intersect_with(self.__wildcard_set)
 
         return used_wildcard_set
 
 def categorize(SM, MaxComparisonN):
-
-    # A state can only by absorbed by one other state.
+    # A state can only be absorbed by one other state.
     # => book keeping about each state that has been absorbed already.
     done_set = set([])
 

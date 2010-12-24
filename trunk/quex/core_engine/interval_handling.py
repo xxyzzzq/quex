@@ -725,7 +725,7 @@ class NumberSet:
 
         return clone
 
-    def mutual_exclusive_set(self, Other):
+    def symmetric_difference(self, Other):
         """Finds the set of numbers that is either in self or in Other but not
            in both. This corresponds to the operation 
            
