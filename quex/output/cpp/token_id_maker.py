@@ -124,12 +124,10 @@ def __is_token_id_occupied(TokenID):
 def __propose_implicit_token_definitions():
     if len(lexer_mode.token_id_implicit_list) == 0: return
 
-    FileName = lexer_mode.token_id_implicit_list[0][1]
-    LineN    = lexer_mode.token_id_implicit_list[0][2]
-    error_msg("There were implicit token identifier definitions. Quex proposes\n"
-              "to define them in a token { ... } section, i.e.\n"
-              "\n"
-              "   token {" , FileName, LineN, 
+    file_name = lexer_mode.token_id_implicit_list[0][1]
+    line_n    = lexer_mode.token_id_implicit_list[0][2]
+    error_msg("Detected implicit token identifier definitions. Proposal:\n"
+              "   token {" , file_name, line_n, 
               DontExitF=True, WarningF=True)
 
     for token_name, file_name, line_n in lexer_mode.token_id_implicit_list:

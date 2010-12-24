@@ -7,7 +7,7 @@ from quex.core_engine.interval_handling import Interval, NumberSet
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Massive Mutual Consistency Check"
-    print "CHOICES:   union, intersection, mutual_exclusive, difference, is_superset;"
+    print "CHOICES:   union, intersection, symmetric_difference, difference, is_superset;"
     print "SAME;"
     sys.exit(0)
 
@@ -152,10 +152,10 @@ elif "difference" in sys.argv:
     test("difference", A_difference_B, "subtract",          A_subtract_B)
     test("subtract",  A_subtract_B,    "intersect not ...", A_intersection_not_B)
 
-elif "mutual_exclusive" in sys.argv:
+elif "symmetric_difference" in sys.argv:
 
-    def mutual_exclusive(A, B):
-        return A.mutual_exclusive_set(B)
+    def symmetric_difference(A, B):
+        return A.symmetric_difference(B)
 
     def A_union_B_minus_A_intersection_B(A, B):
         x = deepcopy(A)
@@ -165,7 +165,7 @@ elif "mutual_exclusive" in sys.argv:
         x.subtract(y)
         return x
 
-    test("mutual_exclusive", mutual_exclusive, "union minus intersection", A_union_B_minus_A_intersection_B)
+    test("symmetric_difference", symmetric_difference, "union minus intersection", A_union_B_minus_A_intersection_B)
     # No second test ... for uniformity:
     print "Oll Korreckt: 4950"
 
