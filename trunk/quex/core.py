@@ -39,7 +39,9 @@ def do():
     # -- do the coding of the class framework
     header_engine_txt,           \
     constructor_and_memento_txt, \
-    header_configuration_txt = quex_class_out.do(mode_db, IndentationSupportF, BeginOfLineSupportF)
+    header_configuration_txt     = quex_class_out.do(mode_db, IndentationSupportF, 
+                                                     BeginOfLineSupportF)
+
     mode_implementation_txt  = mode_classes.do(mode_db)
 
     # (*) Generate the token ids
@@ -82,20 +84,20 @@ def do():
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # Implementation (Potential Inline Functions)
-    implemtation_txt =   constructor_and_memento_txt                + "\n" \
-                       + token_class_txt                            + "\n" 
+    implemtation_txt =   constructor_and_memento_txt + "\n" \
+                       + token_class_txt             + "\n" 
 
     # Engine (Source Code)
-    source_txt =   mode_implementation_txt + "\n" \
-                 + analyzer_code           + "\n" \
+    source_txt =   mode_implementation_txt                    + "\n" \
+                 + analyzer_code                              + "\n" \
                  + map_id_to_name_function_implementation_txt + "\n" 
 
     # (*) Write Files
     write_safely_and_close(Setup.output_configuration_file, header_configuration_txt)
     if Setup.language == "C":
         write_safely_and_close(Setup.output_header_file, header_engine_txt)
-        write_safely_and_close(Setup.output_code_file, source_txt + \
-                                                       implemtation_txt)
+        write_safely_and_close(Setup.output_code_file, 
+                               source_txt + implemtation_txt)
     else:
         header_txt = header_engine_txt.replace("$$ADDITIONAL_HEADER_CONTENT$$", implemtation_txt)
         write_safely_and_close(Setup.output_header_file, header_txt)

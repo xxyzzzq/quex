@@ -59,5 +59,13 @@ echo "(1) Running g++ (no output is good output)"
 g++  -Ipkg pkg/EasyLexer.cpp -o pkg/EasyLexer.o -c -Wall -W
 
 echo "(2) Double check that output file exists"
-ls    pkg/EasyLexer.o
+ls    pkg/EasyLexer.o 2> tmp.txt
+cat tmp.txt
+
+echo "(2.1) Double check that nothing in current directory. (no output is good output)."
+ls    EasyLexer* 2> tmp.txt
+cat tmp.txt
+
+rm -f tmp.txt
+
 
