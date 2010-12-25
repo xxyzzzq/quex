@@ -189,7 +189,7 @@ def do(setup, IndentationSupportF):
                        % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
 
     if setup.token_id_foreign_definition_file != "":
-        token_id_txt = ["#include\"%s\"\n" % get_file_reference(setup.token_id_foreign_definition_file)]
+        token_id_txt = ["#include \"%s\"\n" % get_file_reference(setup.token_id_foreign_definition_file)]
 
     else:
         if setup.language == "C": 

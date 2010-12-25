@@ -86,7 +86,6 @@ class UserCodeFragment(CodeFragment):
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
         norm_filename = get_file_reference(self.filename) 
-        norm_filename = norm_filename.replace("\\", "/")
         txt  = '\n#line %i "%s"\n' % (self.line_n, norm_filename)
         txt += Code
         if ReturnToSourceF:
