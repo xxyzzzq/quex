@@ -102,7 +102,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
         return
 
     fh = open_file_or_die(filename)
-    filename = get_file_reference(filename)
+    norm_filename = get_file_reference(filename)
 
     new_content = ""
     line_n      = 0
@@ -117,7 +117,6 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
                 # compiler warnings by setting line_n = min(line_n, 32768)
                 line = line.replace("NUMBER", repr(int(min(line_n + 1, 32767))))
                 # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
-                norm_filename = filename.replace("\\", "/")
                 line = line.replace("FILENAME", norm_filename)
                 line = line + "\n"
         new_content += line
