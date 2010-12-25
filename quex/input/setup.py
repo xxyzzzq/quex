@@ -29,19 +29,12 @@ class QuexSetup:
         full_source_package_dir = clean(path.realpath(self.source_package_directory) + "/")
         full_code_base_dir      = clean(path.realpath(QUEX_PATH + "/" + self.language_db["$code_base"]) + "/")
 
-        if FileName.find("CppDefault.qx") != -1:
-            print "## filename           = ", FileName
-            print "## full filename      = ", full_file_name
-            print "## source package dir = ", full_source_package_dir
-            print "## full_code_base_dir = ", full_code_base_dir
 
         idx = full_file_name.find(full_code_base_dir)
         if idx != -1:
-            print "##Found"
             result = clean(  self.source_package_directory 
                            + "/" + self.language_db["$code_base"]
-                           + "/" + full_file_name[idx + len(self.source_package_directory):])
-            print "## result = ", result
+                           + "/" + full_file_name[idx + len(full_source_package_dir):])
             return result
 
         elif self.source_package_directory != "" and self.output_directory == self.source_package_directory:
