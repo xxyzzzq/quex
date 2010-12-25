@@ -42,11 +42,8 @@ class QuexSetup:
             # directory is specified, then the base directory is deleted from the FileName.
             idx = full_file_name.find(full_source_package_dir)
             if idx == 0: 
-                print "## exit 2"
                 return clean(full_file_name[len(full_source_package_dir):])
-            print "## exit 3"
 
-        print "## exit 4"
         return clean(FileName)
 
 class something:
