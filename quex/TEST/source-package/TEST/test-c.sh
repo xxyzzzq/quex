@@ -6,8 +6,8 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
-# Check that Quex can deal with backslashes
-export QUEX_PATH=`echo $QUEX_PATH | sed -e 's/\\//\\\\/g'`
+## Check that Quex can deal with backslashes
+## export QUEX_PATH=`echo $QUEX_PATH | sed -e 's/\\//\\\\/g'`
 
 if [ -d pkg ]; then
     rm -rf pkg/*

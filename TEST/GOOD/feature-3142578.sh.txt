@@ -1,15 +1,11 @@
 One TokenID _________________________________________
-1.qx:1:warning: There were implicit token identifier definitions. Quex proposes
-1.qx:1:warning: to define them in a token { ... } section, i.e.
-1.qx:1:warning: 
+1.qx:1:warning: Detected implicit token identifier definitions. Proposal:
 1.qx:1:warning:    token {
 1.qx:1:warning:      A;
 1.qx:1:warning:    }
 No TokenID implicitly defined _______________________
 Three TokenIDs ______________________________________
-3.qx:1:warning: There were implicit token identifier definitions. Quex proposes
-3.qx:1:warning: to define them in a token { ... } section, i.e.
-3.qx:1:warning: 
+3.qx:1:warning: Detected implicit token identifier definitions. Proposal:
 3.qx:1:warning:    token {
 3.qx:1:warning:      A;
 3.qx:1:warning:      B;

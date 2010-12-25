@@ -1,7 +1,5 @@
 quex -i error-3.qx -o Simple
-error-3.qx:5:warning: There were implicit token identifier definitions. Quex proposes
-error-3.qx:5:warning: to define them in a token { ... } section, i.e.
-error-3.qx:5:warning: 
+error-3.qx:5:warning: Detected implicit token identifier definitions. Proposal:
 error-3.qx:5:warning:    token {
 error-3.qx:5:warning:      WORD;
 error-3.qx:6:warning:      QUOTE_S_PRE_COND;
