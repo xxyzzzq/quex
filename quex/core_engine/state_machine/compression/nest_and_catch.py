@@ -87,39 +87,82 @@ CHECK_IDENTIFIER:
 
    _____________________________________________________________________________
 """
-def get_metric(self, A, B):
-    assert type(A) == dict
-    assert type(B) == dict
+from quex.core_engine.interval_handling import NumberSet
 
-    # Compute difference in transition maps
-    #     --> table: [trigger_set, target state in skeleton, target state in candidate]
-    only_in_A    = NumberSet()
-    only_in_B    = NumberSet()
-    diff_in_both = NumberSet()
+class MatchInfo:
+    """An object of this class describes the 'relationship' between
+       a state A (the 'parent') and a state B (the 'child') where 
+       there are transitions from A to B. That means, that B can
+       potentially be nested into A.
 
-    for A_target_index, A_trigger_set in A.items():
-        # If B does not trigger to the A_target_index at all, then the
-        # transition 'A_trigger_set --> A_target_index' is **only** in A.
-        if B.has_key(target_index) == False:
-            only_in_A.unite_with(A_trigger_set)
-            continue
+       The decision about nesting B into A is based on how much of 
+       the transition map of B can be caught by A's transition map.
+       For example:
 
-        # Collect triggers where A and B trigger to the same target index
-        # on different triggers. Symmetric difference = what is either in A
-        # or in B but not in both.
-        delta_set = B[A_target_index].symmetric_difference(A_trigger_set)
-        if not delta_set.is_empty(): 
-            diff_in_both.unite_with(delta_set)
-            continue
+        STATE_A:                   STATE_B:
+                                                     
+           if *p == 'm':              if *p == 'z':
+               goto STATE_B;              goto 4712;
+           if *p in [a-ln-z]:         if *p in [a-y]:
+               goto 4711;                 goto 4711;
 
-    for B_target_index, B_trigger_set in B.items():
-        # If A does not trigger to B_target_index at all, then the
-        # transition 'B_trigger_set --> B_target_index' is **only** in B.
-        if A.has_key(target_index) == False:
-            only_in_B.unite_with(B_trigger_set)
-            continue
+        Can be transformed into:
 
-    return only_in_A, only_in_B, diff_in_both
+           if *p == 'm':         # From STATE_A
+              ++p;
+              if *p == 'z':      # From STATE_B
+                  goto 4712;
+           if *p in [a-z]:       # Common remainder for both, provided
+              goto 4711;         # that 'm' and 'z' are checked before.
+
+        Potentially, there might be open wildcards from trigger ranges
+        that appear in A and B. This object contains:
+
+            -- common catch map.
+
+            -- wildcard trigger map.
+    """
+    def __init__(self, ParentTM, ParentWC, ChildTM):
+        """ParentTM -- Parent State Trigger Map
+           ParentWC -- Parent's Wild Cards, that is the trigger set
+                       where the parent state transits to nested child
+                       states. The Catch Clause can be modified so that
+                       it adapts to the requirements of child states.
+           ChildTM  -- Child State Trigger Map
+        """
+        assert type(ParentTM) == dict
+        assert type(ParentWC) == NumberSet
+        assert type(ChildTM) == dict
+
+        # Compute difference in transition maps
+        #     --> table: [trigger_set, target state in skeleton, target state in candidate]
+        only_in_A    = NumberSet()
+        only_in_B    = NumberSet()
+        diff_in_both = NumberSet()
+
+        for A_target_index, A_trigger_set in A.items():
+            # If B does not trigger to the A_target_index at all, then the
+            # transition 'A_trigger_set --> A_target_index' is **only** in A.
+            if B.has_key(target_index) == False:
+                only_in_A.unite_with(A_trigger_set)
+                continue
+
+            # Collect triggers where A and B trigger to the same target index
+            # on different triggers. Symmetric difference = what is either in A
+            # or in B but not in both.
+            delta_set = B[A_target_index].symmetric_difference(A_trigger_set)
+            if not delta_set.is_empty(): 
+                diff_in_both.unite_with(delta_set)
+                continue
+
+        for B_target_index, B_trigger_set in B.items():
+            # If A does not trigger to B_target_index at all, then the
+            # transition 'B_trigger_set --> B_target_index' is **only** in B.
+            if A.has_key(target_index) == False:
+                only_in_B.unite_with(B_trigger_set)
+                continue
+
+        return only_in_A, only_in_B, diff_in_both
 
 class Info:
     """Note: The path.CharacterPath class a lot in common with the Info.
