@@ -18,6 +18,9 @@ class QuexSetup:
         def clean(X):
             return get_propperly_slash_based_file_name(X)
 
+        code_base_directory = self.language_db["$code_base"]
+        # The starting backslash must be assumed for many things ...
+        assert code_base_directory[0] == "/"
 
         # If the source packager is active, then everything becomes relative
         # to the new source package directory.
@@ -27,24 +30,27 @@ class QuexSetup:
         full_file_name          = clean(path.realpath(FileName))
         # Ensure that all directories end with '/'. The 'clean' will omit double slashes.
         full_source_package_dir = clean(path.realpath(self.source_package_directory) + "/")
-        full_code_base_dir      = clean(path.realpath(QUEX_PATH + "/" + self.language_db["$code_base"]) + "/")
+        full_code_base_dir      = clean(path.realpath(QUEX_PATH + code_base_directory) + "/")
 
-        if FileName.find("CppDefault.qx") != -1:
-            print "## filename           = ", FileName
-            print "## full filename      = ", full_file_name
-            print "## source package dir = ", full_source_package_dir
-            print "## full_code_base_dir = ", full_code_base_dir
+        ##if FileName.find("CppDefault.qx") != -1:
+        ##    print "## filename           = ", FileName
+        ##    print "## full filename      = ", full_file_name
+        ##    print "## source package dir = ", full_source_package_dir
+        ##    print "## full_code_base_dir = ", full_code_base_dir
 
         idx = full_file_name.find(full_code_base_dir)
         if idx != -1:
-            print "##Found"
-            print "## source package directory = ", self.source_package_directory
-            print "## languages' code_base     = ", self.language_db["$code_base"]
-            print "## local file               = ", idx, len(full_code_base_dir), \
-                                                    full_file_name[idx + len(full_code_base_dir):]
-            result = clean(   self.language_db["$code_base"]
+            ## print "##Found"
+            ## print "## source package directory = ", self.source_package_directory
+            ## print "## languages' code_base     = ", self.language_db["$code_base"]
+            ## print "## local file               = ", idx, len(full_code_base_dir), \
+            ##                                        full_file_name[idx + len(full_code_base_dir):]
+
+            # The starting '/' must be deleted from codebase, since otherwise
+            # it will be considered as an absolute path under Unix.
+            result = clean(   code_base_directory[1:]
                            + "/" + full_file_name[idx + len(full_code_base_dir):])
-            print "## result = ", result
+            ## print "## result = ", result
             return result
 
         elif self.source_package_directory != "" and self.output_directory == self.source_package_directory:
@@ -52,11 +58,8 @@ class QuexSetup:
             # directory is specified, then the base directory is deleted from the FileName.
             idx = full_file_name.find(full_source_package_dir)
             if idx == 0: 
-                print "## exit 2"
                 return clean(full_file_name[len(full_source_package_dir):])
-            print "## exit 3"
 
-        print "## exit 4"
         return clean(FileName)
 
 class something:
