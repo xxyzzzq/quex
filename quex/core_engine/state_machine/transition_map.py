@@ -124,6 +124,12 @@ class TransitionMap:
 
         return result
 
+    def get_drop_out_trigger_set_union(self):
+        """This function returns the union of all trigger sets that do not
+           transit to any target.
+        """
+        return self.get_trigger_set_union().inverse()
+
     def get_epsilon_target_state_index_list(self):
         return self.__epsilon_target_index_list
 
