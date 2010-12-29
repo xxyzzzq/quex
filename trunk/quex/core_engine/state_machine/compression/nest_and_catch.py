@@ -88,125 +88,162 @@ CHECK_IDENTIFIER:
    _____________________________________________________________________________
 """
 from quex.core_engine.interval_handling            import NumberSet
-from quex.core_engine.state_machine.transition_map import TransitionMap
 
-class MatchInfo:
-    """An object of this class describes the 'relationship' between
-       a state A (the 'parent') and a state B (the 'child') where 
-       there are transitions from A to B. That means, that B can
-       potentially be nested into A.
+"""An object of this class describes the 'relationship' between
+   a state A (the 'parent') and a state B (the 'child') where 
+   there are transitions from A to B. That means, that B can
+   potentially be nested into A.
 
-       The decision about nesting B into A is based on how much of 
-       the transition map of B can be caught by A's transition map.
-       For example:
+   The decision about nesting B into A is based on how much of 
+   the transition map of B can be caught by A's transition map.
+   For example:
 
-        STATE_A:                   STATE_B:
-                                                     
-           if *p == 'm':              if *p == 'z':
-               goto STATE_B;              goto 4712;
-           if *p in [a-ln-z]:         if *p in [a-y]:
-               goto 4711;                 goto 4711;
+    STATE_A:                   STATE_B:
+                                                 
+       if *p == 'm':              if *p == 'z':
+           goto STATE_B;              goto 4712;
+       if *p in [a-ln-z]:         if *p in [a-y]:
+           goto 4711;                 goto 4711;
 
-        Can be transformed into:
+    Can be transformed into:
 
-           if *p == 'm':         # From STATE_A
-              ++p;
-              if *p == 'z':      # From STATE_B
-                  goto 4712;
-           if *p in [a-z]:       # Common remainder for both, provided
-              goto 4711;         # that 'm' and 'z' are checked before.
+       if *p == 'm':         # From STATE_A
+          ++p;
+          if *p == 'z':      # From STATE_B
+              goto 4712;
+       if *p in [a-z]:       # Common remainder for both, provided
+          goto 4711;         # that 'm' and 'z' are checked before.
 
-        Potentially, there might be open wildcards from trigger ranges
-        that appear in A and B. This object contains:
+    Potentially, there might be open wildcards from trigger ranges
+    that appear in A and B. This object contains:
 
-            -- common catch map.
+        -- common catch map.
 
-            -- wildcard trigger map.
+        -- wildcard trigger map.
+"""
+
+def get_private_map_for_child(Child, ParentCM):
+    """ParentCM -- Parent State's Catch Trigger Map
+                   This is the trigger map that is placed after all
+                   nested states. The nested states drop into this map
+                   if they fail with their tests.
+
+       ** NOTE: The ParentCM must contain a '-1' target that triggers **
+       **      on 'drop-out', i.e. when no other target triggers.     **
+
+       Child  -- Child State
+
+       IDEA: The child might be nested in the parent state so that some
+             transitions of the child might actually happen in the parent's
+             trigger map (provided they are partly the same). Thus, the 'sum' 
+
+                           child's private trigger map
+                         + parent's catch map
+               (1)     ---------------------------------
+                         = child's trigger map
+
+             The 'sum' is actually more like a union where the child's private
+             trigger map dominated. That means, that if the parent's catch map
+             and the child's private trigger map might trigger on the same
+             trigger, but the private trigger map dominates.
+
+        SOLUTION: 
+        
+            A child's private trigger map that can be determined so that
+            equation (1) holds can be determined as follows:
+
+            (A) If child's trigger map triggers to a target which is not in
+                parent's catch map, then the whole transition enters the
+                child's private trigger map. Here the child cannot rely at all
+                on the parent's catch map.
+
+            (B) If the child's triggers to a target that is also in the parent's 
+                catch map, then 
+
+                  (i) if the related trigger maps are the same
+                      => nothing to be done, parent catches correctly.
+
+                  (ii) else this means that the parent's catch map can't help
+                       for the whole trigger set. 
+                       => Difference of the trigger set, must enter the child's 
+                          private trigger map.
+
+             This solution only works, if the 'drop-out' target is contained 
+             as a target, here '-1'.
     """
-    def __init__(self, ParentCM, ChildState):
-        """ParentCM -- Parent State's Catch Trigger Map
-                       This is the trigger map that is placed after all
-                       nested states. The nested states drop into this map
-                       if they fail with their tests.
+    assert type(ParentCM) == dict
+    assert ParentCM.has_key(-1L)
 
-           ** NOTE: The ParentCM must contain a '-1' target that triggers **
-           **      on 'drop-out', i.e. when no other target triggers.     **
+    def add(private_tm, Target, TriggerSet):
+        trigger_set = private_tm.get(Target)
+        if trigger_set == None:
+            private_tm[Target] = deepcopy(TriggerSet)
+        else:
+            trigger_set.unite_with(TriggerSet)
 
-           ChildTM  -- Child State Trigger Map
+    # Generate a trigger map that also contains the '-1' for drop out.
+    child_tm = Child.transitions().get_map().items() 
+    child_tm.append((-1L, Child.transitions().get_drop_out_trigger_set_union()))
 
-           IDEA: The child might be nested in the parent state so that some
-                 transitions of the child might actually happen in the parent's
-                 trigger map (provided they are partly the same). Thus, the 'sum' 
+    # -- Anything that contradicts with the parent's catch map must be done in the
+    #    child's private map:  
+    #                          target state index ---> trigger set 
+    private_tm = {}
 
-                               child's private trigger map
-                             + parent's catch map
-                   (1)     ---------------------------------
-                             = child's trigger map
+    for child_target, child_trigger in child_tm:
+        parent_catch_trigger = ParentCM.has_key(child_target)
+        if parent_catch_trigger == None:
+            # (A) Parent's catch map doesn't even transit to target
+            add(private_tm, child_target, child_trigger)
 
-                 The 'sum' is actually more like a union where the child's private
-                 trigger map dominated. That means, that if the parent's catch map
-                 and the child's private trigger map might trigger on the same
-                 trigger, but the private trigger map dominates.
+        elif parent_catch_trigger.is_equal(child_trigger):
+            # (B.i) Parent's catch map is exactly the same as the child
+            #       => child does not have to do anything.
+            pass
+        else:
+            # (B.ii) Parent's catch map is not enough.
+            #        => child needs to do something
+            add(private_tm, child_target, child_trigger.difference(parent_catch_trigger))
 
-            SOLUTION: 
+    return private_tm
             
-                A child's private trigger map that can be determined so that
-                equation (1) holds can be determined as follows:
 
-                (A) If child's trigger map triggers to a target which is not in
-                    parent's catch map, then the whole transition enters the
-                    child's private trigger map. Here the child cannot rely at all
-                    on the parent's catch map.
+def nest(SM, State):
 
-                (B) If the child's triggers to a target that is also in the parent's 
-                    catch map, then 
+    def get_metric(trigger_map):
+        complexity = 0
+        for trigger_set in trigger_map.values():
+            complexity += trigger_set.interval_number()
+        return complexity
 
-                      (i) if the related trigger maps are the same
-                          => nothing to be done, parent catches correctly.
+    # Generate a trigger map that also contains the '-1' for drop out.
+    # (Only copy, not deepcopy; 
+    #  Only the dictionary structure must be modified, not the trigger set.)
+    catch_map     = copy(State.transitions().get_map())
+    catch_map[-1] = State.transitions().get_drop_out_trigger_set_union()
 
-                      (ii) else this means that the parent's catch map can't help
-                           for the whole trigger set. 
-                           => Difference of the trigger set, must enter the child's 
-                              private trigger map.
+    # Go through all subsequent states (childs) and determine their 'private map'.
+    # That is, the trigger map that cannot be done by a drop into the parent's trigger map.
+    db = []
+    for state_index, trigger_set in catch_map:
+        if state_index == -1L: continue
+        private_map = SM.states[state_index]
+        metric      = get_metric(private_map)
+        if metric < BorderValue:
+            db.append([metric, trigger_set.interval_number(), state_index, private_map])
 
-                 This solution only works, if the 'drop-out' target is contained 
-                 as a target, here '-1'.
-        """
-        assert type(ParentCM) == dict
-        assert ParentCM.has_key(-1L)
-        assert ChildTM.__type__ == TransitionMap
+    # Determine commonality between child's private maps
+    commonality = determine_commonality(db)
+    
+    # Determine the set of nested childs
 
-        # -- Anything that contradicts with the parent's catch map must be done in the
-        #    child's private map:  
-        #                          target state index ---> trigger set 
-        childs_private_tm = {}
+    # Recompute the catch map
 
-        def add(private_tm, Target, TriggerSet):
-            trigger_set = private_tm.get(Target)
-            if trigger_set == None:
-                private_tm[Target] = deepcopy(TriggerSet)
-            else:
-                trigger_set.unite_with(TriggerSet)
+    # Recompute the child's private map
 
-        child_tm = ChildTM.get_map().items() + [(-1L, ChildTM.get_drop_out_trigger_set_union())]
+    # See what parts of private maps can be done by wildcards
 
-        for child_target, child_trigger in child_tm:
-            parent_catch_trigger = ParentCM.has_key(child_target)
-            if parent_catch_trigger == None:
-                # (A) Parent's catch map doesn't even transit to target
-                add(childs_private_tm, child_target, child_trigger)
 
-            elif parent_catch_trigger.is_equal(child_trigger):
-                # (B.i) Parent's catch map is exactly the same as the child
-                #       => child does not have to do anything.
-                pass
-            else:
-                # (B.ii) Parent's catch map is not enough.
-                #        => child needs to do something
-                add(childs_private_tm, child_target, child_trigger.difference(parent_catch_trigger))
-
-        return childs_private_tm
-            
 
 class Info:
     """Note: The path.CharacterPath class a lot in common with the Info.
