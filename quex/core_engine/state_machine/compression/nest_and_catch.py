@@ -216,21 +216,16 @@ def nest(SM, State):
             complexity += trigger_set.interval_number()
         return complexity
 
-    # Generate a trigger map that also contains the '-1' for drop out.
-    # (Only copy, not deepcopy; 
-    #  Only the dictionary structure must be modified, not the trigger set.)
-    catch_map     = copy(State.transitions().get_map())
-    catch_map[-1] = State.transitions().get_drop_out_trigger_set_union()
+    parent_tm = copy(State.transitions().get_map())
 
     # Go through all subsequent states (childs) and determine their 'private map'.
     # That is, the trigger map that cannot be done by a drop into the parent's trigger map.
-    db = []
-    for state_index, trigger_set in catch_map:
-        if state_index == -1L: continue
-        private_map = SM.states[state_index]
-        metric      = get_metric(private_map)
-        if metric < BorderValue:
-            db.append([metric, trigger_set.interval_number(), state_index, private_map])
+    child_list = parent_tm.iterkeys()
+    # Find commonalities between childs
+    for i, child_a in enumerate(child_list):
+        for child_b in child_list[i+1:]:
+            get_common_transitions(SM, child_a, child_b)
+
 
     # Determine commonality between child's private maps
     commonality = determine_commonality(db)
@@ -243,6 +238,149 @@ def nest(SM, State):
 
     # See what parts of private maps can be done by wildcards
 
+
+common_transition_db = {}
+def common_transition_db_get(A, B):
+    """The common transitions between two states are kept in a 
+       little database, so that they do not have to be computed twice.
+
+       Once, all computations are done 'common_transition_db_cleer()'
+       can be called to free the related memory.
+    """
+    global common_transition_db
+
+    x = common_transition_db.get(A)
+    if x == None: return None
+    y = x.get(B)
+    if y == None: return None
+    return y
+
+
+def common_transition_db_clear(A, B):
+    """Free the memory related to the cache."""
+    global common_transition_db
+    common_transition_db.clear()
+
+
+def get_common_transitions(SM, StateIndexA, StateIndexB):
+    """This function determines the common transition map of two states
+       provided that their non-common transitions are checked before. For
+       example:
+
+         STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
+                   [bc] --> 4711                    [ac] --> 4711
+
+       have the common transition: 
+
+                                [abc] --> 4711 
+
+       provided that their other non-common transitions are checked before. 
+       That is
+
+         STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
+                   else --> COMMON                  else --> COMMON
+
+                          COMMON:  [abc] --> 4711  
+
+       Thus, the fact that 'a' is in the common transition does not harm state
+       A, because if the input is 'a' it takes care of it before the COMMON is
+       reached. Respectively, state B does not mind about 'b' being in the
+       common set, ...
+
+       RETURNS: A dictionary that contains the common transitions, i.e. a map
+
+                target state index --> trigger_set
+
+       The 'private transitions' of A and B can be determined easily. Any target
+       state that appears in the common transition (the RETURN value) is not
+       a 'private transition'. Any other is. This holds for the transition map
+       of A and B.
+
+    """
+    # If the result has been computed before, then we do not have to do it again:
+    tm = common_transition_db_get(StateIndexA, StateIndexB)
+    if tm != None: return tm
+
+    tm_a = SM.states[StateIndexA].transitions().get_map()
+    tm_b = SM.states[StateIndexB].transitions().get_map()
+
+    target_state_list = tm_a.iterkeys() + tm_b.iterkeys()
+
+    # (1) Obviously common transitions ________________________________________
+    #     Here, only transitions are considered to be common if they trigger
+    #     on the **same** trigger set to the **same** target state.
+    #
+    #     Some transitions might not be exactly be the same, but their union 
+    #     might be considered common, if the 'holes' are covered by other 
+    #     transitions. Those candidates are collected in 'remainder'.
+    remainder = []
+    # 
+    for target in target_state_list:
+        a_trigger_set = tm_a.get(target)
+        b_trigger_set = tm_b.get(target)
+        if a_trigger_set == None or b_trigger_set == None:
+            # -- If one of A and B does not trigger to the target at all, 
+            #    => Then it cannot build a common transition.
+            pass
+
+        elif a_trigger_set.is_equal(b_trigger_set):
+            # -- If A and B trigger at exactly the same trigger set
+            #    => Accept the transition the trigger set into the common set.
+            common_tm[target] = a_trigger_set
+
+        else:
+            # -- If A and/or B cover the 'holes' in the trigger set by their
+            #    own transitions, then the transition can still enter the common set.
+            #    => Watch out, later.
+            remainder.append(target)
+
+     # (2) Non-obvious common transitions _____________________________________
+     #     Consider those transitions that are common, if one considers that 
+     #     the states cover some of the trigger sets with their own transitions.
+
+     # Build the trigger sets that might plug the holes in the transitions.
+     # The non-common transitions are checked **before** the common transitions.
+     # Thus, if they are allowed in the later common transition, it does not
+     # matter, since they are dealt with before. In this sense, the non-common 
+     # transitions act like a 'shadow' that renders differences to the common
+     # trigger map meaningless.
+     def get_shadow(TriggerMap, CommonTM):
+         """The 'shadow' of the non-common transitions is simply the union of 
+            all non-common transitions.
+         """
+         result = NumberSet()
+         for target, trigger_set in TriggerMap.iteritems():
+             if CommonTM.has_key(target): continue
+             result.unite_with(trigger_set)
+
+     a_shadow_trigger_set = get_shadow(tm_a, common_tm)
+     b_shadow_trigger_set = get_shadow(tm_b, common_tm)
+
+     # Consider remaining candidates (referred to by the target index)
+     for target in remainder:
+        a_trigger_set = tm_a.get(target)
+        b_trigger_set = tm_b.get(target)
+
+        # Union = candidate trigger set for common transition
+        union = a_trigger_set.union(b_trigger_set)
+
+        # Are the 'holes' in A covered by other transitions
+        holes = union.difference(a_trigger_set)
+        if not a_shadow_trigger_set.is_superset(holes):
+            # No --> the transition cannot be part of the common set
+            continue
+
+        # Are the 'holes' in B covered by other transitions
+        holes = union.difference(b_trigger_set)
+        if not b_shadow_trigger_set.is_superset(holes):
+            # No --> the transition cannot be part of the common set
+            continue
+
+        # Both transition maps cover their holes in the union of the 
+        # trigger set, so the union can be considered as part of the common set.
+        common_tm[target] = union
+
+    return common_tm
 
 
 class Info:
