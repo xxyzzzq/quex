@@ -306,6 +306,8 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
 
     target_state_list = tm_a.iterkeys() + tm_b.iterkeys()
 
+    common_tm        = {}
+    partly_common_tm = {}
     # (1) Obviously common transitions ________________________________________
     #     Here, only transitions are considered to be common if they trigger
     #     on the **same** trigger set to the **same** target state.
@@ -361,27 +363,96 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
         a_trigger_set = tm_a.get(target)
         b_trigger_set = tm_b.get(target)
 
+        # NOTE: Set operation '-':   X - Y = X & (not Y)
+        #
         # Union = candidate trigger set for common transition
-        union = a_trigger_set.union(b_trigger_set)
+        #       = a_trigger_set | b_trigger_set
+        #
+        # The set of 'holes' in A is what A does not have in its own trigger set, i.e.
+        #
+        # a_holes = Union - a_trigger_set
+        #         = Union & (not a_trigger_set)
+        #         = (a_trigger_set & not a_trigger_set) | (b_trigger_set & not a_trigger_set)
+        #
+        # Thus:
+        a_holes = b_trigger_set.difference(a_trigger_set)
+        # Respectively:
+        b_holes = a_trigger_set.difference(b_trigger_set)
 
-        # Are the 'holes' in A covered by other transitions
-        holes = union.difference(a_trigger_set)
-        if not a_shadow_trigger_set.is_superset(holes):
-            # No --> the transition cannot be part of the common set
+        # (1) If both 'holes' are covered by their 'shadows' (see above) then the union
+        #     can enter the set of common transitions
+        if     a_shadow_trigger_set.is_superset(a_holes) \
+           and b_shadow_trigger_set.is_superset(b_holes):
+            common_tm[target] = a_trigger_set.union(b_trigger_set)
             continue
 
-        # Are the 'holes' in B covered by other transitions
-        holes = union.difference(b_trigger_set)
-        if not b_shadow_trigger_set.is_superset(holes):
-            # No --> the transition cannot be part of the common set
-            continue
+        if not PartlyCommonTransitionsF: continue
 
-        # Both transition maps cover their holes in the union of the 
-        # trigger set, so the union can be considered as part of the common set.
-        common_tm[target] = union
+        # (2) Consider 'partly common transitions', i.e. where the states do parts of 
+        #     the transitions on their own.
+        transition = get_partly_common_transition(a_holes, a_trigger_set, 
+                                                  b_holes, b_trigger_set)
+        if transition != None:
+            partly_common_tm[target] = transition
 
-    return common_tm
+    if PartlyCommonTransitionsF: return common_tm, partly_common_tm
+    else:                        return common_tm
 
+def get_partly_common_transition(AHoles, ATriggerSet, BHoles, BTriggerSet):
+    """It is possible that there is a common trigger set that just needs some
+       help from one or the other state. Example:
+
+         STATE A:  [a]  --> 4710          STATE B:  [b]   --> 4713
+                   [bc] --> 4711                    [acd] --> 4711
+
+       Here, [abc] or [abcd] would not be a common trigger set in the sense of
+       'get_common_transitions()'. It cannot be [abc], because state B triggers
+       on [d] to 4711 and it cannot be [abcd] because state A does not require
+       [d] to trigger to 4711. But, if one of the two states 'helps' then there
+       can be a solution. Actually, there are three possible solutions:
+
+       Solution 1:
+
+         STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
+                   else --> COMMON                  [d]  --> 4711
+                                                    else --> COMMON
+
+                          COMMON:  [abc] --> 4711  
+
+       Solution 2:
+
+         STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
+                   [d]  --> Drop Out                else --> COMMON
+                   else --> COMMON                  
+                                                    
+
+                          COMMON:  [abcd] --> 4711  
+
+       Solution 3:
+
+         STATE A and STATE B remain the same. No common transitions.
+
+       Which solution is the best depends on the gain of complexity. If the last
+       solution is the best, then clearly, there is no partly common trigger set
+       for the given transitions of A and B.
+
+       Gain of Complexity: The 'cost' of a trigger set is related to the number
+       of non-adjacent intervals. Since we do bisectioning the 'cost' is proportional
+       to log2(number of intervals). That is:
+       
+                        cost(X) = log2(number_intervals(X))
+       
+       In the above example let 'ATS' be the trigger set that triggers to the
+       common target in A, and 'BTS' the trigger set that triggers on the
+       common target in B. The cost of Solution 3 is therefore
+
+            C3 = cost(ATS) + cost(BTS)
+
+       The costs of Solution 1 and 2 are
+
+            C1 = cost((ATS & BTS) | a_shadow)
+            C2 = cost(ATS | BTS)
+    """
 
 class Info:
     """Note: The path.CharacterPath class a lot in common with the Info.
