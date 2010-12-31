@@ -89,6 +89,20 @@ CHECK_IDENTIFIER:
 """
 from quex.core_engine.interval_handling            import NumberSet
 
+from math import log
+
+LOG_2 = log(2)
+def effort(TriggerSet):
+    """This function determines the effort determine whether a 
+       number is in a trigger set. Assumed, that bisectioning 
+       is applied, the effort is proportional to log2 of the
+       interval number.
+    """
+    global LOG_2
+
+    N = TriggerSet.interval_number()
+    return log(N) / LOG_2  # = log2(N)
+
 """An object of this class describes the 'relationship' between
    a state A (the 'parent') and a state B (the 'child') where 
    there are transitions from A to B. That means, that B can
@@ -238,6 +252,19 @@ def nest(SM, State):
 
     # See what parts of private maps can be done by wildcards
 
+# [1] common trigger_map [2] state index list that triggers on the 'common trigger map'
+common_transition_group_db = []
+def common_transition_group_db_consider(StateIndexA, StateIndexB, CommonTM):
+    add_f = False
+    for trigger_set, state_index_set in common_transition_group_db:
+        if CommonTM.is_superset(trigger_set):
+            state_index_set.add(StateIndexA) 
+            state_index_set.add(StateIndexB) 
+            if not CommonTM.is_equal(trigger_set):
+                add_f = True
+
+    if add_f:
+        common_transition_group_db.append(CommonTM, set([StateIndexA, StateIndexB]))
 
 common_transition_db = {}
 def common_transition_db_get(A, B):
@@ -390,20 +417,82 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
 
         # (2) Consider 'partly common transitions', i.e. where the states do parts of 
         #     the transitions on their own.
-        transition = get_partly_common_transition(a_holes, a_trigger_set, 
-                                                  b_holes, b_trigger_set)
-        if transition != None:
-            partly_common_tm[target] = transition
+        partly_common = get_common_transition(a_shadow_trigger_set, a_trigger_set,
+                                              b_shadow_trigger_set, b_trigger_set)
+        if partly_common != None:
+            partly_common_tm[target] = partly_common
 
     if PartlyCommonTransitionsF: return common_tm, partly_common_tm
     else:                        return common_tm
 
-def get_partly_common_transition(AHoles, ATriggerSet, BHoles, BTriggerSet):
-    """It is possible that there is a common trigger set that just needs some
+def get_partly_common_transition(a_shadow, ATriggerSet, a_shadow, BTriggerSet):
+    """Determine the set of partly common transitions.
+
+       RETURNS: None, None, None 
+       
+                   If it is not worth to consider the set of partly
+                   common transitions, because it is too expensive.
+
+                PartlyCommon, DiffA, DiffB 
+                
+                   The set of partly common transitions, the trigger set
+                   that A needs to implement, and the trigger set that 
+                   remains for B to implement.
+
+       EFFORT:
+
+           Determine the 'effort' to implement the partly common transitions.
+           Recall the setup for an implemented partly common transition:
+
+             STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
+                       [e]  --> 4711                    [d]  --> 4711
+                       else --> COMMON                  else --> COMMON
+                                                        
+
+                              COMMON:  [abc] --> 4711
+
+           The effort for transitions not-related to the partly common set can
+           be omitted. It is the same anyway-with and without partly common
+           implementation. Now, the effort of the implementation is
+
+                      effort(PartlyCommon) 
+                    + effort(TransitionInA) 
+                    + effort(TransitionInB)
+    """
+    partly_common = determine_partly_common_transition(a_shadow, ATriggerSet, 
+                                                       b_shadow, BTriggerSet)
+
+    diff_a = ATriggerSet.difference(PartlyCommon)
+    diff_b = BTriggerSet.difference(PartlyCommon) 
+    effort = effort(partly_common) + effort(in_a) + effort(in_b)
+
+    # Effort without a partly common transition = effort for 'a_trigger_set'
+    # plus effort for 'b_trigger_set'. This we do bisectioning the effort is 
+    # proportional log2(number of intervals).
+    original_effort =   effort(a_trigger_set)
+                      + effort(b_trigger_set)
+
+    # Only if it is worth, accept the partly common transition         
+    if original_effort > effort:
+        return partly_common, diff_a, diff_b
+
+    return None, None, None
+
+def determine_partly_common_transition(a_shadow, ATriggerSet, a_shadow, BTriggerSet):
+    """ASSUMPTION: 
+    
+          "a_shadow" and "b_shadow" are no longer needed. We modify them to
+          avoid expensive copying.
+
+          (Note, that "ATriggerSet" and "BTriggerSet" are not modified.)
+
+       EXPLANATION:
+    
+       It is possible that there is a common trigger set that just needs some
        help from one or the other state. Example:
 
-         STATE A:  [a]  --> 4710          STATE B:  [b]   --> 4713
-                   [bc] --> 4711                    [acd] --> 4711
+         STATE A:  [a]   --> 4710          STATE B:  [b]   --> 4713
+                   [bce] --> 4711                    [acd] --> 4711
 
        Here, [abc] or [abcd] would not be a common trigger set in the sense of
        'get_common_transitions()'. It cannot be [abc], because state B triggers
@@ -411,48 +500,60 @@ def get_partly_common_transition(AHoles, ATriggerSet, BHoles, BTriggerSet):
        [d] to trigger to 4711. But, if one of the two states 'helps' then there
        can be a solution. Actually, there are three possible solutions:
 
-       Solution 1:
+       Solution:
 
          STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
-                   else --> COMMON                  [d]  --> 4711
-                                                    else --> COMMON
-
-                          COMMON:  [abc] --> 4711  
-
-       Solution 2:
-
-         STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
-                   [d]  --> Drop Out                else --> COMMON
-                   else --> COMMON                  
+                   [e]  --> 4711                    [d]  --> 4711
+                   else --> COMMON                  else --> COMMON
                                                     
 
-                          COMMON:  [abcd] --> 4711  
+                          COMMON:  [abc] --> 4711
 
-       Solution 3:
+                          Union               = [abcde] = A | B
+                          SymmetricDifference = [abde]  = A (-) B
+                          a_shadow            = [a]
+                          b_shadow            = [b]
 
-         STATE A and STATE B remain the same. No common transitions.
+       SymmetricDifference(A, B) is the set of elements that are in A or B but
+       not in both.  For the term 'shadow' see function 'get_common_transitions()'. 
+       Let
+                          S = a_shadow | b_shadow
+       Then,
+                .----------------------------------------------------.
+          (1)   | PartlyCommon = Union - (SymmetricDifference - S)   |
+                '----------------------------------------------------'
 
-       Which solution is the best depends on the gain of complexity. If the last
-       solution is the best, then clearly, there is no partly common trigger set
-       for the given transitions of A and B.
+       With "X - (Y - Z) = (X & Z) | (X - Y)", where X = Union, 
+       Y = SymmetricDifference, and Z = S, it follows
 
-       Gain of Complexity: The 'cost' of a trigger set is related to the number
-       of non-adjacent intervals. Since we do bisectioning the 'cost' is proportional
-       to log2(number of intervals). That is:
-       
-                        cost(X) = log2(number_intervals(X))
-       
-       In the above example let 'ATS' be the trigger set that triggers to the
-       common target in A, and 'BTS' the trigger set that triggers on the
-       common target in B. The cost of Solution 3 is therefore
+          (2) PartlyCommon = (Union & S) | (Union - SymmetricDifference)
 
-            C3 = cost(ATS) + cost(BTS)
+          (3) Union - SymmetricDifference = (A | B) - (A (-) B) = A & B
+              -----------------------------                     --------
 
-       The costs of Solution 1 and 2 are
+       If this is not clear, then draw it or calculate it. Thus, with (3)
+       in (2) it follows
 
-            C1 = cost((ATS & BTS) | a_shadow)
-            C2 = cost(ATS | BTS)
+          (4) PartlyCommon = ((A | B) & S) | (A & B)
     """
+
+    # S = a_shadow | b_shadow
+    s = a_shadow
+    s.unite_with(b_shadow)
+
+    # Union = A | B
+    union = ATriggerSet.union(BTriggerSet)
+
+    # Intersection = A & B
+    intersection = ATriggerSet.intersection(BTriggerSet)
+
+    # PartlyCommon = (Union & S) | Intersection
+    result = union
+    result.intersect_with(s)
+    result.unite_with(intersection)
+    return result
+    
+def get_effort_for_partly_common_transition(PartlyCommon, ATriggerSet, BTriggerSet):
 
 class Info:
     """Note: The path.CharacterPath class a lot in common with the Info.
