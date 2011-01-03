@@ -61,7 +61,7 @@ $$ENTRY$$
     while( 1 + 1 == 2 ) {
         $$INPUT_GET$$ 
         if( input == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-            $$GOTO_DROP_OUT$$
+            $$GOTO_RELOAD$$
         }
         if( input == *Closer$$SKIPPER_INDEX$$_it ) {
             ++Closer$$SKIPPER_INDEX$$_it;
@@ -99,7 +99,7 @@ $$LC_COUNT_IN_LOOP$$
         $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     }
 
-$$DROP_OUT$$
+$$RELOAD$$
     QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
@@ -193,9 +193,9 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB["$endif"]],
                            ["$$ENTRY$$",                          LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                           ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
                            ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                           ["$$GOTO_DROP_OUT$$",                  LanguageDB["$goto"]("$drop-out", skipper_index)],
+                           ["$$GOTO_RELOAD$$",                    LanguageDB["$goto"]("$reload", skipper_index)],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
                            ["$$GOTO_ENTRY$$",                     LanguageDB["$goto"]("$entry", skipper_index)],

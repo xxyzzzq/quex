@@ -7,8 +7,6 @@
     };
     const QUEX_TYPE_CHARACTER* path_1 = path_walker_23_base + 0;
     const QUEX_TYPE_CHARACTER* path_17 = path_walker_23_base + 5;
-    const QUEX_TYPE_CHARACTER* path_17_end = path_walker_23_base + 10;
-    const QUEX_TYPE_CHARACTER* path_1_end = path_walker_23_base + 4;
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
     QUEX_TYPE_GOTO_LABEL path_end_state = QUEX_GOTO_STATE_LABEL_INIT_VALUE;
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
@@ -47,14 +45,14 @@ PATH_WALKER_23:
 STATE_23_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_INPUT");
 
-    QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
-    input = QUEX_NAME(Buffer_input_get)(&me->buffer);
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
 
     if( input == *path_iterator) {
         ++path_iterator;
         goto PATH_WALKER_23;
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
-        QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);
+        --(me->buffer._input_p);
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
         goto *path_end_state;
 #else  /* not QUEX_OPTION_COMPUTED_GOTOS */
@@ -65,19 +63,27 @@ STATE_23_INPUT:
             }
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
     }
-STATE_23_DROP_OUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT");
-
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ((me->buffer._memory._end_of_file_p != 0x0)) ) {
-STATE_23_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
-        QUEX_GOTO_last_acceptance();
-
+    if( input == 0) {
+        goto STATE_23_RELOAD;    /* \0 */
+    } else {
+        goto STATE_23_DROP_OUT_DIRECT;    /* [\1, oo] */
     }
 
-    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+
+STATE_23_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
-    goto STATE_23_INPUT;
+        goto STATE_23_INPUT;
+    }
+STATE_23_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
+
 
 
 --(Involved State Indices)----------------------------------------------

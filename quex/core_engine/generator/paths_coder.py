@@ -90,10 +90,10 @@ import quex.core_engine.state_machine.compression.paths        as paths
 from   quex.core_engine.interval_handling                      import Interval
 import quex.core_engine.utf8                                   as utf8  
 
+from   quex.input.setup import setup as Setup
 
-
-from copy import deepcopy
-from quex.input.setup import setup as Setup
+from   copy import deepcopy
+import sys
 
 
 LanguageDB = None # Set during call to 'do()', not earlier
@@ -322,10 +322,10 @@ def __path_definition(variable_db, PathWalker, SMD):
         value    = "path_walker_%i_base + %i" % (PathWalkerID, memory_index)
         variable_db[name] = [ var_type, value ]
 
-        name     = "path_%i_end" % path.index()
-        var_type = "const QUEX_TYPE_CHARACTER*"
-        value    = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
-        variable_db[name] = [ var_type, value ]
+        ## name     = "path_%i_end" % path.index()
+        ## var_type = "const QUEX_TYPE_CHARACTER*"
+        ## value    = "path_walker_%i_base + %i" % (PathWalkerID, (memory_index + L - 1))
+        ## variable_db[name] = [ var_type, value ]
 
         memory_index += L
 
@@ -459,11 +459,19 @@ def __path_walker(txt, PathWalker, SMD):
 
     # (3.2) Transition map of the 'skeleton'        
     trigger_map = PathWalker.transitions().get_trigger_map()
-    if len(trigger_map) != 0:
-        # If the skeleton of all related states is 'empty' then no
-        # transition block is required. This happens, for example, if
-        # there are only keywords and no 'overlaying' identifier pattern.
-        txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD))
+    if len(trigger_map) == 0:
+        # (This happens, for example, if there are only keywords and no 
+        #  'overlaying' identifier pattern.)
+
+        # Even if the skeleton/trigger map is empty there must be something
+        # that catches the 'buffer limit code'. 
+        # => Define an 'all drop out' trigger_map and then,
+        # => Adapt the trigger map, so that the 'buffer limit' is an 
+        #    isolated single interval.
+        trigger_map = [ (Interval(-sys.maxint, sys.maxint), None) ]
+        transition_block._separate_buffer_limit_code_transition(trigger_map)
+
+    txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD))
 
     # (4) The drop out (nothing matched)
     #     (Path iterator has not been increased yet)

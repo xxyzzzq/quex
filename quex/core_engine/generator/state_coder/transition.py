@@ -90,7 +90,10 @@ def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     LanguageDB = Setup.language_db
 
     assert TargetStateIdx.__class__.__name__ != "TemplateTarget" 
+    # TargetStateIdx == None --> drop out
+    # TargetStateIdx == -1   --> buffer limit code; reload required
     assert    TargetStateIdx                 == None \
+           or TargetStateIdx                 == -1   \
            or TargetStateIdx                 >= 0
 
     assert    CurrentStateIdx == None \
@@ -102,25 +105,27 @@ def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     assert    TriggerInterval                    == None       \
            or TriggerInterval.__class__.__name__ == "Interval" \
 
-    # (0) Transitions to 'dead-end-state'
     if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
+        # (0) Transitions to 'dead-end-state'
         return __dead_end_state_label(TargetStateIdx, SMD)
 
-    # (1) The very normal transition to another state
-    elif TargetStateIdx != None:   
+    elif TargetStateIdx == None:   
+        # (1) Drop Out
+        #     The current interval does not contain the buffer limit
+        #     code (Otherwise, TargetStateIdx == -1). 
+        #     Thus, no reload is required.
+        return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
+
+    elif TargetStateIdx == -1:
+        # (2) 'Target == -1' => buffer limit code; reload required
+        assert TriggerInterval.size() == 1
+        assert TriggerInterval.contains(Setup.buffer_limit_code)
+        return LanguageDB["$label"]("$reload", CurrentStateIdx)
+
+    else:
+        # (3) The very normal transition to another state
         assert type(TargetStateIdx) in [int, long]
         return LanguageDB["$label"]("$entry", TargetStateIdx)
-
-    # (2) Drop Out
-    #     The normal drop out contains a check against the buffer limit code.
-    #     This check can be avoided, if one is sure that the current interval
-    #     does not contain a buffer limit code.
-    assert isinstance(Setup.buffer_limit_code, int)
-    if    TriggerInterval == None \
-       or TriggerInterval.contains(Setup.buffer_limit_code):
-        return LanguageDB["$label"]("$drop-out", CurrentStateIdx)
-    else:
-        return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
 
 def __dead_end_state_label(TargetStateIdx, SMD):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that

@@ -93,15 +93,21 @@ from math import log
 
 LOG_2 = log(2)
 def effort(TriggerSet):
-    """This function determines the effort determine whether a 
-       number is in a trigger set. Assumed, that bisectioning 
-       is applied, the effort is proportional to log2 of the
-       interval number.
+    """This function determines the effort determine whether a number is in a
+       trigger set. Assumed, that bisectioning is applied, the effort is
+       proportional to log2 of the interval number.  
+       
+       Note, that a single value interval can be checked with a single comparison,
+       thus the 'effort' is half of a normal interval.
     """
     global LOG_2
 
-    N = TriggerSet.interval_number()
-    return log(N) / LOG_2  # = log2(N)
+    sum = 0
+    for interval in TriggerSet.get_intervals(PromiseToTreatWellF=True):
+        if interval.end - interval.begin == 1: sum += 1
+        else:                                  sum += 2
+
+    return log(sum) / LOG_2  # = log2(sum)
 
 """An object of this class describes the 'relationship' between
    a state A (the 'parent') and a state B (the 'child') where 
@@ -252,19 +258,51 @@ def nest(SM, State):
 
     # See what parts of private maps can be done by wildcards
 
-# [1] common trigger_map [2] state index list that triggers on the 'common trigger map'
-common_transition_group_db = []
-def common_transition_group_db_consider(StateIndexA, StateIndexB, CommonTM):
-    add_f = False
-    for trigger_set, state_index_set in common_transition_group_db:
-        if CommonTM.is_superset(trigger_set):
-            state_index_set.add(StateIndexA) 
-            state_index_set.add(StateIndexB) 
-            if not CommonTM.is_equal(trigger_set):
-                add_f = True
+CommonTransitionDB_Entry_id_counter = -1L
+class CommonTransitionDB_Entry:
+    def __init__(self, TargetIdx, TriggerSet, *StateIndeces):
+        CommonTransitionDB_Entry_id_counter += 1L
 
-    if add_f:
-        common_transition_group_db.append(CommonTM, set([StateIndexA, StateIndexB]))
+        self.id              = CommonTransitionDB_Entry_id_counter
+        self.target_index    = TargetIdx
+        self.trigger_set     = TriggerSet
+        self.state_index_set = set(StateIndeces)
+
+class CommonTransitionDB:
+    def __init__(self):
+        self.db             = []
+        # Map: superset id --> subset id
+        self.superset_db       = {}
+        # Map: state index to the database entry that contains it
+        self.state_to_entry_db = {}
+
+    def add(self, StateIndexA, StateIndexB, CommonTriggerSet):
+        global common_transition_id_counter
+
+        for info in common_transition_group_db:
+            # (1) If the common transition is already there, 
+            #     then just add the new state indeces.
+            if CommonTriggerSet.is_equal(info.trigger_set): 
+                info.state_index_set.add(StateIndexA) 
+                info.state_index_set.add(StateIndexB) 
+                self.state_index_to_entry_db.setdefault(StateIndexA, set([]).add(entry.id)
+                self.state_index_to_entry_db.setdefault(StateIndexB, set([]).add(entry.id)
+                break
+        else:
+            # (2) If the transition was not known to the database,
+            #     then add it.
+            new_entry = CommonTransitionDBEntry(TargetIdx, CommonTriggerSet, StateIndexA, StateIndexB])
+            self.db.append(new_entry)
+            self.state_index_to_entry_db.setdefault(StateIndexA, set([]).add(entry.id)
+            self.state_index_to_entry_db.setdefault(StateIndexB, set([]).add(entry.id)
+
+            # Now, the superset/subset relations must be registered
+            for entry in common_transition_group_db:
+                if entry.trigger_set.is_superset(CommonTriggerSet):
+                    self.superset_db[entry.id]     = new_entry.id
+                elif CommonTriggerSet.is_superset(entry.trigger_set):
+                    self.superset_db[new_entry.id] = entry.id
+
 
 common_transition_db = {}
 def common_transition_db_get(A, B):

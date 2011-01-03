@@ -183,7 +183,7 @@ def run_this(Str):
                or line.find("but never defined") != -1 \
                or line.find("t global scope") != -1 \
                or     (line.find("warning: unused variable") != -1 )          \
-                  and (line.find("path_") != -1 or line.find("pathwalker_") != -1) \
+                  and ((line.find("path_") != -1 and not line.find("_end")) or line.find("pathwalker_") != -1) \
                or (line.find("In function") != -1 and line.lower().find("error") == -1):
                 postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
             else:

@@ -1,6 +1,4 @@
-simple.qx:13:warning: There were implicit token identifier definitions. Quex proposes
-simple.qx:13:warning: to define them in a token { ... } section, i.e.
-simple.qx:13:warning: 
+simple.qx:13:warning: Detected implicit token identifier definitions. Proposal:
 simple.qx:13:warning:    token {
 simple.qx:13:warning:      Z;
 simple.qx:13:warning:    }

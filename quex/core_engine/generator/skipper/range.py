@@ -94,7 +94,7 @@ $$LC_COUNT_IN_LOOP$$
      */
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < (ptrdiff_t)Skipper$$SKIPPER_INDEX$$L ) {
         /* (2.1) Reload required. */
-        $$GOTO_DROP_OUT$$            
+        $$GOTO_RELOAD$$            
     }
     $$LC_ON_FIRST_DELIMITER$$
     /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
@@ -115,7 +115,7 @@ $$LC_COUNT_END_PROCEDURE$$
         $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
     }
 
-$$DROP_OUT$$
+$$RELOAD$$
     QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
@@ -209,7 +209,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB["$endif"]],
                            ["$$ENTRY$$",                          LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                           ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
                            ["$$GOTO_ENTRY$$",                     LanguageDB["$goto"]("$entry", skipper_index)],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
@@ -225,7 +225,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
     # The finishing touch
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
-                           ["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
+                           ["$$GOTO_RELOAD$$", LanguageDB["$goto"]("$reload", skipper_index)]])
 
     if reference_p_f:
         local_variable_db["reference_p"] = [ "QUEX_TYPE_CHARACTER_POSITION", 
