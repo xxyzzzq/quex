@@ -78,6 +78,9 @@ run/lexer-re2c: out/re2c_scan.c   $(SOURCES)
 run/lexer-quex: out/quex_scan.cpp $(SOURCES) 
 	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -o $@ 
 
+run/lexer-quex.s:
+	$(CC)     -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -c -g -Wa,-a,-ad  > $@
+
 run/lexer-quex-lc: out/quex_scan.cpp $(SOURCES) 
 	$(CC_LC) -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -o $@ 
 

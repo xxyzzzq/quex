@@ -1,41 +1,129 @@
 Installation
 ============
 
-Before beginning the installation of quex, make sure that
-Python (http://www.python.org) is installed. Most linux distributions provide
-handy rpm packages--so this should not be an issue. 
-Once Python is isntalled, follow these steps: 
+On sourceforge there are a variety of Quex packages supporting
+the major operating systems and distributions at the time of this
+writing as they are: Microsoft Windows (tm), Mac OS (tm), and Linux
+(.deb and .rpm based distributions).
 
-.. note::
+This section discusses the major 'pillars' of an installation. It is
+explains how to install quex from one of the source packages on
+an arbitrary platform. At the same time, it may provide first hints
+for troubleshooting. The pillars of a Quex installation are the 
+following:
 
-   As for quex version 0.36.5 you cannot use Python version ≥ 3.0. Version 3.0
-   is not compatible with the 2.x versions. 
+.. describe:: Python
 
-* Extract the file ``quex-x.x.x.tar.gz`` into the desired directory.
+    Before beginning the installation of quex, make sure that
+    Python (http://www.python.org) is installed. Most linux distributions provide
+    handy .rpm or .deb packages.
 
-* Set the environment variable ``QUEX\_PATH`` in your system
-  environment to the place where you installed quex. If you are using
-  a Unix system and the bash-shell, add the following line to your
-  ``.bashrc``-file: ``export QUEX_PATH=the/directory/where/quex/was/installed/``
-  if you installed quex in the directory given on the right hand side of
-  the assignment.
+    .. warning:: 
 
-* Make a link from the file ``$QUEX_PATH/quex-exe.py`` to
-  ``$EXECUTABLE_PATH/quex`` where ``$EXECUTABLE_PATH`` is a path where executables
-  can be found by your system.  If you work on a unix system, you can
-  type ``ln -s $QUEX_PATH/quex-exe.py /usr/local/bin/quex`` You can
-  ensure executable rights with ``chmod a+rx $QUEX_PATH/quex-exe.py``, ``chmod a+rx
-  /usr/local/bin/quex``.
+       Do not install a Python version >= 3.0! Python 3.x is a language
+       different from Python < 3.0. Quex is programmed towards version
+       2.4.
 
-* Supply your C\+\+ compiler with the include path '$QUEX_PATH'. For the
-  vast majority of compilers this means you must add ``-I$(QUEX_PATH)``
-  to the list of compiler flags. An example of how this is done can be observed
-  in the test applications which come with the quex distribution.
+    In order to verify that Python is installed you may open a 
+    console (``cmd.exe``, ``xterm`` or a shel/terminal under Unix).
+    Then type ``python`` and the output should be similar to::
 
-* If you want to use character set conversion, you need to install one of the
-  supported libraries--currently IBM's ICU <http://icu-project.org/userguide/intro.html>
-  or GNU IConv <http://www.gnu.org/software/libiconv/>[#f1]_.
+        > python
+        Python 2.6.4 (r264:75706, Jan 30 2010, 22:50:05) 
+        ...
+        >>> 
 
+    Type ``quit()`` to leave the shell. If you do not get this interactive
+    python shell, then most likely the PATH variable does not contain 
+    the path where Python is installed. On the console review the setting
+    of the PATH by::
+
+        C:\> echo %PATH%
+
+    on Windows, or::
+
+        > echo $PATH
+
+    on Unix. If Python's path is not in the list, then add it. Consult your
+    the documentation of your operating system for further instructions
+    about how to do this.
+
+.. describe:: Quex Distribution
+
+   Get a source distribution from ``quex.org`` or ``quex.sourceforge.net``.
+   That is, select a file with the ending '.tgz', '.zip', or '.7z' from the
+   download directory.  Extract the files to a directory of your choice.
+
+.. describe:: The QUEX_PATH
+
+   Quex knows about where it is installed through the environment variable
+   ``QUEX_PATH``. If you are using a Unix system and the bash-shell, add 
+   the following line to your ``.bashrc``-file::
+  
+       export QUEX_PATH=the/directory/where/quex/was/installed/
+
+   To do the same thing on Windows, go to Control Panel, System, Advanced,
+   Environment Variables. Then add the variable ``QUEX_PATH`` with the
+   value ``C:\Programs\Quex``, provided that quex is installed there.
+
+   For clarity, the path must point to the place wher ``quex-exe.py`` 
+   is located.
+
+.. describe:: The Quex Executable
+
+   The safest way to do this is to add the content of the ``QUEX_PATH``
+   variable to the PATH variable. Thus the systems will search for
+   executables in quex's installation directory. Or, on operating systems
+   that can provide links, make a link::
+   
+      > ln -s $QUEX_PATH/quex-exe.py $EXECUTABLE_PATH/quex
+     
+   where ``$EXECUTABLE_PATH`` is a path where executables can be found by 
+   your system.  On a Unix system an appropriate directory is::
+   
+           /usr/local/bin/quex 
+           
+   To access this directory, you should be either root or use ``sudo``. 
+   You can ensure executable rights with::
+       
+      > chmod a+rx $QUEX_PATH/quex-exe.py
+      > chmod a+rx /usr/local/bin/quex
+
+   On Windows, the file ``quex.bat`` should be copied into ``C:\WINDOWS\SYSTEM``
+   where most probably executable files can be found.
+
+This is all for the installation of Quex. Your should now be able 
+to type on the command line::
+
+  > quex --version
+
+and get a result similar to::
+
+    Quex - Fast Universal Lexical Analyzer Generator
+    Version 0.57.1
+    (C) 2006-2011 Frank-Rene Schaefer
+    ABSOLUTELY NO WARRANTY
+
+Note, that with the operating system installers there might be problems
+occuring with previous installations. Thus, when updating better better 
+move any older installation to a place where the system can find them
+(e.g. in the trash can). 
+
+.. describe:: Compilation
+
+    When compiling Quex-generated code the QUEX_PATH
+    must be provided as an include path, i.e. you must add 
+    an ``-I`` option ``-I$QUEX_PATH`` on the command line
+    or ``-I$(QUEX_PATH)`` in a Makefile.
+
+    In the sub directories of ``$QUEX_PATH/demo`` there are many
+    examples of how to do that.
+
+.. describe:: IConv, or ICU
+
+    If you want to use character set conversion, you need to install one of the
+    supported libraries--currently IBM's ICU <http://icu-project.org/userguide/intro.html>
+    or GNU IConv <http://www.gnu.org/software/libiconv/>[#f1]_.
 
 That is all. Now, you should either copy the directories ``./demo/*`` to a
 place where you want to work on it, or simply change directory to there.  These

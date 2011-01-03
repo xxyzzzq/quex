@@ -34,9 +34,9 @@ __label_db = \
     "$pathwalker-router":     lambda StateIdx:    "PATH_WALKER_%s_STATE_ROUTER" % __nice(StateIdx),
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
     "$entry-stub":            lambda StateIdx:    "STATE_%s_STUB"     % __nice(StateIdx),
-    "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
+    "$reload":                lambda StateIdx:    "STATE_%s_RELOAD"          % __nice(StateIdx),
     "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),
-    "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),
+    "$input":                 lambda StateIdx:    "STATE_%s_INPUT"           % __nice(StateIdx),
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
     "$start":                 lambda NoThing:     "__REENTRY",
 }
@@ -179,10 +179,10 @@ db["C++"] = {
     "$input":               "input",
     "$debug-print":         lambda txt: "QUEX_DEBUG_PRINT(&me->buffer, \"%s\");" % txt,
     "$mark-lexeme-start":   "QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);",
-    "$input/increment":     "QUEX_NAME(Buffer_input_p_increment)(&me->buffer);",
     "$input/add":           lambda Offset:      "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset,
-    "$input/decrement":     "QUEX_NAME(Buffer_input_p_decrement)(&me->buffer);",
-    "$input/get":           "input = QUEX_NAME(Buffer_input_get)(&me->buffer);",
+    "$input/increment":     "++(me->buffer._input_p);",
+    "$input/decrement":     "--(me->buffer._input_p);",
+    "$input/get":           "input = *(me->buffer._input_p);",
     "$input/get-offset":    lambda Offset:      "input = QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i);" % Offset,
     "$input/tell_position": lambda PositionStr: "%s = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" % PositionStr,
     "$input/seek_position": lambda PositionStr: "QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, %s);\n" % PositionStr,
@@ -293,19 +293,13 @@ db["Python"] = {
     "$debug-info-input":  "",
     "$header-definitions": "",
     "$goto-last_acceptance": "# QUEX_GOTO_last_acceptance();\n",
-    "$drop-out": "# drop out\n",
+    "$reload": "# reload\n",
     #
     "$goto":                lambda Type, Argument=None:  "return %s;" % Argument,
     "$goto-pure":           lambda Argument:             "return %s;" % Argument,
     "$label-def":           lambda Type, Argument=None:  
                                 "#%s:\n"                                % label_db[Type](Argument) + \
                                 "#    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
-    "$drop-out-forward":  lambda StateIndex: 
-                          "# QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
-                          "# goto __FORWARD_DROP_OUT_HANDLING;\n",
-    "$drop-out-backward": lambda StateIndex:              
-                          "# QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
-                          "# goto __BACKWARD_DROP_OUT_HANDLING;\n",
 }
 
 #________________________________________________________________________________

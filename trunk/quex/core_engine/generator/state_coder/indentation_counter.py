@@ -46,7 +46,7 @@ $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$GOTO_LOOP_START$$
 
-$$DROP_OUT$$
+$$RELOAD$$
     /* -- In the case of 'indentation counting' we do not worry about the lexeme at all --
      *    HERE, WE DO! We can only set the lexeme start to the current reference_p, i.e.
      *    the point of the last newline!
@@ -169,12 +169,12 @@ def do(Data):
                        ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$COUNTER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input",    counter_index)],
-                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input",         counter_index)],
-                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry",    counter_index)],
+                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input",  counter_index)],
+                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input",       counter_index)],
+                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry",  counter_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input",    counter_index)],
-                       ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", counter_index)],
+                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input",  counter_index)],
+                       ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", counter_index)],
                        ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", counter_index)],
                        ["$$COUNTER_INDEX$$",                  repr(counter_index)],
                        ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
@@ -187,8 +187,8 @@ def do(Data):
                        ["$$BAD_CHARACTER_HANDLING$$",   get_bad_character_handler(Mode, IndentationSetup, counter_index)],
                       ])
 
-    txt = blue_print(txt,
-                     [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
+    ## txt = blue_print(txt,
+    ##                 [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
 
     return txt, local_variable_db
 

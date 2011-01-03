@@ -35,6 +35,13 @@ with the usage of libraries for the conversion of character encodings to
 unicode. Concluding on converters, a separate section explains how user
 generated converters can be plugged into the process.
 
+.. note:
+
+   With unicode lexical analyzers there is a certain potential that the
+   generated code might be very large to an extend that the compiler is not
+   able to cope with it. In this case, make sure modes that are only inherited
+   are labeled with ``<inheritable: only>`` as a mode option. Further, consider
+   one of the compression algorithms mentioned in section :ref:`sec-tuning`.
 
 .. toctree::
 

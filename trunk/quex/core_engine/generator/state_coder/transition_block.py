@@ -1,6 +1,7 @@
 import sys
 import quex.core_engine.generator.state_coder.transition as transition
 from   quex.input.setup                                  import setup as Setup
+from   quex.core_engine.interval_handling                import Interval
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
@@ -13,6 +14,10 @@ class __info:
         self.dsm             = DSM
 
 def do(TriggerMap, StateIdx, DSM):
+    """Target == None  ---> Drop Out
+       Target == -1    ---> Buffer Limit Code; Require Reload
+                            (this one is added by '_separate_buffer_limit_code_transition()'
+    """
     assert type(TriggerMap) == list
     assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
     # If a state has no transitions, no new input needs to be eaten => no reload.
@@ -27,6 +32,10 @@ def do(TriggerMap, StateIdx, DSM):
     else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 
     info = __info(StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
+
+    # The 'buffer-limit-code' always needs to be identified separately.
+    # This helps to generate the reload procedure a little more elegantly.
+    _separate_buffer_limit_code_transition(TriggerMap)
 
     if len(TriggerMap) > 1:
         return [__get_code(TriggerMap, info), "\n"]
@@ -147,16 +156,15 @@ def __try_very_simplest_case(TriggerMap, info):
     LanguageDB = Setup.language_db
 
     character_list            = []
-    common_target_state_index = -1
+    common_target_state_index = None # Something Impossible for a state
     for trigger in TriggerMap:
         interval           = trigger[0]
         target_state_index = trigger[1]
 
         if target_state_index == None: continue
-        assert target_state_index != -1
 
         # All must have the same target state
-        if common_target_state_index == -1:
+        if common_target_state_index == None:
             common_target_state_index = target_state_index
         # Make sure, you call the target_state_index's comparison operator.
         # (The index might actually be a real object, e.g. an IndentationCounter)
@@ -260,14 +268,76 @@ def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
     LanguageDB = Setup.language_db
 
     middle = TriggerMap[MiddleTrigger_Idx]
+    lower  = TriggerMap[:MiddleTrigger_Idx]
+    higher = TriggerMap[MiddleTrigger_Idx:]
+
     assert middle[0].begin >= 0, \
            "code generation: error cannot split intervals at negative code points."
 
+    # If the size of one interval is 1, then replace the '<' by an '=='.
+    # Note, that an '<' does involve a subtraction. A '==' only a comparison.
+    # The latter is safe to be faster (or at least equally fast) on any machine.
+    if   len(lower)  == 1 and lower[0][0].size() == 1:
+        comparison = LanguageDB["$if =="](repr(lower[0][0].begin))
+    elif len(higher) == 1 and higher[0][0].size() == 1:
+        comparison = LanguageDB["$if !="](repr(higher[0][0].begin))
+    else:
+        comparison = LanguageDB["$if <"](repr(middle[0].begin))
+
     return [ 
-                LanguageDB["$if <"](repr(middle[0].begin)),
-                __get_code(TriggerMap[:MiddleTrigger_Idx], info),
+                comparison,
+                __get_code(lower, info),
                 LanguageDB["$endif-else"],
-                __get_code(TriggerMap[MiddleTrigger_Idx:], info),
+                __get_code(higher, info),
                 LanguageDB["$end-else"]
            ]
+
+def _separate_buffer_limit_code_transition(TriggerMap):
+    """This function ensures, that the buffer limit code is separated 
+       into a single value interval. Thus the transition map can 
+       transit immediate to the reload procedure.
+    """
+    for i, entry in enumerate(TriggerMap):
+        interval, target_index = entry
+
+        if   target_index == -1:   
+            assert interval.contains(Setup.buffer_limit_code) 
+            assert interval.size() == 1
+            # Transition 'buffer limit code --> -1' has been setup already
+            return
+
+        elif target_index != None: 
+            continue
+
+        elif not interval.contains(Setup.buffer_limit_code): 
+            continue
+
+        # Found the interval that contains the buffer limit code.
+        # If the interval's size is alread 1, then there is nothing to be done
+        if interval.size() == 1: return
+
+        before_begin = interval.begin
+        before_end   = Setup.buffer_limit_code 
+        after_begin  = Setup.buffer_limit_code + 1
+        after_end    = interval.end
+
+        # Replace Entry with (max.) three intervals: before, buffer limit code, after
+        del TriggerMap[i]
+
+        if after_end > after_begin:
+            TriggerMap.insert(i, (Interval(after_begin, after_end), None))
+
+        # "Target == - 1" ==> Buffer Limit Code
+        TriggerMap.insert(i, (Interval(Setup.buffer_limit_code, Setup.buffer_limit_code + 1), -1))
+
+        if before_end > before_begin and before_end > 0:
+            TriggerMap.insert(i, (Interval(before_begin, before_end), None))
+
+        return
+
+    # It is conceivable, that the transition does not contain a 'None' transition
+    # on buffer limit code. This happens for example, during backward detection
+    # where it is safe to assume that the buffer limit code may not occur.
+    return
+
 

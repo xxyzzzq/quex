@@ -487,7 +487,7 @@ def __find_begin(sm, StateIndex, InitStateIndex):
         # Never allow the init state to be part of the path
         if StateIndex == InitStateIndex: continue
 
-        # Only consider single character transitions can be element of a path.
+        # Only single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
         if path_char == None: continue
 

@@ -57,15 +57,18 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         local_variable_db.update(variable_db)
         
     # -- all other states
-    for state_index, state in state_machine.states.items():
+    state_list = get_sorted_state_list(state_machine.states)
+    for state_index, state in state_list:
 
-        # the init state has been coded already
-        if state_index == state_machine.init_state_index: continue
-        elif state_index in done_state_index_set:   
-            continue
+        # -- The init state has been coded already.
+        # -- Some states may have been subject to path and template compression.
+        if   state_index == state_machine.init_state_index: continue
+        elif state_index in done_state_index_set:           continue
+
+        # Get the code for the state
         state_code = state_coder.do(state, state_index, SMD)
 
-        # some states are not coded (some dead end states)
+        # Some states are not coded (some dead end states)
         if len(state_code) == 0: continue
 
         txt.append("\n")
@@ -73,6 +76,30 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.append("\n")
     
     return "".join(txt), local_variable_db
+
+def get_sorted_state_list(StateDict):
+    """Sort the list in a away, so that states that are used more
+       often appear earlier. This happens in the hope of more 
+       cache locality. 
+    """
+    ## return StateDict.items()
+
+    # Database that counts the number of entries into a state
+    # "db[state_index] = Sum" means that the state with 'state_index'
+    # is entered 'Sum' times.
+    db = {}
+    for state_index in StateDict.iterkeys():
+        db[state_index] = 0
+
+    for state in StateDict.values():
+        for target_index in state.transitions().get_map().iterkeys():
+            db[target_index] += 1
+
+    state_list = StateDict.items()
+    # x[0] -- state index; 
+    # db[x[0]] is the frequence that state 'state_index' as entered.
+    state_list.sort(key=lambda x: db[x[0]], reverse=True)
+    return state_list
 
 
 

@@ -6,7 +6,7 @@ from   quex.frs_py.string_handling import blue_print
 
 LanguageDB = None
 
-init_drop_out_template = """
+OLD_init_drop_out_template = """
 $$LABEL$$
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 $$LABEL_DIRECT$$
@@ -20,12 +20,26 @@ $$LABEL_DIRECT$$
 
 normal_drop_out_template = """
 $$LABEL$$
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE || ($$LOAD_IMPOSSIBLE$$) ) {
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ($$LOAD_IMPOSSIBLE$$) ) {
+        $$RELOAD_BUFFER$$
+        $$GOTO_INPUT$$
+    }
 $$LABEL_DIRECT$$
         $$GOTO_TERMINAL$$
+"""
+
+init_drop_out_template = """
+$$LABEL$$
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( $$LOAD_IMPOSSIBLE$$ ) {
+        $$GOTO_END_OF_STREAM$$
     }
     $$RELOAD_BUFFER$$
     $$GOTO_INPUT$$
+
+$$LABEL_DIRECT$$
+    $$GOTO_FAILURE$$
 """
 
 def do(State, StateIdx, SMD, StateRouterStr=None):
@@ -138,7 +152,7 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
         txt = blue_print(init_drop_out_template,
-                         [["$$LABEL$$",              LanguageDB["$label-def"]("$drop-out", StateIdx)],
+                         [["$$LABEL$$",              LanguageDB["$label-def"]("$reload", StateIdx)],
                           ["$$LABEL_DIRECT$$",       LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
                           ["$$LOAD_IMPOSSIBLE$$",    load_impossible_str],
                           ["$$GOTO_FAILURE$$",       LanguageDB["$goto"]("$terminal-FAILURE")],
@@ -150,7 +164,7 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
 
     else:
         txt = blue_print(normal_drop_out_template,
-                         [["$$LABEL$$",           LanguageDB["$label-def"]("$drop-out", StateIdx)],
+                         [["$$LABEL$$",           LanguageDB["$label-def"]("$reload", StateIdx)],
                           ["$$LABEL_DIRECT$$",    LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
                           ["$$LOAD_IMPOSSIBLE$$", load_impossible_str],
                           ["$$GOTO_TERMINAL$$",   goto_terminal_str], 

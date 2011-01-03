@@ -26,7 +26,7 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
 #if 0
     if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
-        $$GOTO_DROP_OUT$$
+        $$GOTO_RELOAD$$
     }
 #endif
 
@@ -43,7 +43,7 @@ $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$GOTO_LOOP_START$$
 
-$$DROP_OUT$$
+$$RELOAD$$
     /* -- When loading new content it is always taken care that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -112,7 +112,7 @@ def get_skipper(TriggerSet):
                        ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
                        ["$$RESTART$$",                        LanguageDB["$label-def"]("$input", skipper_index)],
-                       ["$$DROP_OUT$$",                       LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                       ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
                        ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
                        ["$$SKIPPER_INDEX$$",                  repr(skipper_index)],
                        ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
@@ -124,8 +124,8 @@ def get_skipper(TriggerSet):
                       ])
 
     code_str = txt
-    # code_str = blue_print(txt,
-    #                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
+    ## code_str = blue_print(txt,
+    ##                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
     local_variable_db = { "reference_p" : 
                           [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
