@@ -327,7 +327,7 @@ def common_transition_db_clear(A, B):
     common_transition_db.clear()
 
 
-def get_common_transitions(SM, StateIndexA, StateIndexB):
+def get_common_transitions(SM, TM_B, TM_B):
     """This function determines the common transition map of two states
        provided that their non-common transitions are checked before. For
        example:
@@ -366,10 +366,8 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
     tm = common_transition_db_get(StateIndexA, StateIndexB)
     if tm != None: return tm
 
-    tm_a = SM.states[StateIndexA].transitions().get_map()
-    tm_b = SM.states[StateIndexB].transitions().get_map()
-
-    target_state_list = tm_a.iterkeys() + tm_b.iterkeys()
+    target_state_set = set(TM_A.keys())
+    target_state_set.update(TM_B.keys())
 
     common_tm        = {}
     partly_common_tm = {}
@@ -382,9 +380,9 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
     #     transitions. Those candidates are collected in 'remainder'.
     remainder = []
     # 
-    for target in target_state_list:
-        a_trigger_set = tm_a.get(target)
-        b_trigger_set = tm_b.get(target)
+    for target in target_state_set:
+        a_trigger_set = TM_A.get(target)
+        b_trigger_set = TM_B.get(target)
         if a_trigger_set == None or b_trigger_set == None:
             # -- If one of A and B does not trigger to the target at all, 
             #    => Then it cannot build a common transition.
@@ -393,7 +391,7 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
         elif a_trigger_set.is_equal(b_trigger_set):
             # -- If A and B trigger at exactly the same trigger set
             #    => Accept the transition the trigger set into the common set.
-            common_tm[target] = a_trigger_set
+            common_tm[target] = (a_trigger_set, None, None)
 
         else:
             # -- If A and/or B cover the 'holes' in the trigger set by their
@@ -458,10 +456,11 @@ def get_common_transitions(SM, StateIndexA, StateIndexB):
         partly_common = get_common_transition(a_shadow_trigger_set, a_trigger_set,
                                               b_shadow_trigger_set, b_trigger_set)
         if partly_common != None:
-            partly_common_tm[target] = partly_common
+            common_tm[target]     = partly_common 
+            a_adaption_db[target] = a_trigger_set.union(a_shadow_trigger_set).difference(partly_common)
+            b_adaption_db[target] = b_trigger_set.union(a_shadow_trigger_set).difference(partly_common)
 
-    if PartlyCommonTransitionsF: return common_tm, partly_common_tm
-    else:                        return common_tm
+    return common_tm, a_adaption_db, b_adaption_db
 
 def get_partly_common_transition(a_shadow, ATriggerSet, a_shadow, BTriggerSet):
     """Determine the set of partly common transitions.
