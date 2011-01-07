@@ -275,8 +275,6 @@ class CharacterList:
             self.__current_character  = max(0, self.__interval_list[i].begin)
             self.__current_interval_i = i
 
-        
-
     def is_empty(self):
         return self.__interval_list_size == 0
 
