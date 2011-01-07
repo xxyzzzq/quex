@@ -158,8 +158,9 @@ db["C++"] = {
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if in-set":         cpp.__get_if_in_character_set,
     "$if in-interval":    cpp.__get_if_in_interval,
-    "$if ==":             lambda value: "if( input == " + value + ") {\n",
-    "$if !=":             lambda value: "if( input != " + value + ") {\n",
+    "$if ==":             lambda value: "if( input == " + value + " ) {\n",
+    "$elseif ==":         lambda value: "} else if( input == " + value + " ) {\n",
+    "$if !=":             lambda value: "if( input != " + value + " ) {\n",
     #
     "$if >=":             lambda value: "if( input >= " + value + ") {\n",
     "$<":                 lambda left, right: left + " < " + right,

@@ -1,6 +1,7 @@
 from   quex.core_engine.state_machine.core import State 
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
+from   quex.core_engine.interval_handling import Interval
 
 from math import log
 
@@ -14,6 +15,11 @@ def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
     # Template Transition Targets are a little different ...
     result = __template_transition_target(TargetStateIdx, SMD)
     if result != None: return result
+
+    # Tiny neighbour transitions that can be implemented by a switch
+    # statement (assembler might likely convert this into 'indexing').
+    # result = __tiny_neighbour_transitions(TargetStateIdx, CurrentStateIdx, SMD)
+    # if result != None: return result
 
     # All normal transitions can be handled by 'goto' plus 'label'
     # (The init state (forward) does not increment the input position. Thus, here we
