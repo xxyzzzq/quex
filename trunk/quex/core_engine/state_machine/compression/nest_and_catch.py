@@ -61,7 +61,7 @@ CHECK_IDENTIFIER:
        Transition to state requires less then N comparisons
        (N=2 is may be the best for checking just one range.)
 
-   Result of Analyzis __________________________________________________________
+   Result of Analysis __________________________________________________________
 
        A barren tree is a set of states organized as a tree. A tree_node
        contains:
