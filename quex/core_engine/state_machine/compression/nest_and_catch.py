@@ -303,7 +303,6 @@ class CommonTransitionDB:
                 elif CommonTriggerSet.is_superset(entry.trigger_set):
                     self.superset_db[new_entry.id] = entry.id
 
-
 common_transition_db = {}
 def common_transition_db_get(A, B):
     """The common transitions between two states are kept in a 
@@ -320,14 +319,12 @@ def common_transition_db_get(A, B):
     if y == None: return None
     return y
 
-
 def common_transition_db_clear(A, B):
     """Free the memory related to the cache."""
     global common_transition_db
     common_transition_db.clear()
 
-
-def get_common_transitions(SM, TM_B, TM_B):
+def get_common_transitions(InfoList):
     """This function determines the common transition map of two states
        provided that their non-common transitions are checked before. For
        example:
@@ -362,12 +359,9 @@ def get_common_transitions(SM, TM_B, TM_B):
        of A and B.
 
     """
-    # If the result has been computed before, then we do not have to do it again:
-    tm = common_transition_db_get(StateIndexA, StateIndexB)
-    if tm != None: return tm
-
-    target_state_set = set(TM_A.keys())
-    target_state_set.update(TM_B.keys())
+    target_state_set = set([])
+    for state_index, tm in InfoList:
+        target_state_set.update(tm.keys())
 
     common_tm        = {}
     partly_common_tm = {}
@@ -381,15 +375,25 @@ def get_common_transitions(SM, TM_B, TM_B):
     remainder = []
     # 
     for target in target_state_set:
-        a_trigger_set = TM_A.get(target)
-        b_trigger_set = TM_B.get(target)
-        if a_trigger_set == None or b_trigger_set == None:
-            # -- If one of A and B does not trigger to the target at all, 
-            #    => Then it cannot build a common transition.
-            pass
+        next_f      = False
+        all_equal_f = True
+        trigger_set = None
+        for state_index, tm in InfoList:
+            trigger_set = tm.get(target)
+            if trigger_set == None: 
+                # One of the targets does not trigger to the target
+                # => cannot be a common transition
+                next_f = True # break out of for
+            if prototype_trigger_set != None and prototype_trigger_set != trigger_set:
+                all_equal_f = False
 
-        elif a_trigger_set.is_equal(b_trigger_set):
-            # -- If A and B trigger at exactly the same trigger set
+        if next_f:
+            # -- If one of the trigger maps does not trigger to the target at all, 
+            #    => Then it cannot build a common transition.
+            continue
+
+        elif all_equal_f:
+            # -- If all transitions trigger at exactly the same trigger set
             #    => Accept the transition the trigger set into the common set.
             common_tm[target] = (a_trigger_set, None, None)
 
@@ -591,6 +595,7 @@ def determine_partly_common_transition(a_shadow, ATriggerSet, a_shadow, BTrigger
     return result
     
 def get_effort_for_partly_common_transition(PartlyCommon, ATriggerSet, BTriggerSet):
+
 
 class Info:
     """Note: The path.CharacterPath class a lot in common with the Info.
