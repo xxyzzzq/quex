@@ -15,7 +15,7 @@ class TreeNode:
         self.children_common_tm  = []
         self.children_private_tm = {}
 
-    def append(self, ChildStateIndex, ChildTM):
+    def add_child(self, ChildStateIndex, ChildTM):
         self.child_db[ChildStateIndex] = ChildTM
 
     def child_list(self):
@@ -57,33 +57,35 @@ def __build_child_db(SM, LimitEffort):
             if effort(trigger_set) < LimitEffort:
                 node = child_db.get(state_index)
                 if node == None: child_db[target_index] = TreeNode(state_index, target_index, trigger_set, trigger_map)
-                else:            node.append(target_index)
+                else:            node.add_child(target_index)
 
     return child_db
 
+def __construction_code(ParentStateIdx, ParentTM, ChildList):
+    """Childlist = list of pairs: (child_state_index, child_tm)
+                   child_tm = child's trigger map
+    """
 
-def __construction_code(ParentTM, ChildTM_List):
     # Delete transitions to children from ParentTM
     parent_tm = copy(ParentTM)
-    for child_index in ChildList:
+    for child_index, dummy in ChildList:
         del parent_tm[child_index]
     
-    total_common_tm         = __get_common_tm([parent_tm] + ChildTM_List)
-    children_only_common_tm = __get_common_tm(ChildTM_List)
-
-    parent_catch_tm         = __get_common_tm([total_common_tm, children_only_common_tm])
-    children_common_tm      = __difference(children_only_common_tm, parent_catch_tm)
+    total_common_tm, adapt_list = __get_common_tm((ParentStateIndex, parent_tm) + ChildList)
+    # adapt_list[0] == adaptations of the parent. 
+    # adapt_list[1:] = adaptations of the children.
+    children_common_tm = __get_common_tm(adapt_list[1:])
 
     children_private_tm_db  = {}
 
     cost =   effort(parent_catch_tm) \
            + effort(children_common_tm)
-    for child_tm in ChildTM_List:
-        private_tm  = __difference(child_tm, children_only_common_tm)
+    for child_index, child_tm in ChildList:
+        private_tm  = __difference(child_tm, children_common_tm)
         cost       += effort(private_tm)
         children_private_tm_db[child_index] = private_tm
 
-    return cost, (total_common_tm, children_only_common_tm, children_private_tm_db)
+    return cost, (total_common_tm, children_common_tm, children_private_tm_db)
 
 def __build_best_construction(SM, parent_tm, node):
     # Start with all children present
