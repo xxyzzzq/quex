@@ -185,7 +185,6 @@ class StateMachineCoreInfo:
         assert Value.__class__.__name__ == "StateMachine" or Value == None
         self.__post_context_backward_input_position_detector_sm = Value
 
-
 class SideInfo:
     def __init__(self, NewlineN=-1, CharacterN=-1):
         self.__newline_n         = NewlineN
