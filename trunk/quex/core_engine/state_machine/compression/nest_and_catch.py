@@ -324,6 +324,56 @@ def common_transition_db_clear(A, B):
     global common_transition_db
     common_transition_db.clear()
 
+def __get_common_trigger_set_to_target(TargetIndex, InfoList):
+    """Determine whether all related states trigger to the same target
+       on the same trigger set. 
+
+       -- If one state does not trigger to target at all, then the
+          transition "trigger_set --> target" cannot be common, whatever
+          trigger_set may be.
+
+       -- If the trigger_set of one state differs, then the transition
+          cannot be common.
+    """
+    common_trigger_set = None
+    for dummy, tm in InfoList:
+
+        trigger_set = tm.get(Target)
+
+        if trigger_set == None: 
+            return None
+
+        elif common_trigger_set != None and common_trigger_set.is_equal(trigger_set):
+            return -1
+
+        common_trigger_set = trigger_set
+
+    return common_trigger_set
+
+def __union_is_covered(Union, InfoList, CommonTM):
+    """The union of all trigger sets may be part of the common trigger map,
+       if and only if, the triggers to targets that are not common cover
+       for each state the 'holes'.
+    """
+    # We already know, that there are differences for certain trigger sets.
+    # Now, if a difference appears, then try to cover it with 'uncommon' transitions.
+    for dummy, tm in InfoList:
+        raw_trigger_set = tm.get_map()[target]
+        if raw_trigger_set.is_equal(union): continue
+
+        missing = union.difference(raw_trigger_set)
+
+        # Try to 'cover' the miss-matching transitions with transitions that
+        # are not part of the common transition map.
+        for target, trigger_set in tm.iteritems():
+            # Only consider uncommon transitions
+            if CommonTM.has_key(target): continue
+            missing.subtract(trigger_set)
+            if missing.is_empty(): break
+        else:
+            # One state could not cover uncommon transitions with other transitions
+            return False
+
 def get_common_transitions(InfoList):
     """This function determines the common transition map of two states
        provided that their non-common transitions are checked before. For
@@ -336,7 +386,7 @@ def get_common_transitions(InfoList):
 
                                 [abc] --> 4711 
 
-       provided that their other non-common transitions are checked before. 
+       Provided that their other non-common transitions are checked before. 
        That is
 
          STATE A:  [a]  --> 4710          STATE B:  [b]  --> 4713
@@ -375,60 +425,54 @@ def get_common_transitions(InfoList):
     remainder = []
     # 
     for target in target_state_set:
-        next_f      = False
-        all_equal_f = True
-        trigger_set = None
-        for state_index, tm in InfoList:
-            trigger_set = tm.get(target)
-            if trigger_set == None: 
-                # One of the targets does not trigger to the target
-                # => cannot be a common transition
-                next_f = True # break out of for
-            if prototype_trigger_set != None and prototype_trigger_set != trigger_set:
-                all_equal_f = False
 
-        if next_f:
-            # -- If one of the trigger maps does not trigger to the target at all, 
-            #    => Then it cannot build a common transition.
+        common_trigger_set = __get_common_trigger_set_to_target(target, InfoList)
+
+        if common_trigger_set == None: 
+            # There is simply no common transition to the target. Forget it.
             continue
 
-        elif all_equal_f:
-            # -- If all transitions trigger at exactly the same trigger set
-            #    => Accept the transition the trigger set into the common set.
-            common_tm[target] = (a_trigger_set, None, None)
+        elif common_trigger_set == -1:
+            # If all have the same target but differ in their trigger sets
+            # then the transition can still enter the common set. This is 
+            # possible if the differences are covered by their 'holes'.
+            # => Watch out, later.
+            remainder.append(target)
+            continue
 
         else:
-            # -- If A and/or B cover the 'holes' in the trigger set by their
-            #    own transitions, then the transition can still enter the common set.
-            #    => Watch out, later.
-            remainder.append(target)
+            # If all transitions trigger at exactly the same trigger set
+            # => Accept the transition the trigger set into the common set.
+            common_tm[target] = (a_trigger_set, None, None)
+            continue
+
 
      # (2) Non-obvious common transitions _____________________________________
-     #     Consider those transitions that are common, if one considers that 
-     #     the states cover some of the trigger sets with their own transitions.
+     # 
+     #     EXAMPLE:    StateA:               StateB:
+     #                 'a'   --> 4710        'z'   --> 4709
+     #                 [b-z] --> 4711        [a-y] --> 4711
+     #
+     #     Both states do not have an exact common transition. But, considering
+     #     that the uncommon transitions are tested first, it becomes clear that
+     #     '[a-z]' is a common transition. The test for 'a' and 'z' covers the
+     #     later test and the fact that is is included in the common set does 
+     #     not harm.
+     # 
+     #     The 'cover' depends on the set of remaining uncommon transitions.
+     #     It also relative to the currently tested candidate for a common
+     #     transition.
 
-     # Build the trigger sets that might plug the holes in the transitions.
-     # The non-common transitions are checked **before** the common transitions.
-     # Thus, if they are allowed in the later common transition, it does not
-     # matter, since they are dealt with before. In this sense, the non-common 
-     # transitions act like a 'shadow' that renders differences to the common
-     # trigger map meaningless.
-     def get_shadow(TriggerMap, CommonTM):
-         """The 'shadow' of the non-common transitions is simply the union of 
-            all non-common transitions.
-         """
-         result = NumberSet()
-         for target, trigger_set in TriggerMap.iteritems():
-             if CommonTM.has_key(target): continue
-             result.unite_with(trigger_set)
-
-     a_shadow_trigger_set = get_shadow(tm_a, common_tm)
-     b_shadow_trigger_set = get_shadow(tm_b, common_tm)
-
-     # Consider remaining candidates (referred to by the target index)
      for target in remainder:
-        a_trigger_set = tm_a.get(target)
-        b_trigger_set = tm_b.get(target)
+         union = NumberSet()
+         for dummy, tm in InfoList:
+             union.unite_with(tm.get_map()[target])
+
+         union_trigger_set = __get_union_trigger_set_to_target(target, InfoList)
+         if __union_is_covered(union, InfoList):
+             new_common_tm[target] = union_trigger_set
+             # If a new target is added to common_tm, this may change the 
+             # shadowing set.
 
         # NOTE: Set operation '-':   X - Y = X & (not Y)
         #
