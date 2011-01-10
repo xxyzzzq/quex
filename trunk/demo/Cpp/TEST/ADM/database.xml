@@ -1,4 +1,4 @@
-<test-database execution-time-sec="299.18" date="Mon Jan  3 06:40:56 2011">
+<test-database execution-time-sec="311.44" date="Mon Jan 10 20:36:08 2011">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -31,7 +31,7 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="4.53"> 
+        <test title="Single Mode Example" time-sum-sec="4.54"> 
             <application file-name="000.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.40" crc="-584949883"/>
@@ -68,14 +68,14 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.92" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="14.26"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="26.54"> 
             <application file-name="003-icu.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="5" same_result="True">
-               <choice name="BPC=2" result="OK" time_sec="3.88" crc="1977270883"/>
-               <choice name="BPC=2_NDEBUG" result="OK" time_sec="2.59" crc="1977270883"/>
-               <choice name="BPC=4" result="OK" time_sec="2.60" crc="1977270883"/>
-               <choice name="BPC=4_NDEBUG" result="OK" time_sec="2.59" crc="1977270883"/>
-               <choice name="BPC=wchar_t" result="OK" time_sec="2.61" crc="1977270883"/>
+               <choice name="BPC=2" result="OK" time_sec="7.23" crc="1977270883"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time_sec="4.78" crc="1977270883"/>
+               <choice name="BPC=4" result="OK" time_sec="4.79" crc="1977270883"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time_sec="4.84" crc="1977270883"/>
+               <choice name="BPC=wchar_t" result="OK" time_sec="4.89" crc="1977270883"/>
             </choice-list>
         </test>
     </group>
@@ -89,7 +89,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="8.92"> 
+        <test title="Including Files" time-sum-sec="8.91"> 
             <application file-name="005.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="2.46" crc="256352848"/>
@@ -109,7 +109,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="4.78"> 
+        <test title="Miscellaneous Features" time-sum-sec="4.79"> 
             <application file-name="007.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.59" crc="-375962478"/>
@@ -127,7 +127,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="4.26"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="4.25"> 
             <application file-name="009.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="2.06" crc="-1369462576"/>
@@ -150,7 +150,7 @@
                <choice name="point" result="FAIL" time_sec="10.03" crc="None"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="79.38"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="79.37"> 
             <application file-name="010.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="7.33" crc="1030682096"/>
