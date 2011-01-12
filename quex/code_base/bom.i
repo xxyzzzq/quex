@@ -17,65 +17,104 @@
 
 
 #endif /* __QUEX_INCLUDE_GUARD__AUX_STRING_I */
-{| class="wikitable"
-|-
-! Encoding
-! Representation ([[hexadecimal]])
-! Representation ([[decimal]])
-! Representation ([[ISO-8859-1]])
-|-
-| [[UTF-8]]
-| <code>EF BB BF</code>{{#tag:ref|While identifying text as UTF-8, this is not really a "byte order" mark. Since the byte is also the word in UTF-8, there is no byte order to resolve.<ref name="utf-8-bom"/><ref>[http://tools.ietf.org/html/rfc3629#section-6 STD 63: UTF-8, a transformation of ISO 10646] Byte Order Mark (BOM)</ref>|group=t}}
-| <code>239 187 191</code>
-| <code>ï»¿</code>
-|-
-| [[UTF-16]] ([[Big Endian|BE]])
-| <code>FE FF</code>
-| <code>254 255</code>
-| <code>þÿ</code>
-|-
-| [[UTF-16]] ([[Little Endian|LE]])
-| <code>FF FE</code>
-| <code>255 254</code>
-| <code>ÿþ</code>
-|-
-| [[UTF-32]] (BE)
-| <code>00 00 FE FF</code>
-| <code>0 0 254 255</code>
-| <code>□□þÿ</code> (□ is the ascii null character)
-|-
-| [[UTF-32]] (LE)
-| <code>FF FE 00 00</code>
-| <code>255 254 0 0</code>
-| <code>ÿþ□□</code> (□ is the ascii null character)
-|-
-| [[UTF-7]]
-| <code>2B 2F 76</code>, and ''one'' of the following: <code><nowiki>[ 38 | 39 | 2B | 2F ]</nowiki></code><ref group="t">In UTF-7, the fourth byte of the BOM, before encoding as [[base64]], is <code>001111xx</code> in binary, and <code>xx</code> depends on the next character (the first character after the BOM). Hence, technically, the fourth byte is not purely a part of the BOM, but also contains information about the next (non-BOM) character. For <code>xx=00</code>, <code>01</code>, <code>10</code>, <code>11</code>, this byte is, respectively, <code>38</code>, <code>39</code>, <code>2B</code>, or <code>2F</code> when encoded as base64. If no following character is encoded, <code>38</code> is used for the fourth byte and the following byte is <code>2D</code>.</ref>
-| <code>43 47 118</code>, and ''one'' of the following: <code><nowiki>[ 56 | 57 | 43 | 47 ]</nowiki></code>
-| <code>+/v</code>, and ''one'' of the following: <code><nowiki>8 9 + /</nowiki></code>
-|-
-| [[UTF-1]]
-| <code>F7 64 4C</code>
-| <code>247 100 76</code>
-| <code>÷dL</code>
-|-
-| [[UTF-EBCDIC]]
-| <code>DD 73 66 73</code>
-| <code>221 115 102 115</code>
-| <code>Ýsfs</code>
-|-
-| [[Standard Compression Scheme for Unicode|SCSU]]
-| <code>0E FE FF</code>{{#tag:ref|SCSU allows other encodings of U+FEFF, the shown form is the signature recommended in UTR #6.<ref>[http://www.unicode.org/reports/tr6/#Signature UTR #6: Signature Byte Sequence for SCSU]</ref>|group=t}}
-| <code>14 254 255</code>
-| <code>□þÿ</code> (□ is the ascii "shift out" character)
-|-
-| [[BOCU-1]]
-| <code>FB EE 28</code> ''optionally followed by'' <code>FF</code>{{#tag:ref|For BOCU-1 a signature changes the state of the decoder. Octet 0xFF resets the decoder to the initial state.<ref>[http://www.unicode.org/notes/tn6/#Signature UTN #6: Signature Byte Sequence]</ref>|group=t}}
-| <code>251 238 40</code> ''optionally followed by'' <code>255</code>
-| <code>ûî(</code> ''optionally followed by'' <code>ÿ</code>
-|-
-| [[GB-18030]]
-| <code>84 31 95 33</code>
-| <code>132 49 149 51</code>
-| <code>□1■3</code> (□ and ■ are unmapped ISO-8859-1 characters)
-|}
+
+typedef enum {
+    QUEX_BOM_UTF_8           = 0x00,  /* First Nibble  */
+    QUEX_BOM_UTF_1           = 0x01,  
+    QUEX_BOM_UTF_EBCDIC      = 0x02,
+    QUEX_BOM_BOCU_1          = 0x03,
+    QUEX_BOM_GB_18030        = 0x04,
+    QUEX_BOM_UTF_16          = 0x10,  /* D4 --> UTF 16 */         
+    QUEX_BOM_UTF_16_LE       = 0x11,
+    QUEX_BOM_UTF_16_BE       = 0x12,  
+    QUEX_BOM_UTF_32          = 0x20,  /* D5 --> UTF 32 */
+    QUEX_BOM_UTF_32_LE       = 0x21,
+    QUEX_BOM_UTF_32_BE       = 0x22,
+    QUEX_BOM_UTF_7           = 0x40,  /* D6 --> UTF 7  */
+    QUEX_BOM_UTF_7_38        = 0x41,   
+    QUEX_BOM_UTF_7_39        = 0x42,
+    QUEX_BOM_UTF_7_2B        = 0x43, 
+    QUEX_BOM_UTF_7_2F        = 0x44, 
+    QUEX_BOM_SCSU            = 0x80,  /* D7 --> SCSU   */
+    QUEX_BOM_SCSU_TO_UCS     = 0x81,  
+    QUEX_BOM_SCSU_W0_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W1_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W2_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W3_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W4_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W5_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W6_TO_FE80 = 0x81, 
+    QUEX_BOM_SCSU_W7_TO_FE80 = 0x81, 
+} QUEX_TYPE_BOM;
+
+const uint8_t BOM_UTF_8       = { 0xEF, 0xBB, 0xBF };
+const uint8_t UTF_16_BE       = { 0xFE, 0xFF };
+const uint8_t UTF_16_LE       = { 0xFF, 0xFE };
+const uint8_t UTF_32_BE       = { 0x00, 0x00, 0xFE, 0xFF };
+const uint8_t UTF_32_LE       = { 0xFF, 0xFE, 0x00, 0x00 };
+const uint8_t UTF_7_38        = { 0x2B, 0x2F, 0x76, 0x38 };
+const uint8_t UTF_7_39        = { 0x2B, 0x2F, 0x76, 0x39 };
+const uint8_t UTF_7_2B        = { 0x2B, 0x2F, 0x76, 0x2B };
+const uint8_t UTF_7_2F        = { 0x2B, 0x2F, 0x76, 0x2F };
+const uint8_t UTF_1           = { 0xF7, 0x64, 0x4C };
+const uint8_t UTF_EBCDIC      = { 0xDD, 0x73, 0x66, 0x73 };
+const uint8_t SCSU            = { 0x0E, 0xFE, 0xFF };
+const uint8_t SCSU_TO_UCS     = { 0x0F, 0xFE, 0xFF };
+const uint8_t SCSU_W0_TO_FE80 = { 0x18, 0xA5, 0xFF };
+const uint8_t SCSU_W1_TO_FE80 = { 0x19, 0xA5, 0xFF };
+const uint8_t SCSU_W2_TO_FE80 = { 0x1A, 0xA5, 0xFF };
+const uint8_t SCSU_W3_TO_FE80 = { 0x1B, 0xA5, 0xFF };
+const uint8_t SCSU_W4_TO_FE80 = { 0x1C, 0xA5, 0xFF };
+const uint8_t SCSU_W5_TO_FE80 = { 0x1D, 0xA5, 0xFF };
+const uint8_t SCSU_W6_TO_FE80 = { 0x1E, 0xA5, 0xFF };
+const uint8_t SCSU_W7_TO_FE80 = { 0x1F, 0xA5, 0xFF };
+const uint8_t BOCU_1_x        = { 0xFB, 0xEE, 0x28, 0xFF };
+const uint8_t BOCU_1          = { 0xFB, 0xEE, 0x28, };
+const uint8_t GB_18030        = { 0x84, 0x31, 0x95, 0x33 };
+
+
+
+case 0x00: 0x00, 0xFE, 0xFF };  const uint8_t UTF_32_BE       = { 
+case 0x0E: 0xFE, 0xFF };        const uint8_t SCSU            = { 
+case 0x0F: 0xFE, 0xFF };        const uint8_t SCSU_TO_UCS     = { 
+case 0x18: 0xA5, 0xFF };        const uint8_t SCSU_W0_TO_FE80 = { 
+case 0x19: 0xA5, 0xFF };        const uint8_t SCSU_W1_TO_FE80 = { 
+case 0x1A: 0xA5, 0xFF };        const uint8_t SCSU_W2_TO_FE80 = { 
+case 0x1B: 0xA5, 0xFF };        const uint8_t SCSU_W3_TO_FE80 = { 
+case 0x1C: 0xA5, 0xFF };        const uint8_t SCSU_W4_TO_FE80 = { 
+case 0x1D: 0xA5, 0xFF };        const uint8_t SCSU_W5_TO_FE80 = { 
+case 0x1E: 0xA5, 0xFF };        const uint8_t SCSU_W6_TO_FE80 = { 
+case 0x1F: 0xA5, 0xFF };        const uint8_t SCSU_W7_TO_FE80 = { 
+case 0x2B: 0x2F, 0x76, 0x2B };  const uint8_t UTF_7_2B        = { 
+           0x2F, 0x76, 0x2F };  const uint8_t UTF_7_2F        = { 
+           0x2F, 0x76, 0x38 };  const uint8_t UTF_7_38        = { 
+           0x2F, 0x76, 0x39 };  const uint8_t UTF_7_39        = { 
+case 0x84: 0x31, 0x95, 0x33 };  const uint8_t GB_18030        = { 
+case 0xDD: 0x73, 0x66, 0x73 };  const uint8_t UTF_EBCDIC      = { 
+case 0xEF: 0xBB, 0xBF };        const uint8_t BOM_UTF_8       = { 
+case 0xF7: 0x64, 0x4C };        const uint8_t UTF_1           = { 
+case 0xFB: 0xEE, 0x28, 0xFF };  const uint8_t BOCU_1_x        = { 
+           0xEE, 0x28, };       const uint8_t BOCU_1          = { 
+case 0xFE: 0xFF };              const uint8_t UTF_16_BE       = { 
+case 0xFF: 0xFE };              const uint8_t UTF_16_LE       = { 
+           0xFE, 0x00, 0x00 };  const uint8_t UTF_32_LE       = { 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
