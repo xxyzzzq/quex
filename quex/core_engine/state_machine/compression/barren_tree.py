@@ -146,15 +146,12 @@ def __get_common_trigger_set_to_target(TargetIndex, InfoList):
 
     return common_trigger_set
 
-def __get_union_trigger_set_to_target(Target, InfoList, CommonTM):
+def __union_is_covered(Target, InfoList, CommonTM):
     """The union of all trigger sets may be part of the common trigger map,
        if and only if, the triggers to targets that are not common cover
        for each state the 'holes'.
     """
     # Compute the union of all trigger sets to a certain target
-    union = NumberSet()
-    for dummy, tm in InfoList:
-        union.unite_with(tm.get_map()[Target])
 
     # We already know, that there are differences for certain trigger sets.
     # Now, if a difference appears, then try to cover it with 'uncommon' transitions.
@@ -251,28 +248,42 @@ def __get_common_transitions(InfoList):
             common_tm[target] = (a_trigger_set, None, None)
             continue
 
-     # (2) Non-obvious common transitions _____________________________________
-     # 
-     #     EXAMPLE:    StateA:               StateB:
-     #                 'a'   --> 4710        'z'   --> 4709
-     #                 [b-z] --> 4711        [a-y] --> 4711
-     #
-     #     Both states do not have an exact common transition. But, considering
-     #     that the uncommon transitions are tested first, it becomes clear that
-     #     '[a-z]' is a common transition. The test for 'a' and 'z' covers the
-     #     later test and the fact that is is included in the common set does 
-     #     not harm.
-     # 
-     #     The 'cover' depends on the set of remaining uncommon transitions.
-     #     It also relative to the currently tested candidate for a common
-     #     transition.
+    # (2) Non-obvious common transitions _____________________________________
+    # 
+    #     EXAMPLE:    StateA:               StateB:
+    #                 'a'   --> 4710        'z'   --> 4709
+    #                 [b-z] --> 4711        [a-y] --> 4711
+    #
+    #     Both states do not have an exact common transition. But, considering
+    #     that the uncommon transitions are tested first, it becomes clear that
+    #     '[a-z]' is a common transition. The test for 'a' and 'z' covers the
+    #     later test and the fact that is is included in the common set does 
+    #     not harm.
+    # 
+    #     The 'cover' depends on the set of remaining uncommon transitions.
+    #     It also relative to the currently tested candidate for a common
+    #     transition.
+    candidate_list = []
+    # Compute the 'unions' and sort them by effort.
+    for target in remainder:
+        union = NumberSet()
+        for dummy, tm in InfoList:
+            union.unite_with(tm.get_map()[Target])
+        candidate_list.append((effort(union), target, union))
 
-     for target in remainder:
-         union_trigger_set = __get_union_trigger_set_to_target(target, InfoList, common_tm)
-         if __union_is_covered(union, InfoList):
-             common_tm[target] = union_trigger_set
-             # ! If a new target is added to common_tm, this may change the !
-             # ! shadowing set.                                             !
+    candidate_list.sort(key=itemgetter(0), reverse=True)
+
+    common_union_trigger_set = NumberSet()
+    for trigger_set in common.itervalues():
+        common_union_trigger_set.unite_with(trigger_set)
+
+    
+    for cost, target, union in candidate_list:
+        if __union_is_covered(union, InfoList):
+            common_tm[target] = union_trigger_set
+            common_union_trigger_set.unite_with(union_trigger_set)
+            # ! If a new target is added to common_tm, this may change the !
+            # ! shadowing set.                                             !
 
 #def __Partly common transitions not handled yet.
 #        # NOTE: Set operation '-':   X - Y = X & (not Y)
