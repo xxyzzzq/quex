@@ -26,7 +26,14 @@ main(int argc, char** argv)
         fh = fopen(*iterator, "rb");
         bom = QUEX_NAME(bom_snap)(fh);
 
-        printf("%s \t=>%s\n", *iterator, QUEX_NAME(bom_name)(bom));
-
+        printf("%s\n", *iterator);
+        printf("   CODEC: %s\n", QUEX_NAME(bom_name)(bom));
+        printf("   BYTES: ");
+        while( ! feof(fh) )
+        {
+            printf("%02X.", (int)fgetc(fh));
+        }
+        printf("\n");
+        fclose(fh);
     }
 }
