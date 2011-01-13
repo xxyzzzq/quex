@@ -15,63 +15,15 @@
 #ifndef __QUEX_INCLUDE_GUARD__BOM_I
 #define __QUEX_INCLUDE_GUARD__BOM_I
 
+#include <quex/code_base/bom>
+#include <quex/code_base/buffer/InputPolicy>
 
-typedef enum {
-    QUEX_BOM_NONE            = 0x000,
-    QUEX_BOM_UTF_8           = 0x001,  /* D0 --> UTF 8       */
-    QUEX_BOM_UTF_1           = 0x002,  /* D1 --> UTF 1       */
-    QUEX_BOM_UTF_EBCDIC      = 0x004,  /* D2 --> UTF EBCDIC  */
-    QUEX_BOM_BOCU_1          = 0x008,  /* D3 --> BOCU 1      */
-    QUEX_BOM_GB_18030        = 0x010,  /* D4 --> GB_18030    */
-    QUEX_BOM_UTF_7           = 0x020,  /* D5 --> UTF 7       */
-    QUEX_BOM_UTF_16          = 0x040,  /* D6 --> UTF 16      */         
-    QUEX_BOM_UTF_16_LE       = 0x041,
-    QUEX_BOM_UTF_16_BE       = 0x042,  
-    QUEX_BOM_UTF_32          = 0x080,  /* D7 --> UTF 32      */
-    QUEX_BOM_UTF_32_LE       = 0x081,
-    QUEX_BOM_UTF_32_BE       = 0x082,
-    QUEX_BOM_SCSU            = 0x100,  /* D8 --> SCSU        */
-    QUEX_BOM_SCSU_TO_UCS     = 0x101,  
-    QUEX_BOM_SCSU_W0_TO_FE80 = 0x102, 
-    QUEX_BOM_SCSU_W1_TO_FE80 = 0x103, 
-    QUEX_BOM_SCSU_W2_TO_FE80 = 0x104, 
-    QUEX_BOM_SCSU_W3_TO_FE80 = 0x105, 
-    QUEX_BOM_SCSU_W4_TO_FE80 = 0x106, 
-    QUEX_BOM_SCSU_W5_TO_FE80 = 0x107, 
-    QUEX_BOM_SCSU_W6_TO_FE80 = 0x108, 
-    QUEX_BOM_SCSU_W7_TO_FE80 = 0x109, 
-} QUEX_TYPE_BOM;
+#include <quex/code_base/temporary_macros_on>
 
-/* Table of (known) BOMs _____________________________________________________
- *
- *         BOM_UTF_8        { 0xEF, 0xBB, 0xBF }
- *         UTF_16_BE        { 0xFE, 0xFF }
- *         UTF_16_LE        { 0xFF, 0xFE }
- *         UTF_32_BE        { 0x00, 0x00, 0xFE, 0xFF }
- *         UTF_32_LE        { 0xFF, 0xFE, 0x00, 0x00 }
- *         UTF_7_38         { 0x2B, 0x2F, 0x76, 0x38 }
- *         UTF_7_39         { 0x2B, 0x2F, 0x76, 0x39 }
- *         UTF_7_2B         { 0x2B, 0x2F, 0x76, 0x2B }
- *         UTF_7_2F         { 0x2B, 0x2F, 0x76, 0x2F }
- *         UTF_1            { 0xF7, 0x64, 0x4C }
- *         UTF_EBCDIC       { 0xDD, 0x73, 0x66, 0x73 }
- *         SCSU             { 0x0E, 0xFE, 0xFF }
- *         SCSU_TO_UCS      { 0x0F, 0xFE, 0xFF }
- *         SCSU_W0_TO_FE80  { 0x18, 0xA5, 0xFF }
- *         SCSU_W1_TO_FE80  { 0x19, 0xA5, 0xFF }
- *         SCSU_W2_TO_FE80  { 0x1A, 0xA5, 0xFF }
- *         SCSU_W3_TO_FE80  { 0x1B, 0xA5, 0xFF }
- *         SCSU_W4_TO_FE80  { 0x1C, 0xA5, 0xFF }
- *         SCSU_W5_TO_FE80  { 0x1D, 0xA5, 0xFF }
- *         SCSU_W6_TO_FE80  { 0x1E, 0xA5, 0xFF }
- *         SCSU_W7_TO_FE80  { 0x1F, 0xA5, 0xFF }
- *         BOCU_1_x         { 0xFB, 0xEE, 0x28, 0xFF }
- *         BOCU_1           { 0xFB, 0xEE, 0x28, }
- *         GB_18030         { 0x84, 0x31, 0x95, 0x33 }                         
- *_____________________________________________________________________________*/
+QUEX_NAMESPACE_MAIN_OPEN
 
-QUEX_INLINE QUEX_TYPE_BOM
-QUEX_NAME(bom_snap)(IH_TYPE InputHandle) 
+TEMPLATE_IN(InputHandleT) QUEX_TYPE_BOM
+QUEX_NAME(bom_snap)(InputHandleT* InputHandle) 
 {
     /* This function can **only** be used with **normally** behaving streams
      * where the position increases by one with every character being read. If
@@ -80,20 +32,23 @@ QUEX_NAME(bom_snap)(IH_TYPE InputHandle)
     uint8_t        buffer[4] = { 0, 0, 0, 0};
     QUEX_TYPE_BOM  result    = QUEX_BOM_NONE;
     size_t         byte_n    = 0;
+    size_t         read_n    = 0;
+    long           p0 = -1, pEnd = -1;
 
-    p0     = QUEX_INPUT_POLICY_TELL(InputHandle, IH_TYPE);
-    read_n = QUEX_INPUT_POLICY_LOAD_BYTES(InputHandle, IH_TYPE, buffer, 4) ) {
+    p0     = (long)QUEX_INPUT_POLICY_TELL(InputHandle, IH_TYPE);
+    read_n = QUEX_INPUT_POLICY_LOAD_BYTES(InputHandle, IH_TYPE, buffer, 4);
+    if( read_n == 0 ) {
         return QUEX_BOM_NONE;
     }
-    pEnd   = QUEX_INPUT_POLICY_TELL(InputHandle, IH_TYPE);
+    pEnd   = (long)QUEX_INPUT_POLICY_TELL(InputHandle, IH_TYPE);
 
     /* For non-existing bytes fill 0x77, because it does not occur
      * anywhere as a criteria, see 'switch' after that.             */
     switch(read_n) {
         case 0: return QUEX_BOM_NONE;
-        case 1: B1 = 0x77; B2 = 0x77; B3 = 0x77; break; 
-        case 2:            B2 = 0x77; B3 = 0x77; break;
-        case 3:                       B3 = 0x77; break;
+        case 1: buffer[1] = 0x77; buffer[2] = 0x77; buffer[3] = 0x77; break; 
+        case 2:                   buffer[2] = 0x77; buffer[3] = 0x77; break;
+        case 3:                                     buffer[3] = 0x77; break;
     }
 
     result = QUEX_NAME(bom_identify)(buffer, &byte_n);
@@ -102,15 +57,20 @@ QUEX_NAME(bom_snap)(IH_TYPE InputHandle)
 }
 
 QUEX_INLINE QUEX_TYPE_BOM
-QUEX_NAME(bom_identify)(uint8_t B0, uint8_t B1, uint8_t B2, uint8_t B3, size_t* n)
+QUEX_NAME(bom_identify)(const uint8_t* const Buffer, size_t* n)
+    /* Assume, that the buffer contains at least 4 elements! */
 {
-
-    x  = QUEX_BOM_NONE;
+    /* Table of byte order marks (BOMs), see file 'quex/code_base/bom' */
+    const uint8_t B0 = Buffer[0];
+    const uint8_t B1 = Buffer[1];
+    const uint8_t B2 = Buffer[2];
+    const uint8_t B3 = Buffer[3];
+    QUEX_TYPE_BOM  x = QUEX_BOM_NONE;
 
     switch( B0 ) {
-    case 0x00: if( B1 == 0x00 && B2 == 0xFE && B3 == 0xFF ) { *n = 4; x = QUEX_BOM_UTF32_BE; }        break; 
-    case 0x0E: if( B1 == 0xFE && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU; }            break;
-    case 0x0F: if( B1 == 0xFE && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU_TO_UCS;       break; 
+    case 0x00: if( B1 == 0x00 && B2 == 0xFE && B3 == 0xFF ) { *n = 4; x = QUEX_BOM_UTF_32_BE;        } break; 
+    case 0x0E: if( B1 == 0xFE && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU;            } break;
+    case 0x0F: if( B1 == 0xFE && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU_TO_UCS;     } break; 
     case 0x18: if( B1 == 0xA5 && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU_W0_TO_FE80; } break; 
     case 0x19: if( B1 == 0xA5 && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU_W1_TO_FE80; } break; 
     case 0x1A: if( B1 == 0xA5 && B2 == 0xFF )               { *n = 3; x = QUEX_BOM_SCSU_W2_TO_FE80; } break; 
@@ -126,13 +86,13 @@ QUEX_NAME(bom_identify)(uint8_t B0, uint8_t B1, uint8_t B2, uint8_t B3, size_t* 
            *n = 0;
            if( B1 == 0x2F && B2 == 0x76 ) {
                switch( B3 ) 
-               { case 0x2B: case 0x2F: case 0x38: case 0x39: x = QUEX_BOM_UTF7; } 
+               { case 0x2B: case 0x2F: case 0x38: case 0x39: x = QUEX_BOM_UTF_7; } 
            }
            break;
-    case 0x84: if( B1 == 0x31 && B2 == 0x95 && B3 == 0x33 ) { *n = 4; x = QUEX_BOM_GB_18030; }   break;
+    case 0x84: if( B1 == 0x31 && B2 == 0x95 && B3 == 0x33 ) { *n = 4; x = QUEX_BOM_GB_18030;   } break;
     case 0xDD: if( B1 == 0x73 && B2 == 0x66 && B3 == 0x73 ) { *n = 4; x = QUEX_BOM_UTF_EBCDIC; } break;
-    case 0xEF: if( B1 == 0xBB && B2 == 0xBF )               { *n = 3; x = QUEX_BOM_BOM_UTF_8; }  break;
-    case 0xF7: if( B1 == 0x64 && B2 == 0x4C )               { *n = 3; x = QUEX_BOM_UTF_1; }      break;
+    case 0xEF: if( B1 == 0xBB && B2 == 0xBF )               { *n = 3; x = QUEX_BOM_UTF_8;      } break;
+    case 0xF7: if( B1 == 0x64 && B2 == 0x4C )               { *n = 3; x = QUEX_BOM_UTF_1;      } break;
     case 0xFB: 
            if( B1 == 0xEE && B2 == 0x28 ) {
                if( B3 == 0xFF )  { *n = 4; x = QUEX_BOM_BOCU_1; } 
@@ -140,11 +100,11 @@ QUEX_NAME(bom_identify)(uint8_t B0, uint8_t B1, uint8_t B2, uint8_t B3, size_t* 
            }
            break;
     case 0xFE: 
-           if( B1 == 0xFF )      { *n = 2; x = QUEX_BOM_UTF_16_BE; } break;
+           if( B1 == 0xFF ) { *n = 2; x = QUEX_BOM_UTF_16_BE; } break;
     case 0xFF: 
            if( B1 == 0xFE ) {
-               else if( B2 == 0x00 && B3 == 0x00 ) { *n = 4; x = QUEX_BOM_UTF_32_LE; }
-               else                                { *n = 2; x = QUEX_BOM_UTF_16_LE; } }
+               if( B2 == 0x00 && B3 == 0x00 ) { *n = 4; x = QUEX_BOM_UTF_32_LE; }
+               else                           { *n = 2; x = QUEX_BOM_UTF_16_LE; } 
            }
            break;
     default: 
@@ -154,24 +114,40 @@ QUEX_NAME(bom_identify)(uint8_t B0, uint8_t B1, uint8_t B2, uint8_t B3, size_t* 
     return x;
 }           
 
+QUEX_INLINE const char*
+QUEX_NAME(bom_name)(QUEX_TYPE_BOM BOM)
+{
+    switch( BOM ) {
+    case QUEX_BOM_UTF_8:           return "UTF_8";                      
+    case QUEX_BOM_UTF_1:           return "UTF_1";                      
+    case QUEX_BOM_UTF_EBCDIC:      return "UTF_EBCDIC";            
+    case QUEX_BOM_BOCU_1:          return "BOCU_1";                    
+    case QUEX_BOM_GB_18030:        return "GB_18030";                
+    case QUEX_BOM_UTF_7:           return "UTF_7";                      
+    case QUEX_BOM_UTF_16:          return "UTF_16";                                  
+    case QUEX_BOM_UTF_16_LE:       return "UTF_16_LE";              
+    case QUEX_BOM_UTF_16_BE:       return "UTF_16_BE";              
+    case QUEX_BOM_UTF_32:          return "UTF_32";                    
+    case QUEX_BOM_UTF_32_LE:       return "UTF_32_LE";              
+    case QUEX_BOM_UTF_32_BE:       return "UTF_32_BE";              
+    case QUEX_BOM_SCSU:            return "SCSU";                        
+    case QUEX_BOM_SCSU_TO_UCS:     return "SCSU_TO_UCS";          
+    case QUEX_BOM_SCSU_W0_TO_FE80: return "SCSU_W0_TO_FE80";  
+    case QUEX_BOM_SCSU_W1_TO_FE80: return "SCSU_W1_TO_FE80";  
+    case QUEX_BOM_SCSU_W2_TO_FE80: return "SCSU_W2_TO_FE80";  
+    case QUEX_BOM_SCSU_W3_TO_FE80: return "SCSU_W3_TO_FE80";  
+    case QUEX_BOM_SCSU_W4_TO_FE80: return "SCSU_W4_TO_FE80";  
+    case QUEX_BOM_SCSU_W5_TO_FE80: return "SCSU_W5_TO_FE80";  
+    case QUEX_BOM_SCSU_W6_TO_FE80: return "SCSU_W6_TO_FE80";  
+    case QUEX_BOM_SCSU_W7_TO_FE80: return "SCSU_W7_TO_FE80";  
+    default:
+    case QUEX_BOM_NONE:            return "NONE";                        
+    }
+}
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__BOM_I */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

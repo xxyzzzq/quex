@@ -38,7 +38,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     TEMPLATE_IN(InputHandleT)  TEMPLATED(BufferFiller_Plain)*
     QUEX_NAME(BufferFiller_Plain_new)(InputHandleT* input_handle);
     /* input_handle  is the file handle or pointer to the input stream from where the
-     *               incoming characters are to be read. */
+     *               incoming characters are to be read.                             */
 
 #   undef TEMPLATED_CLASS
 
