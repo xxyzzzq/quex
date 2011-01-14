@@ -42,6 +42,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     } QUEX_NAME(Dictionary);
 
+    QUEX_INLINE void
+    QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me);
+
+    QUEX_INLINE void
+    QUEX_NAME(PostCategorizer_destruct)(QUEX_NAME(Dictionary)* me);
+
     QUEX_INLINE int
     QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*  me, 
                                        QUEX_TYPE_CHARACTER         FirstCharacter, 

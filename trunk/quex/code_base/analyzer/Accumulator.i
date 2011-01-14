@@ -16,6 +16,29 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
+QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me, 
+                                 QUEX_TYPE_ANALYZER*       lexer)
+{
+    me->the_lexer = lexer;
+    QUEX_NAME(Accumulator_init_memory)(me);
+    __QUEX_IF_COUNT_LINES(me->_begin_line = 0);
+    __QUEX_IF_COUNT_COLUMNS(me->_begin_column = 0);
+}
+
+
+QUEX_INLINE void
+QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
+{
+    if( me->text.begin != 0x0 ) {
+        QUEX_NAME(MemoryManager_Text_free)(me->text.begin);
+    }
+    me->the_lexer       = 0x0;
+    me->text.begin      = 0x0;
+    me->text.end        = 0x0;
+    me->text.memory_end = 0x0;
+}
+
+QUEX_INLINE void
 QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me) 
 {
     if( QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE == 0 ) {
@@ -30,27 +53,6 @@ QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me)
     }
     me->text.end        = me->text.begin;
     me->text.memory_end = me->text.begin + QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE;
-}
-
-QUEX_INLINE void
-QUEX_NAME(Accumulator_construct)(QUEX_NAME(Accumulator)*   me, 
-                                 QUEX_TYPE_ANALYZER*       lexer)
-{
-    me->the_lexer = lexer;
-    QUEX_NAME(Accumulator_init_memory)(me);
-    __QUEX_IF_COUNT_LINES(me->_begin_line = 0);
-    __QUEX_IF_COUNT_COLUMNS(me->_begin_column = 0);
-}
-
-
-QUEX_INLINE void
-QUEX_NAME(Accumulator_destruct)(QUEX_NAME(Accumulator)* me)
-{
-    QUEX_NAME(MemoryManager_Text_free)(me->text.begin);
-    me->the_lexer       = 0x0;
-    me->text.begin      = 0x0;
-    me->text.end        = 0x0;
-    me->text.memory_end = 0x0;
 }
 
 QUEX_INLINE bool

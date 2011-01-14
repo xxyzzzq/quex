@@ -24,6 +24,12 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          For example, please, consider the 'plain' and 'iconv' implementations
          *          in the correspondent sub directories.                                    */
 
+        /*************************************************************************************
+         ** NOTE: The 'InputHandle' is not located in this class, in order to avoid         **
+         **       the 'templating' of this class with respect to the InputHandle-type.      **
+         **       This templating would extend then to the buffer class etc.                **
+         *************************************************************************************/
+ 
         /* -- 'Tell' returns the character index of the last character read. This corresponds   
          *    to the character index of the last character that is currently in the buffer.  */
         ptrdiff_t   (*tell_character_index)(struct QUEX_NAME(BufferFiller_tag)*);
