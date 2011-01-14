@@ -75,6 +75,45 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me->_input_p == me->_memory._front + 1);
     }
 
+    TEMPLATE_IN(InputHandleT) void
+    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*  me, 
+                            InputHandleT*       input_handle, 
+                            const char*         CharacterEncodingName, 
+                            const size_t        TranslationBufferMemorySize)
+    /* NOTE:     me->_content_character_index_begin == 0 
+     *       and me->_content_character_index_end   == 0 
+     *       => buffer is filled the very first time.                                    
+     * NOTE: The reset of the buffer filler happens by 'delete' and 'new'. This is
+     *       done in order to keep the template decoupled from the rest. Only the
+     *       'new' functions (allocator + constructor) know about the template. The
+     *       'delete_self' function pointer is set to a template that knows how to
+     *       deallocate the object.
+     */
+    {
+        /* Setup the buffer filler for new analysis */
+        if( me->filler != 0x0 ) { 
+            /* If the same input handle is used, as before, than the following command
+             * ensures, that we start at the same position.                            */
+            me->filler->seek_character_index(me->filler, 0);
+            me->filler->delete_self(me->filler);
+        }
+        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+
+        QUEX_NAME(Buffer_init_analyzis)(me, me->_byte_order_reversion_active_f);
+
+        if( me->filler != 0x0 ) {
+            /* We only have to reset the input stream, if we are not at position zero    */
+            QUEX_NAME(BufferFiller_initial_load)(me);   
+        } else {
+            me->_content_character_index_begin = 0; 
+            me->_content_character_index_end   = 0;
+        }
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+        __quex_assert(me->_input_p == me->_memory._front + 1);
+    }
+
     QUEX_INLINE void
     QUEX_NAME(Buffer_init)(QUEX_NAME(Buffer)*  me, bool ByteOrderReversionF)
     {
@@ -121,45 +160,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         QUEX_NAME(BufferMemory_destruct)(&me->_memory);
-    }
-
-    TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*  me, 
-                            InputHandleT*       input_handle, 
-                            const char*         CharacterEncodingName, 
-                            const size_t        TranslationBufferMemorySize)
-    /* NOTE:     me->_content_character_index_begin == 0 
-     *       and me->_content_character_index_end   == 0 
-     *       => buffer is filled the very first time.                                    
-     * NOTE: The reset of the buffer filler happens by 'delete' and 'new'. This is
-     *       done in order to keep the template decoupled from the rest. Only the
-     *       'new' functions (allocator + constructor) know about the template. The
-     *       'delete_self' function pointer is set to a template that knows how to
-     *       deallocate the object.
-     */
-    {
-        /* Setup the buffer filler for new analyzis */
-        if( me->filler != 0x0 ) { 
-            /* If the same input handle is used, as before, than the following command
-             * ensures, that we start at the same position.                            */
-            me->filler->seek_character_index(me->filler, 0);
-            me->filler->delete_self(me->filler);
-        }
-        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
-
-        QUEX_NAME(Buffer_init_analyzis)(me, me->_byte_order_reversion_active_f);
-
-        if( me->filler != 0x0 ) {
-            /* We only have to reset the input stream, if we are not at position zero    */
-            QUEX_NAME(BufferFiller_initial_load)(me);   
-        } else {
-            me->_content_character_index_begin = 0; 
-            me->_content_character_index_end   = 0;
-        }
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-        __quex_assert(me->_input_p == me->_memory._front + 1);
     }
 
     QUEX_INLINE void
@@ -214,7 +214,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_OPTION_PLAIN_C)
-        /* Check wether the memory_position is relative to the current start position   
+        /* Check whether the memory_position is relative to the current start position   
          * of the stream. That means, that the tell_adr() command was called on the  
          * same buffer setting or the positions have been adapted using the += operator.*/
         __quex_assert(Position.buffer_start_position == (size_t)buffer->_content_character_index_begin);

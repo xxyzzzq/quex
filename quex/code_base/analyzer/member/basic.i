@@ -24,7 +24,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                const char*             CharacterEncodingName, 
                                const size_t            TranslationBufferMemorySize,
                                bool                    ByteOrderReversionF)
-    /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
+    /* Initialization of Components of the Lexical Analyzer Engine ________________________
+     *
+     * input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
      *                     by hand in order to setup the memory:
@@ -65,13 +67,24 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           endif
 #       endif
        
+#       ifdef __QUEX_OPTION_COUNTER
+        QUEX_NAME(Counter_construct)(&me->counter);
+#       endif
+
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
         QUEX_NAME(Accumulator_construct)(&me->accumulator, (QUEX_TYPE_ANALYZER*)me);
 #       endif
        
-#       ifdef __QUEX_OPTION_COUNTER
-        QUEX_NAME(Counter_construct)(&me->counter);
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        me->_parent_memento = 0x0;
 #       endif
+
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer);
+#       endif
+
+        me->_mode_stack.end        = me->_mode_stack.begin;
+        me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Initialize everything to 0xFF which is most probably causing an error
@@ -79,13 +92,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
 #       endif
         
-#       ifdef  QUEX_OPTION_INCLUDE_STACK
-        me->_parent_memento = 0x0;
-#       endif
-
-        me->_mode_stack.end        = me->_mode_stack.begin;
-        me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
-
         QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 
                                     BufferMemory, BufferMemorySize, EndOfFileP,
                                     CharacterEncodingName, TranslationBufferMemorySize,
@@ -108,30 +114,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->__file_handle_allocated_by_constructor = 0x0;
     }
 
-
-    QUEX_INLINE void
-    QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me)
-    {
-        QUEX_NAME(Buffer_destruct)(&me->buffer);
-
-#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
-#       endif
-       
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
-        QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
-#       endif
-
-        if( me->__file_handle_allocated_by_constructor != 0x0 ) {
-            __QUEX_STD_fclose(me->__file_handle_allocated_by_constructor); 
-        }
-    }
-
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*  me,
                            InputHandleT*        input_handle, 
                            const char*          CharacterEncodingName, 
                            const size_t         TranslationBufferMemorySize)
+        /* Reset of Components of the Lexical Analyzer Engine ____________________________*/
     {
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_NAME(Counter_reset)(&me->counter);
@@ -157,6 +145,33 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
         QUEX_NAME(Buffer_reset)(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+    }
+
+
+    QUEX_INLINE void
+    QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me)
+    {
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
+        QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
+#       endif
+
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
+#       endif
+       
+#       ifdef QUEX_OPTION_INCLUDE_STACK
+        QUEX_NAME(include_stack_delete)((QUEX_TYPE_ANALYZER*)me);
+#       endif
+
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        QUEX_NAME(PostCategorizer_destruct)(&me->post_categorizer);
+#       endif
+
+        QUEX_NAME(Buffer_destruct)(&me->buffer);
+
+        if( me->__file_handle_allocated_by_constructor != 0x0 ) {
+            __QUEX_STD_fclose(me->__file_handle_allocated_by_constructor); 
+        }
     }
 
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because

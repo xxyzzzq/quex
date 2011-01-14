@@ -10,8 +10,12 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 
+QUEX_INLINE void
+QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*        me, 
+                                               QUEX_NAME(DictionaryNode)*  branch);
+
 QUEX_INLINE QUEX_NAME(DictionaryNode)* 
-QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
+QUEX_NAME(DictionaryNode_new)(QUEX_TYPE_CHARACTER          FirstCharacter,
                                const QUEX_TYPE_CHARACTER*  Remainder,
                                QUEX_TYPE_TOKEN_ID          TokenID)
 {
@@ -22,6 +26,19 @@ QUEX_NAME(PostCategorizer_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
     me->lesser  = 0x0;
     me->greater = 0x0;
     return me;
+}
+
+QUEX_INLINE void
+QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me)
+{
+    me->root = 0x0;
+}
+
+QUEX_INLINE void
+QUEX_NAME(PostCategorizer_destruct)(QUEX_NAME(Dictionary)* me)
+{
+    QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
+    me->root = 0x0;
 }
 
 QUEX_INLINE int
@@ -51,12 +68,6 @@ QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*        me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me)
-{
-    me->root = 0x0;
-}
-
-QUEX_INLINE void
 QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
                                    const QUEX_TYPE_CHARACTER*  EntryName, 
                                    const QUEX_TYPE_TOKEN_ID    TokenID)
@@ -68,7 +79,7 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
     int                           result = 0;
 
     if( me->root == 0x0 ) {
-        me->root = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
+        me->root = QUEX_NAME(DictionaryNode_new)(FirstCharacter, Remainder, TokenID);
         return;
     }
     while( node != 0x0 ) {
@@ -82,9 +93,9 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
     __quex_assert( result != 0 );
 
     if( result > 0 ) 
-        prev_node->greater = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
+        prev_node->greater = QUEX_NAME(DictionaryNode_new)(FirstCharacter, Remainder, TokenID);
     else 
-        prev_node->lesser  = QUEX_NAME(PostCategorizer_new)(FirstCharacter, Remainder, TokenID);
+        prev_node->lesser  = QUEX_NAME(DictionaryNode_new)(FirstCharacter, Remainder, TokenID);
 }
 
 QUEX_INLINE void
