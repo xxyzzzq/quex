@@ -25,7 +25,7 @@ STATE_7_INPUT:
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
 
-    if( input == *path_iterator) {
+    if( input == *path_iterator ) {
         ++path_iterator;
         goto PATH_WALKER_7;
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
@@ -34,13 +34,13 @@ STATE_7_INPUT:
     }
     if( input < 20) {
         if( input < 10) {
-            if( input == 0) {
+            if( input == 0 ) {
                 goto STATE_7_RELOAD;    /* \0 */
             } else {
                 goto STATE_7_DROP_OUT_DIRECT;    /* [\1, '\t'] */
             }
         } else {
-            if( input == 10) {
+            if( input == 10 ) {
                 goto STATE_1;    /* '\n' */
             } else {
                 goto STATE_7_DROP_OUT_DIRECT;    /* ['\v', \19] */
@@ -48,13 +48,13 @@ STATE_7_INPUT:
         }
     } else {
         if( input < 64) {
-            if( input == 20) {
+            if( input == 20 ) {
                 goto STATE_2;    /* \20 */
             } else {
                 goto STATE_7_DROP_OUT_DIRECT;    /* [\21, '?'] */
             }
         } else {
-            if( input == 64) {
+            if( input == 64 ) {
                 goto STATE_1;    /* '@' */
             } else {
                 goto STATE_7_DROP_OUT_DIRECT;    /* ['A', oo] */

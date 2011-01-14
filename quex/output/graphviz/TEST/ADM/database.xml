@@ -1,28 +1,28 @@
-<test-database execution-time-sec="0.75" date="Mon Jan  3 06:47:32 2011">
+<test-database execution-time-sec="1.32" date="Fri Jan 14 22:37:31 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." time-sum-sec="0.07"> 
+    <test title="Check supported formats." time-sum-sec="0.13"> 
         <application file-name="get_supported_formats.py" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.07" crc="-266270399"/>
+           <choice name="" result="OK" time_sec="0.13" crc="-266270399"/>
         </choice-list>
     </test>
     <group name="Plot">
-        <test title="Core state machine." time-sum-sec="0.16"> 
+        <test title="Core state machine." time-sum-sec="0.20"> 
             <application file-name="plot-core.py" info-request-time="1276059903L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.16" crc="-2036900348"/>
+               <choice name="" result="OK" time_sec="0.20" crc="-2036900348"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.30"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.59"> 
             <application file-name="plot-papc.py" info-request-time="1276059896L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.30" crc="1237268508"/>
+               <choice name="" result="OK" time_sec="0.59" crc="1237268508"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." time-sum-sec="0.23"> 
+        <test title="Pre-Context." time-sum-sec="0.39"> 
             <application file-name="plot-pre-context.py" info-request-time="1276059909L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.23" crc="-463690523"/>
+               <choice name="" result="OK" time_sec="0.39" crc="-463690523"/>
             </choice-list>
         </test>
     </group>

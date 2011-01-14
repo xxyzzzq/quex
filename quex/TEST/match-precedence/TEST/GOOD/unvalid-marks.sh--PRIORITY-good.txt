@@ -1,6 +1,4 @@
-data/PRIORITY-good.qx:4:warning: There were implicit token identifier definitions. Quex proposes
-data/PRIORITY-good.qx:4:warning: to define them in a token { ... } section, i.e.
-data/PRIORITY-good.qx:4:warning: 
+data/PRIORITY-good.qx:4:warning: Detected implicit token identifier definitions. Proposal:
 data/PRIORITY-good.qx:4:warning:    token {
 data/PRIORITY-good.qx:4:warning:      THING;
 data/PRIORITY-good.qx:4:warning:    }

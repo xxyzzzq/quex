@@ -53,7 +53,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( input_handle != 0x0 ) __quex_assert(InputMemory == 0x0 );
         if( InputMemory  != 0x0 ) { 
             __quex_assert(input_handle == 0x0 );
-            /* If the input memory is provided, the content **must** be propperly set up.      */
+            /* If the input memory is provided, the content **must** be properly set up.       */
             QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, EndOfFileP);
         }
 #       endif

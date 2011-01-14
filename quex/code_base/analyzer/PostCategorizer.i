@@ -12,7 +12,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*        me, 
-                                               QUEX_NAME(DictionaryNode)*  branch);
+                                             QUEX_NAME(DictionaryNode)*  branch);
 
 QUEX_INLINE QUEX_NAME(DictionaryNode)* 
 QUEX_NAME(DictionaryNode_new)(QUEX_TYPE_CHARACTER          FirstCharacter,
@@ -37,6 +37,7 @@ QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me)
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_destruct)(QUEX_NAME(Dictionary)* me)
 {
+    if( me->root == 0x0 ) return;
     QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
     me->root = 0x0;
 }
@@ -198,8 +199,10 @@ QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)*  me,
 
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*       me, 
-                                               QUEX_NAME(DictionaryNode)*  branch)
+                                             QUEX_NAME(DictionaryNode)*  branch)
 {
+    __quex_assert(branch != 0x0);
+
     if( branch->lesser  != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
     if( branch->greater != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
     QUEX_NAME(MemoryManager_PostCategorizerNode_free)(branch);
@@ -217,6 +220,7 @@ QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_NAME(Dictionary)*  me,
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me)
 {
+    if( me->root == 0x0 ) return;
     QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
 }
 

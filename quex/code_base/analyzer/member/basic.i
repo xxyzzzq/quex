@@ -129,12 +129,14 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
 #       endif
 
-#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_clear)(&me->accumulator);
-#       endif
-
 #       ifdef QUEX_OPTION_INCLUDE_STACK
         QUEX_NAME(include_stack_delete)((QUEX_TYPE_ANALYZER*)me);
+#       endif
+
+        /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE *
+         *            STACK HAS BEEN DELETED. OTHERWISE, THERE MIGHT BE LEAKS. */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator_clear)(&me->accumulator);
 #       endif
 
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
@@ -155,14 +157,16 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
 #       endif
 
-#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
-#       endif
-       
 #       ifdef QUEX_OPTION_INCLUDE_STACK
         QUEX_NAME(include_stack_delete)((QUEX_TYPE_ANALYZER*)me);
 #       endif
 
+        /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE *
+         *            STACK HAS BEEN DELETED. OTHERWISE, THERE MIGHT BE LEAKS. */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
+#       endif
+       
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         QUEX_NAME(PostCategorizer_destruct)(&me->post_categorizer);
 #       endif
