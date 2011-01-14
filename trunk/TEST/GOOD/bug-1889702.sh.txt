@@ -1,5 +1,4 @@
 (1)
-error.qx:2:warning: Token id 'QUEX_TKN_A' defined implicitly.
 command line: No initial mode defined via 'start' while more than one applicable mode exists.
 command line: Use for example 'start = BASE;' in the quex source file to define an initial mode.
 

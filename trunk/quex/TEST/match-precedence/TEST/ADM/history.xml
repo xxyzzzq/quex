@@ -1,4 +1,4 @@
-<history date="Mon Jan  3 06:41:19 2011" element-n="119">
+<history date="Fri Jan 14 23:48:18 2011" element-n="123">
     <day year="2009" month="06" day="27">
         <history-init time="20:41:20"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:04:27"/>
@@ -351,5 +351,11 @@
     <day year="2010" month="12" day="25">
         <crc-error time="11:53:55" application="unvalid-marks.sh" choice="PRIORITY-good" database-crc="1735324169" real-crc="-2085544656"/>
         <crc-error time="11:53:56" application="unvalid-marks.sh" choice="DELETION-good" database-crc="851887329" real-crc="-1276146370"/>
+    </day>
+    <day year="2011" month="01" day="14">
+        <crc-error time="22:48:12" application="unvalid-marks.sh" choice="DELETION-fail" database-crc="-1866089342" real-crc="-409572518"/>
+        <crc-error time="22:48:18" application="unvalid-marks.sh" choice="PRIORITY-good" database-crc="-2085544656" real-crc="-84057889"/>
+        <crc-error time="22:48:18" application="unvalid-marks.sh" choice="PRIORITY-fail" database-crc="-1755387854" real-crc="1109812615"/>
+        <crc-error time="22:48:18" application="unvalid-marks.sh" choice="DELETION-good" database-crc="-1276146370" real-crc="-964384655"/>
     </day>
 </history>

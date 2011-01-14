@@ -53,13 +53,13 @@ STATE_1_INPUT:
     input = *(me->buffer._input_p);
     if( input < 10) {
         if( input < 8) {
-            if( input == 0) {
+            if( input == 0 ) {
                 goto STATE_1_RELOAD;    /* \0 */
             } else {
                 goto STATE_1_DROP_OUT_DIRECT;    /* [\1, '\t'] */
             }
         } else {
-            if( input == 8) {
+            if( input == 8 ) {
                 QUEX_TEMPLATE_GOTO(1, 0, template_state_key);    /* '\b' */
             } else {
                 QUEX_TEMPLATE_GOTO(1, 1, template_state_key);    /* '\t' */
@@ -67,13 +67,13 @@ STATE_1_INPUT:
         }
     } else {
         if( input < 12) {
-            if( input == 10) {
+            if( input == 10 ) {
                 goto STATE_100;    /* '\n' */
             } else {
                 goto TEMPLATE_1;    /* '\v' */
             }
         } else {
-            if( input == 12) {
+            if( input == 12 ) {
                 goto STATE_1_DROP_OUT_DIRECT;    /* '\f' */
             } else {
                 QUEX_TEMPLATE_GOTO(1, 2, template_state_key);    /* [\14, oo] */

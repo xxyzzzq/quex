@@ -980,7 +980,7 @@ STATE_207:
                 }
             } else {
                 if( input < 65) {
-                    if( input == 59) {
+                    if( input == 59 ) {
                         goto TERMINAL_16;    /* ';' */
                     } else {
                         goto STATE_207_DROP_OUT_DIRECT;    /* ['<', '@'] */
@@ -997,20 +997,20 @@ STATE_207:
     } else {
         if( input < 106) {
             if( input < 100) {
-                if( input == 96) {
+                if( input == 96 ) {
                     goto STATE_207_DROP_OUT_DIRECT;    /* '`' */
                 } else {
                     goto STATE_217;    /* '_' */
                 }
             } else {
                 if( input < 102) {
-                    if( input == 100) {
+                    if( input == 100 ) {
                         goto STATE_208;    /* 'd' */
                     } else {
                         goto STATE_209;    /* 'e' */
                     }
                 } else {
-                    if( input != 105) {
+                    if( input != 105 ) {
                         goto STATE_217;    /* ['f', 'h'] */
                     } else {
                         goto STATE_213;    /* 'i' */
@@ -1019,20 +1019,20 @@ STATE_207:
             }
         } else {
             if( input < 123) {
-                if( input == 115) {
+                if( input == 115 ) {
                     goto STATE_212;    /* 's' */
                 } else {
                     goto STATE_217;    /* ['j', 'r'] */
                 }
             } else {
                 if( input < 125) {
-                    if( input == 123) {
+                    if( input == 123 ) {
                         goto TERMINAL_18;    /* '{' */
                     } else {
                         goto STATE_207_DROP_OUT_DIRECT;    /* '|' */
                     }
                 } else {
-                    if( input == 125) {
+                    if( input == 125 ) {
                         goto TERMINAL_20;    /* '}' */
                     } else {
                         goto STATE_207_DROP_OUT_DIRECT;    /* ['~', oo] */
@@ -1073,7 +1073,7 @@ STATE_208_INPUT:
     input = *(me->buffer._input_p);
     if( input < 96) {
         if( input < 65) {
-            if( input == 0) {
+            if( input == 0 ) {
                 goto STATE_208_RELOAD;    /* \0 */
             } else {
                 goto STATE_208_DROP_OUT_DIRECT;    /* [\1, '@'] */
@@ -1087,13 +1087,13 @@ STATE_208_INPUT:
         }
     } else {
         if( input < 111) {
-            if( input == 96) {
+            if( input == 96 ) {
                 goto STATE_208_DROP_OUT_DIRECT;    /* '`' */
             } else {
                 goto STATE_217;    /* ['a', 'n'] */
             }
         } else {
-            if( input < 112) {
+            if( input < 112 ) {
                 goto STATE_233;    /* 'o' */
             } else {
                 if( input < 123) {
@@ -1131,7 +1131,7 @@ STATE_209_INPUT:
     input = *(me->buffer._input_p);
     if( input < 96) {
         if( input < 65) {
-            if( input == 0) {
+            if( input == 0 ) {
                 goto STATE_209_RELOAD;    /* \0 */
             } else {
                 goto STATE_209_DROP_OUT_DIRECT;    /* [\1, '@'] */
@@ -1145,13 +1145,13 @@ STATE_209_INPUT:
         }
     } else {
         if( input < 120) {
-            if( input == 96) {
+            if( input == 96 ) {
                 goto STATE_209_DROP_OUT_DIRECT;    /* '`' */
             } else {
                 goto STATE_217;    /* ['a', 'w'] */
             }
         } else {
-            if( input < 121) {
+            if( input < 121 ) {
                 goto STATE_228;    /* 'x' */
             } else {
                 if( input == 121 || input == 122 ) {
@@ -1235,7 +1235,7 @@ STATE_212_INPUT:
     input = *(me->buffer._input_p);
     if( input < 97) {
         if( input < 91) {
-            if( input < 1) {
+            if( input < 1 ) {
                 goto STATE_212_RELOAD;    /* \0 */
             } else {
                 if( input < 65) {
@@ -1259,7 +1259,7 @@ STATE_212_INPUT:
                 goto STATE_217;    /* ['a', 'd'] */
             }
         } else {
-            if( input < 117) {
+            if( input < 117 ) {
                 goto STATE_220;    /* 't' */
             } else {
                 if( input < 123) {

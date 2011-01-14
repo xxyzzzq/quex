@@ -248,7 +248,7 @@ STATE_21_INPUT:
 PATH_WALKER_23:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23");
 
-    if( input == *path_iterator) {
+    if( input == *path_iterator ) {
         ++path_iterator;
 PATH_WALKER_23_STATE_ROUTER:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23_STATE_ROUTER");
@@ -287,13 +287,13 @@ PATH_WALKER_23_STATE_ROUTER:
     }
     if( input < 20) {
         if( input < 10) {
-            if( input == 0) {
+            if( input == 0 ) {
                 goto STATE_23_RELOAD;    /* \0 */
             } else {
                 goto STATE_23_DROP_OUT_DIRECT;    /* [\1, '\t'] */
             }
         } else {
-            if( input == 10) {
+            if( input == 10 ) {
                 goto STATE_1;    /* '\n' */
             } else {
                 goto STATE_23_DROP_OUT_DIRECT;    /* ['\v', \19] */
@@ -301,13 +301,13 @@ PATH_WALKER_23_STATE_ROUTER:
         }
     } else {
         if( input < 64) {
-            if( input == 20) {
+            if( input == 20 ) {
                 goto STATE_2;    /* \20 */
             } else {
                 goto STATE_23_DROP_OUT_DIRECT;    /* [\21, '?'] */
             }
         } else {
-            if( input == 64) {
+            if( input == 64 ) {
                 goto STATE_1;    /* '@' */
             } else {
                 goto STATE_23_DROP_OUT_DIRECT;    /* ['A', oo] */

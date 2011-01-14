@@ -1,4 +1,3 @@
-data/PRIORITY-fail.qx:4:warning: Token id 'QUEX_TKN_THING' defined implicitly.
 data/PRIORITY-fail.qx:24:error: Pattern 'q' was marked with PRIORITY-MARK but does not
 data/PRIORITY-fail.qx:24:error: exist in any base mode of mode 'Z'.
 data/PRIORITY-fail.qx:26:error: Pattern 'p' was marked with PRIORITY-MARK but does not

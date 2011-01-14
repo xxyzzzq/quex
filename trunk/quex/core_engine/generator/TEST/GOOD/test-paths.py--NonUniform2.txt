@@ -48,7 +48,7 @@ STATE_23_INPUT:
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
 
-    if( input == *path_iterator) {
+    if( input == *path_iterator ) {
         ++path_iterator;
         goto PATH_WALKER_23;
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
@@ -63,7 +63,7 @@ STATE_23_INPUT:
             }
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
     }
-    if( input == 0) {
+    if( input == 0 ) {
         goto STATE_23_RELOAD;    /* \0 */
     } else {
         goto STATE_23_DROP_OUT_DIRECT;    /* [\1, oo] */

@@ -40,7 +40,7 @@ def do(TriggerMap, StateIdx, DSM):
     if len(TriggerMap) > 1:
         # Check whether some things might be pre-checked before the big trigger map
         # starts working. This includes likelyhood and 'assembler-switch' implementations.
-        priorized_code = __get_priorized_code(TriggerMap, info)
+        priorized_code = "" # __get_priorized_code(TriggerMap, info)
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
         block_code     = __get_code(TriggerMap, info)
@@ -106,7 +106,6 @@ def __tiny_neighbour_transitions(Info, CurrentStateIdx, DSM):
 
     return result
     
-
 class TinyNeighborTransitions:
     def __init__(self):
         self.__list = []
@@ -226,7 +225,6 @@ def __extract_likely_character(trigger_map, CharacterCode, first_f, info):
             break
 
     return first_f, result
-
 
 def __get_code(TriggerMap, info):
     """Creates code for state transitions from this state. This function is very
