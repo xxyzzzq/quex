@@ -8,7 +8,15 @@ mode, i.e. without conversion, it does not know about BOMs.
 It is the user's task to cut the BOM--but Quex helps. 
 
 Quex provides functions to handle the recognition and cutting of the BOM from a
-character stream. The function
+character stream. To access the following files must be included:
+
+.. code-block:: cpp
+
+    #include <quex/code_base/bom>
+    #include <quex/code_base/bom.i>
+
+These files declare and implement functions in in the main namespace (default
+``quex``). The function
 
 .. code-block:: cpp
 
@@ -67,6 +75,8 @@ example
 
 .. code-block:: cpp
 
+    using namespace quex;
+
     bom_type = QUEX_NAME(bom_snap)(file_handle);
 
     if( bom_type & (QUEX_BOM_UTF32 | QUEX_BOM_NONE) ) {
@@ -119,4 +129,14 @@ construction of the lexical analyzer object the 'cut' would not have
 any effect. Thus, the constructor call must be delayed after the
 call to ``QUEX_NAME(BOM_snap)(...)``. If the initial call to the
 constructor cannot be avoided, then the call to the BOM snap function
-must be followed by a call to the ``reset(...)`` function. 
+must be followed by a call to the ``reset(...)`` function. Also, 
+an attempt to cut the BOM, after the constructor has done its 
+initial load must fail.
+
+.. warning:: Do not use the file or stream handle that is used 
+   for BOM cutting in the lexical analyzer constructor **before**
+   the BOM cutting. If this is desired, then the constructor
+   call **happen** after the BOM cut.
+
+An example of how to cut the BOM can be found in ``demo/*/003`` in 
+``example-bom.c``, respectively ``example-bom.c``.
