@@ -19,5 +19,10 @@ main(int argc, char** argv)
     QUEX_NAME(include_push)(&qlex, dummy_fh, 0x0, 0x0, 0x0);
 
     QUEX_NAME(destruct)(&qlex);
+
+    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    QUEX_NAME(include_push)(&qlex, dummy_fh, 0x0, 0x0, 0x0);
+    QUEX_NAME(reset)(&qlex, dummy_fh, 0x0);
+    QUEX_NAME(destruct)(&qlex);
     fclose(dummy_fh);
 }
