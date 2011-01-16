@@ -1,47 +1,47 @@
-<test-database execution-time-sec="2.16" date="Fri Jan 14 22:27:28 2011">
+<test-database execution-time-sec="1.07" date="Sun Jan 16 13:44:52 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.63"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.42"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.63" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.42" crc="None"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.11"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.08"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1292746775L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.11" crc="-348331770"/>
+           <choice name="" result="OK" time_sec="0.08" crc="1470818460"/>
         </choice-list>
     </test>
-    <test title="Check if the default configuration has been updated." time-sum-sec="0.11"> 
+    <test title="Check if the default configuration has been updated." time-sum-sec="0.02"> 
         <application file-name="check-default-configuration.sh" info-request-time="1288770751L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.11" crc="512112916"/>
+           <choice name="" result="OK" time_sec="0.02" crc="512112916"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.13"> 
+    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1276061838L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.13" crc="-639186265"/>
+           <choice name="" result="OK" time_sec="0.08" crc="-639186265"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.03"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.02"> 
         <application file-name="macro-check.py" info-request-time="1288770713L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
+           <choice name="" result="OK" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.87"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.40"> 
         <application file-name="include_guard.py" info-request-time="1288771971L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.53" crc="-1057591907"/>
-           <choice name="undefinition" result="FAIL" time_sec="0.34" crc="-1546884230"/>
+           <choice name="convention" result="FAIL" time_sec="0.20" crc="None"/>
+           <choice name="undefinition" result="OK" time_sec="0.20" crc="1693599369"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.28"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.04"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1280814116L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.28" crc="-1492277791"/>
+               <choice name="" result="OK" time_sec="0.04" crc="-1492277791"/>
             </choice-list>
         </test>
     </group>

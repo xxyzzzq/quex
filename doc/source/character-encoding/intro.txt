@@ -50,6 +50,7 @@ generated converters can be plugged into the process.
    converter.txt
    user-defined.txt
    converter_helper.txt
+   bom.txt
 
 .. rubric:: Footnotes
 

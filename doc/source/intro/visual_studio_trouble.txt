@@ -71,6 +71,18 @@ place.
    
    External include directory.
 
+Configuration parameters of the analyzer can be set in the Menu 'C/C++'
+at item 'Command Line'. There should be a large text field in the bottom
+right corner. In the example of demo003, the macro ``ENCODING_NAME``
+must be defined for the file ``example.cpp``. In order to let the 
+lexical analyzer run at full speed, asserts must be disabled, so that
+at least the following options must added::
+
+    -DENCODING_NAME=\"UTF8\" -DQUEX_OPTION_ASSERTS_DISABLED
+
+The ``-D`` flag is used to define the macros. A directly following '='
+allows to define a value for the macro.
+
 Analyzers might also rely on other libraries. For this the library itself, as
 well as the library path must be specified. In the same property window as
 before, under 'Linker/Input', there is a field called 'Additional Dependencies'
@@ -102,4 +114,4 @@ environment shadows the PATH variable.
 As a final hint, it might be a good idea to introduce a break point at 
 the last line of the example lexical analyzer. This way to command line
 window which displays the results remains active. In the command line
-window, the results of the lexical analysis may be examined.
+window, the results of the lexical analysis may be examined. 
