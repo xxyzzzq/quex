@@ -224,6 +224,10 @@ applications first before continuing with the remainder of this text.  With the
 background of easy-to-use examples to serve as starting point for their own
 efforts, it should be natural to get a feeling for the ease of quex.
 
+.. toctree::
+
+   visual_studio_trouble.txt
+
 .. rubric:: Footnotes
 
 .. [#f1] If you are glad to work on a Linux system, the probability that your 
