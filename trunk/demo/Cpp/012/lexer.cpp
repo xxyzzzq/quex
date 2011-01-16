@@ -4,6 +4,11 @@
 #include "max_Lexer"
 #include "boeck_Lexer"
 
+/* We do not need to cut the BOM. I include it here only
+ * to make sure that it remains 'multi-lexer-safe'.        */
+#include <quex/code_base/bom>
+#include <quex/code_base/bom.i>
+
 using namespace std;
 
 
