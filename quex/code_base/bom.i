@@ -37,12 +37,12 @@ QUEX_NAME(bom_snap)(InputHandleT* InputHandle)
     STREAM_POSITION_TYPE(InputHandleT)   p0   = (STREAM_POSITION_TYPE(InputHandleT))-1;
     STREAM_POSITION_TYPE(InputHandleT)   pEnd = (STREAM_POSITION_TYPE(InputHandleT))-1;
 
-    p0     = (long)QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
-    read_n = QUEX_INPUT_POLICY_LOAD_BYTES(InputHandle, InputHandleT, buffer, 4);
+    p0     = (STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
+    read_n = (size_t)QUEX_INPUT_POLICY_LOAD_BYTES(InputHandle, InputHandleT, buffer, 4);
     if( read_n == 0 ) {
         return QUEX_BOM_NONE;
     }
-    pEnd   = (long)QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
+    pEnd   = (STREAM_POSITION_TYPE(InputHandleT))QUEX_INPUT_POLICY_TELL(InputHandle, InputHandleT);
 
     /* For non-existing bytes fill 0x77, because it does not occur
      * anywhere as a criteria, see 'switch' after that.             */
@@ -56,7 +56,7 @@ QUEX_NAME(bom_snap)(InputHandleT* InputHandle)
     result = QUEX_NAME(bom_identify)(buffer, &byte_n);
 
     /* Avoid temporary function argument. Store sum in p0. */
-    p0 += byte_n;
+    p0 += (STREAM_POSITION_TYPE(InputHandleT))byte_n;
     QUEX_INPUT_POLICY_SEEK(InputHandle, InputHandleT, p0);
 
     return result;

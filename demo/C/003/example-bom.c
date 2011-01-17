@@ -1,51 +1,51 @@
-#include<fstream>    
-#include<iostream> 
+#include <stdio.h>    
 
-// (*) include lexical analyser header
-#include "EasyLexer"
+/* (*) include lexical analyser header */
+#include "EasyLexer.h"
 #include <quex/code_base/bom>
 #include <quex/code_base/bom.i>
 
 int 
 main(int argc, char** argv) 
 {        
-    using namespace std;
-
-    quex::Token*          token_p = 0x0;
-    // (*) create the lexical analyser
-    //     1st arg: input file, default = 'example.txt'
-    //     2nd arg: input character encoding name, 0x0 --> no codec conversion
-    FILE*                 fh = fopen(argc > 1 ? argv[1] : "example.txt", "rb");
+    quex_Token*     token_p = 0x0;
+    /* (*) create the lexical analyser
+     *     1st arg: input file, default = 'example.txt'
+     *     2nd arg: input character encoding name, 0x0 --> no codec conversion */
+    FILE*           fh = fopen(argc > 1 ? argv[1] : "example.txt", "rb");
+    EasyLexer       qlex;
+    const size_t    BufferSize = 1024;
+    char            buffer[1024];
+    int number_of_tokens = 0;
 
     /* Either there is no BOM, or if there is one, then it must be UTF8 */
-    QUEX_TYPE_BOM         bom_type = quex::QUEX_NAME(bom_snap)(fh);
+    QUEX_TYPE_BOM   bom_type = QUEX_NAME(bom_snap)(fh);
 
-    cout << "Found BOM: " << quex::QUEX_NAME(bom_name)(bom_type) << endl;
+    printf("Found BOM: %s\n", QUEX_NAME(bom_name)(bom_type));
 
     if( (bom_type & (QUEX_BOM_UTF_8 | QUEX_BOM_NONE)) == 0 ) {
-        cout << "Found a non-UTF8 BOM. Exit\n";
+        printf("Found a non-UTF8 BOM. Exit\n");
         return 0;
     }
 
     /* The lexer **must** be constructed after the BOM-cut */
-    quex::EasyLexer       qlex(fh, "UTF8");
+    QUEX_NAME(construct_FILE)(&qlex, fh, "UTF8", false);
 
+    printf(",-----------------------------------------------------------------\n");
+    printf("| [START]\n");
 
-    cout << ",-----------------------------------------------------------------\n";
-    cout << "| [START]\n";
-
-    int number_of_tokens = 0;
     do {
-        qlex.receive(&token_p);
+        QUEX_NAME(receive)(&qlex, &token_p);
 
-        cout << "(" << token_p->line_number() << ", " << token_p->column_number() << ")  \t";
-        cout << string(*token_p) << endl;
+        printf("(%i, %i)  \t", (int)token_p->_line_n, (int)token_p->_column_n);
+        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
         ++number_of_tokens;
+    } while( token_p->_id != QUEX_TKN_TERMINATION );
 
-    } while( token_p->type_id() != QUEX_TKN_TERMINATION );
+    printf("| [END] number of token = %i\n", number_of_tokens);
+    printf("`-----------------------------------------------------------------\n");
 
-    cout << "| [END] number of token = " << number_of_tokens << "\n";
-    cout << "`-----------------------------------------------------------------\n";
+    QUEX_NAME(destruct)(&qlex);
 
     return 0;
 }
