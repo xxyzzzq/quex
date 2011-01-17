@@ -78,6 +78,9 @@ endif
 lexer:          example.o EasyLexer.o
 	$(LD) -o $@ example.o EasyLexer.o 
           
+bom-lexer:      example-bom.o EasyLexer.o
+	$(LD) -o $@ example-bom.o EasyLexer.o 
+          
 # Object files:
 EasyLexer.o: EasyLexer.c 
 	$(CC) $< -o $@ 
@@ -85,7 +88,7 @@ EasyLexer.o: EasyLexer.c
 example.o: ../example.c  EasyLexer.c
 	$(CC) $< -o $@ 
 
-example-bom.o: example-bom.c EasyLexer.cpp
+example-bom.o: example-bom.c EasyLexer.c
 	$(CC) $< -o $@ 
 
 # Macro expansions (only for debugging):
@@ -107,3 +110,4 @@ clean:
 	rm -f *.bak
 	rm -f *.E
 	rm -f lexer
+	rm -f bom-lexer
