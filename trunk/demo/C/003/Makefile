@@ -85,6 +85,9 @@ EasyLexer.o: EasyLexer.c
 example.o: ../example.c  EasyLexer.c
 	$(CC) $< -o $@ 
 
+example-bom.o: example-bom.c EasyLexer.cpp
+	$(CC) $< -o $@ 
+
 # Macro expansions (only for debugging):
 %.E: %.c    
 	$(CC) -E $< -o $@ 
