@@ -24,6 +24,7 @@ main(int argc, char** argv)
 
     if( (bom_type & (QUEX_BOM_UTF_8 | QUEX_BOM_NONE)) == 0 ) {
         cout << "Found a non-UTF8 BOM. Exit\n";
+        fclose(fh);
         return 0;
     }
 
@@ -47,5 +48,6 @@ main(int argc, char** argv)
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`-----------------------------------------------------------------\n";
 
+    fclose(fh);
     return 0;
 }

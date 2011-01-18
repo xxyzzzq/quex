@@ -25,6 +25,7 @@ main(int argc, char** argv)
 
     if( (bom_type & (QUEX_BOM_UTF_8 | QUEX_BOM_NONE)) == 0 ) {
         printf("Found a non-UTF8 BOM. Exit\n");
+        fclose(fh);
         return 0;
     }
 
@@ -47,5 +48,6 @@ main(int argc, char** argv)
 
     QUEX_NAME(destruct)(&qlex);
 
+    fclose(fh);
     return 0;
 }

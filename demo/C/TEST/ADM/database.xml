@@ -1,4 +1,4 @@
-<test-database execution-time-sec="254.39" date="Fri Jan 14 23:37:19 2011">
+<test-database execution-time-sec="263.91" date="Tue Jan 18 08:19:23 2011">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.29"> 
         <application file-name="makefile-diff.sh" info-request-time="1290545571L" vanished="False"/>
@@ -61,6 +61,14 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="1.28" crc="766281751"/>
             </choice-list>
         </test>
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="9.52"> 
+            <application file-name="003-bom.sh" info-request-time="1295335131L" vanished="False"/>
+            <choice-list number="3" same_result="False">
+               <choice name="Without" result="OK" time_sec="5.01" crc="-2095454429"/>
+               <choice name="UTF8-BOM" result="OK" time_sec="2.33" crc="2029696665"/>
+               <choice name="UTF16BE-BOM" result="OK" time_sec="2.18" crc="1542017505"/>
+            </choice-list>
+        </test>
         <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="8.51"> 
             <application file-name="003-icu.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="5" same_result="True">
@@ -102,7 +110,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="3.07"> 
+        <test title="Miscellaneous Features" time-sum-sec="3.06"> 
             <application file-name="007.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="1.70" crc="-375962478"/>
