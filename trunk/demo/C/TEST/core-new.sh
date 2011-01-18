@@ -23,11 +23,18 @@ rm -f *.o *.exe
 
 # Make the test program _______________________________________________________
 echo "## make lexer $4 $5 $6 $7"
-make lexer $4 $5 $6 $7 >& tmp-make0.txt
+if [[ $args_to_make != "" ]]; then
+    make $args_to_make >& tmp-make0.txt
+else
+    make lexer $4 $5 $6 $7 >& tmp-make0.txt
+fi
 
 # Run the test ________________________________________________________________
 # (including the check for memory leaks)
-valgrind ./lexer $args_to_lexer > tmp-stdout0.txt 2> tmp-stderr0.txt
+if [[ $lexer_name == "" ]]; then
+    lexer_name="./lexer"
+fi
+valgrind $lexer_name $args_to_lexer > tmp-stdout0.txt 2> tmp-stderr0.txt
 
 
 # Filter important lines ______________________________________________________
