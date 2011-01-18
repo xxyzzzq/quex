@@ -247,7 +247,9 @@ namespace quex {
 	}
 }
 
-int main(int argCount, char * argValues[]) {
+int 
+main(int argCount, char * argValues[]) 
+{
 	if(argCount < 0x02) {
 		std::cout << "Usage:" << argValues[0x00] << " [options] <sources>" << std::endl;
 		std::cout << std::endl;

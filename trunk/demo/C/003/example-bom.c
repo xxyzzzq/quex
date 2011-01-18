@@ -12,11 +12,11 @@ main(int argc, char** argv)
     /* (*) create the lexical analyser
      *     1st arg: input file, default = 'example.txt'
      *     2nd arg: input character encoding name, 0x0 --> no codec conversion */
-    FILE*           fh = fopen(argc > 1 ? argv[1] : "example.txt", "rb");
-    EasyLexer       qlex;
     const size_t    BufferSize = 1024;
     char            buffer[1024];
-    int number_of_tokens = 0;
+    int             number_of_tokens = 0;
+    FILE*           fh = fopen(argc > 1 ? argv[1] : "example.txt", "rb");
+    EasyLexer       qlex;
 
     /* Either there is no BOM, or if there is one, then it must be UTF8 */
     QUEX_TYPE_BOM   bom_type = QUEX_NAME(bom_snap)(fh);
