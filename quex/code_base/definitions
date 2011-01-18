@@ -211,5 +211,4 @@
 #define QUEX_SOURCE_POS()         __FILE__ ":" QUEX_NUMBER_TO_STRING(__LINE__) ": "
 
 
-
 #endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */

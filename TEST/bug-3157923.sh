@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=3157923
 if [[ $1 == "--hwut-info" ]]; then
-    echo "Memory Leak by Components: $bug "
+    echo "fschaef: $bug Memory Leak by Components"
     exit
 fi
 

@@ -36,11 +36,11 @@ are
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(unicode, utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode, utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode, utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode, char)(...);
-    QUEX_INLINE void   QUEX_NAME(unicode, wchar)(...);
+    QUEX_INLINE void   QUEX_NAME(unicode_to_utf8)(...);
+    QUEX_INLINE void   QUEX_NAME(unicode_to_utf16)(...);
+    QUEX_INLINE void   QUEX_NAME(unicode_to_utf32)(...);
+    QUEX_INLINE void   QUEX_NAME(unicode_to_char)(...);
+    QUEX_INLINE void   QUEX_NAME(unicode_to_wchar)(...);
 
 The converters towards UTF8, UTF16, and UTF32 are the 'basis' and the
 converters towards ``char`` and ``wchar_t`` choose from them what is
@@ -71,11 +71,11 @@ is available, which is possibly not as fast but more convinient
 
 .. code-block:: cpp
 
-    QUEX_INLINE string<uint8_t>   QUEX_NAME(unicode, utf8)(string<qtc>);
-    QUEX_INLINE string<uint16_t>  QUEX_NAME(unicode, utf16)(string<qtc>);
-    QUEX_INLINE string<uint32_t>  QUEX_NAME(unicode, utf32)(string<qtc>);
-    QUEX_INLINE string<char>      QUEX_NAME(unicode, char)(string<qtc>);
-    QUEX_INLINE string<wchar_t>   QUEX_NAME(unicode, wchar)(string<qtc>);
+    QUEX_INLINE string<uint8_t>   QUEX_NAME(unicode_to_utf8)(string<qtc>);
+    QUEX_INLINE string<uint16_t>  QUEX_NAME(unicode_to_utf16)(string<qtc>);
+    QUEX_INLINE string<uint32_t>  QUEX_NAME(unicode_to_utf32)(string<qtc>);
+    QUEX_INLINE string<char>      QUEX_NAME(unicode_to_char)(string<qtc>);
+    QUEX_INLINE string<wchar_t>   QUEX_NAME(unicode_to_wchar)(string<qtc>);
 
 where ``string<X>`` is a shorthand for ``std::basic_string<X>`` and
 ``string<qtc>`` is a shorthand for ``std::basic_string<QUEX_TYPE_CHARACTER>``.
@@ -92,11 +92,11 @@ UTF32. The converters follow the same scheme as for unicode, only that
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(iso8859_7, utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7, utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7, utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7, char)(...);
-    QUEX_INLINE void   QUEX_NAME(iso8859_7, wchar)(...);
+    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_utf8)(...);
+    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_utf16)(...);
+    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_utf32)(...);
+    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_char)(...);
+    QUEX_INLINE void   QUEX_NAME(iso8859_7_to_wchar)(...);
 
 are the generated converters if ``--codec iso8859-7`` was specified. The 
 converters can be included by
@@ -130,11 +130,11 @@ example
 
 .. code-block:: cpp
 
-    QUEX_INLINE void   QUEX_NAME(utf8, utf8)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8, utf16)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8, utf32)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8, char)(...);
-    QUEX_INLINE void   QUEX_NAME(utf8, wchar)(...);
+    QUEX_INLINE void   QUEX_NAME(utf8_to_utf8)(...);
+    QUEX_INLINE void   QUEX_NAME(utf8_to_utf16)(...);
+    QUEX_INLINE void   QUEX_NAME(utf8_to_utf32)(...);
+    QUEX_INLINE void   QUEX_NAME(utf8_to_char)(...);
+    QUEX_INLINE void   QUEX_NAME(utf8_to_wchar)(...);
 
 in order to convert UTF8 strings to one of the target codecs. UTF16 
 and UTF32 work analogously.

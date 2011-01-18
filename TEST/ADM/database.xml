@@ -1,4 +1,4 @@
-<test-database execution-time-sec="197.10" date="Fri Jan 14 23:46:37 2011">
+<test-database execution-time-sec="197.10" date="Tue Jan 18 21:09:37 2011">
     <last-used-diff-display-program name=""/>
     <group name="Memory Leak by Components">
         <test title="3157923" time-sum-sec="1.28"> 
@@ -375,12 +375,6 @@
                <choice name="" result="OK" time_sec="0.09" crc="-429266748"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.12"> 
-            <application file-name="bug-1885846.sh" info-request-time="1290546211L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.12" crc="2110266544"/>
-            </choice-list>
-        </test>
         <test title="1908092 0.23.5 uses --token-class without --token-class-file" time-sum-sec="0.30"> 
             <application file-name="bug-1908092.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -512,6 +506,12 @@
                <choice name="" result="OK" time_sec="0.09" crc="-2033217112"/>
             </choice-list>
         </test>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.48"> 
+            <application file-name="bug-1887163.sh" info-request-time="1290546211L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.48" crc="1510346924"/>
+            </choice-list>
+        </test>
         <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.51"> 
             <application file-name="bug-1889702.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -620,10 +620,10 @@
                <choice name="" result="OK" time_sec="0.17" crc="-1800512920"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.48"> 
-            <application file-name="bug-1887163.sh" info-request-time="1290546211L" vanished="False"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.12"> 
+            <application file-name="bug-1885846.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.48" crc="1510346924"/>
+               <choice name="" result="OK" time_sec="0.12" crc="2110266544"/>
             </choice-list>
         </test>
     </group>
