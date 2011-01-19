@@ -7,6 +7,9 @@
 < example.o: ../example.cpp  EasyLexer.cpp
 ---
 > example.o: ../example.c  EasyLexer.c
+< example-bom.o: example-bom.cpp  EasyLexer.cpp
+---
+> example-bom.o: example-bom.c EasyLexer.c
 < %.E: %.cpp    
 ---
 > %.E: %.c    
