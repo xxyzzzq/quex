@@ -7,6 +7,9 @@ header {
 	#include <unicode/uidna.h>
 	#include <unicode/uniset.h>
 
+    typedef std::basic_string<QUEX_TYPE_CHARACTER>             uXa_String;
+    typedef std::basic_string<QUEX_TYPE_CHARACTER>::iterator   uXa_StringIterator;
+
 	typedef enum PointieValueID {
 		POINTIE_VALUE_COMPUTED,
 		POINTIE_VALUE_NAN,
@@ -16,335 +19,39 @@ header {
 
 body {
 	public:
-		UnicodeString textAccumulator;
+		uXa_String textAccumulator;
 		struct {
 			bool isBlock;
 			float bnCount;
 		} comment;
 
 		float parseBinInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
-			UChar32 uInput;
-			int32_t digitV;
-
-			UnicodeString           lexeme = UnicodeString(false,lexemeString,lexemeLength - 1);
-			StringCharacterIterator lexItr = StringCharacterIterator(lexeme);
-
-			float value = 0x00;
-			float place = 0x01;
-
-			for(lexItr.setToEnd();lexItr.hasPrevious();/* void */) {
-				uInput = lexItr.previous32();
-				digitV = u_digit(uInput,0x02);
-
-				if(-1 == digitV) {
-					return 0x00;
-				}
-
-				value += (digitV * place);
-				place *= 0x02;
-			}
-
-			return value;
+            return 3.0;
 		}
 
 		float parseOctInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
-			UChar32 uInput;
-			int32_t digitV;
-
-			UnicodeString           lexeme = UnicodeString(false,lexemeString + 2,lexemeLength - 2);
-			StringCharacterIterator lexItr = StringCharacterIterator(lexeme);
-
-			float value = 0x00;
-			float place = 0x01;
-
-			for(lexItr.setToEnd();lexItr.hasPrevious();/* void */) {
-				uInput = lexItr.previous32();
-				digitV = u_digit(uInput,0x08);
-
-				if(-1 == digitV) {
-					return 0x00;
-				}
-
-				value += (digitV * place);
-				place *= 0x08;
-			}
-
-			return value;
+            return 2.0;
 		}
 
 		float parseDecInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
-			UChar32 uInput;
-			int32_t digitV;
-
-			UnicodeString           lexeme = UnicodeString(false,lexemeString,lexemeLength);
-			StringCharacterIterator lexItr = StringCharacterIterator(lexeme);
-
-			float value = 0x00;
-			float place = 0x01;
-
-			for(lexItr.setToEnd();lexItr.hasPrevious();/* void */) {
-				uInput = lexItr.previous32();
-				digitV = u_digit(uInput,0x0A);
-
-				if(-1 == digitV) {
-					return 0x00;
-				}
-
-				value += (digitV * place);
-				place *= 0x0A;
-			}
-
-			return value;
+            return 1.0;
 		}
 
 		float parseHexInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
-			UChar32 uInput;
-			int32_t digitV;
-
-			UnicodeString           lexeme = UnicodeString(false,lexemeString,lexemeLength);
-			StringCharacterIterator lexItr = StringCharacterIterator(lexeme);
-
-			float value = 0x00;
-			float place = 0x01;
-
-			for(lexItr.setToEnd();lexItr.hasPrevious();/* void */) {
-				uInput = lexItr.previous32();
-				digitV = u_digit(uInput,0x10);
-
-				if(-1 == digitV) {
-					return 0x00;
-				}
-
-				value += (digitV * place);
-				place *= 0x10;
-			}
-
-			return value;
+            return 0.0;
 		}
 
 		double parseDecPointie(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
-			UChar32 uInput;
-			int32_t digitV;
-
-			UnicodeString           lexeme = UnicodeString(false,lexemeString,lexemeLength);
-			StringCharacterIterator lexItr = StringCharacterIterator(lexeme);
-
-			double value = 96.0;
-			double delta = 96.0;
-			double place = 96.0;
-
-			int32_t dotIndex = lexeme.indexOf('.');
-			int32_t expIndex = lexeme.indexOf('e');
-
-			if(-1 == expIndex) {
-				expIndex = lexeme.indexOf('E');
-			}
-
-			if(-1 == dotIndex) {
-				if(-1 == expIndex) {
-					lexItr.setToEnd();
-				} else {
-					lexItr.move32(expIndex,CharacterIterator::kStart);
-				}
-			} else {
-				lexItr.move32(dotIndex,CharacterIterator::kStart);
-			}
-
-			for(/* void */;lexItr.hasPrevious();/* void */) {
-				uInput = lexItr.previous32();
-				digitV = u_digit(uInput,0x0A);
-
-				if(-1 == digitV) {
-					return 96.0;
-				}
-
-				delta  = digitV;
-				delta *= place;
-				value += delta;
-				place *= 10.0; 
-			}
-
-			if(-1 != dotIndex) {
-				lexItr.move32(dotIndex,CharacterIterator::kStart);
-
-				delta = 0.0;
-				place = 0.1;
-
-				for(lexItr.next32PostInc();lexItr.hasNext();/* void */) {
-					if(lexItr.current() == 'e' || lexItr.current() == 'E') {
-						break;
-					}
-
-					uInput = lexItr.next32PostInc();
-					digitV = u_digit(uInput,0x0A);
-
-					if(-1 == digitV) {
-						return 0.0;
-					}
-
-					delta  = digitV;
-					delta *= place;
-
-					value += delta;
-					place /= 10.0;
-				}
-			}
-
-			if(-1 != expIndex) {
-				lexItr.move32(expIndex,CharacterIterator::kStart);
-
-				float expInt    = 0x00;
-				bool posExpont = true;
-				float expPlc    = 0x01;
-
-				for(lexItr.setToEnd();lexItr.hasPrevious();/* void */) {
-					uInput = lexItr.previous32();
-
-					if(lexItr.current() == 'e' || lexItr.current() == 'E') {
-						break;
-					} else if(lexItr.current() == '+') {
-						posExpont = true;
-						continue;
-					} else if(lexItr.current() == '-') {
-						posExpont = false;
-						continue;
-					}
-
-					digitV = u_digit(uInput,0x0A);
-
-					if(-1 == digitV) {
-						return 0.0;
-					}
-
-					expInt += (digitV * expPlc);
-					expPlc *= 0x0A;
-				}
-
-				for(expPlc = 0x00;expPlc < expInt;expPlc++) {
-					if(posExpont) {
-						value *= 10.0;
-					} else {
-						value /= 10.0;
-					}
-				}
-			}
-
-			return value;
+			return -1.0;
 		}
 
 		double parseHexPointie(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
-			UChar32 uInput;
-			int32_t digitV;
-
-			UnicodeString           lexeme = UnicodeString(false,lexemeString,lexemeLength);
-			StringCharacterIterator lexItr = StringCharacterIterator(lexeme);
-
-			double value = 0x00,cln;
-			double delta = 0.0;
-			double place = 1.0;
-
-			int32_t dotIndex = lexeme.indexOf('.');
-			int32_t expIndex = lexeme.indexOf('p');
-
-			if(-1 == expIndex) {
-				expIndex = lexeme.indexOf('P');
-			}
-
-			if(-1 == dotIndex) {
-				if(-1 == expIndex) {
-					lexItr.setToEnd();
-				} else {
-					lexItr.move32(expIndex,CharacterIterator::kStart);
-				}
-			} else {
-				lexItr.move32(dotIndex,CharacterIterator::kStart);
-			}
-
-			for(/* void */;lexItr.hasPrevious();/* void */) {
-				uInput = lexItr.previous32();
-				digitV = u_digit(uInput,0x10);
-
-				if(-1 == digitV) {
-					return 0.0;
-				}
-
-				delta  = digitV,cln;
-				delta *= place;
-				value += delta;
-				place *= 16.0;
-			}
-
-			if(-1 != dotIndex) {
-				lexItr.move32(dotIndex,CharacterIterator::kStart);
-
-				delta = 0.0000;
-				place = 0.0625;
-
-				for(lexItr.next32PostInc();lexItr.hasNext();/* void */) {
-					if(lexItr.current() == 'p' || lexItr.current() == 'P') {
-						break;
-					}
-
-					uInput = lexItr.next32PostInc();
-					digitV = u_digit(uInput,0x10);
-
-					if(-1 == digitV) {
-						return 0.0;
-					}
-
-					delta  = digitV,cln;
-					delta *= place;
-
-					value += delta;
-					place /= 16.0;
-				}
-			}
-
-			if(-1 != expIndex) {
-				lexItr.move32(expIndex,CharacterIterator::kStart);
-
-				float expInt    = 0x00;
-				bool posExpont = true;
-				float expPlc    = 0x01;
-
-				for(lexItr.setToEnd();lexItr.hasPrevious();/* void */) {
-					uInput = lexItr.previous32();
-
-					if(lexItr.current() == 'p' || lexItr.current() == 'P') {
-						break;
-					} else if(lexItr.current() == '+') {
-						posExpont = true;
-						continue;
-					} else if(lexItr.current() == '-') {
-						posExpont = false;
-						continue;
-					}
-
-					digitV = u_digit(uInput,0x0A);
-
-					if(-1 == digitV) {
-						return 0.0;
-					}
-
-					expInt += (digitV * expPlc);
-					expPlc *= 0x0A;
-				}
-
-				for(expPlc = 0x00;expPlc < expInt;expPlc++) {
-					if(posExpont) {
-						value *= 2.0;
-					} else {
-						value /= 2.0;
-					}
-				}
-			}
-
-			return value;
+            return -2.0;
 		}
 }
 
 init {
-	self.textAccumulator = UnicodeString();
+	self.textAccumulator.clear();
 	self.comment.isBlock = true;
 	self.comment.bnCount = 0x00;
 }
@@ -424,7 +131,7 @@ token_type {
 
 	distinct {
 		integerValue: float;
-		stringValue : UnicodeString;
+		stringValue : uXa_String;
 		unicodeValue: UChar32;
 		pointieType : PointieValueID;
 		pointieValue: double;
@@ -432,7 +139,7 @@ token_type {
 
 	constructor {
 		self.integerValue = 0x00;
-		self.stringValue  = UnicodeString();
+		self.stringValue.clear();
 		self.unicodeValue = 0x00;
 		self.pointieType  = POINTIE_VALUE_COMPUTED;
 		self.pointieValue = 0.0;
@@ -474,7 +181,7 @@ token_type {
 
 mode DEFAULT {
 	"#" {
-		self.textAccumulator = UnicodeString();
+		self.textAccumulator.clear();
 		self.comment.isBlock = false;
 		self.comment.bnCount = 0 + 0;
 
@@ -482,7 +189,7 @@ mode DEFAULT {
 		self << COMMENT;
 	}
 	"%{" {
-		self.textAccumulator = UnicodeString();
+		self.textAccumulator.clear();
 		self.comment.isBlock = true;
 		self.comment.bnCount = 0x01;
 
@@ -490,7 +197,7 @@ mode DEFAULT {
 		self << COMMENT;
 	}
 	";" {
-		self.textAccumulator = UnicodeString();
+		self.textAccumulator.clear();
 		self.comment.isBlock = false;
 		self.comment.bnCount = 0 + 0;
 
@@ -583,9 +290,9 @@ mode COMMENT {
 }
 
 mode INITIAL : DEFAULT {
-	\X0027 { self.textAccumulator = UnicodeString(); self << SINGLE; }
-	\X0060 { self.textAccumulator = UnicodeString(); self << SYMBOLIC; }
-	\X0022 { self.textAccumulator = UnicodeString(); self << STRING; }
+	\X0027 { self.textAccumulator.clear(); self << SINGLE; }
+	\X0060 { self.textAccumulator.clear(); self << SYMBOLIC; }
+	\X0022 { self.textAccumulator.clear(); self << STRING; }
 
 	"null"  => QUEX_UUID_NULL;
 	"nul"   => QUEX_UUID_NUL;
@@ -625,13 +332,13 @@ mode INITIAL : DEFAULT {
                              pointieValue = self.parseHexPointie(Lexeme + 2,LexemeL - 2));
 
 	"<"[a-zA-Z]+([0-9]+|"("[0-9]+")")?((","[a-zA-Z]+([0-9]+|"("[0-9]+")")?)+|((":"|"-")[a-zA-Z]+([0-9]+|"("[0-9]+")")?))?">"
-		=> QUEX_UUID_REGISTER(stringValue = UnicodeString(Lexeme + 1,LexemeL - 2));
+		=> QUEX_UUID_REGISTER(stringValue = uXa_String(Lexeme + 1,LexemeL - 2));
 
 	[$._@a-zA-Z][$._@a-zA-Z0-9]*
-		=> QUEX_UUID_SYMBOLIC(stringValue = UnicodeString(Lexeme,LexemeL));
+		=> QUEX_UUID_SYMBOLIC(stringValue = uXa_String(Lexeme,LexemeL));
 
 	.
-		=> QUEX_UUID_UNICODE(stringValue = UnicodeString(false,Lexeme,LexemeL).char32At(0x00));
+		=> QUEX_UUID_UNICODE(stringValue = uXa_String(Lexeme,LexemeL));
 }
 
 mode SINGLE {
@@ -655,31 +362,31 @@ mode SINGLE {
 	}
 
 	"\\\X0022" {
-		self.textAccumulator.append(0x22);
+		self.textAccumulator.append(1, 0x22);
 	}
 
 	"\\\X0027" {
-		self.textAccumulator.append(0x27);
+		self.textAccumulator.append(1, 0x27);
 	}
 
 	"\\\X005C" {
-		self.textAccumulator.append(0x5C);
+		self.textAccumulator.append(1, 0x5C);
 	}
 
 	"\\\X0060" {
-		self.textAccumulator.append(0x60);
+		self.textAccumulator.append(1, 0x60);
 	}
 
 	"\\n" {
-		self.textAccumulator.append(0x0A);
+		self.textAccumulator.append(1, 0x0A);
 	}
 
 	"\\t" {
-		self.textAccumulator.append(0x09);
+		self.textAccumulator.append(1, 0x09);
 	}
 
 	"\\r" {
-		self.textAccumulator.append(0x0D);
+		self.textAccumulator.append(1, 0x0D);
 	}
 
 	[^\X005C\X0027]+ {
@@ -716,31 +423,31 @@ mode SYMBOLIC {
 	}
 
 	"\\\X0022" {
-		self.textAccumulator.append(0x22);
+		self.textAccumulator.append(1, 0x22);
 	}
 
 	"\\\X0027" {
-		self.textAccumulator.append(0x27);
+		self.textAccumulator.append(1, 0x27);
 	}
 
 	"\\\X005C" {
-		self.textAccumulator.append(0x5C);
+		self.textAccumulator.append(1, 0x5C);
 	}
 
 	"\\\X0060" {
-		self.textAccumulator.append(0x60);
+		self.textAccumulator.append(1, 0x60);
 	}
 
 	"\\n" {
-		self.textAccumulator.append(0x0A);
+		self.textAccumulator.append(1, 0x0A);
 	}
 
 	"\\t" {
-		self.textAccumulator.append(0x09);
+		self.textAccumulator.append(1, 0x09);
 	}
 
 	"\\r" {
-		self.textAccumulator.append(0x0D);
+		self.textAccumulator.append(1, 0x0D);
 	}
 
 	[^\X005C\X0060]+ {
@@ -777,31 +484,31 @@ mode STRING {
 	}
 
 	"\\\X0022" {
-		self.textAccumulator.append(0x22);
+		self.textAccumulator.append(1, 0x22);
 	}
 
 	"\\\X0027" {
-		self.textAccumulator.append(0x27);
+		self.textAccumulator.append(1, 0x27);
 	}
 
 	"\\\X005C" {
-		self.textAccumulator.append(0x5C);
+		self.textAccumulator.append(1, 0x5C);
 	}
 
 	"\\\X0060" {
-		self.textAccumulator.append(0x60);
+		self.textAccumulator.append(1, 0x60);
 	}
 
 	"\\n" {
-		self.textAccumulator.append(0x0A);
+		self.textAccumulator.append(1, 0x0A);
 	}
 
 	"\\t" {
-		self.textAccumulator.append(0x09);
+		self.textAccumulator.append(1, 0x09);
 	}
 
 	"\\r" {
-		self.textAccumulator.append(0x0D);
+		self.textAccumulator.append(1, 0x0D);
 	}
 
 	[^\X005C\X0022]+ {

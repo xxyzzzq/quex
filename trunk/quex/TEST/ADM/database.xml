@@ -1,21 +1,21 @@
-<test-database execution-time-sec="1.07" date="Sun Jan 16 13:44:52 2011">
+<test-database execution-time-sec="1.09" date="Wed Jan 19 22:48:36 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.42"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.44"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1264886933L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.42" crc="None"/>
+           <choice name="" result="OK" time_sec="0.44" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.08"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1292746775L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.08" crc="1470818460"/>
+           <choice name="" result="OK" time_sec="0.03" crc="1470818460"/>
         </choice-list>
     </test>
-    <test title="Check if the default configuration has been updated." time-sum-sec="0.02"> 
+    <test title="Check if the default configuration has been updated." time-sum-sec="0.03"> 
         <application file-name="check-default-configuration.sh" info-request-time="1288770751L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.02" crc="512112916"/>
+           <choice name="" result="OK" time_sec="0.03" crc="512112916"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 
@@ -30,11 +30,11 @@
            <choice name="" result="OK" time_sec="0.02" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.40"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.44"> 
         <application file-name="include_guard.py" info-request-time="1288771971L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="FAIL" time_sec="0.20" crc="None"/>
-           <choice name="undefinition" result="OK" time_sec="0.20" crc="1693599369"/>
+           <choice name="convention" result="OK" time_sec="0.22" crc="-1057591907"/>
+           <choice name="undefinition" result="OK" time_sec="0.23" crc="1693599369"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
