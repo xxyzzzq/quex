@@ -19,7 +19,7 @@ be UCS4, i.e. UTF32, or UTF16 for systems where ``sizeof(wchar_t) == 2``.
 Converters, however, are provided for a much broader application. Thus,
 text can be converted to ``char`` and ``wchar_t`` whenever it is needed.
 Moreover, converters from the buffer's codec to UTF8, UTF16, UTF32 are
-provided for each generated lexical analyzer. For unicode code based
+provided for each generated lexical analyzer. For Unicode code based
 buffers the required functions are declared and implemented by including::
 
      #include <quex/code_base/converter_helper/unicode>
@@ -28,10 +28,10 @@ and::
 
      #include <quex/code_base/converter_helper/unicode.i>
 
-When using subset of unicode (e.g. ASCII, UCS4 or UTF32) as input encoding,
-then the buffer encoding is unicode. Also, when using converters 
-(see :ref:`sec-converters`) the buffer is still encoded in unicode. Then 
-the unicode converters in the files mentioned above can be used, as they
+When using subset of Unicode (e.g. ASCII, UCS4 or UTF32) as input encoding,
+then the buffer encoding is Unicode. Also, when using converters 
+(see :ref:`sec-converters`) the buffer is still encoded in Unicode. Then 
+the Unicode converters in the files mentioned above can be used, as they
 are
 
 .. code-block:: cpp
@@ -42,10 +42,21 @@ are
     QUEX_INLINE void   QUEX_NAME(unicode_to_char)(...);
     QUEX_INLINE void   QUEX_NAME(unicode_to_wchar)(...);
 
+The functions above convert a whole string. For single character
+conversions the same function group is present only ending with ``_character``
+in the function name, i.e.
+
+.. code-block:: cpp
+
+    QUEX_INLINE void   QUEX_NAME(unicode_to_utf8_character)(...);
+
+converts a single character from Unicode to UTF8.
+
 The converters towards UTF8, UTF16, and UTF32 are the 'basis' and the
-converters towards ``char`` and ``wchar_t`` choose from them what is
-appropriate. Where the exact signature of each function follows the scheme of
-``converter`` in the following code fragment
+converters towards ``char`` and ``wchar_t`` are mapped to one of them depending
+on what is appropriate for the size of ``char`` and ``wchar_t``.  Where the
+exact signature of each function follows the scheme of ``converter`` in the
+following code fragment
 
 .. code-block:: cpp
 
@@ -66,8 +77,8 @@ converter in case that either source or drain is fragmented.
           encoding. For UTF8 it is 8 bytes, for UTF16 4 bytes and for UTF32
           for bytes.
 
-The previous converter is present in C and C++. In C++ the following converter
-is available, which is possibly not as fast but more convinient
+The previous converter is present in C and C++. In C++ the following converters
+are available, which are possibly not as fast but more convenient
 
 .. code-block:: cpp
 
@@ -87,7 +98,7 @@ some dedicated character encoding. The ``Lexeme`` that is presented to the user
 has exactly the coding of the internal buffer. Precisely, it is a chain of
 ``QUEX_TYPE_CHARACTER`` objects that are encoded in the buffer's character
 encoding. Then quex has to generate the converters towards UTF8, UTF16, and
-UTF32. The converters follow the same scheme as for unicode, only that 
+UTF32. The converters follow the same scheme as for Unicode, only that 
 'unicode' is replaced by the codec's name, e.g.
 
 .. code-block:: cpp
