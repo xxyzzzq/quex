@@ -1,0 +1,50 @@
+(1)
+::
+[\v\a] => space 10;
+[\t] => space 10;>
+::
+
+test_string:2:error: 'space' has been defined before for 10;
+test_string:1:error: at this place.
+Exception!
+
+(2)
+::
+[\v\a] => grid 10;
+[\t] => grid 10;>
+::
+
+test_string:2:error: 'grid' has been defined before for 10;
+test_string:1:error: at this place.
+Exception!
+
+(3)
+::
+[\v\a] => newline;
+[\t] => newline;>
+::
+
+test_string:2:error: 'newline' has been defined before;
+test_string:1:error: at this place.
+Exception!
+
+(4)
+::
+[\v\a] => suppressor;
+[\t] => suppressor;>
+::
+
+test_string:2:error: 'suppressor' has been defined before;
+test_string:1:error: at this place.
+Exception!
+
+(5)
+::
+[\v\a] => bad;
+[\t] => bad;>
+::
+
+test_string:2:error: 'bad' has been defined before;
+test_string:1:error: at this place.
+Exception!
+

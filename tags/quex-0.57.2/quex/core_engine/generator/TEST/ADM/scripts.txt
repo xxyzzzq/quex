@@ -1,0 +1,5 @@
+*.py
+--not generator_test.py 
+--not test-priority.py 
+--not test-pseudo_ambiguous_post_conditions-3.py 
+

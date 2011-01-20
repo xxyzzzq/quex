@@ -1,0 +1,338 @@
+--(Path Definitions)----------------------------------------------------
+
+    const QUEX_TYPE_CHARACTER (path_walker_23_base[23]) = {
+    111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'o''t''t''o' */
+    103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'g''r''u''n''i''b''a''l''d''i' */
+    102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'f''r''i''t''z' */
+
+    };
+    const QUEX_TYPE_CHARACTER* path_1 = path_walker_23_base + 0;
+    const QUEX_TYPE_CHARACTER* path_17 = path_walker_23_base + 16;
+    const QUEX_TYPE_CHARACTER* path_6 = path_walker_23_base + 5;
+#ifdef QUEX_OPTION_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL (path_walker_23_state[22]) = {&&STATE_1, &&STATE_2, &&STATE_3, &&STATE_4, &&STATE_5, &&STATE_6, &&STATE_7, &&STATE_8, &&STATE_9, &&STATE_10, &&STATE_11, &&STATE_12, &&STATE_13, &&STATE_14, &&STATE_15, &&STATE_16, &&STATE_17, &&STATE_18, &&STATE_19, &&STATE_20, &&STATE_21, &&STATE_22, };
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
+
+
+--(Pathwalker Code)-----------------------------------------------------
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_1:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1");
+STATE_1_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
+    path_iterator = path_1 + 0;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_2:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_2");
+STATE_2_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_2_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 1");
+    path_iterator = path_1 + 1;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_3:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_3");
+STATE_3_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_3_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 2");
+    path_iterator = path_1 + 2;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_4:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_4");
+STATE_4_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_4_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 3");
+    path_iterator = path_1 + 3;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_6:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_6");
+STATE_6_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_6_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 0");
+    path_iterator = path_6 + 0;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_7:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7");
+STATE_7_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 1");
+    path_iterator = path_6 + 1;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_8:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_8");
+STATE_8_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_8_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 2");
+    path_iterator = path_6 + 2;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_9:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_9");
+STATE_9_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_9_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 3");
+    path_iterator = path_6 + 3;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_10:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_10");
+STATE_10_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_10_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 4");
+    path_iterator = path_6 + 4;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_11:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_11");
+STATE_11_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_11_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 5");
+    path_iterator = path_6 + 5;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_12:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_12");
+STATE_12_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_12_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 6");
+    path_iterator = path_6 + 6;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_13:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_13");
+STATE_13_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_13_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 7");
+    path_iterator = path_6 + 7;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_14:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_14");
+STATE_14_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_14_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 8");
+    path_iterator = path_6 + 8;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_15:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_15");
+STATE_15_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_15_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 9");
+    path_iterator = path_6 + 9;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_17:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_17");
+STATE_17_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_17_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 0");
+    path_iterator = path_17 + 0;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_18:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_18");
+STATE_18_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_18_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 1");
+    path_iterator = path_17 + 1;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_19:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_19");
+STATE_19_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_19_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 2");
+    path_iterator = path_17 + 2;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_20:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_20");
+STATE_20_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_20_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 3");
+    path_iterator = path_17 + 3;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_21:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_21");
+STATE_21_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_21_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 4");
+    path_iterator = path_17 + 4;
+    goto PATH_WALKER_23;
+
+    __quex_assert(false); /* No drop-through between states */
+PATH_WALKER_23:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23");
+
+    if( input == *path_iterator ) {
+        ++path_iterator;
+PATH_WALKER_23_STATE_ROUTER:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23_STATE_ROUTER");
+
+#ifndef QUEX_OPTION_COMPUTED_GOTOS
+            switch((int)(path_iterator - path_walker_23_base)) {
+                case 0: goto STATE_1;
+                case 1: goto STATE_2;
+                case 2: goto STATE_3;
+                case 3: goto STATE_4;
+                case 4: goto STATE_5;
+                case 5: goto STATE_6;
+                case 6: goto STATE_7;
+                case 7: goto STATE_8;
+                case 8: goto STATE_9;
+                case 9: goto STATE_10;
+                case 10: goto STATE_11;
+                case 11: goto STATE_12;
+                case 12: goto STATE_13;
+                case 13: goto STATE_14;
+                case 14: goto STATE_15;
+                case 15: goto STATE_16;
+                case 16: goto STATE_17;
+                case 17: goto STATE_18;
+                case 18: goto STATE_19;
+                case 19: goto STATE_20;
+                case 20: goto STATE_21;
+                case 21: goto STATE_22;
+            default: QUEX_ERROR_EXIT("Pathwalker: path_iterator on inadmissible position.");
+            }
+#else  /* not QUEX_OPTION_COMPUTED_GOTOS */
+        goto *path_walker_23_state[path_iterator - path_walker_23_base];
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
+    } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
+    goto PATH_WALKER_23_STATE_ROUTER;
+    }
+    if( input < 20) {
+        if( input < 10) {
+            if( input == 0 ) {
+                goto STATE_23_RELOAD;    /* \0 */
+            } else {
+                goto STATE_23_DROP_OUT_DIRECT;    /* [\1, '\t'] */
+            }
+        } else {
+            if( input == 10 ) {
+                goto STATE_1;    /* '\n' */
+            } else {
+                goto STATE_23_DROP_OUT_DIRECT;    /* ['\v', \19] */
+            }
+        }
+    } else {
+        if( input < 64) {
+            if( input == 20 ) {
+                goto STATE_2;    /* \20 */
+            } else {
+                goto STATE_23_DROP_OUT_DIRECT;    /* [\21, '?'] */
+            }
+        } else {
+            if( input == 64 ) {
+                goto STATE_1;    /* '@' */
+            } else {
+                goto STATE_23_DROP_OUT_DIRECT;    /* ['A', oo] */
+            }
+        }
+    }
+
+
+STATE_23_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+            goto PATH_WALKER_23_STATE_ROUTER;
+    }
+STATE_23_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
+
+
+
+--(Involved State Indices)----------------------------------------------
+
+set([1L, 2L, 3L, 4L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 17L, 18L, 19L, 20L, 21L])
+

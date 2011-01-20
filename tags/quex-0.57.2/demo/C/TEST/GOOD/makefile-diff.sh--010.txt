@@ -1,0 +1,39 @@
+> SRCS      = $(OBJS:.o=.c)
+< COMPILER = g++ -ggdb -Wall -pedantic 
+---
+> # Use 'C99' to avoid line number limit of 32767 in '#line' pragma
+> COMPILER = gcc -ggdb -Wall -pedantic -std=c99
+> 
+< %-conversion-direct.exe: %-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+---
+> %-conversion-direct.exe: %-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
+< %-conversion.exe:        %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+---
+> %-conversion.exe:        %-conversion.c $(UTF8_OBJS) $(QUEX_CORE) 
+< %.exe:                   %.cpp $(OBJS) $(QUEX_CORE) 
+---
+> %.exe:                   %.c $(OBJS) $(QUEX_CORE) 
+< point.exe:               point.cpp $(OBJS) $(QUEX_CORE) 
+< 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+---
+> point.exe:               point.c $(SRCS) $(QUEX_CORE) 
+> 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
+< re-point.exe:            re-point.cpp $(OBJS) $(QUEX_CORE) 
+< 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+---
+> re-point.exe:            re-point.c $(SRCS) $(QUEX_CORE) 
+> 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
+< %-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
+---
+> %-utf8.o:                %.c $(QUEX_CORE) tiny_lexer
+< %.o:                     %.cpp $(QUEX_CORE) tiny_lexer
+---
+> %.o:                     %.c $(QUEX_CORE) tiny_lexer
+< %.E:                     %.cpp $(QUEX_CORE) tiny_lexer
+---
+> %.E:                     %.c $(QUEX_CORE) tiny_lexer
+< tiny_lexer tiny_lexer.cpp: simple.qx $(QUEX_CORE)
+---
+> tiny_lexer tiny_lexer.c: simple.qx $(QUEX_CORE)
+> 		 --language C          \
+> 	rm -f tmp*

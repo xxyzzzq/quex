@@ -1,0 +1,8 @@
+define {
+WS \P{White_Space}
+}
+
+mode X {
+  {WS} => QUEX_TKN_WS;
+}
+

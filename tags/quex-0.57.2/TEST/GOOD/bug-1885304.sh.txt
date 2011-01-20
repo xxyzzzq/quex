@@ -1,0 +1,3154 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * CONTENT: 
+ *
+ * (1) Includes for required standard headers.
+ * (2) Definitions of options and settings for the particular application.
+ * (3) #include <quex/code_base/definitions> for default settings.
+ * (4) Lexical Analyzer class Simple and its memento class.
+ * (5) Constructor and init core of Simple.
+ * (6) Memento pack and unpack functions.
+ *
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                                      */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED____QUEX____SIMPLE
+
+#ifdef      __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
+    /* In case that multiple lexical analyzers are used the same header
+     * files are compiled with a different setting of the macros. The
+     * undef of the include guards happens in the following file.              */
+#   include <quex/code_base/include-guard-undef>
+#   include <quex/code_base/analyzer/member/token-sending-undef.i>
+#   undef   __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____SIMPLE
+#else
+#   define  __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
+#endif
+
+#include "Simple-configuration"
+
+#include <quex/code_base/definitions>
+
+QUEX_NAMESPACE_MAIN_OPEN 
+    struct QUEX_NAME(Engine_tag);
+    struct QUEX_NAME(Memento_tag);
+    
+    class  QUEX_TYPE0_ANALYZER;    /* Simple */
+    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(QUEX_TYPE_ANALYZER*);
+QUEX_NAMESPACE_MAIN_CLOSE
+
+/* Token Class Declaration must preceed the user's header, so that the user
+ * can refer to it at ease.                                                    */
+QUEX_NAMESPACE_TOKEN_OPEN
+    class  QUEX_TYPE0_TOKEN;
+QUEX_NAMESPACE_TOKEN_CLOSE
+
+/* START: User defined header content _________________________________________
+ *        Must come before token class definition, since the token class 
+ *        might rely on contents of the header.                                */
+
+
+/* END: _______________________________________________________________________*/
+
+#if defined(__QUEX_OPTION_CONVERTER_HELPER)
+#   include "quex/code_base/converter_helper/unicode"
+#endif
+#include <quex/code_base/analyzer/headers>
+
+#include "Simple-token_ids"
+#include "Simple-token"
+
+QUEX_NAMESPACE_MAIN_OPEN 
+
+enum {
+    QUEX_NAME(ModeID_ONE_AND_ONLY) = 0
+};
+
+        extern QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);
+
+
+extern     __QUEX_TYPE_ANALYZER_RETURN_VALUE QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+extern     bool QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)*);
+extern     bool QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)*);
+extern     bool QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)*);
+#endif
+
+
+
+typedef struct QUEX_NAME(Memento_tag) {
+#   include <quex/code_base/analyzer/EngineMemento_body>
+
+    QUEX_NAME(Memento_tag)()  {}  /* Con- and Destruction necessary to trigger */
+    ~QUEX_NAME(Memento_tag)() {}  /* con- and destruction of user members.     */
+
+/* START: User's memento extentions ___________________________________________*/
+
+/* END: _______________________________________________________________________*/
+} QUEX_NAME(Memento);
+
+QUEX_NAMESPACE_MAIN_CLOSE 
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN 
+
+class Simple {
+public:
+#   include <quex/code_base/analyzer/Engine_body>
+
+    /* DISABLED */ Simple(const Simple&);
+public:
+    typedef QUEX_TYPE_TOKEN      token_type;
+    typedef QUEX_TYPE_TOKEN_ID   token_id_type;
+    typedef QUEX_TYPE_CHARACTER  char_type;
+
+    Simple(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
+           QUEX_TYPE_CHARACTER* BufferEndOfContentP   = 0x0,
+           const char*          CharacterEncodingName = 0x0,
+           bool                 ByteOrderReversionF   = false);
+    Simple(const std::string&   Filename,       
+           const char*          CharacterEncodingName = 0x0,
+           bool                 ByteOrderReversionF   = false);
+    Simple(std::istream*        p_input_stream, 
+           const char*          CharacterEncodingName = 0x0,
+           bool                 ByteOrderReversionF   = false);
+#   if defined(__QUEX_OPTION_WCHAR_T)
+    Simple(std::wistream*       p_input_stream,
+           const char*          CharacterEncodingName = 0x0,
+           bool                 ByteOrderReversionF   = false);
+#   endif
+    Simple(std::FILE*           input_fh,       
+           const char*          CharacterEncodingName = 0x0,
+           bool                 ByteOrderReversionF   = false);
+#   if defined(__QUEX_OPTION_UNIT_TEST)
+    template <class UnderlyingStreamT>
+        Simple(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+               const char*                              CharacterEncodingName = 0x0,
+               bool                                     ByteOrderReversionF   = false);
+#   endif
+
+    virtual ~Simple();
+
+    /* Direct Access to Memory */
+    void*                 buffer_fill_region_append(void* ContentBegin, 
+                                                    void* ContentEnd);
+    void*                 buffer_fill_region_append_conversion(void* ContentBegin, 
+                                                               void* ContentEnd);
+    void*                 buffer_fill_region_append_conversion_direct(void* ContentBegin, 
+                                                                      void* ContentEnd);
+    void                  buffer_fill_region_prepare();
+    QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
+    QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
+    size_t                buffer_fill_region_size();
+    void                  buffer_fill_region_finish(const size_t LoadedN);
+    void                  buffer_conversion_fill_region_prepare(); 
+    uint8_t*              buffer_conversion_fill_region_begin();
+    uint8_t*              buffer_conversion_fill_region_end();
+    size_t                buffer_conversion_fill_region_size();
+    void                  buffer_conversion_fill_region_finish(const size_t  ByteN);
+    QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
+    void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
+
+    /* -- activate/deactivate byte order reversion (big-/little-endian)    */
+    bool                  byte_order_reversion();
+    void                  byte_order_reversion_set(bool Value);
+
+    /* NOTE: All calls to receive functions for 'queue' and 'single'
+     *       are deliberately chosen to be incompatible! Thus, when 
+     *       the user switches the token passing policy, he must re-
+     *       think his receive mechanism.                                  */
+#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    /* (1) Token Queue 
+     * 
+     *   When using a token queue, the pointer **must** be adapted.
+     *   Otherwise, very strange results may occur. Force the user to
+     *   provide a pointer that can be adapted by having him specify
+     *   the second argument--not only a return value.
+     *
+     *   Command line option:  --token-policy  queue                       */
+    void                receive(QUEX_TYPE_TOKEN**);
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)  
+    /* (2) Single Token
+     * 
+     *   When there is only one single token as interface, than the
+     *   token id is returned. This enables a minimal setup were the
+     *   analyzer may only return a token id and does not work on tokens. 
+     *
+     *   Command line options: --token-policy  single                      */
+    QUEX_TYPE_TOKEN_ID  receive();
+#   else
+#       error "This section should never be compiled."
+#   endif
+
+    // NOTE: A pointer to an object of the token queue/object is used in order to make
+    //       memory management more flexible. The token queue/token object is heavily
+    //       used and it should be possible to put it somewhere in memory with other
+    //       heavily used data so that the cache can take advantage of data locality.
+    QUEX_TYPE_TOKEN*     token_p();
+
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
+#      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+       void              token_p_set(QUEX_TYPE_TOKEN*);
+       QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
+#      endif
+#   else
+       bool              token_queue_is_empty();
+       void              token_queue_remainder_get(QUEX_TYPE_TOKEN** begin, QUEX_TYPE_TOKEN** end);
+#      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+       void              token_queue_get(QUEX_TYPE_TOKEN** begin, size_t* size);
+       void              token_queue_set(QUEX_TYPE_TOKEN* Begin, size_t Size);
+       void              token_queue_switch(QUEX_TYPE_TOKEN** queue, 
+                                            size_t*           size); 
+#      endif
+#   endif
+
+    //
+    // (*) Mode handling
+    //
+    //     -- modes: read access
+    QUEX_NAME(Mode)&      mode();
+    int                   mode_id() const;
+    const char*           mode_name() const;
+    //
+    //     -- modes: changing lexical analysis mode
+    void        set_mode_brutally(const int       LexerMode);
+    void        set_mode_brutally(const QUEX_NAME(Mode)& Mode);
+    //
+    void        operator<<(const int MODE_ID);               
+    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  
+    //
+    void        pop_mode();
+    void        pop_drop_mode();
+    void        push_mode(QUEX_NAME(Mode)& new_mode);
+    //
+    void        enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
+    //
+    //     -- map: mode id to mode and vice versa
+    QUEX_NAME(Mode)&   map_mode_id_to_mode(const int              ModeID);       
+    int                map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
+
+    // (*) Token sending happens only via 'self_send*(...)' macros
+    void        send(const QUEX_TYPE_TOKEN_ID TokenID)
+    { (void)TokenID; QUEX_ERROR_DEPRECATED("Member functions .send()", "macros: self_send*()"); }
+
+#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+    size_t      line_number() const             { return line_number_at_begin(); }
+    size_t      line_number_at_begin() const    { return counter._line_number_at_begin; }
+    size_t      line_number_at_end() const      { return counter._line_number_at_end; }
+    /*          line_number_set(...) defines the column number of the next pattern match. */
+    void        line_number_set(size_t Y)       { counter._line_number_at_end = Y; }
+#   endif
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    size_t      column_number() const             { return column_number_at_begin(); }
+    size_t      column_number_at_begin() const    { return counter._column_number_at_begin; }
+    size_t      column_number_at_end() const      { return counter._column_number_at_end; }
+    /*          column_number_set(...) defines the column number of the next pattern match. */
+    void        column_number_set(size_t X)       { counter._column_number_at_end = X; }
+#   endif
+#   ifdef   QUEX_OPTION_INDENTATION_TRIGGER
+    size_t      indentation()                    { return counter._indentation; }
+#   endif
+
+
+    // (*) Tell/Seek/Move on basis of character index
+    size_t  tell();
+    void    seek(const size_t);
+    void    seek_forward(const size_t);
+    void    seek_backward(const size_t);
+
+    void    undo();
+
+    void    move_forward(const size_t) { QUEX_ERROR_EXIT("'move_forward()' has been renamed to 'seek_forward()'."); }
+    void    move_backward(const size_t){ QUEX_ERROR_EXIT("'move_backward()' has been renamed to 'seek_backward()'."); }
+
+public:
+
+    void        set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
+                                                                       QUEX_TYPE_CHARACTER*));
+
+    template <class InputHandleT> void reset(InputHandleT*  input_handle, 
+                                             const char*    CharacterEncodingName = 0x0);
+    void                               reset(const char*    CharacterEncodingName = 0x0) 
+    { reset<void>((void*)0x0, CharacterEncodingName); }
+
+    QUEX_TYPE_CHARACTER*               reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                                    size_t               BufferMemorySize,
+                                                    QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
+                                                    const char*          CharacterEncodingName = 0x0);
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+public:
+    template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
+                                                    const QUEX_NAME(Mode)*   Mode            = 0x0, 
+                                                    const char*              IANA_CodingName = 0x0);
+    template<class InputHandleT> void  include_push(InputHandleT*            sh, 
+                                                    const QUEX_NAME(Mode)*   Mode            = 0x0, 
+                                                    const char*              IANA_CodingName = 0x0);
+    bool                               include_pop();
+
+protected:
+    void                               include_stack_delete();
+
+private:
+#   endif
+
+public:
+    void  print_this();
+
+private:
+    // (*) Common core of all constructors ___________________________________________
+    TEMPLATE_IN(InputHandleT) friend void
+    QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*       me,
+                                InputHandleT*             input_handle, 
+                                const char*               CharacterEncodingName,
+                                bool                      ByteOrderReversionF,
+                                QUEX_TYPE_CHARACTER*      BufferMemory,    
+                                size_t                    BufferMemorySize);
+
+    template<class InputHandleT> friend QUEX_NAME(Memento)*
+    QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
+                            InputHandleT**);
+    friend void
+    QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_NAME(Memento)*);
+
+    template<class InputHandleT> friend void
+    QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
+
+    /* (*) All Modes are Friends ___________________________________________________*/
+    friend     __QUEX_TYPE_ANALYZER_RETURN_VALUE QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER*);
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+    friend     bool QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)*);
+    friend     bool QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)*);
+    friend     bool QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)*);
+#endif
+
+  
+
+public:
+/* START: User's class body extensions _____________________________________________*/
+
+/* END: ____________________________________________________________________________*/
+#undef  self
+
+public:
+    // At least warn those, who still use the old interface ...
+    void                  get_token() 
+    { QUEX_ERROR_DEPRECATED("Member functions .get_token()", ".receive(...)"); }
+    void                  get_token(QUEX_TYPE_TOKEN*   result_p)  { (void)result_p; get_token(); }
+    void                  get_token(QUEX_TYPE_TOKEN**  result_pp) { (void)result_pp; get_token(); }
+};
+
+QUEX_NAMESPACE_MAIN_CLOSE
+#include <quex/code_base/temporary_macros_off>
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+void
+QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
+                            InputHandleT*          input_handle, 
+                            const char*            CharacterEncodingName,
+                            bool                   ByteOrderReversionF,
+                            QUEX_TYPE_CHARACTER*   BufferMemory,    
+                            size_t                 BufferMemorySize,
+                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP)
+{
+        __quex_assert(QUEX_NAME(ModeID_ONE_AND_ONLY) < 1);
+
+     QUEX_NAME(ONE_AND_ONLY).id   = QUEX_NAME(ModeID_ONE_AND_ONLY);
+     QUEX_NAME(ONE_AND_ONLY).name = "ONE_AND_ONLY";
+     QUEX_NAME(ONE_AND_ONLY).analyzer_function = QUEX_NAME(ONE_AND_ONLY_analyzer_function);
+#    if      defined(QUEX_OPTION_INDENTATION_TRIGGER)         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+     QUEX_NAME(ONE_AND_ONLY).on_indentation = QUEX_NAME(Mode_on_indentation_null_function);
+#    endif
+     QUEX_NAME(ONE_AND_ONLY).on_entry       = QUEX_NAME(Mode_on_entry_exit_null_function);
+     QUEX_NAME(ONE_AND_ONLY).on_exit        = QUEX_NAME(Mode_on_entry_exit_null_function);
+#    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+     QUEX_NAME(ONE_AND_ONLY).has_base       = QUEX_NAME(ONE_AND_ONLY_has_base);
+     QUEX_NAME(ONE_AND_ONLY).has_entry_from = QUEX_NAME(ONE_AND_ONLY_has_entry_from);
+     QUEX_NAME(ONE_AND_ONLY).has_exit_to    = QUEX_NAME(ONE_AND_ONLY_has_exit_to);
+#    endif
+        me->mode_db[QUEX_NAME(ModeID_ONE_AND_ONLY)] = &(QUEX_NAME(ONE_AND_ONLY));
+
+
+    QUEX_NAME(construct_basic)(me, input_handle,
+                               BufferMemory, BufferMemorySize, BufferEndOfFileP,
+                               CharacterEncodingName, 
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
+                               ByteOrderReversionF);
+
+    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+
+/* START: User's constructor extensions _______________________________________*/
+
+/* END: _______________________________________________________________________*/
+#undef self
+}
+
+
+#ifdef QUEX_OPTION_INCLUDE_STACK
+
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+QUEX_NAME(Memento)*
+QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
+                        QUEX_TYPE_CHARACTER*  InputName, 
+                        InputHandleT**        input_handle)
+{
+#   define self  (*me)
+    QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
+    
+    (void)InputName;
+    (void)input_handle;
+
+#   ifndef __QUEX_OPTION_PLAIN_C
+    /* Use placement 'new' for explicit call of constructor. 
+     * Necessary in C++: Trigger call to constructor for user defined members.   */
+    new ((void*)memento) QUEX_NAME(Memento);
+#   endif
+
+    memento->_parent_memento                  = self._parent_memento;
+    memento->buffer                           = self.buffer;
+    memento->__current_mode_p                 = self.__current_mode_p; 
+    memento->current_analyzer_function        = self.current_analyzer_function;
+       || defined(QUEX_OPTION_ASSERTS)
+    memento->DEBUG_analyzer_function_at_entry = self.DEBUG_analyzer_function_at_entry;
+#   endif
+#   ifdef __QUEX_OPTION_COUNTER
+    memento->counter                          = self.counter;
+#   endif
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    memento->accumulator                      = self.accumulator;
+#   endif
+    memento->__file_handle_allocated_by_constructor = self.__file_handle_allocated_by_constructor;
+
+    /* Deriberately not subject to include handling:
+     *    -- Mode stack.
+     *    -- Token and token queues.
+     *    -- Post categorizer.                                                 */
+
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+    /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */
+#   endif
+
+/* START: User's memento 'pack' _______________________________________________*/
+
+/* END: _______________________________________________________________________*/
+
+    return memento;
+#   undef self
+}
+
+#ifndef __QUEX_OPTION_PLAIN_C
+QUEX_INLINE 
+#endif
+void
+QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
+                          QUEX_NAME(Memento)*  memento)
+{
+#   define self  (*me)
+    self._parent_memento                  = memento->_parent_memento;
+    self.buffer                           = memento->buffer;
+    self.__current_mode_p                 = memento->__current_mode_p; 
+    self.current_analyzer_function        = memento->current_analyzer_function;
+       || defined(QUEX_OPTION_ASSERTS)
+    self.DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
+#   endif
+#   ifdef __QUEX_OPTION_COUNTER
+    self.counter                          = memento->counter;
+#   endif
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    self.accumulator                      = memento->accumulator;
+#   endif
+    self.__file_handle_allocated_by_constructor = memento->__file_handle_allocated_by_constructor;
+
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+    /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */
+#   endif
+
+/* START: User's memento 'unpack' _____________________________________________*/
+
+/* END: _______________________________________________________________________*/
+    
+#   ifndef __QUEX_OPTION_PLAIN_C
+    /* Counterpart to placement new: Explicit destructor call.
+     * Necessary in C++: Trigger call to destructor for user defined members.  */
+    memento->~QUEX_NAME(Memento_tag)();
+#   endif
+
+    QUEX_NAME(MemoryManager_Memento_free)(memento);
+#   undef self
+}
+#endif /* QUEX_OPTION_INCLUDE_STACK */
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
+
+#if defined(__QUEX_OPTION_CONVERTER_HELPER)
+#   include "quex/code_base/converter_helper/unicode.i"
+#endif
+#include <quex/code_base/analyzer/headers.i>
+
+
+/* -*- C++ -*-   vim: set syntax=cpp: 
+ * (C) 2004-2009 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY
+ */
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I
+
+namespace quex {
+
+
+inline
+/* NOTE: If you get an error here, then your configuration
+ *       file does not declare QUEX_TYPE0_TOKEN as Token. 
+ *       The following weirdly typed constructor shall break in
+ *       this particular case.                                        */
+Token::QUEX_TYPE0_TOKEN()
+/*****************************************************/
+{
+#   define self (*this)
+
+#   undef  self
+}
+
+inline
+Token::Token(const Token& Other)
+{
+   QUEX_NAME_TOKEN(copy)(this, &Other);
+#  define self (*this)
+
+#  undef  self
+}
+
+inline
+Token::~Token()
+{
+#  define self (*this)
+
+#  undef  self
+}
+
+inline void
+QUEX_NAME_TOKEN(construct)(Token* __this)
+{
+    /* Explicit constructor call by 'placement new' */
+    new ((void*)__this) QUEX_TYPE_TOKEN;
+}
+
+inline void
+QUEX_NAME_TOKEN(destruct)(Token* __this)
+{
+    __this->QUEX_TYPE0_TOKEN::~QUEX_TYPE0_TOKEN();  
+}
+
+inline void
+QUEX_NAME_TOKEN(copy)(Token* __this, const Token* __That)
+{
+#  define self  (*__this)
+#  define Other (*__That)
+    (void)__this;
+    (void)__That;
+
+
+        self._id    = Other._id;
+        self.text   = Other.text;
+        self.number = Other.number;
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+            self._line_n = Other._line_n;
+    #       endif
+    #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            self._column_n = Other._column_n;
+    #       endif
+    #   endif
+   
+
+
+#  undef Other
+#  undef self
+   /* If the user even misses to copy the token id, then there's
+    * something seriously wrong.                                 */
+   __quex_assert(__this->_id == __That->_id);
+#ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#  ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+   __quex_assert(__this->_line_n == __That->_line_n);
+#  endif
+#  ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+   __quex_assert(__this->_column_n == __That->_column_n);
+#  endif
+#endif
+}
+
+QUEX_INLINE bool 
+QUEX_NAME_TOKEN(take_text)(Token*           __this, 
+                           QUEX_TYPE_ANALYZER*        __analyzer, 
+                           const QUEX_TYPE_CHARACTER* Begin, 
+                           const QUEX_TYPE_CHARACTER* End)
+{
+#  define self      (*__this)
+#  define analyzer  (*__analyzer)
+    (void)__this;
+    (void)__analyzer;
+
+
+#       if 0
+        {
+            /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
+            QUEX_TYPE_CHARACTER* it = 0x0;
+            printf("%lX ", (long)__this);
+            printf("previous:  '");
+            for(it = (QUEX_TYPE_CHARACTER*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
+            printf("'\n");
+            printf("take_text: '");
+            for(it = (QUEX_TYPE_CHARACTER*)Begin; it != End; ++it) printf("%04X.", (int)*it);
+            printf("'\n");
+        }
+#       endif
+
+        /* It cannot be assumed that the lexeme is zero terminated. */
+        self.text.assign(Begin, End-Begin);
+
+#       if 0
+        {
+            /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
+            QUEX_TYPE_CHARACTER* it = 0x0;
+            printf("after:     '");
+            for(it = (QUEX_TYPE_CHARACTER*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
+            printf("'\n");
+        }
+#       endif
+
+        /* This token copied the text from the chunk into the string, 
+         * so we do not claim owneship over it.                       */
+        return false;      
+   
+
+
+#  undef analyzer
+#  undef self
+}
+
+#ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+QUEX_INLINE size_t 
+QUEX_NAME_TOKEN(repetition_n_get)(QUEX_TYPE_TOKEN* __this)
+{
+#   define self      (*__this)
+    (void)__this;
+    
+
+       return self.number;
+   
+
+
+#   undef  self
+}
+
+QUEX_INLINE void 
+QUEX_NAME_TOKEN(repetition_n_set)(QUEX_TYPE_TOKEN* __this, size_t N)
+{
+#   define self      (*__this)
+    (void)__this;
+    (void)N;
+    
+
+       self.number = N;
+   
+
+
+#   undef  self
+}
+#endif /* QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
+
+} /* Closing Namespace 'quex' */
+
+
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____QUEX____TOKEN_I */
+
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED____QUEX____SIMPLE */
+#include "Simple"
+#include <quex/code_base/analyzer/C-adaptions.h>
+QUEX_NAMESPACE_MAIN_OPEN
+/* Global */QUEX_NAME(Mode)  QUEX_NAME(ONE_AND_ONLY);
+#ifndef __QUEX_INDICATOR_DUMPED_TOKEN_ID_DEFINED
+    static QUEX_TYPE_TOKEN_ID    QUEX_NAME_TOKEN(DumpedTokenIdObject);
+#endif
+
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
+        (void)me;
+        (void)FromMode;
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+__quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
+#endif
+
+    }
+
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
+        (void)me;
+        (void)ToMode;
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+__quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
+#endif
+
+    }
+
+#if defined(QUEX_OPTION_INDENTATION_TRIGGER) 
+    void
+    QUEX_NAME(ONE_AND_ONLY_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
+                                            QUEX_TYPE_INDENTATION  Indentation, 
+                                            QUEX_TYPE_CHARACTER*   Begin) {
+        (void)me;
+        (void)Indentation;
+        (void)Begin;
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+       return __self_result_token_id;
+#   else
+       return;
+#   endif
+
+    }
+#endif
+
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+    bool
+    QUEX_NAME(ONE_AND_ONLY_has_base)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
+    return false;
+    }
+    bool
+    QUEX_NAME(ONE_AND_ONLY_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
+    return true; /* default */
+    }
+    bool
+    QUEX_NAME(ONE_AND_ONLY_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
+        (void)Mode;
+    return true; /* default */
+    }
+#endif    
+#undef self
+#undef __self_result_token_id
+QUEX_NAMESPACE_MAIN_CLOSE
+
+    /* 
+     * MODE: ONE_AND_ONLY
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  4) ONE_AND_ONLY: [ \t\r\n]+
+     *       (  6) ONE_AND_ONLY: "struct"
+     *       (  8) ONE_AND_ONLY: "int"
+     *       ( 10) ONE_AND_ONLY: "double"
+     *       ( 12) ONE_AND_ONLY: "send"
+     *       ( 14) ONE_AND_ONLY: "expect"
+     *       ( 16) ONE_AND_ONLY: ";"
+     *       ( 18) ONE_AND_ONLY: "{"
+     *       ( 20) ONE_AND_ONLY: "}"
+     *       ( 25) ONE_AND_ONLY: [0-9]+
+     *       ( 30) ONE_AND_ONLY: [_a-zA-Z]+
+     * 
+     * 
+     */
+/* #include "Simple"*/
+QUEX_NAMESPACE_MAIN_OPEN
+QUEX_TYPE_CHARACTER  QUEX_NAME(LexemeNullObject) = (QUEX_TYPE_CHARACTER)0;
+
+#include <quex/code_base/analyzer/member/basic>
+#include <quex/code_base/buffer/Buffer>
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   include <quex/code_base/token/TokenQueue>
+#endif
+
+#ifdef    CONTINUE
+#   undef CONTINUE
+#endif
+
+#ifdef    RETURN
+#   undef RETURN
+#endif
+
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   define RETURN   return
+#else
+#   define RETURN   do { return __self_result_token_id; } while(0)
+#endif
+#include <quex/code_base/temporary_macros_on>
+
+__QUEX_TYPE_ANALYZER_RETURN_VALUE  
+QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
+{
+    /* NOTE: Different modes correspond to different analyzer functions. The analyzer  
+             functions are all located inside the main class as static functions. That  
+             means, they are something like 'globals'. They receive a pointer to the   
+             lexical analyzer, since static member do not have access to the 'this' pointer.
+     */
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+    register QUEX_TYPE_TOKEN_ID __self_result_token_id 
+           = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
+#   endif
+#   ifdef     self
+#       undef self
+#   endif
+#   define self (*((QUEX_TYPE_ANALYZER*)me))
+    /* me = pointer to state of the lexical analyzer */
+#   define ONE_AND_ONLY    (QUEX_NAME(ONE_AND_ONLY))
+    const size_t PostContextStartPositionN = (size_t)0;
+    QUEX_TYPE_CHARACTER input = (QUEX_TYPE_CHARACTER)(0x00);
+    QUEX_TYPE_GOTO_LABEL last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
+    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
+
+    /* Post context positions do not have to be reset or initialized. If a state
+     * is reached which is associated with 'end of post context' it is clear what
+     * post context is meant. This results from the ways the state machine is 
+     * constructed. A post context positions live time looks like the following:
+     *
+     * (1)   unitialized (don't care)
+     * (1.b) on buffer reload it may, or may not be adapted (don't care)
+     * (2)   when a post context begin state is passed, the it is **SET** (now: take care)
+     * (2.b) on buffer reload it **is adapted**.
+     * (3)   when a terminal state of the post context is reached (which can only be reached
+     *       for that particular post context, then the post context position is used
+     *       to reset the input position.                                              */
+    || defined(QUEX_OPTION_ASSERTS)
+    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;
+#endif
+__REENTRY:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY");
+    QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);
+    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
+    /* state machine */
+    /* init-state = 207L
+     * 00207() <~ (4, 12), (6, 23), (8, 34), (10, 45), (12, 57), (14, 69), (16, 78), (18, 82), (20, 86), (25, 100), (30, 115)
+     *       == ['\t', '\n'], '\r', ' ' ==> 00210
+     *       == ['0', '9'] ==> 00216
+     *       == ';' ==> 00215
+     *       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00217
+     *       == 'd' ==> 00208
+     *       == 'e' ==> 00209
+     *       == 'i' ==> 00213
+     *       == 's' ==> 00212
+     *       == '{' ==> 00211
+     *       == '}' ==> 00214
+     *       <no epsilon>
+     * 00210(A, S) <~ (4, 13, A, S)
+     *       == ['\t', '\n'], '\r', ' ' ==> 00210
+     *       <no epsilon>
+     * 00216(A, S) <~ (25, 101, A, S)
+     *       == ['0', '9'] ==> 00216
+     *       <no epsilon>
+     * 00215(A, S) <~ (16, 79, A, S)
+     *       <no epsilon>
+     * 00217(A, S) <~ (30, 116, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00217
+     *       <no epsilon>
+     * 00208(A, S) <~ (30, 116, A, S), (10, 46)
+     *       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00217
+     *       == 'o' ==> 00233
+     *       <no epsilon>
+     * 00233(A, S) <~ (30, 116, A, S), (10, 47)
+     *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00217
+     *       == 'u' ==> 00234
+     *       <no epsilon>
+     * 00234(A, S) <~ (30, 116, A, S), (10, 48)
+     *       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00217
+     *       == 'b' ==> 00235
+     *       <no epsilon>
+     * 00235(A, S) <~ (30, 116, A, S), (10, 49)
+     *       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00217
+     *       == 'l' ==> 00236
+     *       <no epsilon>
+     * 00236(A, S) <~ (30, 116, A, S), (10, 50)
+     *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00217
+     *       == 'e' ==> 00237
+     *       <no epsilon>
+     * 00237(A, S) <~ (10, 51, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00217
+     *       <no epsilon>
+     * 00209(A, S) <~ (30, 116, A, S), (14, 70)
+     *       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00217
+     *       == 'x' ==> 00228
+     *       <no epsilon>
+     * 00228(A, S) <~ (30, 116, A, S), (14, 71)
+     *       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00217
+     *       == 'p' ==> 00229
+     *       <no epsilon>
+     * 00229(A, S) <~ (30, 116, A, S), (14, 72)
+     *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00217
+     *       == 'e' ==> 00230
+     *       <no epsilon>
+     * 00230(A, S) <~ (30, 116, A, S), (14, 73)
+     *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00217
+     *       == 'c' ==> 00231
+     *       <no epsilon>
+     * 00231(A, S) <~ (30, 116, A, S), (14, 74)
+     *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00217
+     *       == 't' ==> 00232
+     *       <no epsilon>
+     * 00232(A, S) <~ (14, 75, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00217
+     *       <no epsilon>
+     * 00213(A, S) <~ (30, 116, A, S), (8, 35)
+     *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00217
+     *       == 'n' ==> 00218
+     *       <no epsilon>
+     * 00218(A, S) <~ (30, 116, A, S), (8, 36)
+     *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00217
+     *       == 't' ==> 00219
+     *       <no epsilon>
+     * 00219(A, S) <~ (8, 37, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00217
+     *       <no epsilon>
+     * 00212(A, S) <~ (30, 116, A, S), (6, 24), (12, 58)
+     *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00217
+     *       == 'e' ==> 00221
+     *       == 't' ==> 00220
+     *       <no epsilon>
+     * 00221(A, S) <~ (30, 116, A, S), (12, 59)
+     *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00217
+     *       == 'n' ==> 00222
+     *       <no epsilon>
+     * 00222(A, S) <~ (30, 116, A, S), (12, 60)
+     *       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00217
+     *       == 'd' ==> 00223
+     *       <no epsilon>
+     * 00223(A, S) <~ (12, 61, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00217
+     *       <no epsilon>
+     * 00220(A, S) <~ (30, 116, A, S), (6, 25)
+     *       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00217
+     *       == 'r' ==> 00224
+     *       <no epsilon>
+     * 00224(A, S) <~ (30, 116, A, S), (6, 26)
+     *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00217
+     *       == 'u' ==> 00225
+     *       <no epsilon>
+     * 00225(A, S) <~ (30, 116, A, S), (6, 27)
+     *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00217
+     *       == 'c' ==> 00226
+     *       <no epsilon>
+     * 00226(A, S) <~ (30, 116, A, S), (6, 28)
+     *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00217
+     *       == 't' ==> 00227
+     *       <no epsilon>
+     * 00227(A, S) <~ (6, 29, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00217
+     *       <no epsilon>
+     * 00211(A, S) <~ (18, 83, A, S)
+     *       <no epsilon>
+     * 00214(A, S) <~ (20, 87, A, S)
+     *       <no epsilon>
+     * 
+     */
+STATE_207:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207");
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 33) {
+            if( input < 11) {
+                if( input == 0 ) {
+                    goto STATE_207_RELOAD;    /* \0 */
+                } else {
+                    if( input == 9 || input == 10 ) {
+                        goto STATE_210;
+                    } else {
+                        goto STATE_207_DROP_OUT_DIRECT;
+                    }
+                }
+            } else {
+                if( input == 13 || input == 32 ) {
+                    goto STATE_210;
+                } else {
+                    goto STATE_207_DROP_OUT_DIRECT;
+                }
+            }
+        } else {
+            if( input < 59) {
+                if( input >= 48 && input < 58 ) {
+                    goto STATE_216;    /* ['0', '9'] */
+                } else {
+                    goto STATE_207_DROP_OUT_DIRECT;    /* ['!', '/'] */
+                }
+            } else {
+                if( input < 65) {
+                    if( input == 59 ) {
+                        goto TERMINAL_16;    /* ';' */
+                    } else {
+                        goto STATE_207_DROP_OUT_DIRECT;    /* ['<', '@'] */
+                    }
+                } else {
+                    if( input < 91) {
+                        goto STATE_217;    /* ['A', 'Z'] */
+                    } else {
+                        goto STATE_207_DROP_OUT_DIRECT;    /* ['[', '^'] */
+                    }
+                }
+            }
+        }
+    } else {
+        if( input < 106) {
+            if( input < 100) {
+                if( input == 96 ) {
+                    goto STATE_207_DROP_OUT_DIRECT;    /* '`' */
+                } else {
+                    goto STATE_217;    /* '_' */
+                }
+            } else {
+                if( input < 102) {
+                    if( input == 100 ) {
+                        goto STATE_208;    /* 'd' */
+                    } else {
+                        goto STATE_209;    /* 'e' */
+                    }
+                } else {
+                    if( input != 105 ) {
+                        goto STATE_217;    /* ['f', 'h'] */
+                    } else {
+                        goto STATE_213;    /* 'i' */
+                    }
+                }
+            }
+        } else {
+            if( input < 123) {
+                if( input == 115 ) {
+                    goto STATE_212;    /* 's' */
+                } else {
+                    goto STATE_217;    /* ['j', 'r'] */
+                }
+            } else {
+                if( input < 125) {
+                    if( input == 123 ) {
+                        goto TERMINAL_18;    /* '{' */
+                    } else {
+                        goto STATE_207_DROP_OUT_DIRECT;    /* '|' */
+                    }
+                } else {
+                    if( input == 125 ) {
+                        goto TERMINAL_20;    /* '}' */
+                    } else {
+                        goto STATE_207_DROP_OUT_DIRECT;    /* ['~', oo] */
+                    }
+                }
+            }
+        }
+    }
+
+
+STATE_207_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( (me->buffer._memory._end_of_file_p != 0x0) ) {
+        goto TERMINAL_END_OF_STREAM;
+    }
+    QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+    goto STATE_207_INPUT;
+
+STATE_207_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_DROP_OUT_DIRECT");
+
+    goto TERMINAL_FAILURE;
+STATE_207_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_INPUT");
+    ++(me->buffer._input_p);
+    goto STATE_207;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_217:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217");
+STATE_217_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_217_RELOAD;    /* \0 */
+            } else {
+                goto STATE_217_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input < 91) {
+                goto STATE_217;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_217_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_217_DROP_OUT_DIRECT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_217;    /* ['a', 'z'] */
+            } else {
+                goto STATE_217_DROP_OUT_DIRECT;    /* ['{', oo] */
+            }
+        }
+    }
+
+
+STATE_217_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_217_INPUT;
+    }
+STATE_217_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_210:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210");
+STATE_210_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 13) {
+        if( input < 9) {
+            if( input == 0 ) {
+                goto STATE_210_RELOAD;    /* \0 */
+            } else {
+                goto STATE_210_DROP_OUT_DIRECT;    /* [\1, '\b'] */
+            }
+        } else {
+            if( input == 9 || input == 10 ) {
+                goto STATE_210;
+            } else {
+                goto STATE_210_DROP_OUT_DIRECT;
+            }
+        }
+    } else {
+        if( input == 13 || input == 32 ) {
+            goto STATE_210;
+        } else {
+            goto STATE_210_DROP_OUT_DIRECT;
+        }
+    }
+
+
+STATE_210_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_210_INPUT;
+    }
+STATE_210_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_DROP_OUT_DIRECT");
+
+            goto TERMINAL_4_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_216:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216");
+STATE_216_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 48) {
+        if( input == 0 ) {
+            goto STATE_216_RELOAD;    /* \0 */
+        } else {
+            goto STATE_216_DROP_OUT_DIRECT;    /* [\1, '/'] */
+        }
+    } else {
+        if( input < 58) {
+            goto STATE_216;    /* ['0', '9'] */
+        } else {
+            goto STATE_216_DROP_OUT_DIRECT;    /* [':', oo] */
+        }
+    }
+
+
+STATE_216_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_216_INPUT;
+    }
+STATE_216_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_DROP_OUT_DIRECT");
+
+            goto TERMINAL_25_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_208:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208");
+STATE_208_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_208_RELOAD;    /* \0 */
+            } else {
+                goto STATE_208_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_208_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 111) {
+            if( input == 96 ) {
+                goto STATE_208_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'n'] */
+            }
+        } else {
+            if( input == 111 ) {
+                goto STATE_233;    /* 'o' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['p', 'z'] */
+                } else {
+                    goto STATE_208_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_208_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_208_INPUT;
+    }
+STATE_208_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_209:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209");
+STATE_209_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_209_RELOAD;    /* \0 */
+            } else {
+                goto STATE_209_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_209_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 120) {
+            if( input == 96 ) {
+                goto STATE_209_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'w'] */
+            }
+        } else {
+            if( input == 120 ) {
+                goto STATE_228;    /* 'x' */
+            } else {
+                if( input == 121 || input == 122 ) {
+                    goto STATE_217;
+                } else {
+                    goto STATE_209_DROP_OUT_DIRECT;
+                }
+            }
+        }
+    }
+
+
+STATE_209_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_209_INPUT;
+    }
+STATE_209_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_212:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212");
+STATE_212_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 97) {
+        if( input < 91) {
+            if( input == 0 ) {
+                goto STATE_212_RELOAD;    /* \0 */
+            } else {
+                if( input < 65) {
+                    goto STATE_212_DROP_OUT_DIRECT;    /* [\1, '@'] */
+                } else {
+                    goto STATE_217;    /* ['A', 'Z'] */
+                }
+            }
+        } else {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_212_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 101 ) {
+                goto STATE_221;    /* 'e' */
+            } else {
+                goto STATE_217;    /* ['a', 'd'] */
+            }
+        } else {
+            if( input == 116 ) {
+                goto STATE_220;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_212_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_212_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_212_INPUT;
+    }
+STATE_212_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_213:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213");
+STATE_213_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_213_RELOAD;    /* \0 */
+            } else {
+                goto STATE_213_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_213_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 110) {
+            if( input == 96 ) {
+                goto STATE_213_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'm'] */
+            }
+        } else {
+            if( input == 110 ) {
+                goto STATE_218;    /* 'n' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['o', 'z'] */
+                } else {
+                    goto STATE_213_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_213_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_213_INPUT;
+    }
+STATE_213_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_218:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218");
+STATE_218_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_218_RELOAD;    /* \0 */
+            } else {
+                goto STATE_218_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_218_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 96 ) {
+                goto STATE_218_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 's'] */
+            }
+        } else {
+            if( input == 116 ) {
+                goto STATE_219;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_218_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_218_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_218_INPUT;
+    }
+STATE_218_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_219:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219");
+STATE_219_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_219_RELOAD;    /* \0 */
+            } else {
+                goto STATE_219_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input < 91) {
+                goto STATE_217;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_219_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_219_DROP_OUT_DIRECT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_217;    /* ['a', 'z'] */
+            } else {
+                goto STATE_219_DROP_OUT_DIRECT;    /* ['{', oo] */
+            }
+        }
+    }
+
+
+STATE_219_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_219_INPUT;
+    }
+STATE_219_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_DROP_OUT_DIRECT");
+
+            goto TERMINAL_8_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_220:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220");
+STATE_220_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_220_RELOAD;    /* \0 */
+            } else {
+                goto STATE_220_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_220_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 114) {
+            if( input == 96 ) {
+                goto STATE_220_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'q'] */
+            }
+        } else {
+            if( input == 114 ) {
+                goto STATE_224;    /* 'r' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['s', 'z'] */
+                } else {
+                    goto STATE_220_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_220_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_220_INPUT;
+    }
+STATE_220_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_221:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221");
+STATE_221_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_221_RELOAD;    /* \0 */
+            } else {
+                goto STATE_221_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_221_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 110) {
+            if( input == 96 ) {
+                goto STATE_221_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'm'] */
+            }
+        } else {
+            if( input == 110 ) {
+                goto STATE_222;    /* 'n' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['o', 'z'] */
+                } else {
+                    goto STATE_221_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_221_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_221_INPUT;
+    }
+STATE_221_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_222:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222");
+STATE_222_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_222_RELOAD;    /* \0 */
+            } else {
+                goto STATE_222_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_222_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 100) {
+            if( input == 97 || input == 98 || input == 99 ) {
+                goto STATE_217;
+            } else {
+                goto STATE_222_DROP_OUT_DIRECT;
+            }
+        } else {
+            if( input == 100 ) {
+                goto STATE_223;    /* 'd' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['e', 'z'] */
+                } else {
+                    goto STATE_222_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_222_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_222_INPUT;
+    }
+STATE_222_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_223:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223");
+STATE_223_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_223_RELOAD;    /* \0 */
+            } else {
+                goto STATE_223_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input < 91) {
+                goto STATE_217;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_223_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_223_DROP_OUT_DIRECT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_217;    /* ['a', 'z'] */
+            } else {
+                goto STATE_223_DROP_OUT_DIRECT;    /* ['{', oo] */
+            }
+        }
+    }
+
+
+STATE_223_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_223_INPUT;
+    }
+STATE_223_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_DROP_OUT_DIRECT");
+
+            goto TERMINAL_12_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_224:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224");
+STATE_224_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_224_RELOAD;    /* \0 */
+            } else {
+                goto STATE_224_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_224_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 117) {
+            if( input == 96 ) {
+                goto STATE_224_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 't'] */
+            }
+        } else {
+            if( input == 117 ) {
+                goto STATE_225;    /* 'u' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['v', 'z'] */
+                } else {
+                    goto STATE_224_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_224_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_224_INPUT;
+    }
+STATE_224_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_225:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225");
+STATE_225_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_225_RELOAD;    /* \0 */
+            } else {
+                goto STATE_225_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_225_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 99) {
+            if( input == 97 || input == 98 ) {
+                goto STATE_217;
+            } else {
+                goto STATE_225_DROP_OUT_DIRECT;
+            }
+        } else {
+            if( input == 99 ) {
+                goto STATE_226;    /* 'c' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['d', 'z'] */
+                } else {
+                    goto STATE_225_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_225_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_225_INPUT;
+    }
+STATE_225_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_226:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226");
+STATE_226_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_226_RELOAD;    /* \0 */
+            } else {
+                goto STATE_226_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_226_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 96 ) {
+                goto STATE_226_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 's'] */
+            }
+        } else {
+            if( input == 116 ) {
+                goto STATE_227;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_226_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_226_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_226_INPUT;
+    }
+STATE_226_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_227:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227");
+STATE_227_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_227_RELOAD;    /* \0 */
+            } else {
+                goto STATE_227_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input < 91) {
+                goto STATE_217;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_227_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_227_DROP_OUT_DIRECT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_217;    /* ['a', 'z'] */
+            } else {
+                goto STATE_227_DROP_OUT_DIRECT;    /* ['{', oo] */
+            }
+        }
+    }
+
+
+STATE_227_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_227_INPUT;
+    }
+STATE_227_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_DROP_OUT_DIRECT");
+
+            goto TERMINAL_6_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_228:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228");
+STATE_228_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_228_RELOAD;    /* \0 */
+            } else {
+                goto STATE_228_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_228_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 112) {
+            if( input == 96 ) {
+                goto STATE_228_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'o'] */
+            }
+        } else {
+            if( input == 112 ) {
+                goto STATE_229;    /* 'p' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['q', 'z'] */
+                } else {
+                    goto STATE_228_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_228_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_228_INPUT;
+    }
+STATE_228_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_229:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229");
+STATE_229_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_229_RELOAD;    /* \0 */
+            } else {
+                goto STATE_229_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_229_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 101) {
+            if( input == 96 ) {
+                goto STATE_229_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'd'] */
+            }
+        } else {
+            if( input == 101 ) {
+                goto STATE_230;    /* 'e' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['f', 'z'] */
+                } else {
+                    goto STATE_229_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_229_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_229_INPUT;
+    }
+STATE_229_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_230:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230");
+STATE_230_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_230_RELOAD;    /* \0 */
+            } else {
+                goto STATE_230_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_230_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 99) {
+            if( input == 97 || input == 98 ) {
+                goto STATE_217;
+            } else {
+                goto STATE_230_DROP_OUT_DIRECT;
+            }
+        } else {
+            if( input == 99 ) {
+                goto STATE_231;    /* 'c' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['d', 'z'] */
+                } else {
+                    goto STATE_230_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_230_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_230_INPUT;
+    }
+STATE_230_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_231:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231");
+STATE_231_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_231_RELOAD;    /* \0 */
+            } else {
+                goto STATE_231_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_231_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 96 ) {
+                goto STATE_231_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 's'] */
+            }
+        } else {
+            if( input == 116 ) {
+                goto STATE_232;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_231_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_231_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_231_INPUT;
+    }
+STATE_231_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_232:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232");
+STATE_232_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_232_RELOAD;    /* \0 */
+            } else {
+                goto STATE_232_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input < 91) {
+                goto STATE_217;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_232_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_232_DROP_OUT_DIRECT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_217;    /* ['a', 'z'] */
+            } else {
+                goto STATE_232_DROP_OUT_DIRECT;    /* ['{', oo] */
+            }
+        }
+    }
+
+
+STATE_232_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_232_INPUT;
+    }
+STATE_232_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_DROP_OUT_DIRECT");
+
+            goto TERMINAL_14_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_233:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233");
+STATE_233_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_233_RELOAD;    /* \0 */
+            } else {
+                goto STATE_233_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_233_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 117) {
+            if( input == 96 ) {
+                goto STATE_233_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 't'] */
+            }
+        } else {
+            if( input == 117 ) {
+                goto STATE_234;    /* 'u' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['v', 'z'] */
+                } else {
+                    goto STATE_233_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_233_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_233_INPUT;
+    }
+STATE_233_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_234:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234");
+STATE_234_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_234_RELOAD;    /* \0 */
+            } else {
+                goto STATE_234_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_234_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 98) {
+            if( input == 96 ) {
+                goto STATE_234_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* 'a' */
+            }
+        } else {
+            if( input == 98 ) {
+                goto STATE_235;    /* 'b' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['c', 'z'] */
+                } else {
+                    goto STATE_234_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_234_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_234_INPUT;
+    }
+STATE_234_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_235:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235");
+STATE_235_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_235_RELOAD;    /* \0 */
+            } else {
+                goto STATE_235_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_235_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 108) {
+            if( input == 96 ) {
+                goto STATE_235_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'k'] */
+            }
+        } else {
+            if( input == 108 ) {
+                goto STATE_236;    /* 'l' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['m', 'z'] */
+                } else {
+                    goto STATE_235_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_235_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_235_INPUT;
+    }
+STATE_235_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_236:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236");
+STATE_236_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 96) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_236_RELOAD;    /* \0 */
+            } else {
+                goto STATE_236_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input >= 91 && input < 95 ) {
+                goto STATE_236_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            } else {
+                goto STATE_217;    /* ['A', 'Z'] */
+            }
+        }
+    } else {
+        if( input < 101) {
+            if( input == 96 ) {
+                goto STATE_236_DROP_OUT_DIRECT;    /* '`' */
+            } else {
+                goto STATE_217;    /* ['a', 'd'] */
+            }
+        } else {
+            if( input == 101 ) {
+                goto STATE_237;    /* 'e' */
+            } else {
+                if( input < 123) {
+                    goto STATE_217;    /* ['f', 'z'] */
+                } else {
+                    goto STATE_236_DROP_OUT_DIRECT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+
+STATE_236_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_236_INPUT;
+    }
+STATE_236_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
+
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_237:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237");
+STATE_237_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+
+    if( input < 95) {
+        if( input < 65) {
+            if( input == 0 ) {
+                goto STATE_237_RELOAD;    /* \0 */
+            } else {
+                goto STATE_237_DROP_OUT_DIRECT;    /* [\1, '@'] */
+            }
+        } else {
+            if( input < 91) {
+                goto STATE_217;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_237_DROP_OUT_DIRECT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95 ) {
+                goto STATE_217;    /* '_' */
+            } else {
+                goto STATE_237_DROP_OUT_DIRECT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_217;    /* ['a', 'z'] */
+            } else {
+                goto STATE_237_DROP_OUT_DIRECT;    /* ['{', oo] */
+            }
+        }
+    }
+
+
+STATE_237_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_237_INPUT;
+    }
+STATE_237_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_DROP_OUT_DIRECT");
+
+            goto TERMINAL_10_DIRECT;
+
+
+    __quex_assert(false); /* No drop-into __TERMINAL_ROUTER */
+__TERMINAL_ROUTER: {
+        /*  if last_acceptance => goto correspondent acceptance terminal state */
+        /*  else               => execute defaul action                        */
+        if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
+            goto TERMINAL_FAILURE;
+        }
+        /* When a terminal router is used, the terminal is determined dynamically,
+         * thus the last_acceptance_input_position **must** be set. 
+         * Exception: Template States, where acceptance states of post conditions
+         *            do not set the acceptance position (because its retrieved
+         *            anyway from post_context_start_position[i]).               */
+        if(last_acceptance_input_position != 0x0) {
+QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
+
+        }
+#ifdef  QUEX_OPTION_COMPUTED_GOTOS
+        goto *last_acceptance;
+#else
+        /* Route according variable 'last_acceptance'. */
+        switch( last_acceptance ) {
+            case 4: goto TERMINAL_4_DIRECT;
+            case 6: goto TERMINAL_6_DIRECT;
+            case 8: goto TERMINAL_8_DIRECT;
+            case 10: goto TERMINAL_10_DIRECT;
+            case 12: goto TERMINAL_12_DIRECT;
+            case 14: goto TERMINAL_14_DIRECT;
+            case 16: goto TERMINAL_16_DIRECT;
+            case 18: goto TERMINAL_18_DIRECT;
+            case 20: goto TERMINAL_20_DIRECT;
+            case 25: goto TERMINAL_25_DIRECT;
+            case 30: goto TERMINAL_30_DIRECT;
+
+            default: goto TERMINAL_FAILURE;; /* nothing matched */
+        }
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
+    }
+
+  /* (*) Terminal states _______________________________________________________*/
+  /**/
+  /* Acceptance terminal states, i.e. the 'winner patterns'. This means*/
+  /* that the last input dropped out of a state where the longest matching*/
+  /* pattern was according to the terminal state. The terminal states are */
+  /* numbered after the pattern id.*/
+  /**/
+
+/* Lexeme descriptions: There is a temporary zero stored at the end of each
+ * lexeme. A pointer to the zero provides the Null-lexeme.                     */
+#if defined(QUEX_OPTION_ASSERTS)
+#   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeL      QUEX_NAME(access_LexemeL)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#else
+#   define Lexeme       (me->buffer._lexeme_start_p)
+#   define LexemeBegin  (me->buffer._lexeme_start_p)
+#   define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
+#   define LexemeEnd    (me->buffer._input_p)
+#endif
+
+
+           
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_4");
+
+    ++(me->buffer._input_p);
+TERMINAL_4_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_4_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+         
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+           
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_6");
+
+    ++(me->buffer._input_p);
+TERMINAL_6_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_6_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_STRUCT);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+           
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_8");
+
+    ++(me->buffer._input_p);
+TERMINAL_8_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_8_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 3);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_TYPE_INT);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+            
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10");
+
+    ++(me->buffer._input_p);
+TERMINAL_10_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_TYPE_DOUBLE);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+            
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_12");
+
+    ++(me->buffer._input_p);
+TERMINAL_12_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_12_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_SEND);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+            
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_14");
+
+    ++(me->buffer._input_p);
+TERMINAL_14_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_14_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 6);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_EXPECT);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+TERMINAL_16:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16");
+
+    ++(me->buffer._input_p);
+TERMINAL_16_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_SEMICOLON);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+TERMINAL_18:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_18");
+
+    ++(me->buffer._input_p);
+TERMINAL_18_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_18_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_BRACKET_OPEN);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+TERMINAL_20:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_20");
+
+    ++(me->buffer._input_p);
+TERMINAL_20_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_20_DIRECT");
+
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_send(QUEX_TKN_BRACKET_CLOSE);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+            
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25");
+
+    ++(me->buffer._input_p);
+TERMINAL_25_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25_DIRECT");
+
+    QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p)));
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+        self_write_token_p()->number = atoi((char*)Lexeme);
+        self_send(QUEX_TKN_NUMBER);
+        QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+            
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_30");
+
+    ++(me->buffer._input_p);
+TERMINAL_30_DIRECT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_30_DIRECT");
+
+    QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);
+    {
+        {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p)));
+        __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);
+        #   endif
+        
+         self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
+        
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+
+
+TERMINAL_END_OF_STREAM:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_END_OF_STREAM");
+
+                {
+                    {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        #   endif
+        
+        self_send(QUEX_TKN_TERMINATION);
+        
+        
+        }
+                }
+
+     /* End of Stream causes a return from the lexical analyzer, so that no
+      * tokens can be filled after the termination token.                    */
+     RETURN;          
+
+TERMINAL_FAILURE:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_FAILURE");
+
+me->buffer._input_p = me->buffer._lexeme_start_p;
+if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
+
+    /* Next increment will stop on EOF character. */
+}
+
+else {
+    /* Step over nomatching character */
+    ++(me->buffer._input_p);
+}
+
+                {
+                    {
+        #   ifdef __QUEX_OPTION_COUNTER
+        __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
+        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
+        QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);
+        #   endif
+        QUEX_ERROR_EXIT("\n    Match failure in mode 'ONE_AND_ONLY'.\n"
+                        "    No 'on_failure' section provided for this mode.\n"
+                        "    Proposal: Define 'on_failure' and analyze 'Lexeme'.\n");
+        
+        }
+                }
+
+     goto __REENTRY_PREPARATION;
+
+#undef Lexeme
+#undef LexemeBegin
+#undef LexemeEnd
+#undef LexemeNull
+#undef LexemeL
+
+  
+__REENTRY_PREPARATION:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY_PREPARATION");
+
+    /* (*) Common point for **restarting** lexical analysis.
+     *     at each time when CONTINUE is called at the end of a pattern. */
+    
+#ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+    if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
+#   else
+    if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
+#   endif
+#endif
+
+    last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+
+
+    /* Post context positions do not have to be reset or initialized. If a state
+     * is reached which is associated with 'end of post context' it is clear what
+     * post context is meant. This results from the ways the state machine is 
+     * constructed. A post context positions live time looks like the following:
+     *
+     * (1)   unitialized (don't care)
+     * (1.b) on buffer reload it may, or may not be adapted (don't care)
+     * (2)   when a post context begin state is passed, the it is **SET** (now: take care)
+     * (2.b) on buffer reload it **is adapted**.
+     * (3)   when a terminal state of the post context is reached (which can only be reached
+     *       for that particular post context, then the post context position is used
+     *       to reset the input position.                                              */
+
+    /*  If a mode change happened, then the function must first return and
+     *  indicate that another mode function is to be called. At this point, 
+     *  we to force a 'return' on a mode change. 
+     *
+     *  Pseudo Code: if( previous_mode != current_mode ) {
+     *                   return 0;
+     *               }
+     *
+     *  When the analyzer returns, the caller function has to watch if a mode change
+     *  occured. If not it can call this function again.                               */
+    if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
+#endif
+    { 
+    self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+    RETURN;
+#elif defined(QUEX_OPTION_ASSERTS)
+    QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
+#endif
+    }
+
+    goto __REENTRY;
+
+    /* prevent compiler warning 'unused variable': use variables once in a part of the code*/
+    /* that is never reached (and deleted by the compiler anyway).*/
+    if( 0 == 1 ) {
+        int unused = 0;
+        /* In some scenarios, the __TERMINAL_ROUTER is never required.
+         * Still, avoid the warning of 'label never used'.             */
+        goto __TERMINAL_ROUTER;
+        unused += (int)ONE_AND_ONLY.id;
+        unused += (int)QUEX_NAME(LexemeNullObject);
+        unused += (int)QUEX_NAME_TOKEN(DumpedTokenIdObject);
+    }
+#   undef ONE_AND_ONLY
+#undef self
+}
+#include <quex/code_base/temporary_macros_off>
+QUEX_NAMESPACE_MAIN_CLOSE
+
+
+QUEX_NAMESPACE_TOKEN_OPEN
+
+const char*
+QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID)
+{
+   static char  error_string[64];
+   static const char  uninitialized_string[] = "<UNINITIALIZED>";
+   static const char  termination_string[]   = "<TERMINATION>";
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   static const char  indent_string[]        = "<INDENT>";
+   static const char  dedent_string[]        = "<DEDENT>";
+   static const char  nodent_string[]        = "<NODENT>";
+#  endif
+   static const char  token_id_str_BRACKET_CLOSE[] = "BRACKET_CLOSE";
+   static const char  token_id_str_BRACKET_OPEN[]  = "BRACKET_OPEN";
+   static const char  token_id_str_EXPECT[]        = "EXPECT";
+   static const char  token_id_str_IDENTIFIER[]    = "IDENTIFIER";
+   static const char  token_id_str_NUMBER[]        = "NUMBER";
+   static const char  token_id_str_SEMICOLON[]     = "SEMICOLON";
+   static const char  token_id_str_SEND[]          = "SEND";
+   static const char  token_id_str_STRUCT[]        = "STRUCT";
+   static const char  token_id_str_TYPE_DOUBLE[]   = "TYPE_DOUBLE";
+   static const char  token_id_str_TYPE_INT[]      = "TYPE_INT";
+       
+
+   /* NOTE: This implementation works only for token id types that are 
+    *       some type of integer or enum. In case an alien type is to
+    *       used, this function needs to be redefined.                  */
+   switch( TokenID ) {
+   default: {
+       __QUEX_STD_sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", (int)TokenID);
+       return error_string;
+   }
+   case __QUEX_SETTING_TOKEN_ID_TERMINATION:       return termination_string;
+   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED:     return uninitialized_string;
+#  if defined(QUEX_OPTION_INDENTATION_TRIGGER)
+   case __QUEX_SETTING_TOKEN_ID_INDENT:     return indent_string;
+   case __QUEX_SETTING_TOKEN_ID_DEDENT:     return dedent_string;
+   case __QUEX_SETTING_TOKEN_ID_NODENT:     return nodent_string;
+#  endif
+   case QUEX_TKN_BRACKET_CLOSE: return token_id_str_BRACKET_CLOSE;
+   case QUEX_TKN_BRACKET_OPEN:  return token_id_str_BRACKET_OPEN;
+   case QUEX_TKN_EXPECT:        return token_id_str_EXPECT;
+   case QUEX_TKN_IDENTIFIER:    return token_id_str_IDENTIFIER;
+   case QUEX_TKN_NUMBER:        return token_id_str_NUMBER;
+   case QUEX_TKN_SEMICOLON:     return token_id_str_SEMICOLON;
+   case QUEX_TKN_SEND:          return token_id_str_SEND;
+   case QUEX_TKN_STRUCT:        return token_id_str_STRUCT;
+   case QUEX_TKN_TYPE_DOUBLE:   return token_id_str_TYPE_DOUBLE;
+   case QUEX_TKN_TYPE_INT:      return token_id_str_TYPE_INT;
+
+   }
+}
+
+QUEX_NAMESPACE_TOKEN_CLOSE
+
+/* -*- C++ -*- vim: set syntax=cpp:
+ * PURPOSE: File containing definition of token-identifier and
+ *          a function that maps token identifiers to a string
+ *          name.
+ *
+ * NOTE: This file has been created automatically by Quex.
+ *       Visit quex.org for further info.
+ *
+ *
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                           */
+
+#ifndef __QUEX_OPTION_PLAIN_C
+#   include<cstdio> 
+#else
+#   include<stdio.h> 
+#endif
+
+/* The token class definition file can only be included after the two token identifiers have
+ * been defined. Otherwise, it would rely on default values. */
+#include "Simple-token"
+
+
+
+QUEX_NAMESPACE_TOKEN_OPEN
+extern const char* QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID TokenID);
+QUEX_NAMESPACE_TOKEN_CLOSE
+

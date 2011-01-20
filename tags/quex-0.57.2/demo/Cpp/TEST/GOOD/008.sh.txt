@@ -1,0 +1,10 @@
+## make lexer NDEBUG   
+Calculator Example Application
+Contributed by: Marco Antonelli (date: 09y11m7d)
+
+	nan
+	128
+	4857189.927
+	100
+	2049
+VALGRIND:   All heap blocks were freed -- no leaks are possible
