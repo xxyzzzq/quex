@@ -5,33 +5,70 @@ from   quex.core_engine.interval_handling import Interval
 
 from math import log
 
-def do(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
+def do(TargetInfo, CurrentStateIdx, TriggerInterval, SMD):
     LanguageDB = Setup.language_db
 
-    # Indentation counting is something totally different ...
-    result = __indentation_count_action(TargetStateIdx, SMD)
-    if result != None: return result
+    # (*) Indentation counting, may be?
+    #
+    if   TargetInfo.__class__.__name__ == "IndentationCounter": 
+        return __indentation_count_action(TargetInfo, SMD)
 
-    # Template Transition Targets are a little different ...
-    result = __template_transition_target(TargetStateIdx, SMD)
-    if result != None: return result
+    # (*) Template Transition Targets, may be?
+    #
+    elif TargetInfo.__class__.__name__ == "TemplateTarget": 
+        return __template_transition_target(TargetInfo, SMD)
 
-    # Tiny neighbour transitions that can be implemented by a switch
-    # statement (assembler might likely convert this into 'indexing').
-    # result = __tiny_neighbour_transitions(TargetStateIdx, CurrentStateIdx, SMD)
-    # if result != None: return result
+    # (*) Normal Transitions: goto + label
+    #
+    elif TargetInfo == None:
+        return transition_to_drop_out(CurrentStateIdx, ReloadF=False)
 
-    # All normal transitions can be handled by 'goto' plus 'label'
-    # (The init state (forward) does not increment the input position. Thus, here we
-    #  need to transit to the position where the input position is incremented.)
-    if SMD != None and TargetStateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f():
-        return LanguageDB["$goto"]("$input", TargetStateIdx)
+    elif TargetInfo == -1:
+        return transition_to_drop_out(CurrentStateIdx, ReloadF=True)
+
     else:
-        return LanguageDB["$goto-pure"](get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD))
+        return transition_to_state(TargetInfo, SMD)
+
+def transition_to_state(TargetInfo, SMD):
+    LanguageDB = Setup.language_db
+    if SMD != None and TargetInfo == SMD.sm().init_state_index and SMD.forward_lexing_f():
+        # The init state (forward) does not increment the input position. Thus, here we
+        # need to transit to the position where the input position is incremented.
+        return LanguageDB["$goto"]("$input", SMD.sm().init_state_index)
+    else:
+        return LanguageDB["$goto-pure"](get_state_label(TargetInfo, SMD))
+
+def transition_to_drop_out(CurrentStateIdx, ReloadF):
+    LanguageDB = Setup.language_db
+    return LanguageDB["$goto-pure"](get_drop_out_label(CurrentStateIdx, ReloadF))
+
+def get_state_label(TargetStateIdx, SMD):
+    LanguageDB = Setup.language_db
+
+    if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
+        # Transitions to 'dead-end-state'
+        return __dead_end_state_label(TargetStateIdx, SMD)
+    else:
+        # The very normal transition to another state
+        return LanguageDB["$label"]("$entry", TargetStateIdx)
+
+def get_drop_out_label(CurrentStateIdx, ReloadF=False):
+    LanguageDB = Setup.language_db
+
+    if not ReloadF: 
+        # Drop Out
+        # The current interval does not contain the buffer limit
+        # code (Otherwise, TargetStateIdx == -1). 
+        # Thus, no reload is required.
+        return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
+
+    else:
+        # 'Target == -1' => buffer limit code; reload required
+        return LanguageDB["$label"]("$reload", CurrentStateIdx)
 
 def __indentation_count_action(Info, SMD):
     """Indentation counters may count as a consequence of a 'triggering'."""
-    if Info.__class__.__name__ != "IndentationCounter": return None
+    assert Info.__class__.__name__ == "IndentationCounter"
 
     # Spaces simply increment
     if Info.type == "space": 
@@ -70,7 +107,7 @@ def __template_transition_target(Info, SMD):
        NOTE: This handles also the recursive case.
     """
     LanguageDB = Setup.language_db
-    if Info.__class__.__name__ != "TemplateTarget": return None
+    assert Info.__class__.__name__ == "TemplateTarget"
 
     if not Info.recursive():
         if SMD.forward_lexing_f(): cmd = "$goto-template-target"
@@ -84,54 +121,6 @@ def __template_transition_target(Info, SMD):
 
     else:
         return LanguageDB["$goto"]("$template", Info.template_index)
-
-def get_label(TargetStateIdx, CurrentStateIdx, TriggerInterval, SMD):
-    """
-        TargetStateIdx: != None: Index of the state to which 'goto' has to go.
-                        == None: Drop Out. Goto a terminal state.
-
-        SMD == None: We are not concerned with the whole state machine and just want to
-                     create a nice binary-bracketing transition (e.g. for range skippers).
-    """
-    LanguageDB = Setup.language_db
-
-    assert TargetStateIdx.__class__.__name__ != "TemplateTarget" 
-    # TargetStateIdx == None --> drop out
-    # TargetStateIdx == -1   --> buffer limit code; reload required
-    assert    TargetStateIdx                 == None \
-           or TargetStateIdx                 == -1   \
-           or TargetStateIdx                 >= 0
-
-    assert    CurrentStateIdx == None \
-           or CurrentStateIdx >= 0
-
-    assert    SMD                    == None \
-           or SMD.__class__.__name__ == "StateMachineDecorator"
-
-    assert    TriggerInterval                    == None       \
-           or TriggerInterval.__class__.__name__ == "Interval" \
-
-    if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
-        # (0) Transitions to 'dead-end-state'
-        return __dead_end_state_label(TargetStateIdx, SMD)
-
-    elif TargetStateIdx == None:   
-        # (1) Drop Out
-        #     The current interval does not contain the buffer limit
-        #     code (Otherwise, TargetStateIdx == -1). 
-        #     Thus, no reload is required.
-        return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
-
-    elif TargetStateIdx == -1:
-        # (2) 'Target == -1' => buffer limit code; reload required
-        assert TriggerInterval.size() == 1
-        assert TriggerInterval.contains(Setup.buffer_limit_code)
-        return LanguageDB["$label"]("$reload", CurrentStateIdx)
-
-    else:
-        # (3) The very normal transition to another state
-        assert type(TargetStateIdx) in [int, long]
-        return LanguageDB["$label"]("$entry", TargetStateIdx)
 
 def __dead_end_state_label(TargetStateIdx, SMD):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that
@@ -169,7 +158,7 @@ def __dead_end_state_label(TargetStateIdx, SMD):
     elif SMD.backward_lexing_f():
         return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
-    elif SMD. backward_input_position_detection_f():
+    elif SMD.backward_input_position_detection_f():
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
@@ -235,7 +224,6 @@ def __label_distinct_terminal(Origin):
         return LanguageDB["$label"]("$terminal-direct", Origin.state_machine_id)
 
 def __goto_distinct_terminal(Origin):
-
     # No unconditional case of acceptance 
     if type(Origin) == type(None): 
         LanguageDB = Setup.language_db

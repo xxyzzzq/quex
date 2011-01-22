@@ -378,10 +378,12 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
         txt = ["{ "]
         for index in Array:
             if ComputedGotoF:
-                txt.append("&&" + transition.get_label(index, template_index, None, SMD) + ", ")
+                if index != None: elm = "&&" + transition.get_state_label(index, SMD)
+                else:             elm = "&&" + transition.get_drop_out_label(template_index, ReloadF=False)
             else:
-                if index != None: txt.append("%i, " % index)
-                else:             txt.append("-%i," % template_index)
+                if index != None: elm = "%i"  % index
+                else:             elm = "-%i" % template_index
+            txt.append(elm + ", ")
         txt.append("}")
         return "".join(txt)
 
@@ -478,11 +480,11 @@ def __state_router(StateIndexList, SMD):
         if index >= 0:
             # Transition to state entry
             state_index = index
-            code  = transition.do(state_index, None, None, SMD)
+            code        = transition.transition_to_state(state_index, SMD)
         else:
             # Transition to a templates 'drop-out'
             template_index = - index
-            code = transition.do(None, template_index, None, SMD)
+            code           = "goto " + LanguageDB["$label"]("$drop-out-direct", template_index) + ";"
         txt.append(code)
         txt.append("\n")
 
