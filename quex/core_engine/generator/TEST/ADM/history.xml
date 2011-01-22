@@ -1,4 +1,4 @@
-<history date="Wed Jan 19 23:33:41 2011" element-n="1013">
+<history date="Sun Jan 23 00:52:46 2011" element-n="1015">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1795,5 +1795,9 @@
         <crc-error time="22:26:15" application="test-paths.py" choice="NonUniform" database-crc="1673004258" real-crc="-140443370"/>
         <crc-error time="22:26:15" application="test-paths.py" choice="NonUniform2" database-crc="-908096753" real-crc="-1358195247"/>
         <crc-error time="22:26:15" application="test-templates.py" choice="1" database-crc="-1180514809" real-crc="920464935"/>
+    </day>
+    <day year="2011" month="01" day="22">
+        <crc-error time="23:28:07" application="test-templates.py" choice="1" database-crc="920464935" real-crc="-2084339066"/>
+        <crc-error time="23:28:07" application="test-templates.py" choice="2" database-crc="-1025840674" real-crc="-1529721877"/>
     </day>
 </history>

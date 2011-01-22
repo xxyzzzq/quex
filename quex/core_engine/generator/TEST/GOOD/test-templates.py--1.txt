@@ -1,7 +1,7 @@
 --(Transition Targets)--------------------------------------------------
 
 #ifndef QUEX_OPTION_COMPUTED_GOTOS
-    const QUEX_TYPE_GOTO_LABEL (template_1_target_0[3]) = { 1, -1,2, };
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_0[3]) = { 1, -1, 2, };
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
     const QUEX_TYPE_GOTO_LABEL (template_1_target_0_cg[3]) = { &&STATE_1, &&STATE_1_DROP_OUT_DIRECT, &&STATE_2, };
