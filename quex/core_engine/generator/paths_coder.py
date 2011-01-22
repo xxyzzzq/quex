@@ -308,12 +308,12 @@ def __path_definition(variable_db, PathWalker, SMD):
         for state_index, character in Sequence[:-1]:
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
-            state_list.append("&&%s, " % transition.get_label(state_index, None, None, SMD))
+            state_list.append("&&%s, " % transition.get_state_label(state_index, SMD))
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
         end_state_index = Sequence[-1][0]
-        end_state_label = "&&%s, " % transition.get_label(end_state_index, None, None, SMD)
+        end_state_label = "&&%s, " % transition.get_state_label(end_state_index, SMD)
         end_state_list.append(end_state_label)
         state_list.append(end_state_label)
 
@@ -397,7 +397,7 @@ def __state_entries(txt, PathWalker, SMD):
             if PathWalker.uniform_state_entries_f() and PathN != 1:
                 txt.append("#ifdef QUEX_OPTION_COMPUTED_GOTOS\n")
                 end_state_index = path.sequence()[-1][0]
-                end_state_label = "&&%s" % transition.get_label(end_state_index, None, None, SMD)
+                end_state_label = "&&%s" % transition.get_state_label(end_state_index, SMD)
                 txt.append("    " + LanguageDB["$assignment"]("path_end_state", 
                                                               end_state_label).replace("\n", "\n    ") + "\n")
                 txt.append("#endif  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
@@ -536,7 +536,7 @@ def __end_state_router(txt, PathWalker, SMD):
         #     one terminal and it is determined at compilation time.
         txt.append("        ")
         txt.append(LanguageDB["$input/decrement"])
-        txt.append("\n        " + transition.do(PathList[0].end_state_index(), None, None, SMD))
+        txt.append("\n        " + transition.transition_to_state(PathList[0].end_state_index(), SMD))
         txt.append("\n")
     else:
         # (ii) There are multiple paths for the pathwalker, then the terminal
@@ -565,7 +565,7 @@ def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):
         for info in path.sequence():
             if StateIndexList == None or info[0] in StateIndexList:
                 txt.append("                " + LanguageDB["$case"](repr(memory_index)))
-                txt.append(transition.do(info[0], None, None, SMD))
+                txt.append(transition.transition_to_state(info[0], SMD))
                 txt.append("\n")
             memory_index += 1
     txt.append("            ")
