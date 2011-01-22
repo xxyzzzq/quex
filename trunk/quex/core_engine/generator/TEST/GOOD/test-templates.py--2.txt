@@ -1,13 +1,13 @@
 --(Transition Targets)--------------------------------------------------
 
 #ifndef QUEX_OPTION_COMPUTED_GOTOS
-    const QUEX_TYPE_GOTO_LABEL (template_1_target_0[6]) = { 1, -1,1, 2, 2, 2, };
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_0[6]) = { 1, -1, 1, 2, 2, 2, };
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
     const QUEX_TYPE_GOTO_LABEL (template_1_target_0_cg[6]) = { &&STATE_1, &&STATE_1_DROP_OUT_DIRECT, &&STATE_1, &&STATE_2, &&STATE_2, &&STATE_2, };
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
 #ifndef QUEX_OPTION_COMPUTED_GOTOS
-    const QUEX_TYPE_GOTO_LABEL (template_1_target_1[6]) = { 2, 3, 1, -1,2, 2, };
+    const QUEX_TYPE_GOTO_LABEL (template_1_target_1[6]) = { 2, 3, 1, -1, 2, 2, };
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
     const QUEX_TYPE_GOTO_LABEL (template_1_target_1_cg[6]) = { &&STATE_2, &&STATE_3, &&STATE_1, &&STATE_1_DROP_OUT_DIRECT, &&STATE_2, &&STATE_2, };
