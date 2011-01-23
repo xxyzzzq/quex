@@ -1,4 +1,4 @@
-from   quex.frs_py.file_in                import check, error_msg, read_until_character
+from   quex.frs_py.file_in                import check, error_msg, read_until_character, skip_whitespace
 from   quex.core_engine.interval_handling import Interval
 import quex.input.ucs_db_case_fold_parser as     ucs_case_fold
 
@@ -20,6 +20,7 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
     """
 
     pos = sh.tell()
+    skip_whitespace(sh)
     # -- parse the optional options in '(' ')' brackets
     if not check(sh, "("):
         # By default 'single' and 'multi' character case folds are active
@@ -48,11 +49,14 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
                 error_msg("Option 'm' not permitted as case fold option in set expression.\n" + \
                           "Set expressions cannot absorb multi character sequences.", sh)
 
+        skip_whitespace(sh)
+
     # -- parse the expression in '{' '}' which is subject to case folding
     if not check(sh, "{"):
         sh.seek(pos)
         error_msg("Missing '{' for case fold expression.", sh)
 
+    skip_whitespace(sh)
     if snap_set_expression != None:
         trigger_set = snap_set_expression(sh, PatternDict)
         if trigger_set == None:
@@ -72,6 +76,10 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
 
     else:
         sm = snap_expression(sh, PatternDict)
+        if sm == None:
+            error_msg("Missing expression for case fold '\C'.\n" + 
+                      "The content in '\\C{content}' should start with '[' or '[:'.", 
+                      sh)
 
         # -- perform the case fold for State Machines!
         for state_idx, state in sm.states.items():
