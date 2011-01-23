@@ -1,7 +1,4 @@
-from   quex.core_engine.state_machine.core import State 
-import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
-from   quex.input.setup import setup as Setup
-from   quex.core_engine.interval_handling import Interval
+from   quex.input.setup                    import setup as Setup
 
 from math import log
 
@@ -21,15 +18,15 @@ def do(TargetInfo, CurrentStateIdx, TriggerInterval, SMD):
     # (*) Normal Transitions: goto + label
     #
     elif TargetInfo == None:
-        return transition_to_drop_out(CurrentStateIdx, ReloadF=False)
+        return get_transition_to_drop_out(CurrentStateIdx, ReloadF=False)
 
     elif TargetInfo == -1:
-        return transition_to_drop_out(CurrentStateIdx, ReloadF=True)
+        return get_transition_to_drop_out(CurrentStateIdx, ReloadF=True)
 
     else:
-        return transition_to_state(TargetInfo, SMD)
+        return get_transition_to_state(TargetInfo, SMD)
 
-def transition_to_state(TargetInfo, SMD):
+def get_transition_to_state(TargetInfo, SMD):
     LanguageDB = Setup.language_db
     if SMD != None and TargetInfo == SMD.sm().init_state_index and SMD.forward_lexing_f():
         # The init state (forward) does not increment the input position. Thus, here we
@@ -38,7 +35,17 @@ def transition_to_state(TargetInfo, SMD):
     else:
         return LanguageDB["$goto-pure"](get_state_label(TargetInfo, SMD))
 
-def transition_to_drop_out(CurrentStateIdx, ReloadF):
+def get_transition_to_distinct_terminal(Origin):
+    # No unconditional case of acceptance 
+    if type(Origin) == type(None): 
+        LanguageDB = Setup.language_db
+        return LanguageDB["$goto-last_acceptance"]
+
+    assert Origin.is_acceptance()
+    LanguageDB = Setup.language_db
+    return LanguageDB["$goto-pure"](__label_distinct_terminal(Origin))
+
+def get_transition_to_drop_out(CurrentStateIdx, ReloadF):
     LanguageDB = Setup.language_db
     return LanguageDB["$goto-pure"](get_drop_out_label(CurrentStateIdx, ReloadF))
 
@@ -156,62 +163,16 @@ def __dead_end_state_label(TargetStateIdx, SMD):
             return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
 
     elif SMD.backward_lexing_f():
-        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
+        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)       # router to terminal
 
     elif SMD.backward_input_position_detection_f():
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
-        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
+        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)       # router to terminal
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % SMD.mode()
-    
-def do_dead_end_state_stub(DeadEndStateInfo, SMD):
-    """Dead end states are states which are void of any transitions. They 
-       all drop out to some terminal (or drop out totally). Many transitions 
-       to goto states can be replaced by direct transitions to the correspondent
-       terminal. Some dead end states, though, need to be replaced by 'stubs'
-       where some basic handling is necessary. The implementation of such 
-       stubs is handled inside this function.
-    """
-    LanguageDB = Setup.language_db
-
-    pre_context_dependency_f, \
-    winner_origin_list,       \
-    state                     = DeadEndStateInfo
-
-    assert isinstance(state, State)
-    assert state.is_acceptance()
-
-    if SMD.forward_lexing_f():
-        if not pre_context_dependency_f:
-            assert len(winner_origin_list) == 1
-            # Direct transition to terminal possible, no stub required.
-            return [] 
-
-        else:
-            return [ acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                             __goto_distinct_terminal),
-                    "\n" ]
-
-    elif SMD.backward_lexing_f():
-        # When checking a pre-condition no dedicated terminal exists. However, when
-        # we check for pre-conditions, a pre-condition flag needs to be set.
-        return acceptance_info.backward_lexing(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw", True) ] 
-
-
-    elif SMD.backward_input_position_detection_f():
-        # When searching backwards for the end of the core pattern, and one reaches
-        # a dead end state, then no position needs to be stored extra since it was
-        # stored at the entry of the state.
-        return [ LanguageDB["$input/decrement"], "\n"] + \
-               acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]
-
-    assert False, \
-           "Unknown mode '%s' in terminal stub code generation." % Mode
 
 def __label_distinct_terminal(Origin):
     assert Origin.is_acceptance()
@@ -222,14 +183,4 @@ def __label_distinct_terminal(Origin):
         return LanguageDB["$label"]("$terminal", Origin.state_machine_id)
     else:
         return LanguageDB["$label"]("$terminal-direct", Origin.state_machine_id)
-
-def __goto_distinct_terminal(Origin):
-    # No unconditional case of acceptance 
-    if type(Origin) == type(None): 
-        LanguageDB = Setup.language_db
-        return LanguageDB["$goto-last_acceptance"]
-
-    assert Origin.is_acceptance()
-    LanguageDB = Setup.language_db
-    return LanguageDB["$goto-pure"](__label_distinct_terminal(Origin))
 

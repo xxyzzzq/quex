@@ -23,7 +23,8 @@ STATE_1_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
     path_iterator = path_1 + 0;
     goto PATH_WALKER_23;
@@ -35,7 +36,8 @@ STATE_2_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_2_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 1");
     path_iterator = path_1 + 1;
     goto PATH_WALKER_23;
@@ -47,7 +49,8 @@ STATE_3_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_3_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 2");
     path_iterator = path_1 + 2;
     goto PATH_WALKER_23;
@@ -59,7 +62,8 @@ STATE_4_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_4_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 3");
     path_iterator = path_1 + 3;
     goto PATH_WALKER_23;
@@ -71,7 +75,8 @@ STATE_6_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_6_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 0");
     path_iterator = path_6 + 0;
     goto PATH_WALKER_23;
@@ -83,7 +88,8 @@ STATE_7_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 1");
     path_iterator = path_6 + 1;
     goto PATH_WALKER_23;
@@ -95,7 +101,8 @@ STATE_8_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_8_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 2");
     path_iterator = path_6 + 2;
     goto PATH_WALKER_23;
@@ -107,7 +114,8 @@ STATE_9_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_9_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 3");
     path_iterator = path_6 + 3;
     goto PATH_WALKER_23;
@@ -119,7 +127,8 @@ STATE_10_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_10_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 4");
     path_iterator = path_6 + 4;
     goto PATH_WALKER_23;
@@ -131,7 +140,8 @@ STATE_11_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_11_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 5");
     path_iterator = path_6 + 5;
     goto PATH_WALKER_23;
@@ -143,7 +153,8 @@ STATE_12_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_12_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 6");
     path_iterator = path_6 + 6;
     goto PATH_WALKER_23;
@@ -155,7 +166,8 @@ STATE_13_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_13_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 7");
     path_iterator = path_6 + 7;
     goto PATH_WALKER_23;
@@ -167,7 +179,8 @@ STATE_14_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_14_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 8");
     path_iterator = path_6 + 8;
     goto PATH_WALKER_23;
@@ -179,7 +192,8 @@ STATE_15_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_15_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 9");
     path_iterator = path_6 + 9;
     goto PATH_WALKER_23;
@@ -191,7 +205,8 @@ STATE_17_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_17_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 0");
     path_iterator = path_17 + 0;
     goto PATH_WALKER_23;
@@ -203,7 +218,8 @@ STATE_18_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_18_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 1");
     path_iterator = path_17 + 1;
     goto PATH_WALKER_23;
@@ -215,7 +231,8 @@ STATE_19_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_19_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 2");
     path_iterator = path_17 + 2;
     goto PATH_WALKER_23;
@@ -227,7 +244,8 @@ STATE_20_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_20_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 3");
     path_iterator = path_17 + 3;
     goto PATH_WALKER_23;
@@ -239,7 +257,8 @@ STATE_21_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_21_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+
    QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 4");
     path_iterator = path_17 + 4;
     goto PATH_WALKER_23;
@@ -285,6 +304,7 @@ PATH_WALKER_23_STATE_ROUTER:
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
     goto PATH_WALKER_23_STATE_ROUTER;
     }
+
     if( input < 20) {
         if( input < 10) {
             if( input == 0 ) {

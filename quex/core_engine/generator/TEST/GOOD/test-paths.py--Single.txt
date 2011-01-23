@@ -23,7 +23,7 @@ STATE_7_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
 
     if( input == *path_iterator ) {
         ++path_iterator;
