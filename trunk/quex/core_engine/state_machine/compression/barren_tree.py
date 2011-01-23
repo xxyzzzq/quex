@@ -37,8 +37,9 @@ def do(SM):
 
     # Take only children that can be combined nicely, i.e. that are either
     # very small or have a lot in common.
-    for node in child_db.itervalues():
-        __build_best_construction(node)
+    construction_db = {}
+    for construction in map(__build_best_construction, child_db.itervalues()):
+        construction_db[construction.parent_state_index] = construction
 
     return child_db
 
@@ -61,31 +62,31 @@ def __build_child_db(SM, LimitEffort):
 
     return child_db
 
-def __construction_code(ParentStateIdx, ParentTM, ChildList):
-    """Childlist = list of pairs: (child_state_index, child_tm)
-                   child_tm = child's trigger map
-    """
+class Construction:
+    def __init__(self, ParentStateIndex, ParentTM, ChildList):
+        """Childlist = list of pairs: (child_state_index, child_tm)
+                       child_tm = child's trigger map
+        """
 
-    # Delete transitions to children from ParentTM
-    parent_tm = copy(ParentTM)
-    for child_index, dummy in ChildList:
-        del parent_tm[child_index]
-    
-    total_common_tm, adapt_list = __get_common_tm((ParentStateIndex, parent_tm) + ChildList)
-    # adapt_list[0] == adaptations of the parent. 
-    # adapt_list[1:] = adaptations of the children.
-    children_common_tm = __get_common_tm(adapt_list[1:])
+        # Delete transitions to children from ParentTM
+        parent_tm = copy(ParentTM)
+        for child_index, dummy in ChildList:
+            del parent_tm[child_index]
+        
+        total_common_tm, adapt_list = __get_common_tm((ParentStateIndex, parent_tm) + ChildList)
+        # adapt_list[0] == adaptations of the parent. 
+        # adapt_list[1:] = adaptations of the children.
+        children_common_tm = __get_common_tm(adapt_list[1:])
 
-    children_private_tm_db  = {}
+        children_private_tm_db  = {}
 
-    cost =   effort(parent_catch_tm) \
-           + effort(children_common_tm)
-    for child_index, child_tm in ChildList:
-        private_tm  = __difference(child_tm, children_common_tm)
-        cost       += effort(private_tm)
-        children_private_tm_db[child_index] = private_tm
+        cost =   effort(parent_catch_tm) \
+               + effort(children_common_tm)
+        for child_index, child_tm in ChildList:
+            private_tm  = __difference(child_tm, children_common_tm)
+            cost       += effort(private_tm)
+            children_private_tm_db[child_index] = private_tm
 
-    return cost, (total_common_tm, children_common_tm, children_private_tm_db)
 
 def __build_best_construction(SM, parent_tm, node):
     # Start with all children present

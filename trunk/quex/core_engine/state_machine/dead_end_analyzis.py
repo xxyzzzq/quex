@@ -11,18 +11,27 @@ def do(state_machine):
            Some of them need to be investigated, since it depends on pre-conditions
            what terminal state is to be considered. The mapping works as follows:
 
-            db.has_key(state_index) == False    ==>  state is not a dead end at all.
+            CASE 1: db.has_key(state_index) == False    
+            
+                ==> (i)  state is not a dead end at all.
+                    (ii) state is a DEAD END and a NON-ACCEPTANCE state.
+                         --> simply delete all transitions to this state.
+                         --> the state that triggers to it drops out immediately.
 
-            db[state_index] = None              ==> state is a 'gateway' please, jump as usual to 
-                                                     the state, the state then routes to the correspondent
-                                                     terminal (without input) depending on the 
-                                                     pre-conditions.
+            CASE 2: db[state_index][0] == True
 
-            db[state_index] = integer           ==> state transits immediately to TERMINAL_n
-                                                     where 'n' is the integer.
+                ==> State is a DEAD END and an ACCEPTANCE state
+                    It contains a dependency on PRE-CONTEXTS, thus,
+                    it needs to be implemented as a 'pre-condition base router'.
+                    Depending on the pre-context it routes to a terminal.
 
-            db[state_index] = -1                ==> state is a 'harmless' drop out. need to jump to
-                                                    general terminal
+            CASE 3: db[state_index][1] == False
+
+                ==> State is a DEAD END and an ACCEPTANCE state
+                    There are NO PRE-CONTEXTS, so no check is necessary.
+                    Transition to state can be replaced by a transition to the 
+                    terminal corresponding the ACCEPTANCE.
+ 
     """
     db = {}
     # non_acceptance_dead_end_state_index_list = []

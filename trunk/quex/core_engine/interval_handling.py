@@ -68,6 +68,9 @@ class Interval:
         """
         if Number >= self.begin and Number < self.end: return True
         else:                                          return False
+
+    def contains_only(self, Number):
+        return self.begin == Number and self.end == Number + 1
         
     def check_overlap(self, Other):
         """Does interval overlap the Other?"""

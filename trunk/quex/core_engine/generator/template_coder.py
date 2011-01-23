@@ -480,7 +480,7 @@ def __state_router(StateIndexList, SMD):
         if index >= 0:
             # Transition to state entry
             state_index = index
-            code        = transition.transition_to_state(state_index, SMD)
+            code        = transition.get_transition_to_state(state_index, SMD)
         else:
             # Transition to a templates 'drop-out'
             template_index = - index

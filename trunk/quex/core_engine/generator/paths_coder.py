@@ -536,7 +536,7 @@ def __end_state_router(txt, PathWalker, SMD):
         #     one terminal and it is determined at compilation time.
         txt.append("        ")
         txt.append(LanguageDB["$input/decrement"])
-        txt.append("\n        " + transition.transition_to_state(PathList[0].end_state_index(), SMD))
+        txt.append("\n        " + transition.get_transition_to_state(PathList[0].end_state_index(), SMD))
         txt.append("\n")
     else:
         # (ii) There are multiple paths for the pathwalker, then the terminal
@@ -565,7 +565,7 @@ def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):
         for info in path.sequence():
             if StateIndexList == None or info[0] in StateIndexList:
                 txt.append("                " + LanguageDB["$case"](repr(memory_index)))
-                txt.append(transition.transition_to_state(info[0], SMD))
+                txt.append(transition.get_transition_to_state(info[0], SMD))
                 txt.append("\n")
             memory_index += 1
     txt.append("            ")

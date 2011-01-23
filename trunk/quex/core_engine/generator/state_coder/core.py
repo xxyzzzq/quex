@@ -30,7 +30,7 @@ def do(state, StateIdx, SMD=False):
     # Special handling of dead-end-states, i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
     if dead_end_state_info != None:
-        txt = transition.do_dead_end_state_stub(dead_end_state_info, SMD)
+        txt = __dead_end_state_stub(dead_end_state_info, SMD)
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
         if len(txt) == 0: return []
@@ -57,3 +57,48 @@ def do(state, StateIdx, SMD=False):
     if len(txt) != 0: txt.insert(0, prolog)
     return txt 
 
+def __dead_end_state_stub(DeadEndStateInfo, SMD):
+    """Dead end states are states which are void of any transitions. They 
+       all drop out to some terminal (or drop out totally). Many transitions 
+       to goto states can be replaced by direct transitions to the correspondent
+       terminal. Some dead end states, though, need to be replaced by 'stubs'
+       where some basic handling is necessary. The implementation of such 
+       stubs is handled inside this function.
+    """
+    LanguageDB = Setup.language_db
+
+    pre_context_dependency_f, \
+    winner_origin_list,       \
+    state                     = DeadEndStateInfo
+
+    assert isinstance(state, State)
+    assert state.is_acceptance()
+
+    if SMD.forward_lexing_f():
+        if not pre_context_dependency_f:
+            assert len(winner_origin_list) == 1
+            # Direct transition to terminal possible, no stub required.
+            return [] 
+
+        else:
+            return [ acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+                                                             transition.get_transition_to_distinct_terminal),
+                    "\n" ]
+
+    elif SMD.backward_lexing_f():
+        # When checking a pre-condition no dedicated terminal exists. However, when
+        # we check for pre-conditions, a pre-condition flag needs to be set.
+        return acceptance_info.backward_lexing(state.origins().get_list()) + \
+               [ LanguageDB["$goto"]("$terminal-general-bw", True) ] 
+
+
+    elif SMD.backward_input_position_detection_f():
+        # When searching backwards for the end of the core pattern, and one reaches
+        # a dead end state, then no position needs to be stored extra since it was
+        # stored at the entry of the state.
+        return [ LanguageDB["$input/decrement"], "\n"] + \
+               acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
+               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]
+
+    assert False, \
+           "Unknown mode '%s' in terminal stub code generation." % Mode
