@@ -21,13 +21,13 @@ function test_this {
 
 echo "" > $output
 cd ..
-make clean; make OPTIMIZATION='-O3' >& /dev/null
+make clean; make COMPILER_OPT='-O3' >& /dev/null
 cd run
 test_this lexer-quex-lc 
 test_this lexer-quex
 
 cd ..
-make clean; make OPTIMIZATION='-Os' >& /dev/null
+make clean; make COMPILER_OPT='-Os' >& /dev/null
 cd run
 test_this lexer-quex-lc 
 test_this lexer-quex

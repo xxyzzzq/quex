@@ -60,7 +60,7 @@ CC_LC = $(CC_CORE) \
         -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
         -DQUEX_OPTION_COLUMN_NUMBER_COUNTING 
 
-LD = $(COMPILER) $(OPTIMIZATION) $(PROFILER)
+LD = $(COMPILER) $(COMPILER_OPT) $(PROFILER)
 
 # (*) RULES ____________________________________________________________________
 #    lexer    --> application w/o line or column counting
