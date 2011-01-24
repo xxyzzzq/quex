@@ -26,6 +26,22 @@ class TriggerAction:
                              self.__interval, 
                              self.__dsm)
 
+class TriggerMapEntry:
+    def __init__(self, TriggerInterval, Action):
+        assert isinstance(TriggerInterval, Interval)
+        assert isinstance(Action,          TriggerAction)
+        self.interval = TriggerInterval
+        self.action   = Action
+
+class TriggerMap:
+    def __init__(self, Interval_vs_Target_List=None):
+        self.__list = []
+
+    def __getitem__(self, Index):
+        return self.__list[Index]
+
+    def __getslice(self, Begin, End):
+        return self.__list[Begin:End]
 
 def do(TriggerMap, StateIdx, DSM):
     """Target == None  ---> Drop Out
@@ -72,7 +88,6 @@ def do(TriggerMap, StateIdx, DSM):
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
         return ["    ", TriggerMap[0][1].get_code(), "\n"]
-
 
 def __get_code(TriggerMap, info):
     """Creates code for state transitions from this state. This function is very
@@ -363,7 +378,6 @@ def _separate_buffer_limit_code_transition(TriggerMap):
     # on buffer limit code. This happens for example, during backward detection
     # where it is safe to assume that the buffer limit code may not occur.
     return
-
 
 def _transform_trigger_map_to_something_useful(TriggerMap, CurrentStateIdx, DSM):
     result = []

@@ -378,8 +378,8 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
         txt = ["{ "]
         for index in Array:
             if ComputedGotoF:
-                if index != None: elm = "&&" + transition.get_state_label(index, SMD)
-                else:             elm = "&&" + transition.get_drop_out_label(template_index, ReloadF=False)
+                if index != None: elm = "&&" + transition.get_label_of_state(index, SMD)
+                else:             elm = "&&" + transition.get_label_of_drop_out(template_index, ReloadF=False)
             else:
                 if index != None: elm = "%i"  % index
                 else:             elm = "-%i" % template_index

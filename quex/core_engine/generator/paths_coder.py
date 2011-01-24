@@ -308,12 +308,12 @@ def __path_definition(variable_db, PathWalker, SMD):
         for state_index, character in Sequence[:-1]:
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
-            state_list.append("&&%s, " % transition.get_state_label(state_index, SMD))
+            state_list.append("&&%s, " % transition.get_label_of_state(state_index, SMD))
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
         end_state_index = Sequence[-1][0]
-        end_state_label = "&&%s, " % transition.get_state_label(end_state_index, SMD)
+        end_state_label = "&&%s, " % transition.get_label_of_state(end_state_index, SMD)
         end_state_list.append(end_state_label)
         state_list.append(end_state_label)
 
@@ -397,7 +397,7 @@ def __state_entries(txt, PathWalker, SMD):
             if PathWalker.uniform_state_entries_f() and PathN != 1:
                 txt.append("#ifdef QUEX_OPTION_COMPUTED_GOTOS\n")
                 end_state_index = path.sequence()[-1][0]
-                end_state_label = "&&%s" % transition.get_state_label(end_state_index, SMD)
+                end_state_label = "&&%s" % transition.get_label_of_state(end_state_index, SMD)
                 txt.append("    " + LanguageDB["$assignment"]("path_end_state", 
                                                               end_state_label).replace("\n", "\n    ") + "\n")
                 txt.append("#endif  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
