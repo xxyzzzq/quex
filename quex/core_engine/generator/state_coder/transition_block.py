@@ -5,25 +5,15 @@ from   quex.core_engine.interval_handling                import Interval
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
-class __info:
-    def __init__(self, StateIdx, IsInitStateF, DSM):
-        assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
-
-        self.state_index     = StateIdx
-        self.is_init_state_f = IsInitStateF
-        self.dsm             = DSM
-
 class TriggerAction:
-    def __init__(self, TargetStateIndex, SourceStateIndex, TheInterval, DSM):
+    def __init__(self, TargetStateIndex, SourceStateIndex, DSM):
         self.__target_state_index = TargetStateIndex
         self.__source_state_index = SourceStateIndex
-        self.__interval           = TheInterval
         self.__dsm                = DSM
 
     def get_code(self):
         return transition.do(self.__target_state_index, 
                              self.__source_state_index, 
-                             self.__interval, 
                              self.__dsm)
 
 class TriggerMapEntry:
@@ -61,8 +51,6 @@ def do(TriggerMap, StateIdx, DSM):
     if DSM == None: InitStateF = False
     else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 
-    info = __info(StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
-
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
     _separate_buffer_limit_code_transition(TriggerMap)
@@ -75,7 +63,7 @@ def do(TriggerMap, StateIdx, DSM):
         priorized_code = "" # __get_priorized_code(TriggerMap, info)
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
-        block_code     = __get_code(TriggerMap, info)
+        block_code     = __get_code(TriggerMap)
         return [priorized_code, "\n", 
                 block_code, "\n"]
 
@@ -89,7 +77,7 @@ def do(TriggerMap, StateIdx, DSM):
         assert TriggerMap[0][0].end   == sys.maxint
         return ["    ", TriggerMap[0][1].get_code(), "\n"]
 
-def __get_code(TriggerMap, info):
+def __get_code(TriggerMap):
     """Creates code for state transitions from this state. This function is very
        similar to the function creating code for a 'NumberSet' condition 
        (see 'interval_handling').
@@ -119,10 +107,10 @@ def __get_code(TriggerMap, info):
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
         #     If the input falls into this interval the target trigger is identified!
-        txt = [ __create_transition_code(TriggerMap[0], info) ]
+        txt = [ __create_transition_code(TriggerMap[0]) ]
         
     else:    
-        simple_txt = __try_very_simplest_case(TriggerMap, info)
+        simple_txt = __try_very_simplest_case(TriggerMap)
         if simple_txt != None: 
             txt = ["    ", simple_txt]
         else:
@@ -131,10 +119,10 @@ def __get_code(TriggerMap, info):
             middle = TriggerMap[MiddleTrigger_Idx]
 
             # input < 0 is impossible, since unicode codepoints start at 0!
-            if middle[0].begin == 0: code = [ __get_code(TriggerMap[MiddleTrigger_Idx:], info) ]
-            elif TriggerSetN == 2:   code = __bracket_two_intervals(TriggerMap, info) 
-            elif TriggerSetN == 3:   code = __bracket_three_intervals(TriggerMap, info)
-            else:                    code = __bracket_normally(MiddleTrigger_Idx, TriggerMap, info)
+            if middle[0].begin == 0: code = [ __get_code(TriggerMap[MiddleTrigger_Idx:]) ]
+            elif TriggerSetN == 2:   code = __bracket_two_intervals(TriggerMap) 
+            elif TriggerSetN == 3:   code = __bracket_three_intervals(TriggerMap)
+            else:                    code = __bracket_normally(MiddleTrigger_Idx, TriggerMap)
             txt = ["    "] + code
         
 
@@ -145,7 +133,7 @@ def __get_code(TriggerMap, info):
     result = result.replace("\n", "\n    ") + "\n"
     return result 
 
-def __create_transition_code(TriggerMapEntry, info):
+def __create_transition_code(TriggerMapEntry):
     """Creates the transition code to a given target based on the information in
        the trigger map entry.
     """
@@ -171,7 +159,7 @@ def __create_transition_code(TriggerMapEntry, info):
     txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
     return txt
 
-def __try_very_simplest_case(TriggerMap, info):
+def __try_very_simplest_case(TriggerMap):
     """Assume the following setup:
 
            if( input == Char1 ) goto X;
@@ -227,13 +215,13 @@ def __try_very_simplest_case(TriggerMap, info):
     return "".join([
                     txt0,
                     # TriggerInfo = [None, TargetStateIndex] because the interval does not matter.
-                    __create_transition_code([None, common_target_state_index], info),
+                    __create_transition_code([None, common_target_state_index]),
                     LanguageDB["$endif-else"],
-                    __create_transition_code([None, None], info),
+                    __create_transition_code([None, None]),
                     LanguageDB["$end-else"]
                    ])
 
-def __bracket_two_intervals(TriggerMap, info):
+def __bracket_two_intervals(TriggerMap):
     assert len(TriggerMap) == 2
     LanguageDB = Setup.language_db
 
@@ -257,13 +245,13 @@ def __bracket_two_intervals(TriggerMap, info):
 
     return [
                 txt0,
-                __create_transition_code(first, info),
+                __create_transition_code(first),
                 LanguageDB["$endif-else"],
-                __create_transition_code(second, info),
+                __create_transition_code(second),
                 LanguageDB["$end-else"]
            ]
 
-def __bracket_three_intervals(TriggerMap, info):
+def __bracket_three_intervals(TriggerMap):
     assert len(TriggerMap) == 3
     LanguageDB = Setup.language_db
 
@@ -292,19 +280,19 @@ def __bracket_three_intervals(TriggerMap, info):
 
         return [
                     txt0,
-                    __create_transition_code(TriggerMap[1], info),
+                    __create_transition_code(TriggerMap[1]),
                     LanguageDB["$endif-else"],
                     # TODO: Add somehow a mechanism to report that here the 
                     #       intervals 0 **and** 1 are triggered
                     #       (only for the comments in the generated code)
-                    __create_transition_code(TriggerMap[0], info),
+                    __create_transition_code(TriggerMap[0]),
                     LanguageDB["$end-else"]
                ]
 
     # (*) Non special case --> bracket normally
-    return __bracket_normally(1, TriggerMap, info)
+    return __bracket_normally(1, TriggerMap)
 
-def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
+def __bracket_normally(MiddleTrigger_Idx, TriggerMap):
     LanguageDB = Setup.language_db
 
     middle = TriggerMap[MiddleTrigger_Idx]
@@ -326,9 +314,9 @@ def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
 
     return [ 
                 comparison,
-                __get_code(lower, info),
+                __get_code(lower),
                 LanguageDB["$endif-else"],
-                __get_code(higher, info),
+                __get_code(higher),
                 LanguageDB["$end-else"]
            ]
 
@@ -382,7 +370,7 @@ def _separate_buffer_limit_code_transition(TriggerMap):
 def _transform_trigger_map_to_something_useful(TriggerMap, CurrentStateIdx, DSM):
     result = []
     for interval, target_index in TriggerMap:
-        result.append((interval, TriggerAction(target_index, CurrentStateIdx, interval, DSM)))
+        result.append((interval, TriggerAction(target_index, CurrentStateIdx, DSM)))
     return result
 
 #__likely_char_list = [ ord(' ') ]

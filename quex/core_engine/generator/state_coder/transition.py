@@ -2,7 +2,7 @@ from quex.input.setup import setup as Setup
 
 from math import log
 
-def do(TargetInfo, CurrentStateIdx, TriggerInterval, SMD):
+def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
 
     # (*) Indentation counting, may be?
