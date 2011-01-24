@@ -27,7 +27,8 @@ def do(state, StateIdx, SMD=False):
     if not InitStateF: 
         prolog += "    __quex_assert(false); /* No drop-through between states */\n"
 
-    # Special handling of dead-end-states, i.e. states with no further transitions.
+    # (*) Dead End States 
+    #     i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
     if dead_end_state_info != None:
         txt = __dead_end_state_stub(dead_end_state_info, SMD)
@@ -38,6 +39,7 @@ def do(state, StateIdx, SMD=False):
         txt.insert(0, prolog)
         return txt
 
+    # (*) Normal States
     prolog += LanguageDB["$label-def"]("$entry", StateIdx)
 
     TriggerMap = state.transitions().get_trigger_map()
@@ -82,7 +84,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
 
         else:
             return [ acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                             transition.get_transition_to_distinct_terminal),
+                                                             transition.get_transition_to_terminal),
                     "\n" ]
 
     elif SMD.backward_lexing_f():
