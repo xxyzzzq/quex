@@ -110,7 +110,7 @@ def __get_code(TriggerMap):
         txt = [ __create_transition_code(TriggerMap[0]) ]
         
     else:    
-        simple_txt = __try_very_simplest_case(TriggerMap)
+        simple_txt = None # __try_very_simplest_case(TriggerMap)
         if simple_txt != None: 
             txt = ["    ", simple_txt]
         else:
@@ -169,9 +169,9 @@ def __try_very_simplest_case(TriggerMap):
 
        If the input is equally distributed over the characters 1 to N then the
        average number of comparisons for N = 3 will be 2,333. For N = 4, the 
-       everage number of comparisons will be 2,75. Binary bracketing requires
+       average number of comparisons will be 2,75. Binary bracketing requires
        ld(N), so for N = 4 the number of comparisons is 2. Thus until N = 3
-       it is advantegous to compare step by step. Also, for N = 1 a simple 
+       it is advantageous to compare step by step. Also, for N = 1 a simple 
        comparison is, most likely, more efficient that an 'or' operation over
        a list of length '1'. 
        
@@ -211,9 +211,8 @@ def __try_very_simplest_case(TriggerMap):
     if len(character_list) < 2: return None
     assert common_target_state_index != -1
 
-    txt0 = LanguageDB["$if in-set"](character_list)    
     return "".join([
-                    txt0,
+                    LanguageDB["$if in-set"](character_list),
                     # TriggerInfo = [None, TargetStateIndex] because the interval does not matter.
                     __create_transition_code([None, common_target_state_index]),
                     LanguageDB["$endif-else"],
