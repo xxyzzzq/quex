@@ -118,9 +118,9 @@ def do(SMD, CostCoefficient):
     local_variable_db = transition_target_definition 
     if len(local_variable_db) != 0:
         local_variable_db.update({
-          "target_state_index": [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE",
-                                  None, "NotComputedGoto"],
-          "template_state_key": [ "int",                  "(int)0"],
+          "! QUEX_OPTION_COMPUTED_GOTOS/target_state_index": 
+          [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE", None],
+          "template_state_key": [ "ptrdiff_t",                  "(ptrdiff_t)0"],
         })
 
     return "".join(code), \
@@ -415,8 +415,8 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
         value    = __array_to_code(target_state_index_list)
         value_cg = __array_to_code(target_state_index_list, ComputedGotoF=True)
 
-        variable_db[name]         = [ var_type, value,    dimension, "NotComputedGoto" ]
-        variable_db[name + "_cg"] = [ var_type, value_cg, dimension, "ComputedGoto" ]
+        variable_db["! QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value,    dimension ]
+        variable_db["QUEX_OPTION_COMPUTED_GOTOS/"   + name] = [ var_type, value_cg, dimension ]
 
     # If the template does not have uniform state entries, the entries
     # need to be routed on recursion, for example. Thus we need to map 
@@ -426,8 +426,8 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
         value    = __array_to_code(involved_state_list)
         value_cg = __array_to_code(involved_state_list, ComputedGotoF=True)
 
-        variable_db[name]        = [ var_type, value, dimension, "NotComputedGoto"]
-        variable_db[name+ "_cg"] = [ var_type, value_cg, dimension, "ComputedGoto"]
+        variable_db["! QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value, dimension]
+        variable_db["QUEX_OPTION_COMPUTED_GOTOS/"   + name] = [ var_type, value_cg, dimension]
 
 def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key

@@ -46,6 +46,15 @@ def __local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
     def __code(txt, name, info):
+        condition = ""
+        if name.find("/") != -1:
+            fields = name.split("/")
+            print "##", fields
+            assert len(fields) == 2
+            name = fields[1].strip()
+            if fields[0][0] == "!": condition_negated_f = True;  condition = fields[0][1:].strip()
+            else:                   condition_negated_f = False; condition = fields[0].strip()
+
         type = info[0]
         if len(info) > 2 and info[2] != None: 
             if info[2] != 0:
@@ -66,12 +75,17 @@ def __local_variable_definitions(VariableDB):
         if "NotComputedGoto" in info:
             txt.append("#ifndef QUEX_OPTION_COMPUTED_GOTOS\n")
 
+        if condition != "":
+            if condition_negated_f == False: txt.append("#ifdef %s\n" % condition)
+            else:                            txt.append("#ifndef %s\n" %  condition)
         txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
 
         if ("ComputedGoto" in info) or ("NotComputedGoto" in info):
             txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
         if  "CountColumns" in info:
             txt.append("#endif /* QUEX_OPTION_COLUMN_NUMBER_COUNTING */\n")
+        if condition != "":
+            txt.append("#endif /* %s */\n" % condition)
 
     L = max(map(lambda info: len(info[0]), VariableDB.keys()))
     txt = []
@@ -187,27 +201,27 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
-    txt += "    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);\n";
+    txt += "    if( me->buffer._character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\\0' ) {\n"  
+    txt += "    *(me->buffer._input_p) = me->buffer._character_at_lexeme_start;\n"                  
+    txt += "        me->buffer._character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\\0';\n"
+    txt += "    }\n"
     
     txt += function_body
 
     # -- prevent the warning 'unused variable'
     txt += "\n"
-    txt += "    /* prevent compiler warning 'unused variable': use variables once in a part of the code*/\n"
+    txt += "    /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/\n"
     txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
-    txt += "    if( 0 == 1 ) {\n"
-    txt += "        int unused = 0;\n"
-    txt += "        /* In some scenarios, the __TERMINAL_ROUTER is never required.\n"
-    txt += "         * Still, avoid the warning of 'label never used'.             */\n"
-    txt += "        goto __TERMINAL_ROUTER;\n"
     for mode_name in ModeNameList:
-        txt += "        unused += (int)%s.id;\n" % mode_name
-    txt += "        unused += (int)QUEX_NAME(LexemeNullObject);\n"
-    txt += "        unused += (int)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"
+        txt += "    (void)%s;\n" % mode_name
+    txt += "    (void)QUEX_NAME(LexemeNullObject);\n"
+    txt += "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"
+    txt += "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n"
+    txt += "    /* In some scenarios, the __TERMINAL_ROUTER is never required.\n"
+    txt += "     * Still, avoid the warning of 'label never used'.             */\n"
+    txt += "    goto __TERMINAL_ROUTER;\n"
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
-
-    txt += "    }\n"
 
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))

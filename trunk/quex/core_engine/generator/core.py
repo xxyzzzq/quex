@@ -1,8 +1,8 @@
 import quex.core_engine.generator.languages.core                   as languages
 import quex.core_engine.generator.state_machine_coder              as state_machine_coder
-import quex.core_engine.generator.state_router                     as state_router
 import quex.core_engine.generator.input_position_backward_detector as backward_detector
 from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
+import quex.core_engine.generator.state_router                     as state_router
 from   quex.input.setup import setup as Setup
 from   quex.frs_py.string_handling import blue_print
 from   copy import copy
@@ -114,20 +114,21 @@ class Generator(GeneratorBase):
         if self.pre_context_sm_list != []:
             pre_context_sm_code, \
             variable_db,         \
-            state_index_list     = self.__get_combined_pre_context_state_machine()
+            state_info_list      = self.__get_combined_pre_context_state_machine()
             local_variable_db.update(variable_db)
-            routed_state_info_list.append(state_index_list)
+            routed_state_info_list.extend(state_info_list)
             
         # -- write the state machine of the 'core' patterns (i.e. no pre-conditions)
-        main_sm_code, variable_db, state_index_list = self.__get_core_state_machine()
+        main_sm_code,   \
+        variable_db,    \
+        state_info_list = self.__get_core_state_machine()
         local_variable_db.update(variable_db)
-        routed_state_info_list.append(state_index_list)
+        routed_state_info_list.extend(state_info_list)
 
         function_body = pre_context_sm_code + main_sm_code
 
-        state_router_txt = ""
         if len(routed_state_info_list) != 0:
-            state_router_txt = state_router.do(routed_state_info_list)
+            function_body += state_router.do(routed_state_info_list)
 
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
