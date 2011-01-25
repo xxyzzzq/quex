@@ -179,7 +179,7 @@ db["C++"] = {
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
     "$debug-print":         lambda txt: "QUEX_DEBUG_PRINT(&me->buffer, \"%s\");" % txt,
-    "$mark-lexeme-start":   "QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);",
+    "$mark-lexeme-start":   "me->buffer._lexeme_start_p = me->buffer._input_p;",
     "$input/add":           lambda Offset:      "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset,
     "$input/increment":     "++(me->buffer._input_p);",
     "$input/decrement":     "--(me->buffer._input_p);",
