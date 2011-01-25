@@ -27,9 +27,10 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     state_machine = SMD.sm()
     
-    txt                  = []
-    done_state_index_set = set([])
-    local_variable_db    = {}
+    txt                     = []
+    done_state_index_set    = set([])
+    local_variable_db       = {}
+    routed_state_index_list = []
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -50,7 +51,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     # -- Coding templated states [Optional]
     #    (those states do not have to be coded later)
     if Setup.compression_template_f:
-        code, variable_db, state_index_set = \
+        code, routed_state_index_list, variable_db, state_index_set = \
                 template_coder.do(SMD, Setup.compression_template_coef)
         done_state_index_set.update(state_index_set)
         txt.append(code)
@@ -75,7 +76,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
     
-    return "".join(txt), local_variable_db
+    return "".join(txt), local_variable_db, routed_state_index_list
 
 def get_sorted_state_list(StateDict):
     """Sort the list in a away, so that states that are used more

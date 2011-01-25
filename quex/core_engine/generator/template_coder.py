@@ -112,7 +112,7 @@ def do(SMD, CostCoefficient):
     # (2) Implement code for template combinations
     transition_target_definition, \
     code,                         \
-    router,                       \
+    routed_state_index_list,      \
     involved_state_index_list     =  _do(combination_list, SMD)
 
     local_variable_db = transition_target_definition 
@@ -123,7 +123,8 @@ def do(SMD, CostCoefficient):
           "template_state_key": [ "int",                  "(int)0"],
         })
 
-    return "".join(code + router), \
+    return "".join(code), \
+           __get_state_router_info(routed_state_index_list, SMD), \
            local_variable_db, \
            involved_state_index_list
 
@@ -197,15 +198,9 @@ def _do(CombinationList, SMD):
         __templated_state_entries(code, template, SMD)
         __template_state(code, template, SMD)
 
-    # -- state router
-    if len(template_list) != 0:
-        router = __state_router(target_state_index_list, SMD)
-    else:
-        router = []
+    return transition_target_definition, code, target_state_index_list, involved_state_index_list
 
-    return transition_target_definition, code, router, involved_state_index_list
-
-class TemplateTarget:
+class TemplateTarget(transition_block.TriggerAction):
     def __init__(self, TemplateIndex, TargetIndex=None, UniformStateEntriesF=False):
         """TemplateIndex identifies the template that 'hosts' the transition.
 
@@ -244,6 +239,24 @@ class TemplateTarget:
            jump to state entries, rather the template entry.
         """
         return self.__uniform_state_entries_f
+
+    def get_code(self):
+        """Template transition target states. The target state is determined at 
+           run-time based on a 'state_key' for the template.
+           NOTE: This handles also the recursive case.
+        """
+        LanguageDB = Setup.language_db
+
+        if not self.recursive():
+            cmd = "$goto-template-target"
+            return LanguageDB[cmd](self.template_index, self.target_index)
+
+        elif not self.uniform_state_entries_f():
+            cmd = "$goto-template-state-key"
+            return LanguageDB[cmd](self.template_index) 
+
+        else:
+            return LanguageDB["$goto"]("$template", self.template_index)
 
 class TransitionMapMimiker:
     """Class that mimiks the TransitionMap of module
@@ -464,36 +477,10 @@ def __template_state(txt, TheTemplate, SMD):
     txt.extend(transition_block.do(TriggerMap, state_index, SMD))
     txt.extend(drop_out.do(state, state_index, SMD))
 
-def __state_router(StateIndexList, SMD):
-    """Create code that allows to jump to a state based on an integer value.
-    """
-
-    if SMD.forward_lexing_f(): state_router_label = "STATE_ROUTER:\n"
-    else:                      state_router_label = "STATE_ROUTER_BACKWARD:\n" 
-    txt = [
-            "#ifndef QUEX_OPTION_COMPUTED_GOTOS\n",
-            state_router_label,
-            "    switch( target_state_index ) {\n",
-    ]
-    for index in StateIndexList:
-        txt.append("    case %i: " % index)
-        if index >= 0:
-            # Transition to state entry
-            state_index = index
-            code        = transition.get_transition_to_state(state_index, SMD)
-        else:
-            # Transition to a templates 'drop-out'
-            template_index = - index
-            code           = "goto " + LanguageDB["$label"]("$drop-out-direct", template_index) + ";"
-        txt.append(code)
-        txt.append("\n")
-
-    txt.append("    }\n")
-    txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
-
-    return txt
-
 def get_uniform_prototype(SMD, InvolvedStateIndexList):
+    """Gets the prototype of a state in case that the involved states 
+       are all uniform. If not it returns 'None'.
+    """
     if SMD.sm().init_state_index in InvolvedStateIndexList:
         # It is conceivable, that even the init state is part of 
         # a template. In this case, the template **must** be non-uniform.
@@ -508,3 +495,14 @@ def get_uniform_prototype(SMD, InvolvedStateIndexList):
     else:
         return None
 
+def __get_state_router_info(StateIndexList, SMD):
+    result = [None] * len(StateIndexList)
+    for i, index in enumerate(StateIndexList):
+        if index >= 0:
+            # Transition to state entry
+            code = transition.get_transition_to_state(index, SMD)
+        else:
+            # Transition to a templates 'drop-out'
+            code = "goto " + LanguageDB["$label"]("$drop-out-direct", - index) + ";"
+        result[i] = (index, code)
+    return result

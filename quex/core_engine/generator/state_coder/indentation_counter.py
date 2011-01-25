@@ -6,9 +6,10 @@ from   quex.core_engine.interval_handling            import       Interval
 import quex.output.cpp.action_code_formatter         as           action_code_formatter
 import quex.lexer_mode                               as           lexer_mode
 
+from   math import log
 import sys
 
-class IndentationCounter:
+class IndentationCounter(transition_block.TriggerAction):
     def __init__(self, Type, Number):
         self.type   = Type
         self.number = Number
@@ -19,6 +20,41 @@ class IndentationCounter:
 
     def __ne__(self, Other):
         return not self.__eq__(Other)
+
+    def get_code(self):
+        """Indentation counters may count as a consequence of a 'triggering'."""
+
+        # Spaces simply increment
+        if self.type == "space": 
+            if self.number != -1: add_str = "%i" % self.number
+            else:                 add_str = "me->" + self.variable_name
+            return "me->counter._indentation += %s;" % add_str
+        
+        # Grids lie on a grid:
+        elif self.type == "grid":
+            if self.number != -1: 
+                log2 = log(self.number)/log(2)
+                if log2.is_integer():
+                    # For k = a potentials of 2, the expression 'x - x % k' can be written as: x & ~log2(mask) !
+                    # Thus: x = x - x % k + k = x & mask + k
+                    mask = (1 << int(log2)) - 1
+                    return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
+                           "me->counter._indentation += %i;\n" % self.number
+                else:
+                    add_str = "%i" % self.number
+            else:   
+                add_str = "me->" + self.variable_name
+
+            return "me->counter._indentation = (me->counter._indentation - (me->counter._indentation %% %s)) + %s;" \
+                   % (add_str, add_str)
+
+        elif self.type == "bad":
+            assert self.number != -1
+            return "goto INDENTATION_COUNTER_%i_BAD_CHARACTER;\n" % self.number
+
+        else:
+            assert False, "Unreachable code has been reached."
+    
 
 class IndentationBadCharacter:
     def __init__(self, StateIndex):
