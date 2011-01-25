@@ -1,7 +1,5 @@
 from quex.input.setup import setup as Setup
 
-from math import log
-
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
 
@@ -135,60 +133,4 @@ def __get_label_of_dead_end_state(TargetStateIdx, SMD):
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % SMD.mode()
-
-def __indentation_count_action(Info, SMD):
-    """Indentation counters may count as a consequence of a 'triggering'."""
-    assert Info.__class__.__name__ == "IndentationCounter"
-
-    # Spaces simply increment
-    if Info.type == "space": 
-        if Info.number != -1: add_str = "%i" % Info.number
-        else:                 add_str = "me->" + Info.variable_name
-        return "me->counter._indentation += %s;" % add_str
-    
-    # Grids lie on a grid:
-    elif Info.type == "grid":
-        if Info.number != -1: 
-            log2 = log(Info.number)/log(2)
-            if log2.is_integer():
-                # For k = a potentials of 2, the expression 'x - x % k' can be written as: x & ~log2(mask) !
-                # Thus: x = x - x % k + k = x & mask + k
-                mask = (1 << int(log2)) - 1
-                return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
-                       "me->counter._indentation += %i;\n" % Info.number
-            else:
-                add_str = "%i" % Info.number
-        else:   
-            add_str = "me->" + Info.variable_name
-
-        return "me->counter._indentation = (me->counter._indentation - (me->counter._indentation %% %s)) + %s;" \
-               % (add_str, add_str)
-
-    elif Info.type == "bad":
-        assert Info.number != -1
-        return "goto INDENTATION_COUNTER_%i_BAD_CHARACTER;\n" % Info.number
-
-    else:
-        assert False, "Unreachable code has been reached."
-    
-def __template_transition_target(Info, SMD):
-    """Template transition target states. The target state is determined at 
-       run-time based on a 'state_key' for the template.
-       NOTE: This handles also the recursive case.
-    """
-    LanguageDB = Setup.language_db
-    assert Info.__class__.__name__ == "TemplateTarget"
-
-    if not Info.recursive():
-        if SMD.forward_lexing_f(): cmd = "$goto-template-target"
-        else:                      cmd = "$goto-template-target-bw" 
-        return LanguageDB[cmd](Info.template_index, Info.target_index)
-
-    elif not Info.uniform_state_entries_f():
-        if SMD.forward_lexing_f(): cmd = "$goto-template-state-key"
-        else:                      cmd = "$goto-template-state-key-bw"
-        return LanguageDB[cmd](Info.template_index) 
-
-    else:
-        return LanguageDB["$goto"]("$template", Info.template_index)
 

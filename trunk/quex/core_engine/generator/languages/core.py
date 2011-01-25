@@ -197,10 +197,10 @@ db["C++"] = {
                              "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
     "$goto-template-target":    lambda TemplateIdx, TargetIdx: 
                                 "QUEX_TEMPLATE_GOTO(%i, %i, template_state_key);" % (TemplateIdx, TargetIdx),
-    "$goto-template-state-key": lambda TemplateIdx: 
-                                "QUEX_TEMPLATE_GOTO_STATE_KEY(%i, template_state_key);" % TemplateIdx,
-    "$goto-template-target-bw":    lambda TemplateIdx, TargetIdx: 
-                                   "QUEX_TEMPLATE_GOTO_BACKWARD(%i, %i, template_state_key);" % (TemplateIdx, TargetIdx),
+    "$goto-template-target-bw": lambda TemplateIdx, TargetIdx: 
+                                "QUEX_TEMPLATE_GOTO_BACKWARD(%i, %i, template_state_key);" % (TemplateIdx, TargetIdx),
+    "$goto-template-state-key":    lambda TemplateIdx: 
+                                   "QUEX_TEMPLATE_GOTO_STATE_KEY(%i, template_state_key);" % TemplateIdx,
     "$goto-template-state-key-bw": lambda TemplateIdx: 
                                    "QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(%i, template_state_key);" % TemplateIdx,
     "$label":                lambda Type, Argument: label_db_get(Type, Argument, GotoTargetF=True),

@@ -16,27 +16,29 @@ class TriggerAction:
                              self.__source_state_index, 
                              self.__dsm)
 
-class TriggerMapEntry:
-    def __init__(self, TriggerInterval, Action):
-        assert isinstance(TriggerInterval, Interval)
-        assert isinstance(Action,          TriggerAction)
-        self.interval = TriggerInterval
-        self.action   = Action
-
-class TriggerMap:
-    def __init__(self, Interval_vs_Target_List=None):
-        self.__list = []
-
-    def __getitem__(self, Index):
-        return self.__list[Index]
-
-    def __getslice(self, Begin, End):
-        return self.__list[Begin:End]
+def __interpret(TriggerMap, CurrentStateIdx, DSM):
+    result = [None] * len(TriggerMap)
+    for i, entry in enumerate(TriggerMap):
+        interval = entry[0]
+        target   = entry[1]
+        if   target == None:
+            target = TriggerAction(target, CurrentStateIdx, DSM)
+        elif target == -1:
+            target = TriggerAction(target, CurrentStateIdx, DSM)
+        elif type(target) in [int, long]:
+            target = TriggerAction(target, CurrentStateIdx, DSM)
+        else:
+            isinstance(target, TriggerAction)
+            # No change necessary
+        result[i] = (interval, target)
+    return result
 
 def do(TriggerMap, StateIdx, DSM):
-    """Target == None  ---> Drop Out
-       Target == -1    ---> Buffer Limit Code; Require Reload
-                            (this one is added by '_separate_buffer_limit_code_transition()'
+    """Target == None           ---> Drop Out
+       Target == -1             ---> Buffer Limit Code; Require Reload
+                                     (this one is added by '__separate_buffer_limit_code_transition()'
+       Target == Integer >= 0   ---> Transition to state with index 'Target'
+       Target == string         ---> past code fragment 'Target' for given Interval
     """
     assert type(TriggerMap) == list
     assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
@@ -53,9 +55,11 @@ def do(TriggerMap, StateIdx, DSM):
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    _separate_buffer_limit_code_transition(TriggerMap)
+    __separate_buffer_limit_code_transition(TriggerMap)
 
-    TriggerMap = _transform_trigger_map_to_something_useful(TriggerMap, StateIdx, DSM)
+    # Interpret the trigger map.
+    # The actions related to intervals become code fragments (of type 'str')
+    TriggerMap = __interpret(TriggerMap, StateIdx, DSM)
 
     if len(TriggerMap) > 1:
         # Check whether some things might be pre-checked before the big trigger map
@@ -92,14 +96,14 @@ def __get_code(TriggerMap):
         #    This assumption is critical because it is assumed that for any isolated
         #    interval the bordering intervals have bracketed the remaining cases!
         previous_interval = TriggerMap[0][0] 
-        for trigger_interval, target_state_index in TriggerMap[1:]:
-            assert trigger_interval.begin == previous_interval.end, \
-                   "non-adjacent intervals in TriggerMap\n" + \
+        for interval, target_state_index in TriggerMap[1:]:
+            assert interval.begin == previous_interval.end, \
+                   "Non-adjacent intervals in TriggerMap\n" + \
                    "TriggerMap = " + repr(TriggerMap)
-            assert trigger_interval.end > previous_interval.begin, \
-                   "unsorted intervals in TriggerMap\n" + \
+            assert interval.end > interval.begin, \
+                   "Interval of size zero in TriggerMap\n" + \
                    "TriggerMap = " + repr(TriggerMap)
-            previous_interval = deepcopy(trigger_interval)
+            previous_interval = interval
 
     #________________________________________________________________________________
 
@@ -319,7 +323,7 @@ def __bracket_normally(MiddleTrigger_Idx, TriggerMap):
                 LanguageDB["$end-else"]
            ]
 
-def _separate_buffer_limit_code_transition(TriggerMap):
+def __separate_buffer_limit_code_transition(TriggerMap):
     """This function ensures, that the buffer limit code is separated 
        into a single value interval. Thus the transition map can 
        transit immediate to the reload procedure.
@@ -365,12 +369,6 @@ def _separate_buffer_limit_code_transition(TriggerMap):
     # on buffer limit code. This happens for example, during backward detection
     # where it is safe to assume that the buffer limit code may not occur.
     return
-
-def _transform_trigger_map_to_something_useful(TriggerMap, CurrentStateIdx, DSM):
-    result = []
-    for interval, target_index in TriggerMap:
-        result.append((interval, TriggerAction(target_index, CurrentStateIdx, DSM)))
-    return result
 
 #__likely_char_list = [ ord(' ') ]
 #def __get_priorized_code(trigger_map, info):

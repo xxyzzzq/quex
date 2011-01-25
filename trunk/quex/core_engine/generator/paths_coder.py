@@ -469,7 +469,6 @@ def __path_walker(txt, PathWalker, SMD):
         # => Adapt the trigger map, so that the 'buffer limit' is an 
         #    isolated single interval.
         trigger_map = [ (Interval(-sys.maxint, sys.maxint), None) ]
-        transition_block._separate_buffer_limit_code_transition(trigger_map)
 
     txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD))
 

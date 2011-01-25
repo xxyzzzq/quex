@@ -1,5 +1,6 @@
 import quex.core_engine.generator.languages.core                   as languages
 import quex.core_engine.generator.state_machine_coder              as state_machine_coder
+import quex.core_engine.generator.state_router                     as state_router
 import quex.core_engine.generator.input_position_backward_detector as backward_detector
 from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
 from   quex.input.setup import setup as Setup
@@ -52,7 +53,7 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=False, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg, db = state_machine_coder.do(decorated_state_machine)
+        msg, db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
         txt += msg
         variable_db.update(db)
 
@@ -68,7 +69,7 @@ class Generator(GeneratorBase):
         txt += msg
         variable_db.update(db)
 
-        return txt, variable_db
+        return txt, variable_db, routed_state_info_list
 
     def __get_combined_pre_context_state_machine(self):
         LanguageDB = self.language_db
@@ -85,7 +86,7 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=True, 
                                                         BackwardInputPositionDetectionF=False)
 
-        msg, variable_db = state_machine_coder.do(decorated_state_machine)
+        msg, variable_db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
 
         txt += msg
 
@@ -94,7 +95,7 @@ class Generator(GeneratorBase):
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt += "    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n"
 
-        return txt, variable_db
+        return txt, variable_db, routed_state_info_list
 
     def do(self, RequiredLocalVariablesDB):
         local_variable_db = copy(RequiredLocalVariablesDB)
@@ -108,16 +109,25 @@ class Generator(GeneratorBase):
                   backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
 
         pre_context_sm_code = ""
+        routed_state_info_list = []
         # -- write the combined pre-condition state machine
         if self.pre_context_sm_list != []:
-            pre_context_sm_code, variable_db = self.__get_combined_pre_context_state_machine()
+            pre_context_sm_code, \
+            variable_db,         \
+            state_index_list     = self.__get_combined_pre_context_state_machine()
             local_variable_db.update(variable_db)
+            routed_state_info_list.append(state_index_list)
             
         # -- write the state machine of the 'core' patterns (i.e. no pre-conditions)
-        main_sm_code, variable_db = self.__get_core_state_machine()
+        main_sm_code, variable_db, state_index_list = self.__get_core_state_machine()
         local_variable_db.update(variable_db)
+        routed_state_info_list.append(state_index_list)
 
         function_body = pre_context_sm_code + main_sm_code
+
+        state_router_txt = ""
+        if len(routed_state_info_list) != 0:
+            state_router_txt = state_router.do(routed_state_info_list)
 
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
