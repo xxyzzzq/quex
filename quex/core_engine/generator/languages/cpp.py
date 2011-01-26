@@ -45,16 +45,37 @@ def __header_definitions(LanguageDB):
 def __local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
-    def __code(txt, name, info):
-        condition = ""
-        if name.find("/") != -1:
-            fields = name.split("/")
-            print "##", fields
-            assert len(fields) == 2
-            name = fields[1].strip()
-            if fields[0][0] == "!": condition_negated_f = True;  condition = fields[0][1:].strip()
-            else:                   condition_negated_f = False; condition = fields[0].strip()
+    def __interpret(RawName):
+        if RawName.find("/") == -1: return "", False, RawName
 
+        # variable name: CONDITION "/" VARIABLE NAME
+        # CONDITION builds an 'ifdef' or 'ifndef' region.
+        # CONDITION starting with '!' means 'not', thus '! X/a'
+        #           is only defined if X is undefined
+        fields = RawName.split("/")
+        assert len(fields) == 2
+        name = fields[1].strip()
+        if fields[0][0] == "!": condition_negated_f = True;  condition = fields[0][1:].strip()
+        else:                   condition_negated_f = False; condition = fields[0].strip()
+        return condition, condition_negated_f, name
+
+    def __group_by_condition(VariableDB):
+        result = {}
+        for name, info in VariableDB.iteritems():
+            condition, condition_negated_f, name = __interpret(name)
+
+            variable_list = result.get(condition)
+            if variable_list == None: 
+                variable_list     = [[], []]
+                result[condition] = variable_list
+            if not condition_negated_f:
+                variable_list[0].append((name, info))
+            else:
+                variable_list[1].append((name, info))
+
+        return result
+
+    def __code(txt, name, info):
         type = info[0]
         if len(info) > 2 and info[2] != None: 
             if info[2] != 0:
@@ -68,35 +89,59 @@ def __local_variable_definitions(VariableDB):
         else:
             value = " = " + info[1]
 
-        if "ComputedGoto" in info:
-            txt.append("#ifdef QUEX_OPTION_COMPUTED_GOTOS\n")
-        if "CountColumns" in info:
-            txt.append("#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n")
-        if "NotComputedGoto" in info:
-            txt.append("#ifndef QUEX_OPTION_COMPUTED_GOTOS\n")
+        txt.append("    %s%s %s%s;\n" % (type, " " * (30-len(type)), name, value))
+
+    # L   = max(map(lambda info: len(info[0]), VariableDB.keys()))
+    txt = []
+    # Some variables need to be defined before others, use 'First' to indicate that
+    done_list = []
+    for raw_name, info in sorted(VariableDB.items()):
+        if "First" not in info: continue
+
+        condition, condition_negated_f, name = __interpret(raw_name)
 
         if condition != "":
-            if condition_negated_f == False: txt.append("#ifdef %s\n" % condition)
+            if condition_negated_f == False: txt.append("#ifdef %s\n"  % condition)
             else:                            txt.append("#ifndef %s\n" %  condition)
-        txt.append("    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value))
 
-        if ("ComputedGoto" in info) or ("NotComputedGoto" in info):
-            txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
-        if  "CountColumns" in info:
-            txt.append("#endif /* QUEX_OPTION_COLUMN_NUMBER_COUNTING */\n")
+        __code(txt, name, info)
+
         if condition != "":
             txt.append("#endif /* %s */\n" % condition)
 
-    L = max(map(lambda info: len(info[0]), VariableDB.keys()))
-    txt = []
-    # Some variables need to be defined before others, use 'First' to indicate that
-    for name, info in sorted(VariableDB.items()):
-        if "First" not in info: continue
-        __code(txt, name, info)
+        del VariableDB[name]
 
-    for name, info in sorted(VariableDB.items()):
-        if "First" in info: continue
-        __code(txt, name, info)
+    grouped_variable_list = __group_by_condition(VariableDB)
+    unconditioned_name_set = set([])
+    for condition, groups in sorted(grouped_variable_list.iteritems()):
+        if condition != "": continue
+        condition_group, dummy = groups
+        for name, info in condition_group:
+            unconditioned_name_set.add(name)
+
+    for condition, groups in sorted(grouped_variable_list.iteritems()):
+
+        condition_group, negated_condition_group = groups
+        if condition != "":
+            if len(condition_group) != 0:
+                txt.append("#ifdef %s\n"  % condition)
+
+                for name, info in condition_group:
+                    if name in unconditioned_name_set: continue
+                    __code(txt, name, info)
+
+            if len(negated_condition_group) != 0:
+                if len(condition_group) != 0: txt.append("#else /* not %s */\n" % condition)
+                else:                         txt.append("#ifndef %s\n" % condition)
+
+                for name, info in negated_condition_group:
+                    if name in unconditioned_name_set: continue
+                    __code(txt, name, info)
+
+            txt.append("#endif /* %s */\n" % condition)
+        else:
+            for name, info in condition_group:
+                __code(txt, name, info)
             
     return "".join(txt)
          

@@ -8,9 +8,10 @@
 # (C) 2007 Frank-Rene Schaefer
 #
 ################################################################################
-import quex.core_engine.generator.state_machine_coder as state_machine_coder
+import quex.core_engine.generator.state_machine_coder     as state_machine_coder
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
-from   quex.frs_py.string_handling import blue_print
+from   quex.frs_py.string_handling                        import blue_print
+import quex.core_engine.generator.state_router            as state_router
 
 function_str = """
 #include <quex/code_base/temporary_macros_on>
@@ -32,11 +33,14 @@ def do(sm, LanguageDB, PrintStateMachineF):
                                                     BackwardLexingF=True, 
                                                     BackwardInputPositionDetectionF=True)
 
-    function_body, variable_db = state_machine_coder.do(decorated_state_machine)
+    function_body, variable_db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
 
     sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if PrintStateMachineF: 
         sm_str += LanguageDB["$ml-comment"](sm.get_string(NormalizeF=False)) + "\n"
+
+    if len(routed_state_info_list) != 0:
+        function_body += state_router.do(routed_state_info_list)
 
     # -- input position detectors simply the next 'catch' and return
     function_body += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"

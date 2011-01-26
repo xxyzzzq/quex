@@ -228,8 +228,8 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$GOTO_RELOAD$$", LanguageDB["$goto"]("$reload", skipper_index)]])
 
     if reference_p_f:
-        local_variable_db["reference_p"] = [ "QUEX_TYPE_CHARACTER_POSITION", 
-                                             "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"]
+        local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \
+                           [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None]
 
     return code_str, local_variable_db
 

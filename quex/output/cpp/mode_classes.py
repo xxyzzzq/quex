@@ -323,7 +323,7 @@ def get_on_indentation_handler(Mode):
         # Default: Blow the program if there is an indentation error.
         on_indentation_error = 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': indentation error detected!\\n"' \
                                % Mode.name + \
-                               '                "No \'on_indentation_error\' handler has been specified.");'
+                               '                "No \'on_indentation_error\' handler has been specified.\\n");'
     else:
         on_indentation_error, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_error"))
 

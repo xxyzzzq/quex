@@ -248,12 +248,12 @@ class TemplateTarget(transition_block.TriggerAction):
         LanguageDB = Setup.language_db
 
         if not self.recursive():
-            cmd = "$goto-template-target"
-            return LanguageDB[cmd](self.template_index, self.target_index)
+            label = "template_%i_target_%i[template_state_key]" % (self.template_index, self.target_index)
+            return LanguageDB["$goto-state"](label)
 
         elif not self.uniform_state_entries_f():
-            cmd = "$goto-template-state-key"
-            return LanguageDB[cmd](self.template_index) 
+            label = "template_%i_map_state_key_to_state_index[template_state_key]" % self.template_index
+            return LanguageDB["$goto-state"](label)
 
         else:
             return LanguageDB["$goto"]("$template", self.template_index)

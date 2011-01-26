@@ -79,15 +79,7 @@
     /* If no computed gotos are used, then there are two state routers, one for forward
      * state routing and another for backward state routing. Thus, two macros for the same
      * thing are required.                                                                 */
-#   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx, StateKey) \
-           goto *template_ ##TemplateIdx## _target_ ##TargetIdx## _cg[StateKey];
-#   define QUEX_TEMPLATE_GOTO_BACKWARD(TemplateIdx, TargetIdx, StateKey) \
-           QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx, StateKey) 
-
-#   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx, StateKey) \
-           goto *template_ ##TemplateIdx## _map_state_key_to_state_index## _cg[StateKey];
-#   define QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(TemplateIdx, StateKey) \
-           QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx, StateKey) 
+#   define QUEX_GOTO_STATE(LABEL) goto *LABEL;
 
 #else
     typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
@@ -98,18 +90,7 @@
 #   define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
 #   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
 
-#   define QUEX_TEMPLATE_GOTO(TemplateIdx, TargetIdx, StateKey) \
-           target_state_index = template_ ##TemplateIdx## _target_ ##TargetIdx[StateKey]; \
-           goto STATE_ROUTER;
-#   define QUEX_TEMPLATE_GOTO_STATE_KEY(TemplateIdx, StateKey) \
-           target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[StateKey]; \
-           goto STATE_ROUTER;
-#   define QUEX_TEMPLATE_GOTO_BACKWARD(TemplateIdx, TargetIdx, StateKey) \
-           target_state_index = template_ ##TemplateIdx## _target_ ##TargetIdx[StateKey]; \
-           goto STATE_ROUTER_BACKWARD;
-#   define QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(TemplateIdx, StateKey) \
-           target_state_index = template_ ##TemplateIdx## _map_state_key_to_state_index[StateKey]; \
-           goto STATE_ROUTER_BACKWARD;
+#   define QUEX_GOTO_STATE(LABEL) target_state_index = LABEL; goto STATE_ROUTER;
 
 #endif
 

@@ -9,6 +9,7 @@ def do(StateRouterInfoList):
 
     txt = [
             "#ifndef QUEX_OPTION_COMPUTED_GOTOS\n",
+            "__quex_assert(false);\n"
             "STATE_ROUTER:\n",
             "    switch( target_state_index ) {\n",
     ]
