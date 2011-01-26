@@ -183,7 +183,7 @@ db["C++"] = {
     "$input/add":           lambda Offset:      "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset,
     "$input/increment":     "++(me->buffer._input_p);",
     "$input/decrement":     "--(me->buffer._input_p);",
-    "$input/get":           "input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);",
+    "$input/get":           "input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);",
     "$input/get-offset":    lambda Offset:      "input = QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i);" % Offset,
     "$input/tell_position": lambda PositionStr: "%s = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" % PositionStr,
     "$input/seek_position": lambda PositionStr: "QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, %s);\n" % PositionStr,
@@ -195,14 +195,8 @@ db["C++"] = {
     "$goto-template":        lambda TemplateStateIdx, StateKey: 
                              "template_state_key = %i; " % StateKey + \
                              "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
-    "$goto-template-target":    lambda TemplateIdx, TargetIdx: 
-                                "QUEX_TEMPLATE_GOTO(%i, %i, template_state_key);" % (TemplateIdx, TargetIdx),
-    "$goto-template-target-bw": lambda TemplateIdx, TargetIdx: 
-                                "QUEX_TEMPLATE_GOTO_BACKWARD(%i, %i, template_state_key);" % (TemplateIdx, TargetIdx),
     "$goto-template-state-key":    lambda TemplateIdx: 
                                    "QUEX_TEMPLATE_GOTO_STATE_KEY(%i, template_state_key);" % TemplateIdx,
-    "$goto-template-state-key-bw": lambda TemplateIdx: 
-                                   "QUEX_TEMPLATE_GOTO_STATE_KEY_BACKWARD(%i, template_state_key);" % TemplateIdx,
     "$label":                lambda Type, Argument: label_db_get(Type, Argument, GotoTargetF=True),
     "$label-pure":           lambda Label:                "%s:" % Label,
     "$label-def":            lambda Type, Argument=None:  
@@ -230,6 +224,7 @@ db["C++"] = {
     "$token_template_i_file":   "/token/TXT-Cpp.i",
     "$analyzer_template_file":  "/analyzer/TXT-Cpp",
     "$file_extension":          ".cpp",
+    "$goto-state":              lambda Label: "QUEX_GOTO_STATE(%s);\n" % Label,
     }
 
 #________________________________________________________________________________

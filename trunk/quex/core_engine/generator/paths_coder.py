@@ -339,14 +339,14 @@ def __path_definition(variable_db, PathWalker, SMD):
         name     = "path_end_state" % path
         var_type = "QUEX_TYPE_GOTO_LABEL"
         value    = "QUEX_GOTO_STATE_LABEL_INIT_VALUE"
-        variable_db[name] = [ var_type, value, None, "ComputedGoto" ]
+        variable_db["QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value, None ]
 
     if not PathWalker.uniform_state_entries_f():
         name     = "path_walker_%i_state" % PathWalkerID
         var_type = "const QUEX_TYPE_GOTO_LABEL"
         value    = "{" + "".join(state_list) + "}"
         dim      = len(state_list)
-        variable_db[name] = [ var_type, value, dim, "ComputedGoto" ]
+        variable_db["QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value, dim ]
 
 def __state_entries(txt, PathWalker, SMD):
     """Defines the entries of the path's states, so that the state key

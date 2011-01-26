@@ -261,7 +261,7 @@ def get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
     if not Mode.has_code_fragment_list("on_indentation_bad"):
         txt += 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': bad indentation character detected!\\n"' \
                                 % Mode.name + \
-               '                "No \'on_indentation_bad\' handler has been specified.");'
+               '                "No \'on_indentation_bad\' handler has been specified.\\n");'
     else:
         code, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_bad"))
         txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"

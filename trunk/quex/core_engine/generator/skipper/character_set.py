@@ -127,8 +127,8 @@ def get_skipper(TriggerSet):
     ## code_str = blue_print(txt,
     ##                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
-    local_variable_db = { "reference_p" : 
-                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None, "CountColumns"] }
+    local_variable_db = { "QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p" : 
+                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
 
     return code_str, local_variable_db
 

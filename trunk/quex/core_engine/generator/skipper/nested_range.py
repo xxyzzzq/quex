@@ -159,8 +159,8 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
 
     local_variable_db = { 
         "counter":     [ "size_t", "0", None],
-        "reference_p": [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", 
-                         None, "CountColumns"], 
+        "QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p": 
+                       [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None], 
     }
     reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 

@@ -135,7 +135,8 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
         # Templated states, i.e. code fragments that implement more than one
         # state, need to return to dedicated state entries, if the state entries
         # are not uniform.
-        goto_state_input_str = LanguageDB["$goto-template-state-key"](StateIdx) 
+        my_label = "template_%i_map_state_key_to_state_index[template_state_key]" % StateIdx
+        goto_state_input_str = LanguageDB["$goto-state"](my_label) 
 
     elif State.__class__.__name__ == "PathWalkerState" and not State.uniform_state_entries_f():
         goto_state_input_str = StateRouterStr

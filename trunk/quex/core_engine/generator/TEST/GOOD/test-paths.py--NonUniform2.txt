@@ -1,16 +1,16 @@
 --(Path Definitions)----------------------------------------------------
 
-    const QUEX_TYPE_CHARACTER (path_walker_23_base[12]) = {
+    const QUEX_TYPE_CHARACTER      (path_walker_23_base[12]) = {
     111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'o''t''t''o' */
     102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'f''r''i''t''z' */
 
     };
-    const QUEX_TYPE_CHARACTER* path_1 = path_walker_23_base + 0;
-    const QUEX_TYPE_CHARACTER* path_17 = path_walker_23_base + 5;
+    const QUEX_TYPE_CHARACTER*     path_17 = path_walker_23_base + 5;
+    const QUEX_TYPE_CHARACTER*     path_iterator = (QUEX_TYPE_CHARACTER*)0x0;
+    const QUEX_TYPE_CHARACTER*     path_1 = path_walker_23_base + 0;
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
-    QUEX_TYPE_GOTO_LABEL path_end_state = QUEX_GOTO_STATE_LABEL_INIT_VALUE;
+    QUEX_TYPE_GOTO_LABEL           path_end_state = QUEX_GOTO_STATE_LABEL_INIT_VALUE;
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
-    const QUEX_TYPE_CHARACTER* path_iterator = (QUEX_TYPE_CHARACTER*)0x0;
 
 
 --(Pathwalker Code)-----------------------------------------------------
@@ -46,7 +46,7 @@ STATE_23_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(me, input);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
 
     if( input == *path_iterator ) {
         ++path_iterator;
