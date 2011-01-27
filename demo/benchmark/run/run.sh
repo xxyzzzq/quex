@@ -25,8 +25,8 @@ esac
 function make_this {
     echo $1 $2
     cd ..
-    make clean                >& /dev/null 
-    make run/$1 COMPILER_OPT='$2' >& /dev/null
+    make clean                  >& /dev/null 
+    make run/$1 COMPILER_OPT=$2 >& /dev/null
     cd run
 }
 
