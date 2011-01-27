@@ -5,6 +5,9 @@ extern char*  global_re2c_buffer_begin;
 extern char*  global_re2c_buffer_end;
 extern char*  global_re2c_buffer_iterator;
 
+#include "in/token-ids.h"
+#define  TKN_TERMINATION (0)
+
 #define QUEX_TYPE_TOKEN_ID  int
  QUEX_TYPE_TOKEN_ID re2c_scan(char** p);
 #define ANALYZER_ANALYZE(TokenID) \

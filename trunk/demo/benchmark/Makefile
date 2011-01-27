@@ -9,16 +9,16 @@ include info.mk
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \
+	  -DCC_OPTIMIZATION_FLAGS="$(COMPILER_OPT)" \
+      -DQUEX_SETTING_BUFFER_SIZE="$(BUFFER_SIZE)" \
       -DEMAIL='"$(AUTHOR_EMAIL)"' \
       -DCPU_NAME=$(CPU_NAME) \
       -DCPU_CODE="$(CPU_CODE)" \
 	  -DCPU_FREQ_MHZ=$(CPU_MHZ) \
-	  -DCC_OPTIMIZATION_FLAGS="$(COMPILER_OPT)" \
       -DCHARACTER_SIZE="((unsigned)(1))" \
 	  -DOS_NAME='"$(OS_NAME)"' \
 	  -DCC_NAME="$(COMPILER)" \
 	  -D'CC_VERSION=$(COMPILER_V)' \
-      -DQUEX_SETTING_BUFFER_SIZE="$(BUFFER_SIZE)" \
 	  -DNOTE="$(NOTE)"
 
 ifndef QUEX_PATH
