@@ -1,34 +1,57 @@
 stamp=`date +%Yy%mm%dd-%Hh%M`
-if [[ $1 != "HWUT-TEST" ]]; then
-    output="result-$stamp.dat"
-else
-    output="tmp.dat"
-    rm -f tmp.dat
-    cd ..
-    make clean >& /dev/null; 
-    make lexer OPTIMIZATION=' ' EXTRA_COMPILER_FLAG='-DQUEX_QUICK_BENCHMARK_VERSION' >& /dev/null
-    cd run
-    ../lexer-quex linux-2.6.22.17-kernel-dir.c > $output
-    make clean >& /dev/null; 
-    exit
-fi
+quick_f=false
 
-function test_this {
-    ./$1 code/many-tiny-tokens.c           >> $output
-    ./$1 code/single-large-token.c         >> $output
-    ./$1 code/linux-2.6.22.17-kernel-dir.c >> $output
+case $1 in 
+    HWUT-TEST) 
+        output="tmp.dat"
+        rm -f tmp.dat
+        cd ..
+        make clean >& /dev/null; 
+        make lexer OPTIMIZATION=' ' EXTRA_COMPILER_FLAG='-DQUEX_QUICK_BENCHMARK_VERSION' >& /dev/null
+        cd run
+        ../lexer-quex linux-2.6.22.17-kernel-dir.c > $output
+        make clean >& /dev/null; 
+        exit
+    ;;
+    quick)
+        quick_f=true
+        output="tmp.dat"
+    ;;
+    *)
+        output="result-$stamp.dat"
+    ;;
+esac
+
+function make_this {
+    echo $1 $2
+    cd ..
+    make clean                >& /dev/null 
+    make run/$1 COMPILER_OPT='$2' >& /dev/null
+    cd run
 }
 
-echo "" > $output
-cd ..
-make clean; make COMPILER_OPT='-O3' >& /dev/null
-cd run
-test_this lexer-quex-lc 
-test_this lexer-quex
+function test_this {
+    
+    make_this $1 $2
 
-cd ..
-make clean; make COMPILER_OPT='-Os' >& /dev/null
-cd run
-test_this lexer-quex-lc 
-test_this lexer-quex
+    if [[ $quick_f == "false" ]]; then
+        ./$1 code/many-tiny-tokens.c           >> $output
+        ./$1 code/single-large-token.c         >> $output
+        ./$1 code/linux-2.6.22.17-kernel-dir.c >> $output
+    else
+        ./$1 code/linux-2.6.22.17-kernel-dir.c | awk '/clock_cycles_per_token/ || /clock_cycles_per_character/'
+    fi
+}
+
+
+echo "" > $output
+if [[ $quick_f == "false" ]]; then
+    test_this lexer-quex-lc -O3
+fi
+test_this lexer-quex        -O3
+
+if [[ $quick_f == "false" ]]; then
+    test_this lexer-quex-lc -Os
+fi
+test_this lexer-quex        -Os
 

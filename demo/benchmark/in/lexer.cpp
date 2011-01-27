@@ -57,12 +57,12 @@ get_statistics(int* checksum, int* token_n, double* time_per_run_ms)
     /* The time_per_run_ms is only an estimate, not necessarily 
      * a propper measurement.                                     */
 {
-    int            token_id  = TKN_TERMINATION;
-    const clock_t  StartTime = clock();
-    clock_t        end_time  = (clock_t)-1;
+    QUEX_TYPE_TOKEN_ID  token_id  = TKN_TERMINATION;
+    const clock_t       StartTime = clock();
+    clock_t             end_time  = (clock_t)-1;
     /* Run at least 200 ms */
-    const clock_t  MinTime   = (clock_t)(StartTime + 0.2 * (double)CLOCKS_PER_SEC);
-    double         repetition_n = 0;
+    const clock_t       MinTime   = (clock_t)(StartTime + 0.2 * (double)CLOCKS_PER_SEC);
+    double              repetition_n = 0;
 
 
     int n = 0;

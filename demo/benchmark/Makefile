@@ -75,6 +75,12 @@ run/lexer-flex: out/flex_scan.c   $(SOURCES)
 run/lexer-re2c: out/re2c_scan.c   $(SOURCES) 
 	$(CC)    -DANALYZER_GENERATOR_RE2C $< $(SOURCES) in/re2c/adaption.c -o $@
 
+run/lexer-hey-quex: out/quex_hey_scan.cpp $(SOURCES) 
+	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -o $@ 
+
+run/lexer-hey-quex.E: out/quex_hey_scan.cpp $(SOURCES) 
+	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -o $@ -E
+
 run/lexer-quex: out/quex_scan.cpp $(SOURCES) 
 	$(CC)    -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -o $@ 
 
@@ -97,6 +103,17 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 		 --token-id-offset        3              \
 		 --token-prefix           TKN_           \
 	     --token-policy           single         
+
+out/quex_hey_scan.cpp: in/quex/hey.qx $(QUEX_CORE)
+	quex -i $< \
+	     --output-directory       out            \
+		 --engine                 quex_scan      \
+		 --no-string-accumulator                 \
+		 --token-id-offset        3              \
+		 --token-prefix           TKN_           \
+	     --token-policy           single         
+	mv out/quex_scan.cpp out/quex_hey_scan.cpp
+	# ./move_it.sh hey
 
 out/flex_scan.c:  in/flex/c.lex
 	flex -o $@ $< 
