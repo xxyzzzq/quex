@@ -247,7 +247,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
     txt += "    if( me->buffer._character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\\0' ) {\n"  
-    txt += "    *(me->buffer._input_p) = me->buffer._character_at_lexeme_start;\n"                  
+    txt += "        *(me->buffer._input_p) = me->buffer._character_at_lexeme_start;\n"                  
     txt += "        me->buffer._character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\\0';\n"
     txt += "    }\n"
     
