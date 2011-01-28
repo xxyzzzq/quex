@@ -3,19 +3,9 @@ from quex.input.setup import setup as Setup
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
 
-    # (*) Indentation counting, may be?
-    #
-    if   TargetInfo.__class__.__name__ == "IndentationCounter": 
-        return __indentation_count_action(TargetInfo, SMD)
-
-    # (*) Template Transition Targets, may be?
-    #
-    elif TargetInfo.__class__.__name__ == "TemplateTarget": 
-        return __template_transition_target(TargetInfo, SMD)
-
     # (*) Normal Transitions: goto + label
     #
-    elif TargetInfo == None:
+    if TargetInfo == None:
         return get_transition_to_drop_out(CurrentStateIdx, ReloadF=False)
 
     elif TargetInfo == -1:

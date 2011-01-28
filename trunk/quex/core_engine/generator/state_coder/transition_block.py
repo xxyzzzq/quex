@@ -6,30 +6,43 @@ from   quex.core_engine.interval_handling                import Interval
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 class TriggerAction:
-    def __init__(self, TargetStateIndex, SourceStateIndex, DSM):
-        self.__target_state_index = TargetStateIndex
-        self.__source_state_index = SourceStateIndex
-        self.__dsm                = DSM
+    def __init__(self, Code, DropOutF=False):
+        assert type(DropOutF) == bool
+
+        self.__code       = Code
+        self.__drop_out_f = DropOutF
 
     def get_code(self):
-        return transition.do(self.__target_state_index, 
-                             self.__source_state_index, 
-                             self.__dsm)
+        return self.__code
+
+    def is_drop_out(self):
+        return self.__drop_out_f
 
 def __interpret(TriggerMap, CurrentStateIdx, DSM):
     result = [None] * len(TriggerMap)
     for i, entry in enumerate(TriggerMap):
         interval = entry[0]
         target   = entry[1]
+
         if   target == None:
-            target = TriggerAction(target, CurrentStateIdx, DSM)
+            # Classical Drop-Out: no further state transition
+            target = TriggerAction(transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=False),
+                                   DropOutF=True)
+
         elif target == -1:
-            target = TriggerAction(target, CurrentStateIdx, DSM)
+            # Limit Character Detected: Reload
+            target = TriggerAction(transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=True),
+                                   DropOutF=True)
+
         elif type(target) in [int, long]:
-            target = TriggerAction(target, CurrentStateIdx, DSM)
+            # Classical State Transition: transit to state with given id
+            target = TriggerAction(transition.get_transition_to_state(target, DSM),
+                                   DropOutF=False)
+
         else:
             isinstance(target, TriggerAction)
             # No change necessary
+
         result[i] = (interval, target)
     return result
 
@@ -125,7 +138,7 @@ def __get_code(TriggerMap):
             # input < 0 is impossible, since unicode codepoints start at 0!
             if middle[0].begin == 0: code = [ __get_code(TriggerMap[MiddleTrigger_Idx:]) ]
             elif TriggerSetN == 2:   code = __bracket_two_intervals(TriggerMap) 
-            elif TriggerSetN == 3:   code = __bracket_three_intervals(TriggerMap)
+            # elif TriggerSetN == 3:   code = __bracket_three_intervals(TriggerMap)
             else:                    code = __bracket_normally(MiddleTrigger_Idx, TriggerMap)
             txt = ["    "] + code
         
@@ -232,27 +245,38 @@ def __bracket_two_intervals(TriggerMap):
     second = TriggerMap[1]
 
     # If the first interval causes a 'drop out' then make it the second.
-    ## If the second interval is a 'drop out' the 'goto drop out' can be spared,
-    ## since it lands there anyway.
-    ## if second[0] < 0: # target state index < 0 ==> drop out
-    ##    tmp = first; first = second; second = tmp
+    # If the second interval is a 'drop out' the 'goto drop out' can be spared,
+    # since it lands there anyway.
+    if first[1].is_drop_out():
+        first, second = second, first
 
-    # find interval of size '1'
-    first_interval  = first[0]
-    second_interval = second[0]
+    if second[1].is_drop_out():
+        if   first[0].size() == 1: txt0 = LanguageDB["$if =="](repr(first[0].begin))
+        else:                      txt0 = LanguageDB["$if <"](repr(second[0].begin))
 
-    # We only need one comparison at the border between the two intervals
-    if   first_interval.size() == 1:  txt0 = LanguageDB["$if =="](repr(first_interval.begin))
-    elif second_interval.size() == 1: txt0 = LanguageDB["$if !="](repr(second_interval.begin))
-    else:                             txt0 = LanguageDB["$if <"](repr(second_interval.begin))
+        return [
+                    txt0,
+                    __create_transition_code(first),
+                    LanguageDB["$endif"]
+               ]
+        
+    else:
+        # find interval of size '1'
+        first_interval  = first[0]
+        second_interval = second[0]
 
-    return [
-                txt0,
-                __create_transition_code(first),
-                LanguageDB["$endif-else"],
-                __create_transition_code(second),
-                LanguageDB["$end-else"]
-           ]
+        # We only need one comparison at the border between the two intervals
+        if   first_interval.size() == 1:  txt0 = LanguageDB["$if =="](repr(first_interval.begin))
+        elif second_interval.size() == 1: txt0 = LanguageDB["$if !="](repr(second_interval.begin))
+        else:                             txt0 = LanguageDB["$if <"](repr(second_interval.begin))
+
+        return [
+                    txt0,
+                    __create_transition_code(first),
+                    LanguageDB["$endif-else"],
+                    __create_transition_code(second),
+                    LanguageDB["$end-else"]
+               ]
 
 def __bracket_three_intervals(TriggerMap):
     assert len(TriggerMap) == 3
