@@ -55,6 +55,8 @@ class IndentationCounter(transition_block.TriggerAction):
         else:
             assert False, "Unreachable code has been reached."
     
+    def is_drop_out(self):
+        return False
 
 class IndentationBadCharacter:
     def __init__(self, StateIndex):

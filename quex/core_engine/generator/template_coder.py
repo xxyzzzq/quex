@@ -258,6 +258,9 @@ class TemplateTarget(transition_block.TriggerAction):
         else:
             return LanguageDB["$goto"]("$template", self.template_index)
 
+    def is_drop_out(self):
+        return False
+
 class TransitionMapMimiker:
     """Class that mimiks the TransitionMap of module
 
