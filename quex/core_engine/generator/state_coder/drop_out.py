@@ -6,30 +6,23 @@ from   quex.frs_py.string_handling import blue_print
 
 LanguageDB = None
 
-OLD_init_drop_out_template = """
-$$LABEL$$
-    if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-$$LABEL_DIRECT$$
-        $$GOTO_FAILURE$$
-    } else if( $$LOAD_IMPOSSIBLE$$ ) {
-        $$GOTO_END_OF_STREAM$$
-    }
-    $$RELOAD_BUFFER$$
-    $$GOTO_INPUT$$
-"""
-
 normal_drop_out_template = """
+$$LABEL_DIRECT$$
+        $$GOTO_TERMINAL$$
+
 $$LABEL$$
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ($$LOAD_IMPOSSIBLE$$) ) {
         $$RELOAD_BUFFER$$
         $$GOTO_INPUT$$
     }
-$$LABEL_DIRECT$$
-        $$GOTO_TERMINAL$$
+    $$GOTO_TERMINAL$$
 """
 
 init_drop_out_template = """
+$$LABEL_DIRECT$$
+    $$GOTO_FAILURE$$
+
 $$LABEL$$
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( $$LOAD_IMPOSSIBLE$$ ) {
@@ -37,9 +30,6 @@ $$LABEL$$
     }
     $$RELOAD_BUFFER$$
     $$GOTO_INPUT$$
-
-$$LABEL_DIRECT$$
-    $$GOTO_FAILURE$$
 """
 
 def do(State, StateIdx, SMD, StateRouterStr=None):

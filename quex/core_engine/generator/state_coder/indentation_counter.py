@@ -10,9 +10,10 @@ from   math import log
 import sys
 
 class IndentationCounter(transition_block.TriggerAction):
-    def __init__(self, Type, Number):
-        self.type   = Type
-        self.number = Number
+    def __init__(self, Type, Number, StateIndex):
+        self.type        = Type
+        self.number      = Number
+        self.state_index = StateIndex
 
     def __eq__(self, Other):
         if Other.__class__ != IndentationCounter: return False
@@ -23,12 +24,14 @@ class IndentationCounter(transition_block.TriggerAction):
 
     def get_code(self):
         """Indentation counters may count as a consequence of a 'triggering'."""
+        LanguageDB = Setup.language_db
 
         # Spaces simply increment
         if self.type == "space": 
             if self.number != -1: add_str = "%i" % self.number
             else:                 add_str = "me->" + self.variable_name
-            return "me->counter._indentation += %s;" % add_str
+            return "me->counter._indentation += %s;" % add_str + \
+                   LanguageDB["$goto"]("$entry", self.state_index)
         
         # Grids lie on a grid:
         elif self.type == "grid":
@@ -39,18 +42,20 @@ class IndentationCounter(transition_block.TriggerAction):
                     # Thus: x = x - x % k + k = x & mask + k
                     mask = (1 << int(log2)) - 1
                     return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
-                           "me->counter._indentation += %i;\n" % self.number
+                           "me->counter._indentation += %i;\n" % self.number + \
+                           LanguageDB["$goto"]("$entry", self.state_index)
                 else:
                     add_str = "%i" % self.number
             else:   
                 add_str = "me->" + self.variable_name
 
             return "me->counter._indentation = (me->counter._indentation - (me->counter._indentation %% %s)) + %s;" \
-                   % (add_str, add_str)
+                   % (add_str, add_str) + \
+                   LanguageDB["$goto"]("$entry", self.state_index)
 
         elif self.type == "bad":
-            assert self.number != -1
-            return "goto INDENTATION_COUNTER_%i_BAD_CHARACTER;\n" % self.number
+            assert self.state_index != -1
+            return "goto INDENTATION_COUNTER_%i_BAD_CHARACTER;\n" % self.state_index
 
         else:
             assert False, "Unreachable code has been reached."
@@ -80,6 +85,11 @@ $$INIT_REFERENCE_POINTER$$
 $$LOOP_START$$
     $$INPUT_GET$$ 
 $$ON_TRIGGER_SET_TO_LOOP_START$$
+$$DROP_OUT_DIRECT$$
+    /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
+$$END_PROCEDURE$$                           
+    $$GOTO_START$$                           
+
 $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$GOTO_LOOP_START$$
@@ -106,10 +116,6 @@ $$RELOAD$$
         } 
     }
 
-$$DROP_OUT_DIRECT$$
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
-$$END_PROCEDURE$$                           
-    $$GOTO_START$$                           
 $$BAD_CHARACTER_HANDLING$$
 }
 """
@@ -154,12 +160,12 @@ def do(Data):
         # Add the space counters
         for count, character_set in IndentationSetup.space_db.items():
             for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
-                trigger_map.append([interval, IndentationCounter("space", count)])
+                trigger_map.append([interval, IndentationCounter("space", count, counter_index)])
 
         # Add the grid counters
         for count, character_set in IndentationSetup.grid_db.items():
             for interval in character_set.get().get_intervals(PromiseToTreatWellF=True):
-                trigger_map.append([interval, IndentationCounter("grid", count)])
+                trigger_map.append([interval, IndentationCounter("grid", count, counter_index)])
 
         # Reference Pointer: Not required.
         #                    No subtraction 'current_position - reference_p'.
@@ -169,7 +175,7 @@ def do(Data):
     # Bad character detection
     if IndentationSetup.bad_character_set.get().is_empty() == False:
         for interval in IndentationSetup.bad_character_set.get().get_intervals(PromiseToTreatWellF=True):
-            trigger_map.append([interval, IndentationCounter("bad", counter_index)])
+            trigger_map.append([interval, IndentationCounter("bad", None, counter_index)])
 
     # Since we do not use a 'TransitionMap', there are some things we need 
     # to do by hand.

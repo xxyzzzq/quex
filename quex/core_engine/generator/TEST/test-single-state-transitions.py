@@ -96,10 +96,10 @@ function += "".join(transition_block.do(state.transitions().get_trigger_map(),
                                         None, dsm))
 function  = function.replace("_-1_", "_MINUS_1_")
 
-# line_n = 0
-# for line in function.split("\n"):
-#     print "##%i" % line_n, line
-#     line_n += 1
+line_n = 0
+for line in function.split("\n"):
+    print "##%i" % line_n, line
+    line_n += 1
 states = []
 for state_index in target_state_index_list:
     states.append("STATE_%i = %iL\n" % (state_index, state_index))
