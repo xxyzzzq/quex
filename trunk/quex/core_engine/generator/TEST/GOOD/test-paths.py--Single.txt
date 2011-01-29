@@ -36,31 +36,28 @@ STATE_7_INPUT:
         if( input < 10) {
             if( input == 0 ) {
                 goto STATE_7_RELOAD;    /* \0 */
-            } else {
-                goto STATE_7_DROP_OUT_DIRECT;    /* [\1, '\t'] */
             }
         } else {
             if( input == 10 ) {
                 goto STATE_1;    /* '\n' */
-            } else {
-                goto STATE_7_DROP_OUT_DIRECT;    /* ['\v', \19] */
             }
         }
     } else {
         if( input < 64) {
             if( input == 20 ) {
                 goto STATE_2;    /* \20 */
-            } else {
-                goto STATE_7_DROP_OUT_DIRECT;    /* [\21, '?'] */
             }
         } else {
             if( input == 64 ) {
                 goto STATE_1;    /* '@' */
-            } else {
-                goto STATE_7_DROP_OUT_DIRECT;    /* ['A', oo] */
             }
         }
     }
+
+STATE_7_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
 
 
 STATE_7_RELOAD:
@@ -72,10 +69,7 @@ STATE_7_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_7_INPUT;
     }
-STATE_7_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT_DIRECT");
-
-        QUEX_GOTO_last_acceptance();
+    QUEX_GOTO_last_acceptance();
 
 
 

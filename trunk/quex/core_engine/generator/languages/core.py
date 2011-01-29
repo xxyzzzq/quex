@@ -54,6 +54,13 @@ def label_db_marker_init():
     ## __label_printed_list_unique["__TERMINAL_ROUTER"] = True
     __label_used_list_unique.clear()
 
+def label_db_register_usage(Label):
+    __label_used_list_unique.add(Label)
+    return Label
+
+def label_db_unregister_usage(Label):
+    __label_used_list_unique.remove(Label)
+
 def label_db_get(Type, Index, GotoTargetF=False):
     global __label_printed_list_unique
     global __label_used_list_unique
@@ -78,17 +85,15 @@ def label_db_marker_get_unused_label_list():
     nothing_label_set       = []
     computed_goto_label_set = []
 
-    # print "##0", __label_used_list_unique.keys()
-    # print "##1", __label_printed_list_unique
     printed       = __label_printed_list_unique
     used          = __label_used_list_unique
     computed_goto = __label_used_in_computed_goto_list_unique
     for label in printed:
-        if label not in used:
-            if label in computed_goto:
-                computed_goto_label_set.append(label)
-            else:
-                nothing_label_set.append(label)
+        if label in used: continue
+        if label in computed_goto:
+            computed_goto_label_set.append(label)
+        else:
+            nothing_label_set.append(label)
     return nothing_label_set, computed_goto_label_set
 
 
@@ -191,7 +196,7 @@ db["C++"] = {
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$goto":                 lambda Type, Argument=None:  "goto %s;" % label_db_get(Type, Argument, GotoTargetF=True),
-    "$goto-pure":            lambda Argument:             "goto %s;" % Argument,
+    "$goto-pure":            lambda Argument:             "goto %s;" % label_db_register_usage(Argument),
     "$goto-template":        lambda TemplateStateIdx, StateKey: 
                              "template_state_key = %i; " % StateKey + \
                              "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
@@ -200,7 +205,7 @@ db["C++"] = {
     "$label":                lambda Type, Argument: label_db_get(Type, Argument, GotoTargetF=True),
     "$label-pure":           lambda Label:                "%s:" % Label,
     "$label-def":            lambda Type, Argument=None:  
-                                "%s:\n"                             % label_db_get(Type, Argument) + \
+                                "%s:\n"                         % label_db_get(Type, Argument) + \
                                 __string_if_true("    ", Type == "$drop-out-direct") + \
                                 "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
     "$analyzer-func":        cpp.__analyzer_function,
@@ -224,7 +229,7 @@ db["C++"] = {
     "$token_template_i_file":   "/token/TXT-Cpp.i",
     "$analyzer_template_file":  "/analyzer/TXT-Cpp",
     "$file_extension":          ".cpp",
-    "$goto-state":              lambda Label: "QUEX_GOTO_STATE(%s);\n" % Label,
+    "$goto-state":              lambda Label: "QUEX_GOTO_STATE(%s);" % Label,
     }
 
 #________________________________________________________________________________

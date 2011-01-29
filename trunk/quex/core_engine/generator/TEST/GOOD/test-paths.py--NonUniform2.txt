@@ -65,9 +65,12 @@ STATE_23_INPUT:
     }
     if( input == 0 ) {
         goto STATE_23_RELOAD;    /* \0 */
-    } else {
-        goto STATE_23_DROP_OUT_DIRECT;    /* [\1, oo] */
     }
+
+STATE_23_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
 
 
 STATE_23_RELOAD:
@@ -79,10 +82,7 @@ STATE_23_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_23_INPUT;
     }
-STATE_23_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
-
-        QUEX_GOTO_last_acceptance();
+    QUEX_GOTO_last_acceptance();
 
 
 

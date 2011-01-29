@@ -285,36 +285,32 @@ PATH_WALKER_23_STATE_ROUTER:
     } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
     goto PATH_WALKER_23_STATE_ROUTER;
     }
-
     if( input < 20) {
         if( input < 10) {
             if( input == 0 ) {
                 goto STATE_23_RELOAD;    /* \0 */
-            } else {
-                goto STATE_23_DROP_OUT_DIRECT;    /* [\1, '\t'] */
             }
         } else {
             if( input == 10 ) {
                 goto STATE_1;    /* '\n' */
-            } else {
-                goto STATE_23_DROP_OUT_DIRECT;    /* ['\v', \19] */
             }
         }
     } else {
         if( input < 64) {
             if( input == 20 ) {
                 goto STATE_2;    /* \20 */
-            } else {
-                goto STATE_23_DROP_OUT_DIRECT;    /* [\21, '?'] */
             }
         } else {
             if( input == 64 ) {
                 goto STATE_1;    /* '@' */
-            } else {
-                goto STATE_23_DROP_OUT_DIRECT;    /* ['A', oo] */
             }
         }
     }
+
+STATE_23_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
 
 
 STATE_23_RELOAD:
@@ -326,10 +322,7 @@ STATE_23_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
             goto PATH_WALKER_23_STATE_ROUTER;
     }
-STATE_23_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
-
-        QUEX_GOTO_last_acceptance();
+    QUEX_GOTO_last_acceptance();
 
 
 

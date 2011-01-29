@@ -2,6 +2,7 @@ import sys
 import quex.core_engine.generator.state_coder.transition as transition
 from   quex.input.setup                                  import setup as Setup
 from   quex.core_engine.interval_handling                import Interval
+from   quex.core_engine.generator.languages.core         import label_db_unregister_usage
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
@@ -31,8 +32,9 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM):
 
         elif target == -1:
             # Limit Character Detected: Reload
+            # NOTE: Reload != Drop Out!
             target = TriggerAction(transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=True),
-                                   DropOutF=True)
+                                   DropOutF=False)
 
         elif type(target) in [int, long]:
             # Classical State Transition: transit to state with given id
@@ -77,12 +79,12 @@ def do(TriggerMap, StateIdx, DSM):
     if len(TriggerMap) > 1:
         # Check whether some things might be pre-checked before the big trigger map
         # starts working. This includes likelyhood and 'assembler-switch' implementations.
-        priorized_code = "" # __get_priorized_code(TriggerMap, info)
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
-        block_code     = __get_code(TriggerMap)
-        return [priorized_code, "\n", 
-                block_code, "\n"]
+        code = __get_code(TriggerMap)
+        # No transition to 'drop-out' shall actually occur in the map
+        label_db_unregister_usage(transition.get_label_of_drop_out(StateIdx, ReloadF=False))
+        return [ code ]
 
     else:
         # We can actually be sure, that the Buffer Limit Code is filtered
@@ -133,13 +135,15 @@ def __get_code(TriggerMap):
         else:
             # two or more intervals => cut in the middle
             MiddleTrigger_Idx = int(TriggerSetN / 2)
-            middle = TriggerMap[MiddleTrigger_Idx]
+            middle            = TriggerMap[MiddleTrigger_Idx]
 
             # input < 0 is impossible, since unicode codepoints start at 0!
-            if middle[0].begin == 0: code = [ __get_code(TriggerMap[MiddleTrigger_Idx:]) ]
-            elif TriggerSetN == 2:   code = __bracket_two_intervals(TriggerMap) 
-            # elif TriggerSetN == 3:   code = __bracket_three_intervals(TriggerMap)
-            else:                    code = __bracket_normally(MiddleTrigger_Idx, TriggerMap)
+            if middle[0].begin == 0: 
+                code = [ __get_code(TriggerMap[MiddleTrigger_Idx:]) ]
+            else: 
+                code = __get_switch(TriggerMap)
+                if code == None:
+                    code = __get_bisection(MiddleTrigger_Idx, TriggerMap)
             txt = ["    "] + code
         
 
@@ -150,11 +154,71 @@ def __get_code(TriggerMap):
     result = result.replace("\n", "\n    ") + "\n"
     return result 
 
+def __get_bisection(MiddleTrigger_Idx, TriggerMap):
+    LanguageDB = Setup.language_db
+
+    middle = TriggerMap[MiddleTrigger_Idx]
+    lower  = TriggerMap[:MiddleTrigger_Idx]
+    higher = TriggerMap[MiddleTrigger_Idx:]
+
+    assert middle[0].begin >= 0, \
+           "code generation: error cannot split intervals at negative code points."
+
+    # Note, that an '<' does involve a subtraction. A '==' only a comparison.
+    # The latter is safe to be faster (or at least equally fast) on any machine.
+    if len(higher) == 1 and higher[0][1].is_drop_out():
+        
+        # If the size of one interval is 1, then replace the '<' by an '=='.
+        if   len(lower)  == 1 and lower[0][0].size() == 1:
+            comparison = LanguageDB["$if =="](repr(lower[0][0].begin))
+        elif higher[0][0].size() == 1:
+            comparison = LanguageDB["$if !="](repr(higher[0][0].begin))
+        else:
+            comparison = LanguageDB["$if <"](repr(higher[0][0].begin))
+
+        # No 'else' case for what comes BEHIND middle
+        if_block_txt   = __get_code(lower)
+        else_block_txt = ""
+
+    elif len(lower) == 1 and lower[0][1].is_drop_out():
+        if   lower[0][0].size() == 1:
+            comparison = LanguageDB["$if !="](repr(lower[0][0].begin))
+        elif len(higher) == 1 and higher[0][0].size() == 1:
+            comparison = LanguageDB["$if =="](repr(higher[0][0].begin))
+        else:
+            comparison = LanguageDB["$if >="](repr(lower[0][0].end))
+
+        # No 'else' case for what comes BEFORE middle
+        if_block_txt   = __get_code(higher)
+        else_block_txt = ""
+
+    else:
+        # If the size of one interval is 1, then replace the '<' by an '=='.
+        if   len(lower)  == 1 and lower[0][0].size() == 1:
+            comparison = LanguageDB["$if =="](repr(lower[0][0].begin))
+        elif len(higher) == 1 and higher[0][0].size() == 1:
+            comparison = LanguageDB["$if !="](repr(higher[0][0].begin))
+        else:
+            comparison = LanguageDB["$if <"](repr(middle[0].begin))
+
+        if_block_txt   = __get_code(lower)
+        else_block_txt =   LanguageDB["$endif-else"] \
+                         + __get_code(higher)
+
+    return [ 
+                comparison,
+                if_block_txt,
+                else_block_txt, 
+                LanguageDB["$endif"]
+           ]
+
 def __create_transition_code(TriggerMapEntry):
     """Creates the transition code to a given target based on the information in
        the trigger map entry.
     """
     LanguageDB = Setup.language_db
+    comment_function = LanguageDB["$comment"]
+    comment          = lambda interval: comment_function(interval.get_utf8_string())
 
     interval           = TriggerMapEntry[0]
     target_state_index = TriggerMapEntry[1]       
@@ -167,185 +231,75 @@ def __create_transition_code(TriggerMapEntry):
     #  respective language module.
     #
     txt =  "    " + target_state_index.get_code() 
+    assert interval != None
     if interval != None:
         # if Setup.buffer_codec != "":
-        txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
+        txt += "    " + comment(interval) + "\n"
     else:
         txt += "\n"
 
     txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
     return txt
 
-def __try_very_simplest_case(TriggerMap):
-    """Assume the following setup:
-
-           if( input == Char1 ) goto X;
-           if( input == Char2 ) goto X;
-               ...
-           if( input == CharN ) goto X;
-
-       If the input is equally distributed over the characters 1 to N then the
-       average number of comparisons for N = 3 will be 2,333. For N = 4, the 
-       average number of comparisons will be 2,75. Binary bracketing requires
-       ld(N), so for N = 4 the number of comparisons is 2. Thus until N = 3
-       it is advantageous to compare step by step. Also, for N = 1 a simple 
-       comparison is, most likely, more efficient that an 'or' operation over
-       a list of length '1'. 
-       
-       This function is trying to identify the case where there are only two or
-       three characters that trigger to the same target state. 
-       
-       RETURNS:  'None' if the very simple implementation does not make sense.
-                 A string if it could be implemented that way
-    """
+def __get_switch(TriggerMap):
     LanguageDB = Setup.language_db
 
-    character_list            = []
-    common_target_state_index = None # Something Impossible for a state
-    for trigger in TriggerMap:
-        interval           = trigger[0]
-        target_state_index = trigger[1]
+    non_drop_out_range_n   = 0
+    character_n            = 0
+    #white_space_target     = None
+    for interval, target in TriggerMap:
+        if target.is_drop_out(): continue
+        non_drop_out_range_n += 1
+        character_n          += interval.size()
+    #    if interval.contains(ord(' ')):
+    #        white_space_target = target
 
-        if target_state_index == None: continue
+    if non_drop_out_range_n == 0: 
+        return None
 
-        # All must have the same target state
-        if common_target_state_index == None:
-            common_target_state_index = target_state_index
-        # Make sure, you call the target_state_index's comparison operator.
-        # (The index might actually be a real object, e.g. an IndentationCounter)
-        elif target_state_index != common_target_state_index: 
-            return None
+    if character_n == 1:
+        return None
 
-        # Because of memory reasons, it is not wise to try to extend sys.maxint number
-        # of characters. Since, we do not allow for more than three characters, let's
-        # do a little sanity pre-check:
-        if interval.size() > 3: return None
-        character_list.extend(range(interval.begin, interval.end))
+    case_density = character_n / non_drop_out_range_n 
+    if case_density > 10: 
+        return None
 
-        # More than three characters does not make sense
-        if len(character_list) > 3: return None
+    result = []
+    #if white_space_target != None:
+    #    result.append(LanguageDB["$if =="]("0x32"))
+    #    result.append(white_space_target.get_code())
+    #    result.append(LanguageDB["$endif"])
 
-    if len(character_list) < 2: return None
-    assert common_target_state_index != -1
+    result.append(LanguageDB["$switch"]("input"))
+    for interval, target in TriggerMap:
+        if target.is_drop_out(): continue
+        for i in range(interval.begin, interval.end):
+            result.append(LanguageDB["$case"]("0x%X" % i))
+            if i != interval.end - 1: result.append("\n")
+        result.append(target.get_code() + "\n")
+    result.append(LanguageDB["$switchend"])
+    result.append("\n")
 
-    return "".join([
-                    LanguageDB["$if in-set"](character_list),
-                    # TriggerInfo = [None, TargetStateIndex] because the interval does not matter.
-                    __create_transition_code([None, common_target_state_index]),
-                    LanguageDB["$endif-else"],
-                    __create_transition_code([None, None]),
-                    LanguageDB["$end-else"]
-                   ])
+    return result
 
-def __bracket_two_intervals(TriggerMap):
-    assert len(TriggerMap) == 2
-    LanguageDB = Setup.language_db
-
-    first  = TriggerMap[0]
-    second = TriggerMap[1]
-
-    # If the first interval causes a 'drop out' then make it the second.
-    # If the second interval is a 'drop out' the 'goto drop out' can be spared,
-    # since it lands there anyway.
-    if first[1].is_drop_out():
-        first, second = second, first
-
-    if second[1].is_drop_out():
-        if   first[0].size() == 1: txt0 = LanguageDB["$if =="](repr(first[0].begin))
-        else:                      txt0 = LanguageDB["$if <"](repr(second[0].begin))
-
-        return [
-                    txt0,
-                    __create_transition_code(first),
-                    LanguageDB["$endif"]
-               ]
-        
-    else:
-        # find interval of size '1'
-        first_interval  = first[0]
-        second_interval = second[0]
-
-        # We only need one comparison at the border between the two intervals
-        if   first_interval.size() == 1:  txt0 = LanguageDB["$if =="](repr(first_interval.begin))
-        elif second_interval.size() == 1: txt0 = LanguageDB["$if !="](repr(second_interval.begin))
-        else:                             txt0 = LanguageDB["$if <"](repr(second_interval.begin))
-
-        return [
-                    txt0,
-                    __create_transition_code(first),
-                    LanguageDB["$endif-else"],
-                    __create_transition_code(second),
-                    LanguageDB["$end-else"]
-               ]
-
-def __bracket_three_intervals(TriggerMap):
-    assert len(TriggerMap) == 3
-    LanguageDB = Setup.language_db
-
-    # does one interval have the size '1'?
-    size_one_map = [False, False, False]   # size_on_map[i] == True if interval 'i' has size '1'
-    for i in range(len(TriggerMap)):
-        interval = TriggerMap[i][0]
-        if interval.size() == 1: size_one_map[i] = True
-
-    target_state_0 = TriggerMap[0][1]
-    target_state_2 = TriggerMap[2][1]
-    if target_state_0 == target_state_2:
-        if TriggerMap[1][0].size() == 1:
-            # (1) Special Trick I only holds for one single case:
-            #     -- the interval in the middle has size 1
-            #     -- the outer two intervals trigger to the same target state
-            #     if inner character is matched: goto its target
-            #     else:                          goto alternative target
-            txt0  = LanguageDB["$if =="](repr(TriggerMap[1][0].begin))
-        else:
-            # (2) Special Trick II only holds for:
-            #     -- the outer two intervals trigger to the same target state
-            #     if character in inner interval: goto its target
-            #     else:                           goto alternative target
-            txt0  = LanguageDB["$if in-interval"](TriggerMap[1][0])
-
-        return [
-                    txt0,
-                    __create_transition_code(TriggerMap[1]),
-                    LanguageDB["$endif-else"],
-                    # TODO: Add somehow a mechanism to report that here the 
-                    #       intervals 0 **and** 1 are triggered
-                    #       (only for the comments in the generated code)
-                    __create_transition_code(TriggerMap[0]),
-                    LanguageDB["$end-else"]
-               ]
-
-    # (*) Non special case --> bracket normally
-    return __bracket_normally(1, TriggerMap)
-
-def __bracket_normally(MiddleTrigger_Idx, TriggerMap):
-    LanguageDB = Setup.language_db
-
-    middle = TriggerMap[MiddleTrigger_Idx]
-    lower  = TriggerMap[:MiddleTrigger_Idx]
-    higher = TriggerMap[MiddleTrigger_Idx:]
-
-    assert middle[0].begin >= 0, \
-           "code generation: error cannot split intervals at negative code points."
-
-    # If the size of one interval is 1, then replace the '<' by an '=='.
-    # Note, that an '<' does involve a subtraction. A '==' only a comparison.
-    # The latter is safe to be faster (or at least equally fast) on any machine.
-    if   len(lower)  == 1 and lower[0][0].size() == 1:
-        comparison = LanguageDB["$if =="](repr(lower[0][0].begin))
-    elif len(higher) == 1 and higher[0][0].size() == 1:
-        comparison = LanguageDB["$if !="](repr(higher[0][0].begin))
-    else:
-        comparison = LanguageDB["$if <"](repr(middle[0].begin))
-
-    return [ 
-                comparison,
-                __get_code(lower),
-                LanguageDB["$endif-else"],
-                __get_code(higher),
-                LanguageDB["$end-else"]
-           ]
+    #    occurence_db = {}
+    #    for interval, target in TriggerMap:
+    #        target_code = target.get_code()
+    #        if not occurence_db.has_key(target_code): occurence_db[target_code] = 0
+    #        occurence_db[target_code] += 1
+    #
+    #    best_target_code, occurence_n = max(occurence_db.iteritems(), key=itemgetter(1))
+    #
+    #    # If the remaining intervals are either 'small' then a 'switch' catcher can be implemented
+    #    # 
+    #    # (1) max. size of an interval --> if too big, do not implement a switch
+    #    max_interval_size = max(TriggerMap, key=lambda x: x[0].size)
+    #    #
+    #    # (2) compute total amount of switch cases
+    #    sum_switch_case_n = 0
+    #    for interval, target in TriggerMap:
+    #        if target.get_code() == best_target_code: continue
+    #        sum_switch_case_n += interval.size()
 
 def __separate_buffer_limit_code_transition(TriggerMap):
     """This function ensures, that the buffer limit code is separated 

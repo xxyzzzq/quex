@@ -61,14 +61,16 @@ STATE_1_INPUT:
 
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
-
     if( input < 10) {
-        QUEX_GOTO_STATE(template_1_target_0[template_state_key]);
-            /* [-oo, '\t'] */
+        QUEX_GOTO_STATE(template_1_target_0[template_state_key]);    /* [-oo, '\t'] */
     } else {
-        QUEX_GOTO_STATE(template_1_target_1[template_state_key]);
-            /* ['\n', oo] */
+        QUEX_GOTO_STATE(template_1_target_1[template_state_key]);    /* ['\n', oo] */
     }
+
+STATE_1_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
 
 
 STATE_1_RELOAD:
@@ -80,10 +82,7 @@ STATE_1_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_1_INPUT;
     }
-STATE_1_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
-
-        QUEX_GOTO_last_acceptance();
+    QUEX_GOTO_last_acceptance();
 
 
 

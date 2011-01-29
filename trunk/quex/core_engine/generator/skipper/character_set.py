@@ -1,5 +1,6 @@
 import quex.core_engine.state_machine.index                    as     sm_index
 import quex.core_engine.generator.state_coder.transition_block as     transition_block
+import quex.core_engine.generator.state_coder.transition       as     transition
 from   quex.core_engine.generator.skipper.common               import *
 from   quex.core_engine.state_machine.transition_map           import TransitionMap 
 from   quex.input.setup                                        import setup as Setup
@@ -39,6 +40,16 @@ $$LOOP_START$$
     $$INPUT_GET$$ 
 $$LC_COUNT_IN_LOOP$$
 $$ON_TRIGGER_SET_TO_LOOP_START$$
+
+$$DROP_OUT_DIRECT$$
+$$LC_COUNT_END_PROCEDURE$$
+    /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
+     * The character we just swallowed must be re-considered by the main state machine.
+     * But, note that the initial state does not increment '_input_p'!
+     */
+    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
+    $$GOTO_START$$                           
+
 $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$GOTO_LOOP_START$$
@@ -65,15 +76,6 @@ $$LC_COUNT_AFTER_RELOAD$$
             $$GOTO_LOOP_START$$
         } 
     }
-
-$$DROP_OUT_DIRECT$$
-$$LC_COUNT_END_PROCEDURE$$
-    /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
-     * The character we just swallowed must be re-considered by the main state machine.
-     * But, note that the initial state does not increment '_input_p'!
-     */
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-    $$GOTO_START$$                           
 }
 """
 def get_skipper(TriggerSet):
@@ -92,6 +94,7 @@ def get_skipper(TriggerSet):
     transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
     transition_map.add_transition(TriggerSet, skipper_index)
     iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), skipper_index, DSM=None))
+    iteration_code += transition.get_transition_to_drop_out(skipper_index, ReloadF=False)
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 

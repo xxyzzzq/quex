@@ -56,6 +56,7 @@ def get_label_of_state(TargetStateIdx, SMD):
         return LanguageDB["$label"]("$entry", TargetStateIdx)
 
 def get_label_of_drop_out(CurrentStateIdx, ReloadF=False):
+    assert type(ReloadF) == bool
     LanguageDB = Setup.language_db
 
     if not ReloadF: 
