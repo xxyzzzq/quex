@@ -170,11 +170,11 @@ def __get_bisection(MiddleTrigger_Idx, TriggerMap):
         
         # If the size of one interval is 1, then replace the '<' by an '=='.
         if   len(lower)  == 1 and lower[0][0].size() == 1:
-            comparison = LanguageDB["$if =="](repr(lower[0][0].begin))
+            comparison = LanguageDB["$if =="]("0x%X" % lower[0][0].begin)
         elif higher[0][0].size() == 1:
-            comparison = LanguageDB["$if !="](repr(higher[0][0].begin))
+            comparison = LanguageDB["$if !="]("0x%X" % higher[0][0].begin)
         else:
-            comparison = LanguageDB["$if <"](repr(higher[0][0].begin))
+            comparison = LanguageDB["$if <"]("0x%X" % higher[0][0].begin)
 
         # No 'else' case for what comes BEHIND middle
         if_block_txt   = __get_code(lower)
@@ -182,11 +182,11 @@ def __get_bisection(MiddleTrigger_Idx, TriggerMap):
 
     elif len(lower) == 1 and lower[0][1].is_drop_out():
         if   lower[0][0].size() == 1:
-            comparison = LanguageDB["$if !="](repr(lower[0][0].begin))
+            comparison = LanguageDB["$if !="]("0x%X" % lower[0][0].begin)
         elif len(higher) == 1 and higher[0][0].size() == 1:
-            comparison = LanguageDB["$if =="](repr(higher[0][0].begin))
+            comparison = LanguageDB["$if =="]("0x%X" % higher[0][0].begin)
         else:
-            comparison = LanguageDB["$if >="](repr(lower[0][0].end))
+            comparison = LanguageDB["$if >="]("0x%X" % lower[0][0].end)
 
         # No 'else' case for what comes BEFORE middle
         if_block_txt   = __get_code(higher)
@@ -195,11 +195,11 @@ def __get_bisection(MiddleTrigger_Idx, TriggerMap):
     else:
         # If the size of one interval is 1, then replace the '<' by an '=='.
         if   len(lower)  == 1 and lower[0][0].size() == 1:
-            comparison = LanguageDB["$if =="](repr(lower[0][0].begin))
+            comparison = LanguageDB["$if =="]("0x%X" % lower[0][0].begin)
         elif len(higher) == 1 and higher[0][0].size() == 1:
-            comparison = LanguageDB["$if !="](repr(higher[0][0].begin))
+            comparison = LanguageDB["$if !="]("0x%X" % higher[0][0].begin)
         else:
-            comparison = LanguageDB["$if <"](repr(middle[0].begin))
+            comparison = LanguageDB["$if <"]("0x%X" % middle[0].begin)
 
         if_block_txt   = __get_code(lower)
         else_block_txt =   LanguageDB["$endif-else"] \
@@ -274,7 +274,7 @@ def __get_switch(TriggerMap):
         if target.is_drop_out(): continue
         target_code = target.get_code()
         for i in range(interval.begin, interval.end):
-            case_code_list.append(("0x%X" % i, target_code))
+            case_code_list.append((i, target_code))
 
     return LanguageDB["$switch-block"]("input", case_code_list)
 

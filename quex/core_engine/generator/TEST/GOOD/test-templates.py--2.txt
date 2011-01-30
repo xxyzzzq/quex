@@ -61,7 +61,7 @@ STATE_1_INPUT:
 
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
-    if( input < 10) {
+    if( input < 0xA) {
         QUEX_GOTO_STATE(template_1_target_0[template_state_key]);    /* [-oo, '\t'] */
     } else {
         QUEX_GOTO_STATE(template_1_target_1[template_state_key]);    /* ['\n', oo] */

@@ -15,7 +15,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 OBJS      = tiny_lexer.o      messaging-framework.o
-UTF8_OBJS = tiny_lexer-utf8.o messaging-framework-utf8.o
+UTF8_OBJS = tiny_lexer_utf8.o messaging-framework_utf8.o
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -41,12 +41,15 @@ all: $(FILES)
 
 # -- char application
           
-%-conversion-direct.exe: %-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
-	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
-
-%-conversion.exe:        %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
           
+copy-conversion-direct.exe: copy-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
+
+fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
+
 %.exe:                   %.cpp $(OBJS) $(QUEX_CORE) 
 	$(CC)      -o $@ $< $(OBJS) 
 
@@ -56,7 +59,10 @@ point.exe:               point.cpp $(OBJS) $(QUEX_CORE)
 re-point.exe:            re-point.cpp $(OBJS) $(QUEX_CORE) 
 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
           
-%-utf8.o:                %.cpp $(QUEX_CORE) tiny_lexer
+%_utf8.o:                %_utf8.cpp $(QUEX_CORE) 
+	$(CC_UTF8) -c $< -o $@ 
+
+messaging-framework_utf8.o: messaging-framework.cpp $(QUEX_CORE) 
 	$(CC_UTF8) -c $< -o $@ 
           
 %.o:                     %.cpp $(QUEX_CORE) tiny_lexer
@@ -65,12 +71,22 @@ re-point.exe:            re-point.cpp $(OBJS) $(QUEX_CORE)
 %.E:                     %.cpp $(QUEX_CORE) tiny_lexer
 	$(CC)      -E $< -o $@  
           
-tiny_lexer tiny_lexer.cpp: simple.qx $(QUEX_CORE)
+tiny_lexer.cpp: simple.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
-	quex -i simple.qx --engine tiny_lexer \
-		 --token-policy single \
-		 --token-memory-management-by-user
+	quex -i             simple.qx          \
+		 --engine       tiny_lexer         \
+		 --token-policy single             \
+		 --token-memory-management-by-user 
+
+tiny_lexer_utf8.cpp: simple_utf8.qx $(QUEX_CORE)
+	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
+	# does all what is required.
+	quex -i                    simple_utf8.qx   \
+		 --engine              tiny_lexer_utf8  \
+		 --token-policy        single           \
+		 --buffer-element-type wchar_t          \
+		 --token-memory-management-by-user     
 
 # (*) HELPERS __________________________________________________________________
 clean:	

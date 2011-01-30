@@ -1,11 +1,12 @@
 #ifndef __INCLUDE_GUARD__MESSAGING_FRAMEWORK__
 #define __INCLUDE_GUARD__MESSAGING_FRAMEWORK__
 
-#include "tiny_lexer"
 
 #ifndef __QUEX_OPTION_MESSAGE_UTF8
+#   include "tiny_lexer"
 #   define ELEMENT_TYPE QUEX_TYPE_CHARACTER
 #else
+#   include "tiny_lexer_utf8"
 #   define ELEMENT_TYPE uint8_t
 #endif
 

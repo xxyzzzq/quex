@@ -564,7 +564,7 @@ def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):
     for path in PathWalker.path_list():
         for info in path.sequence():
             if StateIndexList == None or info[0] in StateIndexList:
-                case_code_list.append((repr(memory_index), 
+                case_code_list.append((memory_index, 
                                        transition.get_transition_to_state(info[0], SMD)))
             memory_index += 1
 

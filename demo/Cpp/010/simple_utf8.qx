@@ -19,7 +19,8 @@ mode ONE_AND_ONLY :
     "world"|"le monde"|"welt" => QUEX_TKN_WORLD(Lexeme);
     [0-9]+                    => QUEX_TKN_NUMBER(Lexeme);
     "bye"                     => QUEX_TKN_BYE(Lexeme);
-    [A-Za-z_][A-Za-z0-9_]+    => QUEX_TKN_IDENTIFIER(Lexeme);
+    \P{ID_Start}\P{ID_Continue}+  => QUEX_TKN_IDENTIFIER(Lexeme);
+    \X2022                    => QUEX_TKN_DOT(Lexeme);
 }
 
 
