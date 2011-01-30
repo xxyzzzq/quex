@@ -2,7 +2,17 @@
 import sys
 import generator_test
 
-choice = generator_test.hwut_input("Pre Conditions: Pre-condtition vs. Backtracking", "SAME;")
+if "--hwut-info" in sys.argv:
+    print "Skip-NestedRange: Delimiter Sizes 1 and 2;"
+    print "CHOICES: ANSI-C, Cpp-Path-CG, Cpp-Template;"
+    print "SAME;"
+    sys.exit(0)
+
+if len(sys.argv) < 2:
+    print "Language argument not acceptable, use --hwut-info"
+    sys.exit(0)
+
+choice = sys.argv[1]
 
 pattern_list = [
     # -- pre-conditioned expressions need to preceed same (non-preoconditioned) expressions,
@@ -13,13 +23,14 @@ pattern_list = [
     #    patterns, since they are always longer.
     #
     # repetition of 'x' (one or more) **preceded** by 'good' + whitespace
-    'A/hello/',     
-    'B/hello/',   
+    'X/hello/',     
+    '[a-z]*X',
     'hello',
-    '[A-Z][a-z]+'
+    'world',
+    '[ ]',
 ]
 pattern_action_pair_list = map(lambda re: (re, re.replace("\\t", "\\\\t").replace("\\n", "\\\\n")), 
                                pattern_list)
 
-test_str = """AhelloBhellohellohelloworld"""
+test_str = """Xhello XhellohelloX Xhelloworld helloworld"""
 generator_test.do(pattern_action_pair_list, test_str, {}, choice, QuexBufferSize=60)    

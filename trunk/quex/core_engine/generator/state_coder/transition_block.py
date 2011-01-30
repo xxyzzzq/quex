@@ -264,23 +264,19 @@ def __get_switch(TriggerMap):
     if case_density > 10: 
         return None
 
-    result = []
     #if white_space_target != None:
     #    result.append(LanguageDB["$if =="]("0x32"))
     #    result.append(white_space_target.get_code())
     #    result.append(LanguageDB["$endif"])
 
-    result.append(LanguageDB["$switch"]("input"))
+    case_code_list = []
     for interval, target in TriggerMap:
         if target.is_drop_out(): continue
+        target_code = target.get_code()
         for i in range(interval.begin, interval.end):
-            result.append(LanguageDB["$case"]("0x%X" % i))
-            if i != interval.end - 1: result.append("\n")
-        result.append(target.get_code() + "\n")
-    result.append(LanguageDB["$switchend"])
-    result.append("\n")
+            case_code_list.append(("0x%X" % i, target_code))
 
-    return result
+    return LanguageDB["$switch-block"]("input", case_code_list)
 
     #    occurence_db = {}
     #    for interval, target in TriggerMap:

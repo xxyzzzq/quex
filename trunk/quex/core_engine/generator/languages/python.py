@@ -1,5 +1,6 @@
-from copy import copy
 from quex.frs_py.string_handling import blue_print
+from copy import copy
+from operator import itemgetter
 
 #________________________________________________________________________________
 # Python
@@ -17,7 +18,6 @@ def __transition(CurrentStateIdx, StateIdx,
                                            repr(StateIdx).replace("L",""))
     return txt + "return %s" % repr(StateIdx)
         
-         
 def __goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginalStateMachineID=None):
     if SuccessfulOriginalStateMachineID == None:
         txt = "# goto QUEX_LABEL_%s_TERMINAL;\n" % UserDefinedStateMachineName
@@ -64,3 +64,10 @@ def __get_if_in_interval(TriggerSet):
     else:
         return "if input >= %i and input < %i:\n" % (TriggerSet.begin, TriggerSet.end)
 
+def __get_switch_block(VariableName, CaseCodePairList):
+    CaseCodePairList.sort(key=itemgetter(0))
+    txt = ["if %s == %s: %s\n" % (VariableName, CaseCodePairList[0][0], CaseCodePairList[0][1])]
+    for case, code in CaseCodePairList[1:]:
+        txt.append("elif %s == %s: %s\n" % (VariableName, case, code))
+    txt.append("\n")
+    return txt

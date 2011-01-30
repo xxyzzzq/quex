@@ -558,20 +558,18 @@ def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):
     PathWalkerID = PathWalker.core().state_index
     
     txt.append("            ")
-    txt.append(LanguageDB["$switch"]("(int)(path_iterator - path_walker_%i_base)" % PathWalkerID))
+    value_txt = "(int)(path_iterator - path_walker_%i_base)" % PathWalkerID
     memory_index = 0
+    case_code_list = []
     for path in PathWalker.path_list():
         for info in path.sequence():
             if StateIndexList == None or info[0] in StateIndexList:
-                txt.append("                " + LanguageDB["$case"](repr(memory_index)))
-                txt.append(transition.get_transition_to_state(info[0], SMD))
-                txt.append("\n")
+                case_code_list.append((repr(memory_index), 
+                                       transition.get_transition_to_state(info[0], SMD)))
             memory_index += 1
-    txt.append("            ")
-    txt.append(LanguageDB["$default"])
+
+    txt.extend(LanguageDB["$switch-block"](value_txt, case_code_list))
     txt.append("QUEX_ERROR_EXIT(\"Pathwalker: path_iterator on inadmissible position.\");\n")
-    txt.append("            ")
-    txt.append(LanguageDB["$switchend"])
 
 def __path_specific_action(txt, PathList, get_comparison, get_action):
     PathN = len(PathList)

@@ -1,9 +1,10 @@
-from copy import copy
 from quex.frs_py.file_in         import is_identifier_start, is_identifier_continue
 from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
 from   quex.core_engine.interval_handling   import NumberSet
+from copy     import copy
+from operator import itemgetter
 #
 
 def __nice(SM_ID): 
@@ -752,3 +753,21 @@ def __indentation_check_whitespace(Info):
     txt = []
     __condition(txt, number_set)
     return "".join(txt)
+
+def __get_switch_block(VariableName, CaseCodePairList):
+    txt = ["switch( %s ) {\n" % VariableName]
+    next_i = 0
+    L = len(CaseCodePairList)
+    CaseCodePairList.sort(key=itemgetter(0))
+    for case, code in CaseCodePairList: 
+        next_i += 1
+        txt.append("case %s: " % case)
+        if next_i != L and CaseCodePairList[next_i][1] == code:
+            txt.append("\n")
+        else:
+            txt.append(code + "\n")
+            
+    txt.append("}\n")
+    return txt
+
+
