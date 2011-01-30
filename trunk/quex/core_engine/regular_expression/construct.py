@@ -96,7 +96,6 @@ def beautify(the_state_machine):
 
     return result
   
-
 def __detect_initial_orphaned_states(sm, fh):
 
     if sm == None: return
@@ -107,7 +106,6 @@ def __detect_initial_orphaned_states(sm, fh):
               "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
               "Orphan state(s) = " + repr(sm.get_orphan_state_list()), 
               fh, DontExitF=True)
-
 
 def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
     assert Name in ["core pattern", "pre context", "post context"]
@@ -180,6 +178,18 @@ def __delete_forbidden_ranges(sm, fh):
        NOTE: This operation might result in orphaned states that have to 
              be deleted.
     """
+    max_character_value = -1
+    if Setup.buffer_element_size != -1: 
+        if Setup.buffer_element_size == 1: size_str = "1 byte"
+        else:                              size_str = "%i bytes" % Setup.buffer_element_size
+
+        try:
+            max_character_value = 256 ** Setup.buffer_element_size
+        except:
+            error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n" % size_str + 
+                      "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"                  + 
+                      "or specify '-1' to ignore the issue.", fh)
+
     for state in sm.states.values():
         for target_state_index, trigger_set in state.transitions().get_map().items():
 
@@ -187,6 +197,14 @@ def __delete_forbidden_ranges(sm, fh):
             interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
             if interval_list[0].begin < UnicodeInterval.begin or interval_list[-1].end >= UnicodeInterval.end:
                 trigger_set.intersect_with(UnicodeInterval)
+
+            # Notify error, if pattern contains characters that cannot be carried
+            # by the currently set buffer element size.
+            if max_character_value != -1 and interval_list[-1].end > max_character_value:
+                error_msg("Pattern contains character beyond the scope of the buffer element size (%s).\n" % size_str + 
+                          "Cut the pattern's range with 'intersection(...)',\n"
+                          "adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"   + 
+                          "or specify \"--buffer-element-size -1\" to ignore the issue.", fh)
 
             if Setup.buffer_codec in ["utf16-le", "utf16-be"]:
                 # Delete the forbidden interval: D800-DFFF

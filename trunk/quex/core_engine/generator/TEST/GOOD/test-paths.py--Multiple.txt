@@ -69,34 +69,19 @@ STATE_23_INPUT:
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
         goto *path_end_state;
 #else  /* not QUEX_OPTION_COMPUTED_GOTOS */
-            switch((int)(path_iterator - path_walker_23_base)) {
-                case 4: goto STATE_5;
-                case 15: goto STATE_16;
-                case 21: goto STATE_22;
-            default: QUEX_ERROR_EXIT("Pathwalker: path_iterator on inadmissible position.");
-            }
+            switch( (int)(path_iterator - path_walker_23_base) ) {
+case 0x4: goto STATE_5;
+case 0xF: goto STATE_16;
+case 0x15: goto STATE_22;
+}
+QUEX_ERROR_EXIT("Pathwalker: path_iterator on inadmissible position.");
 #endif /* QUEX_OPTION_COMPUTED_GOTOS */
     }
-    if( input < 20) {
-        if( input < 10) {
-            if( input == 0 ) {
-                goto STATE_23_RELOAD;    /* \0 */
-            }
-        } else {
-            if( input == 10 ) {
-                goto STATE_1;    /* '\n' */
-            }
-        }
-    } else {
-        if( input < 64) {
-            if( input == 20 ) {
-                goto STATE_2;    /* \20 */
-            }
-        } else {
-            if( input == 64 ) {
-                goto STATE_1;    /* '@' */
-            }
-        }
+    switch( input ) {
+    case 0x0: goto STATE_23_RELOAD;
+    case 0xA: goto STATE_1;
+    case 0x14: goto STATE_2;
+    case 0x40: goto STATE_1;
     }
 
 STATE_23_DROP_OUT_DIRECT:

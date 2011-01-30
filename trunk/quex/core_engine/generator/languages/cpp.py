@@ -761,7 +761,7 @@ def __get_switch_block(VariableName, CaseCodePairList):
     CaseCodePairList.sort(key=itemgetter(0))
     for case, code in CaseCodePairList: 
         next_i += 1
-        txt.append("case %s: " % case)
+        txt.append("case 0x%X: " % case)
         if next_i != L and CaseCodePairList[next_i][1] == code:
             txt.append("\n")
         else:

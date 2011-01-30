@@ -1,4 +1,4 @@
-<test-database execution-time-sec="319.28" date="Sat Jan 29 22:22:19 2011">
+<test-database execution-time-sec="292.57" date="Sun Jan 30 21:06:12 2011">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.00"> 
         <application file-name="side-kick.sh" info-request-time="1279083777L" vanished="True"/>
@@ -18,7 +18,7 @@
                <choice name="006" result="OK" time_sec="2.84" crc="-592177934"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="24.57"> 
+        <test title="Intel's icpc" time-sum-sec="24.56"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="4.77" crc="-1285689249"/>
@@ -31,7 +31,7 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="4.56"> 
+        <test title="Single Mode Example" time-sum-sec="4.57"> 
             <application file-name="000.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.40" crc="-584949883"/>
@@ -40,7 +40,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.63"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.64"> 
             <application file-name="001.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.48" crc="1133630677"/>
@@ -49,7 +49,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="5.00"> 
+        <test title="Indentation Based Scopes" time-sum-sec="5.01"> 
             <application file-name="002.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.74" crc="-1626426563"/>
@@ -158,19 +158,19 @@
                <choice name="point" result="FAIL" time_sec="10.03" crc="None"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="83.45"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="56.73"> 
             <application file-name="010.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="10" same_result="False">
-               <choice name="copy" result="OK" time_sec="8.05" crc="1030682096"/>
-               <choice name="fill" result="OK" time_sec="8.01" crc="1030682096"/>
-               <choice name="point" result="OK" time_sec="7.87" crc="861795188"/>
-               <choice name="copy-ez" result="OK" time_sec="8.01" crc="-812025512"/>
-               <choice name="fill-ez" result="OK" time_sec="7.95" crc="-812025512"/>
-               <choice name="copy-conversion" result="OK" time_sec="8.94" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="OK" time_sec="9.02" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="OK" time_sec="8.88" crc="-470382527"/>
-               <choice name="stdinlexer" result="OK" time_sec="8.69" crc="248250308"/>
-               <choice name="re-point" result="OK" time_sec="8.03" crc="1228316465"/>
+               <choice name="copy" result="FAIL" time_sec="1.33" crc="1030682096"/>
+               <choice name="fill" result="FAIL" time_sec="1.32" crc="1030682096"/>
+               <choice name="point" result="FAIL" time_sec="1.33" crc="861795188"/>
+               <choice name="copy-ez" result="FAIL" time_sec="1.33" crc="-812025512"/>
+               <choice name="fill-ez" result="FAIL" time_sec="1.30" crc="-812025512"/>
+               <choice name="copy-conversion" result="OK" time_sec="15.64" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="OK" time_sec="15.77" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="OK" time_sec="16.01" crc="-470382527"/>
+               <choice name="stdinlexer" result="FAIL" time_sec="1.31" crc="248250308"/>
+               <choice name="re-point" result="FAIL" time_sec="1.37" crc="1228316465"/>
             </choice-list>
         </test>
         <test title="Direct Buffer Access &amp; Character Set Conversion" time-sum-sec="18.03"> 

@@ -2,7 +2,7 @@
 #include<iostream> 
 #include<sstream> 
 
-#include "tiny_lexer"
+#include "tiny_lexer_utf8"
 #include "messaging-framework.h"
 
 int 
@@ -13,7 +13,7 @@ main(int argc, char** argv)
     quex::Token           token_bank[2];
     quex::Token*          prev_token;
     // Zero pointer to constructor --> use raw memory
-    quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, "UTF-8");   
+    quex::tiny_lexer_utf8 qlex((QUEX_TYPE_CHARACTER*)0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, "UTF-8");   
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;
 
     // -- initialize the token pointers

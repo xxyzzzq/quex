@@ -77,7 +77,7 @@ SETUP_INFO = {
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
-    "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],
+    "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
     "buffer_element_type":            [["--buffer-element-type", "--bet"],       ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],

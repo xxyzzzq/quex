@@ -1,4 +1,4 @@
-<history date="Sun Jan 30 00:59:41 2011" element-n="1028">
+<history date="Sun Jan 30 08:47:18 2011" element-n="1037">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -1816,5 +1816,16 @@
         <crc-error time="21:00:03" application="test-paths.py" choice="Single" database-crc="-577701791" real-crc="921971331"/>
         <crc-error time="21:44:56" application="test-templates.py" choice="1" database-crc="1803042850" real-crc="-77900227"/>
         <crc-error time="21:44:56" application="test-templates.py" choice="2" database-crc="-2082806617" real-crc="-1605505750"/>
+    </day>
+    <day year="2011" month="01" day="30">
+        <crc-error time="07:39:18" application="test-paths.py" choice="Single" database-crc="-1108896053" real-crc="1350135128"/>
+        <crc-error time="07:39:18" application="test-paths.py" choice="Multiple" database-crc="-92825518" real-crc="1939236804"/>
+        <crc-error time="07:39:32" application="test-paths.py" choice="NonUniform" database-crc="-2029070718" real-crc="620190997"/>
+        <crc-error time="07:39:32" application="test-paths.py" choice="NonUniform2" database-crc="-826112747" real-crc="1808883271"/>
+        <crc-error time="07:39:53" application="test-paths.py" choice="Multiple" database-crc="1939236804" real-crc="1478111965"/>
+        <crc-error time="07:39:53" application="test-templates.py" choice="1" database-crc="1302697913" real-crc="1132573640"/>
+        <crc-error time="07:45:37" application="test-pre-conditions-4.py" choice="Cpp-Path-CG" database-crc="2121296612" real-crc="429988081"/>
+        <crc-error time="07:45:39" application="test-pre-conditions-4.py" choice="Cpp-Template" database-crc="1839827296" real-crc="429988081"/>
+        <crc-error time="07:47:18" application="test-templates.py" choice="2" database-crc="-1638564307" real-crc="-664982841"/>
     </day>
 </history>
