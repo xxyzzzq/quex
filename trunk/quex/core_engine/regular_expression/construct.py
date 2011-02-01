@@ -178,33 +178,23 @@ def __delete_forbidden_ranges(sm, fh):
        NOTE: This operation might result in orphaned states that have to 
              be deleted.
     """
-    max_character_value = -1
-    if Setup.buffer_element_size != -1: 
-        if Setup.buffer_element_size == 1: size_str = "1 byte"
-        else:                              size_str = "%i bytes" % Setup.buffer_element_size
+    global Setup
 
-        try:
-            max_character_value = 256 ** Setup.buffer_element_size
-        except:
-            error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n" % size_str + 
-                      "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"                  + 
-                      "or specify '-1' to ignore the issue.", fh)
-
+    character_value_limit = Setup.get_character_value_limit()
     for state in sm.states.values():
+
         for target_state_index, trigger_set in state.transitions().get_map().items():
 
             # Make sure, all transitions lie inside the unicode code range 
-            interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
-            if interval_list[0].begin < UnicodeInterval.begin or interval_list[-1].end >= UnicodeInterval.end:
+            if trigger_set.minimum() < UnicodeInterval.begin or trigger_set.supremum() >= UnicodeInterval.end:
                 trigger_set.intersect_with(UnicodeInterval)
 
-            # Notify error, if pattern contains characters that cannot be carried
-            # by the currently set buffer element size.
-            if max_character_value != -1 and interval_list[-1].end > max_character_value:
-                error_msg("Pattern contains character beyond the scope of the buffer element size (%s).\n" % size_str + 
-                          "Cut the pattern's range with 'intersection(...)',\n"
-                          "adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"   + 
-                          "or specify \"--buffer-element-size -1\" to ignore the issue.", fh)
+            if trigger_set.supremum() > character_value_limit:
+                error_msg("Pattern contains character beyond the scope of the buffer element size (%s)\n" \
+                          % Setup.get_character_value_limit_str() + \
+                          "Please, cut the character range of the regular expression,\n"
+                          "adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
+                          "or specify '--buffer-element-size-irrelevant' to ignore the issue.", fh)
 
             if Setup.buffer_codec in ["utf16-le", "utf16-be"]:
                 # Delete the forbidden interval: D800-DFFF

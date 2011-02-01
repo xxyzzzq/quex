@@ -9,13 +9,13 @@ fi
 tmp=`pwd`
 cd $bug/ 
 if [[ $1 == "good" ]]; then
-    quex -i good.qx -o Simple
+    quex -i good.qx -o Simple --buffer-element-size-irrelevant
     echo "(*) Core Engine"
     awk ' /token_id_str_/ { print; } ' Simple.cpp 
     echo "(*) Token IDs"
     awk ' /QUEX_TKN_/ { print; } ' Simple-token_ids
 else
-    quex -i error-$1.qx -o Simple
+    quex -i error-$1.qx -o Simple --buffer-element-size-irrelevant
 fi
 
 # cleansening

@@ -360,6 +360,14 @@ options:
                      does not result in a nicely printable UTF8 string. Use
                      the member ``.utf8_text()`` instead.
 
+.. cmdoption:: --buffer-element-size-irrelevant 
+
+       If this flag is specified, the regular expressions are not constructed 
+       and not checked to fit a particular character range. Note, that this
+       option is implicitly set when a '--codec' is specified.
+
+       DEFFAULT: not set.
+
 .. cmdoption:: --bet, --buffer-element-type  name
 
        A flexible approach to specify the buffer element size and type is by
@@ -435,6 +443,12 @@ options:
         are bytes, thus only ``-b 1`` makes sense. UTF16 triggers on elements
         of two bytes, while the length of an encoding for a character varries.
         For UTF16, only ``-b 2`` makes sense.
+
+        .. NOTE:
+
+        When ``--codec`` is specified, the range check for characters is disabled.
+        That means, the option ``--buffer-element-size-irrelevant`` is set 
+        automatically.
 
 Template and Path Compression can be controlled with the following command line options:
 

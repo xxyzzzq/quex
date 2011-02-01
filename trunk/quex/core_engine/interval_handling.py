@@ -303,7 +303,7 @@ class NumberSet:
         if NewInterval.is_empty(): return
         
         # (1) determine if begin overlaps with the new interval
-        if self.__intervals == [] or NewInterval.begin > self.__intervals[-1].end:
+        if len(self.__intervals) == 0 or NewInterval.begin > self.__intervals[-1].end:
             self.__intervals.append(NewInterval)
             return
 
@@ -375,7 +375,7 @@ class NumberSet:
         if CutInterval.is_empty(): return
         
         # (*) determine if the interval has any intersection at all
-        if    self.__intervals == []                              \
+        if    len(self.__intervals) == 0                          \
            or CutInterval.begin >  self.__intervals[-1].end       \
            or CutInterval.end   <= self.__intervals[0].begin:
             # (the cutting interval cannot cut out anything)
@@ -460,15 +460,15 @@ class NumberSet:
         return x.begin == Number
 
     def minimum(self):
-        if self.__intervals == []: return sys.maxint   # i.e. an absurd value
-        else:                      return self.__intervals[0].begin
+        if len(self.__intervals) == 0: return sys.maxint   # i.e. an absurd value
+        else:                          return self.__intervals[0].begin
 
     def supremum(self):
-        if self.__intervals == []: return - sys.maxint # i.e. an absurd value
-        else:                      return self.__intervals[0].end
+        if len(self.__intervals) == 0: return - sys.maxint # i.e. an absurd value
+        else:                          return self.__intervals[0].end
 
     def is_empty(self):
-        if self.__intervals == []: return True
+        if len(self.__intervals) == 0: return True
         for interval in self.__intervals:
             if interval.is_empty() == False: return False
         return True
@@ -622,7 +622,7 @@ class NumberSet:
         if Other.__class__ == Interval: Other_intervals = [ Other ]
         else:                           Other_intervals = Other.__intervals
         
-        if Other_intervals == [] or self.__intervals == []:     
+        if len(Other_intervals) == 0 or len(self.__intervals) == 0:     
             self.__intervals = []
             return 
 
@@ -703,6 +703,9 @@ class NumberSet:
             self.cut_interval(Other)
             return
 
+        if len(self.__intervals) == 0:
+            return
+
         Begin = self.__intervals[0].begin
         End   = self.__intervals[-1].end
         for interval in Other.__intervals:
@@ -716,6 +719,9 @@ class NumberSet:
         clone = deepcopy(self)
         if Other.__class__ == Interval: 
             clone.cut_interval(Other)
+            return clone
+
+        if len(self.__intervals) == 0:
             return clone
 
         Begin = self.__intervals[0].begin
@@ -897,81 +903,6 @@ class NumberSet:
             txt += interval.gnuplot_string(y_coordinate)
             txt += "\n"
         return txt
-
-    def DELETED_condition_code(self,
-                       Language     = "C",
-                       FunctionName = "example"):
-
-        LanguageDB = languages.db[Language]
-        txt  = LanguageDB["$function_def"].replace("$$function_name$$", FunctionName)
-        txt += self.__condition_code(LanguageDB)
-        txt += LanguageDB["$function_end"]
-
-        return txt
-
-    def DELETED___condition_code(self, LanguageDB,
-                         LowestInterval_Idx = -1, UppestInterval_Idx = -1, 
-                         NoIndentF = False):
-        
-        """Writes code that does a mapping according to 'binary search' by
-        means of if-else-blocks.
-        """
-        if LowestInterval_Idx == -1 and UppestInterval_Idx == -1:
-            LowestInterval_Idx = 0
-            UppestInterval_Idx = len(self.__intervals) - 1
-            
-        if NoIndentF:
-            txt = ""
-        else:
-            txt = "    "
-
-        MiddleInterval_Idx = (UppestInterval_Idx + LowestInterval_Idx) / 2
-        
-        # quick check:
-        assert UppestInterval_Idx >= LowestInterval_Idx, \
-               "NumberSet::conditions_code(): strange interval indices:" + \
-               "lowest interval index = " + repr(LowestInterval_Idx) + \
-               "uppest interval index = " + repr(UppestInterval_Idx)
-        
-        middle = self.__intervals[MiddleInterval_Idx]
-        
-        if LowestInterval_Idx == UppestInterval_Idx \
-           and middle.begin == middle.end - 1:
-            # middle == one element
-            txt += "$if %s $then\n" % LanguageDB["$=="]("input", repr(middle.begin))
-            txt += "    $return_true\n"
-            txt += "$endif"
-            txt += "$return_false\n"
-            
-        else:
-            # middle interval > one element
-            txt += "$if input $>= %s $then\n" % repr(middle.end)
-
-            if MiddleInterval_Idx == UppestInterval_Idx:
-                # upper interval = none
-                txt += "    $return_false\n"
-                txt += "$endif"
-            else:
-                # upper intervals = some
-                txt += self.__condition_code(LanguageDB,
-                                             MiddleInterval_Idx + 1, UppestInterval_Idx)
-                txt += "$endif"
-
-            txt += "$if input $>= %s $then\n" % repr(middle.begin)
-            txt += "    $return_true\n"
-            txt += "$endif" 
-
-            if MiddleInterval_Idx == LowestInterval_Idx:
-                # lower intervals = none
-                txt += "$return_false\n"
-            else:
-                # lower intervals = some
-                txt += self.__condition_code(LanguageDB,
-                                             LowestInterval_Idx, MiddleInterval_Idx - 1,
-                                             NoIndentF = True)
-            
-        # return program text for given language
-        return languages.replace_keywords(txt, LanguageDB, NoIndentF)
 
 
 # Range of code points that are covered by Unicode

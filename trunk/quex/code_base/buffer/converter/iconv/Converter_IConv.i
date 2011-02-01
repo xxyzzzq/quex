@@ -51,9 +51,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         if( me->handle == (iconv_t)-1 ) {
-            char tmp[128];
-            snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, ToCoding);
-            QUEX_ERROR_EXIT(tmp);
+            /* __QUEX_STD_fprintf(stderr, "Source coding: '%s'\n", FromCoding);
+             * __QUEX_STD_fprintf(stderr, "Target coding: '%s'\n", ToCoding);  */
+            QUEX_ERROR_EXIT("<<IConv conversion: source or target character encoding name unknown.>>");
         }
     }
 

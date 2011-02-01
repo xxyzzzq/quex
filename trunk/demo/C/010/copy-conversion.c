@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "tiny_lexer.h"
+#include "tiny_lexer_utf8.h"
 #include "messaging-framework.h"
 
 typedef struct {
@@ -11,7 +11,7 @@ typedef struct {
 int 
 main(int argc, char** argv) 
 {        
-    tiny_lexer         qlex;   
+    tiny_lexer_utf8    qlex;   
 
     QUEX_TYPE_TOKEN    token_bank[2];     /* Two tokens required, one for look-ahead */
     QUEX_TYPE_TOKEN*   prev_token;        /* Use pointers to swap quickly.           */

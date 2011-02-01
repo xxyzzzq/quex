@@ -24,4 +24,4 @@ extern size_t messaging_framework_receive_into_buffer_syntax_chunk(ELEMENT_TYPE*
 extern size_t messaging_framework_receive_to_internal_buffer();
 extern void   messaging_framework_release(ELEMENT_TYPE*);
 
-#endif // __INCLUDE_GUARD__MESSAGING_FRAMEWORK__
+#endif /*_INCLUDE_GUARD__MESSAGING_FRAMEWORK_*/

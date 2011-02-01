@@ -4,8 +4,30 @@ from   quex.frs_py.file_in                       import get_propperly_slash_base
 from   quex.DEFINITIONS import QUEX_PATH
 
 import os.path as path
+import sys
 
 class QuexSetup:
+
+    def get_character_value_limit(self):
+        """RETURNS: Integer = supremo of possible character range, i.e.
+                              one character behind the last possible.
+
+                    sys.maxint, if no such limit exists.
+        """
+        if   self.buffer_element_size == -1:      return sys.maxint
+        elif self.buffer_element_size_irrelevant: return sys.maxint
+
+        try:
+            return 256 ** self.buffer_element_size
+        except:
+            error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
+                      % self.get_character_value_limit_str()                                    + \
+                      "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
+                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.", fh)
+
+    def get_character_value_limit_str(self):
+        if self.buffer_element_size == 1: return "1 byte"
+        else:                             return "%i bytes" % self.buffer_element_size
 
     def get_file_reference(self, FileName):
         """When a source package is specified, then the must be given
@@ -78,6 +100,7 @@ SETUP_INFO = {
     "buffer_codec":                   [["--codec"],                            ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
+    "buffer_element_size_irrelevant": [["--buffer-element-size-irrelevant"],   FLAG],  
     "buffer_element_type":            [["--buffer-element-type", "--bet"],       ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],

@@ -188,11 +188,14 @@ def do(argv):
 
     if setup.buffer_element_size == "wchar_t":
         error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
-                  "with option '--bytes-per-ucs-code-point' or '-b'. Please, specify\n"
+                  "with option '--buffer-element-size' or '-bes'. Please, specify\n"
                   "'--buffer-element-type wchar_t' or '--bet'.")
 
     if setup.buffer_element_type == "wchar_t":
         setup.converter_ucs_coding_name = "WCHAR_T"
+
+    if setup.buffer_codec != "":
+        setup.buffer_element_size_irrelevant = True
     
     make_numbers(setup)
 
@@ -208,14 +211,16 @@ def do(argv):
             setup.buffer_element_size = -1
 
     if setup.buffer_element_type == "":
-        if setup.buffer_element_size in [-1, 1, 2, 4]:
+        if setup.buffer_element_size in [1, 2, 4]:
             setup.buffer_element_type = { 
                 1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
             }[setup.buffer_element_size]
+        elif setup.buffer_element_size == -1:
+            pass
         else:
             error_msg("Buffer element type cannot be determined for size '%i' which\n" \
                       % setup.buffer_element_size + 
-                      "has been specified by '-b' or '--bytes-per-ucs-code-point'.")
+                      "has been specified by '-b' or '--buffer-element-size'.")
 
     if setup.buffer_codec in ["utf8", "utf16"]:
         setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"

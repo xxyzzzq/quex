@@ -2,7 +2,7 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-.PHONY: clean
+.PHONY: clean UTF8 NON_UTF8
 
 FILES = copy.exe    fill.exe    point.exe \
 		copy-ez.exe fill-ez.exe re-point.exe
@@ -15,8 +15,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 OBJS      = tiny_lexer.o      messaging-framework.o
-SRCS      = $(OBJS:.o=.c)
-UTF8_OBJS = tiny_lexer-utf8.o messaging-framework-utf8.o
+UTF8_OBJS = tiny_lexer_utf8.o messaging-framework_utf8.o
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -27,8 +26,7 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-# Use 'C99' to avoid line number limit of 32767 in '#line' pragma
-COMPILER = gcc -ggdb -Wall -pedantic -std=c99
+COMPILER = gcc -ggdb -Wall -pedantic -std=c89
 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
      # -DQUEX_OPTION_ASSERTS_DISABLED
@@ -44,37 +42,58 @@ all: $(FILES)
 
 # -- char application
           
-%-conversion-direct.exe: %-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
-	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
-
-%-conversion.exe:        %-conversion.c $(UTF8_OBJS) $(QUEX_CORE) 
+copy-conversion.exe:        copy-conversion.c $(UTF8_OBJS) $(QUEX_CORE) 
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
           
-%.exe:                   %.c $(OBJS) $(QUEX_CORE) 
+copy-conversion-direct.exe: copy-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
+	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
+
+fill-conversion-direct.exe: fill-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
+	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
+
+%.exe:                      %.c $(OBJS) $(QUEX_CORE) 
 	$(CC)      -o $@ $< $(OBJS) 
 
-point.exe:               point.c $(SRCS) $(QUEX_CORE) 
-	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
+point.exe:                  point.c $(OBJS) $(QUEX_CORE) NON_UTF8
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
           
-re-point.exe:            re-point.c $(SRCS) $(QUEX_CORE) 
-	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(SRCS) 
+re-point.exe:               re-point.c $(OBJS) $(QUEX_CORE) NON_UTF8
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
           
-%-utf8.o:                %.c $(QUEX_CORE) tiny_lexer
-	$(CC_UTF8) -c $< -o $@  
+%_utf8.o:                   %_utf8.c $(QUEX_CORE) UTF8
+	$(CC_UTF8) -c $< -o $@ 
+
+messaging-framework_utf8.o: messaging-framework.c $(QUEX_CORE) UTF8
+	$(CC_UTF8) -c $< -o $@ 
           
-%.o:                     %.c $(QUEX_CORE) tiny_lexer
+%.o:                     %.c $(QUEX_CORE) NON_UTF8
 	$(CC)      -c $< -o $@  
           
-%.E:                     %.c $(QUEX_CORE) tiny_lexer
+%.E:                     %.c $(QUEX_CORE) NON_UTF8
 	$(CC)      -E $< -o $@  
           
-tiny_lexer tiny_lexer.c: simple.qx $(QUEX_CORE)
+tiny_lexer tiny_lexer.c:            NON_UTF8
+
+tiny_lexer_utf8 tiny_lexer_utf8.c:	UTF8
+
+NON_UTF8: simple.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
-	quex -i simple.qx --engine tiny_lexer \
-		 --token-policy single \
-		 --language C          \
-		 --token-memory-management-by-user
+	quex -i             simple.qx          \
+		 --engine       tiny_lexer         \
+		 --token-policy single             \
+		 --language     C                  \
+		 --token-memory-management-by-user 
+
+UTF8: simple_utf8.qx $(QUEX_CORE)
+	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
+	# does all what is required.
+	quex -i                    simple_utf8.qx   \
+		 --engine              tiny_lexer_utf8  \
+		 --token-policy        single           \
+		 --language            C                \
+		 --buffer-element-type wchar_t          \
+		 --token-memory-management-by-user     
 
 # (*) HELPERS __________________________________________________________________
 clean:	

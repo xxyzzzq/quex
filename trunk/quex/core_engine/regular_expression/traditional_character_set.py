@@ -4,6 +4,7 @@ import quex.core_engine.utf8 as utf8
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 from quex.core_engine.interval_handling  import *
 from quex.exception                      import RegularExpressionException
+from quex.input.setup import setup as Setup
 
 
 
@@ -95,7 +96,12 @@ def do(sh):
                                                  "In this case avoid range expression for clarity.")
             tracker.consider_interval(char_code, char_code_2 + 1)
 
-    if tracker.negation_f: return tracker.match_set.inverse()
-    else:                  return tracker.match_set
+    if tracker.negation_f: 
+        result = tracker.match_set.inverse()
+        if Setup.get_character_value_limit() != sys.maxint:
+            result.intersect_with(Interval(0, Setup.get_character_value_limit()))
+        return result
+    else:                  
+        return tracker.match_set
 
 

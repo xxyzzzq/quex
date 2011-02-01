@@ -179,7 +179,5 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/buffer/Buffer.i>
-
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I */
