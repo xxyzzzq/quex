@@ -801,11 +801,11 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
     /* me = pointer to state of the lexical analyzer */
 #   define ONE_AND_ONLY    (QUEX_NAME(ONE_AND_ONLY))
-    const size_t PostContextStartPositionN = (size_t)0;
-    QUEX_TYPE_CHARACTER input = (QUEX_TYPE_CHARACTER)(0x00);
-    QUEX_TYPE_GOTO_LABEL last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
-    QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
-    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
+    QUEX_TYPE_GOTO_LABEL           last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    const size_t                   PostContextStartPositionN = (size_t)0;
+    QUEX_TYPE_CHARACTER_POSITION*  post_context_start_position = 0x0;
+    QUEX_TYPE_CHARACTER_POSITION   last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
+    QUEX_TYPE_CHARACTER            input = (QUEX_TYPE_CHARACTER)(0x00);
 
     /* Post context positions do not have to be reset or initialized. If a state
      * is reached which is associated with 'end of post context' it is clear what
@@ -824,8 +824,11 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #endif
 __REENTRY:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY");
-    QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);
-    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(&me->buffer);
+    me->buffer._lexeme_start_p = me->buffer._input_p;
+    if( me->buffer._character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) {
+        *(me->buffer._input_p) = me->buffer._character_at_lexeme_start;
+        me->buffer._character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';
+    }
     /* state machine */
     /* init-state = 207L
      * 00207() <~ (4, 12), (6, 23), (8, 34), (10, 45), (12, 57), (14, 69), (16, 78), (18, 82), (20, 86), (25, 100), (30, 115)
@@ -951,98 +954,85 @@ __REENTRY:
      */
 STATE_207:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207");
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 33) {
-            if( input < 11) {
-                if( input == 0 ) {
-                    goto STATE_207_RELOAD;    /* \0 */
-                } else {
-                    if( input == 9 || input == 10 ) {
-                        goto STATE_210;
-                    } else {
-                        goto STATE_207_DROP_OUT_DIRECT;
-                    }
-                }
-            } else {
-                if( input == 13 || input == 32 ) {
-                    goto STATE_210;
-                } else {
-                    goto STATE_207_DROP_OUT_DIRECT;
-                }
-            }
-        } else {
-            if( input < 59) {
-                if( input >= 48 && input < 58 ) {
-                    goto STATE_216;    /* ['0', '9'] */
-                } else {
-                    goto STATE_207_DROP_OUT_DIRECT;    /* ['!', '/'] */
-                }
-            } else {
-                if( input < 65) {
-                    if( input == 59 ) {
-                        goto TERMINAL_16;    /* ';' */
-                    } else {
-                        goto STATE_207_DROP_OUT_DIRECT;    /* ['<', '@'] */
-                    }
-                } else {
-                    if( input < 91) {
-                        goto STATE_217;    /* ['A', 'Z'] */
-                    } else {
-                        goto STATE_207_DROP_OUT_DIRECT;    /* ['[', '^'] */
-                    }
-                }
-            }
-        }
-    } else {
-        if( input < 106) {
-            if( input < 100) {
-                if( input == 96 ) {
-                    goto STATE_207_DROP_OUT_DIRECT;    /* '`' */
-                } else {
-                    goto STATE_217;    /* '_' */
-                }
-            } else {
-                if( input < 102) {
-                    if( input == 100 ) {
-                        goto STATE_208;    /* 'd' */
-                    } else {
-                        goto STATE_209;    /* 'e' */
-                    }
-                } else {
-                    if( input != 105 ) {
-                        goto STATE_217;    /* ['f', 'h'] */
-                    } else {
-                        goto STATE_213;    /* 'i' */
-                    }
-                }
-            }
-        } else {
-            if( input < 123) {
-                if( input == 115 ) {
-                    goto STATE_212;    /* 's' */
-                } else {
-                    goto STATE_217;    /* ['j', 'r'] */
-                }
-            } else {
-                if( input < 125) {
-                    if( input == 123 ) {
-                        goto TERMINAL_18;    /* '{' */
-                    } else {
-                        goto STATE_207_DROP_OUT_DIRECT;    /* '|' */
-                    }
-                } else {
-                    if( input == 125 ) {
-                        goto TERMINAL_20;    /* '}' */
-                    } else {
-                        goto STATE_207_DROP_OUT_DIRECT;    /* ['~', oo] */
-                    }
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_207_RELOAD;
+    case 0x9: 
+    case 0xA: 
+    case 0xD: 
+    case 0x20: goto STATE_210;
+    case 0x30: 
+    case 0x31: 
+    case 0x32: 
+    case 0x33: 
+    case 0x34: 
+    case 0x35: 
+    case 0x36: 
+    case 0x37: 
+    case 0x38: 
+    case 0x39: goto STATE_216;
+    case 0x3B: goto TERMINAL_16;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: goto STATE_217;
+    case 0x64: goto STATE_208;
+    case 0x65: goto STATE_209;
+    case 0x66: 
+    case 0x67: 
+    case 0x68: goto STATE_217;
+    case 0x69: goto STATE_213;
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: goto STATE_217;
+    case 0x73: goto STATE_212;
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
+    case 0x7B: goto TERMINAL_18;
+    case 0x7D: goto TERMINAL_20;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_DROP_OUT_DIRECT");
+
+    goto TERMINAL_FAILURE;
 
 STATE_207_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_RELOAD");
@@ -1054,11 +1044,6 @@ STATE_207_RELOAD:
     QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_207_INPUT;
-
-STATE_207_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_DROP_OUT_DIRECT");
-
-    goto TERMINAL_FAILURE;
 STATE_207_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_INPUT");
     ++(me->buffer._input_p);
@@ -1071,38 +1056,33 @@ STATE_217_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 65) {
-            if( input == 0 ) {
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0x5F) {
+        if( input < 0x41) {
+            if( input == 0x0 ) {
                 goto STATE_217_RELOAD;    /* \0 */
-            } else {
-                goto STATE_217_DROP_OUT_DIRECT;    /* [\1, '@'] */
             }
         } else {
-            if( input < 91) {
+            if( input < 0x5B) {
                 goto STATE_217;    /* ['A', 'Z'] */
-            } else {
-                goto STATE_217_DROP_OUT_DIRECT;    /* ['[', '^'] */
             }
         }
     } else {
-        if( input < 97) {
-            if( input == 95 ) {
+        if( input < 0x61) {
+            if( input == 0x5F ) {
                 goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_217_DROP_OUT_DIRECT;    /* '`' */
             }
         } else {
-            if( input < 123) {
+            if( input < 0x7B) {
                 goto STATE_217;    /* ['a', 'z'] */
-            } else {
-                goto STATE_217_DROP_OUT_DIRECT;    /* ['{', oo] */
             }
         }
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_217_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_RELOAD");
@@ -1113,10 +1093,7 @@ STATE_217_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_217_INPUT;
     }
-STATE_217_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1126,30 +1103,19 @@ STATE_210_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 13) {
-        if( input < 9) {
-            if( input == 0 ) {
-                goto STATE_210_RELOAD;    /* \0 */
-            } else {
-                goto STATE_210_DROP_OUT_DIRECT;    /* [\1, '\b'] */
-            }
-        } else {
-            if( input == 9 || input == 10 ) {
-                goto STATE_210;
-            } else {
-                goto STATE_210_DROP_OUT_DIRECT;
-            }
-        }
-    } else {
-        if( input == 13 || input == 32 ) {
-            goto STATE_210;
-        } else {
-            goto STATE_210_DROP_OUT_DIRECT;
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_210_RELOAD;
+    case 0x9: 
+    case 0xA: 
+    case 0xD: 
+    case 0x20: goto STATE_210;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_DROP_OUT_DIRECT");
+
+            goto TERMINAL_4_DIRECT;
 
 STATE_210_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_RELOAD");
@@ -1160,10 +1126,7 @@ STATE_210_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_210_INPUT;
     }
-STATE_210_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_DROP_OUT_DIRECT");
-
-            goto TERMINAL_4_DIRECT;
+        goto TERMINAL_4_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1173,22 +1136,25 @@ STATE_216_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 48) {
-        if( input == 0 ) {
-            goto STATE_216_RELOAD;    /* \0 */
-        } else {
-            goto STATE_216_DROP_OUT_DIRECT;    /* [\1, '/'] */
-        }
-    } else {
-        if( input < 58) {
-            goto STATE_216;    /* ['0', '9'] */
-        } else {
-            goto STATE_216_DROP_OUT_DIRECT;    /* [':', oo] */
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_216_RELOAD;
+    case 0x30: 
+    case 0x31: 
+    case 0x32: 
+    case 0x33: 
+    case 0x34: 
+    case 0x35: 
+    case 0x36: 
+    case 0x37: 
+    case 0x38: 
+    case 0x39: goto STATE_216;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_DROP_OUT_DIRECT");
+
+            goto TERMINAL_25_DIRECT;
 
 STATE_216_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_RELOAD");
@@ -1199,10 +1165,7 @@ STATE_216_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_216_INPUT;
     }
-STATE_216_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_DROP_OUT_DIRECT");
-
-            goto TERMINAL_25_DIRECT;
+        goto TERMINAL_25_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1212,42 +1175,68 @@ STATE_208_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_208_RELOAD;    /* \0 */
-            } else {
-                goto STATE_208_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_208_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 111) {
-            if( input == 96 ) {
-                goto STATE_208_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'n'] */
-            }
-        } else {
-            if( input == 111 ) {
-                goto STATE_233;    /* 'o' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['p', 'z'] */
-                } else {
-                    goto STATE_208_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_208_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: goto STATE_217;
+    case 0x6F: goto STATE_233;
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_208_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_RELOAD");
@@ -1258,10 +1247,7 @@ STATE_208_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_208_INPUT;
     }
-STATE_208_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1271,42 +1257,68 @@ STATE_209_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_209_RELOAD;    /* \0 */
-            } else {
-                goto STATE_209_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_209_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 120) {
-            if( input == 96 ) {
-                goto STATE_209_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'w'] */
-            }
-        } else {
-            if( input == 120 ) {
-                goto STATE_228;    /* 'x' */
-            } else {
-                if( input == 121 || input == 122 ) {
-                    goto STATE_217;
-                } else {
-                    goto STATE_209_DROP_OUT_DIRECT;
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_209_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: goto STATE_217;
+    case 0x78: goto STATE_228;
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_209_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_RELOAD");
@@ -1317,10 +1329,7 @@ STATE_209_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_209_INPUT;
     }
-STATE_209_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1330,46 +1339,68 @@ STATE_212_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 97) {
-        if( input < 91) {
-            if( input == 0 ) {
-                goto STATE_212_RELOAD;    /* \0 */
-            } else {
-                if( input < 65) {
-                    goto STATE_212_DROP_OUT_DIRECT;    /* [\1, '@'] */
-                } else {
-                    goto STATE_217;    /* ['A', 'Z'] */
-                }
-            }
-        } else {
-            if( input == 95 ) {
-                goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_212_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            }
-        }
-    } else {
-        if( input < 116) {
-            if( input == 101 ) {
-                goto STATE_221;    /* 'e' */
-            } else {
-                goto STATE_217;    /* ['a', 'd'] */
-            }
-        } else {
-            if( input == 116 ) {
-                goto STATE_220;    /* 't' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['u', 'z'] */
-                } else {
-                    goto STATE_212_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_212_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: goto STATE_217;
+    case 0x65: goto STATE_221;
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: goto STATE_217;
+    case 0x74: goto STATE_220;
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_212_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_RELOAD");
@@ -1380,10 +1411,7 @@ STATE_212_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_212_INPUT;
     }
-STATE_212_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1393,42 +1421,68 @@ STATE_213_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_213_RELOAD;    /* \0 */
-            } else {
-                goto STATE_213_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_213_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 110) {
-            if( input == 96 ) {
-                goto STATE_213_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'm'] */
-            }
-        } else {
-            if( input == 110 ) {
-                goto STATE_218;    /* 'n' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['o', 'z'] */
-                } else {
-                    goto STATE_213_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_213_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: goto STATE_217;
+    case 0x6E: goto STATE_218;
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_213_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_RELOAD");
@@ -1439,10 +1493,7 @@ STATE_213_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_213_INPUT;
     }
-STATE_213_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1452,42 +1503,68 @@ STATE_218_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_218_RELOAD;    /* \0 */
-            } else {
-                goto STATE_218_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_218_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 116) {
-            if( input == 96 ) {
-                goto STATE_218_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 's'] */
-            }
-        } else {
-            if( input == 116 ) {
-                goto STATE_219;    /* 't' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['u', 'z'] */
-                } else {
-                    goto STATE_218_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_218_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: goto STATE_217;
+    case 0x74: goto STATE_219;
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_218_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_RELOAD");
@@ -1498,10 +1575,7 @@ STATE_218_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_218_INPUT;
     }
-STATE_218_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1511,38 +1585,33 @@ STATE_219_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 65) {
-            if( input == 0 ) {
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0x5F) {
+        if( input < 0x41) {
+            if( input == 0x0 ) {
                 goto STATE_219_RELOAD;    /* \0 */
-            } else {
-                goto STATE_219_DROP_OUT_DIRECT;    /* [\1, '@'] */
             }
         } else {
-            if( input < 91) {
+            if( input < 0x5B) {
                 goto STATE_217;    /* ['A', 'Z'] */
-            } else {
-                goto STATE_219_DROP_OUT_DIRECT;    /* ['[', '^'] */
             }
         }
     } else {
-        if( input < 97) {
-            if( input == 95 ) {
+        if( input < 0x61) {
+            if( input == 0x5F ) {
                 goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_219_DROP_OUT_DIRECT;    /* '`' */
             }
         } else {
-            if( input < 123) {
+            if( input < 0x7B) {
                 goto STATE_217;    /* ['a', 'z'] */
-            } else {
-                goto STATE_219_DROP_OUT_DIRECT;    /* ['{', oo] */
             }
         }
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_DROP_OUT_DIRECT");
+
+            goto TERMINAL_8_DIRECT;
 
 STATE_219_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_RELOAD");
@@ -1553,10 +1622,7 @@ STATE_219_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_219_INPUT;
     }
-STATE_219_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_DROP_OUT_DIRECT");
-
-            goto TERMINAL_8_DIRECT;
+        goto TERMINAL_8_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1566,42 +1632,68 @@ STATE_220_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_220_RELOAD;    /* \0 */
-            } else {
-                goto STATE_220_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_220_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 114) {
-            if( input == 96 ) {
-                goto STATE_220_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'q'] */
-            }
-        } else {
-            if( input == 114 ) {
-                goto STATE_224;    /* 'r' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['s', 'z'] */
-                } else {
-                    goto STATE_220_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_220_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: goto STATE_217;
+    case 0x72: goto STATE_224;
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_220_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_RELOAD");
@@ -1612,10 +1704,7 @@ STATE_220_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_220_INPUT;
     }
-STATE_220_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1625,42 +1714,68 @@ STATE_221_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_221_RELOAD;    /* \0 */
-            } else {
-                goto STATE_221_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_221_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 110) {
-            if( input == 96 ) {
-                goto STATE_221_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'm'] */
-            }
-        } else {
-            if( input == 110 ) {
-                goto STATE_222;    /* 'n' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['o', 'z'] */
-                } else {
-                    goto STATE_221_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_221_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: goto STATE_217;
+    case 0x6E: goto STATE_222;
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_221_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_RELOAD");
@@ -1671,10 +1786,7 @@ STATE_221_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_221_INPUT;
     }
-STATE_221_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1684,42 +1796,68 @@ STATE_222_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_222_RELOAD;    /* \0 */
-            } else {
-                goto STATE_222_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_222_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 100) {
-            if( input == 97 || input == 98 || input == 99 ) {
-                goto STATE_217;
-            } else {
-                goto STATE_222_DROP_OUT_DIRECT;
-            }
-        } else {
-            if( input == 100 ) {
-                goto STATE_223;    /* 'd' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['e', 'z'] */
-                } else {
-                    goto STATE_222_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_222_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: goto STATE_217;
+    case 0x64: goto STATE_223;
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_222_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_RELOAD");
@@ -1730,10 +1868,7 @@ STATE_222_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_222_INPUT;
     }
-STATE_222_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1743,38 +1878,33 @@ STATE_223_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 65) {
-            if( input == 0 ) {
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0x5F) {
+        if( input < 0x41) {
+            if( input == 0x0 ) {
                 goto STATE_223_RELOAD;    /* \0 */
-            } else {
-                goto STATE_223_DROP_OUT_DIRECT;    /* [\1, '@'] */
             }
         } else {
-            if( input < 91) {
+            if( input < 0x5B) {
                 goto STATE_217;    /* ['A', 'Z'] */
-            } else {
-                goto STATE_223_DROP_OUT_DIRECT;    /* ['[', '^'] */
             }
         }
     } else {
-        if( input < 97) {
-            if( input == 95 ) {
+        if( input < 0x61) {
+            if( input == 0x5F ) {
                 goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_223_DROP_OUT_DIRECT;    /* '`' */
             }
         } else {
-            if( input < 123) {
+            if( input < 0x7B) {
                 goto STATE_217;    /* ['a', 'z'] */
-            } else {
-                goto STATE_223_DROP_OUT_DIRECT;    /* ['{', oo] */
             }
         }
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_DROP_OUT_DIRECT");
+
+            goto TERMINAL_12_DIRECT;
 
 STATE_223_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_RELOAD");
@@ -1785,10 +1915,7 @@ STATE_223_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_223_INPUT;
     }
-STATE_223_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_DROP_OUT_DIRECT");
-
-            goto TERMINAL_12_DIRECT;
+        goto TERMINAL_12_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1798,42 +1925,68 @@ STATE_224_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_224_RELOAD;    /* \0 */
-            } else {
-                goto STATE_224_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_224_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 117) {
-            if( input == 96 ) {
-                goto STATE_224_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 't'] */
-            }
-        } else {
-            if( input == 117 ) {
-                goto STATE_225;    /* 'u' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['v', 'z'] */
-                } else {
-                    goto STATE_224_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_224_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: goto STATE_217;
+    case 0x75: goto STATE_225;
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_224_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_RELOAD");
@@ -1844,10 +1997,7 @@ STATE_224_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_224_INPUT;
     }
-STATE_224_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1857,42 +2007,68 @@ STATE_225_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_225_RELOAD;    /* \0 */
-            } else {
-                goto STATE_225_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_225_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 99) {
-            if( input == 97 || input == 98 ) {
-                goto STATE_217;
-            } else {
-                goto STATE_225_DROP_OUT_DIRECT;
-            }
-        } else {
-            if( input == 99 ) {
-                goto STATE_226;    /* 'c' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['d', 'z'] */
-                } else {
-                    goto STATE_225_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_225_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: goto STATE_217;
+    case 0x63: goto STATE_226;
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_225_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_RELOAD");
@@ -1903,10 +2079,7 @@ STATE_225_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_225_INPUT;
     }
-STATE_225_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1916,42 +2089,68 @@ STATE_226_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_226_RELOAD;    /* \0 */
-            } else {
-                goto STATE_226_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_226_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 116) {
-            if( input == 96 ) {
-                goto STATE_226_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 's'] */
-            }
-        } else {
-            if( input == 116 ) {
-                goto STATE_227;    /* 't' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['u', 'z'] */
-                } else {
-                    goto STATE_226_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_226_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: goto STATE_217;
+    case 0x74: goto STATE_227;
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_226_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_RELOAD");
@@ -1962,10 +2161,7 @@ STATE_226_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_226_INPUT;
     }
-STATE_226_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -1975,38 +2171,33 @@ STATE_227_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 65) {
-            if( input == 0 ) {
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0x5F) {
+        if( input < 0x41) {
+            if( input == 0x0 ) {
                 goto STATE_227_RELOAD;    /* \0 */
-            } else {
-                goto STATE_227_DROP_OUT_DIRECT;    /* [\1, '@'] */
             }
         } else {
-            if( input < 91) {
+            if( input < 0x5B) {
                 goto STATE_217;    /* ['A', 'Z'] */
-            } else {
-                goto STATE_227_DROP_OUT_DIRECT;    /* ['[', '^'] */
             }
         }
     } else {
-        if( input < 97) {
-            if( input == 95 ) {
+        if( input < 0x61) {
+            if( input == 0x5F ) {
                 goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_227_DROP_OUT_DIRECT;    /* '`' */
             }
         } else {
-            if( input < 123) {
+            if( input < 0x7B) {
                 goto STATE_217;    /* ['a', 'z'] */
-            } else {
-                goto STATE_227_DROP_OUT_DIRECT;    /* ['{', oo] */
             }
         }
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_DROP_OUT_DIRECT");
+
+            goto TERMINAL_6_DIRECT;
 
 STATE_227_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_RELOAD");
@@ -2017,10 +2208,7 @@ STATE_227_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_227_INPUT;
     }
-STATE_227_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_DROP_OUT_DIRECT");
-
-            goto TERMINAL_6_DIRECT;
+        goto TERMINAL_6_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2030,42 +2218,68 @@ STATE_228_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_228_RELOAD;    /* \0 */
-            } else {
-                goto STATE_228_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_228_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 112) {
-            if( input == 96 ) {
-                goto STATE_228_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'o'] */
-            }
-        } else {
-            if( input == 112 ) {
-                goto STATE_229;    /* 'p' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['q', 'z'] */
-                } else {
-                    goto STATE_228_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_228_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: goto STATE_217;
+    case 0x70: goto STATE_229;
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_228_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_RELOAD");
@@ -2076,10 +2290,7 @@ STATE_228_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_228_INPUT;
     }
-STATE_228_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2089,42 +2300,68 @@ STATE_229_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_229_RELOAD;    /* \0 */
-            } else {
-                goto STATE_229_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_229_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 101) {
-            if( input == 96 ) {
-                goto STATE_229_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'd'] */
-            }
-        } else {
-            if( input == 101 ) {
-                goto STATE_230;    /* 'e' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['f', 'z'] */
-                } else {
-                    goto STATE_229_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_229_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: goto STATE_217;
+    case 0x65: goto STATE_230;
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_229_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_RELOAD");
@@ -2135,10 +2372,7 @@ STATE_229_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_229_INPUT;
     }
-STATE_229_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2148,42 +2382,68 @@ STATE_230_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_230_RELOAD;    /* \0 */
-            } else {
-                goto STATE_230_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_230_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 99) {
-            if( input == 97 || input == 98 ) {
-                goto STATE_217;
-            } else {
-                goto STATE_230_DROP_OUT_DIRECT;
-            }
-        } else {
-            if( input == 99 ) {
-                goto STATE_231;    /* 'c' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['d', 'z'] */
-                } else {
-                    goto STATE_230_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_230_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: goto STATE_217;
+    case 0x63: goto STATE_231;
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_230_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_RELOAD");
@@ -2194,10 +2454,7 @@ STATE_230_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_230_INPUT;
     }
-STATE_230_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2207,42 +2464,68 @@ STATE_231_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_231_RELOAD;    /* \0 */
-            } else {
-                goto STATE_231_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_231_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 116) {
-            if( input == 96 ) {
-                goto STATE_231_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 's'] */
-            }
-        } else {
-            if( input == 116 ) {
-                goto STATE_232;    /* 't' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['u', 'z'] */
-                } else {
-                    goto STATE_231_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_231_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: goto STATE_217;
+    case 0x74: goto STATE_232;
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_231_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_RELOAD");
@@ -2253,10 +2536,7 @@ STATE_231_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_231_INPUT;
     }
-STATE_231_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2266,38 +2546,33 @@ STATE_232_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 65) {
-            if( input == 0 ) {
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0x5F) {
+        if( input < 0x41) {
+            if( input == 0x0 ) {
                 goto STATE_232_RELOAD;    /* \0 */
-            } else {
-                goto STATE_232_DROP_OUT_DIRECT;    /* [\1, '@'] */
             }
         } else {
-            if( input < 91) {
+            if( input < 0x5B) {
                 goto STATE_217;    /* ['A', 'Z'] */
-            } else {
-                goto STATE_232_DROP_OUT_DIRECT;    /* ['[', '^'] */
             }
         }
     } else {
-        if( input < 97) {
-            if( input == 95 ) {
+        if( input < 0x61) {
+            if( input == 0x5F ) {
                 goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_232_DROP_OUT_DIRECT;    /* '`' */
             }
         } else {
-            if( input < 123) {
+            if( input < 0x7B) {
                 goto STATE_217;    /* ['a', 'z'] */
-            } else {
-                goto STATE_232_DROP_OUT_DIRECT;    /* ['{', oo] */
             }
         }
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_DROP_OUT_DIRECT");
+
+            goto TERMINAL_14_DIRECT;
 
 STATE_232_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_RELOAD");
@@ -2308,10 +2583,7 @@ STATE_232_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_232_INPUT;
     }
-STATE_232_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_DROP_OUT_DIRECT");
-
-            goto TERMINAL_14_DIRECT;
+        goto TERMINAL_14_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2321,42 +2593,68 @@ STATE_233_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_233_RELOAD;    /* \0 */
-            } else {
-                goto STATE_233_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_233_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 117) {
-            if( input == 96 ) {
-                goto STATE_233_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 't'] */
-            }
-        } else {
-            if( input == 117 ) {
-                goto STATE_234;    /* 'u' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['v', 'z'] */
-                } else {
-                    goto STATE_233_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_233_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: goto STATE_217;
+    case 0x75: goto STATE_234;
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_233_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_RELOAD");
@@ -2367,10 +2665,7 @@ STATE_233_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_233_INPUT;
     }
-STATE_233_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2380,42 +2675,68 @@ STATE_234_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_234_RELOAD;    /* \0 */
-            } else {
-                goto STATE_234_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_234_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 98) {
-            if( input == 96 ) {
-                goto STATE_234_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* 'a' */
-            }
-        } else {
-            if( input == 98 ) {
-                goto STATE_235;    /* 'b' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['c', 'z'] */
-                } else {
-                    goto STATE_234_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_234_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: goto STATE_217;
+    case 0x62: goto STATE_235;
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_234_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_RELOAD");
@@ -2426,10 +2747,7 @@ STATE_234_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_234_INPUT;
     }
-STATE_234_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2439,42 +2757,68 @@ STATE_235_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_235_RELOAD;    /* \0 */
-            } else {
-                goto STATE_235_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_235_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 108) {
-            if( input == 96 ) {
-                goto STATE_235_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'k'] */
-            }
-        } else {
-            if( input == 108 ) {
-                goto STATE_236;    /* 'l' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['m', 'z'] */
-                } else {
-                    goto STATE_235_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_235_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: 
+    case 0x65: 
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: goto STATE_217;
+    case 0x6C: goto STATE_236;
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_235_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_RELOAD");
@@ -2485,10 +2829,7 @@ STATE_235_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_235_INPUT;
     }
-STATE_235_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2498,42 +2839,68 @@ STATE_236_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 96) {
-        if( input < 65) {
-            if( input == 0 ) {
-                goto STATE_236_RELOAD;    /* \0 */
-            } else {
-                goto STATE_236_DROP_OUT_DIRECT;    /* [\1, '@'] */
-            }
-        } else {
-            if( input >= 91 && input < 95 ) {
-                goto STATE_236_DROP_OUT_DIRECT;    /* ['[', '^'] */
-            } else {
-                goto STATE_217;    /* ['A', 'Z'] */
-            }
-        }
-    } else {
-        if( input < 101) {
-            if( input == 96 ) {
-                goto STATE_236_DROP_OUT_DIRECT;    /* '`' */
-            } else {
-                goto STATE_217;    /* ['a', 'd'] */
-            }
-        } else {
-            if( input == 101 ) {
-                goto STATE_237;    /* 'e' */
-            } else {
-                if( input < 123) {
-                    goto STATE_217;    /* ['f', 'z'] */
-                } else {
-                    goto STATE_236_DROP_OUT_DIRECT;    /* ['{', oo] */
-                }
-            }
-        }
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    switch( input ) {
+    case 0x0: goto STATE_236_RELOAD;
+    case 0x41: 
+    case 0x42: 
+    case 0x43: 
+    case 0x44: 
+    case 0x45: 
+    case 0x46: 
+    case 0x47: 
+    case 0x48: 
+    case 0x49: 
+    case 0x4A: 
+    case 0x4B: 
+    case 0x4C: 
+    case 0x4D: 
+    case 0x4E: 
+    case 0x4F: 
+    case 0x50: 
+    case 0x51: 
+    case 0x52: 
+    case 0x53: 
+    case 0x54: 
+    case 0x55: 
+    case 0x56: 
+    case 0x57: 
+    case 0x58: 
+    case 0x59: 
+    case 0x5A: 
+    case 0x5F: 
+    case 0x61: 
+    case 0x62: 
+    case 0x63: 
+    case 0x64: goto STATE_217;
+    case 0x65: goto STATE_237;
+    case 0x66: 
+    case 0x67: 
+    case 0x68: 
+    case 0x69: 
+    case 0x6A: 
+    case 0x6B: 
+    case 0x6C: 
+    case 0x6D: 
+    case 0x6E: 
+    case 0x6F: 
+    case 0x70: 
+    case 0x71: 
+    case 0x72: 
+    case 0x73: 
+    case 0x74: 
+    case 0x75: 
+    case 0x76: 
+    case 0x77: 
+    case 0x78: 
+    case 0x79: 
+    case 0x7A: goto STATE_217;
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_DROP_OUT_DIRECT");
+
+            goto TERMINAL_30_DIRECT;
 
 STATE_236_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_RELOAD");
@@ -2544,10 +2911,7 @@ STATE_236_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_236_INPUT;
     }
-STATE_236_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_DROP_OUT_DIRECT");
-
-            goto TERMINAL_30_DIRECT;
+        goto TERMINAL_30_DIRECT;
 
 
     __quex_assert(false); /* No drop-through between states */
@@ -2557,38 +2921,33 @@ STATE_237_INPUT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-
-    if( input < 95) {
-        if( input < 65) {
-            if( input == 0 ) {
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0x5F) {
+        if( input < 0x41) {
+            if( input == 0x0 ) {
                 goto STATE_237_RELOAD;    /* \0 */
-            } else {
-                goto STATE_237_DROP_OUT_DIRECT;    /* [\1, '@'] */
             }
         } else {
-            if( input < 91) {
+            if( input < 0x5B) {
                 goto STATE_217;    /* ['A', 'Z'] */
-            } else {
-                goto STATE_237_DROP_OUT_DIRECT;    /* ['[', '^'] */
             }
         }
     } else {
-        if( input < 97) {
-            if( input == 95 ) {
+        if( input < 0x61) {
+            if( input == 0x5F ) {
                 goto STATE_217;    /* '_' */
-            } else {
-                goto STATE_237_DROP_OUT_DIRECT;    /* '`' */
             }
         } else {
-            if( input < 123) {
+            if( input < 0x7B) {
                 goto STATE_217;    /* ['a', 'z'] */
-            } else {
-                goto STATE_237_DROP_OUT_DIRECT;    /* ['{', oo] */
             }
         }
     }
 
+                          
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_DROP_OUT_DIRECT");
+
+            goto TERMINAL_10_DIRECT;
 
 STATE_237_RELOAD:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_RELOAD");
@@ -2599,10 +2958,7 @@ STATE_237_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
         goto STATE_237_INPUT;
     }
-STATE_237_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_DROP_OUT_DIRECT");
-
-            goto TERMINAL_10_DIRECT;
+        goto TERMINAL_10_DIRECT;
 
 
     __quex_assert(false); /* No drop-into __TERMINAL_ROUTER */
@@ -3050,17 +3406,15 @@ __REENTRY_PREPARATION:
 
     goto __REENTRY;
 
-    /* prevent compiler warning 'unused variable': use variables once in a part of the code*/
+    /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/
     /* that is never reached (and deleted by the compiler anyway).*/
-    if( 0 == 1 ) {
-        int unused = 0;
-        /* In some scenarios, the __TERMINAL_ROUTER is never required.
-         * Still, avoid the warning of 'label never used'.             */
-        goto __TERMINAL_ROUTER;
-        unused += (int)ONE_AND_ONLY.id;
-        unused += (int)QUEX_NAME(LexemeNullObject);
-        unused += (int)QUEX_NAME_TOKEN(DumpedTokenIdObject);
-    }
+    (void)ONE_AND_ONLY;
+    (void)QUEX_NAME(LexemeNullObject);
+    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);
+    QUEX_ERROR_EXIT("Unreachable code has been reached.\n");
+    /* In some scenarios, the __TERMINAL_ROUTER is never required.
+     * Still, avoid the warning of 'label never used'.             */
+    goto __TERMINAL_ROUTER;
 #   undef ONE_AND_ONLY
 #undef self
 }

@@ -3,6 +3,8 @@
 #include "tiny_lexer.h"
 #include "messaging-framework.h"
 
+/* #include <quex/code_base/buffer/Buffer_debug> */
+
 int 
 main(int argc, char** argv) 
 {        
@@ -35,9 +37,8 @@ main(int argc, char** argv)
         receive_n = messaging_framework_receive_to_internal_buffer();
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
-        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);  
         QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n-1);
-        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);  
+        /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
 
         /* -- Loop until the 'termination' token arrives */
         QUEX_NAME(token_p_switch)(&qlex, &token);

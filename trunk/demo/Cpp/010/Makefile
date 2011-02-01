@@ -28,10 +28,10 @@ endif
 
 COMPILER = g++ -ggdb -Wall -pedantic 
 
-CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
+CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS 
      # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
-     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
 
 CC_UTF8 = $(CC) -D__QUEX_OPTION_MESSAGE_UTF8 \
 		        -DQUEX_TYPE_CHARACTER=wchar_t \
@@ -54,11 +54,13 @@ fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE)
 %.exe:                      %.cpp $(OBJS) $(QUEX_CORE) 
 	$(CC)      -o $@ $< $(OBJS) 
 
-point.exe:                  point.cpp $(OBJS) $(QUEX_CORE) NON_UTF8
-	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+point.exe:                  point.cpp $(QUEX_CORE) NON_UTF8
+	# All related files must be compiled with fallback_n = 0
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
           
-re-point.exe:               re-point.cpp $(OBJS) $(QUEX_CORE) NON_UTF8
-	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS) 
+re-point.exe:               re-point.cpp $(QUEX_CORE) NON_UTF8
+	# All related files must be compiled with fallback_n = 0
+	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
           
 %_utf8.o:                   %_utf8.cpp $(QUEX_CORE) UTF8
 	$(CC_UTF8) -c $< -o $@ 
