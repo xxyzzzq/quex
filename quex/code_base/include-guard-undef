@@ -39,6 +39,9 @@
 #ifdef    __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
 #   undef __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
 #endif
+#ifdef    __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG                              
+#   undef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG                            
+#endif
 #ifdef    __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
 #   undef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
 #endif

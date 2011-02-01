@@ -14,6 +14,8 @@ main(int argc, char** argv)
     quex::tiny_lexer   qlex(MESSAGING_FRAMEWORK_BUFFER, 
                             MESSAGING_FRAMEWORK_BUFFER_SIZE,
                             MESSAGING_FRAMEWORK_BUFFER + 1); 
+    size_t             receive_n = (size_t)-1;
+    int                i = 0;
 
     if( QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0 ) {
         QUEX_ERROR_EXIT("This method fails if QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0\n"
@@ -22,11 +24,11 @@ main(int argc, char** argv)
 
     /* Iterate 3 times doing the same thing in order to illustrate
      * the repeated activation of the same chunk of memory. */
-    for(int i = 0; i < 3; ++i ) {
+    for(i = 0; i < 3; ++i ) {
         qlex.buffer_fill_region_prepare();
 
         /* -- Call the low lever driver to fill the fill region */
-        size_t receive_n = messaging_framework_receive_to_internal_buffer();
+        receive_n = messaging_framework_receive_to_internal_buffer();
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
         qlex.buffer_fill_region_finish(receive_n-1);
