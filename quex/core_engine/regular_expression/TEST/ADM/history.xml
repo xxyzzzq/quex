@@ -1,4 +1,4 @@
-<history date="Sat Jan 29 22:28:52 2011" element-n="379">
+<history date="Tue Feb  1 07:50:10 2011" element-n="380">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -1021,5 +1021,8 @@
     </day>
     <day year="2010" month="11" day="23">
         <crc-error time="08:29:51" application="test-eol-carriage-return-newline.py" choice="" database-crc="-685846345" real-crc="648675644"/>
+    </day>
+    <day year="2011" month="02" day="01">
+        <crc-error time="06:50:10" application="test-set-expressions.py" choice="" database-crc="1698415770" real-crc="-517472370"/>
     </day>
 </history>

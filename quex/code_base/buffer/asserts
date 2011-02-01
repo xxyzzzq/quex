@@ -80,9 +80,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
             if( iterator == Begin ) {
                 QUEX_ERROR_EXIT("Buffer limit code character appeared as first character in buffer.\n"
-                                "This is most probably a load failure.");
+                                "This is most probably a load failure.\n");
             } else {
-                QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.");
+                QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.\n");
             }
         }
     }

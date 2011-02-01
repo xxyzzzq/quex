@@ -343,10 +343,14 @@ def __snap_repetition_range(the_state_machine, stream):
     return result
 
 def create_ALL_BUT_NEWLINE_state_machine():
+    global Setup
     result = StateMachine()
     # NOTE: Buffer control characters are supposed to be filtered out by the code
     #       generator.
     trigger_set = NumberSet(Interval(ord("\n")).inverse()) 
+
+    if Setup.get_character_value_limit() != sys.maxint:
+        trigger_set.intersect_with(Interval(0, Setup.get_character_value_limit()))
 
     result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
     return result

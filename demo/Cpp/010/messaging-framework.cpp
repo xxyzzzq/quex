@@ -26,7 +26,7 @@ messaging_framework_receive(ELEMENT_TYPE** rx_buffer)
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
     const size_t          remainder_size =   messaging_framework_data_size() - 1 
                                            - (iterator - messaging_framework_data);
-    size_t                size = (size_t)(float(rand()) / float(RAND_MAX) * 5.0) + 1;
+    size_t                size = (size_t)((float)(rand()) / (float)(RAND_MAX) * 5.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
 
@@ -51,7 +51,7 @@ messaging_framework_receive_whole_characters(ELEMENT_TYPE** rx_buffer)
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
     const size_t          remainder_size =   messaging_framework_data_size() - 1 
                                            - (iterator - messaging_framework_data);
-    size_t                size = (size_t)(float(rand()) / float(RAND_MAX) * 5.0) + 1;
+    size_t                size = (size_t)((float)(rand()) / (float)(RAND_MAX) * 5.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
 
@@ -85,17 +85,18 @@ messaging_framework_receive_syntax_chunk(ELEMENT_TYPE** rx_buffer)
 {
     size_t         index_list[] = {0, 10, 29, 58, 72, 89, 98};
     static size_t  cursor = 0;
+    size_t         size   = (size_t)0;
 
     *rx_buffer = messaging_framework_data + index_list[cursor]; 
 
-    // Apply the messaging_framework_data + ... so that we compute in enties
-    // of ELEMENT_TYPE* and not '1'. Size shall be the number of characters.
-    const size_t Size =   (messaging_framework_data + index_list[cursor + 1]) 
-                        - (messaging_framework_data + index_list[cursor]);
+    /* Apply the messaging_framework_data + ... so that we compute in enties
+     * of ELEMENT_TYPE* and not '1'. Size shall be the number of characters. */
+    size =   (messaging_framework_data + index_list[cursor + 1]) 
+           - (messaging_framework_data + index_list[cursor]);
 
     cursor += 1;
 
-    return Size;
+    return size;
 }
 void 
 messaging_framework_release(ELEMENT_TYPE* buffer)
@@ -111,7 +112,7 @@ messaging_framework_receive_into_buffer(ELEMENT_TYPE* BufferBegin, size_t Buffer
     /* Simulate a low lever driver that is able to fill a specified position in memory. */
 {
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
-    size_t                size = (size_t)(float(rand()) / float(RAND_MAX) * 5.0) + 1;
+    size_t                size = (size_t)((float)(rand()) / (float)(RAND_MAX) * 5.0) + 1;
 
     assert(iterator < messaging_framework_data + messaging_framework_data_size());
     if( iterator + size >= messaging_framework_data + messaging_framework_data_size() - 1 ) 
@@ -132,14 +133,14 @@ messaging_framework_receive_into_buffer_syntax_chunk(ELEMENT_TYPE* BufferBegin, 
     size_t         index_list[] = {0, 10, 29, 58, 72, 89, 98};
     static size_t  cursor = 0;
 
-    // Apply the messaging_framework_data + ... so that we compute in enties
-    // of ELEMENT_TYPE* and not '1'. Size shall be the number of characters.
+    /* Apply the messaging_framework_data + ... so that we compute in enties
+     * of ELEMENT_TYPE* and not '1'. Size shall be the number of characters. */
     size_t size = (  (messaging_framework_data + index_list[cursor + 1]) 
                    - (messaging_framework_data + index_list[cursor])) * sizeof(ELEMENT_TYPE);
 
     if( size > BufferSize ) size = BufferSize; 
 
-    // If the target buffer cannot carry it, we drop it.
+    /* If the target buffer cannot carry it, we drop it. */
     memcpy(BufferBegin, messaging_framework_data + index_list[cursor], size); 
 
     cursor += 1;

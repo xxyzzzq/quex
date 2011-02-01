@@ -1,6 +1,6 @@
-#include<fstream>    
-#include<iostream> 
-#include<sstream> 
+#include <fstream>
+#include <iostream> 
+#include <sstream> 
 
 #include "tiny_lexer"
 #include "messaging-framework.h"
@@ -20,28 +20,28 @@ main(int argc, char** argv)
                         "Consider using the method described in 're-point.c'.");
     }
 
-    // Iterate 3 times doing the same thing in order to illustrate
-    // the repeated activation of the same chunk of memory.
+    /* Iterate 3 times doing the same thing in order to illustrate
+     * the repeated activation of the same chunk of memory. */
     for(int i = 0; i < 3; ++i ) {
         qlex.buffer_fill_region_prepare();
 
-        // -- Call the low lever driver to fill the fill region
+        /* -- Call the low lever driver to fill the fill region */
         size_t receive_n = messaging_framework_receive_to_internal_buffer();
 
-        // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
+        /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
         qlex.buffer_fill_region_finish(receive_n-1);
         /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
 
-        // -- Loop until the 'termination' token arrives
+        /* -- Loop until the 'termination' token arrives */
         (void)qlex.token_p_switch(&token);
         do {
             qlex.receive();
 
             if( token.type_id() != QUEX_TKN_TERMINATION )
-                cout << "Consider: " << string(token) << endl;
+                printf("Consider: %s\n", string(token).c_str());
 
             if( token.type_id() == QUEX_TKN_BYE ) 
-                cout << "##\n";
+                printf("##\n");
 
         } while( token.type_id() != QUEX_TKN_TERMINATION );
     }

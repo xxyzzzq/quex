@@ -74,7 +74,7 @@ def do(setup, command_line, argv):
                       "use command line option '--derived-class-file'.\n")
 
     if setup.buffer_element_size not in [-1, 1, 2, 4]:
-        error_msg("The setting of '--bytes-per-ucs-code-point' (or 'b') can only be\n" 
+        error_msg("The setting of '--buffer-element-size' (or '-b') can only be\n" 
                   "1, 2, or 4 (found %s)." % repr(setup.buffer_element_size))
 
     if setup.buffer_byte_order not in ["<system>", "little", "big"]:

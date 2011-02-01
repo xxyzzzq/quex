@@ -32,6 +32,7 @@ import quex.core_engine.regular_expression.auxiliary                 as aux
 import quex.core_engine.regular_expression.case_fold_expression      as case_fold_expression
 #
 from quex.core_engine.state_machine.core import StateMachine
+from quex.core_engine.interval_handling  import Interval
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.file_in                 import read_until_letter, \
                                                 read_identifier, \
@@ -42,6 +43,7 @@ from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
                                                           snap_replacement
+from quex.input.setup import setup as Setup
 
 __special_character_set_db = None
 
@@ -163,6 +165,8 @@ def snap_set_term(stream, PatternDict):
                 for set in set_list[1:]:
                     result.unite_with(set)
             result = result.inverse()
+            if Setup.get_character_value_limit() != -1:
+                result.intersect_with(Interval(0, Setup.get_character_value_limit()))
             return __debug_exit(result, stream)
 
         if L < 2:

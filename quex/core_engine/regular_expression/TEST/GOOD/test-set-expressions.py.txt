@@ -25,7 +25,7 @@ expression = "[: intersection([0-9], [a-z0-5]) :]"
 result     = ['0', '5']
 
 expression = "[: inverse([0-9]) :]"
-result     = [-oo, '/'], [':', oo]
+result     = [\0, '/'], [':', oo]
 
 And know something completely different ...
 
@@ -47,7 +47,7 @@ result     = init-state = 0L
 expression = "[:inverse([a]):]"
 result     = init-state = 2L
 00002() <~ 
-      == [-7FFFFFFF, 0060] [0062, 7FFFFFFE]  ==> 00003
+      == [0000, 0060] [0062, 7FFFFFFE]  ==> 00003
       <no epsilon>
 00003(A, S) <~ 
       <no epsilon>

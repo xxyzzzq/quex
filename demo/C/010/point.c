@@ -27,7 +27,7 @@ main(int argc, char** argv)
 
 
     /* Iterate 3 times doing the same thing in order to illustrate
-     * the repeated activation of the same chunk of memory.        */
+     * the repeated activation of the same chunk of memory. */
     for(i = 0; i < 3; ++i ) {
         QUEX_NAME(buffer_fill_region_prepare)(&qlex);
 
@@ -35,10 +35,11 @@ main(int argc, char** argv)
         receive_n = messaging_framework_receive_to_internal_buffer();
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
+        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);  
         QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n-1);
-        /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
+        QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5);  
 
-        /* -- Loop until the 'termination' token arrives                      */
+        /* -- Loop until the 'termination' token arrives */
         QUEX_NAME(token_p_switch)(&qlex, &token);
         do {
             QUEX_NAME(receive)(&qlex);
@@ -48,7 +49,7 @@ main(int argc, char** argv)
 
             if( token._id == QUEX_TKN_BYE ) 
                 printf("##\n");
-            
+
         } while( token._id != QUEX_TKN_TERMINATION );
     }
 

@@ -1,11 +1,12 @@
 #ifndef __INCLUDE_GUARD__MESSAGING_FRAMEWORK__
 #define __INCLUDE_GUARD__MESSAGING_FRAMEWORK__
 
-#include "tiny_lexer.h"
 
 #ifndef __QUEX_OPTION_MESSAGE_UTF8
+#   include "tiny_lexer.h"
 #   define ELEMENT_TYPE QUEX_TYPE_CHARACTER
 #else
+#   include "tiny_lexer_utf8.h"
 #   define ELEMENT_TYPE uint8_t
 #endif
 
@@ -23,4 +24,4 @@ extern size_t messaging_framework_receive_into_buffer_syntax_chunk(ELEMENT_TYPE*
 extern size_t messaging_framework_receive_to_internal_buffer();
 extern void   messaging_framework_release(ELEMENT_TYPE*);
 
-#endif /* __INCLUDE_GUARD__MESSAGING_FRAMEWORK__ */
+#endif /*_INCLUDE_GUARD__MESSAGING_FRAMEWORK_*/
