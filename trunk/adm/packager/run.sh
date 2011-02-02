@@ -158,18 +158,18 @@ function collect_packages()
     scriptfile=
     cat > /tmp/quex-packages/sftp-frs.sourceforge.net.sh << EOF
 cd uploads
-put quex-$1.7z                       /home/frs/project/q/qu/quex/Current
-put quex-$1.tar.gz                       /home/frs/project/q/qu/quex/Current
-put quex-$1.zip                          /home/frs/project/q/qu/quex/Current
-put quex_$1-0_i386.deb                   /home/frs/project/q/qu/quex/Current
-put quex-$1-0.i386.rpm                   /home/frs/project/q/qu/quex/Current
-put quex-$1-windows-installer.exe        /home/frs/project/q/qu/quex/Current
-put quex-$1-linux-installer.bin          /home/frs/project/q/qu/quex/Current
-put quex-$1-osx-installer.app.zip        /home/frs/project/q/qu/quex/Current
-put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/Current
-put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/Current
-cd /home/frs/project/q/qu/quex/Current
-mkdir ../HISTORY/OLD
+put quex-$1.7z                       /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1.tar.gz                       /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1.zip                          /home/frs/project/q/qu/quex/DOWNLOAD
+put quex_$1-0_i386.deb                   /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1-0.i386.rpm                   /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1-windows-installer.exe        /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1-linux-installer.bin          /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1-osx-installer.app.zip        /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/DOWNLOAD
+put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/DOWNLOAD
+cd /home/frs/project/q/qu/quex
+mkdir HISTORY/OLD
 rename quex-OLD.7z                           ../HISTORY/OLD/quex-OLD.7z
 rename quex-OLD.tar.gz                       ../HISTORY/OLD/quex-OLD.tar.gz
 rename quex-OLD.zip                          ../HISTORY/OLD/quex-OLD.zip   

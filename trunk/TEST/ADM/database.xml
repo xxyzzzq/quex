@@ -1,4 +1,4 @@
-<test-database execution-time-sec="188.27" date="Wed Feb  2 07:52:13 2011">
+<test-database execution-time-sec="188.27" date="Wed Feb  2 22:03:37 2011">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.40"> 
@@ -37,7 +37,7 @@
                <choice name="codec" result="OK" time_sec="1.79" crc="-416551666"/>
             </choice-list>
         </test>
-        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.11"> 
+        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" time-sum-sec="0.10"> 
             <application file-name="bug-2599228.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Developper" result="OK" time_sec="0.03" crc="1346908960"/>
@@ -45,7 +45,7 @@
                <choice name="FilesExist" result="OK" time_sec="0.05" crc="762666300"/>
             </choice-list>
         </test>
-        <test title="2001787 RE Problem with inverted whitespace" time-sum-sec="3.65"> 
+        <test title="2001787 RE Problem with inverted whitespace" time-sum-sec="3.64"> 
             <application file-name="bug-2001787.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iconv" result="OK" time_sec="1.96" crc="-1133373463"/>
@@ -80,7 +80,7 @@
                <choice name="codec" result="OK" time_sec="2.43" crc="1937036231"/>
             </choice-list>
         </test>
-        <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="0.81"> 
+        <test title="2937342 0.47.3 Regular expression parsing -- closing bracket." time-sum-sec="0.82"> 
             <application file-name="bug-2937342.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="299683308"/>
@@ -121,7 +121,7 @@
                <choice name="5" result="OK" time_sec="0.73" crc="-2109073766"/>
             </choice-list>
         </test>
-        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="6.91"> 
+        <test title="2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP" time-sum-sec="6.90"> 
             <application file-name="feature-2078087.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="GOTO" result="OK" time_sec="1.67" crc="1277117499"/>
@@ -130,7 +130,7 @@
                <choice name="GOSUB-2" result="OK" time_sec="1.68" crc="539787465"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="4.91"> 
+        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="4.92"> 
             <application file-name="bug-2161098-x.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="c_comments" result="OK" time_sec="1.63" crc="-105643959"/>
@@ -192,14 +192,14 @@
                <choice name="funny_comments" result="OK" time_sec="1.67" crc="-1261259321"/>
             </choice-list>
         </test>
-        <test title="2209142 0.33.1-pre-release" time-sum-sec="3.33"> 
+        <test title="2209142 0.33.1-pre-release" time-sum-sec="3.34"> 
             <application file-name="bug-2209142.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="error" result="OK" time_sec="1.66" crc="-665310968"/>
                <choice name="good" result="OK" time_sec="1.68" crc="-952518389"/>
             </choice-list>
         </test>
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="27.43"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="27.44"> 
             <application file-name="bug-1952133.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="29" result="OK" time_sec="3.98" crc="125506198"/>
@@ -246,7 +246,7 @@
         </test>
     </group>
     <group name="mabraham">
-        <test title="3109479 0.55.2 Error Transition to Forward Init State" time-sum-sec="2.33"> 
+        <test title="3109479 0.55.2 Error Transition to Forward Init State" time-sum-sec="2.32"> 
             <application file-name="bug-3109479.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.35" crc="818163954"/>
@@ -269,7 +269,7 @@
                <choice name="" result="OK" time_sec="0.19" crc="1520609401"/>
             </choice-list>
         </test>
-        <test title="2251359 (feature) Single-character token without name" time-sum-sec="1.88"> 
+        <test title="2251359 (feature) Single-character token without name" time-sum-sec="1.87"> 
             <application file-name="feature-2251359.sh" info-request-time="1296540026L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="good" result="OK" time_sec="0.80" crc="1728033802"/>
@@ -381,12 +381,6 @@
                <choice name="" result="OK" time_sec="0.08" crc="-429266748"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.08"> 
-            <application file-name="bug-1885846.sh" info-request-time="1290546211L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="2110266544"/>
-            </choice-list>
-        </test>
         <test title="1908092 0.23.5 uses --token-class without --token-class-file" time-sum-sec="0.29"> 
             <application file-name="bug-1908092.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -405,7 +399,7 @@
                <choice name="" result="OK" time_sec="0.45" crc="1814757686"/>
             </choice-list>
         </test>
-        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="4.42"> 
+        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="4.43"> 
             <application file-name="bug-1895500.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="iconv" result="OK" time_sec="2.51" crc="-1482504339"/>
@@ -518,6 +512,12 @@
                <choice name="" result="OK" time_sec="0.08" crc="-2033217112"/>
             </choice-list>
         </test>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.48"> 
+            <application file-name="bug-1887163.sh" info-request-time="1290546211L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.48" crc="1510346924"/>
+            </choice-list>
+        </test>
         <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.49"> 
             <application file-name="bug-1889702.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -530,9 +530,9 @@
                <choice name="" result="OK" time_sec="0.43" crc="642243735"/>
             </choice-list>
         </test>
-        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bug-1935701.exe" info-request-time="1296629344L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.570915"/>
+            <make-procedure success="False" time_sec="0.570915"/>
             <choice-list number="2" same_result="False">
                <choice name="FILE" result="OK" time_sec="0.00" crc="-953317363"/>
                <choice name="fstream" result="OK" time_sec="0.00" crc="-953317363"/>
@@ -566,7 +566,7 @@
                <choice name="NoModeDetection_ErrorCase" result="OK" time_sec="1.69" crc="-653972300"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" time-sum-sec="7.99"> 
+        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" time-sum-sec="8.00"> 
             <application file-name="bug-2095970-ntq.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Normal" result="OK" time_sec="1.66" crc="-1188795240"/>
@@ -626,10 +626,10 @@
                <choice name="" result="OK" time_sec="0.17" crc="-1800512920"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.48"> 
-            <application file-name="bug-1887163.sh" info-request-time="1290546211L" vanished="False"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.08"> 
+            <application file-name="bug-1885846.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.48" crc="1510346924"/>
+               <choice name="" result="OK" time_sec="0.08" crc="2110266544"/>
             </choice-list>
         </test>
     </group>
@@ -671,7 +671,7 @@
                <choice name="" result="OK" time_sec="0.21" crc="-1660635643"/>
             </choice-list>
         </test>
-        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.56"> 
+        <test title="2819045 0.41.2 Some internal assertion fails on..." time-sum-sec="0.57"> 
             <application file-name="bug-2819045.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="0.23" crc="-424122349"/>
@@ -712,7 +712,7 @@
                <choice name="" result="OK" time_sec="0.62" crc="-417698345"/>
             </choice-list>
         </test>
-        <test title="3030640 0.50.1 Adding .hpp extension to generated headers" time-sum-sec="1.40"> 
+        <test title="3030640 0.50.1 Adding .hpp extension to generated headers" time-sum-sec="1.41"> 
             <application file-name="feature-3030640.sh" info-request-time="1290546211L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="pp" result="OK" time_sec="0.19" crc="-311783427"/>
