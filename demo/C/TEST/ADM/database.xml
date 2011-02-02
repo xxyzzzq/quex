@@ -1,4 +1,4 @@
-<test-database execution-time-sec="173.86" date="Wed Feb  2 07:53:55 2011">
+<test-database execution-time-sec="173.85" date="Wed Feb  2 22:03:37 2011">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.16"> 
         <application file-name="makefile-diff.sh" info-request-time="1290545571L" vanished="False"/>
@@ -69,7 +69,7 @@
                <choice name="UTF16BE-BOM" result="OK" time_sec="1.16" crc="591404884"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="7.56"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="7.57"> 
             <application file-name="003-icu.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="2.54" crc="-1292672989"/>
@@ -150,7 +150,7 @@
                <choice name="" result="OK" time_sec="14.94" crc="248250308"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="31.50"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="31.52"> 
             <application file-name="010.sh" info-request-time="1296592533L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="1.58" crc="595815643"/>
@@ -175,7 +175,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="5.28"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="5.27"> 
             <application file-name="011.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="1.33" crc="-1827787599"/>
@@ -186,7 +186,7 @@
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" time-sum-sec="2.68"> 
+        <test title="Engine Encoding UTF16" time-sum-sec="2.67"> 
             <application file-name="011b.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="LE" result="OK" time_sec="1.34" crc="2001714839"/>

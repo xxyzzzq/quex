@@ -87,7 +87,6 @@ class Construction:
             cost       += effort(private_tm)
             children_private_tm_db[child_index] = private_tm
 
-
 def __build_best_construction(SM, parent_tm, node):
     # Start with all children present
     child_list = node.child_list()
