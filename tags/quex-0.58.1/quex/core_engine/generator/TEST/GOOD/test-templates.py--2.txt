@@ -1,0 +1,103 @@
+--(Transition Targets)--------------------------------------------------
+
+#ifdef QUEX_OPTION_COMPUTED_GOTOS
+    const QUEX_TYPE_GOTO_LABEL     (template_1_target_0[6]) = { &&STATE_1, &&STATE_1_DROP_OUT_DIRECT, &&STATE_1, &&STATE_2, &&STATE_2, &&STATE_2, };
+    const QUEX_TYPE_GOTO_LABEL     (template_1_target_1[6]) = { &&STATE_2, &&STATE_3, &&STATE_1, &&STATE_1_DROP_OUT_DIRECT, &&STATE_2, &&STATE_2, };
+#else /* not QUEX_OPTION_COMPUTED_GOTOS */
+    const QUEX_TYPE_GOTO_LABEL     (template_1_target_0[6]) = { 1, -1, 1, 2, 2, 2, };
+    const QUEX_TYPE_GOTO_LABEL     (template_1_target_1[6]) = { 2, 3, 1, -1, 2, 2, };
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
+
+
+--(Template Code)-------------------------------------------------------
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_100:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_100");
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "0");
+    template_state_key = 0;
+    goto TEMPLATE_1;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_200:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_200");
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "1");
+    template_state_key = 1;
+    goto TEMPLATE_1;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_202:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_202");
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "2");
+    template_state_key = 2;
+    goto TEMPLATE_1;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_300:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_300");
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "3");
+    template_state_key = 3;
+    goto TEMPLATE_1;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_400:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_400");
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "4");
+    template_state_key = 4;
+    goto TEMPLATE_1;
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_500:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_500");
+    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "5");
+    template_state_key = 5;
+    goto TEMPLATE_1;
+
+    __quex_assert(false); /* No drop-through between states */
+TEMPLATE_1:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TEMPLATE_1");
+STATE_1_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    if( input < 0xA) {
+        QUEX_GOTO_STATE(template_1_target_0[template_state_key]);    /* [-oo, '\t'] */
+    } else {
+        QUEX_GOTO_STATE(template_1_target_1[template_state_key]);    /* ['\n', oo] */
+    }
+
+STATE_1_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
+
+
+STATE_1_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_1_INPUT;
+    }
+    QUEX_GOTO_last_acceptance();
+
+
+
+--(State Router)--------------------------------------------------------
+
+#ifndef QUEX_OPTION_COMPUTED_GOTOS
+__quex_assert(false);
+STATE_ROUTER:
+    switch( target_state_index ) {
+    case -1: {goto STATE_1_DROP_OUT_DIRECT;    }
+    case 1: {goto STATE_1;    }
+    case 2: {goto STATE_2;    }
+    case 3: {goto STATE_3;    }
+    }
+    __quex_assert(false);
+#endif /* QUEX_OPTION_COMPUTED_GOTOS */
+
+

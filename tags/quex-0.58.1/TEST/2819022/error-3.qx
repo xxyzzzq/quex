@@ -1,0 +1,8 @@
+mode standard 
+{  
+<<EOF>>      => QUEX_TKN_TERMINATION; 
+[ \r\t\n]+   {}
+[b-z]+       => QUEX_TKN_WORD(Lexeme);
+[b-z]+/'s/   => QUEX_TKN_QUOTE_S_PRE_COND(Lexeme); 
+'            => QUEX_TKN_OTHER(Lexeme); 
+} 

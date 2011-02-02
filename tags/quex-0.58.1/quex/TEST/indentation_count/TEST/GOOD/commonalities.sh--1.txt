@@ -1,0 +1,4 @@
+src/error-1.qx:8:error: Pattern '(\r\n)|\n' matches a superset of what is matched by
+src/error-1.qx:14:error: pattern '\n' while the former has precedence.
+src/error-1.qx:14:error: The latter can never match.
+src/error-1.qx:14:error: You may switch the sequence of definition to avoid this error.

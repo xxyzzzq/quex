@@ -1,0 +1,21 @@
+define {
+	P_WORD	[a-z]+
+	P_EMAIL [a-z\-]+"@"[a-z]+
+}
+
+token {
+   WORD;
+   EMAIL;
+   FAILED;
+}
+
+mode ONE_AND_ONLY
+{
+    <<EOF>>     => QUEX_TKN_TERMINATION;
+    {P_EMAIL}	=> QUEX_TKN_EMAIL(Lexeme);
+    {P_WORD}	=> QUEX_TKN_WORD(Lexeme);
+    <<FAIL>>	=> QUEX_TKN_FAILED(Lexeme);
+}
+
+
+

@@ -1,0 +1,64 @@
+--(Path Definitions)----------------------------------------------------
+
+    const QUEX_TYPE_CHARACTER      (path_walker_7_base[7]) = {
+    99, 111, 110, 103, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'c''o''n''g''o' */
+
+    };
+    const QUEX_TYPE_CHARACTER*     path_1 = path_walker_7_base + 0;
+
+
+--(Pathwalker Code)-----------------------------------------------------
+
+    __quex_assert(false); /* No drop-through between states */
+STATE_1:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1");
+   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
+    path_iterator = path_1 + 0;
+    goto PATH_WALKER_7;
+
+    __quex_assert(false); /* No drop-through between states */
+PATH_WALKER_7:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_7");
+STATE_7_INPUT:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_INPUT");
+
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+
+    if( input == *path_iterator ) {
+        ++path_iterator;
+        goto PATH_WALKER_7;
+    } else if(*path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE) {
+        --(me->buffer._input_p);
+        goto STATE_6;
+    }
+    switch( input ) {
+    case 0x0: goto STATE_7_RELOAD;
+    case 0xA: goto STATE_1;
+    case 0x14: goto STATE_2;
+    case 0x40: goto STATE_1;
+    }
+
+STATE_7_DROP_OUT_DIRECT:
+        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_DROP_OUT_DIRECT");
+
+        QUEX_GOTO_last_acceptance();
+
+
+STATE_7_RELOAD:
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_7_RELOAD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                       post_context_start_position, PostContextStartPositionN);
+        goto STATE_7_INPUT;
+    }
+    QUEX_GOTO_last_acceptance();
+
+
+
+--(Involved State Indices)----------------------------------------------
+
+set([1L, 2L, 3L, 4L, 5L])
+

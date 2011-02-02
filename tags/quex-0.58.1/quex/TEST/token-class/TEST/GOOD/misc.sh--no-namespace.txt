@@ -1,0 +1,12 @@
+class QToken;
+inline void    QUEX_NAME_TOKEN(construct)(QToken* __this);
+inline void    QUEX_NAME_TOKEN(destruct)(QToken* __this);
+inline void    QUEX_NAME_TOKEN(copy)(QToken* me, const QToken* That);
+inline bool    QUEX_NAME_TOKEN(take_text)(QToken*            __this, 
+class QToken {
+    QToken();
+    QToken(const QToken& That);
+    QToken& operator=(const QToken& That) 
+    ~QToken();
+        friend void QUEX_NAME_TOKEN(copy)(QToken* me, const QToken* That);
+        friend bool QUEX_NAME_TOKEN(take_text)(QToken*            __this, 
