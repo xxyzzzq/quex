@@ -1,11 +1,12 @@
-import sys
-import bisect
 # import array
 
 from   quex.core_engine.interval_handling import NumberSet, Interval
 from   quex.frs_py.file_in                import error_msg
 
-from copy import deepcopy
+from   copy import deepcopy
+import sys
+import bisect
+from   operator import attrgetter
 
 # definitions for 'history items':
 INTERVAL_BEGIN            = True
@@ -233,7 +234,7 @@ class TransitionMap:
                 history.append(history_item(interval.end, INTERVAL_END, target_idx))
 
         # (*) sort history according to position
-        history.sort(lambda a, b: cmp(a.position, b.position))
+        history.sort(key=attrgetter("position"))
 
         return history      
 

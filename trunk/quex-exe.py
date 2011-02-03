@@ -68,9 +68,9 @@ except KeyboardInterrupt:
     print
     error_msg("#\n# Keyboard interrupt -- exiting while loading modules unfinished.\n#")
 
-except Exception, x:
-   on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
-                " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+#except Exception, x:
+#   on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
+#                " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
 if __name__ == "__main__":
     try:
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         print
         error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
-    except Exception, x:
-        on_exception(x, "Exception occured -- please, report a bug under\n" + \
-                        " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    #except Exception, x:
+    #    on_exception(x, "Exception occured -- please, report a bug under\n" + \
+    #                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 

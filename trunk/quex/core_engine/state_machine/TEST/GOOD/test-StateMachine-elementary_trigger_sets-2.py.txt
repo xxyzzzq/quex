@@ -10,7 +10,7 @@ states machine =  init-state = 0L
       == 'b' ==> 00001
       <no epsilon>
 
-elementary trigger sets =  [[[100L], [[98]]]]
+elementary trigger sets =  [([100L], [[98]])]
 98 11.000000
 98 11.000000
 98 11.800000
@@ -30,7 +30,7 @@ states machine =  init-state = 0L
 00003() <~ 
       <no epsilon>
 
-elementary trigger sets =  [[[100L], [[98, 99]]]]
+elementary trigger sets =  [([100L], [[98, 99]])]
 98 11.000000
 99 11.000000
 99 11.800000
