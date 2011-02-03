@@ -406,7 +406,8 @@ class NumberSet:
             break
 
         # (*) find the last interval that is concerned with the cut
-        toucher_list = [ i ]
+        toucher_front = i 
+        toucher_back  = i
 
         if remainder_up == None and i != len(self.__intervals) - 1:
             for x in self.__intervals[i+1:]:
@@ -414,7 +415,7 @@ class NumberSet:
                 # (1) last interval was swallowed complety, current interval has no intersection
                 if Y.end <= x.begin: break
                 # (2) INTERSECTION (implicit)
-                toucher_list.append(i)
+                toucher_back = i
                 # (2a) last intersecting interval (probably) not yet reached
                 if Y.end > x.end:   continue
                 # (2b) last cutting leaves an upper interval
@@ -426,16 +427,8 @@ class NumberSet:
         ## print "##", remainder_up
         ## print "##", toucher_list
 
-        # (*) build new list of intervals
-        #     (all overlaps are deleted, i.e. not added because they are
-        #      replaced by the union with the NewInterval)
-        # NOTE: The indices need to be adapted, since if for example
-        #       interval '3' was an overlapper, and so '5' then if
-        #       '3' is deleted, '5' comes at position '5'.
-        offset = -1
-        for i in toucher_list:
-            offset += 1
-            del self.__intervals[i - offset]
+        # Delete all intervals that touched the 'cut interval'
+        del self.__intervals[toucher_front:toucher_back+1]
 
         # insert the upper remainder first, so that it comes after the lower remainder
         if remainder_up  != None: self.__intervals.insert(insertion_index, remainder_up)
@@ -579,8 +572,8 @@ class NumberSet:
 
     def has_intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
-        if   len(self.__intervals) == 0:  return False
-        elif len(Other.__intervals) == 0: return False
+        if   len(self.__intervals) == 0:                                   return False
+        elif Other.__class__ == NumberSet and len(Other.__intervals) == 0: return False
 
         self_begin = self.__intervals[0].begin
         self_end   = self.__intervals[-1].end
@@ -597,6 +590,11 @@ class NumberSet:
                 if x.begin < y.end or y.begin < x.end: return True
 
             return False
+
+        Other_begin = Other.__intervals[0].begin
+        Other_end   = Other.__intervals[-1].end
+        if Other_end   < self_begin: return False
+        if Other_begin > self_end:   return False
 
         for x in Other.__intervals:
             if x.end < self_begin:   continue

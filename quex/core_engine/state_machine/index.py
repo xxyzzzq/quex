@@ -30,8 +30,7 @@ def map_state_combination_to_index(cc_combination):
     """Returns index for the given combination. If the given combination
     does **not** have an index, it gets a new one. Else the existing one is
     returned."""
-    cc_combination.sort()
-    key_str = repr(cc_combination)
+    key_str = repr(sorted(cc_combination))
 
     if not __map_combination_to_index.has_key(key_str):
         # use state_machine.index.get() to get a new unique index for the combination

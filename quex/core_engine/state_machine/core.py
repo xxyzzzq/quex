@@ -1,6 +1,3 @@
-import sys
-from copy import copy, deepcopy
-
 from   quex.frs_py.string_handling import blue_print
 #
 from   quex.core_engine.interval_handling        import NumberSet, Interval
@@ -8,6 +5,10 @@ import quex.core_engine.state_machine.index      as     state_machine_index
 from   quex.core_engine.state_machine.transition_map  import *
 from   quex.core_engine.state_machine.state_core_info import StateCoreInfo
 from   quex.core_engine.state_machine.origin_list     import StateOriginList
+
+import sys
+from   copy import copy, deepcopy
+from   operator import attrgetter
 
 
 class State:
@@ -422,13 +423,41 @@ class StateMachine:
              T0, T2                      [---)     [)
              T0, T1, T2                      [-----)
         """
-        self._DEBUG = {}
+        # For Documentation Purposes: The following approach has been proven to be SLOWER
+        #                             then the one currently implemented. May be, some time
+        #                             it can be tweaked to be faster.
+        #
+        #                             Also, it is not proven to be correct! 
+        ##
+        ## combination_list = []
+        ## for state_index in StateIdxList:
+        ##     state = self.states[state_index]
+        ##     for target_index, trigger_set in state.transitions().get_map().iteritems():
+        ##         target_epsilon_closure = epsilon_closure_db[target_index] 
+        ##         # Delay the 'deepcopy' of the trigger set to the point, when it is actually needed
+        ##         remaining_trigger_set  = None
+        ##         for target_state_set, existing_trigger_set in combination_list:
+        ##             if not existing_trigger_set.has_intersection(trigger_set): continue
+        ##             target_state_set.update(target_epsilon_closure)
+        ##             # We want to subtract from the set, so now, the remaining_trigger_set must be present
+        ##             if remaining_trigger_set == None:
+        ##                 remaining_trigger_set = deepcopy(trigger_set)
+        ##             remaining_trigger_set.subtract(existing_trigger_set)
+        ##         
+        ##         if remaining_trigger_set == None:
+        ##             combination_list.append([set(target_epsilon_closure), trigger_set])
+        ##             
+        ##         elif not remaining_trigger_set.is_empty():
+        ##             combination_list.append([set(target_epsilon_closure), remaining_trigger_set])
+        ##             
+        ## return combination_list
 
-        def DEBUG_print_history(history):
-            txt = ""
-            for item in history:
-                txt += repr(item) + "\n"
-            print txt
+
+        #def DEBUG_print_history(history):
+        #    txt = ""
+        #    for item in history:
+        #        txt += repr(item) + "\n"
+        #    print txt
 
         # (*) accumulate the transitions for all states in the state list.
         #     transitions to the same target state are combined by union.
@@ -436,19 +465,18 @@ class StateMachine:
         for state_idx in StateIdxList:
             # -- trigger dictionary:  target_idx --> trigger set that triggers to target
             line_up = self.states[state_idx].transitions().get_trigger_set_line_up() 
-            # NOTE: Doublicate entries in history are perfectly reasonable at this point,
+            # NOTE: Duplicate entries in history are perfectly reasonable at this point,
             #       simply if two states trigger on the same character range to the same 
             #       target state. When ranges are opened/closed via the history items
-            #       this algo keeps track of doublicates (see below).
+            #       this algo keeps track of duplicates (see below).
             history.extend(line_up)
 
         # (*) sort history according to position
-        history.sort(lambda a, b: cmp(a.position, b.position))
+        history.sort(key = attrgetter("position")) # lambda a, b: cmp(a.position, b.position))
         ## DEBUG_print_history(history)
 
         # (*) build the elementary subset list 
         combinations = {}                             # use dictionary for uniqueness
-        map_key_str_to_target_index_combination = {}  # use dictionary for uniqueness 
         current_interval_begin = None
         current_target_indices = {}          # use dictionary for uniqueness
         current_target_epsilon_closure = []
@@ -462,13 +490,15 @@ class StateMachine:
                current_target_indices.keys() != []:
 
                 interval = Interval(current_interval_begin, item.position)
+
+                current_target_epsilon_closure.sort()             
                 key_str  = repr(current_target_epsilon_closure)
-                if not combinations.has_key(key_str):   
-                    combinations[key_str] = NumberSet(interval, ArgumentIsYoursF=True)
-                    map_key_str_to_target_index_combination[key_str] = \
-                                     current_target_epsilon_closure
+                combination = combinations.get(key_str)
+                if combination == None:
+                    combinations[key_str] = (current_target_epsilon_closure, \
+                                             NumberSet(interval, ArgumentIsYoursF=True))
                 else:
-                    combinations[key_str].unite_with(interval)
+                    combination[1].unite_with(interval)
            
             # -- BEGIN / END of interval:
             #    add or delete a target state to the set of currently considered target states
@@ -489,17 +519,11 @@ class StateMachine:
             current_target_epsilon_closure = \
                 self.get_epsilon_closure_of_state_set(current_target_indices.keys(),
                                                       epsilon_closure_db)
-            current_target_epsilon_closure.sort()             
-    
             # -- set the begin of interval to come
             current_interval_begin = item.position                      
     
         # (*) create the list of pairs [target-index-combination, trigger_set] 
-        result = []
-        for key_str, target_index_combination in map_key_str_to_target_index_combination.items():
-            result.append([target_index_combination, combinations[key_str]])
-    
-        return result
+        return combinations.values()
 
     def get_acceptance_state_list(self, 
                                   ReturnNonAcceptanceTooF=False, 
