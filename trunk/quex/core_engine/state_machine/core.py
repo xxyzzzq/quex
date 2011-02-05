@@ -428,7 +428,7 @@ class StateMachine:
         #                             it can be tweaked to be faster.
         #
         #                             Also, it is not proven to be correct! 
-        ##
+        #
         ## combination_list = []
         ## for state_index in StateIdxList:
         ##     state = self.states[state_index]
@@ -441,8 +441,9 @@ class StateMachine:
         ##             target_state_set.update(target_epsilon_closure)
         ##             # We want to subtract from the set, so now, the remaining_trigger_set must be present
         ##             if remaining_trigger_set == None:
-        ##                 remaining_trigger_set = deepcopy(trigger_set)
-        ##             remaining_trigger_set.subtract(existing_trigger_set)
+        ##                 remaining_trigger_set = trigger_set.difference(existing_trigger_set)
+        ##             else:
+        ##                 remaining_trigger_set.subtract(existing_trigger_set)
         ##         
         ##         if remaining_trigger_set == None:
         ##             combination_list.append([set(target_epsilon_closure), trigger_set])

@@ -78,8 +78,8 @@ print(QUEX_TYPE_ANALYZER* qlex, const char* Str1,
       const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
 {
     space(qlex->include_depth);
-    printf(Str1);
-    if( Str2 != 0x0 ) printf(Str2);
-    if( Str3 != 0x0 ) printf(Str3);
+    printf("%s", Str1);
+    if( Str2 != 0x0 ) printf("%s", Str2);
+    if( Str3 != 0x0 ) printf("%s", Str3);
     printf("\n");
 }

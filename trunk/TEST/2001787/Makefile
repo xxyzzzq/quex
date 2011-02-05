@@ -7,7 +7,7 @@ lexer-iconv: Simple.cpp
 		-ggdb                         \
 		-o $@                         \
 		-D'CONVERTER_ENCODING="UTF8"' \
-		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV >& tmp.txt
+		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV > tmp.txt 2>&1
 	@cat tmp.txt
 	@rm  tmp.txt
 	
@@ -19,7 +19,7 @@ lexer-icu: Simple.cpp
 		-ggdb                         \
 		-o $@                         \
 		-D'CONVERTER_ENCODING="UTF8"' \
-		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICU >& tmp.txt
+		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICU > tmp.txt 2>&1
 	@cat tmp.txt
 	@rm  tmp.txt
 

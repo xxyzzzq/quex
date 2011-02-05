@@ -40,7 +40,7 @@ main(int argc, char** argv)
         char* lexeme = (char*)max_token->pretty_char_text().c_str();
         int   L      = (int)max_token->text.length();
 
-        printf(lexeme);
+        printf("%s", lexeme);
 
         for(int i=0; i < 10 - L ; ++i) printf(" ");
         printf("\t");

@@ -41,7 +41,7 @@ lexer.o: ../lexer.cpp Simple.cpp
 	$(CC) -Wall $< -ggdb -o $@
 
 Simple.cpp: simple.qx
-	@quex -i simple.qx --engine Simple  >& tmp.txt
+	@quex -i simple.qx --engine Simple  > tmp.txt 2>&1
 
 # (*) HELPERS __________________________________________________________________
 mostlyclean:

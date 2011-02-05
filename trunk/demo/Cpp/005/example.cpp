@@ -74,7 +74,7 @@ print_token(QUEX_TYPE_ANALYZER* qlex, QUEX_TYPE_TOKEN* token_p, bool TextF /* = 
 { 
     space(qlex->include_depth);
     printf("%i: (%i)", (int)token_p->line_number(), (int)token_p->column_number());
-    printf(token_p->type_id_name().c_str());
+    printf("%s", token_p->type_id_name().c_str());
     if( TextF ) printf("\t'%s'", (char*)token_p->text.c_str());
     printf("\n");
 }
@@ -84,8 +84,8 @@ print(QUEX_TYPE_ANALYZER* qlex, const char* Str1,
       const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
 {
     space(qlex->include_depth);
-    printf(Str1);
-    if( Str2 != 0x0 ) printf(Str2);
-    if( Str3 != 0x0 ) printf(Str3);
+    printf("%s", Str1);
+    if( Str2 != 0x0 ) printf("%s", Str2);
+    if( Str3 != 0x0 ) printf("%s", Str3);
     printf("\n");
 }
