@@ -23,13 +23,13 @@ error: ../lexer-simply.cpp ERROR
 	$(CC) $< Simple.cpp -DPRINT_LINE_COLUMN -o $@ 
 
 ERROR:
-	@quex -i error.qx --engine Simple --token-policy single >& tmp.txt
+	@quex -i error.qx --engine Simple --token-policy single > tmp.txt 2>&1
 
 good: ../lexer-simply.cpp GOOD
 	$(CC) $< Simple.cpp -DPRINT_LINE_COLUMN -o $@ 
 
 GOOD:
-	@quex -i good.qx --engine Simple --token-policy single >& tmp.txt
+	@quex -i good.qx --engine Simple --token-policy single > tmp.txt 2>&1
 
 
 # (*) HELPERS __________________________________________________________________

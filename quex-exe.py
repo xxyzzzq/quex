@@ -23,7 +23,7 @@ except:
     print("error: This version of quex was not implemented for Python >= 3.0")
     print("error: Please, use Python versions 2.x.")
     sys.exit(-1)
-       
+
 #def __exeption_handler(TheException):
 #    if isinstance(TheException, AssertionError):
 #        error_msg("Assertion error -- please report a bug under\n" + \
@@ -72,6 +72,13 @@ except KeyboardInterrupt:
 #   on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
 #                " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
+try:
+    pass
+    import psyco
+    psyco.full()
+except ImportError:
+    pass
+
 if __name__ == "__main__":
     try:
         core._exception_checker()

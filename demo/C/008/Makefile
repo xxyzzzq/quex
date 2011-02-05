@@ -2,7 +2,7 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-.PHONY: clean
+.PHONY: clean GENERATE
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
@@ -57,7 +57,9 @@ $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
 	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
-$(LEXER_SOURCES): $(LEXER_FILE) $(PARSER_NAME).tab.c
+$(LEXER_SOURCES): GENERATE
+
+GENERATE: $(LEXER_FILE) $(PARSER_NAME).tab.c
 	quex -i $(LEXER_FILE) --engine $(LEXER_NAME) --token-prefix TKN_ \
 		  --language C                                               \
           --foreign-token-id-file Calc_token-ids.h
