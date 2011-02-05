@@ -1,7 +1,7 @@
-<test-database execution-time-sec="231.06" date="Sat Feb  5 01:28:14 2011">
+<test-database execution-time-sec="253.08" date="Sat Feb  5 09:20:13 2011">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" time-sum-sec="3.70"> 
+        <test title="Sun Microsystem's sunCC" time-sum-sec="3.71"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="FAIL" time_sec="0.50" crc="-240093176"/>
@@ -12,20 +12,20 @@
                <choice name="006" result="FAIL" time_sec="0.55" crc="-592177934"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" time-sum-sec="3.73"> 
-            <application file-name="other-compilers-intel.sh" info-request-time="1290545571L" vanished="False"/>
+        <test title="Intel's icpc" time-sum-sec="25.70"> 
+            <application file-name="other-compilers-intel.sh" info-request-time="1296893876L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="000" result="FAIL" time_sec="0.49" crc="-1285689249"/>
-               <choice name="001" result="FAIL" time_sec="0.49" crc="-1111306024"/>
-               <choice name="002" result="FAIL" time_sec="0.61" crc="-593582233"/>
-               <choice name="003" result="FAIL" time_sec="1.08" crc="-1464201274"/>
-               <choice name="005" result="FAIL" time_sec="0.49" crc="-740077430"/>
-               <choice name="006" result="FAIL" time_sec="0.57" crc="-1363480285"/>
+               <choice name="000" result="OK" time_sec="3.90" crc="-1285689249"/>
+               <choice name="001" result="OK" time_sec="3.48" crc="-1111306024"/>
+               <choice name="002" result="OK" time_sec="4.73" crc="-593582233"/>
+               <choice name="003" result="OK" time_sec="6.40" crc="-1464201274"/>
+               <choice name="005" result="OK" time_sec="3.78" crc="-740077430"/>
+               <choice name="006" result="OK" time_sec="3.42" crc="-1363480285"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="6.20"> 
+        <test title="Single Mode Example" time-sum-sec="6.19"> 
             <application file-name="000.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.25" crc="-584949883"/>
@@ -34,7 +34,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="6.43"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="6.44"> 
             <application file-name="001.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="3.43" crc="1133630677"/>
@@ -52,7 +52,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="20.54"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="20.55"> 
             <application file-name="003.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="4.39" crc="766281751"/>
@@ -82,7 +82,7 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="10.77"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="10.78"> 
             <application file-name="004.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="6.01" crc="-1383033063"/>
@@ -91,7 +91,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="13.10"> 
+        <test title="Including Files" time-sum-sec="13.11"> 
             <application file-name="005.sh" info-request-time="1290545571L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="3.60" crc="256352848"/>

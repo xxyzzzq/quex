@@ -666,7 +666,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * LOOP:  It remains to interpret 'remaining_character_n' number of characters. Since 
          *        the interpretation is best done using a buffer, we do this in chunks.      */ 
         size_t               remaining_character_n = (size_t)ForwardN;
-        const size_t         ChunkSize             = (size_t)QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+        const size_t         ChunkSize             = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
         QUEX_TYPE_CHARACTER  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
 
         __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
