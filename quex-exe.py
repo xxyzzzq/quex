@@ -74,8 +74,8 @@ except KeyboardInterrupt:
     
 try:
     pass
-    import psyco
-    psyco.full()
+    #import psyco
+    #psyco.full()
 except ImportError:
     pass
 
