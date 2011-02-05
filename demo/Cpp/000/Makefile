@@ -19,12 +19,16 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb 
+COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -W
+ADD_FLAGS :=#
 
-CC = $(COMPILER) -c \
-	 -I./ -I$(QUEX_PATH)              \
-	 -Wall -Wconversion -pedantic     \
-	 $(CCFLAG_ASSERTS) 
+ifneq (,$(findstring sun, $(COMPILER)))
+	ADD_FLAGS := +w
+endif	
+
+CC = $(COMPILER) -c       \
+	 -I./ -I$(QUEX_PATH)  \
+	 $(ADD_FLAGS) $(CCFLAG_ASSERTS) 
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS

@@ -14,9 +14,9 @@ if "--hwut-info" in sys.argv:
 
 
 print "Plain Reply:"
-for format in plotter.get_supported_graphic_formats():
+for format in sorted(plotter.get_supported_graphic_formats()):
     print format
 
 print "Pretty Reply:"
-for format in plotter.get_supported_graphic_format_description().split(","):
+for format in sorted(plotter.get_supported_graphic_format_description().split(",")):
     print format

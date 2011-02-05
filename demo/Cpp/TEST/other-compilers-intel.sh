@@ -4,5 +4,5 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "CHOICES:  000, 001, 002, 003, 005, 006"
     exit
 fi
-source /opt/intel/cc/10.1.018/bin/iccvars.sh
-source core.sh $1 DEBUG COMPILER='icpc'
+source /opt/intel/composerxe-2011.2.137/bin/compilervars.sh ia32
+source core.sh $1 DEBUG COMPILER=icpc

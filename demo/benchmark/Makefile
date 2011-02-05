@@ -87,6 +87,9 @@ run/lexer-quex: out/quex_scan.cpp $(SOURCES)
 run/lexer-quex.s:
 	$(CC)     -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -c -g -Wa,-a,-ad  > $@
 
+out/quex_scan.E:
+	$(CC)     -DANALYZER_GENERATOR_QUEX out/quex_scan.cpp in/quex/adaption.c -E -o $@
+
 run/lexer-quex-lc: out/quex_scan.cpp $(SOURCES) 
 	$(CC_LC) -DANALYZER_GENERATOR_QUEX $< $(SOURCES) in/quex/adaption.c -o $@ 
 
