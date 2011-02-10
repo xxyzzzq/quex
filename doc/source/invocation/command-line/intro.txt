@@ -572,3 +572,48 @@ this feature:
         Lists all possible graphic formats for which quex can produce transition
         graphs.
 
+The following options control the comment which is added to the generated code:
+
+.. cmdoption:: --comment-state-machine
+
+        With this option set a comment is generated that shows all state transitions
+        of the analyzer in a comment at the begin of the analyzer function. The format
+        follows the scheme presented in the following example
+
+        .. code-block:: cpp
+
+            /* 
+             ...
+             * 02353(A, S) <~ (117, 398, A, S)
+             *       <no epsilon>
+             * 02369(A, S) <~ (394, 1354, A, S), (384, 1329)
+             *       == '=' ==> 02400
+             *       <no epsilon>
+             ...
+
+        It means that state 2369 is an acceptance state (flag 'A') and it should store
+        the input position ('S'), if no backtrack elimination is applied. It originates
+        from pattern '394' which is also an acceptance state and '384'. It transits to
+        state 2400 on the event of a '=' character.
+
+.. cmdoption:: --comment-mode-patterns
+
+        If this option is set a comment is printed that shows what pattern is present 
+        in a mode and from what mode it is inherited. The comment follows the following
+        scheme:
+
+        .. code-block:: cpp
+
+               /* MODE: PROGRAM
+                * 
+                *     PATTERN-ACTION PAIRS:
+                *       (117) ALL:     [ \r\n\t]
+                *       (119) CALC_OP: "+"|"-"|"*"|"/"
+                *       (121) PROGRAM: "//"
+                ...
+
+        This means, that there is a mode ``PROGRAM``. The first three pattern are related
+        to the terminal states '117', '119', and '121'. The whitespace pattern of 117 was
+        inherited from mode `ALL`. The math operator pattern was inherited from mode
+        ``CALC_OP`` and the comment start pattern "//" was implemented in ``PROGRAM`` 
+        itself.

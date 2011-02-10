@@ -11,15 +11,15 @@ mode hierarchie:
 
 .. code-block:: cpp
 
-    mode A : B C    { [a-z]{1,9} => T_A(Lexeme); }
-    mode C : E F G  { [a-z]{1,8} => T_C(Lexeme); }
-    mode G          { [a-z]{1,7} => T_G(Lexeme); }
-    mode F          { [a-z]{1,6} => T_F(Lexeme); }
-    mode B : D E    { [a-z]{1,5} => T_B(Lexeme); }
-    mode E : I      { [a-z]{1,4} => T_E(Lexeme); }
-    mode I          { [a-z]{1,3} => T_I(Lexeme); }
-    mode D : H      { [a-z]{1,2} => T_D(Lexeme); }
-    mode H          { [a-z]{1,1} => T_H(Lexeme); }
+    mode A : B, C     { [a-z]{1,9} => T_A(Lexeme); }
+    mode C : E, F, G  { [a-z]{1,8} => T_C(Lexeme); }
+    mode G            { [a-z]{1,7} => T_G(Lexeme); }
+    mode F            { [a-z]{1,6} => T_F(Lexeme); }
+    mode B : D, E     { [a-z]{1,5} => T_B(Lexeme); }
+    mode E : I,       { [a-z]{1,4} => T_E(Lexeme); }
+    mode I            { [a-z]{1,3} => T_I(Lexeme); }
+    mode D : H        { [a-z]{1,2} => T_D(Lexeme); }
+    mode H            { [a-z]{1,1} => T_H(Lexeme); }
 
 The according mode inheritance hierarchie is show in figure :ref:`Inheritance
 Resolution <fig-inheritance-resolution>`. The letters in the boxes name the
