@@ -1,0 +1,31 @@
+1c1
+< #include "With"
+---
+> #include "WithOut"
+69c69
+< /* #include "With"*/
+---
+> /* #include "WithOut"*/
+142,150d141
+<     /* state machine */
+<     /* init-state = 7L
+<      * 00007() <~ (1, 2)
+<      *       == 'a' ==> 00008
+<      *       <no epsilon>
+<      * 00008(A, S) <~ (1, 3, A, S)
+<      *       <no epsilon>
+<      * 
+<      */
+251c242
+< #line 252 "With.cpp"
+---
+> #line 243 "WithOut.cpp"
+383,390d373
+<     /* 
+<      * MODE: X
+<      * 
+<      *     PATTERN-ACTION PAIRS:
+<      *       (  1) X: a
+<      * 
+<      * 
+<      */
