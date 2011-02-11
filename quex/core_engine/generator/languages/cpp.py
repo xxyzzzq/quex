@@ -416,7 +416,7 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "me->_character_before_lexeme_start = *(me->_input_p - 1);\n"
+        txt += indentation + "me->buffer._character_before_lexeme_start = *(me->buffer._input_p - 1);\n"
 
     if action_info.action().require_terminating_zero_f():
         txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);\n"

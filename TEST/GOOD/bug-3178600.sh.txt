@@ -1,0 +1,29 @@
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+hashes, entering HEADER_LINE
+KEY 'key1' 
+EQUALS '=' 
+KEY 'value1' 
+leaving HEADER_LINE
+hashes, entering HEADER_LINE
+KEY 'key2' 
+EQUALS '=' 
+KEY 'value2' 
+leaving HEADER_LINE
+hashes, entering HEADER_LINE
+KEY 'key3' 
+EQUALS '=' 
+KEY 'value3' 
+leaving HEADER_LINE
+<TERMINATION> '' 
