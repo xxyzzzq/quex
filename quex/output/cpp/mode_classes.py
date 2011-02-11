@@ -32,7 +32,6 @@ def do(Modes):
     
     return txt
 
-
 def write_member_functions(Modes):
     # -- get the implementation of mode class functions
     #    (on_entry, on_exit, on_indent, on_dedent, has_base, has_entry, has_exit, ...)
@@ -49,7 +48,6 @@ def write_member_functions(Modes):
     txt += "#undef self\n"
     txt += "#undef __self_result_token_id\n"
     return txt
-
 
 mode_function_implementation_str = \
 """

@@ -10,17 +10,17 @@ tmp=`pwd`
 cd $bug/ 
 if [[ $1 == "Normal" ]]; then
     quex -i simple.qx --output-directory a/b/c/d
-    find -path "*.svn*" -prune -or -print
+    find -path "*.svn*" -prune -or -print | sort
     rm a/b/c/d/lexer*
 fi
 if [[ $1 == "NotExist" ]]; then
     quex -i simple.qx --output-directory a/b/c/x
-    find -path "*.svn*" -prune -or -print
+    find -path "*.svn*" -prune -or -print | sort
 fi
 if [[ $1 == "NoWrite" ]]; then
     chmod u-w x/y/z
     quex -i simple.qx --output-directory x/y/z
-    find -path "*.svn*" -prune -or -print
+    find -path "*.svn*" -prune -or -print | sort
 fi
 
 # cleansening

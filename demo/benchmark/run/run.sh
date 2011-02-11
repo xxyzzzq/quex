@@ -16,6 +16,11 @@ case $1 in
     quick)
         quick_f=true
         output="tmp.dat"
+        if [[ $2 != "" ]]; then
+            quick_text=$2
+        else
+            quick_text=code/linux-2.6.22.17-kernel-dir.c
+        fi
     ;;
     *)
         output="result-$stamp.dat"
@@ -39,7 +44,7 @@ function test_this {
         ./$1 code/single-large-token.c         >> $output
         ./$1 code/linux-2.6.22.17-kernel-dir.c >> $output
     else
-        ./$1 code/linux-2.6.22.17-kernel-dir.c | awk '/clock_cycles_per_token/ || /clock_cycles_per_character/'
+        ./$1 $quick_text | awk '/clock_cycles_per_token/ || /clock_cycles_per_character/'
     fi
 }
 

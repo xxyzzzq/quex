@@ -126,6 +126,8 @@ def do(SMD, UniformOnlyF):
             "path_iterator":  [ "const QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0"],
         })
 
+    transition_block.format_this(code)
+
     return "".join(code), \
            local_variable_db, \
            involved_state_index_list
@@ -503,7 +505,7 @@ def __state_router(PathWalker, SMD):
     PathWalkerID = PathWalker.core().state_index
 
     # (1) 'Pure C Implementation' State Routing
-    txt = [ "#ifndef QUEX_OPTION_COMPUTED_GOTOS\n" ]
+    txt = [ "#       ifndef QUEX_OPTION_COMPUTED_GOTOS\n" ]
     #    switch( path_iterator - path_walker_base ) {
     #         case 0:  STATE_341;
     #         case 1:  STATE_345;
@@ -512,9 +514,11 @@ def __state_router(PathWalker, SMD):
     __switch_case_state_router(txt, SMD, PathWalker)
 
     # (2) 'Computed Goto Implementation'
-    txt.append("#else  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
+    txt.append("#       else  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
     txt.append("        goto *path_walker_%i_state[path_iterator - path_walker_%i_base];\n" % (PathWalkerID, PathWalkerID))
-    txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
+    txt.append("#       endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
+
+    transition_block.format_this(txt)
 
     return "".join(txt)
 

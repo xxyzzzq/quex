@@ -94,7 +94,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void                  QUEX_NAME(Buffer_input_p_decrement)(QUEX_NAME(Buffer)*);
     QUEX_INLINE void                  QUEX_NAME(Buffer_mark_lexeme_start)(QUEX_NAME(Buffer)*);
     QUEX_INLINE void                  QUEX_NAME(Buffer_seek_lexeme_start)(QUEX_NAME(Buffer)*);
-    QUEX_INLINE void                  QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(QUEX_NAME(Buffer)*);
     QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)*);
     QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_back)(QUEX_NAME(Buffer)*);
     QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_text_end)(QUEX_NAME(Buffer)*);

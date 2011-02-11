@@ -140,6 +140,7 @@ db["C++"] = {
     "$else":          "else {",                                                     
     "$and":           " && ",
     "$or":            " || ",
+    "$not":           lambda expr: "!( %s )" % expr,
     "$switch-block":  cpp.__get_switch_block,
     "$increment":     lambda variable: "++" + variable + ";",
     "$decrement":     lambda variable: "--" + variable + ";",
@@ -165,12 +166,12 @@ db["C++"] = {
     "$if !=":             lambda value: "if( input != " + value + " ) {\n",
     #
     "$if >=":             lambda value: "if( input >= " + value + ") {\n",
-    "$<":                 lambda left, right: left + " < " + right,
-    "$>=":                lambda left, right: left + " >= " + right,
-    "$<=":                lambda left, right: left + " <= " + right,
-    "$>":                 lambda left, right: left + " > " + right,
-    "$==":                lambda left, right: left + " == " + right,
-    "$!=":                lambda left, right: left + " != " + right,
+    "$<":                 lambda left, right: " " + left + " < "  + right + " ",
+    "$>=":                lambda left, right: " " + left + " >= " + right + " ",
+    "$<=":                lambda left, right: " " + left + " <= " + right + " ",
+    "$>":                 lambda left, right: " " + left + " > "  + right + " ",
+    "$==":                lambda left, right: " " + left + " == " + right + " ",
+    "$!=":                lambda left, right: " " + left + " != " + right + " ",
     #
     "$comment":           lambda txt: "/* " + txt + " */",
     "$ml-comment":        lambda txt: "    /* " + txt.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n     * ") + "\n     */",
@@ -213,7 +214,7 @@ db["C++"] = {
                              "%s = %s;\n" % (variable, value),
     "$set-last_acceptance":  lambda PatternIndex: \
                              cpp.__set_last_acceptance(PatternIndex, __label_used_in_computed_goto_list_unique),
-    "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
+    "$goto-last_acceptance": "QUEX_GOTO_TERMINAL(last_acceptance);\n",
     #
     "$header-definitions":   cpp.__header_definitions,
     "$frame":                cpp.__frame_of_all,

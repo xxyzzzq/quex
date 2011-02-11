@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.29" date="Sat Feb  5 01:36:11 2011">
+<test-database execution-time-sec="0.32" date="Thu Feb 10 22:13:01 2011">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
@@ -21,12 +21,12 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.18"> 
+        <test title="read_integer(...)" time-sum-sec="0.20"> 
             <application file-name="test-read_integer.py" info-request-time="1280812457L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.03" crc="952788026"/>
                <choice name="octal" result="OK" time_sec="0.03" crc="1921488222"/>
-               <choice name="decimal" result="OK" time_sec="0.03" crc="-1709956949"/>
+               <choice name="decimal" result="OK" time_sec="0.04" crc="-1709956949"/>
                <choice name="binary" result="OK" time_sec="0.03" crc="245398371"/>
                <choice name="roman" result="OK" time_sec="0.03" crc="832665557"/>
                <choice name="misc" result="OK" time_sec="0.03" crc="731748549"/>
@@ -34,10 +34,10 @@
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.02"> 
+        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.03"> 
             <application file-name="test-trim.py" info-request-time="1264886933L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.02" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.03" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

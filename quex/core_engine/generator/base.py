@@ -8,12 +8,13 @@ import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 ## import quex.core_engine.state_machine.compression.templates as compression_table
 
 class GeneratorBase:
-    def __init__(self, PatternActionPair_List, StateMachineName):
+    def __init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF):
         assert type(PatternActionPair_List) == list
         assert map(lambda elm: elm.__class__ == PatternActionInfo, PatternActionPair_List) \
                == [ True ] * len(PatternActionPair_List)
 
-        self.state_machine_name = StateMachineName
+        self.state_machine_name        = StateMachineName
+        self.begin_of_line_condition_f = True
 
         # -- setup of state machine lists and id lists
         self.__extract_special_lists(PatternActionPair_List)
@@ -47,9 +48,6 @@ class GeneratorBase:
         #       i.e. they need a reverse state machine to be verified.
         self.pre_context_sm_id_list  = []
         self.pre_context_sm_list     = []
-        #    -- pre-conditions that are trivial, i.e. it is only checked for
-        #       the last character, if it was a particular one or not.
-        self.begin_of_line_condition_f = False
         # [NOT IMPLEMENTED YET]    
         # # trivial_pre_context_dict = {}             # map: state machine id --> character code(s)
         for action_info in PatternActionPair_List:
@@ -66,9 +64,6 @@ class GeneratorBase:
                 self.pre_context_sm_list.append(pre_sm)
                 self.pre_context_sm_id_list.append(pre_sm.get_id())
                 
-            if sm.core().pre_context_begin_of_line_f():
-                self.begin_of_line_condition_f = True
-
             # [NOT IMPLEMENTED YET]    
             # # -- collect information about trivial (char code) pre-conditions 
             # # if sm.get_trivial_pre_context_character_codes() != []:
