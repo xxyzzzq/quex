@@ -8,15 +8,15 @@ LanguageDB = None
 
 normal_drop_out_template = """
 $$LABEL_DIRECT$$
-        $$GOTO_TERMINAL$$
+$$GOTO_TERMINAL$$
 
 $$LABEL$$
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( ! ($$LOAD_IMPOSSIBLE$$) ) {
+    if( $$LOAD_POSSIBLE$$ ) {
         $$RELOAD_BUFFER$$
         $$GOTO_INPUT$$
     }
-    $$GOTO_TERMINAL$$
+$$GOTO_TERMINAL$$
 """
 
 init_drop_out_template = """
@@ -113,12 +113,14 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
         ## the end of file pointer or the buffer limit. If the end of file
         ## pointer is != 0 it lies before the buffer limit. Thus, in this
         ## case the end of file has been reached.
-        load_impossible_str  = "(me->buffer._memory._end_of_file_p != 0x0)"
+        load_impossible_str = "(me->buffer._memory._end_of_file_p != 0x0)"
+        load_possible_str   = "(me->buffer._memory._end_of_file_p == 0x0)"
         ## load_impossible_str  = LanguageDB["$EOF"]
         goto_terminal_str    = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
     else:
         reload_str           = __reload_backward()
         load_impossible_str  = LanguageDB["$BOF"]
+        load_possible_str    = LanguageDB["$not"](LanguageDB["$BOF"])
         goto_terminal_str    = LanguageDB["$goto"]("$terminal-general-bw")
 
     if State.__class__.__name__ == "TemplateState" and not State.uniform_state_entries_f():
@@ -157,7 +159,7 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
         txt = blue_print(normal_drop_out_template,
                          [["$$LABEL$$",           LanguageDB["$label-def"]("$reload", StateIdx)],
                           ["$$LABEL_DIRECT$$",    LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
-                          ["$$LOAD_IMPOSSIBLE$$", load_impossible_str],
+                          ["$$LOAD_POSSIBLE$$",   load_possible_str],
                           ["$$GOTO_TERMINAL$$",   goto_terminal_str], 
                           ["$$RELOAD_BUFFER$$",   reload_str], 
                           ["$$GOTO_INPUT$$",      goto_state_input_str],

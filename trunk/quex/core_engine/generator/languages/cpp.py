@@ -416,7 +416,7 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "QUEX_NAME(Buffer_store_last_character_of_lexeme_for_next_run)(&me->buffer);\n"
+        txt += indentation + "me->_character_before_lexeme_start = *(me->_input_p - 1);\n"
 
     if action_info.action().require_terminating_zero_f():
         txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);\n"
@@ -431,7 +431,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     state_machine                  = SMD.sm()
     DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
 
-    txt = ""
+    txt         = ""
     variable_db = {}
 
 
@@ -755,18 +755,20 @@ def __indentation_check_whitespace(Info):
     return "".join(txt)
 
 def __get_switch_block(VariableName, CaseCodePairList):
-    txt = ["switch( %s ) {\n" % VariableName]
+    txt = [0, "switch( %s ) {\n" % VariableName]
     next_i = 0
     L = len(CaseCodePairList)
     CaseCodePairList.sort(key=itemgetter(0))
     for case, code in CaseCodePairList: 
         next_i += 1
+        txt.append(1)
         txt.append("case 0x%X: " % case)
         if next_i != L and CaseCodePairList[next_i][1] == code:
             txt.append("\n")
         else:
             txt.append(code + "\n")
             
+    txt.append(0)
     txt.append("}\n")
     return txt
 

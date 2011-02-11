@@ -71,10 +71,8 @@
     typedef  void*     QUEX_TYPE_GOTO_LABEL;
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE        (&&TERMINAL_FAILURE)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE           (QUEX_TYPE_GOTO_LABEL)(0x0)
-#   define QUEX_SET_drop_out_state_index(StateIndex)  drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
-#   define QUEX_SET_last_acceptance(TerminalIndex)    last_acceptance      = &&TERMINAL_ ##TerminalIndex## _DIRECT; 
-#   define QUEX_GOTO_drop_out_state_index()           goto *drop_out_state_index;
-#   define QUEX_GOTO_last_acceptance()                goto __TERMINAL_ROUTER;
+#   define QUEX_SET_last_acceptance(TerminalIndex)    last_acceptance = &&TERMINAL_ ##TerminalIndex## _DIRECT; 
+#   define QUEX_GOTO_TERMINAL(LABEL)                  goto *LABEL;
 
     /* If no computed gotos are used, then there are two state routers, one for forward
      * state routing and another for backward state routing. Thus, two macros for the same
@@ -85,12 +83,10 @@
     typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(-1)
-#   define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
-#   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
-#   define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
-#   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
+#   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance = TerminalIndex; 
+#   define QUEX_GOTO_TERMINAL(LABEL)                 goto __TERMINAL_ROUTER;
 
-#   define QUEX_GOTO_STATE(LABEL) target_state_index = LABEL; goto STATE_ROUTER;
+#   define QUEX_GOTO_STATE(LABEL) target_state_index = LABEL; goto __STATE_ROUTER;
 
 #endif
 

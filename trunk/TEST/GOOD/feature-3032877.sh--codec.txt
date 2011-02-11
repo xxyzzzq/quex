@@ -8,14 +8,14 @@ ARGUMENT_LIST: --bet u16 --codec utf8
 
 command line: Using codec 'utf8' while buffer element size is not 1 (found 2).
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet u32 --codec utf8
 
 command line: Using codec 'utf8' while buffer element size is not 1 (found 4).
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet uint8_t --codec utf8
@@ -27,35 +27,35 @@ ARGUMENT_LIST: --bet uint16_t --codec utf8
 
 command line: Using codec 'utf8' while buffer element size is not 1 (found 2).
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet uint32_t --codec utf8
 
 command line: Using codec 'utf8' while buffer element size is not 1 (found 4).
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet wchar_t --codec utf8
 
 command line: Using codec 'utf8' while buffer element size undetermined (found type 'wchar_t').
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet UChar --codec utf8
 
 command line: Using codec 'utf8' while buffer element size undetermined (found type 'UChar').
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet UChar --codec utf8 --converter-ucs-coding-name ASCII
 
 command line: Using codec 'utf8' while buffer element size undetermined (found type 'UChar').
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet UChar --codec utf8 -b 1
@@ -67,5 +67,5 @@ ARGUMENT_LIST: --bet UChar --codec utf8 -b 2
 
 command line: Using codec 'utf8' while buffer element size is not 1 (found 2).
 command line: Consult command line argument '--buffer-element-size'.
-awk: cmd. line:1: fatal: cannot open file `EasyLexer-configuration' for reading (No such file or directory)
+File EasyLexer-configuration does not exits.
 

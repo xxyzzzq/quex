@@ -28,7 +28,7 @@ precedence. The applied depth-first approach implies two things:
 
 #. Modes that mentioned first in the inheritance relationship have a higher
    precedence.  In the above example ``B`` has a higher precedence then ``C``,
-   because it is mentioned before it in the definition ``mode A : B C { ...
+   because it is mentioned before it in the definition ``mode A : B, C { ...
    }``.
 
 #. Modes located deeper in the inheritance structure precede

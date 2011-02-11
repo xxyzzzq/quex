@@ -104,6 +104,8 @@ SETUP_INFO = {
     "buffer_element_type":            [["--buffer-element-type", "--bet"],       ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
+    "comment_state_machine_transitions_f": [["--comment-state-machine"],       FLAG],
+    "comment_mode_patterns_f":             [["--comment-mode-patterns"],       FLAG],
     "compression_template_f":         [["--template-compression"],             FLAG],
     "compression_template_coef":      [["--template-compression-coefficient"], 1.0],
     "compression_path_f":             [["--path-compression"],                 FLAG],

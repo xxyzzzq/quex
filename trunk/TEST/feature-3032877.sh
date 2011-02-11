@@ -21,10 +21,14 @@ function perform_test() {
     echo "ARGUMENT_LIST: $argument_list"
     echo
     quex -i simple.qx -o EasyLexer $argument_list
-    awk ' /QUEX_TYPE_CHARACTER/ && /define/ && !/SETTING/ ' EasyLexer-configuration \
-        >& tmp.txt
-    cat tmp.txt
-    rm -f tmp.txt
+    if [ -e EasyLexer-configuration ]; then
+        awk ' /QUEX_TYPE_CHARACTER/ && /define/ && !/SETTING/ ' EasyLexer-configuration \
+            >& tmp.txt
+        cat tmp.txt
+        rm -f tmp.txt
+    else
+        echo "File EasyLexer-configuration does not exits."
+    fi
     rm -f EasyLexer*
     echo
 }

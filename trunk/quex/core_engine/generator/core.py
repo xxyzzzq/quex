@@ -15,7 +15,7 @@ class Generator(GeneratorBase):
                  StateMachineName, AnalyserStateClassName, Language, 
                  OnFailureAction, EndOfStreamAction, 
                  ModeNameList, 
-                 PrintStateMachineF, StandAloneAnalyserF):
+                 PrintStateMachineF, StandAloneAnalyserF, SupportBeginOfLineF):
 
         # Ensure that the language database as been setup propperly
         assert type(Setup.language_db) == dict
@@ -32,7 +32,7 @@ class Generator(GeneratorBase):
         self.print_state_machine_f      = PrintStateMachineF
         self.stand_alone_analyzer_f     = StandAloneAnalyserF
 
-        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
+        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF)
 
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
@@ -42,10 +42,11 @@ class Generator(GeneratorBase):
 
         assert self.sm.get_orphaned_state_index_list() == []
 
-        #  -- comment all state machine transitions 
-        txt += "    " + LanguageDB["$comment"]("state machine") + "\n"
-        if self.print_state_machine_f: 
-            txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
+        #  Comment state machine transitions 
+        if Setup.comment_state_machine_transitions_f:
+            txt += "    " + LanguageDB["$comment"]("state machine") + "\n"
+            if self.print_state_machine_f: 
+                txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
 
         decorated_state_machine = StateMachineDecorator(self.sm, 
                                                         self.state_machine_name, 
@@ -60,12 +61,12 @@ class Generator(GeneratorBase):
         
         #  -- terminal states: execution of pattern actions  
         msg, db = LanguageDB["$terminal-code"](decorated_state_machine,
-                                            self.action_db, 
-                                            self.on_failure_action, 
-                                            self.end_of_stream_action, 
-                                            self.begin_of_line_condition_f, 
-                                            self.pre_context_sm_id_list,
-                                            self.language_db) 
+                                               self.action_db, 
+                                               self.on_failure_action, 
+                                               self.end_of_stream_action, 
+                                               self.begin_of_line_condition_f, 
+                                               self.pre_context_sm_id_list,
+                                               self.language_db) 
         txt += msg
         variable_db.update(db)
 
@@ -156,7 +157,8 @@ def do(PatternActionPair_List, OnFailureAction,
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
        ModeNameList=[],
-       RequiredLocalVariablesDB={}):
+       RequiredLocalVariablesDB={}, 
+       SupportBeginOfLineF=False):
     """Contains a list of pattern-action pairs, i.e. its elements contain
        pairs of state machines and associated actions to be take,
        when a pattern matches. 
@@ -179,7 +181,7 @@ def do(PatternActionPair_List, OnFailureAction,
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
                      OnFailureAction, EndOfStreamAction, ModeNameList, 
-                     PrintStateMachineF, StandAloneAnalyserF).do(RequiredLocalVariablesDB)
+                     PrintStateMachineF, StandAloneAnalyserF, SupportBeginOfLineF).do(RequiredLocalVariablesDB)
     
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)

@@ -70,18 +70,20 @@ def do():
         generator.init_unused_labels()
 
         # accumulate inheritance information for comment
-        code = get_code_for_mode(mode, mode_name_list, IndentationSupportF) 
+        code = get_code_for_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF) 
 
-        inheritance_info_str += mode.get_documentation()
+        if Setup.comment_mode_patterns_f:
+            inheritance_info_str += mode.get_documentation()
 
         # Find unused labels
         analyzer_code += generator.delete_unused_labels(code)
 
+    # Bring the info about the patterns first
+    if Setup.comment_mode_patterns_f:
+        analyzer_code += Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" 
+
     # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)
-
-    # Bring the info about the patterns first
-    analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # Implementation (Potential Inline Functions)
     implemtation_txt =   constructor_and_memento_txt + "\n" \
@@ -149,7 +151,7 @@ def __prepare_on_failure_action(Mode):
     return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_failure"), 
                                     "on_failure", None, Default_ActionF=True) 
 
-def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
+def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     required_local_variables_db = {}
    
     # -- some modes only define event handlers that are inherited
@@ -177,7 +179,8 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                  StandAloneAnalyserF            = False, 
                                  QuexEngineHeaderDefinitionFile = Setup.output_header_file,
                                  ModeNameList                   = ModeNameList,
-                                 RequiredLocalVariablesDB       = required_local_variables_db)
+                                 RequiredLocalVariablesDB       = required_local_variables_db, 
+                                 SupportBeginOfLineF            = BeginOfLineSupportF)
 
     return analyzer_code
 
