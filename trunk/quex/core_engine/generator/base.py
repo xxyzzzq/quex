@@ -14,7 +14,7 @@ class GeneratorBase:
                == [ True ] * len(PatternActionPair_List)
 
         self.state_machine_name        = StateMachineName
-        self.begin_of_line_condition_f = True
+        self.begin_of_line_condition_f = SupportBeginOfLineF
 
         # -- setup of state machine lists and id lists
         self.__extract_special_lists(PatternActionPair_List)
