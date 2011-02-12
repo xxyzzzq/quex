@@ -135,7 +135,7 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
 
     else:
         # Normal return to place where the next input is read
-        goto_state_input_str = LanguageDB["$goto"]("$input", StateIdx)
+        goto_state_input_str = LanguageDB["$goto"]("$entry", StateIdx)
 
     # A pathwalker state may, very well, have an empty skeleton, but there must still be a reload
     if    (len(State.transitions().get_map()) == 0 and State.__class__.__name__ != "PathWalkerState") \

@@ -23,10 +23,6 @@ def do(state, StateIdx, SMD=False):
 
     LanguageDB = Setup.language_db
 
-    prolog = ""
-    if not InitStateF: 
-        prolog += "    __quex_assert(false); /* No drop-through between states */\n"
-
     # (*) Dead End States 
     #     i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
@@ -35,37 +31,22 @@ def do(state, StateIdx, SMD=False):
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
         if len(txt) == 0: return []
-        prolog += LanguageDB["$label-def"]("$entry-stub", StateIdx)
+        prolog = LanguageDB["$label-def"]("$entry-stub", StateIdx)
         txt.insert(0, prolog)
         return txt
 
     # (*) Normal States
-    if InitStateF and SMD.forward_lexing_f():
-        prolog += LanguageDB["$label-def"]("$init_state_fw_transition_block")
-    else:
-        prolog += LanguageDB["$label-def"]("$entry", StateIdx)
-
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
     #                        # => Here, the trigger map cannot be empty.
 
     txt = \
-          input_block.do(StateIdx, InitStateF, SMD)      + \
+          get_prolog(StateIdx, InitStateF, SMD)          + \
           acceptance_info.do(state, StateIdx, SMD)       + \
           transition_block.do(TriggerMap, StateIdx, SMD) + \
-          drop_out.do(state, StateIdx, SMD)
-
-    if InitStateF and SMD.forward_lexing_f():
-        # The init state does not increment the input position, thus we do the
-        # increment in a separate fragment. This fragment acts then as the entry
-        # to the init state. Finally, it jumps to the transition block of the 
-        # init state as defined above.
-        # (The backward init state decrements the input pointer, so this is not necessary.)
-        txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
-        txt.append("    " + LanguageDB["$input/increment"] + "\n")
-        txt.append("    " + LanguageDB["$goto"]("$init_state_fw_transition_block") + "\n")
+          drop_out.do(state, StateIdx, SMD)              + \
+          get_epilog(StateIdx, InitStateF, SMD)
     
-    if len(txt) != 0: txt.insert(0, prolog)
     return txt 
 
 def __dead_end_state_stub(DeadEndStateInfo, SMD):
@@ -114,7 +95,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode
 
-def prolog(StateIdx, InitStateF, SMD):
+def get_prolog(StateIdx, InitStateF, SMD):
     """Generate the code fragment that produce the 'input' character for
        the subsequent transition map. In general this consists of 
 
@@ -130,10 +111,17 @@ def prolog(StateIdx, InitStateF, SMD):
     LanguageDB = Setup.language_db
 
     txt = []
-    if SMD.forward_lexing_f() and InitStateF: 
-        # The init state in forward lexing does not increase the input pointer
-        pass
+
+    if not InitStateF: 
+        txt.append("    __quex_assert(false); /* No drop-through between states */\n")
+
+    if InitStateF and SMD.forward_lexing_f():
+        txt.append(LanguageDB["$label-def"]("$init_state_fw_transition_block"))
     else:
+        txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
+
+    # The init state in forward lexing does not increase the input pointer
+    if not (SMD.forward_lexing_f() and InitStateF): 
         if SMD.forward_lexing_f(): cmd = LanguageDB["$input/increment"]
         else:                      cmd = LanguageDB["$input/decrement"]
         txt.extend(["    ", cmd, "\n"])
@@ -142,4 +130,20 @@ def prolog(StateIdx, InitStateF, SMD):
 
     return txt
 
-def epilog():
+def get_epilog(InitStateF, StateIdx, SMD):
+    """The init state does not increment the input position, thus we do the
+       increment in a separate fragment. This fragment acts then as the entry
+       to the init state. Finally, it jumps to the transition block of the 
+       init state as defined above.
+
+       (The backward init state decrements the input pointer, so this is not necessary.)
+    """
+    LanguageDB = Setup.language_db
+
+    if not (InitStateF and SMD.forward_lexing_f()): return ""
+
+    txt = []
+    txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
+    txt.extend(["    ", LanguageDB["$input/increment"], "\n"])
+    txt.extend(["    ", LanguageDB["$goto"]("$init_state_fw_transition_block"), "\n"])
+    return txt

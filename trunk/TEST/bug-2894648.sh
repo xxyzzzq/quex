@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i tmp.qx -o Simple >& tmp.txt
+quex -i tmp.qx -o Simple --comment-state-machine >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
 python show.py
 rm tmp.txt

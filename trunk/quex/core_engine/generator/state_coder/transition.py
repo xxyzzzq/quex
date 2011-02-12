@@ -16,9 +16,8 @@ def do(TargetInfo, CurrentStateIdx, SMD):
 
 def get_transition_to_state(TargetInfo, SMD):
     LanguageDB = Setup.language_db
-    if SMD != None:
-        if type(TargetInfo) in [int, long] and SMD.dead_end_state_db().has_key(TargetInfo):
-            return __get_transition_to_dead_end_state(TargetInfo, SMD)
+    if type(TargetInfo) in [int, long] and SMD != None and SMD.dead_end_state_db().has_key(TargetInfo):
+        return __get_transition_to_dead_end_state(TargetInfo, SMD)
 
     return LanguageDB["$goto-pure"](get_label_of_state(TargetInfo, SMD))
 
