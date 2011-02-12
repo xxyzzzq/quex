@@ -85,8 +85,7 @@ def do(TriggerMap, StateIdx, DSM):
         # starts working. This includes likelyhood and 'assembler-switch' implementations.
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
-        code = []
-        __get_code(code, TriggerMap)
+        code = __get_code(TriggerMap)
         # No transition to 'drop-out' shall actually occur in the map
         label_db_unregister_usage(transition.get_label_of_drop_out(StateIdx, ReloadF=False))
 
@@ -109,7 +108,7 @@ def format_this(txt):
     """
     # Replace the indentation information with real 'indentation'
     for i, elm in enumerate(txt):
-        if type(elm) == int: txt[i] = "/*%i*/" % elm + "    " * elm
+        if type(elm) == int: txt[i] = "    " * elm
     return txt
 
 def indent_this(txt):
@@ -117,7 +116,7 @@ def indent_this(txt):
         if type(elm) == int: txt[i] += 1
     return txt
 
-def __get_code(txt, TriggerMap):
+def __get_code(TriggerMap):
     """Creates code for state transitions from this state. This function is very
        similar to the function creating code for a 'NumberSet' condition 
        (see 'interval_handling').
@@ -143,6 +142,7 @@ def __get_code(txt, TriggerMap):
 
     #________________________________________________________________________________
 
+    txt = []
     if TriggerSetN == 1 :
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
@@ -156,7 +156,7 @@ def __get_code(txt, TriggerMap):
 
         # input < 0 is impossible, since unicode codepoints start at 0!
         if middle[0].begin == 0: 
-            __get_code(txt, TriggerMap[MiddleTrigger_Idx:]) 
+            txt = __get_code(TriggerMap[MiddleTrigger_Idx:]) 
         else: 
             if   __get_switch(txt, TriggerMap):    pass
             elif __get_bisection(txt, TriggerMap): pass
@@ -165,7 +165,7 @@ def __get_code(txt, TriggerMap):
     # (*) indent by four spaces (nested blocks are correctly indented)
     #     delete the last newline, to prevent additional indentation
     indent_this(txt)
-    return
+    return txt
 
 def __get_bisection(txt, TriggerMap):
     LanguageDB = Setup.language_db
@@ -175,23 +175,22 @@ def __get_bisection(txt, TriggerMap):
     section_index           = preferred_section_index
 
     # Make sure that no cut in the middle of a switch case
-    if True:
-        preferred_section_index = int(L / 2)
-        best_section_index      = -1
-        best_dist               = L
-        switch_case_range_list  = __get_switch_cases(TriggerMap)
-        for candidate in xrange(L):
-            for p, q in switch_case_range_list:
-                if candidate >= p and candidate <= q: 
-                    break
-            else:
-                # No intersection happened, so index may be used
-                if abs(candidate - preferred_section_index) >= best_dist: continue
-                best_section_index = candidate
-                best_dist          = abs(candidate - preferred_section_index)
+    preferred_section_index = int(L / 2)
+    best_section_index      = -1
+    best_dist               = L
+    switch_case_range_list  = __get_switch_cases_info(TriggerMap)
+    for candidate in xrange(L):
+        for p, q in switch_case_range_list:
+            if candidate >= p and candidate <= q: 
+                break
+        else:
+            # No intersection happened, so index may be used
+            if abs(candidate - preferred_section_index) >= best_dist: continue
+            best_section_index = candidate
+            best_dist          = abs(candidate - preferred_section_index)
 
-        if best_section_index not in [-1, 0, L-1]: section_index = best_section_index
-        else:                                      section_index = preferred_section_index; 
+    if best_section_index not in [-1, 0, L-1]: section_index = best_section_index
+    else:                                      section_index = preferred_section_index; 
 
     if __get_linear_comparison_chain(txt, TriggerMap, L): return True
 
@@ -254,7 +253,6 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
         if not target.is_drop_out():
             __create_transition_code(txt, entry)
 
-    txt.append(0)
     txt.append(LanguageDB["$endif"])
     return True
 
@@ -276,7 +274,7 @@ def __get_bisection_code(txt, middle, lower, higher):
 
         # No 'else' case for what comes BEHIND middle
         txt.append(comparison)
-        __get_code(txt, lower)
+        txt.extend(__get_code(lower))
 
     elif len(lower) == 1 and lower[0][1].is_drop_out():
         if   lower[0][0].size() == 1:
@@ -288,7 +286,7 @@ def __get_bisection_code(txt, middle, lower, higher):
 
         # No 'else' case for what comes BEFORE middle
         txt.append(comparison)
-        __get_code(txt, higher)
+        txt.extend(__get_code(higher))
 
     else:
         # If the size of one interval is 1, then replace the '<' by an '=='.
@@ -300,10 +298,10 @@ def __get_bisection_code(txt, middle, lower, higher):
             comparison = LanguageDB["$if <"]("0x%X" % middle[0].begin)
 
         txt.append(comparison)
-        __get_code(txt, lower)
+        txt.extend(__get_code(lower))
         txt.append(0)
         txt.append(LanguageDB["$endif-else"])
-        __get_code(txt, higher)
+        txt.extend(__get_code(higher))
 
     txt.append(0)
     txt.append(LanguageDB["$endif"])
@@ -334,7 +332,99 @@ def __create_transition_code(txt, TriggerMapEntry):
 
     return 
 
-def __get_switch_cases(TriggerMap):
+def __get_switch(txt, TriggerMap):
+    LanguageDB = Setup.language_db
+
+    drop_out_range_n = 0
+    character_n      = 0
+    for interval, target in TriggerMap:
+        if target.is_drop_out(): drop_out_range_n += 1
+        else:                    character_n      += interval.size()
+
+    if __switch_case_heuristic(TriggerMap) == False:
+        return False
+
+    case_code_list = []
+    for interval, target in TriggerMap:
+        if target.is_drop_out(): continue
+        target_code = target.get_code()
+        for i in range(interval.begin, interval.end):
+            case_code_list.append((i, target_code))
+
+    txt.extend(LanguageDB["$switch-block"]("input", case_code_list))
+    return True
+
+def __implement_switch_transitions(trigger_map):
+    """Transitions of characters that lie close to each other can be very efficiently
+       be identified by a switch statement. For example:
+
+           switch( Value ) {
+           case 1: ..
+           case 2: ..
+           ...
+           case 100: ..
+           }
+
+       Is implemented by the very few lines in assembler (i386): 
+
+           sall    $2, %eax
+           movl    .L13(%eax), %eax
+           jmp     *%eax
+
+       where 'jmp *%eax' jumps immediately to the correct switch case.
+    
+       It is therefore of vital interest that those regions are **identified** and
+       **not split** by a bisection. To achieve this, such regions are made a 
+       transition for themselves based on the character range that they cover.
+    """
+    LanguageDB = Setup.language_db
+    Tiny      = 20
+    MinExtend = 4
+    i = 0
+    L = len(trigger_map)
+    while i != L:
+        interval, target = trigger_map[i]
+
+        if interval.size() > Tiny: 
+            i += 1
+            continue
+
+        # Collect 'tiny neighbours'
+        k                     = i
+        switch_case_code_list = []
+        candidate_extend      = 0
+        while 1 + 1 == 2:
+            if not target.is_drop_out(): 
+                target_code = target.get_code()
+                for p in xrange(interval.begin, interval.end):
+                    switch_case_code_list.append((p, target_code))
+            candidate_extend += interval.size()
+
+            k += 1
+            if k == L: break 
+
+            interval, target = trigger_map[k]
+            if interval.size() > Tiny: break
+
+        if candidate_extend < MinExtend: 
+            i = k 
+            continue
+
+        # trigger_map[i][0].begin to trigger_map[k-1][0].end all becomes
+        # switch case transition.
+        switch_case_transition_code = LanguageDB["$switch-block"]("input", switch_case_code_list)
+
+        trigger_map[i] = (Interval(trigger_map[i][0].begin, trigger_map[k-1][0].end),
+                          TriggerAction("".join(switch_case_transition_code)))
+        if k - i != 1:
+            del trigger_map[i+1:k]
+            L -= (k - i - 1)
+            # assert L == len(trigger_map)
+        i += 1
+
+    return
+
+def __get_switch_cases_info(TriggerMap):
     L = len(TriggerMap)
     sum_interval_size          = [0] * (L+1)
     sum_drop_out_interval_size = [0] * (L+1)
@@ -408,29 +498,6 @@ def __switch_case_heuristic(TriggerMap,
 
     return p > 0.03
 
-
-def __get_switch(txt, TriggerMap):
-    LanguageDB = Setup.language_db
-
-    drop_out_range_n = 0
-    character_n      = 0
-    for interval, target in TriggerMap:
-        if target.is_drop_out(): drop_out_range_n += 1
-        else:                    character_n      += interval.size()
-
-    if __switch_case_heuristic(TriggerMap) == False:
-        return False
-
-    case_code_list = []
-    for interval, target in TriggerMap:
-        if target.is_drop_out(): continue
-        target_code = target.get_code()
-        for i in range(interval.begin, interval.end):
-            case_code_list.append((i, target_code))
-
-    txt.extend(LanguageDB["$switch-block"]("input", case_code_list))
-    return True
-
 def __separate_buffer_limit_code_transition(TriggerMap):
     """This function ensures, that the buffer limit code is separated 
        into a single value interval. Thus the transition map can 
@@ -476,76 +543,6 @@ def __separate_buffer_limit_code_transition(TriggerMap):
     # It is conceivable, that the transition does not contain a 'None' transition
     # on buffer limit code. This happens for example, during backward detection
     # where it is safe to assume that the buffer limit code may not occur.
-    return
-
-def __implement_switch_transitions(trigger_map):
-    """Transitions of characters that lie close to each other can be very efficiently
-       be identified by a switch statement. For example:
-
-           switch( Value ) {
-           case 1: ..
-           case 2: ..
-           ...
-           case 100: ..
-           }
-
-       Is implemented by the very few lines in assembler (i386): 
-
-           sall    $2, %eax
-           movl    .L13(%eax), %eax
-           jmp     *%eax
-
-       where 'jmp *%eax' jumps immediately to the correct switch case.
-    
-       It is therefore of vital interest that those regions are **identified** and
-       **not split** by a bisection. To achieve this, such regions are made a 
-       transition for themselves based on the character range that they cover.
-    """
-    LanguageDB = Setup.language_db
-    Tiny      = 20
-    MinExtend = 4
-    i = 0
-    L = len(trigger_map)
-    while i != L:
-        interval, target = trigger_map[i]
-
-        if interval.size() > Tiny: 
-            i += 1
-            continue
-
-        # Collect 'tiny neighbours'
-        k                     = i
-        switch_case_code_list = []
-        candidate_extend      = 0
-        while 1 + 1 == 2:
-            if not target.is_drop_out(): 
-                target_code = target.get_code()
-                for p in xrange(interval.begin, interval.end):
-                    switch_case_code_list.append((p, target_code))
-            candidate_extend += interval.size()
-
-            k += 1
-            if k == L: break 
-
-            interval, target = trigger_map[k]
-            if interval.size() > Tiny: break
-
-        if candidate_extend < MinExtend: 
-            i = k 
-            continue
-
-        # trigger_map[i][0].begin to trigger_map[k-1][0].end all becomes
-        # switch case transition.
-        switch_case_transition_code = LanguageDB["$switch-block"]("input", switch_case_code_list)
-
-        trigger_map[i] = (Interval(trigger_map[i][0].begin, trigger_map[k-1][0].end),
-                          TriggerAction("".join(switch_case_transition_code)))
-        if k - i != 1:
-            del trigger_map[i+1:k]
-            L -= (k - i - 1)
-            # assert L == len(trigger_map)
-        i += 1
-
     return
 
 #__likely_char_list = [ ord(' ') ]
