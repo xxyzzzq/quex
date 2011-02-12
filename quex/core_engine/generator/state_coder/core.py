@@ -40,7 +40,10 @@ def do(state, StateIdx, SMD=False):
         return txt
 
     # (*) Normal States
-    prolog += LanguageDB["$label-def"]("$entry", StateIdx)
+    if InitStateF and SMD.forward_lexing_f():
+        prolog += LanguageDB["$label-def"]("$init_state_fw_transition_block")
+    else:
+        prolog += LanguageDB["$label-def"]("$entry", StateIdx)
 
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -53,8 +56,14 @@ def do(state, StateIdx, SMD=False):
           drop_out.do(state, StateIdx, SMD)
 
     if InitStateF and SMD.forward_lexing_f():
-        # Comment see: do_init_state_input_epilog() function
-        input_block.do_init_state_input_epilog(txt, SMD)
+        # The init state does not increment the input position, thus we do the
+        # increment in a separate fragment. This fragment acts then as the entry
+        # to the init state. Finally, it jumps to the transition block of the 
+        # init state as defined above.
+        # (The backward init state decrements the input pointer, so this is not necessary.)
+        txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
+        txt.append("    " + LanguageDB["$input/increment"] + "\n")
+        txt.append("    " + LanguageDB["$goto"]("$init_state_fw_transition_block") + "\n")
     
     if len(txt) != 0: txt.insert(0, prolog)
     return txt 
@@ -104,3 +113,33 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
 
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode
+
+def prolog(StateIdx, InitStateF, SMD):
+    """Generate the code fragment that produce the 'input' character for
+       the subsequent transition map. In general this consists of 
+
+           (i)  incrementing/decrementing the input pointer.
+           (ii) dereferencing the pointer to get a value.
+
+       The initial state in forward lexing is an exception! The input pointer
+       is not increased, since it already stands on the right position from
+       the last analyzis step. When the init state is entered from any 'normal'
+       state it enters via the 'epilog' generated in the function 
+       do_init_state_input_epilog().
+    """
+    LanguageDB = Setup.language_db
+
+    txt = []
+    if SMD.forward_lexing_f() and InitStateF: 
+        # The init state in forward lexing does not increase the input pointer
+        pass
+    else:
+        if SMD.forward_lexing_f(): cmd = LanguageDB["$input/increment"]
+        else:                      cmd = LanguageDB["$input/decrement"]
+        txt.extend(["    ", cmd, "\n"])
+
+    txt.extend(["    ", LanguageDB["$input/get"], "\n"])
+
+    return txt
+
+def epilog():

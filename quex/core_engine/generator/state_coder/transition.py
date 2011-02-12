@@ -17,12 +17,7 @@ def do(TargetInfo, CurrentStateIdx, SMD):
 def get_transition_to_state(TargetInfo, SMD):
     LanguageDB = Setup.language_db
     if SMD != None:
-        if TargetInfo == SMD.sm().init_state_index and SMD.forward_lexing_f():
-            # The init state (forward) does not increment the input position. Thus, here we
-            # need to transit to the position where the input position is incremented.
-            return LanguageDB["$goto"]("$input", SMD.sm().init_state_index)
-
-        elif type(TargetInfo) in [int, long] and SMD.dead_end_state_db().has_key(TargetInfo):
+        if type(TargetInfo) in [int, long] and SMD.dead_end_state_db().has_key(TargetInfo):
             return __get_transition_to_dead_end_state(TargetInfo, SMD)
 
     return LanguageDB["$goto-pure"](get_label_of_state(TargetInfo, SMD))
