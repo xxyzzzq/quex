@@ -91,7 +91,6 @@ def __Setup_init_language_database(Language):
 
     Setup.language_db = db[Setup.language]
 
-
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
@@ -297,6 +296,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         print "Regular expression parsing:\n" + x.message
         sys.exit(0)
 
+    support_begin_of_line_f = False
+    for entry in PatternActionPairList:
+        if entry.pattern_state_machine().core().pre_context_begin_of_line_f():
+            support_begin_of_line_f = True
+            break
+
     print "## (1) code generation"    
     txt = "#define  __QUEX_OPTION_UNIT_TEST\n"
 
@@ -309,7 +314,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
                         PrintStateMachineF     = True,
                         AnalyserStateClassName = sm_name,
-                        StandAloneAnalyserF    = True)
+                        StandAloneAnalyserF    = True, 
+                        SupportBeginOfLineF    = support_begin_of_line_f)
 
     return generator.delete_unused_labels(txt)
 

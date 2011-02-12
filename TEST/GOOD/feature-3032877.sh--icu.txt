@@ -43,7 +43,7 @@ command line:
 command line: Quex cannot determine automatically the name that the converter requires
 command line: to produce unicode characters for type 'UChar'. It must be specified by the
 command line: command line option '--converter-ucs-coding-name' or '--cucn'.
-awk: cannot open EasyLexer-configuration (No such file or directory)
+File EasyLexer-configuration does not exits.
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet UChar --icu --converter-ucs-coding-name ASCII

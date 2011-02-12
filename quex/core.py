@@ -80,7 +80,7 @@ def do():
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
-        analyzer_code += Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" 
+        analyzer_code += Setup.language_db["$ml-comment"](inheritance_info_str + "\nEND: MODE PATTERNS\n")
 
     # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)

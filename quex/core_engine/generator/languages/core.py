@@ -36,9 +36,9 @@ __label_db = \
     "$entry-stub":            lambda StateIdx:    "STATE_%s_STUB"     % __nice(StateIdx),
     "$reload":                lambda StateIdx:    "STATE_%s_RELOAD"          % __nice(StateIdx),
     "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),
-    "$input":                 lambda StateIdx:    "STATE_%s_INPUT"           % __nice(StateIdx),
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
     "$start":                 lambda NoThing:     "__REENTRY",
+    "$init_state_fw_transition_block": lambda NoThing: "INIT_STATE_TRANSITION_BLOCK",
 }
 
 ## 

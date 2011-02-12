@@ -7,8 +7,8 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple
-awk ' /^[ \t]+\*\// { exit; } /^[ \t]+\*/ && ! /Indentation/ { print; } ' Simple.cpp
+quex -i simple.qx -o Simple --comment-mode-patterns
+awk 'BEGIN { allow_f = 0; } /MODE: FOUR/ { allow_f = 1; } /^[ \t]+\*/ { if( allow_f) print; } /END: MODE PATTERNS/ { exit; }' Simple.cpp
 
 # cleansening
 rm -f Simple Simple.cpp Simple-* *.o tmp.txt
