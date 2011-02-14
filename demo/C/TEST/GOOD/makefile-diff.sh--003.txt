@@ -1,6 +1,13 @@
-< COMPILER = g++ -ggdb 
+< COMPILER = g++ -ggdb -W -pedantic 
 ---
 > COMPILER = gcc -ggdb 
+< 	 -Wall -Wconversion                              \
+---
+> 	 -Wall -W -Wconversion -pedantic                 \
+> #    -- Intel's icpc (tm)
+<              $(findstring $(COMPILER),cl dmc)))
+---
+>              $(findstring $(COMPILER),icpc cl dmc)))
 < EasyLexer.o: EasyLexer.cpp 
 ---
 > EasyLexer.o: EasyLexer.c 

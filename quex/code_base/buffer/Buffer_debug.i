@@ -12,11 +12,11 @@
 
 #if ! defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
 
-#    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg) /* empty */
+#    define __quex_debug_BUFFER_LOAD(Filler, Msg) /* empty */
 
 #else
 
-#    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)  \
+#    define __quex_debug_BUFFER_LOAD(Filler, Msg)  \
             __QUEX_STD_fprintf(stdout, Msg);           \
             QUEX_NAME(BufferFiller_x_show_content)(Filler); 
 

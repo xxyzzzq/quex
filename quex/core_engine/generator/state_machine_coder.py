@@ -2,11 +2,12 @@ from copy import deepcopy
 
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.core_engine.generator.languages.core   as languages
-from   quex.core_engine.generator.languages.core   import __nice
-import quex.core_engine.generator.state_coder.core as state_coder
-import quex.core_engine.generator.template_coder   as template_coder
-import quex.core_engine.generator.paths_coder      as paths_coder
+import quex.core_engine.generator.languages.core         as languages
+from   quex.core_engine.generator.languages.core         import __nice
+import quex.core_engine.generator.state_coder.core       as state_coder
+import quex.core_engine.generator.state_coder.transition as transition
+import quex.core_engine.generator.template_coder         as template_coder
+import quex.core_engine.generator.paths_coder            as paths_coder
 from   quex.input.setup import setup as Setup
 
 
@@ -27,10 +28,10 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     state_machine = SMD.sm()
     
-    txt                     = []
-    done_state_index_set    = set([])
-    local_variable_db       = {}
-    routed_state_info_list  = []
+    txt                  = []
+    done_state_index_set = set([])
+    local_variable_db    = {}
+    routed_state_list    = set([])
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -42,20 +43,22 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     # -- Coding path states [Optional]
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
-        code, variable_db, state_index_set = \
+        code, state_list, variable_db, state_index_set = \
                 paths_coder.do(SMD, Setup.compression_path_uniform_f)
-        done_state_index_set.update(state_index_set)
         txt.append(code)
+        routed_state_list.update(state_list)
         local_variable_db.update(variable_db)
+        done_state_index_set.update(state_index_set)
     
     # -- Coding templated states [Optional]
     #    (those states do not have to be coded later)
     if Setup.compression_template_f:
-        code, routed_state_info_list, variable_db, state_index_set = \
+        code, state_list, variable_db, state_index_set = \
                 template_coder.do(SMD, Setup.compression_template_coef)
-        done_state_index_set.update(state_index_set)
         txt.append(code)
+        routed_state_list.update(state_list)
         local_variable_db.update(variable_db)
+        done_state_index_set.update(state_index_set)
         
     # -- all other states
     state_list = get_sorted_state_list(state_machine.states)
@@ -76,15 +79,13 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
     
-    return "".join(txt), local_variable_db, routed_state_info_list
+    return "".join(txt), local_variable_db, get_state_router_info(routed_state_list, SMD)
 
 def get_sorted_state_list(StateDict):
     """Sort the list in a away, so that states that are used more
        often appear earlier. This happens in the hope of more 
        cache locality. 
     """
-    ## return StateDict.items()
-
     # Database that counts the number of entries into a state
     # "db[state_index] = Sum" means that the state with 'state_index'
     # is entered 'Sum' times.
@@ -101,6 +102,21 @@ def get_sorted_state_list(StateDict):
     # db[x[0]] is the frequence that state 'state_index' as entered.
     state_list.sort(key=lambda x: db[x[0]], reverse=True)
     return state_list
+
+
+def get_state_router_info(StateIndexList, SMD):
+    LanguageDB = Setup.language_db
+
+    result = [None] * len(StateIndexList)
+    for i, index in enumerate(StateIndexList):
+        if index >= 0:
+            # Transition to state entry
+            code = transition.get_transition_to_state(index, SMD)
+        else:
+            # Transition to a templates 'drop-out'
+            code = "goto " + LanguageDB["$label"]("$drop-out-direct", - index) + ";"
+        result[i] = (index, code)
+    return result
 
 
 

@@ -312,7 +312,6 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         StateMachineName       = sm_name + "_UnitTest",
                         OnFailureAction        = PatternActionInfo(None, on_failure_action), 
                         EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
-                        PrintStateMachineF     = True,
                         AnalyserStateClassName = sm_name,
                         StandAloneAnalyserF    = True, 
                         SupportBeginOfLineF    = support_begin_of_line_f)

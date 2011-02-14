@@ -201,7 +201,6 @@ QUEX_NAMESPACE_MAIN_OPEN
          *       may be used by the range skippers, and they write possibly something on
          *       the end of file pointer, that is different from the buffer limit code.
          * NOT: QUEX_BUFFER_ASSERT_CONSISTENCY(buffer); */
-        QUEX_DEBUG_PRINT2(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
         return QUEX_TYPE_CHARACTER_POSITION(buffer->_input_p, buffer->_content_character_index_begin);
 #       else
@@ -228,7 +227,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_TYPE_CHARACTER
     QUEX_NAME(Buffer_input_get)(QUEX_NAME(Buffer)* me)
     {
-        QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
 #       ifdef QUEX_OPTION_ASSERTS
         if( *me->_input_p == QUEX_SETTING_BUFFER_LIMIT_CODE )

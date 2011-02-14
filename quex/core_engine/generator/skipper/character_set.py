@@ -36,7 +36,7 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
      *       criteria is that a character occurs which does not belong to the trigger 
      *       set. The BufferLimitCode, though, does never belong to any trigger set and
      *       thus, no special character is to be set.                                   */
-$$LOOP_START$$
+STATE_$$SKIPPER_INDEX$$_LOOP:
     $$INPUT_GET$$ 
 $$LC_COUNT_IN_LOOP$$
 $$ON_TRIGGER_SET_TO_LOOP_START$$
@@ -52,7 +52,7 @@ $$LC_COUNT_END_PROCEDURE$$
 
 $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    $$GOTO_LOOP_START$$
+    goto STATE_$$SKIPPER_INDEX$$_LOOP;
 
 $$RELOAD$$
     /* -- When loading new content it is always taken care that the beginning of the lexeme
@@ -73,7 +73,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
 $$LC_COUNT_AFTER_RELOAD$$
-            $$GOTO_LOOP_START$$
+            goto STATE_$$SKIPPER_INDEX$$_LOOP;
         } 
     }
 }
@@ -110,14 +110,11 @@ def get_skipper(TriggerSet):
                        ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input", skipper_index)],
-                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input", skipper_index)],
                        ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input", skipper_index)],
                        ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
                        ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
-                       ["$$SKIPPER_INDEX$$",                  repr(skipper_index)],
+                       ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
                        ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
                        # When things were skipped, no change to acceptance flags or modes has
                        # happend. One can jump immediately to the start without re-entry preparation.
@@ -158,11 +155,9 @@ def __lc_counting_replacements(code_str, CharacterSet):
     # Does the end delimiter contain a newline?
     if CharacterSet.contains(ord("\n")): in_loop = line_column_counter_in_loop
 
-    end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                    "                                    - reference_p));\n" 
-    before_reload  = "       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                     "                                   - reference_p));\n" 
-    after_reload   = "           __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n" 
+    end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
+    before_reload  = "       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._input_p - reference_p));\n" 
+    after_reload   = "           __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p);\n" 
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],

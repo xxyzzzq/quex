@@ -62,6 +62,10 @@ def label_db_unregister_usage(Label):
     __label_used_list_unique.remove(Label)
 
 def label_db_get(Type, Index, GotoTargetF=False):
+    assert type(Type)  in [str, unicode]
+    assert Index == None or type(Index) in [int, long], \
+           "Error: index '%s' for label type '%s'" % (repr(Index), Type)
+    assert type(GotoTargetF) == bool
     global __label_printed_list_unique
     global __label_used_list_unique
     global __label_db
@@ -94,6 +98,7 @@ def label_db_marker_get_unused_label_list():
             computed_goto_label_set.append(label)
         else:
             nothing_label_set.append(label)
+
     return nothing_label_set, computed_goto_label_set
 
 
@@ -181,12 +186,13 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
-    "$debug-print":         lambda txt: "QUEX_DEBUG_PRINT(&me->buffer, \"%s\");" % txt,
+    "$debug-print":         lambda txt: "__quex_debug(\"%s\");" % txt,
     "$mark-lexeme-start":   "me->buffer._lexeme_start_p = me->buffer._input_p;",
     "$input/add":           lambda Offset:      "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset,
     "$input/increment":     "++(me->buffer._input_p);",
     "$input/decrement":     "--(me->buffer._input_p);",
-    "$input/get":           "input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);",
+    "$input/get":           "input = *(me->buffer._input_p);\n" + \
+                            "__quex_debug_input();",
     "$input/get-offset":    lambda Offset:      "input = QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i);" % Offset,
     "$input/tell_position": lambda PositionStr: "%s = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" % PositionStr,
     "$input/seek_position": lambda PositionStr: "QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, %s);\n" % PositionStr,
@@ -205,12 +211,12 @@ db["C++"] = {
     "$label-def":            lambda Type, Argument=None:  
                                 "%s:\n"                         % label_db_get(Type, Argument) + \
                                 __string_if_true("    ", Type == "$drop-out-direct") + \
-                                "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
+                                "    __quex_debug(\"LABEL: %s\");\n" % label_db_get(Type, Argument),
     "$analyzer-func":        cpp.__analyzer_function,
     "$terminal-code":        cpp.__terminal_states,      
     "$compile-option":       lambda option: "#define %s\n" % option,
     "$assignment":           lambda variable, value:
-                             "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
+                             "__quex_debug2(\"%s = %%s\", \"%s\");\n" % (variable, value) + \
                              "%s = %s;\n" % (variable, value),
     "$set-last_acceptance":  lambda PatternIndex: \
                              cpp.__set_last_acceptance(PatternIndex, __label_used_in_computed_goto_list_unique),
@@ -267,7 +273,7 @@ db["Python"] = {
     "$==":     lambda left, right: left + " == " + right,
     "$!=":     lambda left, right: left + " != " + right,
     "$>=":     ">=",
-    "$endif":      "",                                                    
+    "$endif":      "\n",                                                    
     "$else":       "else:",                                              
     "$endif-else": "else:\n",
     "$switch-block":  python.__get_switch_block,

@@ -823,7 +823,7 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
     me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;
 #endif
 __REENTRY:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY");
+    __quex_debug(&me->buffer, "LABEL: __REENTRY");
     me->buffer._lexeme_start_p = me->buffer._input_p;
     if( me->buffer._character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) {
         *(me->buffer._input_p) = me->buffer._character_at_lexeme_start;
@@ -953,8 +953,8 @@ __REENTRY:
      * 
      */
 STATE_207:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207");
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    __quex_debug(&me->buffer, "LABEL: STATE_207");
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_207_RELOAD;
     case 0x9: 
@@ -1030,12 +1030,12 @@ STATE_207:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_207_DROP_OUT_DIRECT");
 
     goto TERMINAL_FAILURE;
 
 STATE_207_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_207_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( (me->buffer._memory._end_of_file_p != 0x0) ) {
@@ -1045,18 +1045,18 @@ STATE_207_RELOAD:
                                        post_context_start_position, PostContextStartPositionN);
     goto STATE_207_INPUT;
 STATE_207_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_207_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_207_INPUT");
     ++(me->buffer._input_p);
     goto STATE_207;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_217:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217");
+    __quex_debug(&me->buffer, "LABEL: STATE_217");
 STATE_217_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_217_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0x5F) {
         if( input < 0x41) {
             if( input == 0x0 ) {
@@ -1080,12 +1080,12 @@ STATE_217_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_217_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_217_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_217_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_217_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1098,12 +1098,12 @@ STATE_217_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_210:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210");
+    __quex_debug(&me->buffer, "LABEL: STATE_210");
 STATE_210_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_210_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_210_RELOAD;
     case 0x9: 
@@ -1113,12 +1113,12 @@ STATE_210_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_210_DROP_OUT_DIRECT");
 
             goto TERMINAL_4_DIRECT;
 
 STATE_210_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_210_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_210_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1131,12 +1131,12 @@ STATE_210_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_216:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216");
+    __quex_debug(&me->buffer, "LABEL: STATE_216");
 STATE_216_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_216_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_216_RELOAD;
     case 0x30: 
@@ -1152,12 +1152,12 @@ STATE_216_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_216_DROP_OUT_DIRECT");
 
             goto TERMINAL_25_DIRECT;
 
 STATE_216_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_216_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_216_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1170,12 +1170,12 @@ STATE_216_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_208:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208");
+    __quex_debug(&me->buffer, "LABEL: STATE_208");
 STATE_208_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_208_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_208_RELOAD;
     case 0x41: 
@@ -1234,12 +1234,12 @@ STATE_208_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_208_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_208_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_208_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_208_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1252,12 +1252,12 @@ STATE_208_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_209:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209");
+    __quex_debug(&me->buffer, "LABEL: STATE_209");
 STATE_209_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_209_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_209_RELOAD;
     case 0x41: 
@@ -1316,12 +1316,12 @@ STATE_209_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_209_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_209_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_209_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_209_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1334,12 +1334,12 @@ STATE_209_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_212:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212");
+    __quex_debug(&me->buffer, "LABEL: STATE_212");
 STATE_212_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_212_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_212_RELOAD;
     case 0x41: 
@@ -1398,12 +1398,12 @@ STATE_212_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_212_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_212_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_212_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_212_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1416,12 +1416,12 @@ STATE_212_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_213:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213");
+    __quex_debug(&me->buffer, "LABEL: STATE_213");
 STATE_213_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_213_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_213_RELOAD;
     case 0x41: 
@@ -1480,12 +1480,12 @@ STATE_213_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_213_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_213_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_213_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_213_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1498,12 +1498,12 @@ STATE_213_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_218:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218");
+    __quex_debug(&me->buffer, "LABEL: STATE_218");
 STATE_218_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_218_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_218_RELOAD;
     case 0x41: 
@@ -1562,12 +1562,12 @@ STATE_218_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_218_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_218_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_218_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_218_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1580,12 +1580,12 @@ STATE_218_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_219:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219");
+    __quex_debug(&me->buffer, "LABEL: STATE_219");
 STATE_219_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_219_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0x5F) {
         if( input < 0x41) {
             if( input == 0x0 ) {
@@ -1609,12 +1609,12 @@ STATE_219_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_219_DROP_OUT_DIRECT");
 
             goto TERMINAL_8_DIRECT;
 
 STATE_219_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_219_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_219_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1627,12 +1627,12 @@ STATE_219_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_220:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220");
+    __quex_debug(&me->buffer, "LABEL: STATE_220");
 STATE_220_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_220_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_220_RELOAD;
     case 0x41: 
@@ -1691,12 +1691,12 @@ STATE_220_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_220_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_220_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_220_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_220_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1709,12 +1709,12 @@ STATE_220_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_221:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221");
+    __quex_debug(&me->buffer, "LABEL: STATE_221");
 STATE_221_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_221_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_221_RELOAD;
     case 0x41: 
@@ -1773,12 +1773,12 @@ STATE_221_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_221_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_221_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_221_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_221_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1791,12 +1791,12 @@ STATE_221_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_222:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222");
+    __quex_debug(&me->buffer, "LABEL: STATE_222");
 STATE_222_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_222_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_222_RELOAD;
     case 0x41: 
@@ -1855,12 +1855,12 @@ STATE_222_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_222_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_222_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_222_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_222_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1873,12 +1873,12 @@ STATE_222_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_223:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223");
+    __quex_debug(&me->buffer, "LABEL: STATE_223");
 STATE_223_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_223_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0x5F) {
         if( input < 0x41) {
             if( input == 0x0 ) {
@@ -1902,12 +1902,12 @@ STATE_223_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_223_DROP_OUT_DIRECT");
 
             goto TERMINAL_12_DIRECT;
 
 STATE_223_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_223_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_223_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -1920,12 +1920,12 @@ STATE_223_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_224:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224");
+    __quex_debug(&me->buffer, "LABEL: STATE_224");
 STATE_224_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_224_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_224_RELOAD;
     case 0x41: 
@@ -1984,12 +1984,12 @@ STATE_224_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_224_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_224_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_224_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_224_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2002,12 +2002,12 @@ STATE_224_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_225:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225");
+    __quex_debug(&me->buffer, "LABEL: STATE_225");
 STATE_225_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_225_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_225_RELOAD;
     case 0x41: 
@@ -2066,12 +2066,12 @@ STATE_225_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_225_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_225_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_225_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_225_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2084,12 +2084,12 @@ STATE_225_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_226:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226");
+    __quex_debug(&me->buffer, "LABEL: STATE_226");
 STATE_226_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_226_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_226_RELOAD;
     case 0x41: 
@@ -2148,12 +2148,12 @@ STATE_226_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_226_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_226_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_226_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_226_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2166,12 +2166,12 @@ STATE_226_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_227:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227");
+    __quex_debug(&me->buffer, "LABEL: STATE_227");
 STATE_227_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_227_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0x5F) {
         if( input < 0x41) {
             if( input == 0x0 ) {
@@ -2195,12 +2195,12 @@ STATE_227_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_227_DROP_OUT_DIRECT");
 
             goto TERMINAL_6_DIRECT;
 
 STATE_227_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_227_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_227_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2213,12 +2213,12 @@ STATE_227_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_228:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228");
+    __quex_debug(&me->buffer, "LABEL: STATE_228");
 STATE_228_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_228_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_228_RELOAD;
     case 0x41: 
@@ -2277,12 +2277,12 @@ STATE_228_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_228_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_228_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_228_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_228_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2295,12 +2295,12 @@ STATE_228_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_229:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229");
+    __quex_debug(&me->buffer, "LABEL: STATE_229");
 STATE_229_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_229_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_229_RELOAD;
     case 0x41: 
@@ -2359,12 +2359,12 @@ STATE_229_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_229_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_229_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_229_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_229_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2377,12 +2377,12 @@ STATE_229_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_230:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230");
+    __quex_debug(&me->buffer, "LABEL: STATE_230");
 STATE_230_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_230_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_230_RELOAD;
     case 0x41: 
@@ -2441,12 +2441,12 @@ STATE_230_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_230_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_230_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_230_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_230_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2459,12 +2459,12 @@ STATE_230_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_231:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231");
+    __quex_debug(&me->buffer, "LABEL: STATE_231");
 STATE_231_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_231_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_231_RELOAD;
     case 0x41: 
@@ -2523,12 +2523,12 @@ STATE_231_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_231_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_231_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_231_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_231_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2541,12 +2541,12 @@ STATE_231_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_232:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232");
+    __quex_debug(&me->buffer, "LABEL: STATE_232");
 STATE_232_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_232_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0x5F) {
         if( input < 0x41) {
             if( input == 0x0 ) {
@@ -2570,12 +2570,12 @@ STATE_232_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_232_DROP_OUT_DIRECT");
 
             goto TERMINAL_14_DIRECT;
 
 STATE_232_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_232_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_232_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2588,12 +2588,12 @@ STATE_232_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_233:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233");
+    __quex_debug(&me->buffer, "LABEL: STATE_233");
 STATE_233_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_233_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_233_RELOAD;
     case 0x41: 
@@ -2652,12 +2652,12 @@ STATE_233_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_233_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_233_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_233_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_233_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2670,12 +2670,12 @@ STATE_233_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_234:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234");
+    __quex_debug(&me->buffer, "LABEL: STATE_234");
 STATE_234_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_234_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_234_RELOAD;
     case 0x41: 
@@ -2734,12 +2734,12 @@ STATE_234_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_234_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_234_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_234_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_234_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2752,12 +2752,12 @@ STATE_234_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_235:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235");
+    __quex_debug(&me->buffer, "LABEL: STATE_235");
 STATE_235_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_235_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_235_RELOAD;
     case 0x41: 
@@ -2816,12 +2816,12 @@ STATE_235_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_235_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_235_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_235_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_235_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2834,12 +2834,12 @@ STATE_235_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_236:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236");
+    __quex_debug(&me->buffer, "LABEL: STATE_236");
 STATE_236_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_236_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     switch( input ) {
     case 0x0: goto STATE_236_RELOAD;
     case 0x41: 
@@ -2898,12 +2898,12 @@ STATE_236_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_236_DROP_OUT_DIRECT");
 
             goto TERMINAL_30_DIRECT;
 
 STATE_236_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_236_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_236_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -2916,12 +2916,12 @@ STATE_236_RELOAD:
 
     __quex_assert(false); /* No drop-through between states */
 STATE_237:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237");
+    __quex_debug(&me->buffer, "LABEL: STATE_237");
 STATE_237_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_237_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0x5F) {
         if( input < 0x41) {
             if( input == 0x0 ) {
@@ -2945,12 +2945,12 @@ STATE_237_INPUT:
     }
 
                           
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_237_DROP_OUT_DIRECT");
 
             goto TERMINAL_10_DIRECT;
 
 STATE_237_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_237_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_237_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {
@@ -3023,11 +3023,11 @@ QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, last_acceptance_input_position);
 
 
            
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_4");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_4");
 
     ++(me->buffer._input_p);
 TERMINAL_4_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_4_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_4_DIRECT");
 
     {
         {
@@ -3044,11 +3044,11 @@ TERMINAL_4_DIRECT:
     goto __REENTRY_PREPARATION;
 
            
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_6");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_6");
 
     ++(me->buffer._input_p);
 TERMINAL_6_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_6_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_6_DIRECT");
 
     {
         {
@@ -3069,11 +3069,11 @@ TERMINAL_6_DIRECT:
     goto __REENTRY_PREPARATION;
 
            
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_8");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_8");
 
     ++(me->buffer._input_p);
 TERMINAL_8_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_8_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_8_DIRECT");
 
     {
         {
@@ -3094,11 +3094,11 @@ TERMINAL_8_DIRECT:
     goto __REENTRY_PREPARATION;
 
             
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_10");
 
     ++(me->buffer._input_p);
 TERMINAL_10_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_10_DIRECT");
 
     {
         {
@@ -3119,11 +3119,11 @@ TERMINAL_10_DIRECT:
     goto __REENTRY_PREPARATION;
 
             
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_12");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_12");
 
     ++(me->buffer._input_p);
 TERMINAL_12_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_12_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_12_DIRECT");
 
     {
         {
@@ -3144,11 +3144,11 @@ TERMINAL_12_DIRECT:
     goto __REENTRY_PREPARATION;
 
             
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_14");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_14");
 
     ++(me->buffer._input_p);
 TERMINAL_14_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_14_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_14_DIRECT");
 
     {
         {
@@ -3169,11 +3169,11 @@ TERMINAL_14_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_16:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_16");
 
     ++(me->buffer._input_p);
 TERMINAL_16_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_16_DIRECT");
 
     {
         {
@@ -3194,11 +3194,11 @@ TERMINAL_16_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_18:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_18");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_18");
 
     ++(me->buffer._input_p);
 TERMINAL_18_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_18_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_18_DIRECT");
 
     {
         {
@@ -3219,11 +3219,11 @@ TERMINAL_18_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_20:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_20");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_20");
 
     ++(me->buffer._input_p);
 TERMINAL_20_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_20_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_20_DIRECT");
 
     {
         {
@@ -3244,11 +3244,11 @@ TERMINAL_20_DIRECT:
     goto __REENTRY_PREPARATION;
 
             
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_25");
 
     ++(me->buffer._input_p);
 TERMINAL_25_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_25_DIRECT");
 
     QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);
     {
@@ -3271,11 +3271,11 @@ TERMINAL_25_DIRECT:
     goto __REENTRY_PREPARATION;
 
             
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_30");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_30");
 
     ++(me->buffer._input_p);
 TERMINAL_30_DIRECT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_30_DIRECT");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_30_DIRECT");
 
     QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);
     {
@@ -3298,7 +3298,7 @@ TERMINAL_30_DIRECT:
 
 
 TERMINAL_END_OF_STREAM:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_END_OF_STREAM");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_END_OF_STREAM");
 
                 {
                     {
@@ -3318,7 +3318,7 @@ TERMINAL_END_OF_STREAM:
      RETURN;          
 
 TERMINAL_FAILURE:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_FAILURE");
+    __quex_debug(&me->buffer, "LABEL: TERMINAL_FAILURE");
 
 me->buffer._input_p = me->buffer._lexeme_start_p;
 if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {
@@ -3355,7 +3355,7 @@ else {
 
   
 __REENTRY_PREPARATION:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY_PREPARATION");
+    __quex_debug(&me->buffer, "LABEL: __REENTRY_PREPARATION");
 
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */

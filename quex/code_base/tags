@@ -211,16 +211,16 @@ QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_ba
 QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/asserts	9;"	d	file:
 QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/asserts	/^    QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(QUEX_TYPE_CHARACTER* Begin, $/;"	f	namespace:quex
 QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/asserts	10;"	d	file:
-QUEX_DEBUG_PRINT	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	205;"	d	file:
-QUEX_DEBUG_PRINT	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	213;"	d	file:
-QUEX_DEBUG_PRINT2	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	206;"	d	file:
-QUEX_DEBUG_PRINT2	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	217;"	d	file:
-QUEX_DEBUG_PRINT_BUFFER_LOAD	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	230;"	d	file:
-QUEX_DEBUG_PRINT_BUFFER_LOAD	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	234;"	d	file:
-QUEX_DEBUG_PRINT_INPUT	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	207;"	d	file:
-QUEX_DEBUG_PRINT_INPUT	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	221;"	d	file:
-QUEX_DEBUG_PRINT_TRANSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	/^    QUEX_DEBUG_PRINT_TRANSITION(CLASS* me, QUEX_NAME(Mode)* Source, QUEX_NAME(Mode)* Target)$/;"	f	namespace:quex
-QUEX_DEBUG_PRINT_TRANSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	35;"	d	file:
+__quex_debug	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	205;"	d	file:
+__quex_debug	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	213;"	d	file:
+__quex_debug2	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	206;"	d	file:
+__quex_debug2	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	217;"	d	file:
+__quex_debug_BUFFER_LOAD	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	230;"	d	file:
+__quex_debug_BUFFER_LOAD	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	234;"	d	file:
+__quex_debug_input	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	207;"	d	file:
+__quex_debug_input	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	221;"	d	file:
+__quex_debug_TRANSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	/^    __quex_debug_TRANSITION(CLASS* me, QUEX_NAME(Mode)* Source, QUEX_NAME(Mode)* Target)$/;"	f	namespace:quex
+__quex_debug_TRANSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/mode_handling.i	35;"	d	file:
 QUEX_ERROR_EXIT	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	/^    QUEX_ERROR_EXIT(const char* Msg)$/;"	f	namespace:quex
 QUEX_GOTO_STATE_LABEL_INIT_VALUE	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	149;"	d	file:
 QUEX_GOTO_STATE_LABEL_INIT_VALUE	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	158;"	d	file:

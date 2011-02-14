@@ -66,8 +66,9 @@ def __get_if_in_interval(TriggerSet):
 
 def __get_switch_block(VariableName, CaseCodePairList):
     CaseCodePairList.sort(key=itemgetter(0))
-    txt = ["if %s == %s: %s\n" % (VariableName, CaseCodePairList[0][0], CaseCodePairList[0][1])]
+    txt = [0, "if   %s == %s: %s\n" % (VariableName, CaseCodePairList[0][0], CaseCodePairList[0][1])]
     for case, code in CaseCodePairList[1:]:
+        txt.append(0)
         txt.append("elif %s == %s: %s\n" % (VariableName, case, code))
     txt.append("\n")
     return txt

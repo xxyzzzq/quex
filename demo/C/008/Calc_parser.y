@@ -1,5 +1,4 @@
 %defines
-%define "parser_class_name" "Calc_parser"
 %debug
 %pure-parser
 %error-verbose

@@ -25,9 +25,9 @@
 < %.o: %.cpp $(LEXER_SOURCES) $(PARSER_NAME).tab.cpp
 ---
 > %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
-< $(LEXER_SOURCES): $(LEXER_FILE) $(PARSER_NAME).tab.cpp
+< GENERATE: $(LEXER_FILE) $(PARSER_NAME).tab.cpp
 ---
-> $(LEXER_SOURCES): $(LEXER_FILE) $(PARSER_NAME).tab.c
+> GENERATE: $(LEXER_FILE) $(PARSER_NAME).tab.c
 > 		  --language C                                               \
 < $(PARSER_NAME).tab.cpp: $(PARSER_FILE)
 ---
