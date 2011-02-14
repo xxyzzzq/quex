@@ -582,7 +582,7 @@ The following options control the comment which is added to the generated code:
 
         .. code-block:: cpp
 
-            /* 
+            /* BEGIN: STATE MACHINE
              ...
              * 02353(A, S) <~ (117, 398, A, S)
              *       <no epsilon>
@@ -590,6 +590,8 @@ The following options control the comment which is added to the generated code:
              *       == '=' ==> 02400
              *       <no epsilon>
              ...
+             * END: STATE MACHINE
+             */
 
         It means that state 2369 is an acceptance state (flag 'A') and it should store
         the input position ('S'), if no backtrack elimination is applied. It originates
@@ -604,16 +606,32 @@ The following options control the comment which is added to the generated code:
 
         .. code-block:: cpp
 
-               /* MODE: PROGRAM
+               /* BEGIN: MODE PATTERNS 
+                ...
+                * MODE: PROGRAM
                 * 
                 *     PATTERN-ACTION PAIRS:
                 *       (117) ALL:     [ \r\n\t]
                 *       (119) CALC_OP: "+"|"-"|"*"|"/"
                 *       (121) PROGRAM: "//"
                 ...
+                * END: MODE PATTERNS
+                */
 
         This means, that there is a mode ``PROGRAM``. The first three pattern are related
         to the terminal states '117', '119', and '121'. The whitespace pattern of 117 was
         inherited from mode `ALL`. The math operator pattern was inherited from mode
         ``CALC_OP`` and the comment start pattern "//" was implemented in ``PROGRAM`` 
         itself.
+
+The comment output is framed by ``BEGIN:`` and ``END:`` markers. This facilitates the extraction
+of this information for further processing. For example, the Unix command 'awk' can be used:
+
+        .. code-block:: bash
+
+           awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' MyLexer.c
+
+
+
+
+

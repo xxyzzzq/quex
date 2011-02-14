@@ -80,7 +80,10 @@ def do():
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
-        analyzer_code += Setup.language_db["$ml-comment"](inheritance_info_str + "\nEND: MODE PATTERNS\n")
+        analyzer_code += Setup.language_db["$ml-comment"]("BEGIN: MODE PATTERNS\n" + \
+                                                          inheritance_info_str     + \
+                                                          "\nEND: MODE PATTERNS")
+        analyzer_code += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
     # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)
@@ -173,7 +176,6 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSuppor
     analyzer_code = generator.do(pattern_action_pair_list, 
                                  OnFailureAction                = PatternActionInfo(None, on_failure_action), 
                                  EndOfStreamAction              = PatternActionInfo(None, end_of_stream_action),
-                                 PrintStateMachineF             = True,
                                  StateMachineName               = Mode.name,
                                  AnalyserStateClassName         = Setup.analyzer_class_name,
                                  StandAloneAnalyserF            = False, 

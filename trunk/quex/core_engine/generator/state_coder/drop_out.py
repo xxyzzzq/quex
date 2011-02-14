@@ -121,14 +121,17 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
         reload_str           = __reload_backward()
         load_impossible_str  = LanguageDB["$BOF"]
         load_possible_str    = LanguageDB["$not"](LanguageDB["$BOF"])
-        goto_terminal_str    = LanguageDB["$goto"]("$terminal-general-bw")
+        goto_terminal_str    = "    " + LanguageDB["$goto"]("$terminal-general-bw")
 
-    if State.__class__.__name__ == "TemplateState" and not State.uniform_state_entries_f():
-        # Templated states, i.e. code fragments that implement more than one
-        # state, need to return to dedicated state entries, if the state entries
-        # are not uniform.
-        my_label = "template_%i_map_state_key_to_state_index[template_state_key]" % StateIdx
-        goto_state_input_str = LanguageDB["$goto-state"](my_label) 
+    if State.__class__.__name__ == "TemplateState":
+        if State.uniform_state_entries_f():
+            goto_state_input_str = LanguageDB["$goto"]("$template", StateIdx) 
+        else:
+            # Templated states, i.e. code fragments that implement more than one
+            # state, need to return to dedicated state entries, if the state entries
+            # are not uniform.
+            my_label = "template_%i_map_state_key_to_state_index[template_state_key]" % StateIdx
+            goto_state_input_str = LanguageDB["$goto-state"](my_label) 
 
     elif State.__class__.__name__ == "PathWalkerState" and not State.uniform_state_entries_f():
         goto_state_input_str = StateRouterStr
@@ -186,15 +189,15 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
         # Case if no un-conditional acceptance, the goto general terminal
         if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
         assert Origin.is_acceptance()
-        return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+        return "    " + LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return LanguageDB["$goto-last_acceptance"]
+        return "    " + LanguageDB["$goto-last_acceptance"]
 
     elif not state.is_acceptance():
-        return LanguageDB["$goto-last_acceptance"]
+        return "    " + LanguageDB["$goto-last_acceptance"]
 
     else:
         # -- acceptance state drop outs

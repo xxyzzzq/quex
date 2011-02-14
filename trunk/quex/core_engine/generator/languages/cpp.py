@@ -691,7 +691,7 @@ def __require_terminating_zero_preparation(LanguageDB, CodeStr):
 
 def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
     __label_used_in_computed_goto_list_unique.add(PatternID)
-    return "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % PatternID + \
+    return "__quex_debug2(\"ACCEPTANCE: %%s\", \"%s\");\n" % PatternID + \
            "QUEX_SET_last_acceptance(%s);\n" % PatternID
 
 def __condition(txt, CharSet):

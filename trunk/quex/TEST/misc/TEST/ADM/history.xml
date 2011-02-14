@@ -1,5 +1,8 @@
-<history date="Sat Feb 12 01:14:19 2011" element-n="1">
+<history date="Sun Feb 13 08:17:48 2011" element-n="2">
     <day year="2011" month="02" day="10">
         <history-init time="20:32:09"/>
+    </day>
+    <day year="2011" month="02" day="13">
+        <crc-error time="07:07:32" application="comment.sh" choice="" database-crc="-1663713497" real-crc="-868935868"/>
     </day>
 </history>

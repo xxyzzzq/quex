@@ -96,10 +96,6 @@ function += "".join(transition_block.do(state.transitions().get_trigger_map(),
                                         None, dsm))
 function  = function.replace("_-1_", "_MINUS_1_")
 
-line_n = 0
-for line in function.split("\n"):
-    print "##%i" % line_n, line
-    line_n += 1
 states = []
 for state_index in target_state_index_list:
     states.append("STATE_%i = %iL\n" % (state_index, state_index))
@@ -107,7 +103,13 @@ states.append("STATE_None_RELOAD = -1\n")
 states.append("STATE_None_DROP_OUT_DIRECT = -1\n")
 state_txt = "".join(states)
 
-exec(state_txt + function)
+line_n = 0
+for line in (state_txt + function).split("\n"):
+    print "##%03i" % line_n, line
+    line_n += 1
+
+exec(state_txt + function + "\n")
+
 differences = []    
 output_txt  = []
 for number in range(interval_end):

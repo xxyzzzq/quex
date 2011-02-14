@@ -82,7 +82,7 @@ $$INIT_REFERENCE_POINTER$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
 
-$$LOOP_START$$
+INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY:
     $$INPUT_GET$$ 
 $$ON_TRIGGER_SET_TO_LOOP_START$$
 $$DROP_OUT_DIRECT$$
@@ -92,7 +92,7 @@ $$END_PROCEDURE$$
 
 $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    $$GOTO_LOOP_START$$
+    goto INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY;
 
 $$RELOAD$$
     /* -- In the case of 'indentation counting' we do not worry about the lexeme at all --
@@ -112,7 +112,7 @@ $$RELOAD$$
 
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-            $$GOTO_LOOP_START$$
+            goto INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY;
         } 
     }
 
@@ -213,11 +213,8 @@ def do(Data):
                        ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$COUNTER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_START$$",                     LanguageDB["$label-def"]("$input",  counter_index)],
-                       ["$$GOTO_LOOP_START$$",                LanguageDB["$goto"]("$input",       counter_index)],
                        ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry",  counter_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RESTART$$",                        LanguageDB["$label-def"]("$input",  counter_index)],
                        ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", counter_index)],
                        ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", counter_index)],
                        ["$$COUNTER_INDEX$$",                  repr(counter_index)],

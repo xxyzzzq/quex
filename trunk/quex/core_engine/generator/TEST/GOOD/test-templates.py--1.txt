@@ -15,33 +15,33 @@
 
     __quex_assert(false); /* No drop-through between states */
 STATE_100:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_100");
-    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "0");
+    __quex_debug(&me->buffer, "LABEL: STATE_100");
+    __quex_debug2(&me->buffer, "template_state_key = %s", "0");
     template_state_key = 0;
     goto TEMPLATE_1;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_200:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_200");
-    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "1");
+    __quex_debug(&me->buffer, "LABEL: STATE_200");
+    __quex_debug2(&me->buffer, "template_state_key = %s", "1");
     template_state_key = 1;
     goto TEMPLATE_1;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_202:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_202");
-    QUEX_DEBUG_PRINT2(&me->buffer, "template_state_key = %s", "2");
+    __quex_debug(&me->buffer, "LABEL: STATE_202");
+    __quex_debug2(&me->buffer, "template_state_key = %s", "2");
     template_state_key = 2;
     goto TEMPLATE_1;
 
     __quex_assert(false); /* No drop-through between states */
 TEMPLATE_1:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TEMPLATE_1");
+    __quex_debug(&me->buffer, "LABEL: TEMPLATE_1");
 STATE_1_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_1_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
     if( input < 0xA) {
         switch( input ) {
         case 0x0: goto STATE_1_RELOAD;
@@ -62,13 +62,13 @@ STATE_1_INPUT:
     }
 
 STATE_1_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_1_DROP_OUT_DIRECT");
 
         QUEX_GOTO_last_acceptance();
 
 
 STATE_1_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_1_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {

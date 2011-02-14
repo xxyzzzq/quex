@@ -1,6 +1,15 @@
-< COMPILER = g++ -ggdb 
+< COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -W
+< ADD_FLAGS :=#
+< 
+< ifneq (,$(findstring sun, $(COMPILER)))
+< 	ADD_FLAGS := +w
+< endif	
 ---
 > COMPILER = gcc # -ggdb 
+< 	 $(ADD_FLAGS) $(CCFLAG_ASSERTS) 
+---
+> 	 -Wall -Wconversion -pedantic     \
+> 	 $(CCFLAG_ASSERTS) 
 < EasyLexer.o: EasyLexer.cpp 
 ---
 > EasyLexer.o: EasyLexer.c 

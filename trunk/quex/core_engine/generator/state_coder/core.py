@@ -81,7 +81,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
         return acceptance_info.backward_lexing(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw", True) ] 
+               [ LanguageDB["$goto"]("$terminal-general-bw") ] 
 
 
     elif SMD.backward_input_position_detection_f():
@@ -90,7 +90,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # stored at the entry of the state.
         return [ LanguageDB["$input/decrement"], "\n"] + \
                acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw", True) ]
+               [ LanguageDB["$goto"]("$terminal-general-bw") ]
 
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode
@@ -130,7 +130,7 @@ def get_prolog(StateIdx, InitStateF, SMD):
 
     return txt
 
-def get_epilog(InitStateF, StateIdx, SMD):
+def get_epilog(StateIdx, InitStateF, SMD):
     """The init state does not increment the input position, thus we do the
        increment in a separate fragment. This fragment acts then as the entry
        to the init state. Finally, it jumps to the transition block of the 
@@ -140,9 +140,9 @@ def get_epilog(InitStateF, StateIdx, SMD):
     """
     LanguageDB = Setup.language_db
 
-    if not (InitStateF and SMD.forward_lexing_f()): return ""
+    if not (InitStateF and SMD.forward_lexing_f()): return [""]
 
-    txt = []
+    txt = ["\n"]
     txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
     txt.extend(["    ", LanguageDB["$input/increment"], "\n"])
     txt.extend(["    ", LanguageDB["$goto"]("$init_state_fw_transition_block"), "\n"])

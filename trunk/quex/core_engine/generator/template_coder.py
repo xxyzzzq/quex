@@ -124,7 +124,7 @@ def do(SMD, CostCoefficient):
         })
 
     return "".join(code), \
-           __get_state_router_info(routed_state_index_list, SMD), \
+           routed_state_index_list, \
            local_variable_db, \
            involved_state_index_list
 
@@ -498,14 +498,3 @@ def get_uniform_prototype(SMD, InvolvedStateIndexList):
     else:
         return None
 
-def __get_state_router_info(StateIndexList, SMD):
-    result = [None] * len(StateIndexList)
-    for i, index in enumerate(StateIndexList):
-        if index >= 0:
-            # Transition to state entry
-            code = transition.get_transition_to_state(index, SMD)
-        else:
-            # Transition to a templates 'drop-out'
-            code = "goto " + LanguageDB["$label"]("$drop-out-direct", - index) + ";"
-        result[i] = (index, code)
-    return result

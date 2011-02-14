@@ -2,31 +2,30 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-.PHONY: clean
+.PHONY: clean GENERATE_LEXER GENERATE_PARSER
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
 # (*) SETUP ____________________________________________________________________
-# -- INPUT
-LEXER_FILE		= Calc_lexer.qx
 
 # -- FILES PRODUCED BY QUEX
 LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
-LEXER_SOURCES	= $(LEXER_NAME)                     \
-                  $(LEXER_NAME).cpp                 \
-                  $(LEXER_NAME)-token_ids           \
+LEXER_SOURCES	= $(LEXER_NAME)                \
+                  $(LEXER_NAME).cpp            \
+                  $(LEXER_NAME)-token_ids      \
                   $(LEXER_NAME)-configuration       
 
 TOKEN_FILE		= Calc_token-ids
 
-PARSER_NAME		=	Calc_parser
-PARSER_FILE		=	$(PARSER_NAME).ypp
-PARSER_SOURCES	=	$(PARSER_NAME).tab.cpp	\
-					$(PARSER_NAME).tab.hpp
+# -- FILES RELATED TO BISON
+PARSER_NAME		= Calc_parser
+PARSER_FILE		= $(PARSER_NAME).ypp
+PARSER_SOURCES	= $(PARSER_NAME).tab.cpp	\
+				  $(PARSER_NAME).tab.hpp
 # -- OUTPUT
-APPLICATION      = lexer
+APPLICATION     = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -51,20 +50,24 @@ LD = $(COMPILER)
 $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 
-# -- engine and object files
-%.o: %.cpp $(LEXER_SOURCES) $(PARSER_NAME).tab.cpp
-	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+$(LEXER_SOURCES):                              GENERATE_LEXER
 
-$(LEXER_SOURCES): $(LEXER_FILE) $(PARSER_NAME).tab.cpp
-	quex -i $(LEXER_FILE) --engine $(LEXER_NAME) --token-prefix TKN_ \
+$(PARSER_NAME).tab.hpp $(PARSER_NAME).tab.cpp: GENERATE_PARSER
+
+GENERATE_LEXER: Calc_lexer.qx 
+	quex -i Calc_lexer.qx --engine $(LEXER_NAME) --token-prefix TKN_ \
           --foreign-token-id-file Calc_token-ids.h
 
-$(PARSER_NAME).tab.cpp: $(PARSER_FILE)
+GENERATE_PARSER:
 	bison $(PARSER_FILE)
+
+# -- engine and object files
+%.o: %.cpp $(LEXER_NAME) $(PARSER_NAME).tab.hpp
+	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	touch $(LEXER_FILE)
+	touch Calc_lexer.qx
 	rm -f $(LEXER_SOURCES)
 	rm -f $(LEXER_NAME)-token
 	rm -f $(PARSER_SOURCES)

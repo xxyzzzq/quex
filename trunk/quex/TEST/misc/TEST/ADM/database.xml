@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.34" date="Sat Feb 12 01:14:19 2011">
+<test-database execution-time-sec="0.34" date="Sun Feb 13 08:17:48 2011">
     <last-used-diff-display-program name=""/>
     <test title="Test code comments" time-sum-sec="0.34"> 
         <application file-name="comment.sh" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.34" crc="-1663713497"/>
+           <choice name="" result="OK" time_sec="0.34" crc="33299667"/>
         </choice-list>
     </test>
 </test-database>

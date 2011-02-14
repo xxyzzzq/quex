@@ -67,12 +67,12 @@ tiny_lexer_PROGRAM_analyser_function(QuexAnalyzerEngine* me)
     me->DEBUG_analyser_function_at_entry = me->current_analyser_function;
 #endif
 __REENTRY:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY");
+    __quex_debug(&me->buffer, "LABEL: __REENTRY");
     QuexBuffer_mark_lexeme_start(&me->buffer);
     QuexBuffer_undo_terminating_zero_for_lexeme(&me->buffer);
     /* state machine */
 STATE_787:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_787");
+    __quex_debug(&me->buffer, "LABEL: STATE_787");
 
     input = QuexBuffer_input_get(&me->buffer);
     if( input < 95) {

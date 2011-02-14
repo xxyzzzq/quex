@@ -51,48 +51,48 @@ def write_member_functions(Modes):
 
 mode_function_implementation_str = \
 """
-    void
-    QUEX_NAME($$MODE_NAME$$_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
-        (void)me;
-        (void)FromMode;
+void
+QUEX_NAME($$MODE_NAME$$_on_entry)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* FromMode) {
+    (void)me;
+    (void)FromMode;
 $$ENTER-PROCEDURE$$
-    }
+}
 
-    void
-    QUEX_NAME($$MODE_NAME$$_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
-        (void)me;
-        (void)ToMode;
+void
+QUEX_NAME($$MODE_NAME$$_on_exit)(QUEX_TYPE_ANALYZER* me, const QUEX_NAME(Mode)* ToMode)  {
+    (void)me;
+    (void)ToMode;
 $$EXIT-PROCEDURE$$
-    }
+}
 
 #if defined(QUEX_OPTION_INDENTATION_TRIGGER) 
-    void
-    QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
-                                            QUEX_TYPE_INDENTATION  Indentation, 
-                                            QUEX_TYPE_CHARACTER*   Begin) {
-        (void)me;
-        (void)Indentation;
-        (void)Begin;
+void
+QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
+                                        QUEX_TYPE_INDENTATION  Indentation, 
+                                        QUEX_TYPE_CHARACTER*   Begin) {
+    (void)me;
+    (void)Indentation;
+    (void)Begin;
 $$ON_INDENTATION-PROCEDURE$$
-    }
+}
 #endif
 
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-    bool
-    QUEX_NAME($$MODE_NAME$$_has_base)(const QUEX_NAME(Mode)* Mode) {
-        (void)Mode;
+bool
+QUEX_NAME($$MODE_NAME$$_has_base)(const QUEX_NAME(Mode)* Mode) {
+    (void)Mode;
 $$HAS_BASE_MODE$$
-    }
-    bool
-    QUEX_NAME($$MODE_NAME$$_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
-        (void)Mode;
+}
+bool
+QUEX_NAME($$MODE_NAME$$_has_entry_from)(const QUEX_NAME(Mode)* Mode) {
+    (void)Mode;
 $$HAS_ENTRANCE_FROM$$
-    }
-    bool
-    QUEX_NAME($$MODE_NAME$$_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
-        (void)Mode;
+}
+bool
+QUEX_NAME($$MODE_NAME$$_has_exit_to)(const QUEX_NAME(Mode)* Mode) {
+    (void)Mode;
 $$HAS_EXIT_TO$$
-    }
+}
 #endif    
 """                         
 
@@ -114,17 +114,17 @@ def  get_implementation_of_mode_functions(mode, Modes):
         return result
 
     # (*) on enter 
-    on_entry_str  = "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    on_entry_str += "__quex_assert(me->%s.has_entry_from(FromMode));\n" % mode.name
-    on_entry_str += "#endif\n"
+    on_entry_str  = "#   ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
+    on_entry_str += "    __quex_assert(me->%s.has_entry_from(FromMode));\n" % mode.name
+    on_entry_str += "#   endif\n"
     for code_info in mode.get_code_fragment_list("on_entry"):
         on_entry_str += code_info.get_code()
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
     # (*) on exit
-    on_exit_str  = "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    on_exit_str += "__quex_assert(me->%s.has_exit_to(ToMode));\n" % mode.name
-    on_exit_str += "#endif\n"
+    on_exit_str  = "#   ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
+    on_exit_str += "    __quex_assert(me->%s.has_exit_to(ToMode));\n" % mode.name
+    on_exit_str += "#   endif\n"
     for code_info in mode.get_code_fragment_list("on_exit"):
         on_exit_str += code_info.get_code()
 
@@ -283,9 +283,9 @@ def get_on_indentation_handler(Mode):
     # on what is defined in '$QUEX_PATH/analayzer/member/on_indentation.i'
     if Mode.default_indentation_handler_sufficient():
         return "#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)\n" + \
-               "       return __self_result_token_id;\n" + \
+               "    return __self_result_token_id;\n" + \
                "#   else\n" + \
-               "       return;\n" + \
+               "    return;\n" + \
                "#   endif\n"
 
     if Mode.has_code_fragment_list("on_indent"):

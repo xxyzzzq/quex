@@ -15,7 +15,7 @@ class Generator(GeneratorBase):
                  StateMachineName, AnalyserStateClassName, Language, 
                  OnFailureAction, EndOfStreamAction, 
                  ModeNameList, 
-                 PrintStateMachineF, StandAloneAnalyserF, SupportBeginOfLineF):
+                 StandAloneAnalyserF, SupportBeginOfLineF):
 
         # Ensure that the language database as been setup propperly
         assert type(Setup.language_db) == dict
@@ -29,7 +29,6 @@ class Generator(GeneratorBase):
         self.end_of_stream_action       = EndOfStreamAction
         self.on_failure_action          = OnFailureAction
         self.mode_name_list             = ModeNameList
-        self.print_state_machine_f      = PrintStateMachineF
         self.stand_alone_analyzer_f     = StandAloneAnalyserF
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF)
@@ -42,17 +41,19 @@ class Generator(GeneratorBase):
 
         assert self.sm.get_orphaned_state_index_list() == []
 
-        #  Comment state machine transitions 
-        if Setup.comment_state_machine_transitions_f:
-            txt += "    " + LanguageDB["$comment"]("state machine") + "\n"
-            if self.print_state_machine_f: 
-                txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
-
         decorated_state_machine = StateMachineDecorator(self.sm, 
                                                         self.state_machine_name, 
                                                         self.post_contexted_sm_id_list, 
                                                         BackwardLexingF=False, 
                                                         BackwardInputPositionDetectionF=False)
+
+        #  Comment state machine transitions 
+        txt = ""
+        if Setup.comment_state_machine_transitions_f:
+            txt += LanguageDB["$ml-comment"]("BEGIN: STATE MACHINE\n"             + \
+                                             self.sm.get_string(NormalizeF=False) + \
+                                             "END: STATE MACHINE") 
+            txt += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         msg, db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
         txt += msg
@@ -77,21 +78,24 @@ class Generator(GeneratorBase):
 
         assert self.pre_context_sm.get_orphaned_state_index_list() == []
 
-        txt = "    " + LanguageDB["$comment"]("state machine for pre-condition test:") + "\n"
-        if self.print_state_machine_f: 
-            txt += LanguageDB["$ml-comment"](self.pre_context_sm.get_string(NormalizeF=False)) + "\n"
-
         decorated_state_machine = StateMachineDecorator(self.pre_context_sm, 
                                                         self.state_machine_name, 
                                                         PostContextSM_ID_List=[],
                                                         BackwardLexingF=True, 
                                                         BackwardInputPositionDetectionF=False)
 
+        txt = ""
+        if Setup.comment_state_machine_transitions_f:
+            txt += LanguageDB["$ml-comment"]("BEGIN: PRE-CONTEXT STATE MACHINE\n"             + \
+                                             self.pre_context_sm.get_string(NormalizeF=False) + \
+                                             "END: PRE-CONTEXT STATE MACHINE") 
+            txt += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+
         msg, variable_db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
 
         txt += msg
 
-        txt += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"
+        txt += LanguageDB["$label-def"]("$terminal-general-bw") + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt += "    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n"
@@ -107,7 +111,7 @@ class Generator(GeneratorBase):
         for sm in self.papc_backward_detector_state_machine_list:
             assert sm.get_orphaned_state_index_list() == []
             papc_input_postion_backward_detector_functions +=  \
-                  backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
+                  backward_detector.do(sm, LanguageDB)
 
         pre_context_sm_code = ""
         routed_state_info_list = []
@@ -152,7 +156,6 @@ class Generator(GeneratorBase):
 
 def do(PatternActionPair_List, OnFailureAction, 
        EndOfStreamAction, Language="C++", StateMachineName="",
-       PrintStateMachineF=False,
        AnalyserStateClassName="analyzer_state",
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
@@ -181,7 +184,7 @@ def do(PatternActionPair_List, OnFailureAction,
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
                      OnFailureAction, EndOfStreamAction, ModeNameList, 
-                     PrintStateMachineF, StandAloneAnalyserF, SupportBeginOfLineF).do(RequiredLocalVariablesDB)
+                     StandAloneAnalyserF, SupportBeginOfLineF).do(RequiredLocalVariablesDB)
     
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)

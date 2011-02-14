@@ -18,48 +18,48 @@
 
     __quex_assert(false); /* No drop-through between states */
 STATE_1:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_1");
+    __quex_debug(&me->buffer, "LABEL: STATE_1");
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_end_state = %s", "&&STATE_5");
+    __quex_debug2(&me->buffer, "path_end_state = %s", "&&STATE_5");
     path_end_state = &&STATE_5;
     
 #endif  /* not QUEX_OPTION_COMPUTED_GOTOS */
-   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_1 + 0");
+   __quex_debug2(&me->buffer, "path_iterator = %s", "path_1 + 0");
     path_iterator = path_1 + 0;
     goto PATH_WALKER_23;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_6:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_6");
+    __quex_debug(&me->buffer, "LABEL: STATE_6");
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_end_state = %s", "&&STATE_16");
+    __quex_debug2(&me->buffer, "path_end_state = %s", "&&STATE_16");
     path_end_state = &&STATE_16;
     
 #endif  /* not QUEX_OPTION_COMPUTED_GOTOS */
-   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_6 + 0");
+   __quex_debug2(&me->buffer, "path_iterator = %s", "path_6 + 0");
     path_iterator = path_6 + 0;
     goto PATH_WALKER_23;
 
     __quex_assert(false); /* No drop-through between states */
 STATE_17:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_17");
+    __quex_debug(&me->buffer, "LABEL: STATE_17");
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
-    QUEX_DEBUG_PRINT2(&me->buffer, "path_end_state = %s", "&&STATE_22");
+    __quex_debug2(&me->buffer, "path_end_state = %s", "&&STATE_22");
     path_end_state = &&STATE_22;
     
 #endif  /* not QUEX_OPTION_COMPUTED_GOTOS */
-   QUEX_DEBUG_PRINT2(&me->buffer, "path_iterator = %s", "path_17 + 0");
+   __quex_debug2(&me->buffer, "path_iterator = %s", "path_17 + 0");
     path_iterator = path_17 + 0;
     goto PATH_WALKER_23;
 
     __quex_assert(false); /* No drop-through between states */
 PATH_WALKER_23:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: PATH_WALKER_23");
+    __quex_debug(&me->buffer, "LABEL: PATH_WALKER_23");
 STATE_23_INPUT:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_INPUT");
+    __quex_debug(&me->buffer, "LABEL: STATE_23_INPUT");
 
     ++(me->buffer._input_p);
-    input = *(me->buffer._input_p); QUEX_DEBUG_PRINT_INPUT(&me->buffer, input);
+    input = *(me->buffer._input_p); __quex_debug_input(&me->buffer, input);
 
     if( input == *path_iterator ) {
         ++path_iterator;
@@ -85,13 +85,13 @@ QUEX_ERROR_EXIT("Pathwalker: path_iterator on inadmissible position.");
     }
 
 STATE_23_DROP_OUT_DIRECT:
-        QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
+        __quex_debug(&me->buffer, "LABEL: STATE_23_DROP_OUT_DIRECT");
 
         QUEX_GOTO_last_acceptance();
 
 
 STATE_23_RELOAD:
-    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_23_RELOAD");
+    __quex_debug(&me->buffer, "LABEL: STATE_23_RELOAD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( ! ((me->buffer._memory._end_of_file_p != 0x0)) ) {

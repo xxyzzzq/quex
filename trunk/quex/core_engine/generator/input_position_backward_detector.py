@@ -12,6 +12,7 @@ import quex.core_engine.generator.state_machine_coder     as state_machine_coder
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 from   quex.frs_py.string_handling                        import blue_print
 import quex.core_engine.generator.state_router            as state_router
+from   quex.input.setup                                   import setup as Setup
 
 function_str = """
 #include <quex/code_base/temporary_macros_on>
@@ -25,7 +26,7 @@ $$FUNCTION_BODY$$
 #include <quex/code_base/temporary_macros_off>
 """
 
-def do(sm, LanguageDB, PrintStateMachineF):
+def do(sm, LanguageDB):
 
     decorated_state_machine = StateMachineDecorator(sm, 
                                                     "BACKWARD_DETECTOR_" + repr(sm.get_id()),
@@ -36,14 +37,17 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body, variable_db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
 
     sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
-    if PrintStateMachineF: 
-        sm_str += LanguageDB["$ml-comment"](sm.get_string(NormalizeF=False)) + "\n"
+    if Setup.comment_state_machine_transitions_f: 
+        analyzer_code += Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
+                                                          sm.get_string(NormalizeF=False)            + \
+                                                          "\nEND: BACKWARD DETECTOR STATE MACHINE")
+        analyzer_code += "\n"
 
     if len(routed_state_info_list) != 0:
         function_body += state_router.do(routed_state_info_list)
 
     # -- input position detectors simply the next 'catch' and return
-    function_body += LanguageDB["$label-def"]("$terminal-general-bw", True) + "\n"
+    function_body += LanguageDB["$label-def"]("$terminal-general-bw") + "\n"
     function_body += LanguageDB["$input/seek_position"]("end_of_core_pattern_position") + "\n"
     function_body += LanguageDB["$input/increment"] + "\n"
 
