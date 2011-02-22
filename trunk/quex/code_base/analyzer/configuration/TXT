@@ -139,20 +139,6 @@ $$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 /* Verbosity (uncomment the following, if you want it verbose.)            */
 /* #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                    */
 
-/* Debugging: 
- *    If the engine was created with the '--debug' flag then it contains 
- *    debugging code. The effect of this code fragments can be turned off
- *    by commenting the following options out.                             */
-#ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
-$$SWITCH$$ QUEX_OPTION_DEBUG_TOKEN_SENDING
-#endif
-#ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-$$SWITCH$$ QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-#endif
-#ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-$$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-#endif
-
 /* Include Stack Support                                                  */
 #ifndef   QUEX_OPTION_INCLUDE_STACK
 $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK

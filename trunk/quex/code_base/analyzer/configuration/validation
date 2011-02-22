@@ -42,7 +42,7 @@
  * support it.                                                       */
 #if defined(QUEX_OPTION_COMPUTED_GOTOS)
 #   if    defined(__GNUC__) \
-       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
+       && ((__GNUC__ < 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
 #       error "Detected gcc version < 2.3; This version does not support computed gotos. Option QUEX_OPTION_COMPUTED_GOTOS cannot be used."
 #   endif
 #endif

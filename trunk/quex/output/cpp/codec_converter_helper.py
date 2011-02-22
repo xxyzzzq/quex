@@ -39,11 +39,7 @@ def _do(UnicodeTrafoInfo, CodecName):
     """
     codec_name = make_safe_identifier(CodecName).lower()
     utf8_epilog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
-    # print "##utf16ct:"
-    # for info in ConverterWriterUTF16().get_conversion_table(UnicodeTrafoInfo):
-    #    print "##", info
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
-    # print "##END"
     dummy,        utf32_function_body = ConverterWriterUTF32().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
@@ -180,7 +176,6 @@ class ConverterWriter:
                 i += 1
 
             i -= 1
-            ## print "##", i, source_interval_begin, border_list[i]
             # 'i' now stands on the first utf8_range that touches the source interval
             info = ConversionInfo(i, source_interval_begin, target_interval_begin)
 
@@ -200,7 +195,6 @@ class ConverterWriter:
                 i += 1
                 info = ConversionInfo(i, source_interval_begin, target_interval_begin)
 
-            ## print "##", remaining_size
             if remaining_size != 0:
                 info.codec_interval_size = remaining_size
                 info_list.append(info)

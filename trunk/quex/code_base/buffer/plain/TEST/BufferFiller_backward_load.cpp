@@ -36,7 +36,7 @@ main(int argc, char** argv)
         printf("------------------------------------------------------------\n");
         QUEX_NAME(Buffer_show_byte_content)(&buffer, 5);
         printf("     ");
-        QUEX_NAME(Buffer_show_content)(&buffer);
+        QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
         if( buffer._content_character_index_begin == 0 ) break;
         buffer._input_p        = buffer._memory._front;

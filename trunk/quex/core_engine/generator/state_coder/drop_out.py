@@ -1,5 +1,6 @@
 import quex.core_engine.state_machine.core                    as state_machine
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
+from   quex.core_engine.generator.languages.core              import get_address
 
 from   quex.input.setup            import setup as Setup
 from   quex.frs_py.string_handling import blue_print
@@ -11,28 +12,35 @@ $$LABEL_DIRECT$$
 $$GOTO_TERMINAL$$
 
 $$LABEL$$
+    /* state $$STATE_INDEX$$ reload */
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( $$LOAD_POSSIBLE$$ ) {
+        __quex_debug_reload_before();
         $$RELOAD_BUFFER$$
-        $$GOTO_INPUT$$
+        __quex_debug_reload_after();
+        QUEX_GOTO_STATE($$STATE_INDEX$$);
     }
-$$GOTO_TERMINAL$$
+    __quex_debug("reload impossible");
+    QUEX_GOTO_STATE($$TERMINAL$$);
 """
 
 init_drop_out_template = """
 $$LABEL_DIRECT$$
-    $$GOTO_FAILURE$$
+$$GOTO_FAILURE$$
 
 $$LABEL$$
+    /* init state reload */
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( $$LOAD_IMPOSSIBLE$$ ) {
-        $$GOTO_END_OF_STREAM$$
+    if( $$LOAD_POSSIBLE$$ ) {
+        __quex_debug_reload_before();
+        $$RELOAD_BUFFER$$
+        __quex_debug_reload_after();
+        QUEX_GOTO_STATE($$STATE_INDEX$$);
     }
-    $$RELOAD_BUFFER$$
-    $$GOTO_INPUT$$
+    $$GOTO_END_OF_STREAM$$
 """
 
-def do(State, StateIdx, SMD, StateRouterStr=None):
+def do(State, StateIdx, SMD, StateIndexStr=None):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -107,34 +115,31 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
     LanguageDB = Setup.language_db
     InitStateF = (StateIdx == SMD.sm().init_state_index)
 
+    state_index_str      = "QUEX_LABEL(%i)" % StateIdx
+    state_index_else_str = "QUEX_LABEL(%i)" % get_address("$drop-out-direct", StateIdx)
+
     if SMD.forward_lexing_f(): 
         reload_str           = __reload_forward()
         ## If input == buffer limit code, then the input_p stands on either 
         ## the end of file pointer or the buffer limit. If the end of file
         ## pointer is != 0 it lies before the buffer limit. Thus, in this
         ## case the end of file has been reached.
-        load_impossible_str = "(me->buffer._memory._end_of_file_p != 0x0)"
         load_possible_str   = "(me->buffer._memory._end_of_file_p == 0x0)"
-        ## load_impossible_str  = LanguageDB["$EOF"]
         goto_terminal_str    = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
     else:
         reload_str           = __reload_backward()
-        load_impossible_str  = LanguageDB["$BOF"]
         load_possible_str    = LanguageDB["$not"](LanguageDB["$BOF"])
         goto_terminal_str    = "    " + LanguageDB["$goto"]("$terminal-general-bw")
 
     if State.__class__.__name__ == "TemplateState":
-        if State.uniform_state_entries_f():
-            goto_state_input_str = LanguageDB["$goto"]("$template", StateIdx) 
-        else:
+        if not State.uniform_state_entries_f():
             # Templated states, i.e. code fragments that implement more than one
             # state, need to return to dedicated state entries, if the state entries
             # are not uniform.
-            my_label = "template_%i_map_state_key_to_state_index[template_state_key]" % StateIdx
-            goto_state_input_str = LanguageDB["$goto-state"](my_label) 
+            state_index_str = "template_%i_map_state_key_to_state_index[template_state_key]" % StateIdx
 
     elif State.__class__.__name__ == "PathWalkerState" and not State.uniform_state_entries_f():
-        goto_state_input_str = StateRouterStr
+        state_index_str = StateIndexStr
 
     else:
         # Normal return to place where the next input is read
@@ -150,11 +155,11 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
         txt = blue_print(init_drop_out_template,
                          [["$$LABEL$$",              LanguageDB["$label-def"]("$reload", StateIdx)],
                           ["$$LABEL_DIRECT$$",       LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
-                          ["$$LOAD_IMPOSSIBLE$$",    load_impossible_str],
-                          ["$$GOTO_FAILURE$$",       LanguageDB["$goto"]("$terminal-FAILURE")],
+                          ["$$LOAD_POSSIBLE$$",      load_possible_str],
+                          ["$$GOTO_FAILURE$$",       "    " + LanguageDB["$goto"]("$terminal-FAILURE")],
                           ["$$GOTO_END_OF_STREAM$$", LanguageDB["$goto"]("$terminal-EOF")], 
                           ["$$RELOAD_BUFFER$$",      reload_str], 
-                          ["$$GOTO_INPUT$$",         goto_state_input_str],
+                          ["$$STATE_INDEX$$",        state_index_str], 
                          ])
 
 
@@ -165,7 +170,8 @@ def do(State, StateIdx, SMD, StateRouterStr=None):
                           ["$$LOAD_POSSIBLE$$",   load_possible_str],
                           ["$$GOTO_TERMINAL$$",   goto_terminal_str], 
                           ["$$RELOAD_BUFFER$$",   reload_str], 
-                          ["$$GOTO_INPUT$$",      goto_state_input_str],
+                          ["$$STATE_INDEX$$",     state_index_str], 
+                          ["$$TERMINAL$$",        state_index_else_str], 
                          ])
 
     # -- in case of the init state, the end of file has to be checked.
@@ -179,25 +185,25 @@ def __reload_forward():
 def __reload_backward(): 
     return "QUEX_NAME(buffer_reload_backward)(&me->buffer);\n"
 
+def __goto_terminal(Origin):
+    global LanguageDB 
+    # Case if no un-conditional acceptance, the goto general terminal
+    if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
+    assert Origin.is_acceptance()
+    return "    " + LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
     assert isinstance(SM, state_machine.StateMachine)
     global LanguageDB 
 
-    def __goto_terminal(Origin):
-        global LanguageDB 
-        # Case if no un-conditional acceptance, the goto general terminal
-        if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
-        assert Origin.is_acceptance()
-        return "    " + LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
-
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return "    " + LanguageDB["$goto-last_acceptance"]
+        return "    goto __TERMINAL_ROUTER;"
 
     elif not state.is_acceptance():
-        return "    " + LanguageDB["$goto-last_acceptance"]
+        return "    goto __TERMINAL_ROUTER;"
 
     else:
         # -- acceptance state drop outs

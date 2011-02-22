@@ -1,6 +1,6 @@
 import quex.core_engine.state_machine.index      as     sm_index
-from   quex.core_engine.generator.skipper.common import *
-from   quex.core_engine.generator.languages.core import __nice
+from   quex.core_engine.generator.skipper.common    import *
+from   quex.core_engine.generator.languages.address import __nice
 import quex.output.cpp.action_code_formatter     as     action_code_formatter
 import quex.core_engine.utf8                     as     utf8
 from   quex.input.setup                          import setup as Setup

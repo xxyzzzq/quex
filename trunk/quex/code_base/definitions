@@ -62,7 +62,7 @@
 #   define __QUEX_STD_malloc   malloc
 #   define __QUEX_STD_free     free  
 
-#   define QUEX_INLINE             /*static*/
+#   define QUEX_INLINE             /* static */
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 
@@ -71,8 +71,8 @@
     typedef  void*     QUEX_TYPE_GOTO_LABEL;
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE        (&&TERMINAL_FAILURE)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE           (QUEX_TYPE_GOTO_LABEL)(0x0)
-#   define QUEX_SET_last_acceptance(TerminalIndex)    last_acceptance = &&TERMINAL_ ##TerminalIndex## _DIRECT; 
-#   define QUEX_SET_state_label(LABEL, StateIndex)    LABEL = &&STATE_ ##StateIndex##; 
+#   define QUEX_LABEL(StateIndex)                     &&_##StateIndex 
+
 #   define QUEX_GOTO_TERMINAL(LABEL)                  goto *LABEL;
 
     /* If no computed gotos are used, then there are two state routers, one for forward
@@ -80,17 +80,31 @@
      * thing are required.                                                                 */
 #   define QUEX_GOTO_STATE(LABEL)                     goto *LABEL;
 
+#   define QUEX_GOTO_RELOAD_FORWARD(STATE, ELSE_TERMINAL)    target_state_index = &&STATE_ ##STATE##; \
+                                                             last_acceptance    = &&TERMINAL_ ##ELSE_TERMINAL## _DIRECT; \
+                                                             goto __RELOAD_FORWARD;
+
+#   define QUEX_GOTO_RELOAD_BACKWARD(STATE, ELSE_TERMINAL)   target_state_index = &&STATE_ ##STATE##; \
+                                                             goto __RELOAD_BACKWARD;
 #else
-    typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
+    typedef  int32_t  QUEX_TYPE_GOTO_LABEL;          /* > 0: State index
+                                                      * < 0: Drop Out of a state abs(Label). */
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(-1)
-#   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance = TerminalIndex; 
-#   define QUEX_SET_state_label(LABEL, StateIndex)   LABEL = StateIndex; 
+#   define QUEX_LABEL(StateIndex)                    StateIndex 
+
 #   define QUEX_GOTO_TERMINAL(LABEL)                 last_acceptance = LABEL; \
                                                      goto __TERMINAL_ROUTER;
 
 #   define QUEX_GOTO_STATE(LABEL)                    target_state_index = LABEL; \
                                                      goto __STATE_ROUTER;
+
+#   define QUEX_GOTO_RELOAD_FORWARD(STATE, ELSE_TERMINAL)    target_state_index = STATE; \
+                                                             laster_acceptance  = ELSE_TERMINAL; \
+                                                             goto __RELOAD_FORWARD;
+
+#   define QUEX_GOTO_RELOAD_BACKWARD(STATE, ELSE_TERMINAL)   target_state_index = STATE; \
+                                                             goto __RELOAD_BACKWARD;
 
 #endif
 
@@ -103,33 +117,111 @@
            do { __QUEX_STD_fprintf(stderr, Msg); exit(-1); } while(0)
 #endif
 
-#if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
-#   define __quex_debug(FormatStr)       /* empty */
-#   define __quex_debug2(FormatStr, Arg) /* empty */
-#   define __quex_debug_input()          /* empty */
+#if defined(QUEX_OPTION_DEBUG_SHOW)
+
+#   define __QUEX_PRINT_SOURCE_POSITION()                             \
+           __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) \
+
+#   define __QUEX_PRINT_CHAR(CHAR)                             \
+             (CHAR) == '\n' ? __QUEX_STD_fprintf(stderr, "%02X '\\n'\n", (int)(CHAR)) \
+           : (CHAR) == '\t' ? __QUEX_STD_fprintf(stderr, "%02X '\\t'\n", (int)(CHAR)) \
+           : (CHAR) == '\r' ? __QUEX_STD_fprintf(stderr, "%02X '\\r'\n", (int)(CHAR)) \
+           : (CHAR) == '\a' ? __QUEX_STD_fprintf(stderr, "%02X '\\a'\n", (int)(CHAR)) \
+           : (CHAR) == '\v' ? __QUEX_STD_fprintf(stderr, "%02X '\\v'\n", (int)(CHAR)) \
+           :                  __QUEX_STD_fprintf(stderr, "%02X '%c'\n", \
+                                                    (int)(CHAR), (CHAR) < 0xFF ? (char)(CHAR) : '?')
+
+#   define __quex_debug(FormatStr)                   \
+           __QUEX_PRINT_SOURCE_POSITION();           \
+           __QUEX_STD_fprintf(stderr, FormatStr "\n")
+
+#   define __quex_debug_init_state()                                                    \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "* init state __________\n");                     \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "input:           ");                             \
+           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                                   \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "input position:  %i\n",                          \
+                              (int)(me->buffer._input_p - me->buffer._memory._front)); 
+
+#   define __quex_debug_state(StateIdx)                                                 \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "state %i ______________\n", (int)StateIdx);      \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "input:           ");                             \
+           __QUEX_PRINT_CHAR(*(me->buffer._input_p + 1));                               \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "input position:  %i\n",                          \
+                              (int)(me->buffer._input_p - me->buffer._memory._front + 1)); 
+
+#   define __QUEX_PRINT_BUFFER_INFO()                                                   \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "input position:  %i\n",                          \
+                              (int)(me->buffer._input_p - me->buffer._memory._front + 1)); \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "lexeme start:    %i\n",                          \
+                              (int)(me->buffer._lexeme_start_p - me->buffer._memory._front + 1)); \
+           __QUEX_PRINT_SOURCE_POSITION();                                              \
+           __QUEX_STD_fprintf(stderr, "buffer size:     %i\n",                                    \
+                              (int)(me->buffer._memory._back - me->buffer._memory._front)); 
+
+#   define __quex_debug_reload_before()                             \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "reload ________________\n"); \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "fallback bytes:  %i\n",      \
+                              (int)(QUEX_SETTING_BUFFER_MIN_FALLBACK_N)); \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "(before)\n");                \
+           __QUEX_PRINT_BUFFER_INFO();
+           
+#   define __quex_debug_reload_after()                              \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "(after)\n");                 \
+           __QUEX_PRINT_BUFFER_INFO();                              \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "reload terminated _____\n"); 
+
+#   define __quex_debug2(FormatStr, Arg)                    \
+           __QUEX_PRINT_SOURCE_POSITION();                  \
+           __QUEX_STD_fprintf(stderr, FormatStr "\n", Arg)
+
+#   define __quex_debug_counter()                        \
+           QUEX_NAME(Counter_print_this)(&self.counter)
+
+#else /* not defined(QUEX_OPTION_DEBUG_SHOW) */
+
+#   define __quex_debug(FormatStr)            /* empty */
+#   define __quex_debug_state(StateIdx)       /* empty */
+#   define __quex_debug_reload_before()       /* empty */
+#   define __quex_debug_reload_after()        /* empty */
+#   define __quex_debug_init_state(StateIdx)  /* empty */
+#   define __quex_debug2(FormatStr, Arg)      /* empty */
+#   define __quex_debug_input()               /* empty */
+#   define __quex_debug_counter()             /* empty */
+
+#endif /* ! QUEX_OPTION_DEBUG_SHOW */
+
+#if  defined(QUEX_OPTION_DEBUG_SHOW_LOADS)
+
+#   include <quex/code_base/buffer/Buffer_debug>
+#   define __quex_debug_buffer_load(BUFFER, Msg)         \
+           __QUEX_STD_fprintf(stderr, Msg);              \
+           QUEX_NAME(Buffer_show_debug_content)(BUFFER); 
+
+#elif  defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
+
+#   include <quex/code_base/buffer/Buffer_debug>
+#   define __quex_debug_buffer_load(BUFFER, Msg)         \
+           __QUEX_STD_fprintf(stdout, Msg);              \
+           QUEX_NAME(Buffer_show_content)(BUFFER); 
 #else
-#   define __QUEX_PRINT_SOURCE_POSITION()                                             \
-           __QUEX_STD_fprintf(stdout, "%s:%i: input @ 0x%08X \t", __FILE__, __LINE__, \
-                             (int)(me->buffer._input_p - me->buffer._memory._front);            
 
-#   define __quex_debug(FormatStr)        \
-           __QUEX_PRINT_SOURCE_POSITION()       \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n")
+#   define __quex_debug_buffer_load(BUFFER, Msg) /* empty */
 
-#   define __quex_debug2(FormatStr, Arg)       \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)            \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n", Arg)
+#endif /* __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
 
-#   define __quex_debug_input()                             \
-           __QUEX_PRINT_SOURCE_POSITION(Buffer)                                  \
-             Character == '\n' ? __QUEX_STD_fprintf(stdout, "input:    (%x) '\\n'\n", (char)*me->buffer._input_p) \
-           : Character == '\t' ? __QUEX_STD_fprintf(stdout, "input:    (%x) '\\t'\n", (char)*me->buffer._input_p) \
-           : Character == '\r' ? __QUEX_STD_fprintf(stdout, "input:    (%x) '\\r'\n", (char)*me->buffer._input_p) \
-           : Character == '\a' ? __QUEX_STD_fprintf(stdout, "input:    (%x) '\\a'\n", (char)*me->buffer._input_p) \
-           : Character == '\v' ? __QUEX_STD_fprintf(stdout, "input:    (%x) '\\v'\n", (char)*me->buffer._input_p) \
-           :                     __QUEX_STD_fprintf(stdout, "input:    (%x) '%c'\n", \
-                                                    (int)*me->buffer._input_p, (char)*me->buffer._input_p) 
-#endif /* ! __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS */
 
 
 #if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)

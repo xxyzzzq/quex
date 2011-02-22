@@ -40,7 +40,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
         void (*on_entry)(QUEX_TYPE_ANALYZER*, const struct QUEX_NAME(Mode_tag)* FromMode);
         void (*on_exit)(QUEX_TYPE_ANALYZER*, const struct QUEX_NAME(Mode_tag)* ToMode);
-#       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
+#       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
         bool (*has_base)(const struct QUEX_NAME(Mode_tag)* Mode);
         bool (*has_entry_from)(const struct QUEX_NAME(Mode_tag)* Mode);
         bool (*has_exit_to)(const struct QUEX_NAME(Mode_tag)* Mode);

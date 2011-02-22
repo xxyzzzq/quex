@@ -33,8 +33,8 @@ if True:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
 else:
-    SHOW_TRANSITIONS_STR  = "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
-    SHOW_BUFFER_LOADS_STR = "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+    SHOW_TRANSITIONS_STR  = "-DQUEX_OPTION_DEBUG_SHOW "  
+    SHOW_BUFFER_LOADS_STR = "-DQUEX_OPTION_DEBUG_SHOW_LOADS"
 
 
 choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "ANSI-C-CG", 
@@ -224,7 +224,14 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
                   "-o %s "      % executable_name         + \
                   SHOW_TRANSITIONS_STR    + " " + \
                   SHOW_BUFFER_LOADS_STR
-                  # "-ggdb"                 + " " + \
+
+    # If computed gotos are involved, then make sure that the option is really active.
+    # if compile_str.find("-DQUEX_OPTION_COMPUTED_GOTOS") != -1:
+    #   run_this(compile_str + " -E") # -E --> expand macros
+    #   content = open(filename_tmp, "rb").read()
+    #   if content.find("__STATE_ROUTER"):
+    #       print "##Error: computed gotos contain state router."
+    #       sys.exit()
 
     print compile_str + "##" # DEBUG
     run_this(compile_str)
@@ -290,7 +297,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     try:
         PatternActionPairList = map(lambda x: 
                                     PatternActionInfo(regex.do(x[0], PatternDictionary), 
-                                                      CodeFragment(action(x[1]), RequireTerminatingZeroF=True)),
+                                                      CodeFragment(action(x[1]), RequireTerminatingZeroF=True),
+                                                      Pattern=x[0]),
                                     PatternActionPairList)
     except RegularExpressionException, x:
         print "Regular expression parsing:\n" + x.message
@@ -376,10 +384,9 @@ def create_nested_range_skipper_code(Language, TestStr, OpenSequence, CloseSeque
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
                                                MarkerCharList=[], LocalVariableDB=local_variable_db) 
 
-
 def action(PatternName): 
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
-    txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
+    txt = 'printf("%19s  \'%%s\'\\n", Lexeme); fflush(stdout);\n' % PatternName
 
     if   "->1" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mr_UnitTest_analyzer_function);\n"
     elif "->2" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mrs_UnitTest_analyzer_function);\n"
@@ -468,6 +475,7 @@ run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
 """
 
 def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, LocalVariableDB={}):
+    LanguageDB = Setup.language_db
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
 
@@ -479,11 +487,12 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         ml_txt += "    break;\n"
 
     return blue_print(customized_unit_test_function_txt,
-                      [("$$MARKER_LIST$$",     ml_txt),
-                       ("$$SHOW_POSITION$$",   show_position_str),
-                       ("$$LOCAL_VARIABLES$$", __local_variable_definitions(LocalVariableDB)),
-                       ("$$SOURCE_CODE$$",     SourceCode),
-                       ("$$END_STR$$",         EndStr)])
+                      [("$$MARKER_LIST$$",            ml_txt),
+                       ("$$SHOW_POSITION$$",          show_position_str),
+                       ("$$LOCAL_VARIABLES$$",        __local_variable_definitions(LocalVariableDB)),
+                       ("$$SOURCE_CODE$$",            SourceCode),
+                       ("$$TERMINAL_END_OF_STREAM$$", LanguageDB["$label"]("$terminal-EOF")),
+                       ("$$END_STR$$",                EndStr)])
 
 
 customized_unit_test_function_txt = """
@@ -529,7 +538,7 @@ $$MARKER_LIST$$
         if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
             QUEX_NAME(Buffer_mark_lexeme_start)(&me->buffer);
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-                goto TERMINAL_END_OF_STREAM;
+                goto $$TERMINAL_END_OF_STREAM$$;
             }
             QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                                    post_context_start_position, 0);
@@ -545,10 +554,10 @@ __REENTRY:
      * Here, we use the chance to print the position where the skipper ended.
      * If we are at the border and there is still stuff to load, then load it so we can
      * see what the next character is coming in.                                          */
-    if( ! show_next_character(&me->buffer) ) goto TERMINAL_END_OF_STREAM; 
+    if( ! show_next_character(&me->buffer) ) goto $$TERMINAL_END_OF_STREAM$$; 
     goto ENTRY;
 
-TERMINAL_END_OF_STREAM:
+$$TERMINAL_END_OF_STREAM$$:
 $$END_STR$$
 #undef engine
 }

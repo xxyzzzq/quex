@@ -12,95 +12,12 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-from copy import deepcopy, copy
-import quex.core_engine.generator.languages.cpp    as cpp
-import quex.core_engine.generator.languages.python as python
-from quex.frs_py.string_handling import blue_print
-
-def __nice(SM_ID): 
-    return repr(SM_ID).replace("L", "")
-    
-db = {}
-
-__label_db = \
-{
-    "$terminal":              lambda TerminalIdx: "TERMINAL_%s"        % __nice(TerminalIdx),
-    "$terminal-direct":       lambda TerminalIdx: "TERMINAL_%s_DIRECT" % __nice(TerminalIdx),
-    "$terminal-general-bw":   lambda NoThing:     "TERMINAL_GENERAL_BACKWARD",
-    "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
-    "$terminal-FAILURE":      lambda NoThing:     "TERMINAL_FAILURE",
-    "$template":              lambda StateIdx:    "TEMPLATE_%s"       % __nice(StateIdx),
-    "$pathwalker":            lambda StateIdx:    "PATH_WALKER_%s"    % __nice(StateIdx),
-    "$pathwalker-router":     lambda StateIdx:    "PATH_WALKER_%s_STATE_ROUTER" % __nice(StateIdx),
-    "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
-    "$entry-stub":            lambda StateIdx:    "STATE_%s_STUB"     % __nice(StateIdx),
-    "$reload":                lambda StateIdx:    "STATE_%s_RELOAD"          % __nice(StateIdx),
-    "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),
-    "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
-    "$start":                 lambda NoThing:     "__REENTRY",
-    "$init_state_fw_transition_block": lambda NoThing: "INIT_STATE_TRANSITION_BLOCK",
-}
-
-## 
-__label_printed_list_unique               = set([])
-__label_used_list_unique                  = set([])
-__label_used_in_computed_goto_list_unique = set([])
-
-def label_db_marker_init():
-    global __label_printed_list_unique
-    global __label_used_list_unique
-
-    __label_printed_list_unique.clear()
-    ## __label_printed_list_unique["__TERMINAL_ROUTER"] = True
-    __label_used_list_unique.clear()
-
-def label_db_register_usage(Label):
-    __label_used_list_unique.add(Label)
-    return Label
-
-def label_db_unregister_usage(Label):
-    __label_used_list_unique.remove(Label)
-
-def label_db_get(Type, Index, GotoTargetF=False):
-    assert type(Type)  in [str, unicode]
-    assert Index == None or type(Index) in [int, long], \
-           "Error: index '%s' for label type '%s'" % (repr(Index), Type)
-    assert type(GotoTargetF) == bool
-    global __label_printed_list_unique
-    global __label_used_list_unique
-    global __label_db
-
-    label = __label_db[Type](Index)
-
-    if Type in ["$re-start", "$start"]: return label
-
-    # Keep track of any label. Labels which are not used as goto targets
-    # may be deleted later on.
-    if GotoTargetF: __label_used_list_unique.add(label)
-    else:           __label_printed_list_unique.add(label)
-
-    return label
-
-def label_db_marker_get_unused_label_list():
-    global __label_used_list_unique
-    global __label_printed_list_unique
-    global __label_db
-    
-    nothing_label_set       = []
-    computed_goto_label_set = []
-
-    printed       = __label_printed_list_unique
-    used          = __label_used_list_unique
-    computed_goto = __label_used_in_computed_goto_list_unique
-    for label in printed:
-        if label in used: continue
-        if label in computed_goto:
-            computed_goto_label_set.append(label)
-        else:
-            nothing_label_set.append(label)
-
-    return nothing_label_set, computed_goto_label_set
-
+import quex.core_engine.generator.languages.cpp     as cpp
+import quex.core_engine.generator.languages.python  as python
+from   quex.core_engine.generator.languages.address import *
+from   quex.core_engine.generator.languages.address import __label_used_in_computed_goto_list_unique
+from   quex.frs_py.string_handling import blue_print
+from   copy import deepcopy, copy
 
 #________________________________________________________________________________
 # C++
@@ -191,11 +108,10 @@ db["C++"] = {
     "$input/add":           lambda Offset:      "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset,
     "$input/increment":     "++(me->buffer._input_p);",
     "$input/decrement":     "--(me->buffer._input_p);",
-    "$input/get":           "input = *(me->buffer._input_p);\n" + \
-                            "__quex_debug_input();",
+    "$input/get":           "input = *(me->buffer._input_p);",
     "$input/get-offset":    lambda Offset:      "input = QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i);" % Offset,
-    "$input/tell_position": lambda PositionStr: "%s = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" % PositionStr,
-    "$input/seek_position": lambda PositionStr: "QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, %s);\n" % PositionStr,
+    "$input/tell_position": lambda PositionStr: "%s = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);" % PositionStr,
+    "$input/seek_position": lambda PositionStr: "QUEX_NAME(Buffer_seek_memory_adr)(&me->buffer, %s);" % PositionStr,
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
@@ -206,18 +122,15 @@ db["C++"] = {
                              "goto %s;\n" % label_db_get("$entry", TemplateStateIdx, GotoTargetF=True),
     "$goto-template-state-key":    lambda TemplateIdx: 
                                    "QUEX_TEMPLATE_GOTO_STATE_KEY(%i, template_state_key);" % TemplateIdx,
-    "$label":                lambda Type, Argument: label_db_get(Type, Argument, GotoTargetF=True),
+    "$label":                lambda Type, Argument=None: label_db_get(Type, Argument, GotoTargetF=True),
     "$label-pure":           lambda Label:                "%s:" % Label,
-    "$label-def":            lambda Type, Argument=None:  
-                                "%s:\n"                         % label_db_get(Type, Argument) + \
-                                __string_if_true("    ", Type == "$drop-out-direct") + \
-                                "    __quex_debug(\"LABEL: %s\");\n" % label_db_get(Type, Argument),
+    "$label-def":            lambda Type, Argument=None:  "%s:" % label_db_get(Type, Argument), 
+    "$debug-state":          lambda StateIdx:             "__quex_debug_state(%i);\n" % StateIdx,
+    "$debug-init-state":     "__quex_debug_init_state();\n",
     "$analyzer-func":        cpp.__analyzer_function,
     "$terminal-code":        cpp.__terminal_states,      
     "$compile-option":       lambda option: "#define %s\n" % option,
-    "$assignment":           lambda variable, value:
-                             "__quex_debug2(\"%s = %%s\", \"%s\");\n" % (variable, value) + \
-                             "%s = %s;\n" % (variable, value),
+    "$assignment":           lambda variable, value: "%s = %s;\n" % (variable, value),
     "$set-last_acceptance":  lambda PatternIndex: \
                              cpp.__set_last_acceptance(PatternIndex, __label_used_in_computed_goto_list_unique),
     "$goto-last_acceptance": "QUEX_GOTO_TERMINAL(last_acceptance);\n",

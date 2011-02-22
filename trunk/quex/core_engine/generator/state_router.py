@@ -18,12 +18,13 @@ def do(StateRouterInfoList):
     for index, code in sorted(StateRouterInfoList, key=itemgetter(0)):
         if index in done_set: continue
         done_set.add(index)
-        txt.append("    case %i: {" % index)
+        txt.append("        case %i: { " % index)
         txt.append(code)
-        txt.append("    }\n")
+        txt.append("}\n")
 
+    txt.append("\n")
+    txt.append("        default: QUEX_ERROR_EXIT(\"State router: unknown index.\");\n")
     txt.append("    }\n")
-    txt.append("    __quex_assert(false);\n")
     txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
 
     return "".join(txt)

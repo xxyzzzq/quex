@@ -1,8 +1,8 @@
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 import quex.core_engine.state_machine.core                as     state_machine 
 #
-from   quex.core_engine.generator.languages.core import __nice
-from   quex.input.setup                          import setup as Setup
+from   quex.core_engine.generator.languages.address import __nice
+from   quex.input.setup                             import setup as Setup
 
 LanguageDB = None
 
@@ -153,6 +153,7 @@ def backward_lexing(OriginList):
         assert origin.is_acceptance()
         variable = "pre_context_%s_fulfilled_f" % __nice(origin.state_machine_id)
         txt.append("    " + LanguageDB["$assignment"](variable, 1))
+        txt.append("    __quex_debug(\"pre context %s fulfilled\");\n" % __nice(origin.state_machine_id));
     txt.append("\n")
 
     return txt
@@ -185,6 +186,25 @@ def backward_lexing_find_core_pattern(OriginList):
             return ["    ", LanguageDB["$input/tell_position"]("end_of_core_pattern_position"), "\n"]
     return ["\n"]
 
+def trivial_terminal(OriginList):
+    """If the acceptance depends on pre-context, then the acceptance
+       detection is non-trivial. If it is trivial a simple 'goto terminal'
+       can be applied.
+
+       RETURNS:  None  -- if the acceptance determination is not trivial
+                 >= 0  -- index of the acceptance terminal
+                 -1    -- if it is a non-acceptance state
+    """
+
+    acceptance_terminal_id = -1
+    for origin in OriginList:
+        if not origin.is_acceptance():     continue
+        if   origin.pre_context_id() != -1L:       return False
+        elif origin.pre_context_begin_of_line_f(): return False
+        if acceptance_terminal_id == -1:
+            acceptance_terminal_id = origin.state_machine_id
+    return acceptance_terminal_id
+
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         
     # Just try, to make sure that the function has thought about the case 
@@ -197,7 +217,8 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         # do not replace the last '\n' with '\n    '
         return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
 
-    txt = []
+    txt       = []
+    debug_txt = []
     first_if_statement_f         = True
     unconditional_case_treated_f = False
     OriginList.sort()
@@ -210,13 +231,17 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
             if first_if_statement_f: txt.append(LanguageDB["$if pre-context"](origin.pre_context_id()))
             else:                    txt.append(LanguageDB["$elseif pre-context"](origin.pre_context_id()))
             txt.append(indent_this(info))
-            txt.append(LanguageDB["$endif"])
+            txt.append("\n" + LanguageDB["$endif"])
+            debug_txt.append("__quex_debug2(\"pre condition %i: %%s\", "         % origin.pre_context_id() + \
+                             "pre_context_%i_fulfilled_f ? \"yes\" : \"no\");\n" % origin.pre_context_id())
         
         elif origin.pre_context_begin_of_line_f():
             if first_if_statement_f: txt.append(LanguageDB["$if begin-of-line"])
             else:                    txt.append(LanguageDB["$elseif begin-of-line"])
             txt.append(indent_this(info))
-            txt.append(LanguageDB["$endif"] )
+            txt.append("\n" + LanguageDB["$endif"] )
+            debug_txt.append("__quex_debug2(\"begin of line pre-context: %%s\", " + \
+                             "me->buffer._character_before_lexeme_start ? \"yes\" : \"no\");\n")
         
         else:
             if first_if_statement_f: 
@@ -226,7 +251,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
                 txt.append(LanguageDB["$else"])
                 txt.append("\n")
                 txt.append(indent_this(info))
-                txt.append(LanguageDB["$endif"])
+                txt.append("\n" + LanguageDB["$endif"])
             unconditional_case_treated_f = True
             break  # no need for further pre-condition consideration
 
@@ -235,7 +260,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
     if unconditional_case_treated_f == False:
         txt.append(get_on_detection_code_fragment(None))
 
-    result = "".join(txt)
+    result = "".join(debug_txt + txt)
     if len(result) == 0: return ""
     else:                return "    " + result[:-1].replace("\n", "\n    ") + result[-1]
 

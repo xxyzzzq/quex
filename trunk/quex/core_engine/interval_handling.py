@@ -423,10 +423,6 @@ class NumberSet:
                     remainder_up  = Interval(Y.end, x.end)
                     break
 
-        ## print "##", remainder_low
-        ## print "##", remainder_up
-        ## print "##", toucher_list
-
         # Delete all intervals that touched the 'cut interval'
         del self.__intervals[toucher_front:toucher_back+1]
 

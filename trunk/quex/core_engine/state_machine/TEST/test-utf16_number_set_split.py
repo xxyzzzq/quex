@@ -67,7 +67,6 @@ def check_negative(SM, ImpossibleIntervals):
 
             # An acceptance state cannot be reached by a unicode value in ImpossibleIntervals
             for origin in result.states[s_idx].origins().get_list():
-                print "##", origin, interval.get_string(Option="hex"), "%X" % i
                 assert not origin.is_acceptance()
 
     print " (OK)"

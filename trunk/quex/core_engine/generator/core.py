@@ -127,6 +127,7 @@ class Generator(GeneratorBase):
         main_sm_code,   \
         variable_db,    \
         state_info_list = self.__get_core_state_machine()
+
         local_variable_db.update(variable_db)
         routed_state_info_list.extend(state_info_list)
 
@@ -219,11 +220,11 @@ def delete_unused_labels(Code):
                 replacement_db[first_letter].append([original, replacement])
 
     # Distinguish between:
-    #   'nothing_labels' -- labels that can be replaced by nothing.
+    #   'nothing_labels'       -- labels that can be replaced by nothing.
     #   'computed_goto_labels' -- labels that must be replaced by conditional compilation
     nothing_label_list, computed_goto_label_list = languages.label_db_marker_get_unused_label_list()
-    ## print "##nl", nothing_label_list
-    ## print "##gl", computed_goto_label_list
+    ##print "##nl", nothing_label_list
+    ##print "##gl", computed_goto_label_list
 
     # (1) Replace labels that are not used at all.
     result = delete_unused_labels_FAST(code, nothing_label_list)

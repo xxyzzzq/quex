@@ -83,6 +83,7 @@ import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
+from   quex.core_engine.generator.languages.address            import get_address
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 
@@ -168,6 +169,8 @@ def _do(CombinationList, SMD):
         #                       is no representive state.
         template = TemplateState(combination, SMD.sm().get_id(), index.get(), 
                                  prototype)
+        target_state_index_list.add(template.core().state_index)
+        target_state_index_list.add(get_address("$drop-out-direct", template.core().state_index))
         template_list.append(template)
 
         # -- collect indices of involved states
@@ -179,7 +182,7 @@ def _do(CombinationList, SMD):
                 target_state_index_list.add(state_index)
             else:
                 # 'goto drop-out' is coded in state index list as 'minus template index'
-                target_state_index_list.add(- template.core().state_index)
+                target_state_index_list.add(get_address("$drop-out-direct", template.core().state_index))
 
         # -- if the template is non-uniform, then we need a router that maps to
         #    each state entry of involved states (e.g. for recursion and after reload).
@@ -256,7 +259,7 @@ class TemplateTarget(transition_block.TriggerAction):
             return LanguageDB["$goto-state"](label)
 
         else:
-            return LanguageDB["$goto"]("$template", self.template_index)
+            return LanguageDB["$goto"]("$entry", self.template_index)
 
     def is_drop_out(self):
         return False
@@ -393,12 +396,8 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
     def __array_to_code(Array, ComputedGotoF=False):
         txt = ["{ "]
         for index in Array:
-            if ComputedGotoF:
-                if index != None: elm = "&&" + transition.get_label_of_state(index, SMD)
-                else:             elm = "&&" + transition.get_label_of_drop_out(template_index, ReloadF=False)
-            else:
-                if index != None: elm = "%i"  % index
-                else:             elm = "-%i" % template_index
+            if index != None: elm = "QUEX_LABEL(%i)" % transition.get_index(index, SMD)
+            else:             elm = "QUEX_LABEL(%i)" % get_address("$drop-out-direct", template_index)
             txt.append(elm + ", ")
         txt.append("}")
         return "".join(txt)
@@ -414,23 +413,19 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
     for target_index, target_state_index_list in enumerate(target_state_list_db):
         assert len(target_state_index_list) == involved_state_n
 
-        name     = "template_%i_target_%i" % (template_index, target_index)
-        value    = __array_to_code(target_state_index_list)
-        value_cg = __array_to_code(target_state_index_list, ComputedGotoF=True)
+        name  = "template_%i_target_%i" % (template_index, target_index)
+        value = __array_to_code(target_state_index_list)
 
-        variable_db["! QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value,    dimension ]
-        variable_db["QUEX_OPTION_COMPUTED_GOTOS/"   + name] = [ var_type, value_cg, dimension ]
+        variable_db[name] = [ var_type, value, dimension ]
 
     # If the template does not have uniform state entries, the entries
     # need to be routed on recursion, for example. Thus we need to map 
     # from state-key to state.
     if not TheTemplate.uniform_state_entries_f():
         name  = "template_%i_map_state_key_to_state_index" % template_index
-        value    = __array_to_code(involved_state_list)
-        value_cg = __array_to_code(involved_state_list, ComputedGotoF=True)
+        value = __array_to_code(involved_state_list)
 
-        variable_db["! QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value, dimension]
-        variable_db["QUEX_OPTION_COMPUTED_GOTOS/"   + name] = [ var_type, value_cg, dimension]
+        variable_db[name] = [ var_type, value, dimension]
 
 def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key
@@ -448,7 +443,7 @@ def __templated_state_entries(txt, TheTemplate, SMD):
         # Print the state label
         label_str = LanguageDB["$label-def"]("$entry", state_index)
         if state_index != SMD.sm().init_state_index:
-            label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+            label_str = "    __quex_assert_no_passage();\n" + \
                         label_str
         txt.append(label_str)
 
@@ -460,7 +455,7 @@ def __templated_state_entries(txt, TheTemplate, SMD):
             txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
-        txt.append(LanguageDB["$goto"]("$template", TheTemplate.core().state_index))
+        txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
         txt.append("\n\n")
 
 def __template_state(txt, TheTemplate, SMD):
@@ -470,8 +465,8 @@ def __template_state(txt, TheTemplate, SMD):
     state_index = TheTemplate.core().state_index
     TriggerMap  = state.transitions().get_trigger_map()
 
-    label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
-                LanguageDB["$label-def"]("$template", state_index)
+    label_str = "    __quex_assert_no_passage();\n" + \
+                LanguageDB["$label-def"]("$entry", state_index)
     txt.append(label_str)
 
     if TheTemplate.uniform_state_entries_f():

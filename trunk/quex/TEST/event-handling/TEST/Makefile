@@ -17,12 +17,11 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 COMPILER = g++
 LD = $(COMPILER) -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) \
-	 -DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
+	 -DQUEX_OPTION_DEBUG_MODE_SHOW \
 	 -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
 	 -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
      -ggdb \
-	 # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
-	 #-DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
+	 # -DQUEX_OPTION_DEBUG_SHOW
 
 # (*) RULES ____________________________________________________________________
 # -- application

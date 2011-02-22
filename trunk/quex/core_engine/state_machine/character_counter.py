@@ -54,7 +54,6 @@ def get_character_n(state_machine):
     assert state_machine.core().post_context_id() == -1
 
     __distance_db.clear()
-    ##print "##", state_machine.get_string(NormalizeF=False)
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
     if result == None: return -1
     else:              return result

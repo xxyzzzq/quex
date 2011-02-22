@@ -1,4 +1,5 @@
 from quex.input.setup import setup as Setup
+from quex.core_engine.generator.languages.address import get_address
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
@@ -39,12 +40,27 @@ def __get_transition_to_dead_end_state(TargetStateIndex, SMD):
     LanguageDB = Setup.language_db
     return LanguageDB["$goto-pure"](__get_label_of_dead_end_state(TargetStateIndex, SMD))
 
+def get_index(StateIdx, SMD):
+    # During forward lexing (main lexer process) there are dedicated terminal states.
+    if     SMD != None \
+       and SMD.dead_end_state_db().has_key(StateIdx) \
+       and SMD.forward_lexing_f():
+        # The state is a dead-end-state. It transits immediately to a terminal.
+        pre_context_dependency_f, \
+        winner_origin_list,       \
+        dead_end_target_state     = SMD.dead_end_state_db()[StateIdx]
+        if not pre_context_dependency_f:
+            assert len(winner_origin_list) == 1
+            return get_index_of_terminal(winner_origin_list[0])
+    return StateIdx
+
+# The state is a dead-end-state. It transits immediately to a terminal
 def get_label_of_state(TargetStateIdx, SMD):
     LanguageDB = Setup.language_db
 
     if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
         # Transitions to 'dead-end-state'
-        return  __get_label_of_dead_end_state(TargetStateIdx, SMD)
+        return __get_label_of_dead_end_state(TargetStateIdx, SMD)
     else:
         # The very normal transition to another state
         return LanguageDB["$label"]("$entry", TargetStateIdx)
@@ -73,6 +89,15 @@ def get_label_of_terminal(Origin):
         return LanguageDB["$label"]("$terminal", Origin.state_machine_id)
     else:
         return LanguageDB["$label"]("$terminal-direct", Origin.state_machine_id)
+
+def get_index_of_terminal(Origin):
+    assert Origin.is_acceptance()
+    LanguageDB = Setup.language_db
+    # The seek for the end of the core pattern is part of the 'normal' terminal
+    # if the terminal 'is' a post conditioned pattern acceptance.
+    if Origin.post_context_id() == -1:
+        return get_address("$terminal", Origin.state_machine_id)
+    return get_address("$terminal-direct", Origin.state_machine_id)
 
 def __get_label_of_dead_end_state(TargetStateIdx, SMD):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that
@@ -105,16 +130,16 @@ def __get_label_of_dead_end_state(TargetStateIdx, SMD):
             # Pre-context dependency can only appear in forward lexing which is the analyzis
             # that determines the winning pattern. BackwardInputPositionDetection and 
             # BackwardLexing can never depend on pre-conditions.
-            return LanguageDB["$label"]("$entry-stub", TargetStateIdx)   # router to terminal
+            return LanguageDB["$label"]("$entry", TargetStateIdx)   # router to terminal
 
     elif SMD.backward_lexing_f():
-        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)       # router to terminal
+        return LanguageDB["$label"]("$entry", TargetStateIdx)       # router to terminal
 
     elif SMD.backward_input_position_detection_f():
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
-        return LanguageDB["$label"]("$entry-stub", TargetStateIdx)       # router to terminal
+        return LanguageDB["$label"]("$entry", TargetStateIdx)       # router to terminal
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % SMD.mode()

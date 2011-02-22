@@ -61,9 +61,6 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
 
     txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        Setup.count_column_number_f)        
     txt = __switch(txt, "QUEX_OPTION_COMPUTED_GOTOS",                False)
-    txt = __switch(txt, "QUEX_OPTION_DEBUG_MODE_TRANSITIONS",        Setup.output_debug_f)
-    txt = __switch(txt, "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES",    Setup.output_debug_f)
-    txt = __switch(txt, "QUEX_OPTION_DEBUG_TOKEN_SENDING",           Setup.output_debug_f)
     txt = __switch(txt, "QUEX_OPTION_CONVERTER_ICONV",               Setup.converter_iconv_f)
     txt = __switch(txt, "QUEX_OPTION_CONVERTER_ICU",                 Setup.converter_icu_f)
     txt = __switch(txt, "QUEX_OPTION_INCLUDE_STACK",                 Setup.include_stack_support_f)
@@ -241,13 +238,13 @@ quex_mode_init_call_str = """
      QUEX_NAME($$MN$$).id   = QUEX_NAME(ModeID_$$MN$$);
      QUEX_NAME($$MN$$).name = "$$MN$$";
      QUEX_NAME($$MN$$).analyzer_function = $analyzer_function;
-#    if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \
+#    if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \\
         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
      QUEX_NAME($$MN$$).on_indentation = $on_indentation;
 #    endif
      QUEX_NAME($$MN$$).on_entry       = $on_entry;
      QUEX_NAME($$MN$$).on_exit        = $on_exit;
-#    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#    if      defined(QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK)
      QUEX_NAME($$MN$$).has_base       = $has_base;
      QUEX_NAME($$MN$$).has_entry_from = $has_entry_from;
      QUEX_NAME($$MN$$).has_exit_to    = $has_exit_to;
@@ -322,7 +319,7 @@ def __get_mode_function_declaration(Modes, FriendF=False):
             txt += __mode_functions(prolog, "void", [event_name], 
                                     "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
 
-        txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
+        txt += "#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
                                 "const QUEX_NAME(Mode)*")
         txt += "#endif\n"
@@ -338,7 +335,7 @@ def get_constructor_code(Modes):
     txt = ""
     for mode in Modes:
         if mode.options["inheritable"] == "only": continue
-        txt += "        __quex_assert(QUEX_NAME(ModeID_%s) %s< %i);\n" % \
+        txt += "    __quex_assert(QUEX_NAME(ModeID_%s) %s< %i);\n" % \
                (mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:

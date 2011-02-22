@@ -271,7 +271,6 @@ class StateMachine:
 
         for state_idx, state in self.states.items():
             new_state_idx = replacement[state_idx]
-            # print "##", state_idx, "-->", new_state_idx
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
         
         result.__core = deepcopy(self.__core)

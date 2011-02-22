@@ -27,18 +27,6 @@ the suffix enables something, the option with the suffix disables the 'something
    Enables/disables the usage of computed gotos. Use this option only if your
    compiler supports it. For example, GNU's gcc does support it from version 2.3.
 
-.. cmacro:: QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-
-   Enables/disables debug messages on each mode transition.
-
-.. cmacro:: QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-
-   Enables/disables debug messages for pattern matches.
-
-.. cmacro:: QUEX_OPTION_DEBUG_TOKEN_SENDING
-
-   Enables/disables debug messages for each token to be sent.
-
 .. cmacro:: QUEX_OPTION_CONVERTER_ICONV
 
    Enables/disables the use of the GNU IConv library for conversion. This can also be set with the command line option ``--iconv``.
@@ -48,6 +36,14 @@ the suffix enables something, the option with the suffix disables the 'something
    Enables/disables the use of the IBM's ICU library for conversion. This can also be
    set with the command line option ``--icu``. Note, that IConv and ICU are
    best used mutually exclusive.
+
+.. cmacro:: QUEX_OPTION_DEBUG_SHOW
+
+   Enables/disables the output of details about the lexical analyzis process.
+
+.. cmacro:: QUEX_OPTION_DEBUG_SHOW_LOADS
+
+   Enables/disables the output of details about reloads of the buffer.
 
 .. cmacro:: QUEX_OPTION_ENABLE_PINARD_RECODE
 

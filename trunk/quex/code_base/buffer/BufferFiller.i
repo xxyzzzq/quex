@@ -5,7 +5,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/Buffer_debug>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -220,7 +220,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ true);
             return 0;
         }
-        __quex_debug_BUFFER_LOAD(buffer, "FORWARD(entry)");
+        __quex_debug_buffer_load(buffer, "FORWARD(entry)\n");
 
         /* (*) Check for the three possibilities mentioned above */
         if     ( buffer->_input_p == buffer->_memory._front )         { return 0; }   /* (1)*/
@@ -272,7 +272,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( (me->tell_character_index(me) - buffer->_content_character_index_begin - FallBackN) != (ptrdiff_t)LoadedN ) 
             QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
 
-        __quex_debug_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
+        __quex_debug_buffer_load(buffer, "LOAD FORWARD(exit)\n");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
         /* NOTE: Return value is used for adaptions of memory addresses. It happens that the*/
@@ -429,7 +429,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * greater than normal (64 Bytes). After all, lexical analysis means
          * to go **mainly forward** and not backwards.  */
         __quex_assert(buffer != 0x0);
-        __quex_debug_BUFFER_LOAD(buffer, "BACKWARD(entry)");
+        __quex_debug_buffer_load(buffer, "BACKWARD(entry)\n");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 
         /* (*) Check for the three possibilities mentioned above*/
@@ -486,7 +486,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * not proportional to the number of loaded characters.                              */
         __quex_assert( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) == LoadedN );
 
-        __quex_debug_BUFFER_LOAD(buffer, "BACKWARD(exit)");
+        __quex_debug_buffer_load(buffer, "BACKWARD(exit)\n");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
 
