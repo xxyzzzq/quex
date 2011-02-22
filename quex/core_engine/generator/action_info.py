@@ -56,9 +56,9 @@ UserCodeFragment_OpenLinePragma = {
         "C": 
         [
             [ '/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */',
-              '#line NUMBER "FILENAME"' ],
+              '#   line NUMBER "FILENAME"' ],
             ['/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA CppTemplate.txt */',
-             '#line NUMBER "CppTemplate.txt"' ]
+             '#   line NUMBER "CppTemplate.txt"' ]
         ],
    }
 
@@ -86,12 +86,33 @@ class UserCodeFragment(CodeFragment):
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
         norm_filename = get_file_reference(self.filename) 
-        txt  = '\n#line %i "%s"\n' % (self.line_n, norm_filename)
-        txt += Code
+        txt  = '\n#   line %i "%s"\n' % (self.line_n, norm_filename)
+        txt += self.pretty_format(Code)
         if ReturnToSourceF:
             if txt[-1] != "\n": txt = txt + "\n"
             txt += get_return_to_source_reference()
         return txt
+
+    def pretty_format(self, Code):
+        return Code
+        result = []
+        # Replace 1 tabulator at begin of line = 4 spaces.
+        # Count minimum indentation of code fragment.
+        min_indentation = 1e37
+        for line in Code.split("\n"):
+            L = len(line)
+            first_non_whitespace_index = 0
+            for first_non_whitespace_index, letter in enumerate(line):
+                if not letter.isspace(): break
+            if first_non_whitespace_index != L:
+                line =   line[:first_non_whitespace_index].replace("\t", "    ") \
+                       + line[first_non_whitespace_index:]
+            result.append(line)
+            result.append("\n")
+            
+        return "".join(result)
+            
+
     
 def get_return_to_source_reference():
     return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"

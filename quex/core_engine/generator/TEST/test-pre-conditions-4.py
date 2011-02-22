@@ -3,7 +3,7 @@ import sys
 import generator_test
 
 if "--hwut-info" in sys.argv:
-    print "Skip-NestedRange: Delimiter Sizes 1 and 2;"
+    print "Pre-conditions: The forth test;"
     print "CHOICES: ANSI-C, Cpp-Path-CG, Cpp-Template;"
     print "SAME;"
     sys.exit(0)

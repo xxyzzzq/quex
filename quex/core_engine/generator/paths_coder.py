@@ -100,6 +100,7 @@ LanguageDB = None # Set during call to 'do()', not earlier
 
 def do(SMD, UniformOnlyF):
     """UniformOnlyF --> Accept only uniform states in path.
+                        (This must be done by the 'analyzer module' too.)
     
        RETURNS: Array 'x'
 
@@ -184,13 +185,16 @@ def _do(PathList, SMD, UniformOnlyF):
 
     # -- Sort the paths according their skeleton. Paths with the 
     #    same skeleton will use the same pathwalker.
-    path_db = {}
+    path_db                = {}
+    routed_state_index_set = set([])
     for candidate in PathList:
         assert isinstance(candidate, paths.CharacterPath)
         # Is there a path with the same skeleton?
         if __add_to_matching_path(candidate, path_db): continue
         # If there is no equivalent path, then add a new 'prototype'
-        path_db[index.get()] = [ candidate ]
+        path_walker_state_index = index.get()
+        path_db[path_walker_state_index] = [ candidate ]
+        routed_state_index_set.add(path_walker_state_index)
 
     # -- Create 'PathWalkerState' objects that can mimik state machine states.
     # -- Collect all indices of states involved in paths
@@ -212,13 +216,24 @@ def _do(PathList, SMD, UniformOnlyF):
         # The last state in sequence is the end target state, which cannot be 
         # addressed inside the pathwalker. It is the first state after the path.
         for path in path_list:
-            involved_state_list = map(lambda info: info[0], path.sequence()[:-1])
-            involved_state_index_list.update(involved_state_list)
+            involved_state_list = map(lambda info: info[0], path.sequence())
+            involved_state_index_list.update(involved_state_list[:-1])
 
         # -- Determine if all involved states are uniform
         prototype = template_coder.get_uniform_prototype(SMD, involved_state_index_list)
 
         path_walker_list.append(PathWalkerState(path_list, SM_ID, state_index, prototype))
+
+        for path in path_list:
+            final_state_index = map(lambda info: info[0], path.sequence())[-1]
+            # Allways be able to route to the end-state(?)
+            routed_state_index_set.add(final_state_index)
+            # Also, add the correspondent drop-out state
+            if     not SMD.dead_end_state_db().has_key(final_state_index) \
+               and prototype != None:
+                routed_state_index_set.add(- final_state_index)
+
+        routed_state_index_set.add(- state_index)
 
     # -- Generate code for:
     #      -- related variables: paths for pathwalkers
@@ -227,20 +242,16 @@ def _do(PathList, SMD, UniformOnlyF):
     variable_db = {}
     code        = []
     router_code = []
-    routed_state_index_set = set([])
     require_path_end_state_variable_f = False
     for path_walker in path_walker_list:
         __path_definition(variable_db, path_walker, SMD) 
-        if __state_entries(code, path_walker, SMD):
+        if __state_entries(code, path_walker, routed_state_index_set, SMD):
             require_path_end_state_variable_f = True
         routed_state_index_set.update(__path_walker(code, path_walker, SMD))
 
     if require_path_end_state_variable_f:
-        variable_db.update({
-          "! QUEX_OPTION_COMPUTED_GOTOS/path_end_state": 
-          [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE", None],
-          "path_end_state": [ "ptrdiff_t",                  "(ptrdiff_t)0"],
-        })
+        variable_db["path_end_state"] = \
+                [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE", None]
 
     return variable_db, code, routed_state_index_set, involved_state_index_list
 
@@ -314,10 +325,11 @@ def __path_definition(variable_db, PathWalker, SMD):
     PathList     = PathWalker.path_list()
     PathN        = len(PathList)
 
-    state_list     = []
-    end_state_list = []
-    memory         = ["\n"]
-    memory_index   = 0
+    state_list       = []
+    state_index_list = []
+    end_state_list   = []
+    memory           = ["\n"]
+    memory_index     = 0
     for path in PathList:
         Sequence = path.sequence()
         L        = len(Sequence)
@@ -328,12 +340,13 @@ def __path_definition(variable_db, PathWalker, SMD):
         for state_index, character in Sequence[:-1]:
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
-            state_list.append("&&%s, " % transition.get_label_of_state(state_index, SMD))
+            state_list.append("QUEX_LABEL(%i), " % transition.get_index(state_index, SMD))
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
+
         end_state_index = Sequence[-1][0]
-        end_state_label = "&&%s, " % transition.get_label_of_state(end_state_index, SMD)
+        end_state_label = "QUEX_LABEL(%i), " % transition.get_index(end_state_index, SMD)
         end_state_list.append(end_state_label)
         state_list.append(end_state_label)
 
@@ -366,9 +379,9 @@ def __path_definition(variable_db, PathWalker, SMD):
         var_type = "const QUEX_TYPE_GOTO_LABEL"
         value    = "{" + "".join(state_list) + "}"
         dim      = len(state_list)
-        variable_db["QUEX_OPTION_COMPUTED_GOTOS/" + name] = [ var_type, value, dim ]
+        variable_db[name] = [ var_type, value, dim ]
 
-def __state_entries(txt, PathWalker, SMD):
+def __state_entries(txt, PathWalker, routed_state_index_set, SMD):
     """Defines the entries of the path's states, so that the state key
        for the template is set, before the jump into the template. E.g.
 
@@ -383,6 +396,7 @@ def __state_entries(txt, PathWalker, SMD):
 
     PathN = len(PathWalker.path_list())
     require_path_end_state_variable_f = False
+    txt.append("\n")
     for path in PathWalker.path_list():
         prev_state_index = None
         # Last state of sequence is not in the path, it is the first state after.
@@ -404,9 +418,12 @@ def __state_entries(txt, PathWalker, SMD):
             # Print the state label
             label_str = LanguageDB["$label-def"]("$entry", state_index)
             if state_index != SMD.sm().init_state_index:
-                label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+                label_str = "    __quex_assert_no_passage();\n" + \
                             label_str
             txt.append(label_str)
+            txt.append("\n    ")
+            txt.append(LanguageDB["$debug-state"](state_index))
+            routed_state_index_set.add(state_index)
 
             state = SMD.sm().states[state_index]
             # If all state entries are uniform, the entry handling happens uniformly at
@@ -418,9 +435,9 @@ def __state_entries(txt, PathWalker, SMD):
             if PathWalker.uniform_state_entries_f() and PathN != 1:
                 require_path_end_state_variable_f = True
                 end_state_index = path.sequence()[-1][0]
-                txt.append("    QUEX_SET_state_label(path_end_state, %i);\n" % end_state_index)
-            txt.append("   ")
-            txt.append(LanguageDB["$assignment"]("path_iterator", 
+                txt.append("    path_end_state                 = QUEX_LABEL(%i);\n" % end_state_index)
+            txt.append("    ")
+            txt.append(LanguageDB["$assignment"]("path_iterator                 ", 
                                                  "path_%i + %i" % (path.index(), i)).replace("\n", "\n    "))
             txt.append(LanguageDB["$goto"]("$entry", PathWalker.core().state_index))
             txt.append("\n\n")
@@ -438,9 +455,10 @@ def __path_walker(txt, PathWalker, SMD):
 
     routed_state_index_list = []
 
-    label_str = "    __quex_assert(false); /* No drop-through between states */\n" + \
+    label_str = "    __quex_assert_no_passage();\n" + \
                 LanguageDB["$label-def"]("$entry", PathWalkerID)
     txt.append(label_str)
+    txt.append("\n    __quex_debug(\"path walker %i\");" % PathWalkerID)
 
     if PathWalker.uniform_state_entries_f():
         # (1) Input Block (get the new character)
@@ -467,15 +485,15 @@ def __path_walker(txt, PathWalker, SMD):
         routed_state_index_list = __end_state_router(txt, PathWalker, SMD)
     else:
         txt.append("\n")
-        txt.append(LanguageDB["$label-def"]("$pathwalker-router", PathWalkerID) + "\n")
-        txt.append(__state_router(PathWalker, SMD))
+        route_str = __state_router(PathWalker, SMD)
+        txt.append(route_str)
         # -- Non-uniform path routers do the route-to-end state inside the
         #    state routing (see above).
         txt.append("    ")
         txt.append(LanguageDB["$elseif"] \
                    + LanguageDB["$=="]("*path_iterator", "QUEX_SETTING_PATH_TERMINATION_CODE") \
                    + LanguageDB["$then"])
-        txt.append("    " + LanguageDB["$goto"]("$pathwalker-router", PathWalkerID) + "\n    ")
+        txt.append(route_str + "\n    ")
 
     txt.append(LanguageDB["$endif"])
 
@@ -500,7 +518,8 @@ def __path_walker(txt, PathWalker, SMD):
         txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
     else:
         router_str = "    " + LanguageDB["$goto"]("$pathwalker-router", PathWalkerID)
-        txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, StateRouterStr=router_str))
+        txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, 
+                               StateIndexStr="path_walker_%i_state[path_iterator - path_walker_%i_base]" % (PathWalkerID, PathWalkerID)))
 
     return routed_state_index_list
 
@@ -526,23 +545,7 @@ def __state_router(PathWalker, SMD):
 
     PathWalkerID = PathWalker.core().state_index
 
-    # (1) 'Pure C Implementation' State Routing
-    txt = [ "#       ifndef QUEX_OPTION_COMPUTED_GOTOS\n" ]
-    #    switch( path_iterator - path_walker_base ) {
-    #         case 0:  STATE_341;
-    #         case 1:  STATE_345;
-    #         case 3:  STATE_346;
-    #    }
-    __switch_case_state_router(txt, SMD, PathWalker)
-
-    # (2) 'Computed Goto Implementation'
-    txt.append("#       else  /* not QUEX_OPTION_COMPUTED_GOTOS */\n")
-    txt.append("        goto *path_walker_%i_state[path_iterator - path_walker_%i_base];\n" % (PathWalkerID, PathWalkerID))
-    txt.append("#       endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
-
-    transition_block.format_this(txt)
-
-    return "".join(txt)
+    return "        QUEX_GOTO_STATE(path_walker_%i_state[path_iterator - path_walker_%i_base]);\n" % (PathWalkerID, PathWalkerID)
 
 def __end_state_router(txt, PathWalker, SMD):
     """After the last transition of the path, transit into the 'end state',
@@ -570,7 +573,7 @@ def __end_state_router(txt, PathWalker, SMD):
         #      must be determined at run time.
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
-        txt.append(LanguageDB["$goto-state"]("path_end_state"))
+        txt.append("        " + LanguageDB["$goto-state"]("path_end_state") + "\n")
         routed_state_index_list = map(lambda path: path.end_state_index(), PathList)
 
     txt.append("    ")

@@ -25,7 +25,7 @@ main(int argc, char** argv)
         printf("------------------------------------------------------------\n");
         QUEX_NAME(Buffer_show_byte_content)(&buffer, 5);
         printf("     ");
-        QUEX_NAME(Buffer_show_content)(&buffer);
+        QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
         if( buffer._memory._end_of_file_p != 0x0 ) break;
         buffer._input_p        = buffer._memory._back;

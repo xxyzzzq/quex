@@ -27,7 +27,6 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
         if ext not in ["", ".i", ".h", ".txt"]: continue
         if file.lower() in ["makefile", "tags", "readme"]: continue
         file_name = root + "/" + file
-        ## print "##", file_name
 
         fh = open(file_name, "rb")
         try:    skip_whitespace(fh)
@@ -45,7 +44,6 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
             if len(fields[1]) > max_length: max_length = len(fields[1])
             break
         else:
-            ## print "##", file_name
             include_guard_list.append(info(file_name, -1, "<<No INCLUDE_GUARD derective found>>"))
 
 def better_name(FileName):
@@ -97,8 +95,6 @@ def check_include_guard_undefinition():
 
     # Filter out empty include guards
     include_guard_list = filter(lambda x: x.line_n != -1, include_guard_list)
-    ## for x in include_guard_list:
-    ##    print "##", x.file_name
 
     undef_list = undef_unique.keys()
     stranger_list = filter(lambda x: x.name not in undef_list, include_guard_list)

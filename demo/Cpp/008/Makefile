@@ -63,7 +63,7 @@ GENERATE_PARSER:
 
 # -- engine and object files
 %.o: %.cpp $(LEXER_NAME) $(PARSER_NAME).tab.hpp
-	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+	$(CC) $< -o $@ # -DQUEX_OPTION_DEBUG_SHOW
 
 # (*) HELPERS __________________________________________________________________
 clean:	

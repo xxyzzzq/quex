@@ -51,7 +51,7 @@ main(int argc, char** argv)
                (int)(buffer._lexeme_start_p - buffer._memory._front),
                (char)*buffer._lexeme_start_p);
         /**/
-        QUEX_NAME(Buffer_show_content)(&buffer);
+        QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
 
         const size_t  DistanceIL = buffer._input_p - buffer._lexeme_start_p;
@@ -60,7 +60,7 @@ main(int argc, char** argv)
 
         const size_t  FallBackN = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(&buffer, DistanceIL);
         QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(&buffer, FallBackN);
-        QUEX_NAME(Buffer_show_content)(&buffer);
+        QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
     }
 }

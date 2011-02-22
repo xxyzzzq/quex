@@ -2,7 +2,8 @@ from quex.frs_py.file_in         import is_identifier_start, is_identifier_conti
 from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
-from   quex.core_engine.interval_handling   import NumberSet
+from quex.core_engine.generator.languages.address import *
+from quex.core_engine.interval_handling   import NumberSet
 from copy     import copy
 from operator import itemgetter
 #
@@ -90,7 +91,7 @@ def __local_variable_definitions(VariableDB):
         else:
             value = " = " + info[1]
 
-        txt.append("    %s%s %s%s;\n" % (type, " " * (30-len(type)), name, value))
+        txt.append("    %s%s %s%s%s;\n" % (type, " " * (30-len(type)), name, " " * (30 - len(name)), value))
 
     # L   = max(map(lambda info: len(info[0]), VariableDB.keys()))
     txt = []
@@ -102,13 +103,13 @@ def __local_variable_definitions(VariableDB):
         condition, condition_negated_f, name = __interpret(raw_name)
 
         if condition != "":
-            if condition_negated_f == False: txt.append("#ifdef %s\n"  % condition)
-            else:                            txt.append("#ifndef %s\n" %  condition)
+            if condition_negated_f == False: txt.append("#   ifdef %s\n"  % condition)
+            else:                            txt.append("#   ifndef %s\n" %  condition)
 
         __code(txt, name, info)
 
         if condition != "":
-            txt.append("#endif /* %s */\n" % condition)
+            txt.append("#   endif /* %s */\n" % condition)
 
         del VariableDB[name]
 
@@ -125,21 +126,21 @@ def __local_variable_definitions(VariableDB):
         condition_group, negated_condition_group = groups
         if condition != "":
             if len(condition_group) != 0:
-                txt.append("#ifdef %s\n"  % condition)
+                txt.append("#   ifdef %s\n"  % condition)
 
                 for name, info in condition_group:
                     if name in unconditioned_name_set: continue
                     __code(txt, name, info)
 
             if len(negated_condition_group) != 0:
-                if len(condition_group) != 0: txt.append("#else /* not %s */\n" % condition)
-                else:                         txt.append("#ifndef %s\n" % condition)
+                if len(condition_group) != 0: txt.append("#   else /* not %s */\n" % condition)
+                else:                         txt.append("#   ifndef %s\n" % condition)
 
                 for name, info in negated_condition_group:
                     if name in unconditioned_name_set: continue
                     __code(txt, name, info)
 
-            txt.append("#endif /* %s */\n" % condition)
+            txt.append("#   endif /* %s */\n" % condition)
         else:
             for name, info in condition_group:
                 __code(txt, name, info)
@@ -163,6 +164,35 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #       undef self
 #   endif
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
+"""
+
+reload_forward_str = """
+#if 0
+__RELOAD_FORWARD:
+    __quex_debug("__RELOAD_FORWARD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( me->buffer._memory._end_of_file_p == 0x0 ) {
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                               post_context_start_position, PostContextStartPositionN);
+        QUEX_GOTO_STATE(target_state_index);
+    }
+    QUEX_GOTO_STATE(target_state_else_index);
+#endif
+"""
+
+reload_backward_str = """
+#if 0
+__RELOAD_BACWARD:
+    __quex_debug("__RELOAD_BACKWARD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
+        QUEX_NAME(buffer_reload_backward)(&me->buffer);
+        QUEX_GOTO_STATE(target_state_index);
+    }
+    QUEX_GOTO_STATE(target_state_else_index);
+#endif
 """
 
 comment_on_post_context_position_init_str = """
@@ -220,7 +250,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     local_variable_list = LocalVariableDB
     local_variable_list.update(
-        { "last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",         "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
+        { "last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
           "last_acceptance_input_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x00)"],
           "post_context_start_position":    ["QUEX_TYPE_CHARACTER_POSITION", None, PostContextN],
           "PostContextStartPositionN":      ["const size_t",                 "(size_t)" + repr(PostContextN)],
@@ -244,6 +274,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "#endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
+    txt += "\n"
 
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
@@ -266,6 +297,11 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    /* In some scenarios, the __TERMINAL_ROUTER is never required.\n"
     txt += "     * Still, avoid the warning of 'label never used'.             */\n"
     txt += "    goto __TERMINAL_ROUTER;\n"
+
+    txt += reload_forward_str
+    if len(PreConditionIDList) != 0: 
+        txt += reload_backward_str
+
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
 
@@ -284,16 +320,16 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     return txt
 
 __terminal_state_str  = """
-  /* (*) Terminal states _______________________________________________________*/
-  /**/
-  /* Acceptance terminal states, i.e. the 'winner patterns'. This means*/
-  /* that the last input dropped out of a state where the longest matching*/
-  /* pattern was according to the terminal state. The terminal states are */
-  /* numbered after the pattern id.*/
-  /**/
+    /* (*) Terminal states _______________________________________________________
+     *
+     * States that implement actions of the 'winner patterns.                     */
 
-/* Lexeme descriptions: There is a temporary zero stored at the end of each
- * lexeme. A pointer to the zero provides the Null-lexeme.                     */
+    /* Lexeme setup: 
+     *
+     * There is a temporary zero stored at the end of each lexeme, if the action 
+     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
+     * zero terminated string.                                                    */
+
 #if defined(QUEX_OPTION_ASSERTS)
 #   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
 #   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
@@ -316,7 +352,7 @@ $$END_OF_STREAM_ACTION$$
       * tokens can be filled after the termination token.                    */
      RETURN;          
 
-$$TERMINAL_FAILURE-DEF$$
+$$TERMINAL_FAILURE-DEF$$ /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
      $$GOTO_START_PREPARATION$$
 
@@ -328,31 +364,31 @@ $$FAILURE_ACTION$$
 """
 
 __terminal_router_str = """
-    __quex_assert(false); /* No drop-into __TERMINAL_ROUTER */
-__TERMINAL_ROUTER: {
-        /*  if last_acceptance => goto correspondent acceptance terminal state */
-        /*  else               => execute defaul action                        */
-        if( last_acceptance == QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE) {
-            goto TERMINAL_FAILURE;
-        }
-        /* When a terminal router is used, the terminal is determined dynamically,
-         * thus the last_acceptance_input_position **must** be set. 
-         * Exception: Template States, where acceptance states of post conditions
-         *            do not set the acceptance position (because its retrieved
-         *            anyway from post_context_start_position[i]).               */
-        if(last_acceptance_input_position != 0x0) {
-$$RESTORE_LAST_ACCEPTANCE_POS$$
-        }
-#ifdef  QUEX_OPTION_COMPUTED_GOTOS
-        goto *last_acceptance;
-#else
-        /* Route according variable 'last_acceptance'. */
-        switch( last_acceptance ) {
-$$JUMPS_TO_ACCEPTANCE_STATE$$
-            default: $$TERMINAL_FAILURE-GOTO$$; /* nothing matched */
-        }
-#endif /* QUEX_OPTION_COMPUTED_GOTOS */
+    __quex_assert_no_passage(); 
+__TERMINAL_ROUTER: 
+    __quex_debug("terminal router");
+    /*  if last_acceptance => goto correspondent acceptance terminal state */
+    /*  else               => execute defaul action                        */
+    if( last_acceptance == $$TERMINAL_FAILURE-REF$$ ) {
+        goto $$TERMINAL_FAILURE$$; /* TERMINAL: FAILURE */
     }
+    /* When a terminal router is used, the terminal is determined dynamically,
+     * thus the last_acceptance_input_position **must** be set. 
+     * Exception: Template States, where acceptance states of post conditions
+     *            do not set the acceptance position (because its retrieved
+     *            anyway from post_context_start_position[i]).               */
+    if(last_acceptance_input_position != 0x0) {
+        $$RESTORE_LAST_ACCEPTANCE_POS$$
+    }
+#   ifdef  QUEX_OPTION_COMPUTED_GOTOS
+    goto *last_acceptance;
+#   else
+    /* Route according variable 'last_acceptance'. */
+    switch( last_acceptance ) {
+$$JUMPS_TO_ACCEPTANCE_STATE$$
+        default: QUEX_ERROR_EXIT("Terminal router: unknown index.");
+    }
+#   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 """
 
 __on_continue_reentry_preparation_str = """
@@ -361,15 +397,15 @@ $$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
     
-#ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
-#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
+#   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) RETURN;
 #   else
     if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
 #   endif
-#endif
+#   endif
 
-    last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     /*  If a mode change happened, then the function must first return and
@@ -382,17 +418,17 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
      *
      *  When the analyzer returns, the caller function has to watch if a mode change
      *  occured. If not it can call this function again.                               */
-#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
-    || defined(QUEX_OPTION_ASSERTS)
+#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+       || defined(QUEX_OPTION_ASSERTS)
     if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
-#endif
+#   endif
     { 
-#if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-    self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-    RETURN;
-#elif defined(QUEX_OPTION_ASSERTS)
-    QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
-#endif
+#       if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
+        self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+        RETURN;
+#       elif defined(QUEX_OPTION_ASSERTS)
+        QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
+#       endif
     }
 
     $$GOTO_START$$
@@ -411,7 +447,7 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     if code_str == "": return "", variable_db
 
     indentation = " " * IndentationOffset 
-    txt = ""
+    txt = "\n"
     # TODO: There could be a differenciation between a pattern that contains
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
@@ -421,9 +457,9 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     if action_info.action().require_terminating_zero_f():
         txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);\n"
 
-    txt += indentation + "{\n"
-    txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  
-    txt += indentation + "}\n"
+    # txt += indentation + "{\n"
+    txt += code_str.replace("\n", "\n    ") + "\n"  
+    # txt += indentation + "}\n"
 
     return txt, variable_db
 
@@ -433,7 +469,6 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
 
     txt         = ""
     variable_db = {}
-
 
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
@@ -445,10 +480,19 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     #     router and, thus, **must** restore the acceptance input position. This is so, 
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
+    safe_pattern = pattern_action_info.pattern.replace('"', '\\"')
+    safe_pattern = safe_pattern.replace("\\n", "\\\\n")
+    safe_pattern = safe_pattern.replace("\\t", "\\\\t")
+    safe_pattern = safe_pattern.replace("\\r", "\\\\r")
+    safe_pattern = safe_pattern.replace("\\a", "\\\\a")
+    safe_pattern = safe_pattern.replace("\\v", "\\\\v")
     txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
+    txt += "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern)
     txt += "    " + LanguageDB["$input/increment"] + "\n"
 
     txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
+    txt += "    __quex_debug(\"* terminal %i:   %s\");" % (state_machine_id, safe_pattern)
+
     # (1) Retrieving the input position for the next run
     #     -- Terminal states can be reached directly, so that the input position
     #        is already set correctly, or via the terminal router because the
@@ -529,8 +573,9 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                           
     txt = ""    
     for state_machine_id in action_db.keys():
-       txt += "            case %s: " % repr(state_machine_id).replace("L", "")
-       txt += LanguageDB["$goto"]("$terminal-direct", state_machine_id) + "\n"
+        label_id = get_address("$terminal-direct", state_machine_id)
+        txt += "        case %i: " % label_id
+        txt += LanguageDB["$goto"]("$terminal-direct", state_machine_id) + "\n"
     jumps_to_acceptance_states_str = txt
 
     # (*) preparation of the reentry without return:
@@ -543,7 +588,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
     end_of_stream_code_action_str, db = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF,
-                                                            IndentationOffset=16)
+                                                            IndentationOffset=4)
     variable_db.update(db)
 
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
@@ -565,7 +610,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
 
     msg, db = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF,
-                                  IndentationOffset=16)
+                                  IndentationOffset=4)
     on_failure_str += msg
     variable_db.update(db)
 
@@ -593,13 +638,13 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     txt = blue_print(__terminal_router_str,
             [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
-             ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"](
-                    "last_acceptance_input_position")],
-             ["$$TERMINAL_FAILURE-GOTO$$",        LanguageDB["$goto"]("$terminal-FAILURE")],
+             ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
+             ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
+             ["$$TERMINAL_FAILURE$$",             LanguageDB["$label"]("$terminal-FAILURE")],
             ])
                      
     txt += blue_print(__terminal_state_str, 
-            [["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
+            [["$$SPECIFIC_TERMINAL_STATES$$",        specific_terminal_states_str],
                 ["$$FAILURE_ACTION$$",               on_failure_str],
                 ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                 ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
@@ -613,6 +658,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                        ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  delete_pre_context_flags_str],
                        ["$$GOTO_START$$",                             LanguageDB["$goto"]("$start")],
                        ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
+                       ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                        ])
 
     return txt, variable_db
@@ -690,9 +736,9 @@ def __require_terminating_zero_preparation(LanguageDB, CodeStr):
                return True
 
 def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
-    __label_used_in_computed_goto_list_unique.add(PatternID)
-    return "__quex_debug2(\"ACCEPTANCE: %%s\", \"%s\");\n" % PatternID + \
-           "QUEX_SET_last_acceptance(%s);\n" % PatternID
+    __label_used_in_computed_goto_list_unique.add(get_address("$terminal-direct", PatternID))
+    return "last_acceptance                = QUEX_LABEL(%i); /* Terminal %s */\n" \
+           % (get_address("$terminal-direct", PatternID), PatternID)
 
 def __condition(txt, CharSet):
     first_f = True
@@ -762,7 +808,9 @@ def __get_switch_block(VariableName, CaseCodePairList):
     for case, code in CaseCodePairList: 
         next_i += 1
         txt.append(1)
-        txt.append("case 0x%X: " % case)
+        case_label = "0x%X" % case
+        txt.append("case %s: " % case_label)
+        txt.append(" " * (7 - len(case_label)))
         if next_i != L and CaseCodePairList[next_i][1] == code:
             txt.append("\n")
         else:

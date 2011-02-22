@@ -1,6 +1,5 @@
 from   quex.core_engine.state_machine.core         import State 
 import quex.core_engine.generator.languages.core   as languages
-from   quex.core_engine.generator.languages.core   import __nice
 import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.transition       as transition
@@ -31,7 +30,8 @@ def do(state, StateIdx, SMD=False):
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
         if len(txt) == 0: return []
-        prolog = LanguageDB["$label-def"]("$entry-stub", StateIdx)
+        prolog  = LanguageDB["$label-def"]("$entry", StateIdx)
+        prolog += "\n    " + LanguageDB["$debug-state"](StateIdx)
         txt.insert(0, prolog)
         return txt
 
@@ -113,12 +113,14 @@ def get_prolog(StateIdx, InitStateF, SMD):
     txt = []
 
     if not InitStateF: 
-        txt.append("    __quex_assert(false); /* No drop-through between states */\n")
+        txt.append("    __quex_assert_no_passage();\n")
 
     if InitStateF and SMD.forward_lexing_f():
         txt.append(LanguageDB["$label-def"]("$init_state_fw_transition_block"))
+        txt.append("\n    " + LanguageDB["$debug-init-state"]) 
     else:
         txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
+        txt.append("\n    " + LanguageDB["$debug-state"](StateIdx)) 
 
     # The init state in forward lexing does not increase the input pointer
     if not (SMD.forward_lexing_f() and InitStateF): 
@@ -144,6 +146,7 @@ def get_epilog(StateIdx, InitStateF, SMD):
 
     txt = ["\n"]
     txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
+    txt.append("\n")
     txt.extend(["    ", LanguageDB["$input/increment"], "\n"])
     txt.extend(["    ", LanguageDB["$goto"]("$init_state_fw_transition_block"), "\n"])
     return txt

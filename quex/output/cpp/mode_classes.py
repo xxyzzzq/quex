@@ -77,7 +77,7 @@ $$ON_INDENTATION-PROCEDURE$$
 }
 #endif
 
-#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 bool
 QUEX_NAME($$MODE_NAME$$_has_base)(const QUEX_NAME(Mode)* Mode) {
     (void)Mode;
@@ -114,16 +114,16 @@ def  get_implementation_of_mode_functions(mode, Modes):
         return result
 
     # (*) on enter 
-    on_entry_str  = "#   ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    on_entry_str += "    __quex_assert(me->%s.has_entry_from(FromMode));\n" % mode.name
+    on_entry_str  = "#   ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
+    on_entry_str += "    QUEX_NAME(%s).has_entry_from(FromMode);\n" % mode.name
     on_entry_str += "#   endif\n"
     for code_info in mode.get_code_fragment_list("on_entry"):
         on_entry_str += code_info.get_code()
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
     # (*) on exit
-    on_exit_str  = "#   ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    on_exit_str += "    __quex_assert(me->%s.has_exit_to(ToMode));\n" % mode.name
+    on_exit_str  = "#   ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
+    on_exit_str += "    QUEX_NAME(%s).has_exit_to(ToMode);\n" % mode.name
     on_exit_str += "#   endif\n"
     for code_info in mode.get_code_fragment_list("on_exit"):
         on_exit_str += code_info.get_code()
@@ -192,14 +192,14 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
         txt += ";\n"
     txt += "}\n"
 
-    txt += "#ifdef __QUEX_OPTION_ERROR_OUTPUT_ON_MODE_CHANGE_ERROR\n"
+    txt += "QUEX_ERROR_EXIT("
     if ConsiderDerivedClassesF:
-        txt += "std::cerr << \"mode '%s' is not one of (and not a a derived mode of):\\n\";\n" % mode_name
+        txt += "\"mode '%s' is not one of (and not a a derived mode of): " % mode_name
     else:
-        txt += "std::cerr << \"mode '%s' is not one of:\\n\";" % mode_name
+        txt += "\"mode '%s' is not one of: " % mode_name
     for mode_name in ThoseModes:
-            txt += "    std::cerr << \"         %s\\n\";\n" % mode_name
-    txt += "#endif\n"
+        txt += "%s, " % mode_name
+    txt += "\\n\");\n"
     txt += "return false;\n"
 
     return txt.replace("\n", "\n" + Indentation)
@@ -286,7 +286,7 @@ def get_on_indentation_handler(Mode):
                "    return __self_result_token_id;\n" + \
                "#   else\n" + \
                "    return;\n" + \
-               "#   endif\n"
+               "#   endif"
 
     if Mode.has_code_fragment_list("on_indent"):
         on_indent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indent"))

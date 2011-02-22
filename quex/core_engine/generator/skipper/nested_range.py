@@ -1,9 +1,9 @@
-from   quex.core_engine.generator.skipper.common import *
-import quex.core_engine.state_machine.index      as     sm_index
-from   quex.input.setup                          import setup as Setup
-from   quex.frs_py.string_handling               import blue_print
-from   quex.core_engine.generator.languages.core import __nice
-import quex.lexer_mode                           as     lexer_mode
+from   quex.core_engine.generator.skipper.common    import *
+import quex.core_engine.state_machine.index         as     sm_index
+from   quex.input.setup                             import setup as Setup
+from   quex.frs_py.string_handling                  import blue_print
+from   quex.core_engine.generator.languages.address import __nice
+import quex.lexer_mode                              as     lexer_mode
 
 def do(Data):
 

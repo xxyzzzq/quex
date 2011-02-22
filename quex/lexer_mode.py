@@ -26,6 +26,7 @@ from quex.core_engine.generator.action_info import *
 import quex.core_engine.state_machine.subset_checker   as subset_checker
 import quex.core_engine.state_machine.identity_checker as identity_checker
 import quex.core_engine.state_machine.transformation   as transformation
+import quex.core_engine.state_machine.index            as index
 from   quex.core_engine.interval_handling              import Interval
 
 # ModeDescription/Mode Objects:

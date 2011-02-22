@@ -17,10 +17,12 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.setup import setup as Setup
 import quex.core_engine.generator.languages.core as languages
+from   quex.core_engine.generator.languages.core import __label_db
 Setup.language_db = languages.db["Python"]
 
 from quex.core_engine.interval_handling  import NumberSet, Interval
 from quex.core_engine.state_machine.core import State, StateMachine
+import quex.core_engine.state_machine.index as index
 
 import quex.core_engine.generator.languages.core as languages
 import quex.core_engine.generator.state_coder.transition_block as transition_block
@@ -90,23 +92,28 @@ elif "C" in sys.argv:
 # Make sure, that the 'goto state' is transformed into 'return index of target state'
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
+states = []
+for state_index in target_state_index_list:
+    states.append("%s = %iL\n" % (__label_db["$entry"](state_index), state_index))
+    # increment the state index counter, so that the drop-out and reload labels 
+    # get an appropriate label.
+    __label_db["$entry"](index.get())
+
+# One for the 'terminal'
+__label_db["$entry"](index.get())
+
+states.append("%s = -1\n" % __label_db["$drop-out-direct"](None))
+states.append("%s = -1\n" % __label_db["$reload"](None))
+state_txt = "".join(states)
+
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
 function  = "def example_func(input):\n"
 function += "".join(transition_block.do(state.transitions().get_trigger_map(), 
                                         None, dsm))
 function  = function.replace("_-1_", "_MINUS_1_")
 
-states = []
-for state_index in target_state_index_list:
-    states.append("STATE_%i = %iL\n" % (state_index, state_index))
-states.append("STATE_None_RELOAD = -1\n")
-states.append("STATE_None_DROP_OUT_DIRECT = -1\n")
-state_txt = "".join(states)
-
-line_n = 0
-for line in (state_txt + function).split("\n"):
+for line_n, line in enumerate((state_txt + function).split("\n")):
     print "##%03i" % line_n, line
-    line_n += 1
 
 exec(state_txt + function + "\n")
 
@@ -115,8 +122,9 @@ output_txt  = []
 for number in range(interval_end):
     expected_state_index = state.transitions().get_resulting_target_state_index(number)
     if expected_state_index == None: expected_state_index = -1
+    actual_state_index = example_func(number)
     try: 
-        actual_state_index = example_func(number)
+        pass
     except:
         for line in function.split("\n"):
             print "ERROR: %s" % line

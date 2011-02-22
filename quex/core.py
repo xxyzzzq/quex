@@ -213,7 +213,7 @@ def get_generator_input(Mode, IndentationSupportF):
        -- (optional) for debug output that tells the line number and column number.
     """
     assert isinstance(Mode, lexer_mode.Mode)
-    variable_db = {}
+    variable_db              = {}
     pattern_action_pair_list = Mode.get_pattern_action_pair_list()
 
     indentation_counter_terminal_id = __get_indentation_counter_terminal_index(pattern_action_pair_list)
@@ -237,7 +237,6 @@ def get_generator_input(Mode, IndentationSupportF):
         prepared_action, db = action_code_formatter.do(Mode, action, safe_pattern_str,
                                                        pattern_state_machine, 
                                                        SelfCountingActionF=self_line_column_counting_f)
-
         variable_db.update(db)
 
         pattern_info.set_action(prepared_action)

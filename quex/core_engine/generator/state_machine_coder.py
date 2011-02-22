@@ -3,7 +3,7 @@ from copy import deepcopy
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 import quex.core_engine.generator.languages.core         as languages
-from   quex.core_engine.generator.languages.core         import __nice
+from   quex.core_engine.generator.languages.address      import get_address
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.generator.template_coder         as template_coder
@@ -31,7 +31,9 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     txt                  = []
     done_state_index_set = set([])
     local_variable_db    = {}
-    routed_state_list    = set([])
+    routed_state_list    = set([state_machine.init_state_index])
+    if SMD.backward_lexing_f():
+        routed_state_list.add(- state_machine.init_state_index)
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -62,15 +64,23 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         
     # -- all other states
     state_list = get_sorted_state_list(state_machine.states)
-    for state_index, state in state_list:
+    # -- The init state has been coded already.
+    # -- Some states may have been subject to path and template compression.
+    state_list = filter(lambda x:     x[0] not in done_state_index_set \
+                                  and x[0] != state_machine.init_state_index, state_list)
 
-        # -- The init state has been coded already.
-        # -- Some states may have been subject to path and template compression.
-        if   state_index == state_machine.init_state_index: continue
-        elif state_index in done_state_index_set:           continue
+    for state_index, state in state_list:
 
         # Get the code for the state
         state_code = state_coder.do(state, state_index, SMD)
+
+        # Even 'dead-end-states' need possibly be routed.
+        routed_state_list.add(state_index)
+
+        if not SMD.dead_end_state_db().has_key(state_index): 
+            routed_state_list.add(get_address("$drop-out-direct", state_index))
+        elif SMD.forward_lexing_f():
+            routed_state_list.add(transition.get_index(state_index, SMD))
 
         # Some states are not coded (some dead end states)
         if len(state_code) == 0: continue
@@ -79,6 +89,10 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
     
+
+    local_variable_db["! QUEX_OPTION_COMPUTED_GOTOS/target_state_index"] = \
+                     [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE", None]
+
     return "".join(txt), local_variable_db, get_state_router_info(routed_state_list, SMD)
 
 def get_sorted_state_list(StateDict):
@@ -103,19 +117,20 @@ def get_sorted_state_list(StateDict):
     state_list.sort(key=lambda x: db[x[0]], reverse=True)
     return state_list
 
-
 def get_state_router_info(StateIndexList, SMD):
     LanguageDB = Setup.language_db
 
+    # Make sure, that for every state the 'drop-out' state is also mentioned
     result = [None] * len(StateIndexList)
     for i, index in enumerate(StateIndexList):
         if index >= 0:
             # Transition to state entry
             code = transition.get_transition_to_state(index, SMD)
+            result[i] = (index, code)
         else:
             # Transition to a templates 'drop-out'
             code = "goto " + LanguageDB["$label"]("$drop-out-direct", - index) + ";"
-        result[i] = (index, code)
+            result[i] = (get_address("$drop-out-direct", - index), code)
     return result
 
 

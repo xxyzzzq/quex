@@ -134,7 +134,6 @@ SETUP_INFO = {
     "token_memory_management_by_user_f": [["--token-memory-management-by-user", "--tmmbu"], FLAG],
     "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
     "language":                       [["--language", "-l"],                 "C++"],
-    "output_debug_f":                 [["--debug"],                          FLAG],
     "output_file_naming_scheme":      [["--file-extension-scheme", "--fes"],  ""],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
@@ -190,6 +189,7 @@ SETUP_INFO = {
     "XX_token_id_termination":           [["--token-id-termination"],           "0"],            # DEPRECATED
     "XX_token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],            # DEPRECATED
     "XX_token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],            # DEPRECATED
+    "XX_output_debug_f":                 [["--debug"],                          FLAG],           # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -275,12 +275,16 @@ DEPRECATED = {
        "       UNINITIALIZED = 4711;\n"
        "    }", "0.51.1"),
   "XX_token_id_indentation_error":     
-      ("Option '--token-id-indentation-error' is no longer supported.\n" \
+      ("Option '--token-id-indentation-error' is no longer supported.\n"          \
        "Numeric value for token ids are no longer defined on the command line.\n" \
-       "Numeric values for token ids can be defined in token sections, e.g.\n" \
-       "    token {\n" \
-       "       INDENTATION_ERROR = 4711;\n"
+       "Numeric values for token ids can be defined in token sections, e.g.\n"    \
+       "    token {\n"                                                            \
+       "       INDENTATION_ERROR = 4711;\n"                                       \
        "    }", "0.51.1"),
+  "XX_output_debug_f":
+      ("Option '--debug' is no longer supported. Column and line number counting\n" \
+       "is supported by the compile option '-DQUEX_OPTION_DEBUG_SHOW'.",            \
+       "0.58.3")
 }
  
 HEADER              = 0

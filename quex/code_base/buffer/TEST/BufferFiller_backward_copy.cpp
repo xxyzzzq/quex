@@ -60,7 +60,7 @@ main(int argc, char** argv)
                (int)(buffer._lexeme_start_p - buffer._memory._front),
                (char)*buffer._lexeme_start_p);
         /**/
-        QUEX_NAME(Buffer_show_content)(&buffer);
+        QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
 
         if( buffer._lexeme_start_p - buffer._input_p == memory_size - 2 ) 
@@ -69,7 +69,7 @@ main(int argc, char** argv)
             const size_t  BackwardDistance = QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(&buffer);
             QUEX_NAME(__BufferFiller_backward_copy_backup_region)(&buffer, BackwardDistance);
         }
-        QUEX_NAME(Buffer_show_content)(&buffer);
+        QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
     }
 }

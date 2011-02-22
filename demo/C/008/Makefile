@@ -55,7 +55,7 @@ $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 
 # -- engine and object files
 %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
-	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+	$(CC) $< -o $@ # -DQUEX_OPTION_DEBUG_SHOW
 
 $(LEXER_SOURCES): GENERATE
 
