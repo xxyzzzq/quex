@@ -16,8 +16,8 @@ import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.setup import setup as Setup
-import quex.core_engine.generator.languages.core as languages
-from   quex.core_engine.generator.languages.core import __label_db
+import quex.core_engine.generator.languages.core    as languages
+from   quex.core_engine.generator.languages.address import __label_db
 Setup.language_db = languages.db["Python"]
 
 from quex.core_engine.interval_handling  import NumberSet, Interval

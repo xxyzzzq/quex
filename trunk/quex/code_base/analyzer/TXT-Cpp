@@ -252,6 +252,7 @@ public:
     void    seek_backward(const size_t);
 
     void    undo();
+    void    undo(size_t DeltaN_Backward);
 
     void    move_forward(const size_t) { QUEX_ERROR_EXIT("'move_forward()' has been renamed to 'seek_forward()'."); }
     void    move_backward(const size_t){ QUEX_ERROR_EXIT("'move_backward()' has been renamed to 'seek_backward()'."); }

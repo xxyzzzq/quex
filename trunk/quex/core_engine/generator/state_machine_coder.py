@@ -32,8 +32,8 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     done_state_index_set = set([])
     local_variable_db    = {}
     routed_state_list    = set([state_machine.init_state_index])
-    if SMD.backward_lexing_f():
-        routed_state_list.add(- state_machine.init_state_index)
+    if SMD.backward_lexing_f() or SMD.backward_input_position_detection_f():
+        routed_state_list.add(get_address("$drop-out-direct", state_machine.init_state_index))
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -77,7 +77,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         # Even 'dead-end-states' need possibly be routed.
         routed_state_list.add(state_index)
 
-        if not SMD.dead_end_state_db().has_key(state_index): 
+        if   not SMD.dead_end_state_db().has_key(state_index): 
             routed_state_list.add(get_address("$drop-out-direct", state_index))
         elif SMD.forward_lexing_f():
             routed_state_list.add(transition.get_index(state_index, SMD))
