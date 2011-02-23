@@ -223,8 +223,8 @@ def delete_unused_labels(Code):
     #   'nothing_labels'       -- labels that can be replaced by nothing.
     #   'computed_goto_labels' -- labels that must be replaced by conditional compilation
     nothing_label_list, computed_goto_label_list = languages.label_db_marker_get_unused_label_list()
-    ##print "##nl", nothing_label_list
-    ##print "##gl", computed_goto_label_list
+    print "##nl", nothing_label_list
+    print "##gl", computed_goto_label_list
 
     # (1) Replace labels that are not used at all.
     result = delete_unused_labels_FAST(code, nothing_label_list)

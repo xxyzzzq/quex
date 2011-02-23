@@ -435,7 +435,8 @@ def __state_entries(txt, PathWalker, routed_state_index_set, SMD):
             if PathWalker.uniform_state_entries_f() and PathN != 1:
                 require_path_end_state_variable_f = True
                 end_state_index = path.sequence()[-1][0]
-                txt.append("    path_end_state                 = QUEX_LABEL(%i);\n" % end_state_index)
+                txt.append("    path_end_state                 = QUEX_LABEL(%i);\n" \
+                           % transition.get_index(end_state_index, SMD))
             txt.append("    ")
             txt.append(LanguageDB["$assignment"]("path_iterator                 ", 
                                                  "path_%i + %i" % (path.index(), i)).replace("\n", "\n    "))

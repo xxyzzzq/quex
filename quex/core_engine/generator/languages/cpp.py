@@ -480,7 +480,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     #     router and, thus, **must** restore the acceptance input position. This is so, 
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
-    safe_pattern = pattern_action_info.pattern.replace('"', '\\"')
+    safe_pattern = pattern_action_info.pattern.replace('"', 'double-quote')
     safe_pattern = safe_pattern.replace("\\n", "\\\\n")
     safe_pattern = safe_pattern.replace("\\t", "\\\\t")
     safe_pattern = safe_pattern.replace("\\r", "\\\\r")

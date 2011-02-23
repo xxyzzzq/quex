@@ -10,7 +10,9 @@ LanguageDB = None
 normal_drop_out_template = """
 $$LABEL_DIRECT$$
 $$GOTO_TERMINAL$$
+"""
 
+normal_reload_template = """
 $$LABEL$$
     /* state $$STATE_INDEX$$ reload */
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
@@ -27,7 +29,9 @@ $$LABEL$$
 init_drop_out_template = """
 $$LABEL_DIRECT$$
 $$GOTO_FAILURE$$
+"""
 
+init_reload_template = """
 $$LABEL$$
     /* init state reload */
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
