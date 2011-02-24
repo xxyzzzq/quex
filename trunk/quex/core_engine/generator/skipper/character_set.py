@@ -25,11 +25,6 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
-#if 0
-    if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
-        $$GOTO_RELOAD$$
-    }
-#endif
 
     /* NOTE: For simple skippers the end of content does not have to be overwriten 
      *       with anything (as done for range skippers). This is so, because the abort
@@ -93,6 +88,7 @@ def get_skipper(TriggerSet):
     # That means: As long as characters of the trigger set appear, we go to the loop start.
     transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
     transition_map.add_transition(TriggerSet, skipper_index)
+    # On buffer limit code, the skipper must transit to a dedicated reloader
     iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), skipper_index, DSM=None))
     iteration_code += transition.get_transition_to_drop_out(skipper_index, ReloadF=False)
 

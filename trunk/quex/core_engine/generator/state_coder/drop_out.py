@@ -14,16 +14,7 @@ $$GOTO_TERMINAL$$
 
 normal_reload_template = """
 $$LABEL$$
-    /* state $$STATE_INDEX$$ reload */
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( $$LOAD_POSSIBLE$$ ) {
-        __quex_debug_reload_before();
-        $$RELOAD_BUFFER$$
-        __quex_debug_reload_after();
-        QUEX_GOTO_STATE($$STATE_INDEX$$);
-    }
-    __quex_debug("reload impossible");
-    QUEX_GOTO_STATE($$TERMINAL$$);
+    QUEX_GOTO_RELOAD($$DIRECTION$$, $$STATE_INDEX$$, $$TERMINAL$$);
 """
 
 init_drop_out_template = """
@@ -33,18 +24,10 @@ $$GOTO_FAILURE$$
 
 init_reload_template = """
 $$LABEL$$
-    /* init state reload */
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( $$LOAD_POSSIBLE$$ ) {
-        __quex_debug_reload_before();
-        $$RELOAD_BUFFER$$
-        __quex_debug_reload_after();
-        QUEX_GOTO_STATE($$STATE_INDEX$$);
-    }
-    $$GOTO_END_OF_STREAM$$
+    goto __RELOAD_INIT_STATE;
 """
 
-def do(State, StateIdx, SMD, StateIndexStr=None):
+def do(State, StateIdx, SMD):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -119,75 +102,31 @@ def do(State, StateIdx, SMD, StateIndexStr=None):
     LanguageDB = Setup.language_db
     InitStateF = (StateIdx == SMD.sm().init_state_index)
 
-    state_index_str      = "QUEX_LABEL(%i)" % StateIdx
-    state_index_else_str = "QUEX_LABEL(%i)" % get_address("$drop-out-direct", StateIdx)
-
-    if SMD.forward_lexing_f(): 
-        reload_str           = __reload_forward()
-        ## If input == buffer limit code, then the input_p stands on either 
-        ## the end of file pointer or the buffer limit. If the end of file
-        ## pointer is != 0 it lies before the buffer limit. Thus, in this
-        ## case the end of file has been reached.
-        load_possible_str   = "(me->buffer._memory._end_of_file_p == 0x0)"
-        goto_terminal_str    = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
-    else:
-        reload_str           = __reload_backward()
-        load_possible_str    = LanguageDB["$not"](LanguageDB["$BOF"])
-        goto_terminal_str    = "    " + LanguageDB["$goto"]("$terminal-general-bw")
-
-    if State.__class__.__name__ == "TemplateState":
-        if not State.uniform_state_entries_f():
-            # Templated states, i.e. code fragments that implement more than one
-            # state, need to return to dedicated state entries, if the state entries
-            # are not uniform.
-            state_index_str = "template_%i_map_state_key_to_state_index[template_state_key]" % StateIdx
-
-    elif State.__class__.__name__ == "PathWalkerState" and not State.uniform_state_entries_f():
-        state_index_str = StateIndexStr
-
-    else:
-        # Normal return to place where the next input is read
-        goto_state_input_str = LanguageDB["$goto"]("$entry", StateIdx)
-
-    # A pathwalker state may, very well, have an empty skeleton, but there must still be a reload
-    if    (len(State.transitions().get_map()) == 0 and State.__class__.__name__ != "PathWalkerState") \
-       or SMD.backward_input_position_detection_f():
-        reload_str = ""
-
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
         txt = blue_print(init_drop_out_template,
-                         [["$$LABEL$$",              LanguageDB["$label-def"]("$reload", StateIdx)],
+                         [
                           ["$$LABEL_DIRECT$$",       LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
-                          ["$$LOAD_POSSIBLE$$",      load_possible_str],
                           ["$$GOTO_FAILURE$$",       "    " + LanguageDB["$goto"]("$terminal-FAILURE")],
-                          ["$$GOTO_END_OF_STREAM$$", LanguageDB["$goto"]("$terminal-EOF")], 
-                          ["$$RELOAD_BUFFER$$",      reload_str], 
-                          ["$$STATE_INDEX$$",        state_index_str], 
                          ])
-
 
     else:
+        if SMD.forward_lexing_f(): 
+            goto_terminal_str = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
+        else:
+            goto_terminal_str = "    " + LanguageDB["$goto"]("$terminal-general-bw")
+
         txt = blue_print(normal_drop_out_template,
-                         [["$$LABEL$$",           LanguageDB["$label-def"]("$reload", StateIdx)],
+                         [
                           ["$$LABEL_DIRECT$$",    LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
-                          ["$$LOAD_POSSIBLE$$",   load_possible_str],
                           ["$$GOTO_TERMINAL$$",   goto_terminal_str], 
-                          ["$$RELOAD_BUFFER$$",   reload_str], 
-                          ["$$STATE_INDEX$$",     state_index_str], 
-                          ["$$TERMINAL$$",        state_index_else_str], 
                          ])
+
+    # txt += LanguageDB["$label-def"]("$reload", StateIdx) + "\n"
+    # txt += get_transition_to_reload(StateIdx, SMD, StateIndexStr)
 
     # -- in case of the init state, the end of file has to be checked.
     return [ txt ]
-
-def __reload_forward():
-    # NOTE, extra four whitespace in second line by purpose.
-    return "QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,\n" \
-           "                                       post_context_start_position, PostContextStartPositionN);"
-
-def __reload_backward(): 
-    return "QUEX_NAME(buffer_reload_backward)(&me->buffer);\n"
 
 def __goto_terminal(Origin):
     global LanguageDB 

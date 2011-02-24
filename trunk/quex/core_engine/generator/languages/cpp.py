@@ -167,32 +167,45 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 """
 
 reload_forward_str = """
-#if 0
 __RELOAD_FORWARD:
     __quex_debug("__RELOAD_FORWARD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
+        __quex_debug_reload_before();
         QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, PostContextStartPositionN);
+        __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
+    __quex_debug("reload impossible");
     QUEX_GOTO_STATE(target_state_else_index);
-#endif
+
+__RELOAD_INIT_STATE:
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( me->buffer._memory._end_of_file_p == 0x0 ) {
+        __quex_debug_reload_before();
+        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
+                                               post_context_start_position, PostContextStartPositionN);
+        __quex_debug_reload_after();
+        goto _$$INIT_STATE$$; /* Init state entry */
+    }
+    goto $$END_OF_STREAM$$;  /* End of stream    */
 """
 
 reload_backward_str = """
-#if 0
-__RELOAD_BACWARD:
+__RELOAD_BACKWARD:
     __quex_debug("__RELOAD_BACKWARD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
+        __quex_debug_reload_before();
         QUEX_NAME(buffer_reload_backward)(&me->buffer);
+        __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
+    __quex_debug("reload impossible");
     QUEX_GOTO_STATE(target_state_else_index);
-#endif
 """
 
 comment_on_post_context_position_init_str = """
@@ -254,7 +267,9 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
           "last_acceptance_input_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x00)"],
           "post_context_start_position":    ["QUEX_TYPE_CHARACTER_POSITION", None, PostContextN],
           "PostContextStartPositionN":      ["const size_t",                 "(size_t)" + repr(PostContextN)],
-          "input":                          ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x00)"]
+          "input":                          ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x00)"],
+          "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
+          "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
          })
               
     # -- pre-condition fulfillment flags                
@@ -298,7 +313,12 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "     * Still, avoid the warning of 'label never used'.             */\n"
     txt += "    goto __TERMINAL_ROUTER;\n"
 
-    txt += reload_forward_str
+    txt += blue_print(reload_forward_str,
+                      [
+                          ["$$INIT_STATE$$",    __nice(InitialStateIndex)],
+                          ["$$END_OF_STREAM$$", label_db_get("$terminal-EOF", GotoTargetF=True)],
+                      ])
+
     if len(PreConditionIDList) != 0: 
         txt += reload_backward_str
 

@@ -26,6 +26,29 @@ def get_transition_to_drop_out(CurrentStateIdx, ReloadF):
     LanguageDB = Setup.language_db
     return LanguageDB["$goto-pure"](get_label_of_drop_out(CurrentStateIdx, ReloadF))
 
+def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
+    LanguageDB = Setup.language_db
+
+    direction = "FORWARD"
+    if SMD != None and SMD.backward_lexing_f(): 
+        direction = "BACKWARD"
+
+    state_index_str = "QUEX_LABEL(%i)" % StateIdx
+    if ReturnStateIndexStr != None: 
+        state_index_str = ReturnStateIndexStr
+
+    state_index_else_str = "QUEX_LABEL(%i)" % get_address("$drop-out-direct", StateIdx)
+
+    txt = ""
+    if SMD != None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
+        txt += "    goto __RELOAD_INIT_STATE;\n"
+
+    elif SMD == None or not SMD.backward_input_position_detection_f():
+            txt += "    QUEX_GOTO_RELOAD(%s, %s, %s);\n" % (direction, state_index_str, state_index_else_str)
+
+    return txt
+
+
 def get_transition_to_terminal(Origin):
     # No unconditional case of acceptance 
     if type(Origin) == type(None): 
