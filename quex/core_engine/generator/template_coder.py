@@ -472,7 +472,15 @@ def __template_state(txt, TheTemplate, SMD):
     if TheTemplate.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
-    txt.extend(transition_block.do(TriggerMap, state_index, SMD))
+
+    state_index_str = None
+    if not TheTemplate.uniform_state_entries_f():
+        # Templates that need to implement more than one state need to return to
+        # dedicated state entries, if the state entries are not uniform.
+        state_index_str = "template_%i_map_state_key_to_state_index[template_state_key]" % state_index
+
+    txt.extend(transition_block.do(TriggerMap, state_index, SMD, ReturnToState_Str=state_index_str))
+
     txt.extend(drop_out.do(state, state_index, SMD))
 
 def get_uniform_prototype(SMD, InvolvedStateIndexList):

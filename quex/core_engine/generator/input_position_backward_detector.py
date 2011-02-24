@@ -54,6 +54,8 @@ def do(sm, LanguageDB):
     variable_db.update({
          "input":                        ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x0)"],
          "end_of_core_pattern_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x0)"],
+         # "target_state_else_index":     ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
+         # "target_state_index":          ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
     })
     variables_txt = LanguageDB["$local-variable-defs"](variable_db)
 

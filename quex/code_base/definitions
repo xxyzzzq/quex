@@ -80,12 +80,7 @@
      * thing are required.                                                                 */
 #   define QUEX_GOTO_STATE(LABEL)                     goto *LABEL;
 
-#   define QUEX_GOTO_RELOAD_FORWARD(STATE, ELSE_TERMINAL)    target_state_index = &&STATE_ ##STATE##; \
-                                                             last_acceptance    = &&TERMINAL_ ##ELSE_TERMINAL## _DIRECT; \
-                                                             goto __RELOAD_FORWARD;
 
-#   define QUEX_GOTO_RELOAD_BACKWARD(STATE, ELSE_TERMINAL)   target_state_index = &&STATE_ ##STATE##; \
-                                                             goto __RELOAD_BACKWARD;
 #else
     typedef  int32_t  QUEX_TYPE_GOTO_LABEL;          /* > 0: State index
                                                       * < 0: Drop Out of a state abs(Label). */
@@ -98,15 +93,11 @@
 
 #   define QUEX_GOTO_STATE(LABEL)                    target_state_index = LABEL; \
                                                      goto __STATE_ROUTER;
-
-#   define QUEX_GOTO_RELOAD_FORWARD(STATE, ELSE_TERMINAL)    target_state_index = STATE; \
-                                                             laster_acceptance  = ELSE_TERMINAL; \
-                                                             goto __RELOAD_FORWARD;
-
-#   define QUEX_GOTO_RELOAD_BACKWARD(STATE, ELSE_TERMINAL)   target_state_index = STATE; \
-                                                             goto __RELOAD_BACKWARD;
-
 #endif
+
+#define    QUEX_GOTO_RELOAD(DIR, STATE, ELSE_STATE)   target_state_index      = STATE;      \
+                                                      target_state_else_index = ELSE_STATE; \
+                                                      goto __RELOAD_ ## DIR;
 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)

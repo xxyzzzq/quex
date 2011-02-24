@@ -90,7 +90,7 @@ def label_db_register_usage(Label):
 def label_db_unregister_usage(Label):
     __label_used_list_unique.remove(Label)
 
-def label_db_get(Type, Index, GotoTargetF=False):
+def label_db_get(Type, Index=None, GotoTargetF=False):
     assert type(Type)  in [str, unicode]
     assert Index == None or type(Index) in [int, long], \
            "Error: index '%s' for label type '%s'" % (repr(Index), Type)
@@ -130,4 +130,7 @@ def label_db_marker_get_unused_label_list():
 
     return nothing_label_set, computed_goto_label_set
 
+class Address:
+    def __init__(self, Type, Argument):
+        self.label = label_db_get(Type, state_machine_id)
 

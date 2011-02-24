@@ -22,7 +22,13 @@ class TriggerAction:
     def is_drop_out(self):
         return self.__drop_out_f
 
-def __interpret(TriggerMap, CurrentStateIdx, DSM):
+def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str):
+    """ReturnToState_Str is only required if the reload has a particular
+                         procedure to return to the current state. This
+                         is true for path walker and template states.
+
+                         = None --> no special action required.
+    """
     result = [None] * len(TriggerMap)
     for i, entry in enumerate(TriggerMap):
         interval = entry[0]
@@ -36,7 +42,7 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM):
         elif target == -1:
             # Limit Character Detected: Reload
             # NOTE: Reload != Drop Out!
-            target = TriggerAction(transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=True),
+            target = TriggerAction(transition.get_transition_to_reload(CurrentStateIdx, DSM, ReturnToState_Str),
                                    DropOutF=False)
 
         elif type(target) in [int, long]:
@@ -51,7 +57,7 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM):
         result[i] = (interval, target)
     return result
 
-def do(TriggerMap, StateIdx, DSM):
+def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None):
     """Target == None           ---> Drop Out
        Target == -1             ---> Buffer Limit Code; Require Reload
                                      (this one is added by '__separate_buffer_limit_code_transition()'
@@ -77,7 +83,7 @@ def do(TriggerMap, StateIdx, DSM):
 
     # Interpret the trigger map.
     # The actions related to intervals become code fragments (of type 'str')
-    TriggerMap = __interpret(TriggerMap, StateIdx, DSM)
+    TriggerMap = __interpret(TriggerMap, StateIdx, DSM, ReturnToState_Str)
     # __implement_switch_transitions(TriggerMap)
 
     if len(TriggerMap) > 1:

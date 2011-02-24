@@ -511,16 +511,16 @@ def __path_walker(txt, PathWalker, SMD):
         #    isolated single interval.
         trigger_map = [ (Interval(-sys.maxint, sys.maxint), None) ]
 
-    txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD))
+    state_index_str = None
+    if not PathWalker.uniform_state_entries_f():
+        state_index_str = "path_walker_%i_state[path_iterator - path_walker_%i_base]" % (PathWalkerID, PathWalkerID)
+
+    txt.extend(transition_block.do(trigger_map, PathWalkerID, SMD, ReturnToState_Str=state_index_str))
 
     # (4) The drop out (nothing matched)
     #     (Path iterator has not been increased yet)
-    if PathWalker.uniform_state_entries_f():
-        txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
-    else:
-        router_str = "    " + LanguageDB["$goto"]("$pathwalker-router", PathWalkerID)
-        txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD, 
-                               StateIndexStr="path_walker_%i_state[path_iterator - path_walker_%i_base]" % (PathWalkerID, PathWalkerID)))
+
+    txt.extend(drop_out.do(PathWalker, PathWalkerID, SMD))
 
     return routed_state_index_list
 
