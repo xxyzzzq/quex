@@ -22,7 +22,7 @@ class TriggerAction:
     def is_drop_out(self):
         return self.__drop_out_f
 
-def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str):
+def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_Str):
     """ReturnToState_Str is only required if the reload has a particular
                          procedure to return to the current state. This
                          is true for path walker and template states.
@@ -42,8 +42,12 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str):
         elif target == -1:
             # Limit Character Detected: Reload
             # NOTE: Reload != Drop Out!
-            target = TriggerAction(transition.get_transition_to_reload(CurrentStateIdx, DSM, ReturnToState_Str),
-                                   DropOutF=False)
+            if GotoReload_Str != None: 
+                goto_str = GotoReload_Str
+            else:
+                goto_str = transition.get_transition_to_reload(CurrentStateIdx, DSM, ReturnToState_Str)
+
+            target = TriggerAction(goto_str, DropOutF=False)
 
         elif type(target) in [int, long]:
             # Classical State Transition: transit to state with given id
@@ -57,7 +61,7 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str):
         result[i] = (interval, target)
     return result
 
-def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None):
+def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
     """Target == None           ---> Drop Out
        Target == -1             ---> Buffer Limit Code; Require Reload
                                      (this one is added by '__separate_buffer_limit_code_transition()'
@@ -83,7 +87,7 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None):
 
     # Interpret the trigger map.
     # The actions related to intervals become code fragments (of type 'str')
-    TriggerMap = __interpret(TriggerMap, StateIdx, DSM, ReturnToState_Str)
+    TriggerMap = __interpret(TriggerMap, StateIdx, DSM, ReturnToState_Str, GotoReload_Str)
     # __implement_switch_transitions(TriggerMap)
 
     if len(TriggerMap) > 1:
