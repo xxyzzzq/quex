@@ -109,7 +109,8 @@ state_txt = "".join(states)
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
 function  = "def example_func(input):\n"
 function += "".join(transition_block.do(state.transitions().get_trigger_map(), 
-                                        None, dsm))
+                                        None, dsm, 
+                                        GotoReload_Str="return %s\n" % __label_db["$reload"](None)))
 function  = function.replace("_-1_", "_MINUS_1_")
 
 for line_n, line in enumerate((state_txt + function).split("\n")):

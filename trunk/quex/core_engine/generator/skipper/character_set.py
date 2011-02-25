@@ -89,7 +89,12 @@ def get_skipper(TriggerSet):
     transition_map = TransitionMap() # (don't worry about 'drop-out-ranges' etc.)
     transition_map.add_transition(TriggerSet, skipper_index)
     # On buffer limit code, the skipper must transit to a dedicated reloader
-    iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), skipper_index, DSM=None))
+
+    iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), 
+                                                 skipper_index, 
+                                                 DSM=None, 
+                                                 GotoReload_Str=LanguageDB["$goto"]("$reload", skipper_index)))
+
     iteration_code += transition.get_transition_to_drop_out(skipper_index, ReloadF=False)
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())

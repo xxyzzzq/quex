@@ -187,8 +187,10 @@ def do(Data):
     init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                         "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"
 
-    iteration_code = "".join(transition_block.do(trigger_map, counter_index, DSM=None))
-
+    iteration_code = "".join(transition_block.do(trigger_map, 
+                                                 counter_index, 
+                                                 DSM=None, 
+                                                 GotoReload_Str=LanguageDB["$goto"]("$reload", counter_index)))
 
     comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
 
