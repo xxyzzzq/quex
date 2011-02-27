@@ -43,8 +43,9 @@ def do(sm, LanguageDB):
                                                           "\nEND: BACKWARD DETECTOR STATE MACHINE")
         analyzer_code += "\n"
 
-    if len(routed_state_info_list) != 0:
-        function_body += state_router.do(routed_state_info_list)
+    # Backward detection does not need reload. Thus, it does not need a state router.
+    # if len(routed_state_info_list) != 0:
+    #    function_body += state_router.do(routed_state_info_list)
 
     # -- input position detectors simply the next 'catch' and return
     function_body += LanguageDB["$label-def"]("$terminal-general-bw") + "\n"

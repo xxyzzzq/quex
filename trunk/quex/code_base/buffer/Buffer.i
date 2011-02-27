@@ -247,23 +247,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         return *(me->_input_p + Offset); 
     }
 
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(QUEX_NAME(Buffer)* me)
-    { 
-        me->_character_at_lexeme_start = *(me->_input_p); 
-        *(me->_input_p) = '\0';
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_undo_terminating_zero_for_lexeme)(QUEX_NAME(Buffer)* me)
-    {
-        /* only need to reset, in case that the terminating zero was set*/
-        if( me->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) {  
-            *(me->_input_p) = me->_character_at_lexeme_start;                  
-            me->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     
-        }
-    }
-
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)* me)
     {

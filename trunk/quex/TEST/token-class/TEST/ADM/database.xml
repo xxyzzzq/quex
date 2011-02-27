@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.35" date="Wed Feb 23 21:57:24 2011">
+<test-database execution-time-sec="0.35" date="Sat Feb 26 09:24:52 2011">
     <last-used-diff-display-program name=""/>
-    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple-queue.exe" info-request-time="1298494642L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.886494"/>
+    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
+        <application file-name="simple-queue.exe" info-request-time="1298708689L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.849457"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.00" crc="1902503654"/>
+           <choice name="" result="OK" time_sec="0.01" crc="1902503654"/>
         </choice-list>
     </test>
     <test title="Miscellaneous Sample Runs" time-sum-sec="0.34"> 
@@ -17,8 +17,8 @@
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1298494644L" vanished="False"/>
-        <make-procedure success="True" time_sec="1.846597"/>
+        <application file-name="simple.exe" info-request-time="1298708691L" vanished="False"/>
+        <make-procedure success="True" time_sec="1.802964"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="120585915"/>
         </choice-list>

@@ -278,5 +278,23 @@
 #define QUEX_NUMBER_TO_STRING(x)  QUEX_STRING(x)
 #define QUEX_SOURCE_POS()         __FILE__ ":" QUEX_NUMBER_TO_STRING(__LINE__) ": "
 
+#if ! defined(QUEX_OPTION_TERMINATION_ZERO_DISABLED)
+
+#   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)        \
+        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_input_p); \
+        *((BUFFER)->_input_p) = '\0';
+
+#   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                   \
+        /* only need to reset, in case that the terminating zero was set*/        \
+        if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) { \
+            *((BUFFER)->_input_p) = (BUFFER)->_character_at_lexeme_start;         \
+            (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     \
+        }
+#else
+
+#   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)   /* empty */
+#   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)  /* empty */
+
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */

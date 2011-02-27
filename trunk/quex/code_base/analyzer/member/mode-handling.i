@@ -24,7 +24,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(set_mode_brutally)(QUEX_TYPE_ANALYZER* me, QUEX_NAME(Mode)* ModeP) 
     { 
-#   ifdef     QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#   ifdef     QUEX_OPTION_DEBUG_SHOW_MODES
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         __QUEX_STD_printf("line = %i\n", (int)me->counter._line_number_at_begin);
 #       endif

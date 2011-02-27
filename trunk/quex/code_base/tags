@@ -245,7 +245,7 @@ QUEX_OPTION_ASSERTS	/home/fschaef/prj/quex/trunk/quex/code_base/./asserts	13;"	d
 QUEX_OPTION_ASSERTS	/home/fschaef/prj/quex/trunk/quex/code_base/./asserts	9;"	d	file:
 QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	130;"	d	file:
 QUEX_OPTION_COLUMN_NUMBER_COUNTING	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	98;"	d	file:
-QUEX_OPTION_DEBUG_MODE_TRANSITIONS	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	136;"	d	file:
+QUEX_OPTION_DEBUG_SHOW_MODES	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	136;"	d	file:
 QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	142;"	d	file:
 QUEX_OPTION_DEBUG_TOKEN_SENDING	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	127;"	d	file:
 QUEX_OPTION_CONVERTER_ICONV	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	188;"	d	file:

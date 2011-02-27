@@ -53,11 +53,11 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     txt += on_every_match_code
     txt += "#   ifdef __QUEX_OPTION_COUNTER\n"
     txt += lc_count_code
-    txt += "#   endif\n"
     txt += "    __quex_debug_counter();\n"
-    txt += "{\n"
+    txt += "#   endif\n"
+    txt += "    {\n"
     txt += user_code
-    txt += "\n}"
+    txt += "\n    }"
 
     return CodeFragment(txt, require_terminating_zero_preparation_f), variable_db
 

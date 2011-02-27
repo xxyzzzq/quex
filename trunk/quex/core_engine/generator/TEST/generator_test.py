@@ -180,6 +180,7 @@ def run_this(Str):
         for line in txt.split("\n"):
             if    line.find("defined but not used") != -1 \
                or line.find("but never defined") != -1 \
+               or line.find("At top level") != -1 \
                or line.find("t global scope") != -1 \
                or     (line.find("warning: unused variable") != -1 )          \
                   and ((line.find("path_") != -1 and not line.find("_end")) or line.find("pathwalker_") != -1) \
