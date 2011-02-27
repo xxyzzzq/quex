@@ -3,21 +3,21 @@ import quex.core_engine.utf8                 as utf8
 import quex.output.cpp.action_code_formatter as action_code_formatter
 
 line_counter_in_loop = """
-#       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
-        if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
-            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-        }
-#       endif
+#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
+    if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
+        __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+    }
+#   endif
 """
 
 line_column_counter_in_loop = """
-#       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-        if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
-            __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-            __QUEX_IF_COUNT_COLUMNS_SET((size_t)0);
-            __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
-        }
-#       endif
+#   if defined(__QUEX_OPTION_COUNTER)
+    if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
+        __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+        __QUEX_IF_COUNT_COLUMNS_SET((size_t)0);
+        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
+    }
+#   endif
 """
 
 def get_character_sequence(Sequence):

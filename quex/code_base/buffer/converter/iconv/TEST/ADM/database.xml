@@ -1,114 +1,114 @@
-<test-database execution-time-sec="0.22" date="Wed Feb 23 21:57:54 2011">
+<test-database execution-time-sec="0.21" date="Sat Feb 26 09:25:21 2011">
     <last-used-diff-display-program name=""/>
     <group name="Converter">
         <test title="Plain 32 bit" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="converter-32.exe" info-request-time="1298494667L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.620491"/>
+            <application file-name="converter-32.exe" info-request-time="1298708713L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.623443"/>
             <choice-list number="2" same_result="True">
                <choice name="UTF-8" result="OK" time_sec="0.01" crc="-17263759"/>
                <choice name="UTF-16" result="OK" time_sec="0.01" crc="-17263759"/>
             </choice-list>
         </test>
         <test title="Possible 'statefulness' has been ruled out (16 bit)" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="converter-statefulness-16.exe" info-request-time="1298494668L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.624558"/>
+            <application file-name="converter-statefulness-16.exe" info-request-time="1298708714L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.623982"/>
             <choice-list number="2" same_result="False">
                <choice name="UTF-8" result="OK" time_sec="0.00" crc="-54770980"/>
                <choice name="UTF-16" result="OK" time_sec="0.01" crc="-1725513595"/>
             </choice-list>
         </test>
         <test title="Plain 16 bit" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="converter-16.exe" info-request-time="1298494671L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.629937"/>
+            <application file-name="converter-16.exe" info-request-time="1298708717L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.623841"/>
             <choice-list number="2" same_result="True">
                <choice name="UTF-8" result="OK" time_sec="0.01" crc="-338491359"/>
                <choice name="UTF-16" result="OK" time_sec="0.01" crc="-338491359"/>
             </choice-list>
         </test>
         <test title="Possible 'statefulness' has been ruled out (32 bit)" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="converter-statefulness-32.exe" info-request-time="1298494673L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.628748"/>
+            <application file-name="converter-statefulness-32.exe" info-request-time="1298708719L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.623937"/>
             <choice-list number="2" same_result="False">
-               <choice name="UTF-8" result="OK" time_sec="0.00" crc="-54770980"/>
+               <choice name="UTF-8" result="OK" time_sec="0.01" crc="-54770980"/>
                <choice name="UTF-16" result="OK" time_sec="0.00" crc="-1725513595"/>
             </choice-list>
         </test>
     </group>
     <group name="Move by Offset">
-        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="Buffer_move_forward.exe" info-request-time="1298494670L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.815968"/>
+        <test title="Forward (BPC=4)" make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="Buffer_move_forward.exe" info-request-time="1298708716L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.800757"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.00" crc="518485371"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-292733650"/>
+               <choice name="1" result="OK" time_sec="0.01" crc="518485371"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="-292733650"/>
                <choice name="3" result="OK" time_sec="0.01" crc="745282705"/>
                <choice name="4" result="OK" time_sec="0.01" crc="953394886"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="-2111283219"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="-2111283219"/>
             </choice-list>
         </test>
-        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="Buffer_move_backward.exe" info-request-time="1298494673L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.823659"/>
+        <test title="Backward (BPC=4)" make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="Buffer_move_backward.exe" info-request-time="1298708719L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.815591"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.00" crc="252911644"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="935716412"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="-16646893"/>
-               <choice name="4" result="OK" time_sec="0.00" crc="-1534969806"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="1507160315"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="935716412"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="-16646893"/>
+               <choice name="4" result="OK" time_sec="0.01" crc="-1534969806"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="1507160315"/>
             </choice-list>
         </test>
     </group>
     <group name="Stream Position Seek">
-        <test title="Total Zik-Zak" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="seek_character_index-zikzak.exe" info-request-time="1298494669L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.615772"/>
+        <test title="Total Zik-Zak" make-dependent="True" time-sum-sec="0.01"> 
+            <application file-name="seek_character_index-zikzak.exe" info-request-time="1298708715L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.602109"/>
             <choice-list number="2" same_result="False">
                <choice name="Fixed" result="OK" time_sec="0.01" crc="2100878807"/>
                <choice name="Dynamic" result="OK" time_sec="0.01" crc="2100878807"/>
             </choice-list>
         </test>
         <test title="Plain search" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="seek_character_index.exe" info-request-time="1298494672L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.593042"/>
+            <application file-name="seek_character_index.exe" info-request-time="1298708718L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.590338"/>
             <choice-list number="2" same_result="False">
-               <choice name="Forward" result="OK" time_sec="0.00" crc="-2124477716"/>
+               <choice name="Forward" result="OK" time_sec="0.01" crc="-2124477716"/>
                <choice name="Backward" result="OK" time_sec="0.00" crc="-123182608"/>
             </choice-list>
         </test>
     </group>
     <group name="Tell and Seek">
-        <test title="Bytes Per Character (BPC)=4" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="Buffer_tell_and_seek.exe" info-request-time="1298494674L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.824190"/>
+        <test title="Bytes Per Character (BPC)=4" make-dependent="True" time-sum-sec="0.01"> 
+            <application file-name="Buffer_tell_and_seek.exe" info-request-time="1298708720L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.824061"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="2030489900"/>
+               <choice name="" result="OK" time_sec="0.01" crc="2030489900"/>
             </choice-list>
         </test>
     </group>
     <group name="read_characters">
         <test title="Raw buffer size varries (UTF-8)" make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="one-beat.exe" info-request-time="1298494668L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.596141"/>
+            <application file-name="one-beat.exe" info-request-time="1298708715L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.596976"/>
             <choice-list number="4" same_result="True">
                <choice name="6" result="OK" time_sec="0.00" crc="400097149"/>
-               <choice name="7" result="OK" time_sec="0.01" crc="400097149"/>
+               <choice name="7" result="OK" time_sec="0.00" crc="400097149"/>
                <choice name="8" result="OK" time_sec="0.00" crc="400097149"/>
                <choice name="9" result="OK" time_sec="0.00" crc="400097149"/>
             </choice-list>
         </test>
-        <test title="User buffer size varries (UTF-8)" make-dependent="True" time-sum-sec="0.07"> 
-            <application file-name="n-beat.exe" info-request-time="1298494671L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.575322"/>
+        <test title="User buffer size varries (UTF-8)" make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="n-beat.exe" info-request-time="1298708717L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.579756"/>
             <choice-list number="9" same_result="True">
-               <choice name="3" result="OK" time_sec="0.01" crc="174303693"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="174303693"/>
                <choice name="4" result="OK" time_sec="0.01" crc="174303693"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="174303693"/>
-               <choice name="6" result="OK" time_sec="0.01" crc="174303693"/>
-               <choice name="8" result="OK" time_sec="0.01" crc="174303693"/>
-               <choice name="9" result="OK" time_sec="0.01" crc="174303693"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="174303693"/>
+               <choice name="6" result="OK" time_sec="0.00" crc="174303693"/>
+               <choice name="8" result="OK" time_sec="0.00" crc="174303693"/>
+               <choice name="9" result="OK" time_sec="0.00" crc="174303693"/>
                <choice name="1" result="OK" time_sec="0.01" crc="174303693"/>
                <choice name="2" result="OK" time_sec="0.01" crc="174303693"/>
-               <choice name="7" result="OK" time_sec="0.01" crc="174303693"/>
+               <choice name="7" result="OK" time_sec="0.00" crc="174303693"/>
             </choice-list>
         </test>
     </group>

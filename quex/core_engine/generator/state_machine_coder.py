@@ -89,10 +89,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
     
-
-    local_variable_db["! QUEX_OPTION_COMPUTED_GOTOS/target_state_index"] = \
-                     [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE", None]
-
     return "".join(txt), local_variable_db, get_state_router_info(routed_state_list, SMD)
 
 def get_sorted_state_list(StateDict):

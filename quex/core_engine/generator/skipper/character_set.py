@@ -11,15 +11,13 @@ def do(Data):
 
     code_str, db = get_skipper(Data["character_set"])   
 
-    txt =   "{\n"                                                 \
+    txt =   "    " \
           + LanguageDB["$comment"]("Character set skipper state") \
-          + code_str                                              \
-          + "\n}\n"
+          + code_str                                              
 
     return txt, db
 
 template_str = """
-{ 
     $$DELIMITER_COMMENT$$
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
@@ -71,8 +69,8 @@ $$LC_COUNT_AFTER_RELOAD$$
             goto STATE_$$SKIPPER_INDEX$$_LOOP;
         } 
     }
-}
 """
+
 def get_skipper(TriggerSet):
     """This function implements simple 'skipping' in the sense of passing by
        characters that belong to a given set of characters--the TriggerSet.
@@ -95,7 +93,7 @@ def get_skipper(TriggerSet):
                                                  DSM=None, 
                                                  GotoReload_Str=LanguageDB["$goto"]("$reload", skipper_index)))
 
-    iteration_code += transition.get_transition_to_drop_out(skipper_index, ReloadF=False)
+    # iteration_code += transition.get_transition_to_drop_out(skipper_index, ReloadF=False)
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 

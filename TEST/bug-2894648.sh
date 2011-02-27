@@ -7,9 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i tmp.qx -o Simple --comment-state-machine >& tmp.txt
+quex -i tmp.qx -o Simple --comment-state-machine --language C >& tmp.txt
 cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
-python show.py
+awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' Simple.c
+
+# python show.py
 rm tmp.txt
 
 # cleansening

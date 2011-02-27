@@ -71,12 +71,10 @@ def do():
 
         # accumulate inheritance information for comment
         code = get_code_for_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF) 
+        analyzer_code += code
 
         if Setup.comment_mode_patterns_f:
             inheritance_info_str += mode.get_documentation()
-
-        # Find unused labels
-        analyzer_code += generator.delete_unused_labels(code)
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
@@ -184,7 +182,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSuppor
                                  RequiredLocalVariablesDB       = required_local_variables_db, 
                                  SupportBeginOfLineF            = BeginOfLineSupportF)
 
-    return analyzer_code
+    return "".join(analyzer_code)
 
 def __get_indentation_counter_terminal_index(PatterActionPairList):
     """Under some circumstances a terminal code need to jump to the indentation

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.46" date="Wed Feb 23 22:03:15 2011">
+<test-database execution-time-sec="2.41" date="Sat Feb 26 09:30:41 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1297454632L" vanished="False"/>
@@ -100,16 +100,16 @@
         </test>
     </group>
     <group name="Replacement">
-        <test title="Regular Expression State Machines" time-sum-sec="0.09"> 
+        <test title="Regular Expression State Machines" time-sum-sec="0.08"> 
             <application file-name="test-replacement.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="1905002429"/>
+               <choice name="" result="OK" time_sec="0.08" crc="1905002429"/>
             </choice-list>
         </test>
-        <test title="Character Sets" time-sum-sec="0.09"> 
+        <test title="Character Sets" time-sum-sec="0.08"> 
             <application file-name="test-replacement-2.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="524101486"/>
+               <choice name="" result="OK" time_sec="0.08" crc="524101486"/>
             </choice-list>
         </test>
     </group>
@@ -120,10 +120,10 @@
                <choice name="" result="OK" time_sec="0.61" crc="-1397925985"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.62"> 
+        <test title="Set Operations" time-sum-sec="0.61"> 
             <application file-name="test-properties-2.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.62" crc="1108933321"/>
+               <choice name="" result="OK" time_sec="0.61" crc="1108933321"/>
             </choice-list>
         </test>
     </group>

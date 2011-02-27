@@ -282,11 +282,7 @@ def get_on_indentation_handler(Mode):
     # A mode that deals only with the default indentation handler relies
     # on what is defined in '$QUEX_PATH/analayzer/member/on_indentation.i'
     if Mode.default_indentation_handler_sufficient():
-        return "#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)\n" + \
-               "    return __self_result_token_id;\n" + \
-               "#   else\n" + \
-               "    return;\n" + \
-               "#   endif"
+        return "    return;"
 
     if Mode.has_code_fragment_list("on_indent"):
         on_indent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indent"))

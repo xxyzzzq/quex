@@ -48,28 +48,34 @@ class Generator(GeneratorBase):
                                                         BackwardInputPositionDetectionF=False)
 
         #  Comment state machine transitions 
-        txt = ""
+        comment = ""
         if Setup.comment_state_machine_transitions_f:
-            txt += LanguageDB["$ml-comment"]("BEGIN: STATE MACHINE\n"             + \
-                                             self.sm.get_string(NormalizeF=False) + \
-                                             "END: STATE MACHINE") 
-            txt += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+            comment += LanguageDB["$ml-comment"]("BEGIN: STATE MACHINE\n"             + \
+                                                 self.sm.get_string(NormalizeF=False) + \
+                                                 "END: STATE MACHINE") 
+            comment += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        msg, db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
-        txt += msg
+        state_machine_code, db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
         variable_db.update(db)
 
         
         #  -- terminal states: execution of pattern actions  
-        msg, db = LanguageDB["$terminal-code"](decorated_state_machine,
-                                               self.action_db, 
-                                               self.on_failure_action, 
-                                               self.end_of_stream_action, 
-                                               self.begin_of_line_condition_f, 
-                                               self.pre_context_sm_id_list,
-                                               self.language_db) 
-        txt += msg
+        terminal_code, db = LanguageDB["$terminal-code"](decorated_state_machine,
+                                                         self.action_db, 
+                                                         self.on_failure_action, 
+                                                         self.end_of_stream_action, 
+                                                         self.begin_of_line_condition_f, 
+                                                         self.pre_context_sm_id_list,
+                                                         self.language_db) 
         variable_db.update(db)
+    
+        txt = [ 
+                comment, 
+                state_machine_code,
+                terminal_code,
+        ]
+
+        txt = straighten_labels_and_references(txt)
 
         return txt, variable_db, routed_state_info_list
 
@@ -149,11 +155,14 @@ class Generator(GeneratorBase):
                                                          LocalVariableDB=local_variable_db) 
 
         #  -- paste the papc functions (if there are some) in front of the analyzer functions
-        txt =   LanguageDB["$header-definitions"](LanguageDB)  \
-              + papc_input_postion_backward_detector_functions \
-              + analyzer_function
+        txt = [ 
+            LanguageDB["$header-definitions"](LanguageDB),
+            papc_input_postion_backward_detector_functions,
+            analyzer_function
+        ]
 
-        return languages.replace_keywords(txt, LanguageDB, NoIndentF=True)
+
+        return txt
 
 def do(PatternActionPair_List, OnFailureAction, 
        EndOfStreamAction, Language="C++", StateMachineName="",
@@ -194,7 +203,7 @@ def init_unused_labels():
     ## print "##init,", languages.label_db_marker_get_unused_label_list()
     languages.label_db_marker_init()
 
-def delete_unused_labels(Code):
+def DELETED_delete_unused_labels(Code):
     """Delete unused labels, so that compilers won't complain.
 
        This function is performance critical, so we do a high speed replacement,
@@ -244,7 +253,7 @@ def delete_unused_labels(Code):
     return code
         
 import array
-def delete_unused_labels_FAST(Code, LabelList):
+def DELETED_delete_unused_labels_FAST(Code, LabelList):
     LanguageDB = Setup.language_db
 
     code = array.array("c", Code)
@@ -267,3 +276,6 @@ def delete_unused_labels_FAST(Code, LabelList):
 
     return code.tostring()
         
+def straighten_labels_and_references(TxtList):
+    return "".join(TxtList)
+

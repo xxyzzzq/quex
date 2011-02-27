@@ -17,5 +17,6 @@ and project files.
    patterns/intro.txt
    actions/intro.txt
    modes/intro.txt
+   showtime.txt
 
 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.09" date="Wed Feb 23 21:56:39 2011">
+<test-database execution-time-sec="1.09" date="Sat Feb 26 09:23:58 2011">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.41"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1297454632L" vanished="False"/>
@@ -15,7 +15,7 @@
     <test title="Check if the default configuration has been updated." time-sum-sec="0.01"> 
         <application file-name="check-default-configuration.sh" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.01" crc="512112916"/>
+           <choice name="" result="FAIL" time_sec="0.01" crc="358043729"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 

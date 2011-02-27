@@ -131,6 +131,19 @@ def label_db_marker_get_unused_label_list():
     return nothing_label_set, computed_goto_label_set
 
 class Address:
-    def __init__(self, Type, Argument):
+    def __init__(self, Type, Code=""):
+        """Label = label under which the code is addressed.
+           Code  = Code that is to be generated, supposed that the 
+                   label is actually referred.
+                   (May be empty, so that that only the label is not printed.)
+        """
         self.label = label_db_get(Type, state_machine_id)
+        self.code  = Code
 
+class Reference:
+    def __init__(self, AddressLabel, Code):
+        """Label = label that is referenced in 'Code'.
+           Code  = Code fragment that references the label.
+        """
+        self.label = AddressLabel
+        self.code  = Code

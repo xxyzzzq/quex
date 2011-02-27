@@ -283,20 +283,17 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     txt += LanguageDB["$local-variable-defs"](local_variable_list)
     txt += comment_on_post_context_position_init_str
-    txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
-    txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
+    txt += "#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
+    txt += "       || defined(QUEX_OPTION_ASSERTS)\n"
     txt += "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n"
-    txt += "#endif\n"
+    txt += "#   endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
     txt += "\n"
 
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
-    txt += "    if( me->buffer._character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\\0' ) {\n"  
-    txt += "        *(me->buffer._input_p) = me->buffer._character_at_lexeme_start;\n"                  
-    txt += "        me->buffer._character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\\0';\n"
-    txt += "    }\n"
+    txt += "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
     
     txt += function_body
 
@@ -454,7 +451,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     $$GOTO_START$$
 """
 
-def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset=4): 
+def __adorn_action_code(action_info, SMD, SupportBeginOfLineF): 
 
     result = action_info.action().get_code()
     if type(result) != tuple: 
@@ -466,20 +463,17 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
 
     if code_str == "": return "", variable_db
 
-    indentation = " " * IndentationOffset 
     txt = "\n"
     # TODO: There could be a differenciation between a pattern that contains
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "me->buffer._character_before_lexeme_start = *(me->buffer._input_p - 1);\n"
+        txt += "    me->buffer._character_before_lexeme_start = *(me->buffer._input_p - 1);\n"
 
     if action_info.action().require_terminating_zero_f():
-        txt += indentation + "QUEX_NAME(Buffer_set_terminating_zero_for_lexeme)(&me->buffer);\n"
+        txt += "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
 
-    # txt += indentation + "{\n"
-    txt += code_str.replace("\n", "\n    ") + "\n"  
-    # txt += indentation + "}\n"
+    txt += code_str
 
     return txt, variable_db
 
@@ -607,8 +601,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str, db = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF,
-                                                            IndentationOffset=4)
+    end_of_stream_code_action_str, db = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF)
     variable_db.update(db)
 
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
@@ -629,8 +622,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     on_failure_str += LanguageDB["$endif"] + "\n"
 
 
-    msg, db = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF,
-                                  IndentationOffset=4)
+    msg, db = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
     on_failure_str += msg
     variable_db.update(db)
 

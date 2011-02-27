@@ -236,19 +236,3 @@ db["VisualBasic6"] = {
     "$return_false": "$the_function = True: Exit Function",
     }
 
-
-
-def replace_keywords(program_txt, LanguageDB, NoIndentF):
-    """Replaces pseudo-code keywords with keywords of the given language."""
-
-    txt = blue_print(program_txt, LanguageDB.items())
-
-    if NoIndentF == False:
-        # delete the last newline, to prevent additional indentation
-        if txt[-1] == "\n": txt = txt[:-1]
-        # indent by four spaces
-        # (if this happens in recursively called functions nested indented blocks
-        #  are correctly indented, see NumberSet::get_condition_code() for example)     
-        txt = txt.replace("\n", "\n    ") + "\n"
-    
-    return txt          
