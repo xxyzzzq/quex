@@ -1,13 +1,14 @@
-import quex.core_engine.generator.languages.core                   as languages
-import quex.core_engine.generator.state_machine_coder              as state_machine_coder
-import quex.core_engine.generator.input_position_backward_detector as backward_detector
+import quex.core_engine.generator.languages.core                   as     languages
+from   quex.core_engine.generator.languages.core                   import Address, Reference
+import quex.core_engine.generator.state_machine_coder              as     state_machine_coder
+import quex.core_engine.generator.input_position_backward_detector as     backward_detector
 from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
-import quex.core_engine.generator.state_router                     as state_router
-from   quex.input.setup import setup as Setup
-from   quex.frs_py.string_handling import blue_print
-from   copy import copy
+import quex.core_engine.generator.state_router                     as     state_router
+from   quex.input.setup                                            import setup as Setup
+from   quex.frs_py.string_handling                                 import blue_print
+from   copy                                                        import copy
 #
-from quex.core_engine.generator.base import GeneratorBase
+from   quex.core_engine.generator.base                             import GeneratorBase
 
 class Generator(GeneratorBase):
 
@@ -36,7 +37,7 @@ class Generator(GeneratorBase):
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
 
-        txt         = ""
+        txt         = []
         variable_db = {}
 
         assert self.sm.get_orphaned_state_index_list() == []
@@ -48,15 +49,17 @@ class Generator(GeneratorBase):
                                                         BackwardInputPositionDetectionF=False)
 
         #  Comment state machine transitions 
-        comment = ""
         if Setup.comment_state_machine_transitions_f:
-            comment += LanguageDB["$ml-comment"]("BEGIN: STATE MACHINE\n"             + \
-                                                 self.sm.get_string(NormalizeF=False) + \
-                                                 "END: STATE MACHINE") 
-            comment += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+            comment = LanguageDB["$ml-comment"]("BEGIN: STATE MACHINE\n"             + \
+                                                self.sm.get_string(NormalizeF=False) + \
+                                                "END: STATE MACHINE") 
+            txt.append(comment)
+            txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         state_machine_code, db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
+
         variable_db.update(db)
+        txt.extend(state_machine_code)
 
         
         #  -- terminal states: execution of pattern actions  
@@ -68,14 +71,7 @@ class Generator(GeneratorBase):
                                                          self.pre_context_sm_id_list,
                                                          self.language_db) 
         variable_db.update(db)
-    
-        txt = [ 
-                comment, 
-                state_machine_code,
-                terminal_code,
-        ]
-
-        txt = straighten_labels_and_references(txt)
+        txt.extend(terminal_code)
 
         return txt, variable_db, routed_state_info_list
 
@@ -90,27 +86,31 @@ class Generator(GeneratorBase):
                                                         BackwardLexingF=True, 
                                                         BackwardInputPositionDetectionF=False)
 
-        txt = ""
+        txt = []
         if Setup.comment_state_machine_transitions_f:
-            txt += LanguageDB["$ml-comment"]("BEGIN: PRE-CONTEXT STATE MACHINE\n"             + \
-                                             self.pre_context_sm.get_string(NormalizeF=False) + \
-                                             "END: PRE-CONTEXT STATE MACHINE") 
-            txt += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
+            comment = LanguageDB["$ml-comment"]("BEGIN: PRE-CONTEXT STATE MACHINE\n"             + \
+                                                self.pre_context_sm.get_string(NormalizeF=False) + \
+                                                "END: PRE-CONTEXT STATE MACHINE") 
+            txt.append(comment)
+            txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         msg, variable_db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
 
-        txt += msg
+        txt.extend(msg)
 
-        txt += LanguageDB["$label-def"]("$terminal-general-bw") + "\n"
+        txt.append(LanguageDB["$label-def"]("$terminal-general-bw"))
+        txt.append("\n")
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
-        txt += "    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n"
+        txt.append("    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n")
 
         return txt, variable_db, routed_state_info_list
 
     def do(self, RequiredLocalVariablesDB):
-        local_variable_db = copy(RequiredLocalVariablesDB)
-        LanguageDB        = self.language_db
+        function_body          = []
+        local_variable_db      = copy(RequiredLocalVariablesDB)
+        routed_state_info_list = []
+        LanguageDB             = self.language_db
 
         #  -- state machines for backward input position detection (pseudo ambiguous post conditions)
         papc_input_postion_backward_detector_functions = ""
@@ -119,28 +119,29 @@ class Generator(GeneratorBase):
             papc_input_postion_backward_detector_functions +=  \
                   backward_detector.do(sm, LanguageDB)
 
-        pre_context_sm_code = ""
-        routed_state_info_list = []
         # -- write the combined pre-condition state machine
         if self.pre_context_sm_list != []:
-            pre_context_sm_code, \
-            variable_db,         \
-            state_info_list      = self.__get_combined_pre_context_state_machine()
+            code,           \
+            variable_db,    \
+            state_info_list = self.__get_combined_pre_context_state_machine()
+
             local_variable_db.update(variable_db)
+            function_body.extend(code)
             routed_state_info_list.extend(state_info_list)
             
         # -- write the state machine of the 'core' patterns (i.e. no pre-conditions)
-        main_sm_code,   \
+        code,           \
         variable_db,    \
         state_info_list = self.__get_core_state_machine()
 
         local_variable_db.update(variable_db)
+        function_body.extend(code)
         routed_state_info_list.extend(state_info_list)
 
-        function_body = pre_context_sm_code + main_sm_code
-
         if len(routed_state_info_list) != 0:
-            function_body += state_router.do(routed_state_info_list)
+            function_body.append(state_router.do(routed_state_info_list))
+
+        function_body = straighten_labels_and_references(function_body)
 
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
@@ -160,7 +161,6 @@ class Generator(GeneratorBase):
             papc_input_postion_backward_detector_functions,
             analyzer_function
         ]
-
 
         return txt
 
@@ -276,6 +276,22 @@ def DELETED_delete_unused_labels_FAST(Code, LabelList):
 
     return code.tostring()
         
-def straighten_labels_and_references(TxtList):
-    return "".join(TxtList)
+def straighten_labels_and_references(txt_list):
+    #for txt in txt_list:
+    #    print "## type = ", type(txt)
+    #    print "## txt  = ", txt
+    referenced_label_set = set([])
+    for i, elm in enumerate(txt_list):
+        if isinstance(elm, Reference):
+            referenced_label_set.add(elm.label)
+            txt_list[i] = elm.code
+        if type(elm) in [int, long]:    # Indentation: elm = number of indentations
+            txt_list[i] = "    " * elm
+
+    for i, elm in enumerate(txt_list):
+        if isinstance(elm, Address):
+            if elm.label in referenced_label_set: txt_list[i] = elm.code
+            else:                                 txt_list[i] = "/* should be deleted */\n" + elm.code 
+
+    return "".join(txt_list)
 

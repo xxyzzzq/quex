@@ -124,9 +124,9 @@ def do(SMD, CostCoefficient):
           "template_state_key": [ "ptrdiff_t",                  "(ptrdiff_t)0"],
         })
 
-    return "".join(code), \
+    return code,                    \
            routed_state_index_list, \
-           local_variable_db, \
+           local_variable_db,       \
            involved_state_index_list
 
 def _do(CombinationList, SMD):

@@ -48,23 +48,26 @@ def get_address(Type, Index=None):
         #"$init_state_fw_transition_block": lambda NoThing: "INIT_STATE_TRANSITION_BLOCK",
     }[Type](Index)
 
-def __position(NameOrTerminalID):
-    return "_%s" % __nice(map_label_to_state_index(NameOrTerminalID))
+def _pure_position(LabelID):
+    return "_%s" % __nice(LabelID)
+
+def _position(NameOrTerminalID):
+    return _pure_position(map_label_to_state_index(NameOrTerminalID))
 
 __label_db = \
 {
-    "$terminal":              lambda TerminalIdx: __position("TERMINAL_%s"        % __nice(TerminalIdx)),
-    "$terminal-direct":       lambda TerminalIdx: __position("TERMINAL_%s_DIRECT" % __nice(TerminalIdx)),
-    "$terminal-general-bw":   lambda NoThing:     __position("TERMINAL_GENERAL_BACKWARD"),
-    "$terminal-EOF":          lambda NoThing:     __position("TERMINAL_END_OF_STREAM"),
-    "$terminal-FAILURE":      lambda NoThing:     __position("TERMINAL_FAILURE"),
+    "$terminal":              lambda TerminalIdx: _position("TERMINAL_%s"        % __nice(TerminalIdx)),
+    "$terminal-direct":       lambda TerminalIdx: _position("TERMINAL_%s_DIRECT" % __nice(TerminalIdx)),
+    "$terminal-general-bw":   lambda NoThing:     _position("TERMINAL_GENERAL_BACKWARD"),
+    "$terminal-EOF":          lambda NoThing:     _position("TERMINAL_END_OF_STREAM"),
+    "$terminal-FAILURE":      lambda NoThing:     _position("TERMINAL_FAILURE"),
     "$template":              lambda StateIdx:    "TEMPLATE_%s"       % __nice(StateIdx),
     "$pathwalker":            lambda StateIdx:    "PATH_WALKER_%s"    % __nice(StateIdx),
     "$pathwalker-router":     lambda StateIdx:    "PATH_WALKER_%s_STATE_ROUTER" % __nice(StateIdx),
     "$entry":                 lambda StateIdx:    "_%s"               % __nice(StateIdx),
     "$entry-stub":            lambda StateIdx:    "STATE_%s_STUB"     % __nice(StateIdx),
-    "$reload":                lambda StateIdx:    __position("STATE_%s_RELOAD"          % __nice(StateIdx)),
-    "$drop-out-direct":       lambda StateIdx:    __position("STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx)),
+    "$reload":                lambda StateIdx:    _position("STATE_%s_RELOAD"          % __nice(StateIdx)),
+    "$drop-out-direct":       lambda StateIdx:    _position("STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx)),
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
     "$start":                 lambda NoThing:     "__REENTRY",
     "$init_state_fw_transition_block": lambda NoThing: "INIT_STATE_TRANSITION_BLOCK",
@@ -131,19 +134,22 @@ def label_db_marker_get_unused_label_list():
     return nothing_label_set, computed_goto_label_set
 
 class Address:
-    def __init__(self, Type, Code=""):
+    def __init__(self, Type, Arg, Code=""):
         """Label = label under which the code is addressed.
            Code  = Code that is to be generated, supposed that the 
                    label is actually referred.
                    (May be empty, so that that only the label is not printed.)
         """
-        self.label = label_db_get(Type, state_machine_id)
-        self.code  = Code
+        self.label = get_address(Type, Arg)
+        self.code  = _pure_position(self.label) + ":\n"
+        self.code += Code
 
 class Reference:
-    def __init__(self, AddressLabel, Code):
+    def __init__(self, Type, Arg):
         """Label = label that is referenced in 'Code'.
            Code  = Code fragment that references the label.
         """
-        self.label = AddressLabel
-        self.code  = Code
+        self.label = Arg
+        self.code  = { 
+            "$goto":  "goto %s;\n" % _pure_position(self.label),
+        }[Type]

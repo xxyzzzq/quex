@@ -47,7 +47,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
         code, state_list, variable_db, state_index_set = \
                 paths_coder.do(SMD, Setup.compression_path_uniform_f)
-        txt.append(code)
+        txt.extend(code)
         routed_state_list.update(state_list)
         local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
@@ -57,7 +57,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     if Setup.compression_template_f:
         code, state_list, variable_db, state_index_set = \
                 template_coder.do(SMD, Setup.compression_template_coef)
-        txt.append(code)
+        txt.extend(code)
         routed_state_list.update(state_list)
         local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
@@ -89,7 +89,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
     
-    return "".join(txt), local_variable_db, get_state_router_info(routed_state_list, SMD)
+    return txt, local_variable_db, get_state_router_info(routed_state_list, SMD)
 
 def get_sorted_state_list(StateDict):
     """Sort the list in a away, so that states that are used more

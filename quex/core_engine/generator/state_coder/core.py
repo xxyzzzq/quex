@@ -73,9 +73,8 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
             return [] 
 
         else:
-            return [ acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                             transition.get_transition_to_terminal),
-                    "\n" ]
+            return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+                                                           transition.get_transition_to_terminal)
 
     elif SMD.backward_lexing_f():
         # When checking a pre-condition no dedicated terminal exists. However, when

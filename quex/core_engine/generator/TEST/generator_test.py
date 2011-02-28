@@ -317,7 +317,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     if not SecondModeF:  sm_name = "Mr"
     else:                sm_name = "Mrs"
 
-    txt += generator.do(PatternActionPairList, 
+    code = generator.do(PatternActionPairList, 
                         StateMachineName       = sm_name + "_UnitTest",
                         OnFailureAction        = PatternActionInfo(None, on_failure_action), 
                         EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
@@ -325,7 +325,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         StandAloneAnalyserF    = True, 
                         SupportBeginOfLineF    = support_begin_of_line_f)
 
-    return generator.delete_unused_labels(txt)
+    return txt + "".join(code)
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList,

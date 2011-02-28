@@ -84,6 +84,7 @@ import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_inf
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
 import quex.core_engine.generator.template_coder               as template_coder
+from   quex.core_engine.generator.languages.address            import Address, Reference
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 import quex.core_engine.state_machine.compression.paths        as paths 
@@ -136,7 +137,7 @@ def do(SMD, UniformOnlyF):
 
     transition_block.format_this(code)
 
-    return "".join(code), \
+    return code, \
            routed_state_index_list, \
            local_variable_db, \
            involved_state_index_list
@@ -440,7 +441,7 @@ def __state_entries(txt, PathWalker, routed_state_index_set, SMD):
             txt.append("    ")
             txt.append(LanguageDB["$assignment"]("path_iterator                 ", 
                                                  "path_%i + %i" % (path.index(), i)).replace("\n", "\n    "))
-            txt.append(LanguageDB["$goto"]("$entry", PathWalker.core().state_index))
+            txt.append(Reference("$goto", PathWalker.core().state_index))
             txt.append("\n\n")
 
             prev_state_index = state_index
@@ -477,7 +478,7 @@ def __path_walker(txt, PathWalker, SMD):
 
     if PathWalker.uniform_state_entries_f():
         txt.append("\n        ")
-        txt.append(LanguageDB["$goto"]("$entry", PathWalkerID))
+        txt.append(Reference("$goto", PathWalkerID))
         txt.append("\n    ")
         # else if ( *path_iterator == PTC ) { ... /* reached terminating zero */
         txt.append(LanguageDB["$elseif"] \

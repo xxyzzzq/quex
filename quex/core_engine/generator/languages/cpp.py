@@ -336,50 +336,6 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "#include <quex/code_base/temporary_macros_off>\n"
     return txt
 
-__terminal_state_str  = """
-    /* (*) Terminal states _______________________________________________________
-     *
-     * States that implement actions of the 'winner patterns.                     */
-
-    /* Lexeme setup: 
-     *
-     * There is a temporary zero stored at the end of each lexeme, if the action 
-     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
-     * zero terminated string.                                                    */
-
-#if defined(QUEX_OPTION_ASSERTS)
-#   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
-#   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
-#   define LexemeL      QUEX_NAME(access_LexemeL)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
-#   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
-#else
-#   define Lexeme       (me->buffer._lexeme_start_p)
-#   define LexemeBegin  (me->buffer._lexeme_start_p)
-#   define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
-#   define LexemeEnd    (me->buffer._input_p)
-#endif
-
-#define LexemeNull   (&QUEX_NAME(LexemeNullObject))
-
-$$SPECIFIC_TERMINAL_STATES$$
-
-$$TERMINAL_END_OF_STREAM-DEF$$
-$$END_OF_STREAM_ACTION$$
-     /* End of Stream causes a return from the lexical analyzer, so that no
-      * tokens can be filled after the termination token.                    */
-     RETURN;          
-
-$$TERMINAL_FAILURE-DEF$$ /* TERMINAL: FAILURE */
-$$FAILURE_ACTION$$
-     $$GOTO_START_PREPARATION$$
-
-#undef Lexeme
-#undef LexemeBegin
-#undef LexemeEnd
-#undef LexemeNull
-#undef LexemeL
-"""
-
 __terminal_router_str = """
     __quex_assert_no_passage(); 
 __TERMINAL_ROUTER: 
@@ -407,6 +363,50 @@ $$JUMPS_TO_ACCEPTANCE_STATE$$
     }
 #   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 """
+__terminal_state_prolog  = """
+    /* (*) Terminal states _______________________________________________________
+     *
+     * States that implement actions of the 'winner patterns.                     */
+
+    /* Lexeme setup: 
+     *
+     * There is a temporary zero stored at the end of each lexeme, if the action 
+     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
+     * zero terminated string.                                                    */
+
+#if defined(QUEX_OPTION_ASSERTS)
+#   define Lexeme       QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeBegin  QUEX_NAME(access_Lexeme)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeL      QUEX_NAME(access_LexemeL)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#   define LexemeEnd    QUEX_NAME(access_LexemeEnd)((const char*)__FILE__, (size_t)__LINE__, &me->buffer)
+#else
+#   define Lexeme       (me->buffer._lexeme_start_p)
+#   define LexemeBegin  (me->buffer._lexeme_start_p)
+#   define LexemeL      ((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))
+#   define LexemeEnd    (me->buffer._input_p)
+#endif
+
+#define LexemeNull      (&QUEX_NAME(LexemeNullObject))
+"""
+
+__terminal_state_epilog = """
+$$TERMINAL_END_OF_STREAM-DEF$$
+$$END_OF_STREAM_ACTION$$
+     /* End of Stream causes a return from the lexical analyzer, so that no
+      * tokens can be filled after the termination token.                    */
+     RETURN;          
+
+$$TERMINAL_FAILURE-DEF$$ /* TERMINAL: FAILURE */
+$$FAILURE_ACTION$$
+     $$GOTO_START_PREPARATION$$
+
+#undef Lexeme
+#undef LexemeBegin
+#undef LexemeEnd
+#undef LexemeNull
+#undef LexemeL
+"""
+
 
 __on_continue_reentry_preparation_str = """
   
@@ -481,7 +481,6 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     state_machine                  = SMD.sm()
     DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
 
-    txt         = ""
     variable_db = {}
 
     state_machine_id_str = __nice(state_machine_id)
@@ -500,12 +499,14 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     safe_pattern = safe_pattern.replace("\\r", "\\\\r")
     safe_pattern = safe_pattern.replace("\\a", "\\\\a")
     safe_pattern = safe_pattern.replace("\\v", "\\\\v")
-    txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
-    txt += "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern)
-    txt += "    " + LanguageDB["$input/increment"] + "\n"
-
-    txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
-    txt += "    __quex_debug(\"* terminal %i:   %s\");" % (state_machine_id, safe_pattern)
+    txt = [
+            Address("$terminal", state_machine_id,
+                      "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern) \
+                    + "    " + LanguageDB["$input/increment"] + "\n"),
+            Address("$terminal-direct", state_machine_id), 
+            "\n",
+            "    __quex_debug(\"* terminal %i:   %s\");" % (state_machine_id, safe_pattern),
+    ]
 
     # (1) Retrieving the input position for the next run
     #     -- Terminal states can be reached directly, so that the input position
@@ -524,28 +525,46 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         #    pattern. However, after a match a backward detection of the end
         #    of the core pattern is done. Here, we first need to go to the point
         #    where the 'normal' pattern ended, then we can do a backward detection.
-        txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
-               __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
+        txt.append("    PAPC_input_postion_backward_detector_%s(me);\n" % \
+                   __nice(state_machine.core().post_context_backward_input_position_detector_sm_id()))
 
     elif state_machine.core().post_context_id() != -1L: 
         post_condition_index = SMD.get_post_context_index(state_machine_id)
         # Post Contexted Patterns:
         # -- have a dedicated register from where they store the end of the core pattern.
         variable = "post_context_start_position[%s]" % __nice(post_condition_index) 
-        txt += "    " + LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
-                                               (__nice(post_condition_index), __nice(state_machine_id))) + "\n"
-        txt += "    " + LanguageDB["$input/seek_position"](variable) + "\n"
+        txt.append("    ")
+        txt.append(LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
+                                               (__nice(post_condition_index), __nice(state_machine_id))))
+        txt.append("\n    ")
+        txt.append(LanguageDB["$input/seek_position"](variable))
+        txt.append("\n")
 
     else:
         # Normal Acceptance:
         pass
 
     # -- paste the action code that correponds to the pattern   
-    txt += action_code + "\n"    
-    txt += "    " + LanguageDB["$goto"]("$re-start") + "\n" 
-    txt += "\n"
+    txt.append(action_code)
+    txt.append("\n")
+    txt.append("    ")
+    txt.append(LanguageDB["$goto"]("$re-start"))
+    txt.append("\n\n")
 
     return txt, variable_db
+
+def __terminal_on_failure_prolog(LanguageDB):
+    return [
+        "me->buffer._input_p = me->buffer._lexeme_start_p;\n",
+        LanguageDB["$if"], LanguageDB["$EOF"], LanguageDB["$then"], "\n",
+        "    ", LanguageDB["$comment"]("Next increment will stop on EOF character."), "\n",
+        LanguageDB["$endif"], "\n",
+        LanguageDB["$else"], "\n",
+        "    ", LanguageDB["$comment"]("Step over nomatching character"), "\n",
+        "    ", LanguageDB["$input/increment"], "\n",
+        LanguageDB["$endif"], "\n",
+    ]
+
 
 def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction, 
                       SupportBeginOfLineF, PreConditionIDList, LanguageDB):
@@ -558,46 +577,32 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     DirectlyReachedTerminalID_List     = SMD.directly_reached_terminal_id_list()
 
     # (*) specific terminal states of patterns (entered from acceptance states)
-    txt = ""
+    specific_terminal_states = []
     variable_db = {}
     for state_machine_id, pattern_action_info in action_db.items():
         code, db = get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
-        txt += code
+
         variable_db.update(db)
-    specific_terminal_states_str = txt
+        specific_terminal_states.extend(code)
 
     # (*) general terminal state (entered from non-acceptance state)    
-    # terminal_state_idx_list = sorted(action_db.keys())
-    # lowest_terminal_id      = terminal_state_idx_list[0]
-    # def binary_bracket(IdxList):
-    #     L = len(IdxList)
-    #     Middle = L / 2
-    #     if L > 1: 
-    #         return "    " + "if( last_acceptance < %i ) {\n" % Middle + \
-    #                "    " +     binary_bracket(IdxList[:Middle]) + \
-    #                "    " + "} else {\n" + \
-    #                "    " +     binary_bracket(IdxList[Middle:]) + \
-    #                "    " + "}\n"
-    #     else:
-    #         if IdxList[0] == lowest_terminal_id:
-    #             return "    " + LanguageDB["$goto"]("$terminal-FAILURE")]
-    #         else:
-    #             return "    " + "goto TERMINAL_%i;\n" % IdxList[0]
-    # jumps_to_acceptance_states_str = binary_bracket(terminal_state_idx_list)
-                          
-    txt = ""    
+    # 
+    #     NOTE: Since the exceptance terminals are very close to each other
+    #           with their 'ID', the switch statement is most likely
+    #           faster then binary bracketing.
+    jumps_to_acceptance_states = []
     for state_machine_id in action_db.keys():
         label_id = get_address("$terminal-direct", state_machine_id)
-        txt += "        case %i: " % label_id
-        txt += LanguageDB["$goto"]("$terminal-direct", state_machine_id) + "\n"
-    jumps_to_acceptance_states_str = txt
+        jumps_to_acceptance_states.append("        case %i: " % label_id)
+        jumps_to_acceptance_states.append(LanguageDB["$goto"]("$terminal-direct", state_machine_id))
+        jumps_to_acceptance_states.append("\n")
 
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
-    txt = ""
+    delete_pre_context_flags = []
     for pre_context_sm_id in PreConditionIDList:
-        txt += "    " + LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0)
-    delete_pre_context_flags_str = txt
+        delete_pre_context_flags.append("    ")
+        delete_pre_context_flags.append(LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0))
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
@@ -612,66 +617,46 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
-    on_failure_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
-    on_failure_str += LanguageDB["$if"] + LanguageDB["$EOF"] + LanguageDB["$then"] + "\n"
-    on_failure_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
-    on_failure_str += LanguageDB["$endif"] + "\n"
-    on_failure_str += LanguageDB["$else"] + "\n"
-    on_failure_str += "    " + LanguageDB["$comment"]("Step over nomatching character") + "\n"
-    on_failure_str += "    " + LanguageDB["$input/increment"] + "\n"
-    on_failure_str += LanguageDB["$endif"] + "\n"
+    on_failure = __terminal_on_failure_prolog(LanguageDB)
+    msg, db    = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
 
-
-    msg, db = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
-    on_failure_str += msg
     variable_db.update(db)
-
-    if False:
-        # TO BE DELETED ____________________________________________________________________________________
-        # -- routing to states via switch statement
-        #    (note, the gcc computed goto is implement, too)
-        txt = ""
-        for state_index, state in sm.states.items():
-            if state.transitions().is_empty(): continue
-            txt += "            "
-            txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
-
-        if sm.core().pre_context_sm() != None:
-            for state_index, state in sm.core().pre_context_sm().states.items():
-                if state.transitions().is_empty(): continue
-                txt += "            "
-                txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
-
-        switch_cases_drop_out_back_router_str = txt
-        # TO BE DELETED ____________________________________________________________________________________
+    on_failure.append(msg)
 
     if PreConditionIDList == []: precondition_involved_f = "0"
     else:                        precondition_involved_f = "1"
 
-    txt = blue_print(__terminal_router_str,
-            [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
-             ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
-             ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-             ["$$TERMINAL_FAILURE$$",             LanguageDB["$label"]("$terminal-FAILURE")],
-            ])
+    router = blue_print(__terminal_router_str,
+             [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    "".join(jumps_to_acceptance_states)],   
+              ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
+              ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
+              ["$$TERMINAL_FAILURE$$",             LanguageDB["$label"]("$terminal-FAILURE")],
+             ])
                      
-    txt += blue_print(__terminal_state_str, 
-            [["$$SPECIFIC_TERMINAL_STATES$$",        specific_terminal_states_str],
-                ["$$FAILURE_ACTION$$",               on_failure_str],
-                ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
-                ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
-                ["$$TERMINAL_FAILURE-DEF$$",         LanguageDB["$label-def"]("$terminal-FAILURE")],
-                ["$$STATE_MACHINE_NAME$$",           SMD.name()],
-                ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],
-                ])
+    epilog = blue_print(__terminal_state_epilog, 
+             [
+              ["$$FAILURE_ACTION$$",             "".join(on_failure)],
+              ["$$END_OF_STREAM_ACTION$$",       end_of_stream_code_action_str],
+              ["$$TERMINAL_END_OF_STREAM-DEF$$", LanguageDB["$label-def"]("$terminal-EOF")],
+              ["$$TERMINAL_FAILURE-DEF$$",       LanguageDB["$label-def"]("$terminal-FAILURE")],
+              ["$$STATE_MACHINE_NAME$$",         SMD.name()],
+              ["$$GOTO_START_PREPARATION$$",     LanguageDB["$goto"]("$re-start")],
+             ])
 
-    txt += blue_print(__on_continue_reentry_preparation_str,
-                      [["$$REENTRY_PREPARATION$$",                    LanguageDB["$label-def"]("$re-start")],
-                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  delete_pre_context_flags_str],
-                       ["$$GOTO_START$$",                             LanguageDB["$goto"]("$start")],
-                       ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
-                       ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-                       ])
+    reentry_preparation = blue_print(__on_continue_reentry_preparation_str,
+                          [["$$REENTRY_PREPARATION$$",                    LanguageDB["$label-def"]("$re-start")],
+                           ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  "".join(delete_pre_context_flags)],
+                           ["$$GOTO_START$$",                             LanguageDB["$goto"]("$start")],
+                           ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
+                           ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
+                          ])
+
+    txt = []
+    txt.append(router)
+    txt.append(__terminal_state_prolog)
+    txt.extend(specific_terminal_states)
+    txt.append(epilog)
+    txt.append(reentry_preparation)
 
     return txt, variable_db
     
