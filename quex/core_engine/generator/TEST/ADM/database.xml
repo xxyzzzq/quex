@@ -1,6 +1,6 @@
-<test-database execution-time-sec="255.59" date="Mon Feb 28 22:33:50 2011">
+<test-database execution-time-sec="255.59" date="Mon Feb 28 22:41:57 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Basic Path Compression Test" time-sum-sec="0.27"> 
+    <test title="Basic Path Compression Test" time-sum-sec="0.28"> 
         <application file-name="test-paths.py" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="Single" result="FAIL" time_sec="0.06" crc="1468175842"/>
@@ -27,13 +27,13 @@
             <application file-name="test-backward_loading.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.51" crc="-1584767564"/>
-               <choice name="ANSI-C" result="FAIL" time_sec="0.51" crc="-1584767564"/>
-               <choice name="Cpp" result="FAIL" time_sec="0.83" crc="-1584767564"/>
+               <choice name="ANSI-C" result="OK" time_sec="0.51" crc="-1584767564"/>
+               <choice name="Cpp" result="OK" time_sec="0.83" crc="-1584767564"/>
                <choice name="Cpp-Template" result="OK" time_sec="0.83" crc="-1584767564"/>
                <choice name="Cpp-Path" result="OK" time_sec="0.83" crc="-1584767564"/>
                <choice name="Cpp-PathUniform" result="OK" time_sec="0.86" crc="-1584767564"/>
-               <choice name="Cpp-ASSERTS" result="FAIL" time_sec="0.83" crc="-1584767564"/>
-               <choice name="ANSI-C-ASSERTS" result="FAIL" time_sec="0.51" crc="-1584767564"/>
+               <choice name="Cpp-ASSERTS" result="OK" time_sec="0.83" crc="-1584767564"/>
+               <choice name="ANSI-C-ASSERTS" result="OK" time_sec="0.51" crc="-1584767564"/>
                <choice name="Cpp-Path-CG" result="OK" time_sec="0.83" crc="-1584767564"/>
                <choice name="ANSI-C-CG" result="OK" time_sec="0.52" crc="-1584767564"/>
                <choice name="Cpp-PathUniform-CG" result="OK" time_sec="0.93" crc="-1584767564"/>
@@ -266,7 +266,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="8.44"> 
+        <test title="Part II" time-sum-sec="8.43"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.54" crc="1614045300"/>
@@ -282,7 +282,7 @@
                <choice name="Cpp-Template-CG" result="OK" time_sec="0.87" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="7.88"> 
+        <test title="Part I" time-sum-sec="7.87"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="11" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.49" crc="1455270"/>

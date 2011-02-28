@@ -83,6 +83,8 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
             routed_state_list.add(drop_out_address)
         if SMD.forward_lexing_f():
             routed_state_list.add(transition.get_index(state_index, SMD))
+        elif SMD.backward_lexing_f():
+            routed_state_list.add(transition.get_index(state_index, SMD))
 
         # Some states are not coded (some dead end states)
         if len(state_code) == 0: continue
