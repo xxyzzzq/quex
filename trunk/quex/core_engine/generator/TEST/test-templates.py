@@ -63,7 +63,7 @@ else:
 
 x = coder._do([combination], DSM)
 
-state_router_txt = state_router.do(__get_state_router_info(x[2], None))
+state_router_txt = "".join(state_router.do(__get_state_router_info(x[2], None)))
 
 print "--(Transition Targets)--------------------------------------------------"
 print
