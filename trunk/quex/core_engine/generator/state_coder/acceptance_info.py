@@ -86,7 +86,7 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
 
         return info
 
-    txt.append(get_acceptance_detector(OriginList, __on_detection_code))
+    txt.extend(get_acceptance_detector(OriginList, __on_detection_code))
 
     return txt
 
@@ -213,10 +213,6 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
 
     LanguageDB = Setup.language_db
 
-    def indent_this(Fragment):
-        # do not replace the last '\n' with '\n    '
-        return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
-
     txt       = []
     debug_txt = []
     first_if_statement_f         = True
@@ -228,18 +224,28 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         info = get_on_detection_code_fragment(origin)
 
         if origin.pre_context_id() != -1L:
+            txt.append(1)
             if first_if_statement_f: txt.append(LanguageDB["$if pre-context"](origin.pre_context_id()))
             else:                    txt.append(LanguageDB["$elseif pre-context"](origin.pre_context_id()))
-            txt.append(indent_this(info))
-            txt.append("\n" + LanguageDB["$endif"])
+            txt.append(2)
+            txt.append(info)
+            txt.append("\n")
+            txt.append(1)
+            txt.append(LanguageDB["$endif"])
+            debug_txt.append(1)
             debug_txt.append("__quex_debug2(\"pre condition %i: %%s\", "         % origin.pre_context_id() + \
                              "pre_context_%i_fulfilled_f ? \"yes\" : \"no\");\n" % origin.pre_context_id())
         
         elif origin.pre_context_begin_of_line_f():
+            txt.append(1)
             if first_if_statement_f: txt.append(LanguageDB["$if begin-of-line"])
             else:                    txt.append(LanguageDB["$elseif begin-of-line"])
-            txt.append(indent_this(info))
-            txt.append("\n" + LanguageDB["$endif"] )
+            txt.append(1)
+            txt.append(info)
+            txt.append("\n")
+            txt.append(1)
+            txt.append(LanguageDB["$endif"])
+            debug_txt.append(1)
             debug_txt.append("__quex_debug2(\"begin of line pre-context: %%s\", " + \
                              "me->buffer._character_before_lexeme_start ? \"yes\" : \"no\");\n")
         
@@ -248,10 +254,14 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
                 txt.append(info)
             else:
                 # if an 'if' statements preceeded, the acceptance needs to appear in an else block
+                txt.append(1)
                 txt.append(LanguageDB["$else"])
                 txt.append("\n")
-                txt.append(indent_this(info))
-                txt.append("\n" + LanguageDB["$endif"])
+                txt.append(2)
+                txt.append(info)
+                txt.append("\n")
+                txt.append(1)
+                txt.append(LanguageDB["$endif"])
             unconditional_case_treated_f = True
             break  # no need for further pre-condition consideration
 
@@ -260,9 +270,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
     if unconditional_case_treated_f == False:
         txt.append(get_on_detection_code_fragment(None))
 
-    result = "".join(debug_txt + txt)
-    if len(result) == 0: return ""
-    else:                return "    " + result[:-1].replace("\n", "\n    ") + result[-1]
+    return debug_txt + txt
 
 def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
     """For the 'longest match' approach it is generally necessary to store the last

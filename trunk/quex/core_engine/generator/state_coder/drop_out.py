@@ -12,19 +12,9 @@ $$LABEL_DIRECT$$
 $$GOTO_TERMINAL$$
 """
 
-normal_reload_template = """
-$$LABEL$$
-    QUEX_GOTO_RELOAD($$DIRECTION$$, $$STATE_INDEX$$, $$TERMINAL$$);
-"""
-
 init_drop_out_template = """
 $$LABEL_DIRECT$$
 $$GOTO_FAILURE$$
-"""
-
-init_reload_template = """
-$$LABEL$$
-    goto __RELOAD_INIT_STATE;
 """
 
 def do(State, StateIdx, SMD):
@@ -104,36 +94,27 @@ def do(State, StateIdx, SMD):
 
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
-        txt = blue_print(init_drop_out_template,
-                         [
-                          ["$$LABEL_DIRECT$$",       LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
-                          ["$$GOTO_FAILURE$$",       "    " + LanguageDB["$goto"]("$terminal-FAILURE")],
-                         ])
+        txt = [
+                 LanguageDB["$label-def"]("$drop-out-direct", StateIdx), "\n"
+                 "    ", LanguageDB["$goto"]("$terminal-FAILURE"),
+              ]
 
     else:
+        txt = [ LanguageDB["$label-def"]("$drop-out-direct", StateIdx), "\n" ]
         if SMD.forward_lexing_f(): 
-            goto_terminal_str = __get_forward_goto_terminal_str(State, StateIdx, SMD.sm())
+            txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
         else:
-            goto_terminal_str = "    " + LanguageDB["$goto"]("$terminal-general-bw")
+            txt.append("    ")
+            txt.append(LanguageDB["$goto"]("$terminal-general-bw"))
 
-        txt = blue_print(normal_drop_out_template,
-                         [
-                          ["$$LABEL_DIRECT$$",    LanguageDB["$label-def"]("$drop-out-direct", StateIdx)],
-                          ["$$GOTO_TERMINAL$$",   goto_terminal_str], 
-                         ])
-
-    # txt += LanguageDB["$label-def"]("$reload", StateIdx) + "\n"
-    # txt += get_transition_to_reload(StateIdx, SMD, StateIndexStr)
-
-    # -- in case of the init state, the end of file has to be checked.
-    return [ txt ]
+    return txt
 
 def __goto_terminal(Origin):
     global LanguageDB 
     # Case if no un-conditional acceptance, the goto general terminal
     if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
     assert Origin.is_acceptance()
-    return "    " + LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+    return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
@@ -143,10 +124,10 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return "    goto __TERMINAL_ROUTER;"
+        return ["    goto __TERMINAL_ROUTER;"]
 
     elif not state.is_acceptance():
-        return "    goto __TERMINAL_ROUTER;"
+        return ["    goto __TERMINAL_ROUTER;"]
 
     else:
         # -- acceptance state drop outs

@@ -1,5 +1,5 @@
 from quex.input.setup import setup as Setup
-from quex.core_engine.generator.languages.address import get_address
+from quex.core_engine.generator.languages.address import get_address, Address, Reference
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
@@ -29,7 +29,6 @@ def get_transition_to_drop_out(CurrentStateIdx, ReloadF):
 def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     LanguageDB = Setup.language_db
 
-    
     if SMD != None and SMD.backward_lexing_f(): direction = "BACKWARD"
     else:                                       direction = "FORWARD"
 
@@ -48,14 +47,19 @@ def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
         return ""
 
 def get_transition_to_terminal(Origin):
+    LanguageDB = Setup.language_db
+
     # No unconditional case of acceptance 
     if type(Origin) == type(None): 
-        LanguageDB = Setup.language_db
         return LanguageDB["$goto-last_acceptance"]
 
     assert Origin.is_acceptance()
-    LanguageDB = Setup.language_db
-    return LanguageDB["$goto-pure"](get_label_of_terminal(Origin))
+    # The seek for the end of the core pattern is part of the 'normal' terminal
+    # if the terminal 'is' a post conditioned pattern acceptance.
+    if Origin.post_context_id() == -1:
+        return Reference("$goto", get_address("$terminal", Origin.state_machine_id))
+    else:
+        return Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id))
 
 def __get_transition_to_dead_end_state(TargetStateIndex, SMD):
     LanguageDB = Setup.language_db
@@ -135,8 +139,8 @@ def __get_label_of_dead_end_state(TargetStateIdx, SMD):
     dead_end_target_state     = SMD.dead_end_state_db()[TargetStateIdx]
 
     assert dead_end_target_state.is_acceptance(), \
-           "NON-ACCEPTANCE dead end detected during code generation!\n" + \
-           "A dead end that is not deleted must be an ACCEPTANCE dead end. See\n" + \
+           "NON-ACCEPTANCE dead end detected during code generation!\n"                 + \
+           "A dead end that is not deleted must be an ACCEPTANCE dead end. See\n"       + \
            "state_machine.dead_end_analyzis.py and generator.state_machine_coder.py.\n" + \
            "If this is not the case, then something serious went wrong. A transition\n" + \
            "to a non-acceptance dead end is to be translated into a drop-out."
