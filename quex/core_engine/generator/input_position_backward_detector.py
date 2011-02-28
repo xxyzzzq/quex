@@ -20,7 +20,6 @@ QUEX_INLINE void
 PAPC_input_postion_backward_detector_$$ID$$(QUEX_TYPE_ANALYZER* me) 
 {
 $$LOCAL_VARIABLES$$
-$$STATE_MACHINE$$
 $$FUNCTION_BODY$$ 
 }
 #include <quex/code_base/temporary_macros_off>
@@ -36,21 +35,24 @@ def do(sm, LanguageDB):
 
     function_body, variable_db, routed_state_info_list = state_machine_coder.do(decorated_state_machine)
 
-    sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if Setup.comment_state_machine_transitions_f: 
-        analyzer_code += Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
-                                                          sm.get_string(NormalizeF=False)            + \
-                                                          "\nEND: BACKWARD DETECTOR STATE MACHINE")
-        analyzer_code += "\n"
+        comment = Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
+                                                   sm.get_string(NormalizeF=False)            + \
+                                                   "\nEND: BACKWARD DETECTOR STATE MACHINE")
+        function_body.append(comment)
+        fnuction_body.append("\n")
 
-    # Backward detection does not need reload. Thus, it does not need a state router.
     if len(routed_state_info_list) != 0:
-        function_body += state_router.do(routed_state_info_list)
+        function_body.extend(state_router.do(routed_state_info_list))
+        variable_db["target_state_index"] = ["QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_CHARACTER)(0x00)"]
 
     # -- input position detectors simply the next 'catch' and return
-    function_body += LanguageDB["$label-def"]("$terminal-general-bw") + "\n"
-    function_body += LanguageDB["$input/seek_position"]("end_of_core_pattern_position") + "\n"
-    function_body += LanguageDB["$input/increment"] + "\n"
+    function_body.append(LanguageDB["$label-def"]("$terminal-general-bw"))
+    function_body.append("\n")
+    function_body.append(LanguageDB["$input/seek_position"]("end_of_core_pattern_position"))
+    function_body.append("\n")
+    function_body.append(LanguageDB["$input/increment"])
+    function_body.append("\n")
 
     variable_db.update({
          "input":                        ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x0)"],
@@ -58,13 +60,13 @@ def do(sm, LanguageDB):
          # "target_state_else_index":     ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
          # "target_state_index":          ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
     })
+
     variables_txt = LanguageDB["$local-variable-defs"](variable_db)
 
     return blue_print(function_str, 
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
-                       ["$$FUNCTION_BODY$$",   function_body],
+                       ["$$FUNCTION_BODY$$",   "".join(function_body)],
                        ["$$LOCAL_VARIABLES$$", variables_txt],
-                       ["$$STATE_MACHINE$$",   sm_str],
                       ])
 
 

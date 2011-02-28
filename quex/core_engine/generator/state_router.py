@@ -8,8 +8,8 @@ def do(StateRouterInfoList):
     LanguageDB = Setup.language_db
 
     txt = [
-            "#ifndef QUEX_OPTION_COMPUTED_GOTOS\n",
-            "__quex_assert(false);\n"
+            "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n",
+            "    __quex_assert_no_passage();\n"
             "__STATE_ROUTER:\n",
             "    switch( target_state_index ) {\n",
     ]
@@ -25,7 +25,7 @@ def do(StateRouterInfoList):
     txt.append("\n")
     txt.append("        default: QUEX_ERROR_EXIT(\"State router: unknown index.\");\n")
     txt.append("    }\n")
-    txt.append("#endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
+    txt.append("#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
 
-    return "".join(txt)
+    return txt
 

@@ -1,21 +1,11 @@
 import quex.core_engine.state_machine.core                    as state_machine
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
-from   quex.core_engine.generator.languages.core              import get_address
+from   quex.core_engine.generator.languages.core              import get_address, Reference
 
 from   quex.input.setup            import setup as Setup
 from   quex.frs_py.string_handling import blue_print
 
 LanguageDB = None
-
-normal_drop_out_template = """
-$$LABEL_DIRECT$$
-$$GOTO_TERMINAL$$
-"""
-
-init_drop_out_template = """
-$$LABEL_DIRECT$$
-$$GOTO_FAILURE$$
-"""
 
 def do(State, StateIdx, SMD):
     """There are two reasons for drop out:
@@ -114,11 +104,11 @@ def __goto_terminal(Origin):
     # Case if no un-conditional acceptance, the goto general terminal
     if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
     assert Origin.is_acceptance()
-    return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+    return Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id))
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
-    assert isinstance(SM, state_machine.StateMachine)
+    assert isinstance(SM,    state_machine.StateMachine)
     global LanguageDB 
 
     # (1) non-acceptance state drop-outs

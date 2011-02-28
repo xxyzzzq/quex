@@ -139,7 +139,7 @@ class Generator(GeneratorBase):
         routed_state_info_list.extend(state_info_list)
 
         if len(routed_state_info_list) != 0:
-            function_body.append(state_router.do(routed_state_info_list))
+            function_body.extend(state_router.do(routed_state_info_list))
 
         function_body = straighten_labels_and_references(function_body)
 
@@ -232,8 +232,8 @@ def DELETED_delete_unused_labels(Code):
     #   'nothing_labels'       -- labels that can be replaced by nothing.
     #   'computed_goto_labels' -- labels that must be replaced by conditional compilation
     nothing_label_list, computed_goto_label_list = languages.label_db_marker_get_unused_label_list()
-    print "##nl", nothing_label_list
-    print "##gl", computed_goto_label_list
+    ## print "##nl", nothing_label_list
+    ## print "##gl", computed_goto_label_list
 
     # (1) Replace labels that are not used at all.
     result = delete_unused_labels_FAST(code, nothing_label_list)

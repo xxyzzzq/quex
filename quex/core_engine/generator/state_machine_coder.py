@@ -75,11 +75,13 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         state_code = state_coder.do(state, state_index, SMD)
 
         # Even 'dead-end-states' need possibly be routed.
-        routed_state_list.add(state_index)
+        # routed_state_list.add(state_index)
+        print "##state", state_index, SMD.forward_lexing_f(), SMD.backward_lexing_f(), SMD.dead_end_state_db().has_key(state_index)
 
-        if   not SMD.dead_end_state_db().has_key(state_index): 
-            routed_state_list.add(get_address("$drop-out-direct", state_index))
-        elif SMD.forward_lexing_f():
+        if not SMD.dead_end_state_db().has_key(state_index): 
+            drop_out_address = get_address("$drop-out-direct", state_index)
+            routed_state_list.add(drop_out_address)
+        if SMD.forward_lexing_f():
             routed_state_list.add(transition.get_index(state_index, SMD))
 
         # Some states are not coded (some dead end states)

@@ -151,5 +151,6 @@ class Reference:
         """
         self.label = Arg
         self.code  = { 
-            "$goto":  "goto %s;\n" % _pure_position(self.label),
+            "$goto":      "goto %s;\n"     % _pure_position(self.label),
+            "$reference": "QUEX_LABEL(%s)" % _pure_position(self.label),
         }[Type]
