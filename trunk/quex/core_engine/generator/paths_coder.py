@@ -567,7 +567,8 @@ def __end_state_router(txt, PathWalker, SMD):
     if PathN == 1:
         # (i) There is only one path for the pathwalker, then there is only
         #     one terminal and it is determined at compilation time.
-        txt.append("\n        " + transition.get_transition_to_state(PathList[0].end_state_index(), SMD))
+        txt.append("\n        ")
+        txt.append(transition.get_transition_to_state(PathList[0].end_state_index(), SMD))
         txt.append("\n")
         routed_state_index_list = []
     else:

@@ -36,6 +36,11 @@ else:
     SHOW_TRANSITIONS_STR  = "-DQUEX_OPTION_DEBUG_SHOW "  
     SHOW_BUFFER_LOADS_STR = "-DQUEX_OPTION_DEBUG_SHOW_LOADS"
 
+# Switch: Turn off some warnings
+if True:
+    IGNORE_WARNING_F = True
+else:
+    IGNORE_WARNING_F = False
 
 choices_list = ["ANSI-C-PlainMemory", "ANSI-C", "ANSI-C-CG", 
                 "Cpp", "Cpp_StrangeStream", "Cpp-Template", "Cpp-Template-CG", 
@@ -182,12 +187,13 @@ def run_this(Str):
                or line.find("but never defined") != -1 \
                or line.find("At top level") != -1 \
                or line.find("t global scope") != -1 \
-               or     (line.find("warning: unused variable") != -1 )          \
-                  and ((line.find("path_") != -1 and not line.find("_end")) or line.find("pathwalker_") != -1) \
+               or (     (line.find("warning: unused variable") != -1 )                                           \
+                   and ((line.find("path_") != -1 and not line.find("_end")) or line.find("pathwalker_") != -1)) \
                or (line.find("In function") != -1 and line.lower().find("error") == -1):
-                postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
-            else:
-                print line
+                    if IGNORE_WARNING_F: 
+                        postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
+                        continue
+            print line
         for line in postponed_list:
             print line
         os.remove("tmp.out")
@@ -325,6 +331,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         StandAloneAnalyserF    = True, 
                         SupportBeginOfLineF    = support_begin_of_line_f)
 
+    for elm in code:
+        if type(elm) != str: 
+            print "##", type(elm), elm.__class__.__name__, elm
     return txt + "".join(code)
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
@@ -486,6 +495,9 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
             ml_txt += "        if( input == %i ) break;\n" % character
     else:
         ml_txt += "    break;\n"
+
+    if type(SourceCode) == list:
+        SourceCode = generator._get_propper_text(SourceCode)
 
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),

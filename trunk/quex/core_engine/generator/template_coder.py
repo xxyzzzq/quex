@@ -252,14 +252,14 @@ class TemplateTarget(transition_block.TriggerAction):
 
         if not self.recursive():
             label = "template_%i_target_%i[template_state_key]" % (self.template_index, self.target_index)
-            return LanguageDB["$goto-state"](label)
+            return [ LanguageDB["$goto-state"](label) ]
 
         elif not self.uniform_state_entries_f():
             label = "template_%i_map_state_key_to_state_index[template_state_key]" % self.template_index
-            return LanguageDB["$goto-state"](label)
+            return [ LanguageDB["$goto-state"](label) ]
 
         else:
-            return LanguageDB["$goto"]("$entry", self.template_index)
+            return [ LanguageDB["$goto"]("$entry", self.template_index) ]
 
     def is_drop_out(self):
         return False

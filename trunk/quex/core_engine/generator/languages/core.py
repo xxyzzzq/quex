@@ -131,8 +131,6 @@ db["C++"] = {
     "$terminal-code":        cpp.__terminal_states,      
     "$compile-option":       lambda option: "#define %s\n" % option,
     "$assignment":           lambda variable, value: "%s = %s;\n" % (variable, value),
-    "$set-last_acceptance":  lambda PatternIndex: \
-                             cpp.__set_last_acceptance(PatternIndex, __label_used_in_computed_goto_list_unique),
     "$goto-last_acceptance": "QUEX_GOTO_TERMINAL(last_acceptance);\n",
     #
     "$header-definitions":   cpp.__header_definitions,

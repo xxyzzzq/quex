@@ -24,7 +24,6 @@ def trim(Str):
         else:        return Str[i:-k + 1]
     else:            return Str[i:]
 
-
 def blue_print(BluePrintStr, Replacements, CommonStart="$"):
     """Takes a string acting as blue print and replaces all
        replacements of the form r in Replacements:
@@ -48,7 +47,12 @@ def blue_print(BluePrintStr, Replacements, CommonStart="$"):
         i = txt.find(CommonStart, prev_end)
         if i == -1: 
             result.append(txt[prev_end:])
-            return "".join(result)
+            try:    
+                return "".join(result)
+            except: 
+                for original, replacement in Replacements:
+                    print "##", original, "  ->  ", repr(replacement.__class__.__name__)
+                assert False
 
         for orig, replacement in Replacements:
             assert orig[0] == CommonStart[0]
@@ -64,8 +68,6 @@ def blue_print(BluePrintStr, Replacements, CommonStart="$"):
             result.append(txt[prev_end:i+1])
             prev_end  = i + 1
             pass
-
-
 
 def tex_safe(Str):
 

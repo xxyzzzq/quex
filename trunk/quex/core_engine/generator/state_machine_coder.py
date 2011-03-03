@@ -3,7 +3,7 @@ from copy import deepcopy
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 import quex.core_engine.generator.languages.core         as languages
-from   quex.core_engine.generator.languages.address      import get_address
+from   quex.core_engine.generator.languages.address      import get_address, Reference
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.generator.template_coder         as template_coder
@@ -74,13 +74,10 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         # Get the code for the state
         state_code = state_coder.do(state, state_index, SMD)
 
-        # Even 'dead-end-states' need possibly be routed.
-        # routed_state_list.add(state_index)
-        print "##state", state_index, SMD.forward_lexing_f(), SMD.backward_lexing_f(), SMD.dead_end_state_db().has_key(state_index)
-
         if not SMD.dead_end_state_db().has_key(state_index): 
             drop_out_address = get_address("$drop-out-direct", state_index)
             routed_state_list.add(drop_out_address)
+
         if SMD.forward_lexing_f():
             routed_state_list.add(transition.get_index(state_index, SMD))
         elif SMD.backward_lexing_f():
@@ -92,6 +89,11 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.append("\n")
         txt.extend(state_code)
         txt.append("\n")
+
+    # Determine the terminals that are referred by 'set-last_acceptance'
+    for elm in txt:
+        if isinstance(elm, Reference) and elm.reference_type == "$set-last_acceptance":
+            routed_state_list.add(elm.label)
     
     return txt, local_variable_db, get_state_router_info(routed_state_list, SMD)
 

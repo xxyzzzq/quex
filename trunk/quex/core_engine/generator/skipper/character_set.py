@@ -17,7 +17,7 @@ def do(Data):
 
     return txt, db
 
-template_str = """
+prolog_txt = """
     $$DELIMITER_COMMENT$$
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
@@ -32,8 +32,9 @@ $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 STATE_$$SKIPPER_INDEX$$_LOOP:
     $$INPUT_GET$$ 
 $$LC_COUNT_IN_LOOP$$
-$$ON_TRIGGER_SET_TO_LOOP_START$$
+"""
 
+epilog_txt = """
 $$DROP_OUT_DIRECT$$
 $$LC_COUNT_END_PROCEDURE$$
     /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
@@ -88,48 +89,52 @@ def get_skipper(TriggerSet):
     transition_map.add_transition(TriggerSet, skipper_index)
     # On buffer limit code, the skipper must transit to a dedicated reloader
 
-    iteration_code = "".join(transition_block.do(transition_map.get_trigger_map(), 
-                                                 skipper_index, 
-                                                 DSM=None, 
-                                                 GotoReload_Str=LanguageDB["$goto"]("$reload", skipper_index)))
-
-    # iteration_code += transition.get_transition_to_drop_out(skipper_index, ReloadF=False)
+    iteration_code = transition_block.do(transition_map.get_trigger_map(), 
+                                         skipper_index, 
+                                         DSM=None, 
+                                         GotoReload_Str=LanguageDB["$goto"]("$reload", skipper_index))
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 
     # Line and column number counting
-    code_str = __lc_counting_replacements(template_str, TriggerSet)
+    prolog = __lc_counting_replacements(prolog_txt, TriggerSet)
+    epilog = __lc_counting_replacements(epilog_txt, TriggerSet)
 
-    # The finishing touch
-    txt = blue_print(code_str,
-                      [
-                       ["$$DELIMITER_COMMENT$$",              comment_str],
-                       ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
-                       ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
-                       ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
-                       ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
-                       ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
-                       ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
-                       ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
-                       ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
-                       ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
-                       # When things were skipped, no change to acceptance flags or modes has
-                       # happend. One can jump immediately to the start without re-entry preparation.
-                       ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
-                       ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
-                       ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
-                      ])
+    prolog = blue_print(prolog,
+                        [
+                         ["$$DELIMITER_COMMENT$$",              comment_str],
+                         ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
+                         ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
+                        ])
 
-    code_str = txt
+    epilog = blue_print(epilog,
+                        [
+                         ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
+                         ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
+                         ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
+                         ["$$ENDIF$$",                          LanguageDB["$endif"]],
+                         ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
+                         ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
+                         ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
+                         ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
+                         ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
+                         ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
+                         # When things were skipped, no change to acceptance flags or modes has
+                         # happend. One can jump immediately to the start without re-entry preparation.
+                         ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
+                         ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
+                        ])
+
+    code = [ prolog ]
+    code.extend(iteration_code)
+    code.append(epilog)
     ## code_str = blue_print(txt,
     ##                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
     local_variable_db = { "QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p" : 
                           [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
 
-    return code_str, local_variable_db
+    return code, local_variable_db
 
 def __lc_counting_replacements(code_str, CharacterSet):
     """Line and Column Number Counting(Range Skipper):

@@ -356,11 +356,8 @@ __TERMINAL_ROUTER:
 #   ifdef  QUEX_OPTION_COMPUTED_GOTOS
     goto *last_acceptance;
 #   else
-    /* Route according variable 'last_acceptance'. */
-    switch( last_acceptance ) {
-$$JUMPS_TO_ACCEPTANCE_STATE$$
-        default: QUEX_ERROR_EXIT("Terminal router: unknown index.");
-    }
+    target_state_index = last_acceptance;
+    goto __STATE_ROUTER;  /* Route according variable 'last_acceptance'. */
 #   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 """
 __terminal_state_prolog  = """
@@ -627,7 +624,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     else:                        precondition_involved_f = "1"
 
     router = blue_print(__terminal_router_str,
-             [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    "".join(jumps_to_acceptance_states)],   
+             [
               ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
               ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
               ["$$TERMINAL_FAILURE$$",             LanguageDB["$label"]("$terminal-FAILURE")],
@@ -732,11 +729,6 @@ def __require_terminating_zero_preparation(LanguageDB, CodeStr):
            and (found_i == L - LO or not is_identifier_continue(txt[found_i + LO])): 
                return True
 
-def __set_last_acceptance(PatternID, __label_used_in_computed_goto_list_unique):
-    __label_used_in_computed_goto_list_unique.add(get_address("$terminal-direct", PatternID))
-    return "last_acceptance                = QUEX_LABEL(%i); /* Terminal %s */\n" \
-           % (get_address("$terminal-direct", PatternID), PatternID)
-
 def __condition(txt, CharSet):
     first_f = True
     for interval in CharSet.get_intervals(PromiseToTreatWellF=True):
@@ -811,7 +803,11 @@ def __get_switch_block(VariableName, CaseCodePairList):
         if next_i != L and CaseCodePairList[next_i][1] == code:
             txt.append("\n")
         else:
-            txt.append(code + "\n")
+            if isinstance(code, Reference): code = code.code
+
+            if type(code) == list: txt.extend(code)
+            else:                  txt.append(code)
+            txt.append("\n")
             
     txt.append(0)
     txt.append("}\n")

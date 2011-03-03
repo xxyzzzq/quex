@@ -1,6 +1,6 @@
 import quex.core_engine.state_machine.core                    as state_machine
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
-from   quex.core_engine.generator.languages.core              import get_address, Reference
+from   quex.core_engine.generator.languages.core              import get_address, Reference, Address
 
 from   quex.input.setup            import setup as Setup
 from   quex.frs_py.string_handling import blue_print
@@ -82,29 +82,24 @@ def do(State, StateIdx, SMD):
     LanguageDB = Setup.language_db
     InitStateF = (StateIdx == SMD.sm().init_state_index)
 
+    txt = [ Address("$drop-out-direct", StateIdx) ] 
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
-        txt = [
-                 LanguageDB["$label-def"]("$drop-out-direct", StateIdx), "\n"
-                 "    ", LanguageDB["$goto"]("$terminal-FAILURE"),
-              ]
-
+        txt.extend([ "    ", LanguageDB["$goto"]("$terminal-FAILURE") ])
     else:
-        txt = [ LanguageDB["$label-def"]("$drop-out-direct", StateIdx), "\n" ]
         if SMD.forward_lexing_f(): 
             txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
         else:
-            txt.append("    ")
-            txt.append(LanguageDB["$goto"]("$terminal-general-bw"))
+            txt.extend(["    ", LanguageDB["$goto"]("$terminal-general-bw")])
 
-    return txt
+    return txt 
 
-def __goto_terminal(Origin):
+def _on_detection_code(Origin):
     global LanguageDB 
     # Case if no un-conditional acceptance, the goto general terminal
-    if type(Origin) == type(None): return LanguageDB["$goto-last_acceptance"]
+    if type(Origin) == type(None): return [ LanguageDB["$goto-last_acceptance"] ]
     assert Origin.is_acceptance()
-    return Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id))
+    return [ Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id)) ]
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
@@ -122,7 +117,7 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     else:
         # -- acceptance state drop outs
         return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                       __goto_terminal)
+                                                       _on_detection_code)
 
 
 

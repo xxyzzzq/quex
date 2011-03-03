@@ -1,7 +1,7 @@
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 import quex.core_engine.state_machine.core                as     state_machine 
 #
-from   quex.core_engine.generator.languages.address import __nice
+from   quex.core_engine.generator.languages.address import __nice, Reference
 from   quex.input.setup                             import setup as Setup
 
 LanguageDB = None
@@ -67,7 +67,7 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
         return txt
    
     # (2) Create detector for normal and pre-conditioned acceptances
-    def __on_detection_code(Origin):
+    def _on_detection_code(Origin):
         """Store the name of the winner pattern (last_acceptance) and the position
            where it has matched (use of $input/tell_position).
         """
@@ -77,16 +77,16 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
 
         assert Origin.is_acceptance()
 
-        info = LanguageDB["$set-last_acceptance"](__nice(Origin.state_machine_id))
+        info = [ Reference("$set-last_acceptance", Origin.state_machine_id) ]
         # NOTE: When a post conditioned pattern ends it does not need to store the input 
         #       position. Rather, the acceptance position of the core pattern is retrieved
         #       in the terminal state.
         if Origin.post_context_id() == -1:
-             info += LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n"
+             info.append(LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n")
 
         return info
 
-    txt.extend(get_acceptance_detector(OriginList, __on_detection_code))
+    txt.extend(get_acceptance_detector(OriginList, _on_detection_code))
 
     return txt
 
@@ -228,7 +228,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
             if first_if_statement_f: txt.append(LanguageDB["$if pre-context"](origin.pre_context_id()))
             else:                    txt.append(LanguageDB["$elseif pre-context"](origin.pre_context_id()))
             txt.append(2)
-            txt.append(info)
+            txt.extend(info)
             txt.append("\n")
             txt.append(1)
             txt.append(LanguageDB["$endif"])
@@ -241,7 +241,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
             if first_if_statement_f: txt.append(LanguageDB["$if begin-of-line"])
             else:                    txt.append(LanguageDB["$elseif begin-of-line"])
             txt.append(1)
-            txt.append(info)
+            txt.extend(info)
             txt.append("\n")
             txt.append(1)
             txt.append(LanguageDB["$endif"])
@@ -251,14 +251,14 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         
         else:
             if first_if_statement_f: 
-                txt.append(info)
+                txt.extend(info)
             else:
                 # if an 'if' statements preceeded, the acceptance needs to appear in an else block
                 txt.append(1)
                 txt.append(LanguageDB["$else"])
                 txt.append("\n")
                 txt.append(2)
-                txt.append(info)
+                txt.extend(info)
                 txt.append("\n")
                 txt.append(1)
                 txt.append(LanguageDB["$endif"])
@@ -268,7 +268,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         first_if_statement_f = False
 
     if unconditional_case_treated_f == False:
-        txt.append(get_on_detection_code_fragment(None))
+        txt.extend(get_on_detection_code_fragment(None))
 
     return debug_txt + txt
 

@@ -40,12 +40,11 @@ def do(state, StateIdx, SMD=False):
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
     #                        # => Here, the trigger map cannot be empty.
 
-    txt = \
-          get_prolog(StateIdx, InitStateF, SMD)          + \
-          acceptance_info.do(state, StateIdx, SMD)       + \
-          transition_block.do(TriggerMap, StateIdx, SMD) + \
-          drop_out.do(state, StateIdx, SMD)              + \
-          get_epilog(StateIdx, InitStateF, SMD)
+    txt = get_prolog(StateIdx, InitStateF, SMD)
+    txt.extend(acceptance_info.do(state, StateIdx, SMD))
+    txt.extend(transition_block.do(TriggerMap, StateIdx, SMD))
+    txt.extend(drop_out.do(state, StateIdx, SMD))
+    txt.extend(get_epilog(StateIdx, InitStateF, SMD))
     
     return txt 
 
@@ -66,6 +65,8 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
     assert isinstance(state, State)
     assert state.is_acceptance()
 
+    
+
     if SMD.forward_lexing_f():
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
@@ -73,8 +74,11 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
             return [] 
 
         else:
+            def _on_detection_code(Origin):
+                return [ transition.get_transition_to_terminal(Origin) ]
+
             return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                           transition.get_transition_to_terminal)
+                                                           _on_detection_code)
 
     elif SMD.backward_lexing_f():
         # When checking a pre-condition no dedicated terminal exists. However, when
