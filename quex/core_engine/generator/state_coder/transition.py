@@ -17,10 +17,10 @@ def do(TargetInfo, CurrentStateIdx, SMD):
 
 def get_transition_to_state(TargetInfo, SMD):
     LanguageDB = Setup.language_db
-    if type(TargetInfo) in [int, long] and SMD != None and SMD.dead_end_state_db().has_key(TargetInfo):
-        return __get_transition_to_dead_end_state(TargetInfo, SMD)
+    #if type(TargetInfo) in [int, long] and SMD != None and SMD.dead_end_state_db().has_key(TargetInfo):
+    #    return __get_transition_to_dead_end_state(TargetInfo, SMD)
 
-    return LanguageDB["$goto-pure"](get_label_of_state(TargetInfo, SMD))
+    return Reference("$goto", get_real_address(TargetInfo, SMD))
 
 def get_transition_to_drop_out(CurrentStateIdx, ReloadF):
     LanguageDB = Setup.language_db
@@ -32,19 +32,24 @@ def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     if SMD != None and SMD.backward_lexing_f(): direction = "BACKWARD"
     else:                                       direction = "FORWARD"
 
-    if ReturnStateIndexStr != None: state_index_str = ReturnStateIndexStr
-    else:                           state_index_str = "QUEX_LABEL(%i)" % StateIdx
-
-    state_index_else_str = "QUEX_LABEL(%i)" % get_address("$drop-out-direct", StateIdx)
+    if ReturnStateIndexStr != None: state_reference = ReturnStateIndexStr
+    else:                           state_reference = Reference("$reference", StateIdx)
 
     if SMD != None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
-        return "goto __RELOAD_INIT_STATE;"
+        return [ "goto __RELOAD_INIT_STATE;" ]
 
     elif SMD == None or not SMD.backward_input_position_detection_f():
-        return "QUEX_GOTO_RELOAD(%s, %s, %s);" % (direction, state_index_str, state_index_else_str)
+        return [ 
+                "QUEX_GOTO_RELOAD(",
+                direction, 
+                ", ",
+                state_reference,
+                ", ",
+                Reference("$reference", get_address("$drop-out-direct", StateIdx)), 
+                ");" ]
 
     else:
-        return ""
+        return [ "" ]
 
 def get_transition_to_terminal(Origin):
     LanguageDB = Setup.language_db
@@ -61,10 +66,6 @@ def get_transition_to_terminal(Origin):
     else:
         return Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id))
 
-def __get_transition_to_dead_end_state(TargetStateIndex, SMD):
-    LanguageDB = Setup.language_db
-    return LanguageDB["$goto-pure"](__get_label_of_dead_end_state(TargetStateIndex, SMD))
-
 def get_index(StateIdx, SMD):
     # During forward lexing (main lexer process) there are dedicated terminal states.
     if     SMD != None \
@@ -76,19 +77,19 @@ def get_index(StateIdx, SMD):
         dead_end_target_state     = SMD.dead_end_state_db()[StateIdx]
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
-            return get_index_of_terminal(winner_origin_list[0])
+            return get_address_of_terminal(winner_origin_list[0])
     return StateIdx
 
 # The state is a dead-end-state. It transits immediately to a terminal
-def get_label_of_state(TargetStateIdx, SMD):
+def get_real_address(TargetStateIdx, SMD):
     LanguageDB = Setup.language_db
 
     if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
         # Transitions to 'dead-end-state'
-        return __get_label_of_dead_end_state(TargetStateIdx, SMD)
+        return __get_address_of_dead_end_state(TargetStateIdx, SMD)
     else:
         # The very normal transition to another state
-        return LanguageDB["$label"]("$entry", TargetStateIdx)
+        return TargetStateIdx
 
 def get_label_of_drop_out(CurrentStateIdx, ReloadF=False):
     assert type(ReloadF) == bool
@@ -105,26 +106,17 @@ def get_label_of_drop_out(CurrentStateIdx, ReloadF=False):
         # 'Target == -1' => buffer limit code; reload required
         return LanguageDB["$label"]("$reload", CurrentStateIdx)
 
-def get_label_of_terminal(Origin):
-    assert Origin.is_acceptance()
-    LanguageDB = Setup.language_db
-    # The seek for the end of the core pattern is part of the 'normal' terminal
-    # if the terminal 'is' a post conditioned pattern acceptance.
-    if Origin.post_context_id() == -1:
-        return LanguageDB["$label"]("$terminal", Origin.state_machine_id)
-    else:
-        return LanguageDB["$label"]("$terminal-direct", Origin.state_machine_id)
-
-def get_index_of_terminal(Origin):
+def get_address_of_terminal(Origin):
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
     if Origin.post_context_id() == -1:
         return get_address("$terminal", Origin.state_machine_id)
-    return get_address("$terminal-direct", Origin.state_machine_id)
+    else:
+        return get_address("$terminal-direct", Origin.state_machine_id)
 
-def __get_label_of_dead_end_state(TargetStateIdx, SMD):
+def __get_address_of_dead_end_state(TargetStateIdx, SMD):
     """The TargetStateIdx is mentioned to be a dead-end-state! That means, that
        there is actually no 'transition block' in that state and it transits
        directly to a terminal.  The jump to those states can be shortcut. It is
@@ -149,22 +141,22 @@ def __get_label_of_dead_end_state(TargetStateIdx, SMD):
         if not pre_context_dependency_f:
             assert len(winner_origin_list) == 1
             # During forward lexing (main lexer process) there are dedicated terminal states.
-            return get_label_of_terminal(winner_origin_list[0])
+            return get_address_of_terminal(winner_origin_list[0])
 
         else:
             # Pre-context dependency can only appear in forward lexing which is the analyzis
             # that determines the winning pattern. BackwardInputPositionDetection and 
             # BackwardLexing can never depend on pre-conditions.
-            return LanguageDB["$label"]("$entry", TargetStateIdx)   # router to terminal
+            return TargetStateIdx
 
     elif SMD.backward_lexing_f():
-        return LanguageDB["$label"]("$entry", TargetStateIdx)       # router to terminal
+        return TargetStateIdx
 
     elif SMD.backward_input_position_detection_f():
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
-        return LanguageDB["$label"]("$entry", TargetStateIdx)       # router to terminal
+        return TargetStateIdx
 
     else:
         assert False, "Impossible engine generation mode: '%s'" % SMD.mode()

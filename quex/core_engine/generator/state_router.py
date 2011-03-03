@@ -23,7 +23,9 @@ def do(StateRouterInfoList):
         txt.append("}\n")
 
     txt.append("\n")
-    txt.append("        default: QUEX_ERROR_EXIT(\"State router: unknown index.\");\n")
+    txt.append("        default:\n")
+    txt.append("            __QUEX_STD_fprintf(stderr, \"State router: index = %i\", (int)target_state_index);\n")
+    txt.append("            QUEX_ERROR_EXIT(\"State router: unknown index.\");\n")
     txt.append("    }\n")
     txt.append("#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n")
 

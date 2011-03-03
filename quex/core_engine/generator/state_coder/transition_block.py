@@ -13,7 +13,8 @@ class TriggerAction:
     def __init__(self, Code, DropOutF=False):
         assert type(DropOutF) == bool
 
-        self.__code       = Code
+        if type(Code) == list: self.__code = Code
+        else:                  self.__code = [ Code ]
         self.__drop_out_f = DropOutF
 
     def get_code(self):
@@ -36,14 +37,14 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_
 
         if   target == None:
             # Classical Drop-Out: no further state transition
-            target = TriggerAction(transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=False),
+            target = TriggerAction([ transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=False) ],
                                    DropOutF=True)
 
         elif target == -1:
             # Limit Character Detected: Reload
             # NOTE: Reload != Drop Out!
             if GotoReload_Str != None: 
-                goto_str = GotoReload_Str
+                goto_str = [ GotoReload_Str ]
             else:
                 goto_str = transition.get_transition_to_reload(CurrentStateIdx, DSM, ReturnToState_Str)
 
@@ -51,7 +52,7 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_
 
         elif type(target) in [int, long]:
             # Classical State Transition: transit to state with given id
-            target = TriggerAction(transition.get_transition_to_state(target, DSM),
+            target = TriggerAction([ transition.get_transition_to_state(target, DSM) ],
                                    DropOutF=False)
 
         else:
@@ -107,7 +108,7 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        code = ["    ", TriggerMap[0][1].get_code(), "\n"]
+        code = ["    "] + TriggerMap[0][1].get_code() + ["\n"]
 
     return format_this(code)
 
@@ -335,7 +336,7 @@ def __create_transition_code(txt, TriggerMapEntry):
     #  respective language module.
     #
     txt.append(1)                              # indent one scope
-    txt.append(target_state_index.get_code())
+    txt.extend(target_state_index.get_code())
 
     if Setup.buffer_codec == "": txt.append("    " + comment(interval) + "\n")
     else:                        txt.append("\n")
@@ -425,7 +426,7 @@ def __implement_switch_transitions(trigger_map):
         switch_case_transition_code = LanguageDB["$switch-block"]("input", switch_case_code_list)
 
         trigger_map[i] = (Interval(trigger_map[i][0].begin, trigger_map[k-1][0].end),
-                          TriggerAction("".join(switch_case_transition_code)))
+                          TriggerAction(switch_case_transition_code))
         if k - i != 1:
             del trigger_map[i+1:k]
             L -= (k - i - 1)

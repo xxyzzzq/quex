@@ -61,7 +61,6 @@ class Generator(GeneratorBase):
         variable_db.update(db)
         txt.extend(state_machine_code)
 
-        
         #  -- terminal states: execution of pattern actions  
         terminal_code, db = LanguageDB["$terminal-code"](decorated_state_machine,
                                                          self.action_db, 
@@ -112,12 +111,14 @@ class Generator(GeneratorBase):
         routed_state_info_list = []
         LanguageDB             = self.language_db
 
+        txt = [ LanguageDB["$header-definitions"](LanguageDB) ]
+
         #  -- state machines for backward input position detection (pseudo ambiguous post conditions)
-        papc_input_postion_backward_detector_functions = ""
+        #     paste the papc functions (if there are some) in front of the analyzer functions
         for sm in self.papc_backward_detector_state_machine_list:
             assert sm.get_orphaned_state_index_list() == []
-            papc_input_postion_backward_detector_functions +=  \
-                  backward_detector.do(sm, LanguageDB)
+            code = backward_detector.do(sm, LanguageDB)
+            txt.extend(_get_propper_text(code))
 
         # -- write the combined pre-condition state machine
         if self.pre_context_sm_list != []:
@@ -141,7 +142,7 @@ class Generator(GeneratorBase):
         if len(routed_state_info_list) != 0:
             function_body.extend(state_router.do(routed_state_info_list))
 
-        function_body = straighten_labels_and_references(function_body)
+        function_body = _get_propper_text(function_body)
 
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
@@ -155,12 +156,7 @@ class Generator(GeneratorBase):
                                                          LanguageDB=LanguageDB,
                                                          LocalVariableDB=local_variable_db) 
 
-        #  -- paste the papc functions (if there are some) in front of the analyzer functions
-        txt = [ 
-            LanguageDB["$header-definitions"](LanguageDB),
-            papc_input_postion_backward_detector_functions,
-            analyzer_function
-        ]
+        txt.append(analyzer_function)
 
         return txt
 
@@ -199,7 +195,7 @@ def do(PatternActionPair_List, OnFailureAction,
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup)
 
-def init_unused_labels():
+def DELETED_init_unused_labels():
     ## print "##init,", languages.label_db_marker_get_unused_label_list()
     languages.label_db_marker_init()
 
@@ -276,22 +272,43 @@ def DELETED_delete_unused_labels_FAST(Code, LabelList):
 
     return code.tostring()
         
-def straighten_labels_and_references(txt_list):
-    #for txt in txt_list:
-    #    print "## type = ", type(txt)
-    #    print "## txt  = ", txt
-    referenced_label_set = set([])
+_referenced_label_set = set([])
+def _get_propper_text(txt_list):
+    global referenced_label_set
+    _referenced_label_set.clear()
+
+    _referenced_label_set_search(txt_list)
+    return _get_text(txt_list)
+
+def _referenced_label_set_search(txt_list):
+    global _referenced_label_set
+
     for i, elm in enumerate(txt_list):
         if isinstance(elm, Reference):
-            referenced_label_set.add(elm.label)
+            _referenced_label_set.add(elm.label)
+            # A reference has done its work as soon as it has notified about
+            # its existence. Now, its code can replace its position.
             txt_list[i] = elm.code
-        if type(elm) in [int, long]:    # Indentation: elm = number of indentations
-            txt_list[i] = "    " * elm
+
+        elif isinstance(elm, Address):
+            # An 'addressed' code fragment may contain further references.
+            _referenced_label_set_search(elm.code)
+        
+def _get_text(txt_list):
+    """ -- If an addressed code fragment is referenced, then it is inserted.
+        -- Integers are replaced by indentation, i.e. '1' = 4 spaces.
+    """
+    global _referenced_label_set
 
     for i, elm in enumerate(txt_list):
         if isinstance(elm, Address):
-            if elm.label in referenced_label_set: txt_list[i] = elm.code
-            else:                                 txt_list[i] = "/* should be deleted */\n" + elm.code 
+            if elm.label in _referenced_label_set: 
+                txt_list[i] = _get_text(elm.code)
+            else:
+                txt_list[i] = ""          # not referenced -> not implemented
+
+        elif type(elm) in [int, long]:    # Indentation: elm = number of indentations
+            txt_list[i] = "    " * elm
 
     return "".join(txt_list)
 

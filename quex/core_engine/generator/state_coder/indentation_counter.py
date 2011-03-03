@@ -74,7 +74,7 @@ class IndentationBadCharacter:
     def __ne__(self, Other):
         return not self.__eq__(Other)
 
-template_str = """
+prolog_txt = """
 { 
     $$DELIMITER_COMMENT$$
 $$INIT_REFERENCE_POINTER$$
@@ -84,7 +84,9 @@ $$INIT_REFERENCE_POINTER$$
 
 INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY:
     $$INPUT_GET$$ 
-$$ON_TRIGGER_SET_TO_LOOP_START$$
+"""
+
+epilog_txt = """
 $$DROP_OUT_DIRECT$$
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
 $$END_PROCEDURE$$                           
@@ -187,10 +189,10 @@ def do(Data):
     init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                         "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"
 
-    iteration_code = "".join(transition_block.do(trigger_map, 
-                                                 counter_index, 
-                                                 DSM=None, 
-                                                 GotoReload_Str=LanguageDB["$goto"]("$reload", counter_index)))
+    iteration_code = transition_block.do(trigger_map, 
+                                         counter_index, 
+                                         DSM=None, 
+                                         GotoReload_Str=LanguageDB["$goto"]("$reload", counter_index))
 
     comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
 
@@ -207,12 +209,19 @@ def do(Data):
                          % Mode.name
 
     # The finishing touch
-    txt = blue_print(template_str,
+    prolog = blue_print(prolog_txt,
+                         [
+                           ["$$DELIMITER_COMMENT$$",              comment_str],
+                           ["$$INIT_REFERENCE_POINTER$$",         init_reference_p],
+                           ["$$COUNTER_INDEX$$",                  repr(counter_index)],
+                           ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
+                         ])
+
+    # The finishing touch
+    epilog = blue_print(epilog_txt,
                       [
-                       ["$$DELIMITER_COMMENT$$",              comment_str],
                        ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
                        ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
-                       ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$COUNTER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB["$endif"]],
                        ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry",  counter_index)],
@@ -224,14 +233,16 @@ def do(Data):
                        # When things were skipped, no change to acceptance flags or modes has
                        # happend. One can jump immediately to the start without re-entry preparation.
                        ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
-                       ["$$ON_TRIGGER_SET_TO_LOOP_START$$",   iteration_code],
-                       ["$$INIT_REFERENCE_POINTER$$",         init_reference_p],
                        ["$$END_PROCEDURE$$",            end_procedure],
                        ["$$BAD_CHARACTER_HANDLING$$",   get_bad_character_handler(Mode, IndentationSetup, counter_index)],
                       ])
 
     ## txt = blue_print(txt,
     ##                 [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
+
+    txt = [prolog]
+    txt.extend(iteration_code)
+    txt.append(epilog)
 
     return txt, local_variable_db
 

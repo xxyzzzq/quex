@@ -141,16 +141,28 @@ class Address:
                    (May be empty, so that that only the label is not printed.)
         """
         self.label = get_address(Type, Arg)
-        self.code  = _pure_position(self.label) + ":\n"
-        self.code += Code
+        self.code  = [ _pure_position(self.label), ":\n" ]
+        if type(Code) == list: self.code.extend(Code)
+        else:                  self.code.append(Code)
 
 class Reference:
     def __init__(self, Type, Arg):
         """Label = label that is referenced in 'Code'.
            Code  = Code fragment that references the label.
         """
-        self.label = Arg
-        self.code  = { 
-            "$goto":      "goto %s;\n"     % _pure_position(self.label),
-            "$reference": "QUEX_LABEL(%s)" % _pure_position(self.label),
-        }[Type]
+        if Type == "$goto":
+            self.label = Arg
+            self.code  = "goto %s;\n" % _pure_position(self.label)
+
+        elif Type == "$reference":
+            self.label = Arg
+            self.code  = "QUEX_LABEL(%s)" % self.label
+
+        elif Type == "$set-last_acceptance":
+            self.label = get_address("$terminal-direct", Arg)
+            self.code  = "last_acceptance                = QUEX_LABEL(%s);\n" % self.label
+
+        self.reference_type = Type
+
+    def __repr__(self):
+        return self.code

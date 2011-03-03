@@ -67,8 +67,6 @@ def do():
 
     for mode in mode_list:        
 
-        generator.init_unused_labels()
-
         # accumulate inheritance information for comment
         code = get_code_for_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF) 
         analyzer_code += code
