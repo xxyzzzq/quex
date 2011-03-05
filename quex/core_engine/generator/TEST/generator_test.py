@@ -37,7 +37,7 @@ else:
     SHOW_BUFFER_LOADS_STR = "-DQUEX_OPTION_DEBUG_SHOW_LOADS"
 
 # Switch: Turn off some warnings
-if True:
+if False:
     IGNORE_WARNING_F = True
 else:
     IGNORE_WARNING_F = False
@@ -183,6 +183,10 @@ def run_this(Str):
         # In the current version we forgive unused static functions
         postponed_list = []
         for line in txt.split("\n"):
+            if    line.find("DumpedTokenIdObject") != -1:
+                postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
+                continue
+
             if    line.find("defined but not used") != -1 \
                or line.find("but never defined") != -1 \
                or line.find("At top level") != -1 \
@@ -331,9 +335,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         StandAloneAnalyserF    = True, 
                         SupportBeginOfLineF    = support_begin_of_line_f)
 
-    for elm in code:
+    for i, elm in enumerate(code):
         if type(elm) != str: 
+            print "##", i
             print "##", type(elm), elm.__class__.__name__, elm
+            sys.exit()
+
     return txt + "".join(code)
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
@@ -497,7 +504,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         ml_txt += "    break;\n"
 
     if type(SourceCode) == list:
-        SourceCode = generator._get_propper_text(SourceCode)
+        SourceCode = "".join(generator._get_propper_text(SourceCode))
 
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),

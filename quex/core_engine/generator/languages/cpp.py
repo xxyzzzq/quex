@@ -3,7 +3,7 @@ from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
 from quex.core_engine.generator.languages.address import *
-from quex.core_engine.interval_handling   import NumberSet
+from quex.core_engine.interval_handling           import NumberSet
 from copy     import copy
 from operator import itemgetter
 #
@@ -41,7 +41,7 @@ __header_definitions_txt = """
 def __header_definitions(LanguageDB):
 
     txt = __header_definitions_txt
-    txt = txt.replace("$$GOTO_START_PREPARATION$$", LanguageDB["$goto"]("$re-start"))
+    txt = txt.replace("$$GOTO_START_PREPARATION$$", get_address("$re-start"))
     return txt
 
 def __local_variable_definitions(VariableDB):
@@ -167,7 +167,6 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 """
 
 reload_forward_str = """
-__RELOAD_FORWARD:
     __quex_debug("__RELOAD_FORWARD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
@@ -180,8 +179,13 @@ __RELOAD_FORWARD:
     }
     __quex_debug("reload impossible");
     QUEX_GOTO_STATE(target_state_else_index);
+"""
 
+reload_init_state_forward_str = """
+    __quex_assert_no_passage();
 __RELOAD_INIT_STATE:
+    __quex_debug("__RELOAD_INIT_STATE");
+
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
         __quex_debug_reload_before();
@@ -194,7 +198,6 @@ __RELOAD_INIT_STATE:
 """
 
 reload_backward_str = """
-__RELOAD_BACKWARD:
     __quex_debug("__RELOAD_BACKWARD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
@@ -234,30 +237,11 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
        StandAloneEngineF = False if a mode for a quex engine is to be created. True
                            if a stand-alone lexical engine is required (without the
                            complete mode-handling framework of quex).
-        
-       NOTE: If a stand-alone lexer is requested, then there are two functions that are
-             created additionally: 
-
-               'EngineClassName'_init(EngineClassName* me,
-                                      QUEX_TYPE_CHARACTER StartInputPosition);
-
-                     This function has to be called before starting the lexing process.
-                     See the unit tests for examples.
-               
-               'EngineClassName'_do(EngineClassName* me);
-                     
-                     This function does a lexical analysis from the current position as
-                     it is stored in 'me'.
     """              
-    txt = ""
-
-    signature = __function_signature
-
-    txt  = "#include <quex/code_base/temporary_macros_on>\n"
-    txt += signature
-    txt  = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
-
-    txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyzer") + "\n"
+    txt = [
+            "#include <quex/code_base/temporary_macros_on>\n",
+            __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
+    ]
 
     PostContextN = len(PostConditionedStateMachineID_List)
 
@@ -270,7 +254,8 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
           "input":                          ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x00)"],
           "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
           "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
-         })
+         }
+    )
               
     # -- pre-condition fulfillment flags                
     for pre_context_sm_id in PreConditionIDList:
@@ -279,66 +264,59 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            txt += "#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name) 
+            txt.append("#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name))
 
-    txt += LanguageDB["$local-variable-defs"](local_variable_list)
-    txt += comment_on_post_context_position_init_str
-    txt += "#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
-    txt += "       || defined(QUEX_OPTION_ASSERTS)\n"
-    txt += "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n"
-    txt += "#   endif\n"
+    txt.extend([
+        LanguageDB["$local-variable-defs"](local_variable_list),
+        comment_on_post_context_position_init_str,
+        "#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n",
+        "       || defined(QUEX_OPTION_ASSERTS)\n",
+        "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n",
+        "#   endif\n",
+    ])
 
-    txt += LanguageDB["$label-def"]("$start")
-    txt += "\n"
+    txt.append(LanguageDB["$label-def"]("$start") + "\n")
 
     # -- entry to the actual function body
-    txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
-    txt += "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
+    txt.append("    " + LanguageDB["$mark-lexeme-start"] + "\n")
+    txt.append("    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n")
     
-    txt += function_body
+    txt.extend(function_body)
 
     # -- prevent the warning 'unused variable'
-    txt += "\n"
-    txt += "    /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/\n"
-    txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
+    txt.append( 
+        "\n"                                                                                              \
+        "    /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/\n" \
+        "    /* that is never reached (and deleted by the compiler anyway).*/\n")
+
     for mode_name in ModeNameList:
-        txt += "    (void)%s;\n" % mode_name
-    txt += "    (void)QUEX_NAME(LexemeNullObject);\n"
-    txt += "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"
-    txt += "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n"
-    txt += "    /* In some scenarios, the __TERMINAL_ROUTER is never required.\n"
-    txt += "     * Still, avoid the warning of 'label never used'.             */\n"
-    txt += "    goto __TERMINAL_ROUTER;\n"
+        txt.append("    (void)%s;\n" % mode_name)
 
-    txt += blue_print(reload_forward_str,
-                      [
-                          ["$$INIT_STATE$$",    __nice(InitialStateIndex)],
-                          ["$$END_OF_STREAM$$", label_db_get("$terminal-EOF", GotoTargetF=True)],
-                      ])
+    txt.append(                                                            \
+        "    (void)QUEX_NAME(LexemeNullObject);\n"                         \
+        "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                \
+        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n")
 
-    if len(PreConditionIDList) != 0: 
-        txt += reload_backward_str
+    txt.append(Address("$reload-FORWARD", None, reload_forward_str))
+    txt.append(blue_print(reload_init_state_forward_str,
+                          [["$$INIT_STATE$$",    __nice(InitialStateIndex)],
+                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF")]]))
+    txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
 
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
-
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            txt += "#   undef %s\n" % name 
+            txt.append("#   undef %s\n" % name)
 
-    txt += "#undef self\n"
-    txt += "}\n"
+    txt.append("#   undef self\n")
+    txt.append("}\n")
 
-    # -- the name of the game
-    txt = txt.replace("$$QUEX_ANALYZER_STRUCT_NAME$$", EngineClassName)
-
-    txt += "#include <quex/code_base/temporary_macros_off>\n"
+    txt.append("#include <quex/code_base/temporary_macros_off>\n")
     return txt
 
-__terminal_router_str = """
-    __quex_assert_no_passage(); 
-__TERMINAL_ROUTER: 
+__terminal_router_prolog_str = """
     __quex_debug("terminal router");
     /*  if last_acceptance => goto correspondent acceptance terminal state */
     /*  else               => execute defaul action                        */
@@ -357,7 +335,9 @@ __TERMINAL_ROUTER:
     goto *last_acceptance;
 #   else
     target_state_index = last_acceptance;
-    goto __STATE_ROUTER;  /* Route according variable 'last_acceptance'. */
+    goto """
+
+__terminal_router_epilog_str = """
 #   endif /* QUEX_OPTION_COMPUTED_GOTOS */
 """
 __terminal_state_prolog  = """
@@ -387,13 +367,13 @@ __terminal_state_prolog  = """
 """
 
 __terminal_state_epilog = """
-$$TERMINAL_END_OF_STREAM-DEF$$
+$$TERMINAL_END_OF_STREAM-DEF$$: /* TERMINAL: END_OF_STREAM */
 $$END_OF_STREAM_ACTION$$
      /* End of Stream causes a return from the lexical analyzer, so that no
       * tokens can be filled after the termination token.                    */
      RETURN;          
 
-$$TERMINAL_FAILURE-DEF$$ /* TERMINAL: FAILURE */
+$$TERMINAL_FAILURE-DEF$$: /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
      $$GOTO_START_PREPARATION$$
 
@@ -623,19 +603,26 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     if PreConditionIDList == []: precondition_involved_f = "0"
     else:                        precondition_involved_f = "1"
 
-    router = blue_print(__terminal_router_str,
-             [
-              ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
-              ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-              ["$$TERMINAL_FAILURE$$",             LanguageDB["$label"]("$terminal-FAILURE")],
-             ])
+    router = [ "    __quex_assert_no_passage();\n", 
+               Address("$terminal-router", None,
+                    [
+                        blue_print(__terminal_router_prolog_str,
+                        [
+                         ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
+                         ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
+                         ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
+                        ]),
+                        Reference("$address", get_address("$state-router")), ";",
+                        __terminal_router_epilog_str, 
+                    ])
+              ]
                      
     epilog = blue_print(__terminal_state_epilog, 
              [
               ["$$FAILURE_ACTION$$",             "".join(on_failure)],
               ["$$END_OF_STREAM_ACTION$$",       end_of_stream_code_action_str],
-              ["$$TERMINAL_END_OF_STREAM-DEF$$", LanguageDB["$label-def"]("$terminal-EOF")],
-              ["$$TERMINAL_FAILURE-DEF$$",       LanguageDB["$label-def"]("$terminal-FAILURE")],
+              ["$$TERMINAL_END_OF_STREAM-DEF$$", get_label("$terminal-EOF")],
+              ["$$TERMINAL_FAILURE-DEF$$",       get_label("$terminal-FAILURE")],
               ["$$STATE_MACHINE_NAME$$",         SMD.name()],
               ["$$GOTO_START_PREPARATION$$",     LanguageDB["$goto"]("$re-start")],
              ])
@@ -649,7 +636,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                           ])
 
     txt = []
-    txt.append(router)
+    txt.extend(router)
     txt.append(__terminal_state_prolog)
     txt.extend(specific_terminal_states)
     txt.append(epilog)

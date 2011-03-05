@@ -24,7 +24,7 @@ def get_transition_to_state(TargetInfo, SMD):
 
 def get_transition_to_drop_out(CurrentStateIdx, ReloadF):
     LanguageDB = Setup.language_db
-    return LanguageDB["$goto-pure"](get_label_of_drop_out(CurrentStateIdx, ReloadF))
+    return Reference("$goto", get_label_of_drop_out(CurrentStateIdx, ReloadF))
 
 def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     LanguageDB = Setup.language_db
@@ -41,7 +41,7 @@ def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     elif SMD == None or not SMD.backward_input_position_detection_f():
         return [ 
                 "QUEX_GOTO_RELOAD(",
-                direction, 
+                Reference("$address", get_address("$reload-%s" % direction)),
                 ", ",
                 state_reference,
                 ", ",
@@ -56,7 +56,7 @@ def get_transition_to_terminal(Origin):
 
     # No unconditional case of acceptance 
     if type(Origin) == type(None): 
-        return LanguageDB["$goto-last_acceptance"]
+        return Reference("$goto-last_acceptance", LanguageDB) 
 
     assert Origin.is_acceptance()
     # The seek for the end of the core pattern is part of the 'normal' terminal

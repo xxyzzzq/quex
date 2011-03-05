@@ -85,19 +85,21 @@ def do(State, StateIdx, SMD):
     txt = [ Address("$drop-out-direct", StateIdx) ] 
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
-        txt.extend([ "    ", LanguageDB["$goto"]("$terminal-FAILURE") ])
+        txt.extend([ "    ", Reference("$goto", get_address("$terminal-FAILURE")) ])
     else:
         if SMD.forward_lexing_f(): 
             txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
         else:
-            txt.extend(["    ", LanguageDB["$goto"]("$terminal-general-bw")])
+            txt.extend(["    ", Reference("$goto", get_address("$terminal-general-bw"))])
 
     return txt 
 
 def _on_detection_code(Origin):
     global LanguageDB 
     # Case if no un-conditional acceptance, the goto general terminal
-    if type(Origin) == type(None): return [ LanguageDB["$goto-last_acceptance"] ]
+    if type(Origin) == type(None): 
+        return [ Reference("$goto-last_acceptance", LanguageDB) ]
+
     assert Origin.is_acceptance()
     return [ Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id)) ]
 
@@ -109,10 +111,10 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return ["    goto __TERMINAL_ROUTER;"]
+        return [ Reference("$goto", "__TERMINAL_ROUTER") ]
 
     elif not state.is_acceptance():
-        return ["    goto __TERMINAL_ROUTER;"]
+        return [ Reference("$goto", "__TERMINAL_ROUTER") ]
 
     else:
         # -- acceptance state drop outs

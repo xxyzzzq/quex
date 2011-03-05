@@ -142,8 +142,6 @@ class Generator(GeneratorBase):
         if len(routed_state_info_list) != 0:
             function_body.extend(state_router.do(routed_state_info_list))
 
-        function_body = _get_propper_text(function_body)
-
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
                                                          self.analyzer_state_class_name, 
@@ -156,7 +154,9 @@ class Generator(GeneratorBase):
                                                          LanguageDB=LanguageDB,
                                                          LocalVariableDB=local_variable_db) 
 
-        txt.append(analyzer_function)
+        txt.extend(analyzer_function)
+
+        txt = _get_propper_text(txt)
 
         return txt
 
@@ -303,12 +303,13 @@ def _get_text(txt_list):
     for i, elm in enumerate(txt_list):
         if isinstance(elm, Address):
             if elm.label in _referenced_label_set: 
-                txt_list[i] = _get_text(elm.code)
+                txt_list[i] = "".join(_get_text(elm.code))
             else:
                 txt_list[i] = ""          # not referenced -> not implemented
+                # txt_list[i] = "".join(_get_text(elm.code)) # ""          # not referenced -> not implemented
 
         elif type(elm) in [int, long]:    # Indentation: elm = number of indentations
             txt_list[i] = "    " * elm
 
-    return "".join(txt_list)
+    return txt_list
 

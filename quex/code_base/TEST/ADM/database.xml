@@ -1,26 +1,26 @@
-<test-database execution-time-sec="0.09" date="Sat Feb 26 09:24:59 2011">
+<test-database execution-time-sec="0.06" date="Fri Mar  4 22:07:21 2011">
     <last-used-diff-display-program name=""/>
     <test title="data/bocu1.txt" make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="bom.exe" info-request-time="1298708699L" vanished="False"/>
-        <make-procedure success="True" time_sec="0.154673"/>
+        <application file-name="bom.exe" info-request-time="1299272840L" vanished="False"/>
+        <make-procedure success="True" time_sec="0.168628"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="-838016451"/>
         </choice-list>
     </test>
     <group name="StrangeStream">
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.06"> 
-            <application file-name="strange_stream.exe" info-request-time="1298240565L" vanished="False"/>
-            <make-procedure success="False" time_sec="0.317856"/>
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="strange_wstream.exe" info-request-time="1299272841L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.557903"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="MAKE FAILED" time_sec="0.03" crc="2006234070"/>
-               <choice name="3" result="MAKE FAILED" time_sec="0.01" crc="725477678"/>
-               <choice name="4" result="MAKE FAILED" time_sec="0.01" crc="-924245705"/>
-               <choice name="5" result="MAKE FAILED" time_sec="0.01" crc="252659001"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="2006234070"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>
+               <choice name="4" result="OK" time_sec="0.01" crc="-924245705"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="252659001"/>
             </choice-list>
         </test>
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="strange_wstream.exe" info-request-time="1298708699L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.469842"/>
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.03"> 
+            <application file-name="strange_stream.exe" info-request-time="1299272840L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.478373"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.01" crc="2006234070"/>
                <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>

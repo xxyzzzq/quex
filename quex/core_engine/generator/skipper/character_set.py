@@ -35,7 +35,7 @@ $$LC_COUNT_IN_LOOP$$
 """
 
 epilog_txt = """
-$$DROP_OUT_DIRECT$$
+/* $$DROP_OUT_DIRECT$$ */
 $$LC_COUNT_END_PROCEDURE$$
     /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
      * The character we just swallowed must be re-considered by the main state machine.
