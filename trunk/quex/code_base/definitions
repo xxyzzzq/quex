@@ -95,9 +95,9 @@
                                                      goto __STATE_ROUTER;
 #endif
 
-#define    QUEX_GOTO_RELOAD(DIR, STATE, ELSE_STATE)   target_state_index      = STATE;      \
-                                                      target_state_else_index = ELSE_STATE; \
-                                                      goto __RELOAD_ ## DIR;
+#define    QUEX_GOTO_RELOAD(RELOAD_STATE, STATE, ELSE_STATE)   target_state_index      = STATE;      \
+                                                               target_state_else_index = ELSE_STATE; \
+                                                               goto RELOAD_STATE;
 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)

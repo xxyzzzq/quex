@@ -1,31 +1,31 @@
-<test-database execution-time-sec="6.11" date="Sat Feb 26 09:24:29 2011">
+<test-database execution-time-sec="4.21" date="Fri Mar  4 22:06:56 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Local variables." time-sum-sec="1.49"> 
+    <test title="Local variables." time-sum-sec="0.29"> 
         <application file-name="local-variables.sh" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.49" crc="1827488403"/>
+           <choice name="" result="FAIL" time_sec="0.29" crc="1827488403"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.81"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.96"> 
         <application file-name="unvalid-marks.sh" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="PRIORITY-good" result="OK" time_sec="0.24" crc="-84057889"/>
-           <choice name="PRIORITY-fail" result="OK" time_sec="0.17" crc="1109812615"/>
-           <choice name="DELETION-good" result="OK" time_sec="0.24" crc="-964384655"/>
-           <choice name="DELETION-fail" result="OK" time_sec="0.17" crc="-409572518"/>
+           <choice name="PRIORITY-good" result="OK" time_sec="0.28" crc="-84057889"/>
+           <choice name="PRIORITY-fail" result="OK" time_sec="0.21" crc="1109812615"/>
+           <choice name="DELETION-good" result="OK" time_sec="0.28" crc="-964384655"/>
+           <choice name="DELETION-fail" result="OK" time_sec="0.19" crc="-409572518"/>
         </choice-list>
     </test>
     <group name="Precedence">
-        <test title="Larger Inheritance Tree" time-sum-sec="2.25"> 
+        <test title="Larger Inheritance Tree" time-sum-sec="2.66"> 
             <application file-name="large-tree.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="2.25" crc="-828763524"/>
+               <choice name="" result="OK" time_sec="2.66" crc="-828763524"/>
             </choice-list>
         </test>
-        <test title="Derived before Base" time-sum-sec="1.56"> 
+        <test title="Derived before Base" time-sum-sec="0.30"> 
             <application file-name="derived-before-base.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.56" crc="1727262709"/>
+               <choice name="" result="FAIL" time_sec="0.30" crc="1727262709"/>
             </choice-list>
         </test>
     </group>

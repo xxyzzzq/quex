@@ -1,5 +1,6 @@
 from   quex.core_engine.state_machine.core         import State 
 import quex.core_engine.generator.languages.core   as languages
+from   quex.core_engine.generator.languages.address            import Address, Reference, get_address
 import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.transition       as transition
@@ -26,14 +27,14 @@ def do(state, StateIdx, SMD=False):
     #     i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
     if dead_end_state_info != None:
-        txt = __dead_end_state_stub(dead_end_state_info, SMD)
+        state_stub = __dead_end_state_stub(dead_end_state_info, SMD)
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
-        if len(txt) == 0: return []
-        prolog  = LanguageDB["$label-def"]("$entry", StateIdx)
-        prolog += "\n    " + LanguageDB["$debug-state"](StateIdx)
-        txt.insert(0, prolog)
-        return txt
+        if len(state_stub) == 0: return []
+        return [ Address("$entry", StateIdx,
+                         ["\n    " + LanguageDB["$debug-state"](StateIdx),
+                          state_stub]) 
+        ]
 
     # (*) Normal States
     TriggerMap = state.transitions().get_trigger_map()
@@ -84,7 +85,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
         return acceptance_info.backward_lexing(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw") ] 
+               [ Reference("$goto", get_address("$terminal-general-bw")) ] 
 
 
     elif SMD.backward_input_position_detection_f():
@@ -93,7 +94,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # stored at the entry of the state.
         return [ LanguageDB["$input/decrement"], "\n"] + \
                acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
-               [ LanguageDB["$goto"]("$terminal-general-bw") ]
+               [ Reference("$goto", get_address("$terminal-general-bw")) ] 
 
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode
@@ -122,7 +123,7 @@ def get_prolog(StateIdx, InitStateF, SMD):
         txt.append(LanguageDB["$label-def"]("$init_state_fw_transition_block"))
         txt.append("\n    " + LanguageDB["$debug-init-state"]) 
     else:
-        txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
+        txt.append(Address("$entry", StateIdx))
         txt.append("\n    " + LanguageDB["$debug-state"](StateIdx)) 
 
     # The init state in forward lexing does not increase the input pointer
@@ -151,5 +152,5 @@ def get_epilog(StateIdx, InitStateF, SMD):
     txt.append(LanguageDB["$label-def"]("$entry", StateIdx))
     txt.append("\n")
     txt.extend(["    ", LanguageDB["$input/increment"], "\n"])
-    txt.extend(["    ", LanguageDB["$goto"]("$init_state_fw_transition_block"), "\n"])
+    txt.extend(["    ", Reference("$goto", get_address("$init_state_fw_transition_block")), "\n"])
     return txt

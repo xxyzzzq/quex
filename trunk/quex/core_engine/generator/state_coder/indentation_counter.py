@@ -237,9 +237,6 @@ def do(Data):
                        ["$$BAD_CHARACTER_HANDLING$$",   get_bad_character_handler(Mode, IndentationSetup, counter_index)],
                       ])
 
-    ## txt = blue_print(txt,
-    ##                 [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", counter_index)]])
-
     txt = [prolog]
     txt.extend(iteration_code)
     txt.append(epilog)
