@@ -102,7 +102,7 @@ for state_index in target_state_index_list:
 # One for the 'terminal'
 __label_db["$entry"](index.get())
 
-states.append("%s = -1\n" % __label_db["$drop-out-direct"](None))
+states.append("%s = -1\n" % __label_db["$drop-out"](None))
 states.append("%s = -1\n" % __label_db["$reload"](None))
 state_txt = "".join(states)
 

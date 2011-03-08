@@ -1,7 +1,7 @@
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 import quex.core_engine.state_machine.core                as     state_machine 
 #
-from   quex.core_engine.generator.languages.address import __nice, Reference
+from   quex.core_engine.generator.languages.address import __nice, Reference, get_address, get_label
 from   quex.input.setup                             import setup as Setup
 
 LanguageDB = None
@@ -14,11 +14,13 @@ def do(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
     LanguageDB = Setup.language_db
     
     mode = SMD.mode()
-    if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF)
-    elif mode == "BackwardLexing":                 return backward_lexing(State.origins().get_list())
-    elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State.origins().get_list())
+    if   mode == "ForwardLexing":                  txt = forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF)
+    elif mode == "BackwardLexing":                 txt = backward_lexing(State.origins().get_list())
+    elif mode == "BackwardInputPositionDetection": txt = backward_lexing_find_core_pattern(State.origins().get_list())
     else:
         assert False, "This part of the code should never be reached"
+    assert type(txt) == list
+    return txt
 
 def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
     """Forward Lexing:
@@ -77,12 +79,21 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
 
         assert Origin.is_acceptance()
 
-        info = [ Reference("$set-last_acceptance", Origin.state_machine_id) ]
+        info = [ 
+           "    last_acceptance                = QUEX_LABEL(",
+           Reference("$terminal-direct", 
+                     Origin.state_machine_id, 
+                     Code="%i" % get_address("$terminal-direct", Origin.state_machine_id),
+                     RoutingF=True), 
+           ");\n"
+        ]
+
         # NOTE: When a post conditioned pattern ends it does not need to store the input 
         #       position. Rather, the acceptance position of the core pattern is retrieved
         #       in the terminal state.
         if Origin.post_context_id() == -1:
-             info.append(LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n")
+            info.append("    ")
+            info.append(LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n")
 
         return info
 

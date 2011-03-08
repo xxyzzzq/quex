@@ -41,7 +41,7 @@ __header_definitions_txt = """
 def __header_definitions(LanguageDB):
 
     txt = __header_definitions_txt
-    txt = txt.replace("$$GOTO_START_PREPARATION$$", get_address("$re-start"))
+    txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start"))
     return txt
 
 def __local_variable_definitions(VariableDB):
@@ -78,20 +78,28 @@ def __local_variable_definitions(VariableDB):
         return result
 
     def __code(txt, name, info):
-        type = info[0]
+        variable_type = info[0]
+        variable_init = info[1]
+        if type(variable_init) != list: variable_init = [ variable_init ]
+
         if len(info) > 2 and info[2] != None: 
             if info[2] != 0:
                 name  += "[%s]" % repr(info[2])
-                if type.find("QUEX_TYPE_GOTO_LABEL"): name = "(" + name + ")"
-                if info[1] != None: value = " = " + info[1]
-                else:               value = "/* un-initilized */"
+                if variable_type.find("QUEX_TYPE_GOTO_LABEL"): name = "(" + name + ")"
+                if variable_init != None: value = [" = "] + variable_init
+                else:                  value = ["/* un-initilized */"]
             else:
-                type  += "*"
-                value  = " = 0x0"
+                variable_type  += "*"
+                value  = [" = 0x0"]
         else:
-            value = " = " + info[1]
+            value = [" = "] + variable_init
 
-        txt.append("    %s%s %s%s%s;\n" % (type, " " * (30-len(type)), name, " " * (30 - len(name)), value))
+        txt.append("    %s%s %s%s" % \
+                   (variable_type, 
+                    " " * (30-len(variable_type)), name, 
+                    " " * (30 - len(name))))
+        txt.extend(value)
+        txt.append(";\n")
 
     # L   = max(map(lambda info: len(info[0]), VariableDB.keys()))
     txt = []
@@ -145,7 +153,7 @@ def __local_variable_definitions(VariableDB):
             for name, info in condition_group:
                 __code(txt, name, info)
             
-    return "".join(txt)
+    return txt
          
 __function_signature = """
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  
@@ -167,6 +175,8 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 """
 
 reload_forward_str = """
+    __quex_assert_no_passage();
+__RELOAD_FORWARD:
     __quex_debug("__RELOAD_FORWARD");
 
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
@@ -198,8 +208,9 @@ __RELOAD_INIT_STATE:
 """
 
 reload_backward_str = """
+    __quex_assert_no_passage();
+__RELOAD_BACKWARD:
     __quex_debug("__RELOAD_BACKWARD");
-
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
         __quex_debug_reload_before();
@@ -226,6 +237,17 @@ comment_on_post_context_position_init_str = """
      *       to reset the input position.                                              */
 """
 
+def __reload_definitions(InitialStateIndex):
+    txt = []
+    txt.append(Address("$reload-FORWARD", None, reload_forward_str))
+    txt.append(blue_print(reload_init_state_forward_str,
+                          [["$$INIT_STATE$$",    __nice(InitialStateIndex)],
+                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF")]]))
+    # Append empty references to make sure that the addresses are implemented.
+    txt.append(Reference("$entry", InitialStateIndex, Code=""))
+    txt.append(Reference("$terminal-EOF", Code=""))
+    txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
+    return txt
 
 def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
                         function_body, PostConditionedStateMachineID_List, PreConditionIDList,
@@ -266,8 +288,9 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
         for name in ModeNameList:
             txt.append("#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name))
 
+    txt.extend(LanguageDB["$local-variable-defs"](local_variable_list))
+
     txt.extend([
-        LanguageDB["$local-variable-defs"](local_variable_list),
         comment_on_post_context_position_init_str,
         "#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n",
         "       || defined(QUEX_OPTION_ASSERTS)\n",
@@ -297,12 +320,6 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
         "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                \
         "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n")
 
-    txt.append(Address("$reload-FORWARD", None, reload_forward_str))
-    txt.append(blue_print(reload_init_state_forward_str,
-                          [["$$INIT_STATE$$",    __nice(InitialStateIndex)],
-                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF")]]))
-    txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
-
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
     if not StandAloneEngineF: 
@@ -317,6 +334,8 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     return txt
 
 __terminal_router_prolog_str = """
+    __quex_assert_no_passage();
+__TERMINAL_ROUTER:
     __quex_debug("terminal router");
     /*  if last_acceptance => goto correspondent acceptance terminal state */
     /*  else               => execute defaul action                        */
@@ -386,7 +405,6 @@ $$FAILURE_ACTION$$
 
 
 __on_continue_reentry_preparation_str = """
-  
 $$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
@@ -478,7 +496,8 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     safe_pattern = safe_pattern.replace("\\v", "\\\\v")
     txt = [
             Address("$terminal", state_machine_id,
-                      "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern) \
+                      "%s:\n" % get_label("$terminal", state_machine_id)                                \
+                    + "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern) \
                     + "    " + LanguageDB["$input/increment"] + "\n"),
             Address("$terminal-direct", state_machine_id), 
             "\n",
@@ -603,19 +622,20 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     if PreConditionIDList == []: precondition_involved_f = "0"
     else:                        precondition_involved_f = "1"
 
-    router = [ "    __quex_assert_no_passage();\n", 
-               Address("$terminal-router", None,
-                    [
-                        blue_print(__terminal_router_prolog_str,
-                        [
-                         ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
-                         ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-                         ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
-                        ]),
-                        Reference("$address", get_address("$state-router")), ";",
-                        __terminal_router_epilog_str, 
-                    ])
-              ]
+    prolog = __terminal_state_prolog  
+
+    router = Address("$terminal-router", None,
+                  [
+                      blue_print(__terminal_router_prolog_str,
+                      [
+                       ["$$RESTORE_LAST_ACCEPTANCE_POS$$",  LanguageDB["$input/seek_position"]("last_acceptance_input_position")],
+                       ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
+                       ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
+                      ]),
+                      Reference("$state-router"), ";",
+                      __terminal_router_epilog_str, 
+                  ])
+             
                      
     epilog = blue_print(__terminal_state_epilog, 
              [
@@ -636,8 +656,8 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                           ])
 
     txt = []
-    txt.extend(router)
-    txt.append(__terminal_state_prolog)
+    txt.append(router)
+    txt.append(prolog)
     txt.extend(specific_terminal_states)
     txt.append(epilog)
     txt.append(reentry_preparation)
