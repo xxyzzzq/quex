@@ -133,6 +133,7 @@ db["C++"] = {
     "$assignment":           lambda variable, value: "%s = %s;\n" % (variable, value),
     "$goto-last_acceptance": "QUEX_GOTO_TERMINAL(last_acceptance);\n",
     #
+    "$reload-definitions":   cpp.__reload_definitions,
     "$header-definitions":   cpp.__header_definitions,
     "$frame":                cpp.__frame_of_all,
     "$goto-mode":            lambda Mode: "QUEX_NAME(enter_mode)(&self, &" + Mode + ");",

@@ -116,7 +116,7 @@ def get_skipper(TriggerSet):
                          ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
                          ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
                          ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
-                         ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
+                         ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out", skipper_index)],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
                          ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
                          # When things were skipped, no change to acceptance flags or modes has

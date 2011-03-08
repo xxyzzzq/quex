@@ -82,15 +82,15 @@ def do(State, StateIdx, SMD):
     LanguageDB = Setup.language_db
     InitStateF = (StateIdx == SMD.sm().init_state_index)
 
-    txt = [ Address("$drop-out-direct", StateIdx) ] 
+    txt = [ Address("$drop-out", StateIdx) ] 
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
-        txt.extend([ "    ", Reference("$goto", get_address("$terminal-FAILURE")) ])
+        txt.extend([ "    goto ", Reference("$terminal-FAILURE"), ";" ])
     else:
         if SMD.forward_lexing_f(): 
             txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
         else:
-            txt.extend(["    ", Reference("$goto", get_address("$terminal-general-bw"))])
+            txt.extend(["    goto ", Reference("$terminal-general-bw"), ";"])
 
     return txt 
 
@@ -98,10 +98,10 @@ def _on_detection_code(Origin):
     global LanguageDB 
     # Case if no un-conditional acceptance, the goto general terminal
     if type(Origin) == type(None): 
-        return [ Reference("$goto-last_acceptance", LanguageDB) ]
+        return [ Reference("$terminal-router", Code=LanguageDB["$goto-last_acceptance"]) ]
 
     assert Origin.is_acceptance()
-    return [ Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id)) ]
+    return [ "goto ", Reference("$terminal-direct", Origin.state_machine_id), ";" ]
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
@@ -111,10 +111,10 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return [ Reference("$goto", "__TERMINAL_ROUTER") ]
+        return [ "goto ", Reference("$terminal-router"), ";" ]
 
     elif not state.is_acceptance():
-        return [ Reference("$goto", "__TERMINAL_ROUTER") ]
+        return [ "goto ", Reference("$terminal-router"), ";" ]
 
     else:
         # -- acceptance state drop outs

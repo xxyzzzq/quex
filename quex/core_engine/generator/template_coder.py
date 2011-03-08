@@ -170,7 +170,7 @@ def _do(CombinationList, SMD):
         template = TemplateState(combination, SMD.sm().get_id(), index.get(), 
                                  prototype)
         target_state_index_list.add(template.core().state_index)
-        target_state_index_list.add(get_address("$drop-out-direct", template.core().state_index))
+        target_state_index_list.add(get_address("$drop-out", template.core().state_index))
         template_list.append(template)
 
         # -- collect indices of involved states
@@ -182,7 +182,7 @@ def _do(CombinationList, SMD):
                 target_state_index_list.add(state_index)
             else:
                 # 'goto drop-out' is coded in state index list as 'minus template index'
-                target_state_index_list.add(get_address("$drop-out-direct", template.core().state_index))
+                target_state_index_list.add(get_address("$drop-out", template.core().state_index))
 
         # -- if the template is non-uniform, then we need a router that maps to
         #    each state entry of involved states (e.g. for recursion and after reload).
@@ -397,7 +397,7 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
         txt = ["{ "]
         for index in Array:
             if index != None: elm = "QUEX_LABEL(%i)" % transition.get_index(index, SMD)
-            else:             elm = "QUEX_LABEL(%i)" % get_address("$drop-out-direct", template_index)
+            else:             elm = "QUEX_LABEL(%i)" % get_address("$drop-out", template_index)
             txt.append(elm + ", ")
         txt.append("}")
         return "".join(txt)

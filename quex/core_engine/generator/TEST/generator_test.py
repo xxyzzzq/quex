@@ -37,7 +37,8 @@ else:
     SHOW_BUFFER_LOADS_STR = "-DQUEX_OPTION_DEBUG_SHOW_LOADS"
 
 # Switch: Turn off some warnings
-if False:
+#         'False' --> show (almost) all compiler warnings
+if True:
     IGNORE_WARNING_F = True
 else:
     IGNORE_WARNING_F = False
@@ -337,8 +338,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     for i, elm in enumerate(code):
         if type(elm) != str: 
-            print "##", i
-            print "##", type(elm), elm.__class__.__name__, elm
+            print "##", repr(type(elm)), elm.__class__.__name__, repr(elm.code)
             sys.exit()
 
     return txt + "".join(code)

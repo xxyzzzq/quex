@@ -3,13 +3,12 @@ from copy import deepcopy
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 import quex.core_engine.generator.languages.core         as languages
-from   quex.core_engine.generator.languages.address      import get_address, Reference
+from   quex.core_engine.generator.languages.address      import get_address, get_label, Reference
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.generator.template_coder         as template_coder
 import quex.core_engine.generator.paths_coder            as paths_coder
-from   quex.input.setup import setup as Setup
-
+from   quex.input.setup                                  import setup as Setup
 
 def do(SMD, TemplateHasBeenCodedBeforeF=False):
     """Returns the program code implementing the StateMachine's behavior.
@@ -33,7 +32,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     local_variable_db    = {}
     routed_state_list    = set([state_machine.init_state_index])
     if SMD.backward_lexing_f() or SMD.backward_input_position_detection_f():
-        routed_state_list.add(get_address("$drop-out-direct", state_machine.init_state_index))
+        routed_state_list.add(get_address("$drop-out", state_machine.init_state_index))
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -75,7 +74,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         state_code = state_coder.do(state, state_index, SMD)
 
         if not SMD.dead_end_state_db().has_key(state_index): 
-            drop_out_address = get_address("$drop-out-direct", state_index)
+            drop_out_address = get_address("$drop-out", state_index)
             routed_state_list.add(drop_out_address)
 
         if SMD.forward_lexing_f():
@@ -90,12 +89,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
 
-    # Determine the terminals that are referred by 'set-last_acceptance'
-    for elm in txt:
-        if isinstance(elm, Reference) and elm.reference_type == "$set-last_acceptance":
-            routed_state_list.add(elm.label)
-    
-    return txt, local_variable_db, get_state_router_info(routed_state_list, SMD)
+    return txt, local_variable_db, routed_state_list
 
 def get_sorted_state_list(StateDict):
     """Sort the list in a away, so that states that are used more
@@ -118,24 +112,4 @@ def get_sorted_state_list(StateDict):
     # db[x[0]] is the frequence that state 'state_index' as entered.
     state_list.sort(key=lambda x: db[x[0]], reverse=True)
     return state_list
-
-def get_state_router_info(StateIndexList, SMD):
-    LanguageDB = Setup.language_db
-
-    # Make sure, that for every state the 'drop-out' state is also mentioned
-    result = [None] * len(StateIndexList)
-    for i, index in enumerate(StateIndexList):
-        if index >= 0:
-            # Transition to state entry
-            code = transition.get_transition_to_state(index, SMD)
-            result[i] = (index, code)
-        else:
-            # Transition to a templates 'drop-out'
-            code = "goto " + LanguageDB["$label"]("$drop-out-direct", - index) + ";"
-            result[i] = (get_address("$drop-out-direct", - index), code)
-    return result
-
-
-
-
 

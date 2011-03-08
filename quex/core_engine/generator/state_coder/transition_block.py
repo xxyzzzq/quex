@@ -37,7 +37,7 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_
 
         if   target == None:
             # Classical Drop-Out: no further state transition
-            target = TriggerAction([ transition.get_transition_to_drop_out(CurrentStateIdx, ReloadF=False) ],
+            target = TriggerAction([ transition.get_transition_to_drop_out(CurrentStateIdx) ],
                                    DropOutF=True)
 
         elif target == -1:
@@ -97,9 +97,6 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
         code = __get_code(TriggerMap)
-        # No transition to 'drop-out' shall actually occur in the map
-        label_db_unregister_usage(transition.get_label_of_drop_out(StateIdx, ReloadF=False))
-
     else:
         # We can actually be sure, that the Buffer Limit Code is filtered
         # out, since this is the task of the regular expression parser.

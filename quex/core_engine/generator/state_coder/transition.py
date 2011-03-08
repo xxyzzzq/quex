@@ -1,5 +1,5 @@
 from quex.input.setup import setup as Setup
-from quex.core_engine.generator.languages.address import get_address, Address, Reference
+from quex.core_engine.generator.languages.address import get_address, get_label, Address, Reference
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
@@ -7,10 +7,10 @@ def do(TargetInfo, CurrentStateIdx, SMD):
     # (*) Normal Transitions: goto + label
     #
     if TargetInfo == None:
-        return get_transition_to_drop_out(CurrentStateIdx, ReloadF=False)
+        return get_transition_to_drop_out(CurrentStateIdx)
 
     elif TargetInfo == -1:
-        return get_transition_to_drop_out(CurrentStateIdx, ReloadF=True)
+        return get_transition_to_reload(CurrentStateIdx)
 
     else:
         return get_transition_to_state(TargetInfo, SMD)
@@ -20,11 +20,13 @@ def get_transition_to_state(TargetInfo, SMD):
     #if type(TargetInfo) in [int, long] and SMD != None and SMD.dead_end_state_db().has_key(TargetInfo):
     #    return __get_transition_to_dead_end_state(TargetInfo, SMD)
 
-    return Reference("$goto", get_real_address(TargetInfo, SMD))
+    return Reference("$entry", get_real_address(TargetInfo, SMD),
+                     Code="goto %s;" % get_label("$entry", get_real_address(TargetInfo, SMD)) )
 
-def get_transition_to_drop_out(CurrentStateIdx, ReloadF):
+def get_transition_to_drop_out(CurrentStateIdx):
     LanguageDB = Setup.language_db
-    return Reference("$goto", get_label_of_drop_out(CurrentStateIdx, ReloadF))
+    return Reference("$entry", get_address("$drop-out", CurrentStateIdx),
+                     Code="goto %s;" % get_label("$drop-out", CurrentStateIdx))
 
 def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     LanguageDB = Setup.language_db
@@ -32,8 +34,10 @@ def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     if SMD != None and SMD.backward_lexing_f(): direction = "BACKWARD"
     else:                                       direction = "FORWARD"
 
-    if ReturnStateIndexStr != None: state_reference = ReturnStateIndexStr
-    else:                           state_reference = Reference("$reference", StateIdx)
+    if ReturnStateIndexStr != None: 
+        state_reference = ReturnStateIndexStr
+    else:                           
+        state_reference = Reference("$entry", StateIdx, Code="QUEX_LABEL(%s)" % StateIdx, RoutingF=True)
 
     if SMD != None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
         return [ "goto __RELOAD_INIT_STATE;" ]
@@ -41,11 +45,13 @@ def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     elif SMD == None or not SMD.backward_input_position_detection_f():
         return [ 
                 "QUEX_GOTO_RELOAD(",
-                Reference("$address", get_address("$reload-%s" % direction)),
+                Reference("$reload-%s" % direction),
                 ", ",
                 state_reference,
                 ", ",
-                Reference("$reference", get_address("$drop-out-direct", StateIdx)), 
+                Reference("$drop-out", StateIdx, 
+                          Code="QUEX_LABEL(%s)" % get_address("$drop-out", StateIdx), 
+                          RoutingF=True), 
                 ");" ]
 
     else:
@@ -56,15 +62,15 @@ def get_transition_to_terminal(Origin):
 
     # No unconditional case of acceptance 
     if type(Origin) == type(None): 
-        return Reference("$goto-last_acceptance", LanguageDB) 
+        return [ "goto ", Reference("$terminal-router", Code=LanguageDB["$goto-last_acceptance"]) ]
 
     assert Origin.is_acceptance()
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
     if Origin.post_context_id() == -1:
-        return Reference("$goto", get_address("$terminal", Origin.state_machine_id))
+        return [ "goto ", Reference("$terminal", Origin.state_machine_id)]
     else:
-        return Reference("$goto", get_address("$terminal-direct", Origin.state_machine_id))
+        return [ "goto ", Reference("$terminal-direct", Origin.state_machine_id)]
 
 def get_index(StateIdx, SMD):
     # During forward lexing (main lexer process) there are dedicated terminal states.
@@ -90,21 +96,6 @@ def get_real_address(TargetStateIdx, SMD):
     else:
         # The very normal transition to another state
         return TargetStateIdx
-
-def get_label_of_drop_out(CurrentStateIdx, ReloadF=False):
-    assert type(ReloadF) == bool
-    LanguageDB = Setup.language_db
-
-    if not ReloadF: 
-        # Drop Out
-        # The current interval does not contain the buffer limit
-        # code (Otherwise, TargetStateIdx == -1). 
-        # Thus, no reload is required.
-        return LanguageDB["$label"]("$drop-out-direct", CurrentStateIdx)
-
-    else:
-        # 'Target == -1' => buffer limit code; reload required
-        return LanguageDB["$label"]("$reload", CurrentStateIdx)
 
 def get_address_of_terminal(Origin):
     assert Origin.is_acceptance()
