@@ -90,7 +90,7 @@ def do(State, StateIdx, SMD):
         if SMD.forward_lexing_f(): 
             txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
         else:
-            txt.extend(["    goto %s;" % get_label("$terminal-general-bw")])
+            txt.extend(["    goto %s;" % get_label("$terminal-general-bw", U=True)])
 
     return txt 
 
@@ -98,7 +98,7 @@ def _on_detection_code(Origin):
     global LanguageDB 
     # Case if no un-conditional acceptance, the goto general terminal
     if type(Origin) == type(None): 
-        get_label("$terminal-router") # Note that the terminal router is referenced
+        get_label("$terminal-router", U=True) # Note that the terminal router is referenced
         return [ LanguageDB["$goto-last_acceptance"] ]
 
     assert Origin.is_acceptance()
@@ -112,10 +112,10 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return [ "goto %s;" % get_label("$terminal-router") ]
+        return [ "goto %s;" % get_label("$terminal-router", U=True) ]
 
     elif not state.is_acceptance():
-        return [ "goto %s; " % get_label("$terminal-router") ]
+        return [ "goto %s; " % get_label("$terminal-router", U=True) ]
 
     else:
         # -- acceptance state drop outs

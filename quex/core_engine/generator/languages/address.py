@@ -30,7 +30,6 @@ class AddressDB:
            as defined by '__address_db_special'. For those the string itself
            is returned.
         """
-        assert NameOrTerminalID != "STATE_102_DROP_OUT"
         # Special addresses are not treated, but returned as string
         if NameOrTerminalID in self.__special:
             return NameOrTerminalID
@@ -152,6 +151,7 @@ class Address:
                    (May be empty, so that that only the label is not printed.)
         """
         self.label = get_label(LabelType, LabelTypeArg)
+
         if   Code == None:       self.code = [ self.label, ":\n" ]
         elif type(Code) == list: self.code = Code
         else:                    self.code = [ Code ]
