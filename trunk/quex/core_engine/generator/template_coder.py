@@ -396,8 +396,8 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
     def __array_to_code(Array, ComputedGotoF=False):
         txt = ["{ "]
         for index in Array:
-            if index != None: elm = "QUEX_LABEL(%i)" % transition.get_index(index, SMD)
-            else:             elm = "QUEX_LABEL(%i)" % get_address("$drop-out", template_index)
+            if index != None: elm = "QUEX_LABEL(%i)" % get_address("$entry", index, U=True, R=True)
+            else:             elm = "QUEX_LABEL(%i)" % get_address("$drop-out", template_index, U=True, R=True)
             txt.append(elm + ", ")
         txt.append("}")
         return "".join(txt)

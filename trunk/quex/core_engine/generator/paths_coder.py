@@ -84,7 +84,7 @@ import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_inf
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
 import quex.core_engine.generator.template_coder               as template_coder
-from   quex.core_engine.generator.languages.address            import Address, get_label, get_address
+from   quex.core_engine.generator.languages.address            import Address, get_label, get_address, get_label_of_address
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 import quex.core_engine.state_machine.compression.paths        as paths 
@@ -440,9 +440,8 @@ def __state_entries(txt, PathWalker, routed_state_index_set, SMD):
             if PathWalker.uniform_state_entries_f() and PathN != 1:
                 require_path_end_state_variable_f = True
                 end_state_index = path.sequence()[-1][0]
-                entry_txt.append("    path_end_state                 = ")
-                entry_txt.append("QUEX_LABEL(%i), " % get_address("$entry", end_state_index, U=True, R=True))
-                entry_txt.append(";\n")
+                entry_txt.append("    path_end_state                 = QUEX_LABEL(%i);\n" \
+                                 % get_address("$entry", end_state_index, U=True, R=True))
                 
             entry_txt.append("    ")
             entry_txt.append(LanguageDB["$assignment"](
@@ -484,7 +483,7 @@ def __path_walker(txt, PathWalker, SMD):
 
     if PathWalker.uniform_state_entries_f():
         txt.append("\n        ")
-        txt.extend("goto %s;\n" % get_label_of_address("$entry", PathWalkerID, U=True))
+        txt.extend("goto %s;\n" % get_label_of_address(PathWalkerID, U=True))
         txt.append("    ")
         # else if ( *path_iterator == PTC ) { ... /* reached terminating zero */
         txt.append(LanguageDB["$elseif"] \
@@ -574,7 +573,7 @@ def __end_state_router(txt, PathWalker, SMD):
         # (i) There is only one path for the pathwalker, then there is only
         #     one terminal and it is determined at compilation time.
         txt.append("\n        ")
-        txt.append(transition.get_transition_to_state(PathList[0].end_state_index(), SMD))
+        txt.append(transition.get_transition_to_state(PathList[0].end_state_index()))
         txt.append("\n")
         routed_state_index_list = []
     else:
@@ -582,7 +581,7 @@ def __end_state_router(txt, PathWalker, SMD):
         #      must be determined at run time.
         #   -- At the end of the path, path_iterator == path_end, thus we can identify
         #      the path by comparing simply against all path_ends.
-        txt.append("        " + LanguageDB["$goto-state"]("path_end_state") + "\n")
+        txt.append("        QUEX_GOTO_STATE(path_end_state);\n")
         routed_state_index_list = map(lambda path: path.end_state_index(), PathList)
 
     txt.append("    ")

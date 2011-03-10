@@ -6,6 +6,7 @@ from   quex.core_engine.interval_handling import NumberSet, Interval
 from   generator_test                     import compile_and_run, create_customized_analyzer_function, __Setup_init_language_database
 from   quex.input.indentation_setup       import IndentationSetup
 import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
+from   quex.core_engine.generator.languages.address               import init_address_handling
 
 if "--hwut-info" in sys.argv:
     print "Indentation Counting"
@@ -27,6 +28,7 @@ EndStr = \
 def test(TestStr, IndentationSetup):
     Language = "Cpp"
     __Setup_init_language_database("Cpp")
+    init_address_handling({})
     code_str, local_variable_db = indentation_counter.do({"indentation_setup": IndentationSetup})
 
     txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 

@@ -30,9 +30,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     txt                  = []
     done_state_index_set = set([])
     local_variable_db    = {}
-    routed_state_list    = set([state_machine.init_state_index])
-    if SMD.backward_lexing_f() or SMD.backward_input_position_detection_f():
-        routed_state_list.add(get_address("$drop-out", state_machine.init_state_index))
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -47,7 +44,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         code, state_list, variable_db, state_index_set = \
                 paths_coder.do(SMD, Setup.compression_path_uniform_f)
         txt.extend(code)
-        routed_state_list.update(state_list)
         local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
     
@@ -57,7 +53,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         code, state_list, variable_db, state_index_set = \
                 template_coder.do(SMD, Setup.compression_template_coef)
         txt.extend(code)
-        routed_state_list.update(state_list)
         local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
         
@@ -73,15 +68,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         # Get the code for the state
         state_code = state_coder.do(state, state_index, SMD)
 
-        if not SMD.dead_end_state_db().has_key(state_index): 
-            drop_out_address = get_address("$drop-out", state_index)
-            routed_state_list.add(drop_out_address)
-
-        if SMD.forward_lexing_f():
-            routed_state_list.add(transition.get_index(state_index, SMD))
-        elif SMD.backward_lexing_f():
-            routed_state_list.add(transition.get_index(state_index, SMD))
-
         # Some states are not coded (some dead end states)
         if len(state_code) == 0: continue
 
@@ -89,7 +75,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
 
-    return txt, local_variable_db, routed_state_list
+    return txt, local_variable_db
 
 def get_sorted_state_list(StateDict):
     """Sort the list in a away, so that states that are used more

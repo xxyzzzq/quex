@@ -31,10 +31,10 @@ def do(state, StateIdx, SMD=False):
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.
         if len(state_stub) == 0: return []
-        return [ Address("$entry", StateIdx,
-                         ["\n    " + LanguageDB["$debug-state"](StateIdx)]
-                         + state_stub) 
-        ]
+        return [ get_label("$entry", StateIdx), ":\n",
+                "    ", LanguageDB["$debug-state"](StateIdx)
+               ] + state_stub 
+        
 
     # (*) Normal States
     TriggerMap = state.transitions().get_trigger_map()
@@ -74,7 +74,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
 
         else:
             def _on_detection_code(Origin):
-                return [ transition.get_transition_to_terminal(Origin) ]
+                return transition.get_transition_to_terminal(Origin)
 
             return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
                                                            _on_detection_code)
@@ -83,7 +83,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # When checking a pre-condition no dedicated terminal exists. However, when
         # we check for pre-conditions, a pre-condition flag needs to be set.
         return acceptance_info.backward_lexing(state.origins().get_list()) + \
-               [ "goto %s;" % get_label("$terminal-general-bw") ] 
+               [ "goto %s;" % get_label("$terminal-general-bw", U=True) ] 
 
 
     elif SMD.backward_input_position_detection_f():
@@ -92,7 +92,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # stored at the entry of the state.
         return [ LanguageDB["$input/decrement"], "\n"] + \
                acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
-               [ "goto %s;" % get_label("$terminal-general-bw") ] 
+               [ "goto %s;" % get_label("$terminal-general-bw", U=True) ] 
 
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode

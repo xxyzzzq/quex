@@ -2,6 +2,7 @@ from   quex.frs_py.string_handling                   import       blue_print
 from   quex.input.setup                              import       setup as Setup
 import quex.core_engine.state_machine.index          as           sm_index
 import quex.core_engine.generator.state_coder.transition_block as transition_block
+from   quex.core_engine.generator.languages.address  import       get_label
 from   quex.core_engine.interval_handling            import       Interval
 import quex.output.cpp.action_code_formatter         as           action_code_formatter
 import quex.lexer_mode                               as           lexer_mode
@@ -31,7 +32,7 @@ class IndentationCounter(transition_block.TriggerAction):
             if self.number != -1: add_str = "%i" % self.number
             else:                 add_str = "me->" + self.variable_name
             return "me->counter._indentation += %s;" % add_str + \
-                   LanguageDB["$goto"]("$entry", self.state_index)
+                   "goto %s;" % get_label("$entry", self.state_index, U=True)
         
         # Grids lie on a grid:
         elif self.type == "grid":
@@ -43,7 +44,7 @@ class IndentationCounter(transition_block.TriggerAction):
                     mask = (1 << int(log2)) - 1
                     return "me->counter._indentation &= ~ ((QUEX_TYPE_INDENTATION)0x%X);\n" % mask + \
                            "me->counter._indentation += %i;\n" % self.number + \
-                           LanguageDB["$goto"]("$entry", self.state_index)
+                           "goto %s;" % get_label("$entry", self.state_index, U=True)
                 else:
                     add_str = "%i" % self.number
             else:   
@@ -87,16 +88,16 @@ INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY:
 """
 
 epilog_txt = """
-$$DROP_OUT_DIRECT$$
+$$DROP_OUT_DIRECT$$:
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
 $$END_PROCEDURE$$                           
-    $$GOTO_START$$                           
+    goto $$GOTO_START$$;
 
-$$LOOP_REENTRANCE$$
+$$LOOP_REENTRANCE$$:
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     goto INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY;
 
-$$RELOAD$$
+$$RELOAD$$:
     /* -- In the case of 'indentation counting' we do not worry about the lexeme at all --
      *    HERE, WE DO! We can only set the lexeme start to the current reference_p, i.e.
      *    the point of the last newline!
@@ -107,7 +108,7 @@ $$RELOAD$$
     if( $$INPUT_EQUAL_BUFFER_LIMIT_CODE$$ ) {
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-            $$GOTO_TERMINAL_EOF$$
+            goto $$GOTO_TERMINAL_EOF$$;
         } else {
             QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                                    post_context_start_position, PostContextStartPositionN);
@@ -192,7 +193,7 @@ def do(Data):
     iteration_code = transition_block.do(trigger_map, 
                                          counter_index, 
                                          DSM=None, 
-                                         GotoReload_Str=LanguageDB["$goto"]("$reload", counter_index))
+                                         GotoReload_Str="goto %s;" % get_label("$reload", counter_index))
 
     comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
 
@@ -224,17 +225,17 @@ def do(Data):
                        ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$COUNTER_INDEX$$[0]")],
                        ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                       ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry",  counter_index)],
+                       ["$$LOOP_REENTRANCE$$",                get_label("$entry",  counter_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                       ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", counter_index)],
-                       ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out", counter_index)],
+                       ["$$RELOAD$$",                         get_label("$reload", counter_index)],
+                       ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", counter_index)],
                        ["$$COUNTER_INDEX$$",                  repr(counter_index)],
-                       ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
+                       ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
                        # When things were skipped, no change to acceptance flags or modes has
                        # happend. One can jump immediately to the start without re-entry preparation.
-                       ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
-                       ["$$END_PROCEDURE$$",            end_procedure],
-                       ["$$BAD_CHARACTER_HANDLING$$",   get_bad_character_handler(Mode, IndentationSetup, counter_index)],
+                       ["$$GOTO_START$$",                     get_label("$start", U=True)], 
+                       ["$$END_PROCEDURE$$",                  end_procedure],
+                       ["$$BAD_CHARACTER_HANDLING$$",         get_bad_character_handler(Mode, IndentationSetup, counter_index)],
                       ])
 
     txt = [prolog]
