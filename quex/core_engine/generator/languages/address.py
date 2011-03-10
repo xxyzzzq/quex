@@ -1,4 +1,5 @@
 import quex.core_engine.state_machine.index         as index
+from   copy import copy
 
 def __nice(SM_ID): 
     return repr(SM_ID).replace("L", "").replace("'", "")
@@ -29,6 +30,7 @@ class AddressDB:
            as defined by '__address_db_special'. For those the string itself
            is returned.
         """
+        assert NameOrTerminalID != "STATE_102_DROP_OUT"
         # Special addresses are not treated, but returned as string
         if NameOrTerminalID in self.__special:
             return NameOrTerminalID
@@ -42,11 +44,23 @@ class AddressDB:
         self.__db[NameOrTerminalID] = entry
         return entry
 
+    def set_direct_transitions(self, DirectTransitionDB):
+        assert type(DirectTransitionDB) == dict
+        self.__direct_transition_db = DirectTransitionDB
+
+    def get_real(self, StateIndex):
+        if self.__direct_transition_db.has_key(StateIndex):
+            result = self.__direct_transition_db[StateIndex]
+            assert type(result) in [int, long]
+            return result
+
+        return StateIndex
+
 __address_db = AddressDB()
 
 __label_db = {
     # Let's make one thing clear: addresses of labels are aligned with state indices:
-    "$entry":                 lambda StateIdx:   StateIdx,
+    "$entry":                 lambda StateIdx:    __address_db.get_real(StateIdx),
     # 
     "$terminal":              lambda TerminalIdx: __address_db.get("TERMINAL_%s"        % __nice(TerminalIdx)),
     "$terminal-router":       lambda NoThing:     __address_db.get("__TERMINAL_ROUTER"),
@@ -60,18 +74,28 @@ __label_db = {
     "$reload":                lambda StateIdx:    __address_db.get("STATE_%s_RELOAD"    % __nice(StateIdx)),
     "$reload-FORWARD":        lambda StateIdx:    __address_db.get("__RELOAD_FORWARD"),
     "$reload-BACKWARD":       lambda StateIdx:    __address_db.get("__RELOAD_BACKWARD"),
-    #"$template":             lambda StateIdx:   "TEMPLATE_%s"       % __nice(StateIdx),
-    #"$pathwalker":           lambda StateIdx:   "PATH_WALKER_%s"    % __nice(StateIdx),
-    #"$pathwalker-router":    lambda StateIdx:   "PATH_WALKER_%s_STATE_ROUTER" % __nice(StateIdx),
-    #"$entry-stub":           lambda StateIdx:   "STATE_%s_STUB"     % __nice(StateIdx),
-    "$drop-out":              lambda StateIdx:    __address_db.get("STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx)),
+    "$drop-out":              lambda StateIdx:    __address_db.get("STATE_%s_DROP_OUT" % __nice(StateIdx)),
     "$re-start":              lambda NoThing:     __address_db.get("__REENTRY_PREPARATION"),
     "$start":                 lambda NoThing:     __address_db.get("__REENTRY"),
     "$init_state_fw_transition_block": lambda NoThing: "INIT_STATE_TRANSITION_BLOCK",
 }
 
-def get_address(Type, Arg=None):
-    """RETURNS A NUMBER that can be potentially be used for 
+__referenced_label_set = set([])
+__routed_address_set   = set([])
+
+def init_address_handling(DirectTransitionDB):
+    __referenced_label_set.clear()
+    __routed_address_set.clear()
+    __address_db.set_direct_transitions(DirectTransitionDB)
+
+def get_address_set_subject_to_routing():
+    return __routed_address_set
+
+def get_address(Type, Arg=None, U=False, R=False):
+    """U -- mark as 'used' if True
+       R -- mark as subject to 'routing' if True
+    
+       RETURNS A NUMBER that can be potentially be used for 
        routing (i.e. "switch( index ) { case N: goto _address; ... "
     """
     global __label_db
@@ -79,81 +103,48 @@ def get_address(Type, Arg=None):
 
     assert type(result) in [int, long], \
            "Label type '%s' is not suited for routing." % Type
+    
+    if U: __referenced_label_set.add(get_label_of_address(result))
+    if R: __routed_address_set.add(__address_db.get_real(result))
+
     return result
 
-def get_label(LabelType, Arg=None):
-    """RETURNS A STRING, that can be used directly for a goto statement."""
+def get_label(LabelType, Arg=None, U=False, R=False):
+    """U -- mark as 'used' if True
+       R -- mark as subject to 'routing' if True
+    
+       RETURNS A STRING, that can be used directly for a goto statement.
+    """
     global __label_db
     label_id = __label_db[LabelType](Arg)
-    if type(label_id) in [int, long]: return get_label_of_address(label_id)
-    else:                             return label_id
+    if type(label_id) in [int, long]: result = get_label_of_address(label_id)
+    else:                             result = label_id
 
-def get_label_of_address(Adr):
-    """RETURNS A STRING--the label that belongs to a certain (numeric) address."""
-    return "_%s" % __nice(Adr)
+    assert type(result) in [str, unicode]
 
-## 
-__label_printed_list_unique               = set([])
-__label_used_list_unique                  = set([])
-__label_used_in_computed_goto_list_unique = set([])
+    if U: 
+        __referenced_label_set.add(result)
+    if R: 
+        assert type(label_id) in [int, long], \
+               "Only labels that expand to addresses can be routed."
+        __routed_address_set.add(__address_db.get_real(label_id))
 
-def label_db_marker_init():
-    global __label_printed_list_unique
-    global __label_used_list_unique
+    return result
 
-    __label_printed_list_unique.clear()
-    ## __label_printed_list_unique["__TERMINAL_ROUTER"] = True
-    __label_used_list_unique.clear()
-
-def label_db_register_usage(Label):
-    __label_used_list_unique.add(Label)
-    return Label
-
-def label_db_unregister_usage(Label):
-    __label_used_list_unique.remove(Label)
-
-def label_db_get(Type, Index=None, GotoTargetF=False):
-    assert type(Type)  in [str, unicode]
-    assert Index == None or type(Index) in [int, long], \
-           "Error: index '%s' for label type '%s'" % (repr(Index), Type)
-    assert type(GotoTargetF) == bool
-    global __label_printed_list_unique
-    global __label_used_list_unique
-    global __label_db
-
-    label = __label_db[Type](Index)
-
-    if Type in ["$re-start", "$start"]: return label
-
-    # Keep track of any label. Labels which are not used as goto targets
-    # may be deleted later on.
-    if GotoTargetF: __label_used_list_unique.add(label)
-    else:           __label_printed_list_unique.add(label)
-
-    return label
-
-def label_db_marker_get_unused_label_list():
-    global __label_used_list_unique
-    global __label_printed_list_unique
-    global __label_db
+def get_label_of_address(Adr, U=False):
+    """U -- mark as 'used' if True
+       (labels cannot be routed => no option 'R')
     
-    nothing_label_set       = []
-    computed_goto_label_set = []
+       RETURNS A STRING--the label that belongs to a certain (numeric) address.
+    """
 
-    printed       = __label_printed_list_unique
-    used          = __label_used_list_unique
-    computed_goto = __label_used_in_computed_goto_list_unique
-    for label in printed:
-        if label in used: continue
-        if label in computed_goto:
-            computed_goto_label_set.append(label)
-        else:
-            nothing_label_set.append(label)
+    result = "_%s" % __nice(Adr)
+    if U: __referenced_label_set.add(result)
 
-    return nothing_label_set, computed_goto_label_set
+    return result
 
 class Address:
-    def __init__(self, LabelType, LabelTypeArg, Code=None):
+    def __init__(self, LabelType, LabelTypeArg=None, Code=None):
         """LabelType, LabelTypeArg --> used to access __address_db.
 
            Code  = Code that is to be generated, supposed that the 
@@ -165,88 +156,35 @@ class Address:
         elif type(Code) == list: self.code = Code
         else:                    self.code = [ Code ]
 
-class Reference:
-    def __init__(self, LabelType, LabelTypeArg=None, Code=None, RoutingF=False):
-        """LabelType, LabelTypeArg --> used to access __address_db.
-           
-           Code  = Code fragment that references the label.
-
-           RoutingF = The existence of this reference requires a mentioning 
-                      in the state router table.
-        """
-        self.label = get_label(LabelType, LabelTypeArg)
-        if    Code == None:      self.code = [ self.label ]
-        elif type(Code) == list: self.code = Code 
-        else:                    self.code = [ Code ]
-
-        self.routing_f = RoutingF
-        if RoutingF: self.address = get_address(LabelType, LabelTypeArg)
-        else:        self.address = None
-
-_referenced_label_set = set([])
-
 def get_plain_strings(txt_list, RoutingInfoF=True):
-    global _referenced_label_set
-
-    _referenced_label_set.clear()
-
-    while 1 + 1 == 2:
-        prev_size = len(_referenced_label_set)
-        _resolve_references(txt_list)
-        # If no new references where found, then finalize the text
-        if prev_size == len(_referenced_label_set): break
-
-        # Fill in code fragments that have been referenced
-        _fill_text(txt_list)
-
-    # Delete unreferenced code fragments.
-    # Replace integers by indentations
-    print "##", _referenced_label_set
-    return _finalize_text(txt_list)
-
-def _resolve_references(txt_list):
-    global _referenced_label_set
-
-    for i, elm in enumerate(txt_list):
-        if isinstance(elm, Reference):
-            _referenced_label_set.add(elm.label)
-            # A reference has done its work as soon as it has notified about
-            # its existence. Now, its code can replace its position.
-            if len(elm.code) == 1: txt_list[i] = elm.code[0]
-            else:                  txt_list    = txt_list[:i] + elm.code + txt_list[i+1:]
-
-        elif isinstance(elm, Address):
-            # An 'addressed' code fragment may contain further references.
-            _resolve_references(elm.code)
-        
-def _fill_text(txt_list):
-    """If an addressed code fragment is referenced, then it is inserted.
-    """
-    global _referenced_label_set
-
-    for i, elm in enumerate(txt_list):
-        if not isinstance(elm, Address): continue
-        if elm.label in _referenced_label_set: 
-            if len(elm.code) == 1: txt_list[i] = elm.code[0]
-            else:                  txt_list    = txt_list[:i] + elm.code + txt_list[i+1:]
-
-    return txt_list
-
-def _finalize_text(txt_list):
     """-- Replaces unreferenced 'Address' objects by empty strings.
        -- Replaces integers by indentation, i.e. '1' = 4 spaces.
     """
-    for i, elm in enumerate(txt_list):
-        if isinstance(elm, Address):
-            if elm.label in _referenced_label_set: txt_list[i] = "".join(elm.code)
-            else:                                  txt_list[i] = ""; print "##not:", elm.label
-        elif type(elm) in [int, long]:    # Indentation: elm = number of indentations
+    global __referenced_label_set
+
+    size = len(txt_list)
+    i    = -1
+    while i < size - 1:
+        i += 1
+
+        elm = txt_list[i]
+
+        if type(elm) in [int, long]:    
+            # Indentation: elm = number of indentations
             txt_list[i] = "    " * elm
+
+        elif not isinstance(elm, Address): 
+            # Text is left as it is
+            continue
+
+        elif elm.label in __referenced_label_set: 
+            # If an address is referenced, the correspondent code is inserted.
+            txt_list = txt_list[:i] + elm.code + txt_list[i+1:]
+            size += len(elm.code) - 1
+            i    -= 1
+        else:
+            # If an address is not referenced, the it is replaced by an empty string
+            txt_list[i] = ""
 
     return txt_list
 
-def find_routed_address_set(txt_list):
-    result = set([])
-    for i, elm in enumerate(txt_list):
-        if isinstance(elm, Reference) and elm.routing_f: result.add(elm.address)
-    return result

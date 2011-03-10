@@ -1,10 +1,9 @@
 import quex.core_engine.generator.languages.core                   as     languages
 from   quex.core_engine.generator.languages.address                import get_label, get_address, \
-                                                                          get_plain_strings,      \
-                                                                          find_routed_address_set
+                                                                          get_plain_strings, \
+                                                                          init_address_handling, \
+                                                                          get_address_set_subject_to_routing
 import quex.core_engine.generator.state_machine_coder              as     state_machine_coder
-import quex.core_engine.generator.backward_input_position_detector_function as backward_detector_function
-import quex.core_engine.generator.analyzer_function                         as analyzer_function
 from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
 import quex.core_engine.generator.state_router                     as     state_router
 from   quex.input.setup                                            import setup as Setup
@@ -49,7 +48,7 @@ class Generator(GeneratorBase):
             txt.extend(self.backward_detector_function_get(sm))
         
         # (*) Main analyzer function
-        txt.extend(self.analyzer_function_get())
+        txt.extend(self.analyzer_function_get(RequiredLocalVariablesDB))
 
         return txt
 
@@ -69,10 +68,10 @@ class Generator(GeneratorBase):
         assert sm.get_orphaned_state_index_list() == []
 
         dsm = StateMachineDecorator(sm, 
-                                                        "BACKWARD_DETECTOR_" + repr(sm.get_id()),
-                                                        PostContextSM_ID_List = [], 
-                                                        BackwardLexingF=True, 
-                                                        BackwardInputPositionDetectionF=True)
+                                    "BACKWARD_DETECTOR_" + repr(sm.get_id()),
+                                    PostContextSM_ID_List = [], 
+                                    BackwardLexingF=True, 
+                                    BackwardInputPositionDetectionF=True)
 
         function_body, variable_db, routed_address_set = state_machine_coder.do(dsm)
 
@@ -117,7 +116,7 @@ class Generator(GeneratorBase):
             
         return txt
 
-    def analyzer_function_get():
+    def analyzer_function_get(self, RequiredLocalVariablesDB):
         routed_address_set = set([])
         local_variable_db  = copy(RequiredLocalVariablesDB)
         function_body      = []
@@ -125,6 +124,7 @@ class Generator(GeneratorBase):
         # (*) Pre Context State Machine
         #     All pre-context combined in single backward analyzer.
         if self.pre_context_sm_list != []:
+            init_address_handling({})
             code, variable_db, new_routed_address_set = __backward_analyzer()
 
             local_variable_db.update(variable_db)
@@ -133,29 +133,40 @@ class Generator(GeneratorBase):
             
         # (*) Core State Machine
         #     All pattern detectors combined in single forward analyzer
-        code, variable_db, new_routed_address_set = self.__forward_analyzer()
+        dsm = StateMachineDecorator(self.sm, 
+                                    self.state_machine_name, 
+                                    self.post_contexted_sm_id_list, 
+                                    BackwardLexingF=False, 
+                                    BackwardInputPositionDetectionF=False)
+        init_address_handling(dsm.get_direct_transition_to_terminal_db())
+
+        code, variable_db, new_routed_address_set = self.__forward_analyzer(dsm)
 
         local_variable_db.update(variable_db)
         function_body.extend(code)
-        routed_address_set.update(new_routed_address_set)
+
+        code = self.language_db["$variable-definitions"](self.post_contexted_sm_id_list,
+                                                         self.pre_context_sm_id_list, 
+                                                         local_variable_db,
+                                                         self.language_db)
+        function_body = code + function_body
+
+        # At this point in time, the function body is completely defined
+        routed_address_set = get_address_set_subject_to_routing()
 
         if len(routed_address_set) != 0:
-            routed_state_info_list = state_router.get_info(routed_address_set)
+            routed_state_info_list = state_router.get_info(routed_address_set, dsm)
             function_body.extend(state_router.do(routed_state_info_list))
 
         # (*) Pack Pre-Context and Core State Machine into a single function
-        analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
-                                                         self.analyzer_state_class_name, 
-                                                         self.stand_alone_analyzer_f,
-                                                         function_body, 
-                                                         self.post_contexted_sm_id_list, 
-                                                         self.pre_context_sm_id_list,
-                                                         self.mode_name_list, 
-                                                         InitialStateIndex=self.sm.init_state_index,
-                                                         LanguageDB=LanguageDB,
-                                                         LocalVariableDB=local_variable_db) 
+        analyzer_function = self.language_db["$analyzer-func"](self.state_machine_name, 
+                                                               self.analyzer_state_class_name, 
+                                                               self.stand_alone_analyzer_f,
+                                                               function_body, 
+                                                               self.mode_name_list, 
+                                                               LanguageDB=self.language_db)
 
-        txt.extend(get_plain_strings(analyzer_function))
+        return get_plain_strings(analyzer_function)
 
     def __backward_analyzer(self):
         LanguageDB = self.language_db
@@ -187,19 +198,13 @@ class Generator(GeneratorBase):
 
         return txt, variable_db, routed_state_list
 
-    def __forward_analyzer(self):
+    def __forward_analyzer(self, DSM):
         LanguageDB = self.language_db 
 
         txt         = []
         variable_db = {}
 
         assert self.sm.get_orphaned_state_index_list() == []
-
-        dsm = StateMachineDecorator(self.sm, 
-                                    self.state_machine_name, 
-                                    self.post_contexted_sm_id_list, 
-                                    BackwardLexingF=False, 
-                                    BackwardInputPositionDetectionF=False)
 
         # -- [optional] comment state machine transitions 
         if Setup.comment_state_machine_transitions_f:
@@ -211,13 +216,13 @@ class Generator(GeneratorBase):
 
         # -- implement the state machine itself
         state_machine_code, db, routed_address_set = \
-                state_machine_coder.do(dsm)
+                state_machine_coder.do(DSM)
 
         variable_db.update(db)
         txt.extend(state_machine_code)
 
         # -- terminal states: execution of pattern actions  
-        terminal_code, db = LanguageDB["$terminal-code"](dsm,
+        terminal_code, db = LanguageDB["$terminal-code"](DSM,
                                                          self.action_db, 
                                                          self.on_failure_action, 
                                                          self.end_of_stream_action, 
@@ -231,10 +236,7 @@ class Generator(GeneratorBase):
         code = LanguageDB["$reload-definitions"](self.sm.init_state_index)
         txt.extend(code)
 
-        routed_address_set.update(find_routed_address_set(txt))
-
         return txt, variable_db, routed_address_set
-
 
 def do(PatternActionPair_List, OnFailureAction, 
        EndOfStreamAction, Language="C++", StateMachineName="",

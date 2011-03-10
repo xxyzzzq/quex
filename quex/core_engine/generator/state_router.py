@@ -1,6 +1,7 @@
-from quex.input.setup import setup as Setup
-from quex.core_engine.generator.languages.address import Address, get_label, get_address
-from operator         import itemgetter
+from   quex.input.setup import setup as Setup
+from   quex.core_engine.generator.languages.address import Address, get_label, get_address, get_label_of_address
+import quex.core_engine.generator.state_coder.transition as transition
+from   operator         import itemgetter
 
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
@@ -31,9 +32,9 @@ def do(StateRouterInfoList):
 
     epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
 
-    return [prolog, Address("$state-router", None, txt), epilog]
+    return [prolog] + txt + [epilog]
 
-def get_info(StateIndexList):
+def get_info(StateIndexList, DSM):
     LanguageDB = Setup.language_db
 
     # Make sure, that for every state the 'drop-out' state is also mentioned
@@ -42,7 +43,7 @@ def get_info(StateIndexList):
         assert type(index) != str
         if index >= 0:
             # Transition to state entry
-            code = "goto " + get_label("$entry", index) + "; "
+            code = "goto %s; " % get_label_of_address(index)
             result[i] = (index, code)
         else:
             # Transition to a templates 'drop-out'

@@ -140,7 +140,6 @@ def read_character_code(fh):
     fh.seek(pos)
     return -1               
 
-
 def __parse_function_argument_list(fh, ReferenceName):
     argument_list = []
     position = fh.tell()

@@ -83,7 +83,7 @@ import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
-from   quex.core_engine.generator.languages.address            import get_address
+from   quex.core_engine.generator.languages.address            import get_address, get_label
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 
@@ -441,7 +441,7 @@ def __templated_state_entries(txt, TheTemplate, SMD):
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
 
         # Print the state label
-        label_str = LanguageDB["$label-def"]("$entry", state_index)
+        label_str = get_label("$entry", state_index) + ":\n"
         if state_index != SMD.sm().init_state_index:
             label_str = "    __quex_assert_no_passage();\n" + \
                         label_str
@@ -455,7 +455,7 @@ def __templated_state_entries(txt, TheTemplate, SMD):
             txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
-        txt.append(LanguageDB["$goto"]("$entry", TheTemplate.core().state_index))
+        txt.append("    goto %s;" % get_label("$entry", TheTemplate.core().state_index))
         txt.append("\n\n")
 
 def __template_state(txt, TheTemplate, SMD):
@@ -466,7 +466,7 @@ def __template_state(txt, TheTemplate, SMD):
     TriggerMap  = state.transitions().get_trigger_map()
 
     label_str = "    __quex_assert_no_passage();\n" + \
-                LanguageDB["$label-def"]("$entry", state_index)
+                get_label("$entry", state_index) + ":\n"
     txt.append(label_str)
 
     if TheTemplate.uniform_state_entries_f():

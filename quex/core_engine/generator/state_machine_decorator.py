@@ -1,5 +1,6 @@
 from copy import deepcopy
 import quex.core_engine.state_machine.dead_end_analyzis as dead_end_analyzis
+import quex.core_engine.generator.languages.address     as address 
 
 class StateMachineDecorator:
     def __init__(self, SM, Name, PostContextSM_ID_List, 
@@ -69,8 +70,25 @@ class StateMachineDecorator:
 
     def directly_reached_terminal_id_list(self):
         result = []
-        for info in self.__dead_end_state_db.values():
+        for info in self.__dead_end_state_db.itervalues():
             result.extend(info[1])
+        return result
+
+    def get_direct_transition_to_terminal_db(self):
+        """Returns a dictionary that maps:
+
+                state-index  -->   directly entered terminal
+
+           where the 'state-index' is the index of a dead-end-state, i.e.
+           a state that does nothing else but transiting into the terminal.
+           Thus, this intermediate state can be shortcut.
+        """
+        result = {}
+        for key, item in self.__dead_end_state_db.iteritems():
+            # item[0] == False => State is a dead-end and an acceptance state
+            if item[0] != False: continue
+            assert len(item[1]) == 1
+            result[key] = address.get_address("$terminal", item[1][0].state_machine_id)
         return result
 
 

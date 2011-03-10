@@ -25,7 +25,7 @@ def do(state_machine):
                     it needs to be implemented as a 'pre-condition base router'.
                     Depending on the pre-context it routes to a terminal.
 
-            CASE 3: db[state_index][1] == False
+            CASE 3: db[state_index][0] == False
 
                 ==> State is a DEAD END and an ACCEPTANCE state
                     There are NO PRE-CONTEXTS, so no check is necessary.

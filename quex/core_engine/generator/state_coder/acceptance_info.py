@@ -1,7 +1,7 @@
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 import quex.core_engine.state_machine.core                as     state_machine 
 #
-from   quex.core_engine.generator.languages.address import __nice, Reference, get_address, get_label
+from   quex.core_engine.generator.languages.address import __nice, get_address, get_label
 from   quex.input.setup                             import setup as Setup
 
 LanguageDB = None
@@ -80,12 +80,8 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
         assert Origin.is_acceptance()
 
         info = [ 
-           "    last_acceptance                = QUEX_LABEL(",
-           Reference("$terminal-direct", 
-                     Origin.state_machine_id, 
-                     Code="%i" % get_address("$terminal-direct", Origin.state_machine_id),
-                     RoutingF=True), 
-           ");\n"
+           "    last_acceptance                = QUEX_LABEL(%i);\n" \
+           % get_address("$terminal-direct", Origin.state_machine_id, U=True, R=True) 
         ]
 
         # NOTE: When a post conditioned pattern ends it does not need to store the input 
@@ -279,6 +275,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         first_if_statement_f = False
 
     if unconditional_case_treated_f == False:
+        debug_txt.append(1)
         txt.extend(get_on_detection_code_fragment(None))
 
     return debug_txt + txt

@@ -1,7 +1,6 @@
 import quex.core_engine.generator.state_coder.transition as transition
 from   quex.input.setup                                  import setup as Setup
 from   quex.core_engine.interval_handling                import Interval
-from   quex.core_engine.generator.languages.core         import label_db_unregister_usage
 
 import sys
 from   math import log
@@ -13,15 +12,53 @@ class TriggerAction:
     def __init__(self, Code, DropOutF=False):
         assert type(DropOutF) == bool
 
-        if type(Code) == list: self.__code = Code
-        else:                  self.__code = [ Code ]
+        if type(Code) == list: self._code = Code
+        else:                  self._code = [ Code ]
         self.__drop_out_f = DropOutF
 
     def get_code(self):
-        return self.__code
+        return self._code
 
     def is_drop_out(self):
-        return self.__drop_out_f
+        return False
+
+class TriggerActionTransition(TriggerAction):
+    def __init__(self, TargetStateIndex):
+        self.__target_state_index = TargetStateIndex
+
+    def get_code(self):
+        return [ transition.get_transition_to_state(self.__target_state_index) ]
+
+class TriggerActionDropOut(TriggerAction):
+    def __init__(self, CurrentStateIdx):
+        self.__state_index = CurrentStateIdx
+
+    def get_code(self):
+        # The call to 'get_transition_to_drop_out()' is delayed until the code
+        # is implemented. This is so, since 'get_transition_to_drop_out' causes
+        # the drop-out label being entered into the 'used' list. However, it may
+        # happen, that the Drop-Out Labels are optimized away. Then, it would be
+        # marked as 'used' while nothing in the code refers to it.
+        return [ transition.get_transition_to_drop_out(self.__state_index) ]
+
+    def is_drop_out(self):
+        return True
+
+class TriggerActionReload(TriggerAction):
+    def __init__(self, GotoReload_Str, CurrentStateIdx, DSM, ReturnToState_Str):
+        self.__goto_reload_str     = GotoReload_Str
+        self.__state_index         = CurrentStateIdx
+        self.__dsm                 = DSM
+        self.__return_to_state_str = ReturnToState_Str
+
+    def get_code(self):
+
+        if self.__goto_reload_str != None: 
+            return [ self.__goto_reload_str ]
+        else:
+            return [ transition.get_transition_to_reload(self.__state_index, 
+                                                         self.__dsm, 
+                                                         self.__return_to_state_str) ]
 
 def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_Str):
     """ReturnToState_Str is only required if the reload has a particular
@@ -35,29 +72,17 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_
         interval = entry[0]
         target   = entry[1]
 
-        if   target == None:
-            # Classical Drop-Out: no further state transition
-            target = TriggerAction([ transition.get_transition_to_drop_out(CurrentStateIdx) ],
-                                   DropOutF=True)
+        if   target == -1:
+            target = TriggerActionReload(GotoReload_Str, CurrentStateIdx, DSM, ReturnToState_Str)
 
-        elif target == -1:
-            # Limit Character Detected: Reload
-            # NOTE: Reload != Drop Out!
-            if GotoReload_Str != None: 
-                goto_str = [ GotoReload_Str ]
-            else:
-                goto_str = transition.get_transition_to_reload(CurrentStateIdx, DSM, ReturnToState_Str)
-
-            target = TriggerAction(goto_str, DropOutF=False)
+        elif target == None:
+            target = TriggerActionDropOut(CurrentStateIdx)
 
         elif type(target) in [int, long]:
-            # Classical State Transition: transit to state with given id
-            target = TriggerAction([ transition.get_transition_to_state(target, DSM) ],
-                                   DropOutF=False)
+            target = TriggerActionTransition(target)
 
         else:
-            isinstance(target, TriggerAction)
-            # No change necessary
+            assert isinstance(target, TriggerAction) # No change necessary
 
         result[i] = (interval, target)
     return result
