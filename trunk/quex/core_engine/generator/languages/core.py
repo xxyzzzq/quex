@@ -15,7 +15,6 @@
 import quex.core_engine.generator.languages.cpp     as cpp
 import quex.core_engine.generator.languages.python  as python
 from   quex.core_engine.generator.languages.address import *
-from   quex.core_engine.generator.languages.address import __label_used_in_computed_goto_list_unique
 from   quex.frs_py.string_handling import blue_print
 from   copy import deepcopy, copy
 
@@ -135,6 +134,7 @@ db["C++"] = {
     #
     "$reload-definitions":   cpp.__reload_definitions,
     "$header-definitions":   cpp.__header_definitions,
+    "$variable-definitions": cpp.__local_variable_definition,
     "$frame":                cpp.__frame_of_all,
     "$goto-mode":            lambda Mode: "QUEX_NAME(enter_mode)(&self, &" + Mode + ");",
     "$gosub-mode":           lambda Mode: "QUEX_NAME(push_mode)(&self, &" + Mode + ");",

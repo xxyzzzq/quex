@@ -1,6 +1,6 @@
 import quex.core_engine.state_machine.core                    as state_machine
 import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
-from   quex.core_engine.generator.languages.core              import get_address, Reference, Address
+from   quex.core_engine.generator.languages.core              import get_address, get_label, Address
 
 from   quex.input.setup            import setup as Setup
 from   quex.frs_py.string_handling import blue_print
@@ -85,12 +85,12 @@ def do(State, StateIdx, SMD):
     txt = [ Address("$drop-out", StateIdx) ] 
     if InitStateF and SMD.forward_lexing_f():
         # Initial State in forward lexing is special! See comments above!
-        txt.extend([ "    goto ", Reference("$terminal-FAILURE"), ";" ])
+        txt.extend([ "    goto %s;" % get_label("$terminal-FAILURE") ])
     else:
         if SMD.forward_lexing_f(): 
             txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
         else:
-            txt.extend(["    goto ", Reference("$terminal-general-bw"), ";"])
+            txt.extend(["    goto %s;" % get_label("$terminal-general-bw")])
 
     return txt 
 
@@ -98,10 +98,11 @@ def _on_detection_code(Origin):
     global LanguageDB 
     # Case if no un-conditional acceptance, the goto general terminal
     if type(Origin) == type(None): 
-        return [ Reference("$terminal-router", Code=LanguageDB["$goto-last_acceptance"]) ]
+        get_label("$terminal-router") # Note that the terminal router is referenced
+        return [ LanguageDB["$goto-last_acceptance"] ]
 
     assert Origin.is_acceptance()
-    return [ "goto ", Reference("$terminal-direct", Origin.state_machine_id), ";" ]
+    return [ "goto %s;" % get_label("$terminal-direct", Origin.state_machine_id, U=True) ]
 
 def __get_forward_goto_terminal_str(state, StateIdx, SM):
     assert isinstance(state, state_machine.State)
@@ -111,10 +112,10 @@ def __get_forward_goto_terminal_str(state, StateIdx, SM):
     # (1) non-acceptance state drop-outs
     #     (winner is determined by variable 'last_acceptance', then goto terminal router)
     if state.__class__.__name__ == "TemplateState": 
-        return [ "goto ", Reference("$terminal-router"), ";" ]
+        return [ "goto %s;" % get_label("$terminal-router") ]
 
     elif not state.is_acceptance():
-        return [ "goto ", Reference("$terminal-router"), ";" ]
+        return [ "goto %s; " % get_label("$terminal-router") ]
 
     else:
         # -- acceptance state drop outs

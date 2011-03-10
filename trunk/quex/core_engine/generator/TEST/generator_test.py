@@ -11,6 +11,7 @@ from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #
 from   quex.core_engine.generator.languages.core import db
+import quex.core_engine.generator.languages.address as address
 from   quex.core_engine.generator.languages.cpp  import  __local_variable_definitions
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
 import quex.core_engine.generator.core                  as generator
@@ -190,6 +191,7 @@ def run_this(Str):
 
             if    line.find("defined but not used") != -1 \
                or line.find("but never defined") != -1 \
+               or line.find("unused variable") != -1 \
                or line.find("At top level") != -1 \
                or line.find("t global scope") != -1 \
                or (     (line.find("warning: unused variable") != -1 )                                           \
@@ -338,8 +340,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     for i, elm in enumerate(code):
         if type(elm) != str: 
-            print "##", repr(type(elm)), elm.__class__.__name__, repr(elm.code)
-            sys.exit()
+            print "##", repr(type(elm)), elm.__class__.__name__, elm, repr(elm.code)
+            assert False
 
     return txt + "".join(code)
 
@@ -360,6 +362,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
+    address.init_address_handling({})
     skipper_code, local_variable_db = character_set_skipper.get_skipper(TriggerSet)
 
     marker_char_list = []
@@ -380,6 +383,8 @@ def create_range_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=102
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
+    address.init_address_handling({})
+
     skipper_code, local_variable_db = range_skipper.get_skipper(EndSequence, OnSkipRangeOpenStr=end_str)
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
@@ -394,6 +399,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenSequence, CloseSeque
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
+    address.init_address_handling({})
     skipper_code, local_variable_db = nested_range_skipper.get_skipper(OpenSequence, CloseSequence, 
                                                                        OnSkipRangeOpenStr=end_str)
 
@@ -504,14 +510,14 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         ml_txt += "    break;\n"
 
     if type(SourceCode) == list:
-        SourceCode = "".join(generator._get_propper_text(SourceCode))
+        SourceCode = "".join(address.get_plain_strings(SourceCode))
 
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),
                        ("$$SHOW_POSITION$$",          show_position_str),
-                       ("$$LOCAL_VARIABLES$$",        __local_variable_definitions(LocalVariableDB)),
+                       ("$$LOCAL_VARIABLES$$",        "".join(__local_variable_definitions(LocalVariableDB))),
                        ("$$SOURCE_CODE$$",            SourceCode),
-                       ("$$TERMINAL_END_OF_STREAM$$", LanguageDB["$label"]("$terminal-EOF")),
+                       ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
                        ("$$END_STR$$",                EndStr)])
 
 

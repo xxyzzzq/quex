@@ -80,18 +80,22 @@ def __local_variable_definitions(VariableDB):
     def __code(txt, name, info):
         variable_type = info[0]
         variable_init = info[1]
-        if type(variable_init) != list: variable_init = [ variable_init ]
+        variable_dimension = None
+        if len(info) > 2: variable_dimension = info[2]
 
-        if len(info) > 2 and info[2] != None: 
-            if info[2] != 0:
-                name  += "[%s]" % repr(info[2])
+
+        if variable_dimension != None: 
+            if variable_dimension != 0:
+                name  += "[%s]" % repr(variable_dimension)
                 if variable_type.find("QUEX_TYPE_GOTO_LABEL"): name = "(" + name + ")"
-                if variable_init != None: value = [" = "] + variable_init
-                else:                  value = ["/* un-initilized */"]
             else:
-                variable_type  += "*"
-                value  = [" = 0x0"]
+                variable_type += "*"
+                variable_init  = ["0x0"]
+
+        if variable_init == None: 
+            value = ["/* un-initilized */"]
         else:
+            if type(variable_init) != list: variable_init = [ variable_init ]
             value = [" = "] + variable_init
 
         txt.append("    %s%s %s%s" % \
@@ -202,7 +206,7 @@ __RELOAD_INIT_STATE:
         QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, PostContextStartPositionN);
         __quex_debug_reload_after();
-        goto _$$INIT_STATE$$; /* Init state entry */
+        goto $$INIT_STATE$$; /* Init state entry */
     }
     goto $$END_OF_STREAM$$;  /* End of stream    */
 """
@@ -241,31 +245,14 @@ def __reload_definitions(InitialStateIndex):
     txt = []
     txt.append(Address("$reload-FORWARD", None, reload_forward_str))
     txt.append(blue_print(reload_init_state_forward_str,
-                          [["$$INIT_STATE$$",    __nice(InitialStateIndex)],
-                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF")]]))
+                          [["$$INIT_STATE$$",    get_label("$entry", InitialStateIndex, U=True)],
+                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF", U=True, R=True)]]))
     # Append empty references to make sure that the addresses are implemented.
-    txt.append(Reference("$entry", InitialStateIndex, Code=""))
-    txt.append(Reference("$terminal-EOF", Code=""))
     txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
     return txt
 
-def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
-                        function_body, PostConditionedStateMachineID_List, PreConditionIDList,
-                        ModeNameList=[], InitialStateIndex=-1, LanguageDB=None,
-                        LocalVariableDB={}):   
-    """EngineClassName = name of the structure that contains the engine state.
-                         if a mode of a complete quex environment is created, this
-                         is the mode name. otherwise, any name can be chosen. 
-       StandAloneEngineF = False if a mode for a quex engine is to be created. True
-                           if a stand-alone lexical engine is required (without the
-                           complete mode-handling framework of quex).
-    """              
-    txt = [
-            "#include <quex/code_base/temporary_macros_on>\n",
-            __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
-    ]
-
-    PostContextN = len(PostConditionedStateMachineID_List)
+def __local_variable_definition(PostContextID_List, PreContextID_List, LocalVariableDB, LanguageDB):
+    PostContextN = len(PostContextID_List)
 
     local_variable_list = LocalVariableDB
     local_variable_list.update(
@@ -280,15 +267,29 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     )
               
     # -- pre-condition fulfillment flags                
-    for pre_context_sm_id in PreConditionIDList:
-        local_variable_list["pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id)] = ["int", "0"]
+    for sm_id in PreContextID_List:
+        local_variable_list["pre_context_%s_fulfilled_f" % __nice(sm_id)] = ["int", "0"]
+
+    return LanguageDB["$local-variable-defs"](local_variable_list)
+
+def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
+                        function_body, ModeNameList=[], LanguageDB=None):
+    """EngineClassName = name of the structure that contains the engine state.
+                         if a mode of a complete quex environment is created, this
+                         is the mode name. otherwise, any name can be chosen. 
+       StandAloneEngineF = False if a mode for a quex engine is to be created. True
+                           if a stand-alone lexical engine is required (without the
+                           complete mode-handling framework of quex).
+    """              
+    txt = [
+            "#include <quex/code_base/temporary_macros_on>\n",
+            __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
+    ]
 
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             txt.append("#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name))
-
-    txt.extend(LanguageDB["$local-variable-defs"](local_variable_list))
 
     txt.extend([
         comment_on_post_context_position_init_str,
@@ -298,7 +299,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
         "#   endif\n",
     ])
 
-    txt.append(LanguageDB["$label-def"]("$start") + "\n")
+    txt.append(get_label("$start") + ":\n")
 
     # -- entry to the actual function body
     txt.append("    " + LanguageDB["$mark-lexeme-start"] + "\n")
@@ -394,7 +395,7 @@ $$END_OF_STREAM_ACTION$$
 
 $$TERMINAL_FAILURE-DEF$$: /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
-     $$GOTO_START_PREPARATION$$
+     goto $$GOTO_START_PREPARATION$$;
 
 #undef Lexeme
 #undef LexemeBegin
@@ -405,7 +406,7 @@ $$FAILURE_ACTION$$
 
 
 __on_continue_reentry_preparation_str = """
-$$REENTRY_PREPARATION$$
+$$REENTRY_PREPARATION$$:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
     
@@ -443,7 +444,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 #       endif
     }
 
-    $$GOTO_START$$
+    goto $$GOTO_START$$;
 """
 
 def __adorn_action_code(action_info, SMD, SupportBeginOfLineF): 
@@ -540,12 +541,11 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         # Normal Acceptance:
         pass
 
-    # -- paste the action code that correponds to the pattern   
+    # -- paste the action code that corresponds to the pattern   
     txt.append(action_code)
     txt.append("\n")
     txt.append("    ")
-    txt.append(LanguageDB["$goto"]("$re-start"))
-    txt.append("\n\n")
+    txt.append("goto %s;\n" % get_label("$re-start", U=True))
 
     return txt, variable_db
 
@@ -590,8 +590,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     for state_machine_id in action_db.keys():
         label_id = get_address("$terminal-direct", state_machine_id)
         jumps_to_acceptance_states.append("        case %i: " % label_id)
-        jumps_to_acceptance_states.append(LanguageDB["$goto"]("$terminal-direct", state_machine_id))
-        jumps_to_acceptance_states.append("\n")
+        jumps_to_acceptance_states.append("goto %s;\n" % get_label("$terminal-direct", state_machine_id, U=True))
 
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
@@ -632,7 +631,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                        ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                        ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
                       ]),
-                      Reference("$state-router"), ";",
+                      get_label("$state-router", U=True), ";",
                       __terminal_router_epilog_str, 
                   ])
              
@@ -644,13 +643,13 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
               ["$$TERMINAL_END_OF_STREAM-DEF$$", get_label("$terminal-EOF")],
               ["$$TERMINAL_FAILURE-DEF$$",       get_label("$terminal-FAILURE")],
               ["$$STATE_MACHINE_NAME$$",         SMD.name()],
-              ["$$GOTO_START_PREPARATION$$",     LanguageDB["$goto"]("$re-start")],
+              ["$$GOTO_START_PREPARATION$$",     get_label("$re-start", U=True)],
              ])
 
     reentry_preparation = blue_print(__on_continue_reentry_preparation_str,
-                          [["$$REENTRY_PREPARATION$$",                    LanguageDB["$label-def"]("$re-start")],
+                          [["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
                            ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  "".join(delete_pre_context_flags)],
-                           ["$$GOTO_START$$",                             LanguageDB["$goto"]("$start")],
+                           ["$$GOTO_START$$",                             get_label("$start", U=True)],
                            ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
                            ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                           ])
@@ -810,8 +809,6 @@ def __get_switch_block(VariableName, CaseCodePairList):
         if next_i != L and CaseCodePairList[next_i][1] == code:
             txt.append("\n")
         else:
-            if isinstance(code, Reference): code = code.code
-
             if type(code) == list: txt.extend(code)
             else:                  txt.append(code)
             txt.append("\n")

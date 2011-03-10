@@ -1,6 +1,7 @@
 import quex.core_engine.state_machine.index                    as     sm_index
 import quex.core_engine.generator.state_coder.transition_block as     transition_block
 import quex.core_engine.generator.state_coder.transition       as     transition
+from   quex.core_engine.generator.languages.address            import get_label
 from   quex.core_engine.generator.skipper.common               import *
 from   quex.core_engine.state_machine.transition_map           import TransitionMap 
 from   quex.input.setup                                        import setup as Setup
@@ -42,13 +43,13 @@ $$LC_COUNT_END_PROCEDURE$$
      * But, note that the initial state does not increment '_input_p'!
      */
     /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-    $$GOTO_START$$                           
+    goto $$GOTO_START$$;
 
-$$LOOP_REENTRANCE$$
+$$LOOP_REENTRANCE$$:
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     goto STATE_$$SKIPPER_INDEX$$_LOOP;
 
-$$RELOAD$$
+$$RELOAD$$:
     /* -- When loading new content it is always taken care that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -59,7 +60,7 @@ $$RELOAD$$
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-            $$GOTO_TERMINAL_EOF$$
+            goto $$GOTO_TERMINAL_EOF$$;
         } else {
             QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
                                                    post_context_start_position, PostContextStartPositionN);
@@ -92,7 +93,7 @@ def get_skipper(TriggerSet):
     iteration_code = transition_block.do(transition_map.get_trigger_map(), 
                                          skipper_index, 
                                          DSM=None, 
-                                         GotoReload_Str=LanguageDB["$goto"]("$reload", skipper_index))
+                                         GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 
@@ -113,15 +114,15 @@ def get_skipper(TriggerSet):
                          ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
                          ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
                          ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                         ["$$LOOP_REENTRANCE$$",                LanguageDB["$label-def"]("$entry", skipper_index)],
+                         ["$$LOOP_REENTRANCE$$",                get_label("$entry", skipper_index)],
                          ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
-                         ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
-                         ["$$DROP_OUT_DIRECT$$",                LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                         ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
+                         ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", skipper_index, U=True)],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
-                         ["$$GOTO_TERMINAL_EOF$$",              LanguageDB["$goto"]("$terminal-EOF")],
+                         ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
                          # When things were skipped, no change to acceptance flags or modes has
                          # happend. One can jump immediately to the start without re-entry preparation.
-                         ["$$GOTO_START$$",                     LanguageDB["$goto"]("$start")], 
+                         ["$$GOTO_START$$",                     get_label("$start", U=True)], 
                          ["$$MARK_LEXEME_START$$",              LanguageDB["$mark-lexeme-start"]],
                         ])
 

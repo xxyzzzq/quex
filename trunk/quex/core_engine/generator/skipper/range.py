@@ -1,6 +1,6 @@
 import quex.core_engine.state_machine.index      as     sm_index
 from   quex.core_engine.generator.skipper.common    import *
-from   quex.core_engine.generator.languages.address import __nice
+from   quex.core_engine.generator.languages.address import __nice, get_label
 import quex.output.cpp.action_code_formatter     as     action_code_formatter
 import quex.core_engine.utf8                     as     utf8
 from   quex.input.setup                          import setup as Setup
@@ -40,7 +40,7 @@ template_str = """
     QUEX_TYPE_CHARACTER*        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
-$$ENTRY$$
+$$ENTRY$$:
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= Skipper$$SKIPPER_INDEX$$L );
 
@@ -94,7 +94,7 @@ $$LC_COUNT_IN_LOOP$$
      */
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < (ptrdiff_t)Skipper$$SKIPPER_INDEX$$L ) {
         /* (2.1) Reload required. */
-        $$GOTO_RELOAD$$            
+        goto $$GOTO_RELOAD$$;
     }
     $$LC_ON_FIRST_DELIMITER$$
     /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
@@ -115,7 +115,7 @@ $$LC_COUNT_END_PROCEDURE$$
         $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
     }
 
-$$RELOAD$$
+$$RELOAD$$:
     QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
@@ -139,7 +139,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        $$GOTO_ENTRY$$
+        goto $$GOTO_ENTRY$$;
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -179,19 +179,19 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
             i += 1
             txt += "    " + LanguageDB["$input/get-offset"](i-1) + "\n"
             txt += "    " + LanguageDB["$if !="]("Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         " + LanguageDB["$goto"]("$entry", skipper_index) + "\n"
+            txt += "         goto %s;" % get_label("$entry", skipper_index, U=True) 
             txt += "    " + LanguageDB["$endif"]
         delimiter_remainder_test_str = txt
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
-        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$start")
+        goto_after_end_of_skipping_str = "goto %s;" % get_label("$start", U=True)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         assert IndentationCounterTerminalID != None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = LanguageDB["$goto"]("$terminal-direct", IndentationCounterTerminalID)
+        goto_after_end_of_skipping_str = "goto %s;" % get_label("$terminal-direct", IndentationCounterTerminalID, U=True)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
@@ -208,9 +208,9 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB["$if =="]("Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          LanguageDB["$endif"]],
-                           ["$$ENTRY$$",                          LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$RELOAD$$",                         LanguageDB["$label-def"]("$reload", skipper_index)],
-                           ["$$GOTO_ENTRY$$",                     LanguageDB["$goto"]("$entry", skipper_index)],
+                           ["$$ENTRY$$",                          get_label("$entry", skipper_index)],
+                           ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
+                           ["$$GOTO_ENTRY$$",                     get_label("$entry", skipper_index, U=True)],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
                            ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
@@ -225,7 +225,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
     # The finishing touch
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
-                           ["$$GOTO_RELOAD$$", LanguageDB["$goto"]("$reload", skipper_index)]])
+                           ["$$GOTO_RELOAD$$",   get_label("$reload", skipper_index)]])
 
     if reference_p_f:
         local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \

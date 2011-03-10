@@ -3,7 +3,7 @@ from copy import deepcopy
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 import quex.core_engine.generator.languages.core         as languages
-from   quex.core_engine.generator.languages.address      import get_address, get_label, Reference
+from   quex.core_engine.generator.languages.address      import get_address, get_label
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.generator.template_coder         as template_coder

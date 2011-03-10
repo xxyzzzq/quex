@@ -84,7 +84,7 @@ import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_inf
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
 import quex.core_engine.generator.template_coder               as template_coder
-from   quex.core_engine.generator.languages.address            import Address, Reference, get_label, get_address
+from   quex.core_engine.generator.languages.address            import Address, get_label, get_address
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 import quex.core_engine.state_machine.compression.paths        as paths 
@@ -341,15 +341,15 @@ def __path_definition(variable_db, PathWalker, SMD):
         for state_index, character in Sequence[:-1]:
             memory.append("%i, " % character)
             sequence_str.append(Interval(character).get_utf8_string())
-            state_list.append(Reference("$entry", state_index, 
-                                        Code="QUEX_LABEL(%i), " % state_index))
+            state_list.append("QUEX_LABEL(%i), " % get_address("$entry", state_index, R=True, U=True))
         memory.append("QUEX_SETTING_PATH_TERMINATION_CODE, ")
         memory.append(LanguageDB["$comment"]("".join(sequence_str)) + "\n")
 
 
         end_state_index = Sequence[-1][0]
-        end_state_label = Reference("$entry", end_state_index, 
-                                    Code="QUEX_LABEL(%i), " % end_state_index)
+        # If 'end_state_index' belongs to a non-implemented dead-end-state
+        # => 'get_real_address()' returns address of immediately entered terminal
+        end_state_label = "QUEX_LABEL(%i), " % get_address("$entry", end_state_index, R=True, U=True)
         end_state_list.append(end_state_label)
         state_list.append(end_state_label)
 
@@ -441,16 +441,14 @@ def __state_entries(txt, PathWalker, routed_state_index_set, SMD):
                 require_path_end_state_variable_f = True
                 end_state_index = path.sequence()[-1][0]
                 entry_txt.append("    path_end_state                 = ")
-                entry_txt.append(Reference("$entry", end_state_index, 
-                                           Code="QUEX_LABEL(%i), " % get_address(end_state_index),
-                                           RoutingF=True))
+                entry_txt.append("QUEX_LABEL(%i), " % get_address("$entry", end_state_index, U=True, R=True))
                 entry_txt.append(";\n")
                 
             entry_txt.append("    ")
             entry_txt.append(LanguageDB["$assignment"](
                                        "path_iterator                 ", 
                                        "path_%i + %i" % (path.index(), i)))
-            entry_txt.extend(["goto ", Reference("$entry", PathWalker.core().state_index), ";\n\n"])
+            entry_txt.append("goto %s;\n\n" % get_label_of_address(PathWalker.core().state_index, U=True))
 
             txt.append(Address("$entry", state_index, Code=entry_txt))
             prev_state_index = state_index
@@ -486,7 +484,7 @@ def __path_walker(txt, PathWalker, SMD):
 
     if PathWalker.uniform_state_entries_f():
         txt.append("\n        ")
-        txt.extend(["goto ", Reference("$entry", PathWalkerID), ";\n"])
+        txt.extend("goto %s;\n" % get_label_of_address("$entry", PathWalkerID, U=True))
         txt.append("    ")
         # else if ( *path_iterator == PTC ) { ... /* reached terminating zero */
         txt.append(LanguageDB["$elseif"] \

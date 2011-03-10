@@ -44,8 +44,8 @@ class Interval:
             self.begin = 0
             self.end   = 0
         else:
-            if Begin == None:
-                raise "Begin can only be 'None', if End is also 'None'!"
+            assert Begin != None, "Begin can only be 'None', if End is also 'None'!"
+
             self.begin = Begin            
             if End == None:  
                 if self.begin != sys.maxint: self.end = self.begin + 1

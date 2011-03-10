@@ -1,5 +1,5 @@
 from quex.input.setup import setup as Setup
-from quex.core_engine.generator.languages.address import get_address, get_label, Address, Reference
+from quex.core_engine.generator.languages.address import get_address, get_label, Address
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
@@ -13,20 +13,15 @@ def do(TargetInfo, CurrentStateIdx, SMD):
         return get_transition_to_reload(CurrentStateIdx)
 
     else:
-        return get_transition_to_state(TargetInfo, SMD)
+        return get_transition_to_state(TargetInfo)
 
-def get_transition_to_state(TargetInfo, SMD):
+def get_transition_to_state(TargetInfo):
     LanguageDB = Setup.language_db
-    #if type(TargetInfo) in [int, long] and SMD != None and SMD.dead_end_state_db().has_key(TargetInfo):
-    #    return __get_transition_to_dead_end_state(TargetInfo, SMD)
-
-    return Reference("$entry", get_real_address(TargetInfo, SMD),
-                     Code="goto %s;" % get_label("$entry", get_real_address(TargetInfo, SMD)) )
+    return "goto %s;" % get_label("$entry", TargetInfo, U=True)
 
 def get_transition_to_drop_out(CurrentStateIdx):
     LanguageDB = Setup.language_db
-    return Reference("$entry", get_address("$drop-out", CurrentStateIdx),
-                     Code="goto %s;" % get_label("$drop-out", CurrentStateIdx))
+    return "goto %s;" % get_label("$drop-out", CurrentStateIdx, U=True)
 
 def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     LanguageDB = Setup.language_db
@@ -37,25 +32,19 @@ def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     if ReturnStateIndexStr != None: 
         state_reference = ReturnStateIndexStr
     else:                           
-        state_reference = Reference("$entry", StateIdx, Code="QUEX_LABEL(%s)" % StateIdx, RoutingF=True)
+        state_reference = "QUEX_LABEL(%i)" % get_address("$entry", StateIdx, R=True)
 
     if SMD != None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
-        return [ "goto __RELOAD_INIT_STATE;" ]
+        return "goto __RELOAD_INIT_STATE;" 
 
     elif SMD == None or not SMD.backward_input_position_detection_f():
-        return [ 
-                "QUEX_GOTO_RELOAD(",
-                Reference("$reload-%s" % direction),
-                ", ",
-                state_reference,
-                ", ",
-                Reference("$drop-out", StateIdx, 
-                          Code="QUEX_LABEL(%s)" % get_address("$drop-out", StateIdx), 
-                          RoutingF=True), 
-                ");" ]
+        return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
+               % (get_label("$reload-%s" % direction, U=True),
+                  state_reference,
+                  get_address("$drop-out", StateIdx, U=True, R=True)) 
 
     else:
-        return [ "" ]
+        return "" 
 
 def get_transition_to_terminal(Origin):
     LanguageDB = Setup.language_db
@@ -68,9 +57,9 @@ def get_transition_to_terminal(Origin):
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
     if Origin.post_context_id() == -1:
-        return [ "goto ", Reference("$terminal", Origin.state_machine_id)]
+        return [ "goto %s;" % get_label("$terminal", Origin.state_machine_id, U=True)]
     else:
-        return [ "goto ", Reference("$terminal-direct", Origin.state_machine_id)]
+        return [ "goto %s;" % Reference("$terminal-direct", Origin.state_machine_id, U=True)]
 
 def get_index(StateIdx, SMD):
     # During forward lexing (main lexer process) there are dedicated terminal states.
@@ -90,7 +79,9 @@ def get_index(StateIdx, SMD):
 def get_real_address(TargetStateIdx, SMD):
     LanguageDB = Setup.language_db
 
-    if SMD != None and SMD.dead_end_state_db().has_key(TargetStateIdx):
+    if     SMD != None \
+       and SMD.dead_end_state_db().has_key(TargetStateIdx) \
+       and SMD.forward_lexing_f():
         # Transitions to 'dead-end-state'
         return __get_address_of_dead_end_state(TargetStateIdx, SMD)
     else:
