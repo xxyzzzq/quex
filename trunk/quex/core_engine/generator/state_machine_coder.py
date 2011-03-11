@@ -3,7 +3,7 @@ from copy import deepcopy
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 import quex.core_engine.generator.languages.core         as languages
-from   quex.core_engine.generator.languages.address      import get_address, get_label
+import quex.core_engine.generator.languages.address      as address
 import quex.core_engine.generator.state_coder.core       as state_coder
 import quex.core_engine.generator.state_coder.transition as transition
 import quex.core_engine.generator.template_coder         as template_coder
@@ -41,12 +41,13 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     # -- Coding path states [Optional]
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
-        code, state_list, variable_db, state_index_set = \
+        code, variable_db, state_index_set = \
                 paths_coder.do(SMD, Setup.compression_path_uniform_f)
         txt.extend(code)
         local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
     
+    print "##rs1", address.get_address_set_subject_to_routing()
     # -- Coding templated states [Optional]
     #    (those states do not have to be coded later)
     if Setup.compression_template_f:

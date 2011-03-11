@@ -15,18 +15,21 @@ import sys
 import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.input.setup import setup as Setup
+from   quex.input.setup import setup                as Setup
 import quex.core_engine.generator.languages.core    as languages
 from   quex.core_engine.generator.languages.address import __label_db
 Setup.language_db = languages.db["Python"]
 
-from quex.core_engine.interval_handling  import NumberSet, Interval
-from quex.core_engine.state_machine.core import State, StateMachine
+from quex.core_engine.interval_handling     import NumberSet, Interval
+from quex.core_engine.state_machine.core    import State, StateMachine
 import quex.core_engine.state_machine.index as index
 
-import quex.core_engine.generator.languages.core as languages
+import quex.core_engine.generator.languages.core               as languages
+import quex.core_engine.generator.languages.address            as address
 import quex.core_engine.generator.state_coder.transition_block as transition_block
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+from   quex.core_engine.generator.state_machine_decorator      import StateMachineDecorator
+
+address.init_address_handling({})
 
 if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation;"
@@ -94,24 +97,24 @@ languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)
 
 states = []
 for state_index in target_state_index_list:
-    states.append("%s = %iL\n" % (__label_db["$entry"](state_index), state_index))
+    states.append("%s = %iL\n" % (address.get_label("$entry", state_index), state_index))
     # increment the state index counter, so that the drop-out and reload labels 
     # get an appropriate label.
-    __label_db["$entry"](index.get())
+    index.get()
 
 # One for the 'terminal'
 __label_db["$entry"](index.get())
 
-states.append("%s = -1\n" % __label_db["$drop-out"](None))
-states.append("%s = -1\n" % __label_db["$reload"](None))
+states.append("%s = -1\n" % address.get_label("$drop-out", -1))
+states.append("%s = -1\n" % address.get_label("$reload", -1))
 state_txt = "".join(states)
 
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
 function  = "def example_func(input):\n"
 function += "".join(transition_block.do(state.transitions().get_trigger_map(), 
                                         None, dsm, 
-                                        GotoReload_Str="return %s\n" % __label_db["$reload"](None)))
-function  = function.replace("_-1_", "_MINUS_1_")
+                                        GotoReload_Str="return -1;"))
+function  = function.replace("_-1_", "_MINUS_1_").replace("goto", "return")
 
 for line_n, line in enumerate((state_txt + function).split("\n")):
     print "##%03i" % line_n, line

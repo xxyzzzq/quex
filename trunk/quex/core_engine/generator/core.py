@@ -127,6 +127,9 @@ class Generator(GeneratorBase):
                                     BackwardLexingF=False, 
                                     BackwardInputPositionDetectionF=False)
         init_address_handling(dsm.get_direct_transition_to_terminal_db())
+        print "##dtttk", sorted(dsm.get_direct_transition_to_terminal_db().keys())
+        print "##dtttv", sorted(dsm.get_direct_transition_to_terminal_db().values())
+        print "##desdb", sorted(dsm.dead_end_state_db().keys())
 
         # (*) Pre Context State Machine
         #     All pre-context combined in single backward analyzer.
