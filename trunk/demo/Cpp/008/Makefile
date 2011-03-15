@@ -50,7 +50,7 @@ LD = $(COMPILER)
 $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 
-$(LEXER_SOURCES):                              GENERATE_LEXER
+$(LEXER_SOURCES): GENERATE_LEXER
 
 $(PARSER_NAME).tab.hpp $(PARSER_NAME).tab.cpp: GENERATE_PARSER
 

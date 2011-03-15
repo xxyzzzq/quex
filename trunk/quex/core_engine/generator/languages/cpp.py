@@ -229,7 +229,7 @@ def __reload_definitions(InitialStateIndex):
     txt.append(Address("$reload-FORWARD", None, reload_forward_str))
     txt.append(blue_print(reload_init_state_forward_str,
                           [["$$INIT_STATE$$",    get_label("$entry", InitialStateIndex, U=True)],
-                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF", U=True, R=True)]]))
+                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF", U=True)]]))
     # Append empty references to make sure that the addresses are implemented.
     txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
     return txt

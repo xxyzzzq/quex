@@ -6,6 +6,7 @@ import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
 import quex.input.indentation_setup   as indentation_setup
 from   quex.core_engine.generator.action_info                     import GeneratedCode, UserCodeFragment
+from   quex.core_engine.generator.languages.address               import get_label
 import quex.core_engine.generator.skipper.character_set           as     skip_character_set
 import quex.core_engine.generator.skipper.range                   as     skip_range
 import quex.core_engine.generator.skipper.nested_range            as     skip_nested_range
@@ -239,7 +240,7 @@ def parse_mode_option(fh, new_mode):
             FileName = value.newline_suppressor_state_machine.file_name
             LineN    = value.newline_suppressor_state_machine.line_n
             # Go back to start.
-            code_fragment = UserCodeFragment(LanguageDB["$goto"]("$start"), FileName, LineN)
+            code_fragment = UserCodeFragment("goto %s;" % get_label("$start", U=True), FileName, LineN)
 
             suppressed_newline_sm = fit_state_machine(suppressed_newline_sm)
 
