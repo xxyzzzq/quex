@@ -43,6 +43,7 @@ base_compatibility = """
 base_buffer = """
 /buffer/asserts
 /buffer/Buffer
+/buffer/Buffer_debug
 /buffer/Buffer_debug.i
 /buffer/Buffer.i
 /buffer/MemoryPositionMimiker

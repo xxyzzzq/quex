@@ -30,7 +30,7 @@ else:    REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
 #         'False' --> Verbose debug output
-if False:
+if True:
     SHOW_TRANSITIONS_STR  = ""
     SHOW_BUFFER_LOADS_STR = ""
 else:
@@ -39,7 +39,7 @@ else:
 
 # Switch: Turn off some warnings
 #         'False' --> show (almost) all compiler warnings
-if True:
+if False:
     IGNORE_WARNING_F = True
 else:
     IGNORE_WARNING_F = False
@@ -109,12 +109,14 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     __Setup_init_language_database(Language)
 
     CompileOptionStr = ""
+    computed_goto_f  = False
     if Language.find("StrangeStream") != -1:
         CompileOptionStr += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
 
     if Language.find("-CG") != -1:
         Language = Language.replace("-CG", "")
         CompileOptionStr += " -DQUEX_OPTION_COMPUTED_GOTOS "
+        computed_goto_f   = True
 
     if Language == "Cpp-Template":
         Language = "Cpp"
@@ -146,7 +148,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     except RegularExpressionException, x:
         print "Dictionary Creation:\n" + repr(x)
 
-    test_program = create_main_function(Language, TestStr, QuexBufferSize)
+    test_program = create_main_function(Language, TestStr, QuexBufferSize, 
+                                        ComputedGotoF=computed_goto_f)
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
                                                        adapted_dict, 
@@ -259,13 +262,22 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
         try:    os.remove(executable_name)
         except: pass
 
-def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
+def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, ComputedGotoF=False):
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
 
     txt = test_program_db[Language]
     txt = txt.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
     txt = txt.replace("$$TEST_STRING$$", test_str)
+
+    # Verify that the compilation is done with/without computed gotos
+    if ComputedGotoF:   
+        txt = txt.replace("$$COMPUTED_GOTOS$$",    "/* Correct */")
+        txt = txt.replace("$$NO_COMPUTED_GOTOS$$", "QUEX_ERROR_EXIT(\"QUEX_OPTION_COMPUTED_GOTOS not active!\\n\");")
+    else:
+        txt = txt.replace("$$COMPUTED_GOTOS$$",    "QUEX_ERROR_EXIT(\"QUEX_OPTION_COMPUTED_GOTOS active!\\n\");")
+        txt = txt.replace("$$NO_COMPUTED_GOTOS$$", "/* Correct */")
+
     if CommentTestStrF: txt = txt.replace("$$COMMENT$$", "##")
     else:               txt = txt.replace("$$COMMENT$$", "")
 
@@ -599,6 +611,12 @@ test_program_db = {
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
+#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
+        $$COMPUTED_GOTOS$$
+#       else
+        $$NO_COMPUTED_GOTOS$$
+#       endif
+
         QUEX_NAME(construct_basic)(&lexer_state, (void*)0x0,
                                    TestString, MemorySize, TestString + MemorySize - 1, 
                                    0x0, 0, false);
@@ -618,6 +636,12 @@ test_program_db = {
         /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
+
+#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
+        $$COMPUTED_GOTOS$$
+#       else
+        $$NO_COMPUTED_GOTOS$$
+#       endif
 
         /* Write test string into temporary file */
         fwrite(test_string, strlen(test_string), 1, fh);
@@ -647,6 +671,12 @@ test_program_db = {
         /**/
         istringstream istr("$$TEST_STRING$$");
 
+#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
+        $$COMPUTED_GOTOS$$
+#       else
+        $$NO_COMPUTED_GOTOS$$
+#       endif
+
         QUEX_NAME(construct_basic)(&lexer_state, &istr, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
 
@@ -669,6 +699,12 @@ test_program_db = {
         /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
+
+#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
+        $$COMPUTED_GOTOS$$
+#       else
+        $$NO_COMPUTED_GOTOS$$
+#       endif
 
         QUEX_NAME(construct_basic)(&lexer_state, &strange_stream, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);

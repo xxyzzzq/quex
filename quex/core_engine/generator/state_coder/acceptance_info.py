@@ -214,10 +214,6 @@ def trivial_terminal(OriginList):
 
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         
-    # Just try, to make sure that the function has thought about the case 
-    # 'no unconditional_case_treated_f' option.
-    assert get_on_detection_code_fragment(None) != None
-
     LanguageDB = Setup.language_db
 
     txt       = []
@@ -276,7 +272,9 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
 
     if unconditional_case_treated_f == False:
         debug_txt.append(1)
-        txt.extend(get_on_detection_code_fragment(None))
+        default_action = get_on_detection_code_fragment(None)
+        assert default_action != None
+        txt.extend(default_action)
 
     return debug_txt + txt
 

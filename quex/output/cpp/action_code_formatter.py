@@ -66,13 +66,16 @@ def get_code(CodeFragmentList, variable_db={}):
     require_terminating_zero_preparation_f = False
     for code_info in CodeFragmentList:
         result = code_info.get_code()
-        if type(result) != tuple: 
-            code_str += result
-        else:
-            code_str += result[0]
-            variable_db.update(result[1])
+        if type(result) == tuple: 
+            result, add_variable_db = result
+            variable_db.update(add_variable_db)
+
+        if type(result) == list: code_str += "".join(result)
+        else:                    code_str += result        
+
         if code_info.require_terminating_zero_f():
             require_terminating_zero_preparation_f = True
+
     return code_str, require_terminating_zero_preparation_f
 
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):

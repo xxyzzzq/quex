@@ -145,7 +145,6 @@ db["C++"] = {
     "$token_template_i_file":   "/token/TXT-Cpp.i",
     "$analyzer_template_file":  "/analyzer/TXT-Cpp",
     "$file_extension":          ".cpp",
-    "$goto-state":              lambda Label: "QUEX_GOTO_STATE(%s);" % Label,
     }
 
 #________________________________________________________________________________

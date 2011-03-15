@@ -112,8 +112,6 @@ class UserCodeFragment(CodeFragment):
             
         return "".join(result)
             
-
-    
 def get_return_to_source_reference():
     return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"
 

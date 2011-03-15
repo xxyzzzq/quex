@@ -20,6 +20,7 @@ class AddressDB:
             "INIT_STATE_TRANSITION_BLOCK",
             "__REENTRY_PREPARATION", "__REENTRY",
         ])
+        self.__direct_transition_db = {}
 
     def get(self, NameOrTerminalID):
         """NameOrTerminalID is something that identifies a position/address 
@@ -80,7 +81,19 @@ __label_db = {
 }
 
 __referenced_label_set = set([])
-__routed_address_set   = set([])
+def __referenced_label_set_add(Label):
+    global __referenced_label_set
+    __referenced_label_set.add(Label)
+    # If a terminal router is used, then a state router is also required.
+    if Label == "__TERMINAL_ROUTER": 
+        __referenced_label_set.add("__STATE_ROUTER")
+
+def is_label_referenced(Type, Arg=None):
+    global __referenced_label_set
+    label = get_label(Type, Arg)
+    return label in __referenced_label_set
+
+__routed_address_set = set([])
 
 def init_address_handling(DirectTransitionDB):
     __referenced_label_set.clear()
@@ -103,7 +116,7 @@ def get_address(Type, Arg=None, U=False, R=False):
     assert type(result) in [int, long], \
            "Label type '%s' is not suited for routing." % Type
     
-    if U: __referenced_label_set.add(get_label_of_address(result))
+    if U: __referenced_label_set_add(get_label_of_address(result))
     if R: __routed_address_set.add(__address_db.get_real(result))
 
     return result
@@ -122,7 +135,7 @@ def get_label(LabelType, Arg=None, U=False, R=False):
     assert type(result) in [str, unicode]
 
     if U: 
-        __referenced_label_set.add(result)
+        __referenced_label_set_add(result)
     if R: 
         assert type(label_id) in [int, long], \
                "Only labels that expand to addresses can be routed."
@@ -138,7 +151,7 @@ def get_label_of_address(Adr, U=False):
     """
 
     result = "_%s" % __nice(Adr)
-    if U: __referenced_label_set.add(result)
+    if U: __referenced_label_set_add(result)
 
     return result
 

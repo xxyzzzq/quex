@@ -6,7 +6,8 @@ from   operator         import itemgetter
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
-    if len(StateRouterInfoList) == 0: return ""
+    assert len(StateRouterInfoList) != 0
+
     LanguageDB = Setup.language_db
 
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
@@ -32,7 +33,7 @@ def do(StateRouterInfoList):
 
     epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
 
-    return [prolog] + txt + [epilog]
+    return Address("$state-router", Code=[prolog] + txt + [epilog])
 
 def get_info(StateIndexList, DSM):
     LanguageDB = Setup.language_db

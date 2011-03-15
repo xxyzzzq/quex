@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.31" date="Fri Mar  4 22:12:49 2011">
+<test-database execution-time-sec="0.29" date="Mon Mar 14 22:48:32 2011">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
@@ -21,7 +21,7 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.19"> 
+        <test title="read_integer(...)" time-sum-sec="0.18"> 
             <application file-name="test-read_integer.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.03" crc="952788026"/>

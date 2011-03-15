@@ -3,6 +3,7 @@ import quex.core_engine.state_machine.index         as     sm_index
 from   quex.input.setup                             import setup as Setup
 from   quex.frs_py.string_handling                  import blue_print
 from   quex.core_engine.generator.languages.address import __nice, get_label
+from   quex.core_engine.generator.languages.variable_db import Variable
 import quex.lexer_mode                              as     lexer_mode
 
 def do(Data):
@@ -158,9 +159,13 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
 
     local_variable_db = { 
-        "counter":     [ "size_t", "0", None],
+        "counter":     Variable("counter", "size_t", None, "0"),
         "QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p": 
-                       [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None], 
+                       Variable("reference_p", 
+                                "QUEX_TYPE_CHARACTER_POSITION", 
+                                None,
+                                "(QUEX_TYPE_CHARACTER_POSITION)0x0", 
+                                "QUEX_OPTION_COLUMN_NUMBER_COUNTING")
     }
     reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
