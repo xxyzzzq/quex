@@ -242,7 +242,7 @@ def do(Data):
 
     txt = [prolog]
     txt.extend(iteration_code)
-    txt.append(Address("$drop-out", counter_index))
+    # txt.append(Address("$drop-out", counter_index))
     txt.append("\n")
     txt.append(epilog)
 
