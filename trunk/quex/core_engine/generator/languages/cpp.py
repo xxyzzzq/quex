@@ -2,8 +2,9 @@ from quex.frs_py.file_in         import is_identifier_start, is_identifier_conti
 from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
-from quex.core_engine.generator.languages.address import *
-from quex.core_engine.interval_handling           import NumberSet
+from quex.core_engine.generator.languages.address     import *
+from quex.core_engine.generator.languages.variable_db import variable_db
+from quex.core_engine.interval_handling               import NumberSet
 from copy     import copy
 from operator import itemgetter
 #
@@ -25,7 +26,7 @@ __header_definitions_txt = """
 #ifdef    CONTINUE
 #   undef CONTINUE
 #endif
-#define   CONTINUE $$GOTO_START_PREPARATION$$ 
+#define   CONTINUE goto $$GOTO_START_PREPARATION$$; 
 
 #ifdef    RETURN
 #   undef RETURN
@@ -41,53 +42,36 @@ __header_definitions_txt = """
 def __header_definitions(LanguageDB):
 
     txt = __header_definitions_txt
-    txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start"))
+    txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
     return txt
 
 def __local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
-    def __interpret(RawName):
-        if RawName.find("/") == -1: return "", False, RawName
-
-        # variable name: CONDITION "/" VARIABLE NAME
-        # CONDITION builds an 'ifdef' or 'ifndef' region.
-        # CONDITION starting with '!' means 'not', thus '! X/a'
-        #           is only defined if X is undefined
-        fields = RawName.split("/")
-        assert len(fields) == 2
-        name = fields[1].strip()
-        if fields[0][0] == "!": condition_negated_f = True;  condition = fields[0][1:].strip()
-        else:                   condition_negated_f = False; condition = fields[0].strip()
-        return condition, condition_negated_f, name
-
     def __group_by_condition(VariableDB):
         result = {}
-        for name, info in VariableDB.iteritems():
-            condition, condition_negated_f, name = __interpret(name)
+        for variable in VariableDB.itervalues():
 
-            variable_list = result.get(condition)
+            variable_list = result.get(variable.condition)
             if variable_list == None: 
-                variable_list     = [[], []]
-                result[condition] = variable_list
-            if not condition_negated_f:
-                variable_list[0].append((name, info))
-            else:
-                variable_list[1].append((name, info))
+                variable_list              = [[], []]
+                result[variable.condition] = variable_list
+
+            if not variable.condition_negated_f: variable_list[0].append(variable)
+            else:                                variable_list[1].append(variable)
 
         return result
 
-    def __code(txt, name, info):
-        variable_type = info[0]
-        variable_init = info[1]
-        variable_dimension = None
-        if len(info) > 2: variable_dimension = info[2]
+    def __code(txt, variable):
+        variable_type = variable.variable_type
+        variable_init = variable.initial_value
+        variable_name = variable.name
 
-
-        if variable_dimension != None: 
-            if variable_dimension != 0:
-                name  += "[%s]" % repr(variable_dimension)
-                if variable_type.find("QUEX_TYPE_GOTO_LABEL"): name = "(" + name + ")"
+        if variable.element_n != None: 
+            if variable.element_n != 0:
+                variable_name += "[%s]" % repr(variable.element_n)
+                if variable_type.find("QUEX_TYPE_GOTO_LABEL") != -1: 
+                    variable_name = "(" + variable_name + ")"
             else:
                 variable_type += "*"
                 variable_init  = ["0x0"]
@@ -100,62 +84,61 @@ def __local_variable_definitions(VariableDB):
 
         txt.append("    %s%s %s%s" % \
                    (variable_type, 
-                    " " * (30-len(variable_type)), name, 
-                    " " * (30 - len(name))))
+                    " " * (30-len(variable_type)), variable_name, 
+                    " " * (30 - len(variable_name))))
         txt.extend(value)
         txt.append(";\n")
 
     # L   = max(map(lambda info: len(info[0]), VariableDB.keys()))
-    txt = []
-    # Some variables need to be defined before others, use 'First' to indicate that
+    txt       = []
     done_list = []
-    for raw_name, info in sorted(VariableDB.items()):
-        if "First" not in info: continue
+    for raw_name, variable in sorted(VariableDB.items()):
+        if variable.priority_f == False: continue
 
-        condition, condition_negated_f, name = __interpret(raw_name)
+        if variable.condition != None:
+            if variable.condition_negated_f == False: 
+                txt.append("#   ifdef %s\n"  % variable.condition)
+            else:
+                txt.append("#   ifndef %s\n" %  variable.condition)
 
-        if condition != "":
-            if condition_negated_f == False: txt.append("#   ifdef %s\n"  % condition)
-            else:                            txt.append("#   ifndef %s\n" %  condition)
+        __code(txt, variable)
 
-        __code(txt, name, info)
+        if variable.condition != None:
+            txt.append("#   endif /* %s */\n" % variable.condition)
 
-        if condition != "":
-            txt.append("#   endif /* %s */\n" % condition)
-
-        del VariableDB[name]
+        del VariableDB[variable.name]
 
     grouped_variable_list = __group_by_condition(VariableDB)
     unconditioned_name_set = set([])
     for condition, groups in sorted(grouped_variable_list.iteritems()):
-        if condition != "": continue
-        condition_group, dummy = groups
-        for name, info in condition_group:
-            unconditioned_name_set.add(name)
+        if condition != None: continue
+        for variable in groups[0]:
+            unconditioned_name_set.add(variable.name)
 
     for condition, groups in sorted(grouped_variable_list.iteritems()):
 
         condition_group, negated_condition_group = groups
-        if condition != "":
+
+        if condition == None:
+            for variable in condition_group:
+                __code(txt, variable)
+        else:
             if len(condition_group) != 0:
                 txt.append("#   ifdef %s\n"  % condition)
 
-                for name, info in condition_group:
-                    if name in unconditioned_name_set: continue
-                    __code(txt, name, info)
+                for variable in condition_group:
+                    if variable.name in unconditioned_name_set: continue
+                    __code(txt, variable)
 
             if len(negated_condition_group) != 0:
                 if len(condition_group) != 0: txt.append("#   else /* not %s */\n" % condition)
-                else:                         txt.append("#   ifndef %s\n" % condition)
+                else:                         txt.append("#   ifndef %s\n"         % condition)
 
-                for name, info in negated_condition_group:
-                    if name in unconditioned_name_set: continue
-                    __code(txt, name, info)
+                for variable in negated_condition_group:
+                    if variable.name in unconditioned_name_set: continue
+                    __code(txt, variable)
 
             txt.append("#   endif /* %s */\n" % condition)
-        else:
-            for name, info in condition_group:
-                __code(txt, name, info)
             
     return txt
          
@@ -251,29 +234,27 @@ def __reload_definitions(InitialStateIndex):
     txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
     return txt
 
-def __local_variable_definition(PostContextID_List, PreContextID_List, LocalVariableDB, LanguageDB):
+def __local_variable_definition(PostContextID_List, PreContextID_List, LanguageDB):
     PostContextN = len(PostContextID_List)
 
-    local_variable_list = LocalVariableDB
-    local_variable_list.update(
-        { "last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
-          "last_acceptance_input_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x00)"],
-          "post_context_start_position":    ["QUEX_TYPE_CHARACTER_POSITION", None, PostContextN],
-          "PostContextStartPositionN":      ["const size_t",                 "(size_t)" + repr(PostContextN)],
-          "input":                          ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x00)"],
-          "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
-          "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",         "(QUEX_TYPE_CHARACTER)(0x00)"],
-         }
-    )
+    variable_db.require("last_acceptance", 
+                        Initial="QUEX_LABEL(%i)" % get_address("$terminal-FAILURE"))
+    variable_db.require("last_acceptance_input_position") 
+    variable_db.require_array("post_context_start_position",    
+                              ElementN = PostContextN, 
+                              Initial  = "{ " + ("0, " * (PostContextN - 1) + "0") + "}")
+    variable_db.require("PostContextStartPositionN", 
+                        Initial = "(size_t)" + repr(PostContextN))
+    variable_db.require("input") 
               
     # -- pre-condition fulfillment flags                
     for sm_id in PreContextID_List:
-        local_variable_list["pre_context_%s_fulfilled_f" % __nice(sm_id)] = ["int", "0"]
+        variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
 
-    return LanguageDB["$local-variable-defs"](local_variable_list)
+    return LanguageDB["$local-variable-defs"](variable_db.get())
 
 def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
-                        function_body, ModeNameList=[], LanguageDB=None):
+                        variable_definitions, function_body, ModeNameList=[], LanguageDB=None):
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
@@ -285,6 +266,8 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
             "#include <quex/code_base/temporary_macros_on>\n",
             __function_signature.replace("$$STATE_MACHINE_NAME$$", StateMachineName),
     ]
+
+    txt.extend(variable_definitions)
 
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
@@ -316,10 +299,10 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     for mode_name in ModeNameList:
         txt.append("    (void)%s;\n" % mode_name)
 
-    txt.append(                                                            \
-        "    (void)QUEX_NAME(LexemeNullObject);\n"                         \
-        "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                \
-        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n")
+    txt.append(                                                             \
+        "    (void)QUEX_NAME(LexemeNullObject);\n"                          \
+        "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                 \
+        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n") 
 
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
@@ -450,14 +433,10 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 def __adorn_action_code(action_info, SMD, SupportBeginOfLineF): 
 
     result = action_info.action().get_code()
-    if type(result) != tuple: 
-        code_str    = result
-        variable_db = {}
-    else:
-        code_str    = result[0]
-        variable_db = result[1]
+    assert type(result) != tuple
+    code_str = result
 
-    if code_str == "": return "", variable_db
+    if code_str == "": return ""
 
     txt = "\n"
     # TODO: There could be a differenciation between a pattern that contains
@@ -471,19 +450,16 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF):
 
     txt += code_str
 
-    return txt, variable_db
+    return txt
 
 def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB):
     state_machine                  = SMD.sm()
     DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
 
-    variable_db = {}
-
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
     #
-    action_code, db = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
-    variable_db.update(db)
+    action_code = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -547,7 +523,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     txt.append("    ")
     txt.append("goto %s;\n" % get_label("$re-start", U=True))
 
-    return txt, variable_db
+    return txt
 
 def __terminal_on_failure_prolog(LanguageDB):
     return [
@@ -561,7 +537,6 @@ def __terminal_on_failure_prolog(LanguageDB):
         LanguageDB["$endif"], "\n",
     ]
 
-
 def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction, 
                       SupportBeginOfLineF, PreConditionIDList, LanguageDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
@@ -574,23 +549,13 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     specific_terminal_states = []
-    variable_db = {}
     for state_machine_id, pattern_action_info in action_db.items():
-        code, db = get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
+        code = get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
 
-        variable_db.update(db)
         specific_terminal_states.extend(code)
 
-    # (*) general terminal state (entered from non-acceptance state)    
-    # 
-    #     NOTE: Since the exceptance terminals are very close to each other
-    #           with their 'ID', the switch statement is most likely
-    #           faster then binary bracketing.
-    jumps_to_acceptance_states = []
-    for state_machine_id in action_db.keys():
-        label_id = get_address("$terminal-direct", state_machine_id)
-        jumps_to_acceptance_states.append("        case %i: " % label_id)
-        jumps_to_acceptance_states.append("goto %s;\n" % get_label("$terminal-direct", state_machine_id, U=True))
+    # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
+    if len(action_db) != 0: get_label("$re-start", U=True)
 
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
@@ -601,8 +566,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str, db = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF)
-    variable_db.update(db)
+    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF)
 
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
@@ -613,9 +577,8 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
     on_failure = __terminal_on_failure_prolog(LanguageDB)
-    msg, db    = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
+    msg        = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
 
-    variable_db.update(db)
     on_failure.append(msg)
 
     if PreConditionIDList == []: precondition_involved_f = "0"
@@ -631,10 +594,11 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
                        ["$$TERMINAL_FAILURE-REF$$",         "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                        ["$$TERMINAL_FAILURE$$",             get_label("$terminal-FAILURE")],
                       ]),
-                      get_label("$state-router", U=True), ";",
+                      # DO NOT 'U=True' for the state router. This is done automatically if 
+                      # 'goto reload' is used. 
+                      get_label("$state-router"), ";",
                       __terminal_router_epilog_str, 
                   ])
-             
                      
     epilog = blue_print(__terminal_state_epilog, 
              [
@@ -661,7 +625,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     txt.append(epilog)
     txt.append(reentry_preparation)
 
-    return txt, variable_db
+    return txt
     
 def __frame_of_all(Code, Setup):
     LanguageDB = Setup.language_db

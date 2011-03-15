@@ -79,11 +79,12 @@ from   quex.core_engine.generator.state_machine_decorator import StateMachineDec
 
 import quex.core_engine.generator.state_coder.core             as state_coder
 import quex.core_engine.generator.state_coder.transition       as transition
-import quex.core_engine.generator.state_coder.input_block      as input_block
 import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
+import quex.core_engine.generator.state_coder.input_block      as input_block
 from   quex.core_engine.generator.languages.address            import get_address, get_label
+from   quex.core_engine.generator.languages.variable_db        import variable_db
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
 
@@ -111,23 +112,13 @@ def do(SMD, CostCoefficient):
     combination_list = templates.do(SMD.sm(), CostCoefficient)
 
     # (2) Implement code for template combinations
-    transition_target_definition, \
-    code,                         \
-    routed_state_index_list,      \
-    involved_state_index_list     =  _do(combination_list, SMD)
+    code,                     \
+    involved_state_index_list = _do(combination_list, SMD)
 
-    local_variable_db = transition_target_definition 
-    if len(local_variable_db) != 0:
-        local_variable_db.update({
-          "! QUEX_OPTION_COMPUTED_GOTOS/target_state_index": 
-          [ "QUEX_TYPE_GOTO_LABEL", "QUEX_GOTO_STATE_LABEL_INIT_VALUE", None],
-          "template_state_key": [ "ptrdiff_t",                  "(ptrdiff_t)0"],
-        })
+    if len(involved_state_index_list) != 0:
+        variable_db.require("template_state_key")
 
-    return code,                    \
-           routed_state_index_list, \
-           local_variable_db,       \
-           involved_state_index_list
+    return code, involved_state_index_list
 
 def _do(CombinationList, SMD):
     """-- Returns generated code for all templates.
@@ -142,8 +133,6 @@ def _do(CombinationList, SMD):
 
     # -- Collect all indices of states involved in templates
     involved_state_index_list = set([])
-    # -- Collect all indices of targets states in the 'adaption table'
-    target_state_index_list   = set([])
     # -- Generate 'TemplatedState's for each TemplateCombination
     template_list             = []
     for combination in CombinationList:
@@ -162,37 +151,21 @@ def _do(CombinationList, SMD):
         #       -- Recursion is routed to entries of involved states.
         #      
         involved_state_list = combination.involved_state_list()
-        prototype = get_uniform_prototype(SMD, involved_state_list)
+        prototype           = get_uniform_prototype(SMD, involved_state_list)
 
         # -- create template state for combination object
         #    prototype == None, tells that there state entries differ and there
         #                       is no representive state.
         template = TemplateState(combination, SMD.sm().get_id(), index.get(), 
                                  prototype)
-        target_state_index_list.add(template.core().state_index)
-        target_state_index_list.add(get_address("$drop-out", template.core().state_index))
         template_list.append(template)
 
         # -- collect indices of involved states
         involved_state_index_list.update(involved_state_list)
 
-        # -- collect indices of target states
-        for state_index in template.transitions().get_target_state_index_list():
-            if state_index != None: 
-                target_state_index_list.add(state_index)
-            else:
-                # 'goto drop-out' is coded in state index list as 'minus template index'
-                target_state_index_list.add(get_address("$drop-out", template.core().state_index))
-
-        # -- if the template is non-uniform, then we need a router that maps to
-        #    each state entry of involved states (e.g. for recursion and after reload).
-        if not template.uniform_state_entries_f():
-            target_state_index_list.update(involved_state_list)
-
     # -- transition target definition for each templated state
-    transition_target_definition = {}
     for template in template_list:
-        __transition_target_data_structures(transition_target_definition, template, SMD)
+        __transition_target_data_structures(template, SMD)
 
     # -- template state entries
     # -- template state
@@ -201,7 +174,7 @@ def _do(CombinationList, SMD):
         __templated_state_entries(code, template, SMD)
         __template_state(code, template, SMD)
 
-    return transition_target_definition, code, target_state_index_list, involved_state_index_list
+    return code, involved_state_index_list
 
 class TemplateTarget(transition_block.TriggerAction):
     def __init__(self, TemplateIndex, TargetIndex=None, UniformStateEntriesF=False):
@@ -252,11 +225,13 @@ class TemplateTarget(transition_block.TriggerAction):
 
         if not self.recursive():
             label = "template_%i_target_%i[template_state_key]" % (self.template_index, self.target_index)
-            return [ LanguageDB["$goto-state"](label) ]
+            get_label("$state-router", U=True) # Ensure reference of state router
+            return [ "QUEX_GOTO_STATE(%s);\n" % label ]
 
         elif not self.uniform_state_entries_f():
             label = "template_%i_map_state_key_to_state_index[template_state_key]" % self.template_index
-            return [ LanguageDB["$goto-state"](label) ]
+            get_label("$state-router", U=True) # Ensure reference of state router
+            return [ "QUEX_GOTO_STATE(%s);\n" % label ]
 
         else:
             return [ LanguageDB["$goto"]("$entry", self.template_index) ]
@@ -388,7 +363,7 @@ class TemplateState(state_machine.State):
     def template_combination(self):
         return self.__template_combination
 
-def __transition_target_data_structures(variable_db, TheTemplate, SMD):
+def __transition_target_data_structures(TheTemplate, SMD):
     """Defines the transition targets for each involved state.
     """
     template_index      = TheTemplate.core().state_index
@@ -404,28 +379,25 @@ def __transition_target_data_structures(variable_db, TheTemplate, SMD):
 
     involved_state_list = TheTemplate.template_combination().involved_state_list()
     involved_state_n    = len(involved_state_list)
-    # Type and dimension of the involved arrays is always the same
-    var_type  = "const QUEX_TYPE_GOTO_LABEL"
-    dimension = involved_state_n 
 
     target_state_list_db = TheTemplate.transitions().target_state_list_db()
 
     for target_index, target_state_index_list in enumerate(target_state_list_db):
         assert len(target_state_index_list) == involved_state_n
 
-        name  = "template_%i_target_%i" % (template_index, target_index)
-        value = __array_to_code(target_state_index_list)
-
-        variable_db[name] = [ var_type, value, dimension ]
+        variable_db.require_array("template_%i_target_%i", 
+                                  ElementN = involved_state_n, 
+                                  Initial  = __array_to_code(target_state_index_list), 
+                                  Index    = (template_index, target_index))
 
     # If the template does not have uniform state entries, the entries
     # need to be routed on recursion, for example. Thus we need to map 
     # from state-key to state.
     if not TheTemplate.uniform_state_entries_f():
-        name  = "template_%i_map_state_key_to_state_index" % template_index
-        value = __array_to_code(involved_state_list)
-
-        variable_db[name] = [ var_type, value, dimension]
+        variable_db.require_array("template_%i_map_state_key_to_state_index", 
+                                  ElementN = involved_state_n, 
+                                  Initial  = __array_to_code(involved_state_list),
+                                  Index    = template_index)
 
 def __templated_state_entries(txt, TheTemplate, SMD):
     """Defines the entries of templated states, so that the state key
@@ -439,20 +411,21 @@ def __templated_state_entries(txt, TheTemplate, SMD):
                key = 2; goto TEMPLATE_STATE_111;
     """
     for key, state_index in enumerate(TheTemplate.template_combination().involved_state_list()):
-
-        # Print the state label
-        label_str = get_label("$entry", state_index) + ":\n"
-        if state_index != SMD.sm().init_state_index:
-            label_str = "    __quex_assert_no_passage();\n" + \
-                        label_str
-        txt.append(label_str)
-
         state = SMD.sm().states[state_index]
-        # If all state entries are uniform, the entry handling happens uniformly at
-        # the entrance of the template, not each state.
-        if not TheTemplate.uniform_state_entries_f():
+
+        if TheTemplate.uniform_state_entries_f():
+            # Print the state label
+            label_str = get_label("$entry", state_index) + ":\n"
+            if state_index != SMD.sm().init_state_index:
+                label_str = "    __quex_assert_no_passage();\n" + \
+                            label_str
+            txt.append(label_str)
+        else:
+            # If all state entries are uniform, the entry handling happens uniformly at
+            # the entrance of the template, not each state.
             txt.extend(input_block.do(state_index, False, SMD))
             txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
+
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
         txt.append("    goto %s;" % get_label("$entry", TheTemplate.core().state_index))
@@ -465,13 +438,14 @@ def __template_state(txt, TheTemplate, SMD):
     state_index = TheTemplate.core().state_index
     TriggerMap  = state.transitions().get_trigger_map()
 
-    label_str = "    __quex_assert_no_passage();\n" + \
-                get_label("$entry", state_index) + ":\n"
-    txt.append(label_str)
 
     if TheTemplate.uniform_state_entries_f():
         txt.extend(input_block.do(state_index, False, SMD))
         txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))
+    else:
+        label_str = "    __quex_assert_no_passage();\n" + \
+                    get_label("$entry", state_index) + ":\n"
+        txt.append(label_str)
 
     state_index_str = None
     if not TheTemplate.uniform_state_entries_f():

@@ -2,7 +2,8 @@ from   quex.frs_py.string_handling                   import       blue_print
 from   quex.input.setup                              import       setup as Setup
 import quex.core_engine.state_machine.index          as           sm_index
 import quex.core_engine.generator.state_coder.transition_block as transition_block
-from   quex.core_engine.generator.languages.address  import       get_label
+from   quex.core_engine.generator.languages.variable_db        import Variable
+from   quex.core_engine.generator.languages.address  import       get_label, Address
 from   quex.core_engine.interval_handling            import       Interval
 import quex.output.cpp.action_code_formatter         as           action_code_formatter
 import quex.lexer_mode                               as           lexer_mode
@@ -88,7 +89,6 @@ INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY:
 """
 
 epilog_txt = """
-$$DROP_OUT_DIRECT$$:
     /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
 $$END_PROCEDURE$$                           
     goto $$GOTO_START$$;
@@ -185,7 +185,10 @@ def do(Data):
     arrange_trigger_map(trigger_map)
 
     local_variable_db = { "reference_p" : 
-                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None],
+                          Variable("reference_p", 
+                                   "QUEX_TYPE_CHARACTER_POSITION", 
+                                   None, 
+                                   "(QUEX_TYPE_CHARACTER_POSITION)0x0")
     }
     init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                         "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"
@@ -228,7 +231,6 @@ def do(Data):
                        ["$$LOOP_REENTRANCE$$",                get_label("$entry",  counter_index)],
                        ["$$INPUT_EQUAL_BUFFER_LIMIT_CODE$$",  LanguageDB["$BLC"]],
                        ["$$RELOAD$$",                         get_label("$reload", counter_index)],
-                       ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", counter_index)],
                        ["$$COUNTER_INDEX$$",                  repr(counter_index)],
                        ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
                        # When things were skipped, no change to acceptance flags or modes has
@@ -240,6 +242,8 @@ def do(Data):
 
     txt = [prolog]
     txt.extend(iteration_code)
+    txt.append(Address("$drop-out", counter_index))
+    txt.append("\n")
     txt.append(epilog)
 
     return txt, local_variable_db

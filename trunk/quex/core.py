@@ -236,8 +236,6 @@ def get_generator_input(Mode, IndentationSupportF):
         variable_db.update(db)
 
         pattern_info.set_action(prepared_action)
-
-        ## prepared_pattern_action_pair_list.append(action_info)
     
     return pattern_action_pair_list, variable_db
 
@@ -283,7 +281,6 @@ def __get_mode_db(Setup):
     consistency_check.do(lexer_mode.mode_db)
 
     return lexer_mode.mode_db
-
 
 #########################################################################################
 # Allow to check wether the exception handlers are all in place

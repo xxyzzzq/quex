@@ -1,8 +1,12 @@
 import quex.core_engine.generator.languages.core                   as     languages
+from   quex.core_engine.generator.languages.variable_db            import variable_db
 from   quex.core_engine.generator.languages.address                import get_label, get_address, \
+                                                                          get_label_of_address, \
                                                                           get_plain_strings, \
                                                                           init_address_handling, \
-                                                                          get_address_set_subject_to_routing
+                                                                          get_address_set_subject_to_routing, \
+                                                                          is_label_referenced
+
 import quex.core_engine.generator.state_machine_coder              as     state_machine_coder
 from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
 import quex.core_engine.generator.state_router                     as     state_router
@@ -11,6 +15,20 @@ from   quex.frs_py.string_handling                                 import blue_p
 from   copy                                                        import copy
 #
 from   quex.core_engine.generator.base                             import GeneratorBase
+
+bwd_prolog = """
+#include <quex/code_base/temporary_macros_on>
+QUEX_INLINE void 
+PAPC_input_postion_backward_detector_$$ID$$(QUEX_TYPE_ANALYZER* me) 
+{
+"""
+
+bwd_epilog = """
+    __quex_assert_no_passage();
+    goto $$INIT_STATE_ID$$; /* Reference the init state to prevent compiler warnings. */ 
+}
+#include <quex/code_base/temporary_macros_off>
+"""
 
 class Generator(GeneratorBase):
 
@@ -53,20 +71,7 @@ class Generator(GeneratorBase):
         return txt
 
     def backward_detector_function_get(self, sm):
-        prolog = """
-        #include <quex/code_base/temporary_macros_on>
-        QUEX_INLINE void 
-        PAPC_input_postion_backward_detector_$$ID$$(QUEX_TYPE_ANALYZER* me) 
-        {
-        """
-
-        epilog = """
-        }
-        #include <quex/code_base/temporary_macros_off>
-        """
         assert sm.get_orphaned_state_index_list() == []
-
-        txt = [ prolog.replace("$$ID$$", repr(sm.get_id()).replace("L", "")) ]
 
         dsm = StateMachineDecorator(sm, 
                                     "BACKWARD_DETECTOR_" + repr(sm.get_id()),
@@ -74,49 +79,55 @@ class Generator(GeneratorBase):
                                     BackwardLexingF                 = True, 
                                     BackwardInputPositionDetectionF = True)
 
+        variable_db.init()
         init_address_handling(dsm.get_direct_transition_to_terminal_db())
 
-        function_body, variable_db = state_machine_coder.do(dsm)
+        function_body = state_machine_coder.do(dsm)
 
+        comment = []
         if Setup.comment_state_machine_transitions_f: 
             comment = Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
                                                        sm.get_string(NormalizeF=False)            + \
                                                        "\nEND: BACKWARD DETECTOR STATE MACHINE")
-            function_body.append(comment)
-            fnuction_body.append("\n")
+            comment.append("\n")
 
 
         # -- input position detectors simply the next 'catch' and return
-        function_body.append("\n")
-        function_body.append("    __quex_assert_no_passage();\n")
-        function_body.append(get_label("$terminal-general-bw") + ":\n")
-        function_body.append("    " + self.language_db["$input/seek_position"]("end_of_core_pattern_position") + "\n")
-        function_body.append("    " + self.language_db["$input/increment"] + "\n")
-        function_body.append("    return;\n")
-
-        variable_db.update({
-             "input":                        ["QUEX_TYPE_CHARACTER",          "(QUEX_TYPE_CHARACTER)(0x0)"],
-             "end_of_core_pattern_position": ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER*)(0x0)"],
-        })
-
-        txt.extend(self.language_db["$local-variable-defs"](variable_db))
-        txt.extend(function_body)
+        terminal = []
+        terminal.append("\n")
+        terminal.append("    __quex_assert_no_passage();\n")
+        terminal.append(get_label("$terminal-general-bw") + ":\n")
+        terminal.append("    " + self.language_db["$input/seek_position"]("end_of_core_pattern_position") + "\n")
+        terminal.append("    " + self.language_db["$input/increment"] + "\n")
+        terminal.append("    return;\n")
 
         routed_address_set = get_address_set_subject_to_routing()
 
+        state_router_txt = ""
         if len(routed_address_set) != 0:
             routed_state_info_list = state_router.get_info(routed_address_set, dsm)
-            txt.extend(state_router.do(routed_state_info_list))
-            variable_db["! QUEX_OPTION_COMPUTED_GOTOS/target_state_index"] = \
-                         ["QUEX_TYPE_GOTO_LABEL", "(QUEX_TYPE_CHARACTER)(0x00)"]
+            state_router_txt       = state_router.do(routed_state_info_list)
+            variable_db.require("target_state_index", Condition_ComputedGoto=False)
 
-        txt.append(epilog)
+        variable_db.require("input")
+        variable_db.require("end_of_core_pattern_position")
+
+        local_variable_definition = self.language_db["$local-variable-defs"](variable_db.get())
+
+        # Put all things together
+        txt = []
+        txt.append(bwd_prolog.replace("$$ID$$", repr(sm.get_id()).replace("L", "")))
+        txt.extend(local_variable_definition)
+        txt.extend(comment)
+        txt.extend(function_body)
+        txt.extend(terminal)
+        txt.append(state_router_txt)
+        txt.append(bwd_epilog.replace("$$INIT_STATE_ID$$", get_label_of_address(sm.init_state_index)))
 
         return get_plain_strings(txt)
 
     def analyzer_function_get(self, RequiredLocalVariablesDB):
         routed_address_set = set([])
-        local_variable_db  = copy(RequiredLocalVariablesDB)
         function_body      = []
 
         # (*) Core State Machine
@@ -126,42 +137,42 @@ class Generator(GeneratorBase):
                                     self.post_contexted_sm_id_list, 
                                     BackwardLexingF=False, 
                                     BackwardInputPositionDetectionF=False)
+
+        variable_db.init(RequiredLocalVariablesDB)
         init_address_handling(dsm.get_direct_transition_to_terminal_db())
-        print "##dtttk", sorted(dsm.get_direct_transition_to_terminal_db().keys())
-        print "##dtttv", sorted(dsm.get_direct_transition_to_terminal_db().values())
-        print "##desdb", sorted(dsm.dead_end_state_db().keys())
 
         # (*) Pre Context State Machine
         #     All pre-context combined in single backward analyzer.
         if self.pre_context_sm_list != []:
-            code, variable_db = self.__backward_analyzer()
-
-            local_variable_db.update(variable_db)
+            code = self.__backward_analyzer()
             function_body.extend(code)
             
         # -- now, consider core state machine
-        code, variable_db = self.__forward_analyzer(dsm)
-
-        local_variable_db.update(variable_db)
+        code = self.__forward_analyzer(dsm)
         function_body.extend(code)
-
-        code = self.language_db["$variable-definitions"](self.post_contexted_sm_id_list,
-                                                         self.pre_context_sm_id_list, 
-                                                         local_variable_db,
-                                                         self.language_db)
-        function_body = code + function_body
 
         # At this point in time, the function body is completely defined
         routed_address_set = get_address_set_subject_to_routing()
 
         if len(routed_address_set) != 0:
             routed_state_info_list = state_router.get_info(routed_address_set, dsm)
-            function_body.extend(state_router.do(routed_state_info_list))
+            function_body.append(state_router.do(routed_state_info_list))
+            variable_db.require("target_state_index", Condition_ComputedGoto=False) 
+
+        if is_label_referenced("$reload-FORWARD") or is_label_referenced("$reload-BACKWARD"):
+            variable_db.require("target_state_else_index")
+            variable_db.require("target_state_index")
+
+        # Following function refers to the global 'variable_db'
+        variable_definitions = self.language_db["$variable-definitions"](self.post_contexted_sm_id_list,
+                                                                         self.pre_context_sm_id_list, 
+                                                                         self.language_db)
 
         # (*) Pack Pre-Context and Core State Machine into a single function
         analyzer_function = self.language_db["$analyzer-func"](self.state_machine_name, 
                                                                self.analyzer_state_class_name, 
                                                                self.stand_alone_analyzer_f,
+                                                               variable_definitions, 
                                                                function_body, 
                                                                self.mode_name_list, 
                                                                LanguageDB=self.language_db)
@@ -187,8 +198,7 @@ class Generator(GeneratorBase):
             txt.append(comment)
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        msg, variable_db = state_machine_coder.do(dsm)
-
+        msg = state_machine_coder.do(dsm)
         txt.extend(msg)
 
         txt.append(get_label("$terminal-general-bw") + ":\n")
@@ -196,15 +206,13 @@ class Generator(GeneratorBase):
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n")
 
-        return txt, variable_db
+        return txt
 
     def __forward_analyzer(self, DSM):
-        LanguageDB = self.language_db 
-
-        txt         = []
-        variable_db = {}
-
         assert self.sm.get_orphaned_state_index_list() == []
+
+        LanguageDB = self.language_db 
+        txt        = []
 
         # -- [optional] comment state machine transitions 
         if Setup.comment_state_machine_transitions_f:
@@ -215,27 +223,24 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         # -- implement the state machine itself
-        state_machine_code, db = state_machine_coder.do(DSM)
-
-        variable_db.update(db)
+        state_machine_code = state_machine_coder.do(DSM)
         txt.extend(state_machine_code)
 
         # -- terminal states: execution of pattern actions  
-        terminal_code, db = LanguageDB["$terminal-code"](DSM,
-                                                         self.action_db, 
-                                                         self.on_failure_action, 
-                                                         self.end_of_stream_action, 
-                                                         self.begin_of_line_condition_f, 
-                                                         self.pre_context_sm_id_list,
-                                                         self.language_db) 
-        variable_db.update(db)
+        terminal_code = LanguageDB["$terminal-code"](DSM,
+                                                     self.action_db, 
+                                                     self.on_failure_action, 
+                                                     self.end_of_stream_action, 
+                                                     self.begin_of_line_condition_f, 
+                                                     self.pre_context_sm_id_list,
+                                                     self.language_db) 
         txt.extend(terminal_code)
 
         # -- reload definition (forward, backward, init state reload)
         code = LanguageDB["$reload-definitions"](self.sm.init_state_index)
         txt.extend(code)
 
-        return txt, variable_db
+        return txt
 
 def do(PatternActionPair_List, OnFailureAction, 
        EndOfStreamAction, Language="C++", StateMachineName="",

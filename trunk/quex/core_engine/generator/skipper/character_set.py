@@ -2,6 +2,7 @@ import quex.core_engine.state_machine.index                    as     sm_index
 import quex.core_engine.generator.state_coder.transition_block as     transition_block
 import quex.core_engine.generator.state_coder.transition       as     transition
 from   quex.core_engine.generator.languages.address            import get_label
+from   quex.core_engine.generator.languages.variable_db        import Variable
 from   quex.core_engine.generator.skipper.common               import *
 from   quex.core_engine.state_machine.transition_map           import TransitionMap 
 from   quex.input.setup                                        import setup as Setup
@@ -12,9 +13,10 @@ def do(Data):
 
     code_str, db = get_skipper(Data["character_set"])   
 
-    txt =   "    " \
-          + LanguageDB["$comment"]("Character set skipper state") \
-          + code_str                                              
+    txt = []
+    txt.append("    ")
+    txt.append(LanguageDB["$comment"]("Character set skipper state"))
+    txt.extend(code_str)
 
     return txt, db
 
@@ -129,11 +131,14 @@ def get_skipper(TriggerSet):
     code = [ prolog ]
     code.extend(iteration_code)
     code.append(epilog)
-    ## code_str = blue_print(txt,
-    ##                          [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
-    local_variable_db = { "QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p" : 
-                          [ "QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", None] }
+    local_variable_db = {}
+    local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \
+                     Variable("reference_p", 
+                              "QUEX_TYPE_CHARACTER_POSITION", 
+                              None,
+                              "(QUEX_TYPE_CHARACTER_POSITION)0x0",
+                              "QUEX_OPTION_COLUMN_NUMBER_COUNTING") 
 
     return code, local_variable_db
 

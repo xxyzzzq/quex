@@ -29,7 +29,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
     
     txt                  = []
     done_state_index_set = set([])
-    local_variable_db    = {}
 
     init_state = state_machine.states[state_machine.init_state_index]
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
@@ -41,20 +40,15 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     # -- Coding path states [Optional]
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
-        code, variable_db, state_index_set = \
-                paths_coder.do(SMD, Setup.compression_path_uniform_f)
+        code, state_index_set = paths_coder.do(SMD, Setup.compression_path_uniform_f)
         txt.extend(code)
-        local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
     
-    print "##rs1", address.get_address_set_subject_to_routing()
     # -- Coding templated states [Optional]
     #    (those states do not have to be coded later)
     if Setup.compression_template_f:
-        code, state_list, variable_db, state_index_set = \
-                template_coder.do(SMD, Setup.compression_template_coef)
+        code, state_index_set = template_coder.do(SMD, Setup.compression_template_coef)
         txt.extend(code)
-        local_variable_db.update(variable_db)
         done_state_index_set.update(state_index_set)
         
     # -- all other states
@@ -76,7 +70,7 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
         txt.extend(state_code)
         txt.append("\n")
 
-    return txt, local_variable_db
+    return txt
 
 def get_sorted_state_list(StateDict):
     """Sort the list in a away, so that states that are used more
