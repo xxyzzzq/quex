@@ -11,21 +11,15 @@ endif
 # (*) SETUP ____________________________________________________________________
 
 # -- FILES PRODUCED BY QUEX
-LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
-LEXER_SOURCES	= $(LEXER_NAME)                \
-                  $(LEXER_NAME).cpp            \
-                  $(LEXER_NAME)-token_ids      \
-                  $(LEXER_NAME)-configuration       
+LEXER_NAME	   = Calc_lexer# NOTE: a whitespace after this name creates chaos!
+LEXER_SOURCES  = $(LEXER_NAME).cpp         
 
-TOKEN_FILE		= Calc_token-ids
-
-# -- FILES RELATED TO BISON
-PARSER_NAME		= Calc_parser
-PARSER_FILE		= $(PARSER_NAME).ypp
-PARSER_SOURCES	= $(PARSER_NAME).tab.cpp	\
-				  $(PARSER_NAME).tab.hpp
+TOKEN_FILE     = Calc_token-ids
+PARSER_NAME	   = Calc_parser
+PARSER_SOURCES = $(PARSER_NAME).tab.cpp	
+			     
 # -- OUTPUT
-APPLICATION     = lexer
+APPLICATION    = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -50,27 +44,26 @@ LD = $(COMPILER)
 $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 
-$(LEXER_SOURCES): GENERATE_LEXER
+%.o: %.cpp $(LEXER_SOURCES) $(PARSER_SOURCES)
+	$(CC) $< -o $@ # -DQUEX_OPTION_DEBUG_SHOW
 
-$(PARSER_NAME).tab.hpp $(PARSER_NAME).tab.cpp: GENERATE_PARSER
+$(LEXER_SOURCES):  GENERATE_LEXER
+
+$(PARSER_SOURCES): GENERATE_PARSER
 
 GENERATE_LEXER: Calc_lexer.qx 
-	quex -i Calc_lexer.qx --engine $(LEXER_NAME) --token-prefix TKN_ \
+	quex -i $< --engine $(LEXER_NAME) --token-prefix TKN_ \
           --foreign-token-id-file Calc_token-ids.h
 
-GENERATE_PARSER:
-	bison $(PARSER_FILE)
-
-# -- engine and object files
-%.o: %.cpp $(LEXER_NAME) $(PARSER_NAME).tab.hpp
-	$(CC) $< -o $@ # -DQUEX_OPTION_DEBUG_SHOW
+GENERATE_PARSER: Calc_parser.ypp
+	bison $<
 
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch Calc_lexer.qx
 	rm -f $(LEXER_SOURCES)
-	rm -f $(LEXER_NAME)-token
 	rm -f $(PARSER_SOURCES)
+	rm -f $(LEXER_NAME)-token
 	rm -f *.o
 	rm -f $(APPLICATION)
 	rm -f *.bak

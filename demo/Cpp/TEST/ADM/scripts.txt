@@ -3,4 +3,6 @@
 --not core-new.sh
 --not *-side-kick.sh
 --not *side-kick.sh
+--not *watcom*.sh
+--not *sun*.sh
 --not show-valgrind.py

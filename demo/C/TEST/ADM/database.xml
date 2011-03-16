@@ -1,6 +1,6 @@
-<test-database execution-time-sec="145.42" date="Wed Mar 16 08:02:04 2011">
+<test-database execution-time-sec="146.13" date="Wed Mar 16 22:34:38 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.14"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.13"> 
         <application file-name="makefile-diff.sh" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.03" crc="743386054"/>
@@ -10,7 +10,7 @@
            <choice name="005" result="OK" time_sec="0.01" crc="1834819860"/>
            <choice name="006" result="OK" time_sec="0.01" crc="1184240632"/>
            <choice name="007" result="OK" time_sec="0.01" crc="2107947548"/>
-           <choice name="008" result="FAIL" time_sec="0.01" crc="-1716089166"/>
+           <choice name="008" result="OK" time_sec="0.00" crc="1482484533"/>
            <choice name="009" result="OK" time_sec="0.01" crc="935015182"/>
            <choice name="010" result="OK" time_sec="0.01" crc="70876815"/>
            <choice name="011" result="OK" time_sec="0.01" crc="-684471139"/>
@@ -113,11 +113,11 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.19"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.91"> 
             <application file-name="008.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.20" crc="-1665911539"/>
-               <choice name="DEBUG" result="OK" time_sec="1.99" crc="-1665911539"/>
+               <choice name="DEBUG" result="OK" time_sec="2.71" crc="-1665911539"/>
             </choice-list>
         </test>
     </group>

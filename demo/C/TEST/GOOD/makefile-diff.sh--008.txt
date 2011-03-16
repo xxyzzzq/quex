@@ -1,34 +1,22 @@
-< LEXER_SOURCES	= $(LEXER_NAME)                     \
-<                   $(LEXER_NAME).cpp                 \
-<                   $(LEXER_NAME)-token_ids           \
-<                   $(LEXER_NAME)-configuration       
+< LEXER_SOURCES  = $(LEXER_NAME).cpp         
 ---
-> LEXER_SOURCES	= $(LEXER_NAME).c                 \
->                   $(LEXER_NAME).h                 \
->                   $(LEXER_NAME)-token_ids.h       \
->                   $(LEXER_NAME)-token.h           \
->                   $(LEXER_NAME)-token.c           \
->                   $(LEXER_NAME)-configuration.h       
-< PARSER_FILE		=	$(PARSER_NAME).ypp
-< PARSER_SOURCES	=	$(PARSER_NAME).tab.cpp	\
-< 					$(PARSER_NAME).tab.hpp
+> LEXER_SOURCES	= $(LEXER_NAME).c         
+< PARSER_SOURCES = $(PARSER_NAME).tab.cpp	
 ---
-> PARSER_FILE		=	$(PARSER_NAME).y
-> PARSER_SOURCES	=	$(PARSER_NAME).tab.c	\
-> 					$(PARSER_NAME).tab.h
+> PARSER_SOURCES = $(PARSER_NAME).tab.c
 < COMPILER = g++ -ggdb -Wall
 ---
 > COMPILER = gcc -ggdb -Wall
 < 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 ---
 > 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o -lm
-< %.o: %.cpp $(LEXER_SOURCES) $(PARSER_NAME).tab.cpp
+< %.o: %.cpp $(LEXER_SOURCES) $(PARSER_SOURCES)
 ---
-> %.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
-< GENERATE: $(LEXER_FILE) $(PARSER_NAME).tab.cpp
+> %.o: %.c $(LEXER_SOURCES) $(PARSER_SOURCES)
+<           --foreign-token-id-file Calc_token-ids.h
 ---
-> GENERATE: $(LEXER_FILE) $(PARSER_NAME).tab.c
-> 		  --language C                                               \
-< $(PARSER_NAME).tab.cpp: $(PARSER_FILE)
+>           --foreign-token-id-file Calc_token-ids.h                   \
+> 		  --language C         
+< GENERATE_PARSER: Calc_parser.ypp
 ---
-> $(PARSER_NAME).tab.c: $(PARSER_FILE)
+> GENERATE_PARSER:  Calc_parser.y

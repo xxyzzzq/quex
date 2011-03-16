@@ -1,6 +1,7 @@
 // This file has to be encoded in UTF-8
 token {
 	DUMMY;
+    NUM;
 }
 
 start = ONE_AND_ONLY;
