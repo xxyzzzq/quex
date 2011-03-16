@@ -13,7 +13,7 @@ class Generator(GeneratorBase):
 
         assert_graphviz_installed()
 
-        GeneratorBase.__init__(self, PatternActionPairList, StateMachineName)
+        GeneratorBase.__init__(self, PatternActionPairList, StateMachineName, SupportBeginOfLineF=False)
 
         # -- check if graphics format is supported
         supported_format_list = get_supported_graphic_formats()

@@ -2,11 +2,11 @@
 < #include "With"
 ---
 > #include "WithOut"
-69c69
+64c64
 < /* #include "With"*/
 ---
 > /* #include "WithOut"*/
-142,150d141
+132,140d131
 <     /* BEGIN: STATE MACHINE
 <      * init-state = 7L
 <      * 00007() <~ (1, 2)
@@ -16,11 +16,11 @@
 <      *       <no epsilon>
 <      * END: STATE MACHINE
 <      */
-253c244
-< #line 254 "With.cpp"
+196c187
+< #   line 197 "With.cpp"
 ---
-> #line 245 "WithOut.cpp"
-385,394d375
+> #   line 188 "WithOut.cpp"
+325,334d315
 <     /* BEGIN: MODE PATTERNS
 <      * 
 <      * MODE: X

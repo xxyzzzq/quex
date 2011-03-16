@@ -52,11 +52,17 @@ The reading of the current lexeme can be undone by
 .. code-block:: cpp
 
     void    undo();
+    void    undo_n(size_t DeltaN);
 
-It sets the input pointer to where it was before the current lexeme was
-matched.  This function has several advantages over the ``seek`` functions.
-First of all it is very fast. Since the lexical analyzer knows that no buffer
+The function ``undo()`` sets the input pointer to where it was before the
+current lexeme was matched.  With ``undo_n(...)`` it is possible to go only a
+specified number of characters backwards. However, it is not possible to 
+go back more then the length of the current lexeme.
+
+The undo functions have several advantages over the seek functions.  First of
+all they are very fast. Since the lexical analyzer knows that no buffer
 reloading is involved, it can do the operation very quickly. Second, it can
 take care of the line and column numbers. The user does not have to compute
-anything manually. Nevertheless, it should be used with care. It is still
-possible if the undo is not combined with a mode change for example.
+anything manually. Nevertheless, they should be used with care. For example, if
+``undo()`` is not combined with a mode change, it is possible to stall the analyzer.
+

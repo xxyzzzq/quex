@@ -83,7 +83,7 @@ import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_inf
 import quex.core_engine.generator.state_coder.transition_block as transition_block
 import quex.core_engine.generator.state_coder.drop_out         as drop_out
 import quex.core_engine.generator.state_coder.input_block      as input_block
-from   quex.core_engine.generator.languages.address            import get_address, get_label
+from   quex.core_engine.generator.languages.address            import get_address, get_label, get_label_of_address
 from   quex.core_engine.generator.languages.variable_db        import variable_db
 import quex.core_engine.state_machine.index                    as index
 import quex.core_engine.state_machine.core                     as state_machine
@@ -234,7 +234,7 @@ class TemplateTarget(transition_block.TriggerAction):
             return [ "QUEX_GOTO_STATE(%s);\n" % label ]
 
         else:
-            return [ LanguageDB["$goto"]("$entry", self.template_index) ]
+            return [ "goto %s;" % get_label_of_address(self.template_index, U=True) ]
 
     def is_drop_out(self):
         return False

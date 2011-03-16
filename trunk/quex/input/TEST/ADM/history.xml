@@ -1,4 +1,4 @@
-<history date="Tue Mar 15 21:45:09 2011" element-n="340">
+<history date="Wed Mar 16 07:57:18 2011" element-n="344">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -962,5 +962,11 @@
     </day>
     <day year="2010" month="11" day="18">
         <crc-error time="08:56:59" application="test-query-character-set-by-expression.py" choice="" database-crc="831616985" real-crc="-1557359517"/>
+    </day>
+    <day year="2011" month="03" day="16">
+        <crc-error time="06:56:08" application="token_type-4.py" choice="Constructor" database-crc="1233219576" real-crc="-300396885"/>
+        <crc-error time="06:56:25" application="token_type-4.py" choice="Constructor-2" database-crc="1092220819" real-crc="-43917463"/>
+        <crc-error time="06:56:36" application="token_type-4.py" choice="Destructor" database-crc="1133266951" real-crc="-185289580"/>
+        <crc-error time="06:56:45" application="token_type-4.py" choice="Copy" database-crc="-913011942" real-crc="330406118"/>
     </day>
 </history>

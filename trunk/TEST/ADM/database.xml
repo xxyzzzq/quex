@@ -1,4 +1,4 @@
-<test-database execution-time-sec="215.75" date="Tue Mar 15 22:22:12 2011">
+<test-database execution-time-sec="216.06" date="Wed Mar 16 07:28:26 2011">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="4.66"> 
@@ -105,10 +105,10 @@
                <choice name="" result="OK" time_sec="2.78" crc="-306258998"/>
             </choice-list>
         </test>
-        <test title="3102035 0.55.1 Weird Setup causes Duplicate State Label" time-sum-sec="2.95"> 
+        <test title="3102035 0.55.1 Weird Setup causes Duplicate State Label" time-sum-sec="3.26"> 
             <application file-name="bug-3102035.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.40" crc="273932922"/>
+               <choice name="1" result="OK" time_sec="0.71" crc="273932922"/>
                <choice name="2" result="OK" time_sec="0.29" crc="-1474666640"/>
                <choice name="3" result="OK" time_sec="0.71" crc="962376534"/>
                <choice name="4" result="OK" time_sec="0.77" crc="-2109073766"/>
@@ -346,10 +346,10 @@
         <test title="3079986 Allow namespace delimiter in --token-prefix for C++" time-sum-sec="3.46"> 
             <application file-name="feature-3079986.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="nnn" result="FAIL" time_sec="0.87" crc="736777157"/>
-               <choice name="nnc" result="FAIL" time_sec="0.87" crc="736777157"/>
-               <choice name="ncc" result="FAIL" time_sec="0.86" crc="736777157"/>
-               <choice name="ccc" result="FAIL" time_sec="0.86" crc="736777157"/>
+               <choice name="nnn" result="OK" time_sec="0.86" crc="736777157"/>
+               <choice name="nnc" result="OK" time_sec="0.87" crc="736777157"/>
+               <choice name="ncc" result="OK" time_sec="0.87" crc="736777157"/>
+               <choice name="ccc" result="OK" time_sec="0.86" crc="736777157"/>
             </choice-list>
         </test>
     </group>
@@ -458,9 +458,9 @@
             </choice-list>
         </test>
         <test title="1895066 0.20.8 #line directive after header contents missing" time-sum-sec="0.17"> 
-            <application file-name="bug-1895066.sh" info-request-time="1297454632L" vanished="False"/>
+            <application file-name="bug-1895066.sh" info-request-time="1300256821L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.17" crc="610862543"/>
+               <choice name="" result="OK" time_sec="0.17" crc="-1715157199"/>
             </choice-list>
         </test>
         <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" time-sum-sec="0.16"> 
@@ -508,7 +508,7 @@
         <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.31"> 
             <application file-name="bug-1885304.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.31" crc="-876862191"/>
+               <choice name="" result="OK" time_sec="0.31" crc="780847664"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.04"> 

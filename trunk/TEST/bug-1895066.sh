@@ -12,7 +12,7 @@ quex -i error.qx -o Simple
 echo
 echo 'Output from constructed header:_______________________________________'
 echo
-cat Simple | grep -sHne '\#line'
+cat Simple | awk '/\#/ && /line/'
 
 # cleansening
 rm -f Simple Simple.cpp Simple-*

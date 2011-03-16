@@ -1,9 +1,9 @@
-<test-database execution-time-sec="1.80" date="Tue Mar 15 21:45:11 2011">
+<test-database execution-time-sec="1.73" date="Wed Mar 16 07:58:17 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Token Class Template" time-sum-sec="0.06"> 
+    <test title="Token Class Template" time-sum-sec="0.00"> 
         <application file-name="test-token_class.py" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.06" crc="-355463670"/>
+           <choice name="" result="OK" time_sec="0.00" crc="-462729158"/>
         </choice-list>
     </test>
     <group name="Converter">

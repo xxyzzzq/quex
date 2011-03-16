@@ -6,13 +6,23 @@ from   operator         import itemgetter
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
-    assert len(StateRouterInfoList) != 0
-
     LanguageDB = Setup.language_db
 
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
              "__STATE_ROUTER:\n"
+
+    # It is conceivable, that 'last_acceptance' is never set to a valid 
+    # terminal. Further, there might be solely the init state. In this
+    # case the state router is void of states. But, the terminal router
+    # requires it to be defined --> define a dummy state router.
+    if len(StateRouterInfoList) == 0:
+        return Address("$state-router",
+                       Code = [  prolog  \
+                               + "    QUEX_ERROR_EXIT(\"Entered section of empty state router.\");\n"
+                               + "#   endif\n"
+                               ])
+
 
     txt = ["    switch( target_state_index ) {\n" ]
 
@@ -37,6 +47,11 @@ def do(StateRouterInfoList):
 
 def get_info(StateIndexList, DSM):
     LanguageDB = Setup.language_db
+
+    # In some strange cases, a 'dummy' state router is required so that 
+    # 'goto __STATE_ROUTER;' does not reference a non-existing label. Then,
+    # we return an empty text array.
+    if len(StateIndexList) == 0: return []
 
     # Make sure, that for every state the 'drop-out' state is also mentioned
     result = [None] * len(StateIndexList)

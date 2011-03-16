@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import os
 import sys
+from   operator import attrgetter
 sys.path.append(os.environ["QUEX_PATH"])
 from quex.frs_py.file_in import skip_whitespace, get_current_line_info_number
 
@@ -44,7 +45,7 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
             if len(fields[1]) > max_length: max_length = len(fields[1])
             break
         else:
-            include_guard_list.append(info(file_name, -1, "<<No INCLUDE_GUARD derective found>>"))
+            include_guard_list.append(info(file_name, -1, "<<No INCLUDE_GUARD directive found>>"))
 
 def better_name(FileName):
     L = len(os.environ["QUEX_PATH"] + "/quex/code_base/")
@@ -76,7 +77,7 @@ def check_include_guard_convention():
     L = max(map(lambda x: len(x.name), stranger_list))
 
     print "Following include guards do not follow convention:"
-    for x in stranger_list:
+    for x in sorted(stranger_list, key=attrgetter("file_name")):
         print "%s%s --> %s" % \
               (x.name, " " * (L - len(x.name)), better_name(x.file_name))
 

@@ -5,7 +5,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.state_machine.compression.templates as templates
 from   quex.core_engine.state_machine.core                  import StateMachine, State
 import quex.core_engine.generator.template_coder            as coder
-from   quex.core_engine.generator.template_coder            import __get_state_router_info
+from   quex.core_engine.generator.languages.variable_db     import variable_db
+from   quex.core_engine.generator.languages.address         import get_plain_strings
 import quex.core_engine.generator.state_router              as state_router  
 import quex.core_engine.generator.languages.cpp             as cpp
 from   quex.core_engine.generator.state_machine_decorator   import StateMachineDecorator
@@ -63,15 +64,17 @@ else:
 
 x = coder._do([combination], DSM)
 
-state_router_txt = "".join(state_router.do(__get_state_router_info(x[2], None)))
+state_info_list  = state_router.get_info(x[1], None)
+router           = state_router.do(state_info_list)
+state_router_txt = "".join(router.code)
 
 print "--(Transition Targets)--------------------------------------------------"
 print
-print cpp.__local_variable_definitions(x[0])
+print "".join(cpp.__local_variable_definitions(variable_db.get()))
 print
 print "--(Template Code)-------------------------------------------------------"
 print
-print "".join(x[1])
+print "".join(get_plain_strings(x[0]))
 print
 print "--(State Router)--------------------------------------------------------"
 print
