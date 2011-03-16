@@ -154,7 +154,7 @@ class Generator(GeneratorBase):
         # At this point in time, the function body is completely defined
         routed_address_set = get_address_set_subject_to_routing()
 
-        if len(routed_address_set) != 0:
+        if len(routed_address_set) != 0 or is_label_referenced("$state-router"):
             routed_state_info_list = state_router.get_info(routed_address_set, dsm)
             function_body.append(state_router.do(routed_state_info_list))
             variable_db.require("target_state_index", Condition_ComputedGoto=False) 

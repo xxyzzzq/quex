@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.58.1"
-#define QUEX_SETTING_BUILD_DATE        "Sun Feb 20 08:59:40 2011"
+#define QUEX_SETTING_BUILD_DATE        "Wed Mar 16 08:05:27 2011"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -138,20 +138,6 @@
 
 /* Verbosity (uncomment the following, if you want it verbose.)            */
 /* #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                    */
-
-/* Debugging: 
- *    If the engine was created with the '--debug' flag then it contains 
- *    debugging code. The effect of this code fragments can be turned off
- *    by commenting the following options out.                             */
-#ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
-/* #define QUEX_OPTION_DEBUG_TOKEN_SENDING */
-#endif
-#ifndef QUEX_OPTION_DEBUG_SHOW_MODES
-/* #define QUEX_OPTION_DEBUG_SHOW_MODES */
-#endif
-#ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-/* #define QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES */
-#endif
 
 /* Include Stack Support                                                  */
 #ifndef   QUEX_OPTION_INCLUDE_STACK

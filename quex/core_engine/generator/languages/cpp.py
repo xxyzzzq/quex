@@ -296,8 +296,9 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
         "    /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/\n" \
         "    /* that is never reached (and deleted by the compiler anyway).*/\n")
 
-    for mode_name in ModeNameList:
-        txt.append("    (void)%s;\n" % mode_name)
+    # Mode Names are defined as macros, so the following is not necessary.
+    # for mode_name in ModeNameList:
+    #    txt.append("    (void)%s;\n" % mode_name)
 
     txt.append(                                                             \
         "    (void)QUEX_NAME(LexemeNullObject);\n"                          \

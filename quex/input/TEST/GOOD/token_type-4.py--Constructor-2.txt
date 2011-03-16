@@ -15,7 +15,8 @@ union members {
 }
 constructor {
 
-#line 1 "string"
+#   line 1 "string"
   The world is a /* } */ nice place 
+
 /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
 }

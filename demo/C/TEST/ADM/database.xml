@@ -1,6 +1,6 @@
-<test-database execution-time-sec="142.72" date="Tue Mar 15 21:31:25 2011">
+<test-database execution-time-sec="145.42" date="Wed Mar 16 08:02:04 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.13"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.14"> 
         <application file-name="makefile-diff.sh" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="12" same_result="False">
            <choice name="000" result="OK" time_sec="0.03" crc="743386054"/>
@@ -36,16 +36,16 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="0.96"> 
+        <test title="Indentation Based Scopes" time-sum-sec="3.63"> 
             <application file-name="002.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.47" crc="29925504"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.49" crc="29925504"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.05" crc="29925504"/>
+               <choice name="DEBUG" result="OK" time_sec="1.58" crc="29925504"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="10.21"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="10.20"> 
             <application file-name="003.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.01" crc="766281751"/>
@@ -63,7 +63,7 @@
                <choice name="UTF16BE-BOM" result="OK" time_sec="1.64" crc="591404884"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="10.19"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="10.18"> 
             <application file-name="003-icu.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.00" crc="-1292672989"/>
@@ -113,7 +113,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.18"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="4.19"> 
             <application file-name="008.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.20" crc="-1665911539"/>
@@ -122,7 +122,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="3.99"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="4.00"> 
             <application file-name="009.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="1.96" crc="-1473894578"/>
@@ -131,7 +131,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="60.33"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="60.35"> 
             <application file-name="010.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="copy" result="OK" time_sec="2.05" crc="595815643"/>
@@ -148,7 +148,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.17"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.18"> 
             <application file-name="011.sh" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="1.82" crc="-1827787599"/>

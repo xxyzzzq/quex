@@ -7,6 +7,8 @@ from   quex.core_engine.state_machine.core                  import StateMachine,
 import quex.core_engine.state_machine.index                 as index                  
 import quex.core_engine.generator.paths_coder               as coder
 import quex.core_engine.generator.languages.cpp             as cpp
+from   quex.core_engine.generator.languages.variable_db     import variable_db
+from   quex.core_engine.generator.languages.address         import get_plain_strings
 from   quex.core_engine.generator.state_machine_decorator   import StateMachineDecorator
 from   quex.core_engine.interval_handling                   import *
 from   quex.input.setup import setup as Setup
@@ -90,20 +92,20 @@ elif "NonUniform2" in sys.argv:
                   get_path("fritz", skeleton) ]
 
     # The state machine has been setup during 'get_path()'
-    code, variable_db, state_list = coder.do(SMD, UniformOnlyF=True)
-    x = [variable_db, code, state_list]
+    code, state_list = coder.do(SMD, UniformOnlyF=True)
+    x = [code, state_list]
 
 print "--(Path Definitions)----------------------------------------------------"
 print
-print cpp.__local_variable_definitions(x[0])
+print "".join(cpp.__local_variable_definitions(variable_db.get()))
 print
 print "--(Pathwalker Code)-----------------------------------------------------"
 print
-print "".join(x[1])
+print "".join(get_plain_strings(x[0]))
 print
 print "--(Involved State Indices)----------------------------------------------"
 print
-print x[2]
+print x[1]
 print
 
 sys.exit(0)
