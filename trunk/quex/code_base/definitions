@@ -187,7 +187,7 @@
 #   define __quex_debug_state(StateIdx)       /* empty */
 #   define __quex_debug_reload_before()       /* empty */
 #   define __quex_debug_reload_after()        /* empty */
-#   define __quex_debug_init_state(StateIdx)  /* empty */
+#   define __quex_debug_init_state()          /* empty */
 #   define __quex_debug2(FormatStr, Arg)      /* empty */
 #   define __quex_debug_input()               /* empty */
 #   define __quex_debug_counter()             /* empty */

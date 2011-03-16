@@ -2,33 +2,24 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-.PHONY: clean GENERATE
+.PHONY: clean GENERATE_LEXER GENERATE_PARSER
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
 # (*) SETUP ____________________________________________________________________
-# -- INPUT
-LEXER_FILE		= Calc_lexer.qx
 
 # -- FILES PRODUCED BY QUEX
 LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
-LEXER_SOURCES	= $(LEXER_NAME).c                 \
-                  $(LEXER_NAME).h                 \
-                  $(LEXER_NAME)-token_ids.h       \
-                  $(LEXER_NAME)-token.h           \
-                  $(LEXER_NAME)-token.c           \
-                  $(LEXER_NAME)-configuration.h       
+LEXER_SOURCES	= $(LEXER_NAME).c         
 
-TOKEN_FILE		= Calc_token-ids
+TOKEN_FILE     = Calc_token-ids
+PARSER_NAME	   = Calc_parser
+PARSER_SOURCES = $(PARSER_NAME).tab.c
 
-PARSER_NAME		=	Calc_parser
-PARSER_FILE		=	$(PARSER_NAME).y
-PARSER_SOURCES	=	$(PARSER_NAME).tab.c	\
-					$(PARSER_NAME).tab.h
 # -- OUTPUT
-APPLICATION      = lexer
+APPLICATION    = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -53,26 +44,27 @@ LD = $(COMPILER)
 $(APPLICATION): main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o -lm
 
-# -- engine and object files
-%.o: %.c $(LEXER_SOURCES) $(PARSER_NAME).tab.c
+%.o: %.c $(LEXER_SOURCES) $(PARSER_SOURCES)
 	$(CC) $< -o $@ # -DQUEX_OPTION_DEBUG_SHOW
 
-$(LEXER_SOURCES): GENERATE
+$(LEXER_SOURCES):  GENERATE_LEXER
 
-GENERATE: $(LEXER_FILE) $(PARSER_NAME).tab.c
-	quex -i $(LEXER_FILE) --engine $(LEXER_NAME) --token-prefix TKN_ \
-		  --language C                                               \
-          --foreign-token-id-file Calc_token-ids.h
+$(PARSER_SOURCES): GENERATE_PARSER
 
-$(PARSER_NAME).tab.c: $(PARSER_FILE)
-	bison $(PARSER_FILE)
+GENERATE_LEXER: Calc_lexer.qx 
+	quex -i $< --engine $(LEXER_NAME) --token-prefix TKN_ \
+          --foreign-token-id-file Calc_token-ids.h                   \
+		  --language C         
+
+GENERATE_PARSER:  Calc_parser.y
+	bison $<
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	touch $(LEXER_FILE)
+	touch Calc_lexer.qx
 	rm -f $(LEXER_SOURCES)
-	rm -f $(LEXER_NAME)-token
 	rm -f $(PARSER_SOURCES)
+	rm -f $(LEXER_NAME)-token
 	rm -f *.o
 	rm -f $(APPLICATION)
 	rm -f *.bak
