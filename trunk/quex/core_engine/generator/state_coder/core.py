@@ -32,7 +32,7 @@ def do(state, StateIdx, SMD=False):
         # forward transitions to the terminal.
         if len(state_stub) == 0: return []
         return [ get_label("$entry", StateIdx), ":\n",
-                "    ", LanguageDB["$debug-state"](StateIdx)
+                "    ", LanguageDB["$debug-state"](StateIdx, SMD.forward_lexing_f())
                ] + state_stub 
         
 

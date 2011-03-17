@@ -124,7 +124,9 @@ db["C++"] = {
     "$label":                lambda Type, Argument=None: label_db_get(Type, Argument, GotoTargetF=True),
     "$label-pure":           lambda Label:                "%s:" % Label,
     "$label-def":            lambda Type, Argument=None:  "%s:" % label_db_get(Type, Argument), 
-    "$debug-state":          lambda StateIdx:             "__quex_debug_state(%i);\n" % StateIdx,
+    "$debug-state":          lambda StateIdx, ForwardF: \
+                                    { True:  "__quex_debug_state(%i);\n"          % StateIdx,
+                                      False: "__quex_debug_state_backward(%i);\n" % StateIdx, }[ForwardF],
     "$debug-init-state":     "__quex_debug_init_state();\n",
     "$analyzer-func":        cpp.__analyzer_function,
     "$terminal-code":        cpp.__terminal_states,      

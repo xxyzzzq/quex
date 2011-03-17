@@ -24,17 +24,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(set_mode_brutally)(QUEX_TYPE_ANALYZER* me, QUEX_NAME(Mode)* ModeP) 
     { 
-#   ifdef     QUEX_OPTION_DEBUG_SHOW_MODES
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("line = %i\n", (int)me->counter._line_number_at_begin);
+#       ifdef     QUEX_OPTION_DEBUG_SHOW_MODES
+        if( me->__current_mode_p != 0x0 ) {
+            __QUEX_STD_fprintf(stderr, "| Mode change from %s\n", me->__current_mode_p->name);
+            __QUEX_STD_fprintf(stderr, "|             to   %s\n", ModeP->name);
+        } else {
+            __QUEX_STD_fprintf(stderr, "| Mode change to %s\n", ModeP->name);
+        }
 #       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("column = %i\n", (int)me->counter._column_number_at_begin);
-#       endif
-        if( me->__current_mode_p != 0x0 ) 
-            __QUEX_STD_printf("FromMode: %s ", me->__current_mode_p->name);
-        __QUEX_STD_printf("ToMode: %s\n", ModeP->name);
-#    endif
 
         me->__current_mode_p          = ModeP;
         me->current_analyzer_function = ModeP->analyzer_function; 

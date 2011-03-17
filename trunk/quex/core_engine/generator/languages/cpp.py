@@ -319,6 +319,19 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     return txt
 
 __terminal_router_prolog_str = """
+#   if defined(QUEX_OPTION_COMPUTED_GOTOS)
+    __quex_assert_no_passage();
+    /* Scenario: -- QUEX_GOTO_TERMINAL(last_acceptance) defined
+     *              => required __TERMINAL_ROUTER
+     *           -- all last_acceptance are 'failure' 
+     *              => no routing.
+     *           -- Compilation with 'QUEX_OPTION_COMPUTED_GOTOS'.
+     *              => no state router required.                     
+     * Then: There is no 'goto' to __TERMINAL_ROUTER and the compiler
+     *       would complain about an unreferenced label. Avoid this by
+     *       putting an explicit, never reached 'goto' here.               */
+    goto __TERMINAL_ROUTER;
+#   endif
     __quex_assert_no_passage();
 __TERMINAL_ROUTER:
     __quex_debug("terminal router");
@@ -478,8 +491,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
                     + "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern) \
                     + "    " + LanguageDB["$input/increment"] + "\n"),
             Address("$terminal-direct", state_machine_id), 
-            "\n",
-            "    __quex_debug(\"* terminal %i:   %s\");" % (state_machine_id, safe_pattern),
+            "    __quex_debug(\"* terminal %i:   %s\");\n" % (state_machine_id, safe_pattern),
     ]
 
     # (1) Retrieving the input position for the next run
@@ -506,12 +518,9 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         post_condition_index = SMD.get_post_context_index(state_machine_id)
         # Post Contexted Patterns:
         # -- have a dedicated register from where they store the end of the core pattern.
+        txt.append("    __quex_debug(\"post context %s: reset position\");\n" % __nice(state_machine_id))
         variable = "post_context_start_position[%s]" % __nice(post_condition_index) 
-        txt.append("    ")
-        txt.append(LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
-                                               (__nice(post_condition_index), __nice(state_machine_id))))
-        txt.append("\n    ")
-        txt.append(LanguageDB["$input/seek_position"](variable))
+        txt.append("    " + LanguageDB["$input/seek_position"](variable))
         txt.append("\n")
 
     else:
