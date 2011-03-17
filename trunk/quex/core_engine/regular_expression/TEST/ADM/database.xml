@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.43" date="Wed Mar 16 23:10:23 2011">
+<test-database execution-time-sec="2.41" date="Thu Mar 17 23:08:19 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1297454632L" vanished="False"/>
@@ -80,10 +80,10 @@
                <choice name="" result="OK" time_sec="0.07" crc="-561669938"/>
             </choice-list>
         </test>
-        <test title="post conditions" time-sum-sec="0.07"> 
+        <test title="post conditions" time-sum-sec="0.06"> 
             <application file-name="test-post-condition.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="30145240"/>
+               <choice name="" result="OK" time_sec="0.06" crc="30145240"/>
             </choice-list>
         </test>
         <test title="pre- and post-conditions" time-sum-sec="0.08"> 
@@ -100,10 +100,10 @@
         </test>
     </group>
     <group name="Replacement">
-        <test title="Regular Expression State Machines" time-sum-sec="0.09"> 
+        <test title="Regular Expression State Machines" time-sum-sec="0.08"> 
             <application file-name="test-replacement.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="1905002429"/>
+               <choice name="" result="OK" time_sec="0.08" crc="1905002429"/>
             </choice-list>
         </test>
         <test title="Character Sets" time-sum-sec="0.08"> 
@@ -120,10 +120,10 @@
                <choice name="" result="OK" time_sec="0.61" crc="-1397925985"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.62"> 
+        <test title="Set Operations" time-sum-sec="0.61"> 
             <application file-name="test-properties-2.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.62" crc="1108933321"/>
+               <choice name="" result="OK" time_sec="0.61" crc="1108933321"/>
             </choice-list>
         </test>
     </group>

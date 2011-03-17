@@ -1,4 +1,4 @@
-<test-database execution-time-sec="38.64" date="Wed Mar 16 23:06:06 2011">
+<test-database execution-time-sec="38.08" date="Thu Mar 17 23:04:10 2011">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.07"> 
@@ -14,7 +14,7 @@
                <choice name="" result="OK" time_sec="0.04" crc="1051370365"/>
             </choice-list>
         </test>
-        <test title="Inverse" time-sum-sec="0.06"> 
+        <test title="Inverse" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="1433382430"/>
@@ -27,21 +27,21 @@
                <choice name="" result="OK" time_sec="0.04" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Massive Mutual Consistency Check" time-sum-sec="27.17"> 
+        <test title="Massive Mutual Consistency Check" time-sum-sec="27.04"> 
             <application file-name="test-NumberSet-mmcc.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="5" same_result="True">
-               <choice name="union" result="OK" time_sec="6.87" crc="1624740239"/>
-               <choice name="intersection" result="OK" time_sec="6.60" crc="1624740239"/>
-               <choice name="symmetric_difference" result="OK" time_sec="6.16" crc="1624740239"/>
-               <choice name="difference" result="OK" time_sec="6.03" crc="1624740239"/>
-               <choice name="is_superset" result="OK" time_sec="1.52" crc="1624740239"/>
+               <choice name="union" result="OK" time_sec="6.84" crc="1624740239"/>
+               <choice name="intersection" result="OK" time_sec="6.58" crc="1624740239"/>
+               <choice name="symmetric_difference" result="OK" time_sec="6.21" crc="1624740239"/>
+               <choice name="difference" result="OK" time_sec="5.90" crc="1624740239"/>
+               <choice name="is_superset" result="OK" time_sec="1.51" crc="1624740239"/>
             </choice-list>
         </test>
         <test title="Transform" time-sum-sec="0.10"> 
             <application file-name="test-NumberSet-transform.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="856175348"/>
-               <choice name="2" result="OK" time_sec="0.04" crc="103827339"/>
+               <choice name="2" result="OK" time_sec="0.03" crc="103827339"/>
                <choice name="3" result="OK" time_sec="0.03" crc="1050676042"/>
             </choice-list>
         </test>
@@ -57,31 +57,31 @@
                <choice name="" result="OK" time_sec="0.03" crc="973910203"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.64"> 
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.50"> 
             <application file-name="test-NumberSet-transform-x.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="10" result="OK" time_sec="0.03" crc="1378888075"/>
-               <choice name="1000" result="OK" time_sec="0.52" crc="-646722016"/>
-               <choice name="2000" result="OK" time_sec="1.81" crc="1205044615"/>
-               <choice name="3000" result="OK" time_sec="3.96" crc="843858714"/>
+               <choice name="1000" result="OK" time_sec="0.51" crc="-646722016"/>
+               <choice name="2000" result="OK" time_sec="1.77" crc="1205044615"/>
+               <choice name="3000" result="OK" time_sec="3.89" crc="843858714"/>
                <choice name="100" result="OK" time_sec="0.04" crc="-2005431878"/>
                <choice name="250" result="OK" time_sec="0.08" crc="1443580919"/>
-               <choice name="500" result="OK" time_sec="0.18" crc="-352222672"/>
+               <choice name="500" result="OK" time_sec="0.17" crc="-352222672"/>
             </choice-list>
         </test>
-        <test title="Cut Interval" time-sum-sec="0.06"> 
+        <test title="Cut Interval" time-sum-sec="0.07"> 
             <application file-name="test-Interval-cmp.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="normal" result="OK" time_sec="0.03" crc="1145705751"/>
+               <choice name="normal" result="OK" time_sec="0.04" crc="1145705751"/>
                <choice name="special" result="OK" time_sec="0.03" crc="517788893"/>
             </choice-list>
         </test>
     </group>
     <group name="UTF16">
-        <test title="Conversion from and to byte sequences" time-sum-sec="0.66"> 
+        <test title="Conversion from and to byte sequences" time-sum-sec="0.38"> 
             <application file-name="test-utf16-byte-sequences.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.66" crc="-1432178973"/>
+               <choice name="" result="OK" time_sec="0.38" crc="-1432178973"/>
             </choice-list>
         </test>
     </group>
@@ -92,10 +92,10 @@
                <choice name="" result="OK" time_sec="0.03" crc="-99051650"/>
             </choice-list>
         </test>
-        <test title="Conversion from and to byte sequences" time-sum-sec="3.69"> 
+        <test title="Conversion from and to byte sequences" time-sum-sec="3.67"> 
             <application file-name="test-utf8-byte-sequences.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.69" crc="-1432178973"/>
+               <choice name="" result="OK" time_sec="3.67" crc="-1432178973"/>
             </choice-list>
         </test>
     </group>
