@@ -246,8 +246,10 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
             txt.append(1)
             txt.append(LanguageDB["$endif"])
             debug_txt.append(1)
-            debug_txt.append("__quex_debug2(\"begin of line pre-context: %%s\", " + \
-                             "me->buffer._character_before_lexeme_start ? \"yes\" : \"no\");\n")
+            debug_txt.append("__quex_debug2(\"begin of line pre-context: ")
+            debug_txt.append("%")
+            debug_txt.append("s\", ")
+            debug_txt.append("me->buffer._character_before_lexeme_start ? \"yes\" : \"no\");\n")
         
         else:
             if first_if_statement_f: 

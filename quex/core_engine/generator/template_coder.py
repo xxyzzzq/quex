@@ -414,11 +414,10 @@ def __templated_state_entries(txt, TheTemplate, SMD):
         state = SMD.sm().states[state_index]
 
         if TheTemplate.uniform_state_entries_f():
-            txt = []
             if state_index != SMD.sm().init_state_index:
                 txt.append("    __quex_assert_no_passage();\n")
             txt.append(get_label("$entry", state_index) + ":\n")
-            txt.append("\n    " + LanguageDB["$debug-state"](StateIdx, SMD.forward_lexing_f())) 
+            txt.append("\n    " + LanguageDB["$debug-state"](state_index, SMD.forward_lexing_f())) 
         else:
             # If all state entries are uniform, the entry handling happens uniformly at
             # the entrance of the template, not each state.
@@ -427,7 +426,7 @@ def __templated_state_entries(txt, TheTemplate, SMD):
 
         txt.append("    ")
         txt.append(LanguageDB["$assignment"]("template_state_key", "%i" % key).replace("\n", "\n    "))
-        txt.append("    goto %s;" % get_label("$entry", TheTemplate.core().state_index))
+        txt.append("    goto %s;" % get_label("$entry", TheTemplate.core().state_index, U=True))
         txt.append("\n\n")
 
 def __template_state(txt, TheTemplate, SMD):
