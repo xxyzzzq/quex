@@ -123,12 +123,9 @@ def __handle_post_conditioned_core_patterns(OriginList, SMD):
             # Store current input position, to be restored when post condition really matches
             post_context_index = SMD.get_post_context_index(origin.state_machine_id)
             txtl += [
-                    "    ", 
-                    LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
-                            (__nice(post_context_index), __nice(origin.state_machine_id))),
-                    "\n    ", 
-                    LanguageDB["$input/tell_position"]("post_context_start_position[%i]" % \
-                            post_context_index),
+                    "    __quex_debug(\"post context %s: mark position\");\n" % __nice(origin.state_machine_id),
+                    "    " + LanguageDB["$input/tell_position"]("post_context_start_position[%i]" % \
+                             post_context_index),
                     "\n"
                     ]
 

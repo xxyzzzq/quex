@@ -394,7 +394,7 @@ def __state_entries(txt, PathWalker, SMD):
 
                 entry_txt.append(label_str)
                 entry_txt.append("    ")
-                entry_txt.append(LanguageDB["$debug-state"](state_index))
+                entry_txt.append(LanguageDB["$debug-state"](state_index, SMD.forward_lexing_f()))
             else:
                 entry_txt.extend(input_block.do(state_index, False, SMD))
                 entry_txt.extend(acceptance_info.do(state, state_index, SMD, ForceSaveLastAcceptanceF=True))

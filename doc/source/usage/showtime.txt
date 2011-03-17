@@ -34,8 +34,8 @@ in detail. Such output looks like the following::
 
 This tells how the input triggers from one state to the next
 and finally ends up in the terminal for ``[A-Z]:``. Especially, 
-when reload is involved, it makes sense to set also the command
-line option::
+when reload is involved, it makes sense to set also the compile
+option::
 
         QUEX_OPTION_DEBUG_SHOW_LOADS
 
@@ -61,4 +61,21 @@ is an output that tells that the start of the lexeme was at position '0xC' when
 the reload was triggered and the current input was at the end of the buffer
 content. The right-most numbers show the unicode value of the character that is
 the content of the buffer at the given position. This feature comes especially
-handy, if one tries to program a customizes character set converted.
+handy, if one tries to program a customizes character set converted. With the
+compile option::
+
+        QUEX_OPTION_DEBUG_SHOW_MODES
+
+mode transitions can be made visible. With this option set, the analyzer
+documents each mode change by outputs such as:: 
+
+    | Mode change from GENERAL
+    |             to   MATH
+    ...
+    | Mode change from MATH
+    |             to   FORMAT_STRING
+    ...
+    | Mode change from FORMAT_STRING
+    |             to   MATH
+    ...
+

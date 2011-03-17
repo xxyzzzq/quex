@@ -39,6 +39,14 @@ reasonable pattern characteristics[#f2]_. For reasonable applications
 as known from popular programming languages the mechanisms of counting should
 be optimal.
 
+For some purposes, it might be necessary to set the line and column number
+actively. Then the following member functions may be used:
+
+.. code-block:: cpp
+
+    void        line_number_set(size_t Y);
+    void        column_number_set(size_t X);
+
 Line and column counting can be turned off individually by pre-processor
 switches. 
 

@@ -23,10 +23,10 @@ def do(StateIdx, InitStateF, SMD):
 
     if InitStateF and SMD.forward_lexing_f():
         txt.append(get_label("$init_state_fw_transition_block") + ":\n")
-        txt.append("\n    " + LanguageDB["$debug-init-state"]) 
+        txt.append("    " + LanguageDB["$debug-init-state"]) 
     else:
         txt.append(get_label("$entry", StateIdx) + ":\n")
-        txt.append("\n    " + LanguageDB["$debug-state"](StateIdx)) 
+        txt.append("    " + LanguageDB["$debug-state"](StateIdx, SMD.forward_lexing_f())) 
 
     # The init state in forward lexing does not increase the input pointer
     if not (SMD.forward_lexing_f() and InitStateF): 
