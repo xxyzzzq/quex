@@ -20,17 +20,15 @@ main(int argc, char** argv)
     std::string    Directory("examples/");
     quex::EHLexer  qlex(Directory + argv[1] + ".txt");
 
-    stderr = stdout;
-
-    cout << "| [START]\n";
+    cerr << "| [START]\n";
 
     token = qlex.token_p();
     do {
         (void)qlex.receive();
-        cout << "TOKEN: " << std::string(*token) << endl;
+        cerr << "TOKEN: " << std::string(*token) << endl;
     } while( token->type_id() != TK_TERMINATION );
 
-    cout << "| [END]\n";
+    cerr << "| [END]\n";
 
     return 0;
 }

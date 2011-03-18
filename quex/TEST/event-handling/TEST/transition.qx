@@ -9,8 +9,8 @@ start = ONE;
 
 mode ONE : <skip: [ \t\n]> 
 {
-    on_entry { printf("Enter: %s\n", FromMode->name); }
-    on_exit  { printf("Exit:  %s\n", ToMode->name); }
+    on_entry { fprintf(stderr, "Enter: %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  %s\n", ToMode->name); }
     return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
 
     2      => GOTO(TWO,    TK_GOTO(Lexeme));
@@ -24,8 +24,8 @@ mode ONE : <skip: [ \t\n]>
 
 mode TWO : <skip: [ \t\n]> 
 {
-    on_entry { printf("Enter: %s\n", FromMode->name); }
-    on_exit  { printf("Exit:  %s\n", ToMode->name); }
+    on_entry { fprintf(stderr, "Enter: %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  %s\n", ToMode->name); }
     return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
 
     1      => GOTO(ONE,    TK_GOTO(Lexeme));
@@ -39,8 +39,8 @@ mode TWO : <skip: [ \t\n]>
 
 mode THREE : <skip: [ \t\n]> 
 {
-    on_entry { printf("Enter: %s\n", FromMode->name); }
-    on_exit  { printf("Exit:  %s\n", ToMode->name); }
+    on_entry { fprintf(stderr, "Enter: %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  %s\n", ToMode->name); }
     return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
 
     1      => GOTO(ONE,    TK_GOTO(Lexeme));

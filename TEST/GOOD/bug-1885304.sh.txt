@@ -816,7 +816,6 @@ __REENTRY:
     me->buffer._lexeme_start_p = me->buffer._input_p;
     QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);
 INIT_STATE_TRANSITION_BLOCK:
-
     __quex_debug_init_state();
     input = *(me->buffer._input_p);
     switch( input ) {
@@ -900,7 +899,6 @@ _207:
 
     __quex_assert_no_passage();
 _217:
-
     __quex_debug_state(217);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -965,7 +963,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _210:
-
     __quex_debug_state(210);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -981,7 +978,6 @@ goto _246;
 
     __quex_assert_no_passage();
 _216:
-
     __quex_debug_state(216);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1003,7 +999,6 @@ goto _248;
 
     __quex_assert_no_passage();
 _208:
-
     __quex_debug_state(208);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1068,7 +1063,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _209:
-
     __quex_debug_state(209);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1133,7 +1127,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _212:
-
     __quex_debug_state(212);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1198,7 +1191,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _213:
-
     __quex_debug_state(213);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1263,7 +1255,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _218:
-
     __quex_debug_state(218);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1328,7 +1319,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _219:
-
     __quex_debug_state(219);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1393,7 +1383,6 @@ goto _255;
 
     __quex_assert_no_passage();
 _220:
-
     __quex_debug_state(220);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1458,7 +1447,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _221:
-
     __quex_debug_state(221);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1523,7 +1511,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _222:
-
     __quex_debug_state(222);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1588,7 +1575,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _223:
-
     __quex_debug_state(223);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1653,7 +1639,6 @@ goto _260;
 
     __quex_assert_no_passage();
 _224:
-
     __quex_debug_state(224);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1718,7 +1703,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _225:
-
     __quex_debug_state(225);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1783,7 +1767,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _226:
-
     __quex_debug_state(226);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1848,7 +1831,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _227:
-
     __quex_debug_state(227);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1913,7 +1895,6 @@ goto _265;
 
     __quex_assert_no_passage();
 _228:
-
     __quex_debug_state(228);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -1978,7 +1959,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _229:
-
     __quex_debug_state(229);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2043,7 +2023,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _230:
-
     __quex_debug_state(230);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2108,7 +2087,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _231:
-
     __quex_debug_state(231);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2173,7 +2151,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _232:
-
     __quex_debug_state(232);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2238,7 +2215,6 @@ goto _271;
 
     __quex_assert_no_passage();
 _233:
-
     __quex_debug_state(233);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2303,7 +2279,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _234:
-
     __quex_debug_state(234);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2368,7 +2343,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _235:
-
     __quex_debug_state(235);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2433,7 +2407,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _236:
-
     __quex_debug_state(236);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2498,7 +2471,6 @@ goto _244;
 
     __quex_assert_no_passage();
 _237:
-
     __quex_debug_state(237);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
@@ -2584,8 +2556,8 @@ goto _277;
 #endif
 
 _246:
-
     __quex_debug("* terminal 4:   [ \\t\\r\\n]+");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2598,8 +2570,8 @@ _246:
     }
     goto __REENTRY_PREPARATION;
 _265:
-
     __quex_debug("* terminal 6:   double-quotestructdouble-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2613,13 +2585,13 @@ _265:
 self_send(QUEX_TKN_STRUCT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1936 "Simple.cpp"
+#   line 1908 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _255:
-
     __quex_debug("* terminal 8:   double-quoteintdouble-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2633,13 +2605,13 @@ _255:
 self_send(QUEX_TKN_TYPE_INT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1956 "Simple.cpp"
+#   line 1928 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _277:
-
     __quex_debug("* terminal 10:   double-quotedoubledouble-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2653,13 +2625,13 @@ _277:
 self_send(QUEX_TKN_TYPE_DOUBLE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1976 "Simple.cpp"
+#   line 1948 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _260:
-
     __quex_debug("* terminal 12:   double-quotesenddouble-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2673,13 +2645,13 @@ _260:
 self_send(QUEX_TKN_SEND);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1996 "Simple.cpp"
+#   line 1968 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _271:
-
     __quex_debug("* terminal 14:   double-quoteexpectdouble-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2693,15 +2665,15 @@ _271:
 self_send(QUEX_TKN_EXPECT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2016 "Simple.cpp"
+#   line 1988 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _240:
     __quex_debug("pre-terminal 16: double-quote;double-quote");
     ++(me->buffer._input_p);
-
     __quex_debug("* terminal 16:   double-quote;double-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2715,15 +2687,15 @@ _240:
 self_send(QUEX_TKN_SEMICOLON);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2038 "Simple.cpp"
+#   line 2010 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _238:
     __quex_debug("pre-terminal 18: double-quote{double-quote");
     ++(me->buffer._input_p);
-
     __quex_debug("* terminal 18:   double-quote{double-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2737,15 +2709,15 @@ _238:
 self_send(QUEX_TKN_BRACKET_OPEN);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2060 "Simple.cpp"
+#   line 2032 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _239:
     __quex_debug("pre-terminal 20: double-quote}double-quote");
     ++(me->buffer._input_p);
-
     __quex_debug("* terminal 20:   double-quote}double-quote");
+
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);
@@ -2759,13 +2731,13 @@ _239:
 self_send(QUEX_TKN_BRACKET_CLOSE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2082 "Simple.cpp"
+#   line 2054 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _248:
-
     __quex_debug("* terminal 25:   [0-9]+");
+
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2781,13 +2753,13 @@ self_write_token_p()->number = atoi((char*)Lexeme);
 self_send(QUEX_TKN_NUMBER);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2104 "Simple.cpp"
+#   line 2076 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
 _244:
-
     __quex_debug("* terminal 30:   [_a-zA-Z]+");
+
     QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2801,7 +2773,7 @@ _244:
 #   line 28 "dos_lf_2.qx"
  self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
 
-#   line 2124 "Simple.cpp"
+#   line 2096 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2818,7 +2790,7 @@ _289: /* TERMINAL: END_OF_STREAM */
 #   line 16 "dos_lf_2.qx"
 self_send(QUEX_TKN_TERMINATION);
 
-#   line 2141 "Simple.cpp"
+#   line 2113 "Simple.cpp"
 
     }
      /* End of Stream causes a return from the lexical analyzer, so that no

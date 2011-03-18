@@ -1,8 +1,13 @@
-.PHONY: clean
-TEST_FILES = transition.exe \
-			 transition-x.exe \
-			 on_skip_range_open.exe \
-			 on_skip_range_open-customized.exe 
+.PHONY: clean 
+.SECONDARY: transition.exe \
+	        transition-x.exe \
+			on_skip_range_open.exe \
+			on_skip_range_open-customized.exe
+	 
+TEST_FILES = transition.sh \
+			 transition-x.sh \
+			 on_skip_range_open.sh \
+			 on_skip_range_open-customized.sh 
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
@@ -30,6 +35,19 @@ all: $(TEST_FILES)
 hwut-info:
 	@echo $(TEST_FILES)
 
+transit%.sh: transit%.exe
+	@cat template.sh | sed -e 's/EXE/$</g' > $@
+	chmod ua+rx $@
+
+on_skip_range_open.sh: on_skip_range_open.exe
+	@cat template.sh | sed -e 's/EXE/$</g' > $@
+	chmod ua+rx $@
+
+on_skip_range_open-customized.sh: on_skip_range_open-customized.exe
+	@cat template.sh | sed -e 's/EXE/$</g' > $@
+	chmod ua+rx $@
+
+
 transit%.exe: transit%.qx lexer.cpp $(QUEX_CORE)
 	$(QUEX_PATH)/quex-exe.py -i $< --engine EHLexer --token-prefix TK_ --token-policy single
 	$(LD) ./lexer.cpp EHLexer.cpp -o $@ \
@@ -54,6 +72,7 @@ on_skip_range_open-customized.exe: on_skip_range_open-customized.qx $(QUEX_CORE)
 clean:	
 	rm -f EHLexer*
 	rm -f EasyLexer*
+	rm -f *.exe
 	rm -f lexer.o
 	rm -f lexer
 	rm -f token_ids

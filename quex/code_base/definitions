@@ -281,6 +281,12 @@
         "Error: senders in plain 'C'. Please use something like\n\n"              \
         "Error:           '=> TKN_MY_TOKEN(ID, text=Lexeme)\n\n"
 
+#define __QUEX_MESSAGE_MODE_STACK_OVERFLOW \
+        "Error: Mode stack overflow. Adapt size of mode stack via the macro\n"      \
+        "Error: QUEX_SETTING_MODE_STACK_SIZE, or review mode transitions.\n"        \
+        "Error: I.e. check that for every GOSUB (push), there is a correspondent\n" \
+        "Error: GOUP (pop)."
+
 #define QUEX_ERROR_DEPRECATED(NAME, REPLACEMENT) \
         QUEX_ERROR_EXIT(NAME " has been deprecated\n"   \
                         "Please, use " REPLACEMENT ".")

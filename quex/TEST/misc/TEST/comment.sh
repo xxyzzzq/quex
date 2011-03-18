@@ -10,7 +10,7 @@ case $1 in
         quex -i comment.qx -o With   \
              --comment-state-machine \
              --comment-mode-patterns
-        diff With.cpp WithOut.cpp
+        diff With.cpp WithOut.cpp | awk ' (/</ || />/) && ! /\#/ '
         rm -f With*
         ;;
 esac

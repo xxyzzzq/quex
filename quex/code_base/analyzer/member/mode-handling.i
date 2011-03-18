@@ -87,10 +87,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         if( me->_mode_stack.end == me->_mode_stack.memory_end ) 
-            QUEX_ERROR_EXIT("Mode stack overflow. Adapt size of mode stack via the macro "
-                            "QUEX_SETTING_MODE_STACK_SIZE, or review mode transitions. "
-                            "I.e. check that for every GOSUB (push), there is a correspondent "
-                            "GOUP (pop).");
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_MODE_STACK_OVERFLOW);
 #       endif
         *me->_mode_stack.end = me->__current_mode_p;
         ++(me->_mode_stack.end);

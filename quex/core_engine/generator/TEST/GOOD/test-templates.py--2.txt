@@ -8,37 +8,48 @@
 
     __quex_assert_no_passage();
 _100:
+
+    __quex_debug_state(100);
     template_state_key = 0;
         goto _1;
 
     __quex_assert_no_passage();
 _200:
+
+    __quex_debug_state(200);
     template_state_key = 1;
         goto _1;
 
     __quex_assert_no_passage();
 _202:
+
+    __quex_debug_state(202);
     template_state_key = 2;
         goto _1;
 
     __quex_assert_no_passage();
 _300:
+
+    __quex_debug_state(300);
     template_state_key = 3;
         goto _1;
 
     __quex_assert_no_passage();
 _400:
+
+    __quex_debug_state(400);
     template_state_key = 4;
         goto _1;
 
     __quex_assert_no_passage();
 _500:
+
+    __quex_debug_state(500);
     template_state_key = 5;
         goto _1;
 
     __quex_assert_no_passage();
 _1:
-
     __quex_debug_state(1);
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
