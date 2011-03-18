@@ -1,3 +1,4 @@
+| Mode change to ONE_AND_ONLY
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
 ## define 'QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED' which only disables
@@ -17,7 +18,6 @@
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
-ToMode: ONE_AND_ONLY
 ## An Assert-Abortion might be an intended element of the experiment.
 ALIEN '#' 
 IDENTIFIER 'include' 

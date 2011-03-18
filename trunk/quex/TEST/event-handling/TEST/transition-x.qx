@@ -10,8 +10,8 @@ start = ONE;
 mode BASE : 
   <skip: [ \t\n]> 
 {
-    on_entry { printf("Enter: %s\n", FromMode->name); }
-    on_exit  { printf("Exit:  %s\n", ToMode->name); }
+    on_entry { fprintf(stderr, "Enter: %s\n", FromMode->name); }
+    on_exit  { fprintf(stderr, "Exit:  %s\n", ToMode->name); }
     return   => GOUP(TK_RETURN_TO_MODE(Lexeme));
 
     on_end_of_stream => TK_TERMINATION(LexemeNull);
