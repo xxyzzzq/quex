@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.30" date="Fri Mar 18 08:03:58 2011">
+<test-database execution-time-sec="0.30" date="Sat Mar 19 06:51:21 2011">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
@@ -13,15 +13,15 @@
                <choice name="" result="OK" time_sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" time-sum-sec="0.04"> 
+        <test title="Function delete_comment(...)" time-sum-sec="0.03"> 
             <application file-name="test-delete_comment.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.03" crc="1761513741"/>
             </choice-list>
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.18"> 
+        <test title="read_integer(...)" time-sum-sec="0.19"> 
             <application file-name="test-read_integer.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.03" crc="952788026"/>
