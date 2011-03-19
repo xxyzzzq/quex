@@ -1,0 +1,224 @@
+(
+)
+<
+>
+[
+]
+{
+}
+=
++
+-
+*
+/
++=
+-=
+*=
+/=
+>
+>=
+>
+&
+::
+>
+namespace     
+using         
+class         
+struct        
+template     
+private:
+protected:
+friend        
+const         
+mutual        
+if            
+else          
+switch        
+for           
+do            
+while         
+break         
+continue    
+throw         
+try           
+catch         
+.
+/* this * is * comment */
+template <class X>
+// this is another comment
+struct example {
+  int    x;
+private:
+  double y;
+
+public:
+  void function() const;
+
+  X::element_type  my_array[512];
+};
+
+try {
+    if( 1 + x == 23 ) {
+        printf("hello world");
+    } else {
+        printf("never mind, world");
+        throw this; 
+    }
+    if( x >= 34 ) return;
+
+} catch {
+}
+throw(this);
+continue;
+for(iterator = vec.begin; iterator != end; ++iterator) { do_something(x-1+3*4/2); }
+while( i <= 2 && i > 3 );
+break;
+break;
+(
+)
+<
+>
+[
+]
+{
+}
+=
++
+-
+*
+/
++=
+-=
+*=
+/=
+>
+>=
+>
+&
+::
+>
+namespace     
+using         
+class         
+struct        
+template     
+private:
+protected:
+friend        
+const         
+mutual        
+if            
+else          
+switch        
+for           
+do            
+while         
+break         
+continue    
+throw         
+try           
+catch         
+.
+/* this * is * comment */
+template <class X>
+// this is another comment
+struct example {
+  int    x;
+private:
+  double y;
+
+public:
+  void function() const;
+
+  X::element_type  my_array[512];
+};
+
+try {
+    if( 1 + x == 23 ) {
+        printf("hello world");
+    } else {
+        printf("never mind, world");
+        throw this; 
+    }
+    if( x >= 34 ) return;
+
+} catch {
+}
+throw(this);
+continue;
+for(iterator = vec.begin; iterator != end; ++iterator) { do_something(x-1+3*4/2); }
+while( i <= 2 && i > 3 );
+break;
+break;
+(
+)
+<
+>
+[
+]
+{
+}
+=
++
+-
+*
+/
++=
+-=
+*=
+/=
+>
+>=
+>
+&
+::
+>
+namespace     
+using         
+class         
+struct        
+template     
+private:
+protected:
+friend        
+const         
+mutual        
+if            
+else          
+switch        
+for           
+do            
+while         
+break         
+continue    
+throw         
+try           
+catch         
+.
+/* this * is * comment */
+template <class X>
+// this is another comment
+struct example {
+  int    x;
+private:
+  double y;
+
+public:
+  void function() const;
+
+  X::element_type  my_array[512];
+};
+
+try {
+    if( 1 + x == 23 ) {
+        printf("hello world");
+    } else {
+        printf("never mind, world");
+        throw this; 
+    }
+    if( x >= 34 ) return;
+
+} catch {
+}
+throw(this);
+continue;

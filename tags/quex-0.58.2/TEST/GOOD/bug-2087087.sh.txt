@@ -1,0 +1,11 @@
+command line: Unidentified option(s) = ['-numeric']
+command line:     --set-by-expression
+command line:     --property-match
+command line:     --numeric (only with '--set-by-property', '--set-by-expression')
+command line:     --property
+command line:     --set-by-property
+command line:     --codec-for-language
+command line:     --names (only with '--set-by-property', '--set-by-expression')
+command line:     --intervals (only with '--set-by-property', '--set-by-expression')
+command line:     --codec-info
+command line: 

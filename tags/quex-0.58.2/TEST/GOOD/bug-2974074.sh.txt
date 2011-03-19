@@ -1,0 +1,11 @@
+quex -i error.qx -o Simple 
+(*) Test that character sets are not modified.
+## An Assert-Abortion might be an intended element of the experiment.
+NUM '3' 
+LETTER 'a' 
+<TERMINATION>
+(*) Test that state machines are not modified.
+## An Assert-Abortion might be an intended element of the experiment.
+LETTER 'a' 
+LETTER 'b' 
+<TERMINATION>
