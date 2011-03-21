@@ -26,7 +26,7 @@ from   quex.input.setup import setup as Setup
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
 if False: REMOVE_FILES = True
-else:    REMOVE_FILES = False
+else:     REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
 #         'False' --> Verbose debug output
@@ -160,7 +160,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                                                             PatternDictionary, 
                                                             BufferLimitCode,
                                                             SecondModeF=True)
-
 
     if ShowBufferLoadsF:
         state_machine_code = "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS\n" + \

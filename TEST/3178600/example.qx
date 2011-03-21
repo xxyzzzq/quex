@@ -4,8 +4,7 @@ start = HEADER;
 
 header 
 {
-#include <cstdlib>  // for: atoi()
-using namespace std;
+#include <stdlib.h>  /* for: atoi() */
 }
 
 token {
@@ -22,16 +21,16 @@ token {
 mode HEADER {
     on_failure { printf("HEADER: something is wrong: [%s]\n",Lexeme); }
     <<EOF>>    => QUEX_TKN_TERMINATION(LexemeNull);
-    ^##        { printf("hashes, entering HEADER_LINE\n"); self.enter_mode(HEADER_LINE); }
+    ^##        { printf("hashes, entering HEADER_LINE\n"); self_enter_mode(&HEADER_LINE); }
     \r?\n      { printf("newline in header\n"); }
 
 }
 mode HEADER_LINE 
 {
     on_failure      { printf("HEADER_LINE: something is wrong: %s\n",Lexeme); }
-    \r?\n           { printf("leaving HEADER_LINE\n"); self.enter_mode(HEADER); }
+    \r?\n           { printf("leaving HEADER_LINE\n"); self_enter_mode(&HEADER); }
     [^=\r\n]+       { self_send1(QUEX_TKN_KEY,Lexeme); }
-    "="             => QUEX_TKN_EQUALS(text=Lexeme);
+    "="             => QUEX_TKN_EQUALS(Lexeme);
 }
 
 
