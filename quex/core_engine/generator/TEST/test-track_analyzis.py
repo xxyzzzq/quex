@@ -9,13 +9,28 @@ from   quex.core_engine.generator.track_analyzis import TrackInfo
 
 
 if "--hwut-info" in sys.argv:
-    print "Track Analyzis: Keywords 'for', 'forest', 'forester', and 'formidable'"
+    print "Track Analyzis: Necessity of storing acceptance;"
+    print "CHOICES: 1, 2;"
     sys.exit()
 
-pattern_list = [
-    'for',        
-    'forest',     
-]
+if "1" in sys.argv:
+    pattern_list = [
+        'for',        
+        'forest',     
+    ]
+elif "2" in sys.argv:
+    pattern_list = [
+        'aa|bca',        
+        'b',     
+    ]
+elif "3" in sys.argv:
+    pattern_list = [
+        'for',        
+        'for([e]+)st',     
+    ]
+else:
+    assert False
+
 
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
@@ -25,10 +40,6 @@ print sm.get_string(NormalizeF=False)
 
 ti = TrackInfo(sm)
 
-for state_index in sm.states.iterkeys():
-    print "State = %i" % state_index
-    print "    store accept.     ", ti.necessary_to_store_last_acceptance(state_index)
-    print "    store accept. pos.", ti.necessary_to_store_last_acceptance_position(state_index)
-    acceptance, transitions_since_acceptance = ti.acceptance_info_on_drop_out(state_index)
-    print "    on drop out:       acceptance = ", acceptance
-    print "                       backward   = ", transitions_since_acceptance
+for state_index, state in sm.states.iteritems():
+    print "State = %i" % state_index + "____________________________________"
+    print state.acceptance_tracer
