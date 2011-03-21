@@ -263,8 +263,10 @@ def __create_token_sender_by_token_name(fh, TokenName):
                 return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, LexemeNull, LexemeNull);\n" \
                        "self_send(%s);\n" % (TokenName)
             else:
-                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"
-                          "or 'LexemeNull'. Found '%s'.\n" % argument_list[0] + \
+                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"          + \
+                          "or 'LexemeNull'. Found '%s'.\n" % argument_list[0]                     + \
+                          "To cut parts of the lexeme, please, use the 2 argument sender, e.g.\n" + \
+                          "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
                           "Alternatively, use named parameters such as 'number=...'.", fh)
 
         elif len(argument_list) == 0:
@@ -296,6 +298,21 @@ def __create_token_sender_by_token_name(fh, TokenName):
             verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
                                 "No member:   '%s' in token type description." % member_name, 
                                 fh)
+            idx = value.find("Lexeme")
+            if idx != -1:
+                if idx != 0 and value[idx-1] == "(":
+                    pass
+                else:
+                    error_msg("Brief token sender contains member assignment of 'Lexeme' pointer.\n"
+                              "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
+                              "Proposals:\n"
+                              "   -- Surround 'Lexeme' by brackets, that is \"(Lexeme)\" to pretend\n"
+                              "      that you are aware of the danger.\n"
+                              "   -- Use token senders without named arguments, for example\n"
+                              "          \"QUEX_TKN_MINE(Lexeme+1, LexemeEnd-2)\"\n"
+                              "      These token senders create a copy of the lexeme and let the token\n"
+                              "      own it.", fh)
+
             access = lexer_mode.token_type_definition.get_member_access(member_name)
             txt += "self_write_token_p()->%s = %s;\n" % (access, value.strip())
 

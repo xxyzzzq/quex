@@ -1,11 +1,8 @@
 from   quex.frs_py.file_in                        import error_msg
-import quex.core_engine.state_machine.parallelize as     parallelize
 from   quex.core_engine.generator.action_info     import PatternActionInfo
-import quex.core_engine.state_machine.nfa_to_dfa  as nfa_to_dfa
+import quex.core_engine.state_machine.nfa_to_dfa            as nfa_to_dfa
+import quex.core_engine.state_machine.parallelize           as parallelize
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
-
-# DEBUG
-## import quex.core_engine.state_machine.compression.templates as compression_table
 
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF):
@@ -23,11 +20,9 @@ class GeneratorBase:
         #     -- core state machine
         self.sm = self.__create_core_state_machine()
 
-        # DEBUG ONLY
-        ## compression_table.do(self.sm, 0.5)
-
         #     -- pre conditions
         self.pre_context_sm = self.__create_pre_context_state_machine()
+
         #     -- backward detectors for state machines with forward ambiguous
         #        post-conditions.
         self.papc_backward_detector_state_machine_list = \
