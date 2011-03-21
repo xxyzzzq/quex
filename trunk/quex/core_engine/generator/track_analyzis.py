@@ -257,7 +257,7 @@ class TrackInfo:
         # Add the information that the current state has a path where the last acceptance
         # lies n transitions backward.
         self.__acceptance_db.setdefault(StateIndex, []).append((last_acceptance_state_index, 
-                                                                path_since_last_acceptance))
+                                                                copy(path_since_last_acceptance)))
 
         if StateIndex in path:
             # All states in the detected loop must be marked as being part of
