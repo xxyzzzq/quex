@@ -88,6 +88,7 @@ the member functions
                       to the place where the acceptance occured.
 """
 from quex.input.setup import setup as Setup
+from copy import copy
 
 class AcceptanceCondition:
     def __init__(self, PatternID, PreContextID, PreContextBeginOfLineF):
@@ -106,7 +107,7 @@ class AcceptanceCondition:
         self.pre_context_id              = PreContextID
         self.pre_context_begin_of_line_f = PreContextBeginOfLineF
 
-class AcceptanceObj:
+class AcceptanceConditions:
     def __init__(self, OriginList=None):
         LanguageDB = Setup.language_db
 
@@ -146,7 +147,7 @@ class AcceptanceObj:
         return True
 
     def __eq__(self, Other):
-        if not isinstance(Other, AcceptanceObj): return False
+        if not isinstance(Other, AcceptanceConditions): return False
         return self.__info == Other.__info
 
     def __repr__(self):
@@ -158,11 +159,63 @@ class AcceptanceObj:
                         repr(acceptance.pre_context_begin_of_line_f)))
         return "".join(txt)
 
+class AcceptanceInfo:
+    def __init__(self, 
+                 OnEntryAcceptance,   OnEntryStoreInputPositionF,
+                 OnDropOutAcceptance, OnDropOutDecrementInputPosition):
+
+        self.__on_entry_store_acceptance            = OnEntryAcceptance
+        self.__on_entry_store_input_position_f      = OnEntryStoreInputPositionF
+        self.__on_drop_out_acceptance               = OnDropOutAcceptance
+        self.__on_drop_out_decrement_input_position = OnDropOutDecrementInputPosition
+
+    def on_entry_store_acceptance(self):
+        """None                 -- Do not store any acceptance.
+           AcceptanceConditions -- Object containing information about how to store
+                                   acceptance.
+        """
+        return self.__on_entry_store_acceptance
+
+    def on_entry_store_input_position_f(self):
+        """True,  if all successor states have a distinct acceptance
+                  that can be determined from the state machine structure.
+                  Then, no storage of the acceptance in an acceptance
+                  variable is necessary.
+           False, if there are subsequent states that are of void 
+                  acceptance that can only be determined at run-time.
+                  Then, the 'last_acceptance' variable is required.
+        """
+        return self.__on_entry_store_input_position_f
+
+    def on_drop_out_acceptance(self):
+        """None                 -- Acceptance cannot be determined based on the
+                                   structure of the state machine. At run-time 
+                                   it must be restored what is saved in variable
+                                   'last_acceptance'.
+           AcceptanceConditions -- Object containing information about acceptance.
+        """
+        return self.__on_drop_out_acceptance
+
+    def on_drop_out_decrement_input_position(self):
+        """None    -- Acceptance position undetermined. Restore what is 
+                      stored in 'last_acceptance_position'.
+           -1      -- Set input position to lexeme start + 1.
+           integer -- number of characters to go backward to set the input
+                      right after the last acceptance position.
+        """
+        return self.__on_drop_out_decrement_input_position
+
+    def __repr__(self):
+        txt = []
+        txt.append("OnEntry:   store acceptance     = %s;\n" % repr(self.on_entry_store_acceptance()))
+        txt.append("           store input position = %s;\n" % repr(self.on_entry_store_input_position_f()))
+        txt.append("OnDropOut: acceptance           = %s;\n" % repr(self.on_drop_out_acceptance()))
+        txt.append("           decr. input position = %s;\n" % repr(self.on_drop_out_decrement_input_position()))
+        return "".join(txt)
 
 class TrackInfo:
     def __init__(self, SM):
-        """SM -- state machine to be investigated.
-        """
+        """SM -- state machine to be investigated.  """
         self.__sm = SM
 
         # (1) Analyze recursively in the state machine:
@@ -200,42 +253,26 @@ class TrackInfo:
         #     Analyze to build the databases mentioned above.
         self.__determine_database()
 
-    def acceptance_info_on_drop_out(self, StateIndex):
-        """RETURNS 2 Values: 
-        
-              AcceptanceObj -- about the acceptance on drop out
-              N             -- number of characters to go backwards to the
-                               end of the acceptance position.
-                               -1   --> go back to lexeme start + 1
-                               None --> require storage of acceptance position
-                                        goto last_acceptance_position.
-        """
-        return self.__db[StateIndex]
+        # (3) Adorn each state in the state machine with acceptance information
+        for state_index, state in self.__sm.states.iteritems():
+            on_drop_out_acceptance, on_drop_out_decrement_input_position = self.__db[state_index]
+            if state_index in self.__acceptance_states_with_necessity_to_store_last_acceptance:
+                assert state.is_acceptance()
+                info = self.__acceptance_db[state_index]
+                assert len(info) == 1
+                on_entry_store_acceptance = info[0][0]
+            else:
+                on_entry_store_acceptance = None
 
-    def necessary_to_store_last_acceptance(self, StateIndex):
-        """StateIndex must be the index of an acceptance state. 
+            if state_index in self.__acceptance_states_with_necessity_to_store_last_acceptance_position:
+                on_entry_store_acceptance_position_f = True
+            else:
+                on_entry_store_acceptance_position_f = False
 
-           RETURNS: True,  if all successor states have a distinct acceptance
-                           that can be determined from the state machine structure.
-                           Then, no storage of the acceptance in an acceptance
-                           variable is necessary.
-                    False, if there are subsequent states that are of void 
-                           acceptance that can only be determined at run-time.
-                           Then, the 'last_acceptance' variable is required.
-
-        """
-        return StateIndex in self.__acceptance_states_with_necessity_to_store_last_acceptance
-
-    def necessary_to_store_last_acceptance_position(self, StateIndex):
-        """StateIndex must be the index of an acceptance state. 
-
-           Same as 'all_successors_have_distinct_acceptance_on_drop_out()'--now
-           about the necessity to store the acceptance position. It is conceivable
-           that the acceptance of all successor states is determined, but the 
-           distance from the last acceptance state is not (due to loops in the
-           state machine).
-        """
-        return StateIndex in self.__acceptance_states_with_necessity_to_store_last_acceptance_position
+            state.acceptance_tracer = AcceptanceInfo(on_entry_store_acceptance, 
+                                                     on_entry_store_acceptance_position_f,
+                                                     on_drop_out_acceptance,
+                                                     on_drop_out_decrement_input_position)
 
     def necessary_to_maintain_lexeme(self, StateIndex):
         """If an acceptance has been passed, that does not care about the lexeme
@@ -284,7 +321,7 @@ class TrackInfo:
                     if state_index in self.__loop_states:
                         return None
 
-                if   n == None:                                 n = len(path_from_last_acceptance_state) - 1
+                if   n == None:                                 n = len(path_from_last_acceptance_state) 
                 elif n != len(path_from_last_acceptance_state): return None
 
             return n
@@ -295,10 +332,10 @@ class TrackInfo:
                 acceptance_state_index = info[0]
 
                 if acceptance_state_index == -1: # Failure
-                    acceptance_obj = AcceptanceObj()
+                    acceptance_obj = AcceptanceConditions()
                 else:
                     state = self.__sm.states[acceptance_state_index]
-                    acceptance_obj = AcceptanceObj(state.origins())
+                    acceptance_obj = AcceptanceConditions(state.origins())
 
                 if   acceptance == None:           acceptance = acceptance_obj
                 elif acceptance != acceptance_obj: return None
@@ -310,7 +347,8 @@ class TrackInfo:
             if state.is_acceptance(): 
                 # The last acceptance state is the state itself and the last 
                 # acceptance position lies zero characters backward.
-                self.__db[state_index] = (AcceptanceObj(state.origins()), 0)
+                self.__db[state_index] = (AcceptanceConditions(state.origins()), 0)
+                continue
 
             info = self.__acceptance_db[state_index]
             # info = list of pairs (AcceptanceStateIndex, Path from AcceptanceStateIndex to state_index)
