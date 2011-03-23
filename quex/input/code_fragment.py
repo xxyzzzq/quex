@@ -302,7 +302,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
             if idx != -1:
                 if idx != 0 and value[idx-1] == "(":
                     pass
-                else:
+                elif Setup.language.upper() != "C++":
                     error_msg("Brief token sender contains member assignment of 'Lexeme' pointer.\n"
                               "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
                               "Proposals:\n"

@@ -1,18 +1,18 @@
-<test-database execution-time-sec="0.04" date="Sat Mar 19 06:45:23 2011">
+<test-database execution-time-sec="0.04" date="Wed Mar 23 08:18:28 2011">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="queue.exe" info-request-time="1300513518L" vanished="False"/>
             <make-procedure success="True" time_sec="1.631974"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="721591502"/>
+               <choice name="" result="OK" time_sec="0.00" crc="721591502"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="queue-real.exe" info-request-time="1300513523L" vanished="False"/>
             <make-procedure success="True" time_sec="1.657869"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="178235029"/>
+               <choice name="" result="OK" time_sec="0.00" crc="178235029"/>
             </choice-list>
         </test>
     </group>
@@ -24,11 +24,11 @@
                <choice name="" result="OK" time_sec="0.00" crc="-1396014048"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="users_token-real.exe" info-request-time="1300513521L" vanished="False"/>
             <make-procedure success="True" time_sec="1.617466"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="178235029"/>
+               <choice name="" result="OK" time_sec="0.00" crc="178235029"/>
             </choice-list>
         </test>
     </group>

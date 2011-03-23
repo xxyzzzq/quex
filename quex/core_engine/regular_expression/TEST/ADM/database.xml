@@ -1,9 +1,9 @@
-<test-database execution-time-sec="2.44" date="Sat Mar 19 06:51:09 2011">
+<test-database execution-time-sec="2.48" date="Wed Mar 23 08:24:04 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1297454632L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="set" result="OK" time_sec="0.07" crc="1832220665"/>
+           <choice name="set" result="OK" time_sec="0.08" crc="1832220665"/>
            <choice name="pattern" result="OK" time_sec="0.08" crc="2048360827"/>
         </choice-list>
     </test>
@@ -40,10 +40,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="1454754068"/>
             </choice-list>
         </test>
-        <test title="Snap string until (low level function)" time-sum-sec="0.04"> 
+        <test title="Snap string until (low level function)" time-sum-sec="0.05"> 
             <application file-name="test-snap_until.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-1055637304"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-1055637304"/>
             </choice-list>
         </test>
     </group>
@@ -68,6 +68,12 @@
         </test>
     </group>
     <group name="Conditional Analysis">
+        <test title="pre- and post-conditions" time-sum-sec="0.08"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1297454632L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.08" crc="423562782"/>
+            </choice-list>
+        </test>
         <test title="pre conditions" time-sum-sec="0.07"> 
             <application file-name="test-pre-condition.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -86,12 +92,6 @@
                <choice name="" result="OK" time_sec="0.07" crc="30145240"/>
             </choice-list>
         </test>
-        <test title="pre- and post-conditions" time-sum-sec="0.08"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1297454632L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="423562782"/>
-            </choice-list>
-        </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.05"> 
             <application file-name="test-eol-carriage-return-newline.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -100,10 +100,10 @@
         </test>
     </group>
     <group name="Replacement">
-        <test title="Regular Expression State Machines" time-sum-sec="0.08"> 
+        <test title="Regular Expression State Machines" time-sum-sec="0.09"> 
             <application file-name="test-replacement.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="1905002429"/>
+               <choice name="" result="OK" time_sec="0.09" crc="1905002429"/>
             </choice-list>
         </test>
         <test title="Character Sets" time-sum-sec="0.09"> 
@@ -120,10 +120,10 @@
                <choice name="" result="OK" time_sec="0.62" crc="-1397925985"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.62"> 
+        <test title="Set Operations" time-sum-sec="0.63"> 
             <application file-name="test-properties-2.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.62" crc="1108933321"/>
+               <choice name="" result="OK" time_sec="0.63" crc="1108933321"/>
             </choice-list>
         </test>
     </group>
