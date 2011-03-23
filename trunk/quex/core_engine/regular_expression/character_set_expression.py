@@ -162,8 +162,8 @@ def snap_set_term(stream, PatternDict):
         if word == "inverse":
             # The inverse of multiple sets, is to be the inverse of the union of these sets.
             if L > 1:
-                for set in set_list[1:]:
-                    result.unite_with(set)
+                for character_set in set_list[1:]:
+                    result.unite_with(character_set)
             result = result.inverse()
             if Setup.get_character_value_limit() != -1:
                 result.intersect_with(Interval(0, Setup.get_character_value_limit()))

@@ -107,6 +107,8 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
     if DSM == None: InitStateF = False
     else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 
+    TriggerMap = __prune_trigger_map_to_character_type_domain(TriggerMap)
+
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
     __separate_buffer_limit_code_transition(TriggerMap)
@@ -128,8 +130,8 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
         # In case of backward lexing in pseudo-ambiguous post conditions,
         # it makes absolutely sense that there is only one interval that
         # covers all characters (see the discussion there).
-        assert TriggerMap[0][0].begin == -sys.maxint
-        assert TriggerMap[0][0].end   == sys.maxint
+        # assert TriggerMap[0][0].begin == -sys.maxint
+        # assert TriggerMap[0][0].end   == sys.maxint
         code = ["    "] + TriggerMap[0][1].get_code() + ["\n"]
 
     return format_this(code)
@@ -193,7 +195,6 @@ def __get_code(TriggerMap):
         else: 
             if   __get_switch(txt, TriggerMap):    pass
             elif __get_bisection(txt, TriggerMap): pass
-        
 
     # (*) indent by four spaces (nested blocks are correctly indented)
     #     delete the last newline, to prevent additional indentation
@@ -746,3 +747,28 @@ def __separate_buffer_limit_code_transition(TriggerMap):
 #            break
 #
 #    return first_f, result
+
+def __prune_trigger_map_to_character_type_domain(trigger_map):
+
+    UpperLimit = Setup.get_character_value_limit()
+    LowerLimit = 0
+
+    if UpperLimit == -1: return trigger_map
+
+    new_trigger_map = []
+    for entry in trigger_map:
+        interval, target = entry
+
+        if interval.end <= LowerLimit: 
+            # No character can have a value below zero
+            continue
+        elif interval.begin > UpperLimit:
+            break
+        elif interval.end < UpperLimit:
+            new_trigger_map.append(entry)
+        else:
+            # Interval overlaps the end. Thus it is the last and
+            # does not need to be checked.
+            new_trigger_map.append([Interval(interval.begin, UpperLimit), target])
+    return new_trigger_map
+

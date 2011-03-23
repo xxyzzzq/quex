@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.core  as regex
 from   quex.core_engine.generator.base           import get_combined_state_machine
 from   quex.core_engine.generator.track_analyzis import TrackInfo
+from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 
 if "--hwut-info" in sys.argv:
@@ -36,9 +37,14 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
+dsm = StateMachineDecorator(sm, "TrackTest", 
+                            PostContextSM_ID_List           = [], 
+                            BackwardLexingF                 = False, 
+                            BackwardInputPositionDetectionF = False)
+
 print sm.get_string(NormalizeF=False)
 
-ti = TrackInfo(sm)
+ti = TrackInfo(dsm)
 
 for state_index, state in sm.states.iteritems():
     print "State = %i" % state_index + "____________________________________"

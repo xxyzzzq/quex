@@ -179,7 +179,7 @@ def backward_lexing_find_core_pattern(OriginList):
                                       origin.pre_context_id() != -1L or
                                       origin.post_context_id() != -1L,
                                       OriginList)
-    assert inadmissible_origin_list == [], \
+    assert len(inadmissible_origin_list) == 0, \
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 

@@ -1,7 +1,5 @@
-import re
 import os
 import sys
-import fnmatch
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
@@ -10,6 +8,10 @@ from quex.frs_py.file_in         import *
 from quex.frs_py.string_handling import *
 
 from quex.core_engine.interval_handling import Interval, NumberSet
+
+import re
+import fnmatch
+from   copy import deepcopy
 
 unicode_db_directory = QUEX_PATH + "/quex/data_base/unicode"
 comment_deleter_re   = re.compile("#[^\n]*")
@@ -61,6 +63,8 @@ def parse_table(Filename, IntervalColumnList=[], NumberColumnList=[], NumberList
 
         record_set.append(cells)
 
+    # There is no need to decouple here, since the record_set is created 
+    # each time that the function is called.
     return record_set
 
 def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumnIdx):
@@ -76,8 +80,8 @@ def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumn
        self.db = database to contain the associative map.
     """
 
+    db = {}
     if ValueType == "NumberSet":
-        db = {}
         for record in table:
             key   = record[KeyColumnIdx].strip()
             key   = key.replace(" ", "_")
@@ -88,7 +92,6 @@ def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumn
             db.setdefault(key, NumberSet()).quick_append_interval(value, SortF=False)
 
     elif ValueType == "number" or ValueType == "string":
-        db = {}
         for record in table:
             key   = record[KeyColumnIdx].strip()
             key   = key.replace(" ", "_")
@@ -165,7 +168,8 @@ class PropertyInfo:
             self.init_code_point_db()
 
         if self.type == "Binary": 
-            return self.code_point_db
+            # Decouple, since we refer to an internal database
+            return deepcopy(self.code_point_db)
 
         adapted_value = Value.replace(" ", "_")
         if self.code_point_db.has_key(adapted_value): 
@@ -179,9 +183,12 @@ class PropertyInfo:
                 return "Property '%s' cannot have a value or value alias '%s'.\n" % (self.name, Value) + \
                        "Possible Values: " + \
                        self.get_value_list_help()
-            return character_set
+            # No need to decouple, since character is not a reference to
+            # internal database (for safety, do it)
+            return deepcopy(character_set)
 
-        return self.code_point_db[value]
+        # Reference to internal database --> decouple with 'deepcopy'
+        return deepcopy(self.code_point_db[value])
 
     def init_code_point_db(self):
 
@@ -292,6 +299,7 @@ class PropertyInfo:
         value_candidates = self.code_point_db.keys()
         match_value_list = fnmatch.filter(value_candidates, WildCardValue)
         match_value_list.sort()
+        # No need to decouple, match_value_list is generated new for each call.
         return match_value_list
 
     def __wildcard_value_match(self, WildCardValue):
@@ -304,6 +312,7 @@ class PropertyInfo:
         for value in value_list:
             result.unite_with(NumberSet(self.code_point_db[value]))
 
+        # No decoupling, since result is computed each fresh and new
         return result
 
 class PropertyInfoDB:
