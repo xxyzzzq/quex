@@ -1,0 +1,3 @@
+token_type-empty.qx:2:error: Section 'token_type' does not define any members, does not
+token_type-empty.qx:2:error: modify any standard member types, nor does it define a class
+token_type-empty.qx:2:error: different from 'Token'.

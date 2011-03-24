@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Bouml (http://bouml.free.fr/) -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="747" height="470" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<g>
+	<line stroke="black" stroke-opacity="1" x1="217" y1="340" x2="217" y2="130" />
+	<line stroke="black" stroke-opacity="1" x1="217" y1="124" x2="211" y2="130" />
+	<line stroke="black" stroke-opacity="1" x1="217" y1="124" x2="223" y2="130" />
+	<line stroke="black" stroke-opacity="1" x1="211" y1="130" x2="223" y2="130" />
+</g>
+<g>
+	<line stroke="black" stroke-opacity="1" x1="586" y1="339" x2="538" y2="279" />
+	<line stroke="black" stroke-opacity="1" x1="535" y1="275" x2="534" y2="283" />
+	<line stroke="black" stroke-opacity="1" x1="535" y1="275" x2="543" y2="275" />
+	<line stroke="black" stroke-opacity="1" x1="534" y1="283" x2="543" y2="275" />
+</g>
+<g>
+	<line stroke="black" stroke-opacity="1" x1="441" y1="339" x2="489" y2="279" />
+	<line stroke="black" stroke-opacity="1" x1="493" y1="275" x2="484" y2="275" />
+	<line stroke="black" stroke-opacity="1" x1="493" y1="275" x2="493" y2="283" />
+	<line stroke="black" stroke-opacity="1" x1="484" y1="275" x2="493" y2="283" />
+</g>
+<g>
+	<line stroke="black" stroke-opacity="1" x1="487" y1="236" x2="284" y2="126" />
+	<line stroke="black" stroke-opacity="1" x1="279" y1="124" x2="281" y2="132" />
+	<line stroke="black" stroke-opacity="1" x1="279" y1="124" x2="287" y2="121" />
+	<line stroke="black" stroke-opacity="1" x1="281" y1="132" x2="287" y2="121" />
+</g>
+<g>
+	<line stroke="black" stroke-opacity="1" x1="516" y1="226" x2="516" y2="133" />
+	<line stroke="black" stroke-opacity="1" x1="516" y1="127" x2="510" y2="133" />
+	<line stroke="black" stroke-opacity="1" x1="516" y1="127" x2="522" y2="133" />
+	<line stroke="black" stroke-opacity="1" x1="510" y1="133" x2="522" y2="133" />
+</g>
+<g>
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="292" y="65" width="4" height="58" />
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="144" y="119" width="152" height="4" />
+	<rect fill="#ffffc0" stroke="black" stroke-width="1" stroke-opacity="1" x="139" y="60" width="153" height="59" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" font-weight="bold" text-anchor="middle" x="216" y="75">A_base</text>
+	<line stroke="black" stroke-opacity="1" x1="139" y1="85" x2="292" y2="85" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" x="144" y="100">other_patterns_of_A</text>
+	<line stroke="black" stroke-opacity="1" x1="139" y1="110" x2="292" y2="110" />
+</g>
+<g>
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="602" y="68" width="4" height="58" />
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="432" y="122" width="174" height="4" />
+	<rect fill="#ffffc0" stroke="black" stroke-width="1" stroke-opacity="1" x="427" y="63" width="175" height="59" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" font-weight="bold" text-anchor="middle" x="515" y="78">A1</text>
+	<line stroke="black" stroke-opacity="1" x1="427" y1="88" x2="602" y2="88" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" x="432" y="103">harmful_patterns_for_B</text>
+	<line stroke="black" stroke-opacity="1" x1="427" y1="113" x2="602" y2="113" />
+</g>
+<g>
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="469" y="345" width="4" height="58" />
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="365" y="399" width="108" height="4" />
+	<rect fill="#ffffc0" stroke="black" stroke-width="1" stroke-opacity="1" x="360" y="340" width="109" height="59" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" font-weight="bold" text-anchor="middle" x="415" y="355">C</text>
+	<line stroke="black" stroke-opacity="1" x1="360" y1="365" x2="469" y2="365" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" x="365" y="380">patterns_of_C</text>
+	<line stroke="black" stroke-opacity="1" x1="360" y1="390" x2="469" y2="390" />
+</g>
+<g>
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="664" y="345" width="4" height="58" />
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="560" y="399" width="108" height="4" />
+	<rect fill="#ffffc0" stroke="black" stroke-width="1" stroke-opacity="1" x="555" y="340" width="109" height="59" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" font-weight="bold" text-anchor="middle" x="610" y="355">D</text>
+	<line stroke="black" stroke-opacity="1" x1="555" y1="365" x2="664" y2="365" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" x="560" y="380">patterns_of_D</text>
+	<line stroke="black" stroke-opacity="1" x1="555" y1="390" x2="664" y2="390" />
+</g>
+<g>
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="291" y="346" width="4" height="58" />
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="143" y="400" width="152" height="4" />
+	<rect fill="#ffffc0" stroke="black" stroke-width="1" stroke-opacity="1" x="138" y="341" width="153" height="59" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" font-weight="bold" text-anchor="middle" x="215" y="356">B</text>
+	<line stroke="black" stroke-opacity="1" x1="138" y1="366" x2="291" y2="366" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" x="143" y="381">other_patterns_of_B</text>
+	<line stroke="black" stroke-opacity="1" x1="138" y1="391" x2="291" y2="391" />
+</g>
+<g>
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="539" y="232" width="4" height="42" />
+	<rect fill="#808080" stroke="none" stroke-opacity="1" x="493" y="270" width="50" height="4" />
+	<rect fill="#ffffc0" stroke="black" stroke-width="1" stroke-opacity="1" x="488" y="227" width="51" height="43" />
+	<text font-family="Helvetica" font-size="13" fill="#000000" xml:space="preserve" font-weight="bold" text-anchor="middle" x="514" y="242">A</text>
+	<line stroke="black" stroke-opacity="1" x1="488" y1="252" x2="539" y2="252" />
+	<line stroke="black" stroke-opacity="1" x1="488" y1="261" x2="539" y2="261" />
+</g>
+</svg>

@@ -1,0 +1,17 @@
+Call to quex
+Compiling
+#-DQUEX_OPTION_DEBUG_SHOW \
+		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
+## An Assert-Abortion might be an intended element of the experiment.
+WORD 'word' 
+FAILED '-' 
+WORD 'with' 
+FAILED '-' 
+WORD 'dashes' 
+FAILED '\n' 
+<TERMINATION>
+rm -rf Simple-*
+rm -rf Simple.cpp
+rm -rf Simple
+rm -rf a.out
+touch simple.qx

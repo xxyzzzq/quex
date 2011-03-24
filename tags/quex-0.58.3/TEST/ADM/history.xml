@@ -1,0 +1,1677 @@
+<history date="Thu Mar 24 03:33:37 2011" element-n="869">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:50:03"/>
+        <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
+        <crc-error time="09:50:07" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="-2036118939"/>
+        <crc-error time="09:50:08" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="09:50:09" application="bug-1889321.sh" choice="" database-crc="-1471372117" real-crc="1361684450"/>
+        <accept    time="10:49:22" application="bug-1889692.sh" choice="" crc="-2034439106" />
+        <accept    time="11:40:19" application="bug-1889892.sh" choice="" crc="179063707" />
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="11:40:29"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <accept    time="01:42:44" application="bug-1889892.sh" choice="" crc="1674519782" />
+        <accept    time="01:50:09" application="bug-1889692.sh" choice="" crc="1515421355" />
+        <accept    time="15:31:13" application="bug-1890876.sh" choice="" crc="-1608833832" />
+        <accept    time="15:55:53" application="bug-1890876.sh" choice="" crc="-6452980" />
+        <accept    time="16:26:00" application="bug-1890876.sh" choice="" crc="1086595520" />
+        <accept    time="16:36:05" application="bug-1890828.sh" choice="" crc="-981811895" />
+        <accept    time="16:46:02" application="bug-1891254.sh" choice="" crc="1488678156" />
+        <accept    time="16:53:17" application="bug-1892227.sh" choice="" crc="1038686624" />
+        <accept    time="16:53:43" application="bug-1889877.sh" choice="" crc="-2122143967" />
+        <test-runs-today n="11" ok-n="5" fail-n="5" else-n="1" last-run="oll korrekt" last-time="16:56:44"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <accept    time="16:05:45" application="bug-1892809.sh" choice="" crc="-1083928424" />
+        <accept    time="16:16:46" application="bug-1885855.sh" choice="" crc="237801586" />
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:17:49"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <accept    time="16:29:41" application="bug-1893874.sh" choice="" crc="744506208" />
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:31:00"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <accept    time="02:30:48" application="bug-1894578.sh" choice="" crc="2046147525" />
+        <accept    time="02:33:57" application="bug-1885304.sh" choice="" crc="-133052857" />
+        <accept    time="03:22:28" application="bug-1893849.sh" choice="" crc="1646982068" />
+        <accept    time="03:24:00" application="bug-1889086.sh" choice="" crc="1259011558" />
+        <accept    time="03:24:33" application="bug-1893849.sh" choice="" crc="-1988005010" />
+        <accept    time="08:47:17" application="bug-1893880.sh" choice="" crc="1628237482" />
+        <accept    time="09:16:49" application="bug-1894130.sh" choice="" crc="654394390" />
+        <accept    time="09:17:26" application="bug-1889089.sh" choice="" crc="-2011073123" />
+        <accept    time="09:19:39" application="bug-1889892.sh" choice="" crc="-1867080036" />
+        <accept    time="09:36:33" application="bug-1894185.sh" choice="" crc="781076954" />
+        <accept    time="09:42:14" application="bug-1889692.sh" choice="" crc="1055383844" />
+        <test-runs-today n="16" ok-n="3" fail-n="10" else-n="3" last-run="oll korrekt" last-time="09:42:18"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <accept    time="03:29:15" application="bug-1894130.sh" choice="" crc="-895622030" />
+        <accept    time="03:48:03" application="bug-1895066.sh" choice="" crc="-2019481038" />
+        <test-runs-today n="5" ok-n="2" fail-n="3" else-n="0" last-run="failure" last-time="09:12:27"/>
+        <accept    time="09:14:01" application="bug-1889086.sh" choice="" crc="-873278874" />
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="16:03:16"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="3" ok-n="0" fail-n="0" else-n="3" last-run="no verdict" last-time="22:32:19"/>
+    </day>
+    <day year="2008" month="02" day="20">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="16:30:36"/>
+    </day>
+    <day year="2008" month="02" day="21">
+        <accept    time="00:04:29" application="bug-1898125.sh" choice="" crc="1051315050" />
+        <accept    time="15:55:10" application="bug-1885304.sh" choice="" crc="-1909435169" />
+        <test-runs-today n="3" ok-n="0" fail-n="2" else-n="1" last-run="no verdict" last-time="15:55:34"/>
+    </day>
+    <day year="2008" month="02" day="22">
+        <accept    time="00:21:16" application="bug-1885304.sh" choice="" crc="-367116587" />
+        <accept    time="00:24:32" application="bug-1885304.sh" choice="" crc="-411460771" />
+        <accept    time="00:29:07" application="bug-1895066.sh" choice="" crc="-896777448" />
+        <test-runs-today n="7" ok-n="0" fail-n="3" else-n="4" last-run="no verdict" last-time="23:55:58"/>
+    </day>
+    <day year="2008" month="02" day="23">
+        <accept    time="00:23:41" application="bug-1895500.sh" choice="" crc="2072423412" />
+        <accept    time="01:25:51" application="bug-1895500.sh" choice="" crc="1010183602" />
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="04:45:25"/>
+    </day>
+    <day year="2008" month="02" day="24">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="15:59:22"/>
+        <accept    time="16:18:13" application="bug-1885304.sh" choice="" crc="329998242" />
+    </day>
+    <day year="2008" month="02" day="25">
+        <accept    time="14:45:15" application="bug-1900391.sh" choice="" crc="-1949253838" />
+        <accept    time="14:47:38" application="bug-1885304.sh" choice="" crc="-1070126772" />
+        <accept    time="23:45:42" application="bug-1885304.sh" choice="" crc="-741800299" />
+        <test-runs-today n="5" ok-n="3" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:51:56"/>
+    </day>
+    <day year="2008" month="02" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:32:57"/>
+    </day>
+    <day year="2008" month="02" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:03:29"/>
+        <accept    time="23:17:47" application="bug-1902175.sh" choice="" crc="-2033217112" />
+    </day>
+    <day year="2008" month="02" day="29">
+        <accept    time="23:47:49" application="bug-1885304.sh" choice="" crc="-1968625971" />
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:48:05"/>
+    </day>
+    <day year="2008" month="03" day="01">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:28:29"/>
+    </day>
+    <day year="2008" month="03" day="02">
+        <accept    time="01:05:13" application="bug-1889702.sh" choice="" crc="1627315716" />
+        <accept    time="01:18:11" application="bug-1889892.sh" choice="" crc="-1117047420" />
+        <accept    time="01:18:15" application="bug-1889321.sh" choice="" crc="1338170566" />
+        <accept    time="01:18:28" application="bug-1889089.sh" choice="" crc="107363452" />
+        <test-runs-today n="7" ok-n="5" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:25:14"/>
+    </day>
+    <day year="2008" month="03" day="03">
+        <accept    time="23:05:29" application="bug-1895066.sh" choice="" crc="1188788304" />
+        <accept    time="23:05:45" application="bug-1885304.sh" choice="" crc="1886161891" />
+        <accept    time="23:09:42" application="bug-1885304.sh" choice="" crc="-91378656" />
+        <test-runs-today n="7" ok-n="3" fail-n="3" else-n="1" last-run="no verdict" last-time="23:16:29"/>
+    </day>
+    <day year="2008" month="03" day="04">
+        <accept    time="21:57:51" application="bug-1905768.sh" choice="" crc="-1099986130" />
+        <test-runs-today n="5" ok-n="4" fail-n="0" else-n="1" last-run="oll korrekt" last-time="23:15:08"/>
+    </day>
+    <day year="2008" month="03" day="05">
+        <accept    time="13:15:06" application="bug-1885304.sh" choice="" crc="-1997557355" />
+        <accept    time="13:26:15" application="bug-1885304.sh" choice="" crc="777060467" />
+        <test-runs-today n="6" ok-n="2" fail-n="4" else-n="0" last-run="failure" last-time="22:25:19"/>
+    </day>
+    <day year="2008" month="03" day="06">
+        <accept    time="13:59:30" application="bug-1908436.sh" choice="" crc="-1532020740" />
+        <accept    time="14:35:01" application="bug-1895500.sh" choice="" crc="-545629355" />
+        <accept    time="14:35:20" application="bug-1885304.sh" choice="" crc="1587971638" />
+        <accept    time="14:35:24" application="bug-1905768.sh" choice="" crc="-1427568419" />
+        <accept    time="15:01:37" application="bug-1885304.sh" choice="" crc="-1018666236" />
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="22:27:00"/>
+    </day>
+    <day year="2008" month="03" day="08">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="07:13:39"/>
+    </day>
+    <day year="2008" month="03" day="25">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:12:00"/>
+    </day>
+    <day year="2008" month="03" day="27">
+        <accept    time="13:07:21" application="bug-1905768.sh" choice="" crc="-1099986130" />
+        <accept    time="19:49:55" application="bug-1895500.sh" choice="" crc="140707230" />
+        <accept    time="19:57:20" application="bug-1895066.sh" choice="" crc="412034062" />
+        <accept    time="20:05:23" application="bug-1895500.sh" choice="" crc="451297046" />
+        <accept    time="20:05:28" application="bug-1885304.sh" choice="" crc="-1866472765" />
+        <accept    time="20:06:23" application="bug-1890828.sh" choice="" crc="-656582305" />
+        <test-runs-today n="8" ok-n="3" fail-n="5" else-n="0" last-run="oll korrekt" last-time="20:37:58"/>
+    </day>
+    <day year="2008" month="03" day="28">
+        <test-runs-today n="22" ok-n="17" fail-n="5" else-n="0" last-run="oll korrekt" last-time="23:40:21"/>
+    </day>
+    <day year="2008" month="03" day="29">
+        <accept    time="20:54:39" application="bug-1885304.sh" choice="" crc="1736702299" />
+        <accept    time="23:35:29" application="bug-1885304.sh" choice="" crc="169704481" />
+        <test-runs-today n="17" ok-n="12" fail-n="5" else-n="0" last-run="oll korrekt" last-time="23:35:52"/>
+    </day>
+    <day year="2008" month="03" day="30">
+        <accept    time="21:12:13" application="bug-1885304.sh" choice="" crc="-299969831" />
+        <accept    time="21:12:16" application="bug-1905768.sh" choice="" crc="-1328295834" />
+        <test-runs-today n="6" ok-n="4" fail-n="2" else-n="0" last-run="oll korrekt" last-time="21:12:23"/>
+    </day>
+    <day year="2008" month="03" day="31">
+        <accept    time="04:20:53" application="bug-1885304.sh" choice="" crc="-1395145639" />
+        <accept    time="05:19:44" application="bug-1885304.sh" choice="" crc="-1871733519" />
+        <accept    time="05:37:02" application="bug-1908436.sh" choice="" crc="106667216" />
+        <test-runs-today n="11" ok-n="7" fail-n="4" else-n="0" last-run="oll korrekt" last-time="05:37:19"/>
+    </day>
+    <day year="2008" month="04" day="01">
+        <accept    time="08:12:06" application="bug-1885304.sh" choice="" crc="-1708423237" />
+        <accept    time="11:14:14" application="bug-1885304.sh" choice="" crc="-2113370671" />
+        <test-runs-today n="6" ok-n="2" fail-n="4" else-n="0" last-run="failure" last-time="19:11:12"/>
+        <accept    time="19:11:41" application="bug-1885304.sh" choice="" crc="-70565284" />
+    </day>
+    <day year="2008" month="04" day="03">
+        <accept    time="05:11:39" application="bug-1885304.sh" choice="" crc="1368504904" />
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="19:02:12"/>
+    </day>
+    <day year="2008" month="04" day="05">
+        <accept    time="21:55:22" application="bug-1935701.exe" choice="FILE" crc="-1598919026" />
+        <accept    time="21:55:23" application="bug-1935701.exe" choice="fstream" crc="-1598919026" />
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:25:49"/>
+    </day>
+    <day year="2008" month="04" day="06">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:34:44"/>
+    </day>
+    <day year="2008" month="04" day="07">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:09:10"/>
+    </day>
+    <day year="2008" month="04" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:51:51"/>
+    </day>
+    <day year="2008" month="04" day="15">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:00:39"/>
+    </day>
+    <day year="2008" month="04" day="20">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="16:40:53"/>
+    </day>
+    <day year="2008" month="04" day="21">
+        <accept    time="16:24:50" application="bug-1894578.sh" choice="" crc="1096694076" />
+        <accept    time="16:24:55" application="bug-1895066.sh" choice="" crc="-356422183" />
+        <accept    time="16:24:59" application="bug-1889321.sh" choice="" crc="-183459496" />
+        <accept    time="16:25:05" application="bug-1895500.sh" choice="" crc="-1888187264" />
+        <accept    time="16:25:09" application="bug-1885855.sh" choice="" crc="584772075" />
+        <accept    time="16:25:14" application="bug-1889702.sh" choice="" crc="-1186799545" />
+        <accept    time="16:25:20" application="bug-1885304.sh" choice="" crc="-1085459325" />
+        <accept    time="16:25:41" application="bug-1892809.sh" choice="" crc="-1535149083" />
+        <accept    time="16:26:49" application="bug-1905768.sh" choice="" crc="463982673" />
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="16:27:03"/>
+    </day>
+    <day year="2008" month="04" day="22">
+        <test-runs-today n="6" ok-n="2" fail-n="4" else-n="0" last-run="failure" last-time="16:57:36"/>
+    </day>
+    <day year="2008" month="04" day="23">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="16:09:57"/>
+    </day>
+    <day year="2008" month="04" day="24">
+        <accept    time="16:16:21" application="bug-1885304.sh" choice="" crc="6434439" />
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="16:18:31"/>
+    </day>
+    <day year="2008" month="04" day="25">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="15:59:50"/>
+    </day>
+    <day year="2008" month="04" day="26">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="19:11:28"/>
+    </day>
+    <day year="2008" month="04" day="27">
+        <accept    time="01:33:36" application="bug-1952133.sh" choice="29" crc="-1020317142" />
+        <accept    time="01:33:40" application="bug-1952133.sh" choice="30" crc="-1769829012" />
+        <accept    time="01:33:43" application="bug-1952133.sh" choice="127" crc="1159892932" />
+        <accept    time="01:33:47" application="bug-1952133.sh" choice="128" crc="-1539255043" />
+        <accept    time="01:33:51" application="bug-1952133.sh" choice="129" crc="-1219881466" />
+        <accept    time="01:33:55" application="bug-1952133.sh" choice="2499" crc="220117901" />
+        <accept    time="01:33:59" application="bug-1952133.sh" choice="2501" crc="1677544258" />
+        <accept    time="01:34:02" application="bug-1952133.sh" choice="2502" crc="-1695847012" />
+        <accept    time="01:36:13" application="bug-1952133.sh" choice="2500" crc="888187144" />
+        <accept    time="01:50:51" application="bug-1885304.sh" choice="" crc="-1793624070" />
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="14:32:42"/>
+    </day>
+    <day year="2008" month="05" day="07">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="16:37:15"/>
+    </day>
+    <day year="2008" month="05" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="03:32:07"/>
+    </day>
+    <day year="2008" month="05" day="09">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="16:31:21"/>
+    </day>
+    <day year="2008" month="05" day="12">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="09:05:26"/>
+    </day>
+    <day year="2008" month="05" day="13">
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="20:54:08"/>
+    </day>
+    <day year="2008" month="05" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:11:53"/>
+    </day>
+    <day year="2008" month="05" day="15">
+        <accept    time="04:28:27" application="bug-1885304.sh" choice="" crc="629418015" />
+        <accept    time="04:28:38" application="bug-1895066.sh" choice="" crc="-1219415394" />
+        <accept    time="04:28:55" application="bug-1905768.sh" choice="" crc="1210696919" />
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="04:38:38"/>
+        <accept    time="19:22:30" application="bug-1952747.sh" choice="" crc="-703497109" />
+    </day>
+    <day year="2008" month="05" day="16">
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="failure" last-time="19:37:20"/>
+    </day>
+    <day year="2008" month="05" day="17">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="20:10:22"/>
+        <accept    time="20:15:01" application="bug-1885304.sh" choice="" crc="-477029900" />
+        <accept    time="20:15:07" application="bug-1895066.sh" choice="" crc="-957145527" />
+    </day>
+    <day year="2008" month="05" day="19">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="04:23:38"/>
+    </day>
+    <day year="2008" month="05" day="20">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="04:39:33"/>
+    </day>
+    <day year="2008" month="05" day="21">
+        <accept    time="03:31:17" application="bug-1936707.sh" choice="" crc="-1726019089" />
+        <accept    time="03:35:37" application="bug-1885304.sh" choice="" crc="-1854638550" />
+        <accept    time="04:22:38" application="bug-1908092.sh" choice="" crc="1349585656" />
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="04:41:05"/>
+    </day>
+    <day year="2008" month="05" day="22">
+        <accept    time="13:47:57" application="bug-1969629.sh" choice="" crc="235647334" />
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="failure" last-time="19:29:40"/>
+        <accept    time="19:30:04" application="bug-1908092.sh" choice="" crc="1343316621" />
+    </day>
+    <day year="2008" month="05" day="23">
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="failure" last-time="18:34:24"/>
+        <accept    time="18:46:11" application="bug-1885304.sh" choice="" crc="-1079000033" />
+        <accept    time="18:46:15" application="bug-1895066.sh" choice="" crc="-1518717768" />
+    </day>
+    <day year="2008" month="05" day="24">
+        <accept    time="05:43:14" application="bug-1885304.sh" choice="" crc="-755864766" />
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="05:44:19"/>
+    </day>
+    <day year="2008" month="05" day="26">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:13:32"/>
+        <accept    time="19:17:52" application="bug-1885304.sh" choice="" crc="1969959989" />
+        <accept    time="19:17:55" application="bug-1895066.sh" choice="" crc="-2031933991" />
+    </day>
+    <day year="2008" month="05" day="28">
+        <accept    time="03:52:49" application="bug-1885304.sh" choice="" crc="-1938197153" />
+        <accept    time="03:52:55" application="bug-1895066.sh" choice="" crc="-146732786" />
+        <accept    time="15:07:04" application="bug-1885304.sh" choice="" crc="724269942" />
+        <test-runs-today n="5" ok-n="1" fail-n="4" else-n="0" last-run="oll korrekt" last-time="15:07:59"/>
+    </day>
+    <day year="2008" month="05" day="29">
+        <accept    time="03:08:30" application="bug-1952133.sh" choice="29" crc="1741677142" />
+        <accept    time="03:08:46" application="bug-1952133.sh" choice="30" crc="845307152" />
+        <accept    time="03:08:54" application="bug-1952133.sh" choice="127" crc="1021154014" />
+        <accept    time="03:09:07" application="bug-1952133.sh" choice="128" crc="-574633497" />
+        <accept    time="03:09:15" application="bug-1952133.sh" choice="129" crc="-826995940" />
+        <accept    time="03:10:20" application="bug-1952133.sh" choice="2499" crc="-984068674" />
+        <accept    time="03:10:28" application="bug-1952133.sh" choice="2500" crc="-55156933" />
+        <accept    time="03:10:41" application="bug-1952133.sh" choice="2501" crc="-1413759631" />
+        <accept    time="03:10:47" application="bug-1952133.sh" choice="2502" crc="1387109295" />
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="19:58:32"/>
+    </day>
+    <day year="2008" month="05" day="30">
+        <accept    time="03:20:27" application="bug-1952133.sh" choice="29" crc="-1965207736" />
+        <accept    time="03:20:37" application="bug-1952133.sh" choice="30" crc="-2107699820" />
+        <accept    time="03:20:43" application="bug-1952133.sh" choice="127" crc="639794907" />
+        <accept    time="03:20:51" application="bug-1952133.sh" choice="128" crc="-273816244" />
+        <accept    time="03:20:57" application="bug-1952133.sh" choice="129" crc="79299260" />
+        <accept    time="03:21:03" application="bug-1952133.sh" choice="2499" crc="-883374869" />
+        <accept    time="03:21:09" application="bug-1952133.sh" choice="2500" crc="396308692" />
+        <accept    time="03:21:17" application="bug-1952133.sh" choice="2501" crc="2007951774" />
+        <accept    time="03:21:23" application="bug-1952133.sh" choice="2502" crc="-671317440" />
+        <accept    time="03:25:28" application="bug-1952747.sh" choice="" crc="-2076561580" />
+        <accept    time="03:25:33" application="bug-1893880.sh" choice="" crc="-1830775414" />
+        <accept    time="03:25:42" application="bug-1889086.sh" choice="" crc="-1486450036" />
+        <accept    time="03:25:45" application="bug-1890828.sh" choice="" crc="-1379047760" />
+        <accept    time="03:25:56" application="bug-1908092.sh" choice="" crc="1110966914" />
+        <accept    time="03:26:00" application="bug-1889871.sh" choice="" crc="-1246523500" />
+        <accept    time="03:26:16" application="bug-1889692.sh" choice="" crc="-122831979" />
+        <accept    time="03:26:20" application="bug-1936707.sh" choice="" crc="-673084129" />
+        <accept    time="03:26:24" application="bug-1908436.sh" choice="" crc="274803384" />
+        <accept    time="03:26:29" application="bug-1894578.sh" choice="" crc="1874267893" />
+        <accept    time="03:26:37" application="bug-1885855.sh" choice="" crc="1600902326" />
+        <accept    time="03:26:48" application="bug-1895066.sh" choice="" crc="1760998401" />
+        <accept    time="03:26:51" application="bug-1889089.sh" choice="" crc="-1981542010" />
+        <accept    time="03:27:13" application="bug-1898125.sh" choice="" crc="1088260997" />
+        <accept    time="03:27:17" application="bug-1885846.sh" choice="" crc="1493545985" />
+        <accept    time="03:27:24" application="bug-1890876.sh" choice="" crc="250888149" />
+        <accept    time="03:27:28" application="bug-1889892.sh" choice="" crc="-1439273065" />
+        <accept    time="03:27:32" application="bug-1889702.sh" choice="" crc="495965400" />
+        <accept    time="03:27:43" application="bug-1893849.sh" choice="" crc="-1921867414" />
+        <accept    time="03:27:47" application="bug-1889321.sh" choice="" crc="-1794323936" />
+        <accept    time="03:27:50" application="bug-1894130.sh" choice="" crc="-439618702" />
+        <accept    time="03:27:53" application="bug-1902175.sh" choice="" crc="-883469764" />
+        <accept    time="03:27:56" application="bug-1892227.sh" choice="" crc="-911274598" />
+        <accept    time="03:27:59" application="bug-1969629.sh" choice="" crc="-689215474" />
+        <accept    time="03:28:04" application="bug-1887163.sh" choice="" crc="312783870" />
+        <accept    time="03:28:07" application="bug-1905768.sh" choice="" crc="1191787275" />
+        <accept    time="03:28:10" application="bug-1889877.sh" choice="" crc="1595045568" />
+        <accept    time="03:28:13" application="bug-1893874.sh" choice="" crc="-47022051" />
+        <crc-error time="03:33:13" application="bug-1891254.sh" choice="" database-crc="1488678156" real-crc="-872092837"/>
+        <crc-error time="03:33:14" application="bug-1885304.sh" choice="" database-crc="724269942" real-crc="1164338596"/>
+        <crc-error time="03:33:16" application="bug-1892809.sh" choice="" database-crc="-1535149083" real-crc="1202907301"/>
+        <crc-error time="03:33:16" application="bug-1894185.sh" choice="" database-crc="781076954" real-crc="-1782156034"/>
+        <accept    time="03:33:26" application="bug-1895500.sh" choice="" crc="-42648966" />
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="03:34:23"/>
+    </day>
+    <day year="2008" month="05" day="31">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="06:30:59"/>
+    </day>
+    <day year="2008" month="06" day="07">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:21:03"/>
+    </day>
+    <day year="2008" month="06" day="09">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="03:46:31"/>
+    </day>
+    <day year="2008" month="06" day="10">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:02:39"/>
+    </day>
+    <day year="2008" month="06" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="04:02:48"/>
+    </day>
+    <day year="2008" month="06" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:12:55"/>
+    </day>
+    <day year="2008" month="06" day="24">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="failure" last-time="23:00:51"/>
+    </day>
+    <day year="2008" month="06" day="25">
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="05:54:00"/>
+    </day>
+    <day year="2008" month="06" day="26">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:29:05"/>
+    </day>
+    <day year="2008" month="06" day="27">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="18:13:49"/>
+    </day>
+    <day year="2008" month="06" day="28">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="16:26:23"/>
+    </day>
+    <day year="2008" month="06" day="29">
+        <test-runs-today n="5" ok-n="0" fail-n="2" else-n="3" last-run="no verdict" last-time="13:19:20"/>
+    </day>
+    <day year="2008" month="06" day="30">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="04:43:45"/>
+    </day>
+    <day year="2008" month="07" day="04">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="07:35:27"/>
+    </day>
+    <day year="2008" month="07" day="06">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="08:19:12"/>
+    </day>
+    <day year="2008" month="07" day="07">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="06:47:19"/>
+    </day>
+    <day year="2008" month="08" day="15">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="13:25:20"/>
+    </day>
+    <day year="2008" month="08" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:55:36"/>
+    </day>
+    <day year="2008" month="08" day="23">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="04:08:21"/>
+    </day>
+    <day year="2008" month="08" day="24">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="21:15:14"/>
+    </day>
+    <day year="2008" month="08" day="26">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="21:01:33"/>
+    </day>
+    <day year="2008" month="08" day="27">
+        <test-runs-today n="6" ok-n="0" fail-n="5" else-n="1" last-run="no verdict" last-time="20:31:49"/>
+    </day>
+    <day year="2008" month="08" day="31">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="09:11:04"/>
+    </day>
+    <day year="2008" month="09" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:04:38"/>
+    </day>
+    <day year="2008" month="09" day="03">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:10:45"/>
+    </day>
+    <day year="2008" month="09" day="04">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:07:21"/>
+    </day>
+    <day year="2008" month="09" day="05">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="23:17:46"/>
+    </day>
+    <day year="2008" month="09" day="06">
+        <crc-error time="05:25:09" application="bug-1952747.sh" choice="" database-crc="-2076561580" real-crc="-703497109"/>
+        <crc-error time="05:25:09" application="bug-1885846.sh" choice="" database-crc="1493545985" real-crc="2110266544"/>
+        <crc-error time="05:25:09" application="bug-1885855.sh" choice="" database-crc="1600902326" real-crc="584772075"/>
+        <crc-error time="05:25:10" application="bug-1889871.sh" choice="" database-crc="-1246523500" real-crc="-429266748"/>
+        <crc-error time="05:25:13" application="bug-1898125.sh" choice="" database-crc="1088260997" real-crc="1051315050"/>
+        <test-runs-today n="11" ok-n="2" fail-n="6" else-n="3" last-run="no verdict" last-time="13:19:55"/>
+    </day>
+    <day year="2008" month="09" day="08">
+        <test-runs-today n="4" ok-n="0" fail-n="3" else-n="1" last-run="no verdict" last-time="21:42:57"/>
+    </day>
+    <day year="2008" month="09" day="09">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:20:29"/>
+    </day>
+    <day year="2008" month="09" day="10">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:15:04"/>
+    </day>
+    <day year="2008" month="09" day="12">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="20:09:23"/>
+    </day>
+    <day year="2008" month="09" day="19">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:01:40"/>
+    </day>
+    <day year="2008" month="09" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="11:24:21"/>
+    </day>
+    <day year="2008" month="09" day="25">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:21:27"/>
+    </day>
+    <day year="2008" month="09" day="27">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="08:44:56"/>
+    </day>
+    <day year="2008" month="09" day="28">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="09:24:32"/>
+    </day>
+    <day year="2008" month="09" day="29">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:15:23"/>
+    </day>
+    <day year="2008" month="10" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:16:30"/>
+    </day>
+    <day year="2008" month="10" day="03">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="11:35:56"/>
+    </day>
+    <day year="2008" month="10" day="04">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="04:13:44"/>
+    </day>
+    <day year="2008" month="10" day="05">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="08:52:23"/>
+    </day>
+    <day year="2008" month="10" day="06">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:27:07"/>
+    </day>
+    <day year="2008" month="10" day="08">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="20:09:31"/>
+    </day>
+    <day year="2008" month="10" day="11">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:33:38"/>
+    </day>
+    <day year="2008" month="10" day="12">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="21:00:58"/>
+    </day>
+    <day year="2008" month="10" day="13">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:49:51"/>
+    </day>
+    <day year="2008" month="10" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="05:35:30"/>
+    </day>
+    <day year="2008" month="10" day="17">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="10:21:01"/>
+    </day>
+    <day year="2008" month="10" day="28">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="07:02:42"/>
+    </day>
+    <day year="2008" month="10" day="30">
+        <test-runs-today n="8" ok-n="3" fail-n="3" else-n="2" last-run="oll korrekt" last-time="22:09:20"/>
+    </day>
+    <day year="2008" month="11" day="01">
+        <test-runs-today n="5" ok-n="0" fail-n="5" else-n="0" last-run="failure" last-time="16:41:22"/>
+    </day>
+    <day year="2008" month="11" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="09:34:51"/>
+    </day>
+    <day year="2008" month="11" day="04">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="07:32:16"/>
+    </day>
+    <day year="2008" month="11" day="07">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:45:07"/>
+    </day>
+    <day year="2008" month="11" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="21:15:22"/>
+    </day>
+    <day year="2008" month="11" day="09">
+        <test-runs-today n="3" ok-n="0" fail-n="2" else-n="1" last-run="failure" last-time="21:24:25"/>
+    </day>
+    <day year="2008" month="11" day="10">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:51:39"/>
+    </day>
+    <day year="2008" month="11" day="11">
+        <test-runs-today n="3" ok-n="0" fail-n="2" else-n="1" last-run="no verdict" last-time="18:55:34"/>
+    </day>
+    <day year="2008" month="11" day="12">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="19:24:15"/>
+    </day>
+    <day year="2008" month="11" day="13">
+        <test-runs-today n="4" ok-n="0" fail-n="0" else-n="4" last-run="no verdict" last-time="18:10:58"/>
+    </day>
+    <day year="2008" month="11" day="16">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:52:33"/>
+    </day>
+    <day year="2008" month="11" day="18">
+        <test-runs-today n="7" ok-n="0" fail-n="2" else-n="5" last-run="no verdict" last-time="18:30:13"/>
+    </day>
+    <day year="2008" month="11" day="19">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="22:09:47"/>
+    </day>
+    <day year="2008" month="11" day="20">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:49:05"/>
+    </day>
+    <day year="2008" month="11" day="21">
+        <test-runs-today n="4" ok-n="0" fail-n="2" else-n="2" last-run="no verdict" last-time="07:11:04"/>
+    </day>
+    <day year="2008" month="11" day="22">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="failure" last-time="22:36:56"/>
+    </day>
+    <day year="2008" month="11" day="23">
+        <test-runs-today n="6" ok-n="0" fail-n="3" else-n="3" last-run="no verdict" last-time="15:48:04"/>
+    </day>
+    <day year="2008" month="11" day="26">
+        <test-runs-today n="3" ok-n="0" fail-n="1" else-n="2" last-run="no verdict" last-time="21:52:58"/>
+    </day>
+    <day year="2008" month="11" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:15:46"/>
+    </day>
+    <day year="2008" month="11" day="29">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="19:44:14"/>
+    </day>
+    <day year="2008" month="11" day="30">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="09:59:57"/>
+    </day>
+    <day year="2008" month="12" day="01">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="21:38:10"/>
+    </day>
+    <day year="2008" month="12" day="02">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="06:39:37"/>
+    </day>
+    <day year="2008" month="12" day="03">
+        <crc-error time="05:20:48" application="bug-1952747.sh" choice="" database-crc="964272634" real-crc="445550474"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="05:40:54"/>
+    </day>
+    <day year="2008" month="12" day="04">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="failure" last-time="06:56:39"/>
+    </day>
+    <day year="2008" month="12" day="05">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="07:08:11"/>
+    </day>
+    <day year="2008" month="12" day="06">
+        <test-runs-today n="5" ok-n="0" fail-n="2" else-n="3" last-run="no verdict" last-time="22:22:04"/>
+    </day>
+    <day year="2008" month="12" day="07">
+        <test-runs-today n="4" ok-n="0" fail-n="1" else-n="3" last-run="no verdict" last-time="12:00:48"/>
+    </day>
+    <day year="2008" month="12" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:38:15"/>
+    </day>
+    <day year="2008" month="12" day="09">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:59:57"/>
+    </day>
+    <day year="2008" month="12" day="16">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:37:08"/>
+    </day>
+    <day year="2008" month="12" day="17">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="10:52:53"/>
+    </day>
+    <day year="2008" month="12" day="18">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:52:38"/>
+    </day>
+    <day year="2008" month="12" day="19">
+        <test-runs-today n="3" ok-n="0" fail-n="2" else-n="1" last-run="no verdict" last-time="10:09:51"/>
+    </day>
+    <day year="2008" month="12" day="20">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="15:25:30"/>
+    </day>
+    <day year="2008" month="12" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="01:55:58"/>
+    </day>
+    <day year="2008" month="12" day="22">
+        <test-runs-today n="5" ok-n="0" fail-n="2" else-n="3" last-run="no verdict" last-time="21:24:13"/>
+    </day>
+    <day year="2008" month="12" day="24">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="08:37:22"/>
+    </day>
+    <day year="2009" month="01" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="09:11:51"/>
+    </day>
+    <day year="2009" month="01" day="17">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:59:55"/>
+    </day>
+    <day year="2009" month="02" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:59:41"/>
+    </day>
+    <day year="2009" month="02" day="06">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="18:38:19"/>
+    </day>
+    <day year="2009" month="02" day="10">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="21:22:54"/>
+    </day>
+    <day year="2009" month="02" day="11">
+        <crc-error time="06:22:51" application="bug-1885304.sh" choice="" database-crc="-1862258467" real-crc="-1449659469"/>
+        <crc-error time="06:22:51" application="bug-1895066.sh" choice="" database-crc="-1566085200" real-crc="1873673179"/>
+        <test-runs-today n="3" ok-n="0" fail-n="1" else-n="2" last-run="no verdict" last-time="06:28:50"/>
+    </day>
+    <day year="2009" month="02" day="13">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="14:02:40"/>
+    </day>
+    <day year="2009" month="02" day="15">
+        <test-runs-today n="4" ok-n="0" fail-n="0" else-n="4" last-run="no verdict" last-time="18:09:35"/>
+    </day>
+    <day year="2009" month="02" day="17">
+        <test-runs-today n="2" ok-n="1" fail-n="0" else-n="1" last-run="no verdict" last-time="05:18:17"/>
+    </day>
+    <day year="2009" month="02" day="19">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="06:12:15"/>
+    </day>
+    <day year="2009" month="02" day="21">
+        <test-runs-today n="3" ok-n="0" fail-n="1" else-n="2" last-run="no verdict" last-time="17:38:15"/>
+    </day>
+    <day year="2009" month="02" day="23">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="22:40:42"/>
+    </day>
+    <day year="2009" month="02" day="24">
+        <crc-error time="06:43:39" application="bug-2395200.sh" choice="lexer" database-crc="-1296137965" real-crc="-1764815470"/>
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="06:54:10"/>
+    </day>
+    <day year="2009" month="02" day="26">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="23:10:36"/>
+    </day>
+    <day year="2009" month="02" day="27">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="20:09:16"/>
+    </day>
+    <day year="2009" month="02" day="28">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="07:41:22"/>
+    </day>
+    <day year="2009" month="03" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:59:40"/>
+    </day>
+    <day year="2009" month="03" day="04">
+        <crc-error time="06:29:54" application="bug-2599228.sh" choice="Developper" database-crc="-9519005" real-crc="136489900"/>
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="06:38:50"/>
+    </day>
+    <day year="2009" month="03" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:43:19"/>
+    </day>
+    <day year="2009" month="03" day="15">
+        <crc-error time="10:40:02" application="bug-2095970-ntq.sh" choice="NoModeDetection" database-crc="-1962891232" real-crc="-1000541069"/>
+        <test-runs-today n="13" ok-n="1" fail-n="10" else-n="2" last-run="no verdict" last-time="13:40:57"/>
+    </day>
+    <day year="2009" month="03" day="16">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="07:08:24"/>
+    </day>
+    <day year="2009" month="03" day="17">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="05:43:35"/>
+    </day>
+    <day year="2009" month="03" day="20">
+        <crc-error time="10:47:08" application="bug-1952133.sh" choice="29" database-crc="-1965207736" real-crc="-1895456230"/>
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="11:11:26"/>
+    </day>
+    <day year="2009" month="03" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="12:00:26"/>
+    </day>
+    <day year="2009" month="03" day="23">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="10:34:37"/>
+    </day>
+    <day year="2009" month="03" day="24">
+        <crc-error time="16:28:36" application="bug-2001602.sh" choice="" database-crc="-2000137329" real-crc="-891185254"/>
+        <crc-error time="16:29:42" application="bug-1885304.sh" choice="" database-crc="-1738545664" real-crc="1280974404"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="16:30:10"/>
+    </day>
+    <day year="2009" month="03" day="25">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:15:22"/>
+    </day>
+    <day year="2009" month="03" day="27">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="16:15:59"/>
+    </day>
+    <day year="2009" month="03" day="29">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:47:52"/>
+    </day>
+    <day year="2009" month="04" day="09">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="21:39:28"/>
+    </day>
+    <day year="2009" month="04" day="10">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="07:02:40"/>
+    </day>
+    <day year="2009" month="04" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:52:53"/>
+    </day>
+    <day year="2009" month="04" day="19">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="10:37:23"/>
+    </day>
+    <day year="2009" month="04" day="23">
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="05:51:56"/>
+    </day>
+    <day year="2009" month="04" day="25">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:30:09"/>
+    </day>
+    <day year="2009" month="04" day="28">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="04:03:55"/>
+    </day>
+    <day year="2009" month="05" day="08">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="22:20:06"/>
+    </day>
+    <day year="2009" month="05" day="09">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="03:50:13"/>
+    </day>
+    <day year="2009" month="05" day="11">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:34:53"/>
+    </day>
+    <day year="2009" month="05" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:25:11"/>
+    </day>
+    <day year="2009" month="05" day="16">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="11:10:32"/>
+    </day>
+    <day year="2009" month="05" day="18">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:33:07"/>
+    </day>
+    <day year="2009" month="05" day="19">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:56:14"/>
+    </day>
+    <day year="2009" month="05" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:33:23"/>
+    </day>
+    <day year="2009" month="05" day="23">
+        <crc-error time="20:30:55" application="bug-1885304.sh" choice="" database-crc="1671981210" real-crc="-955027217"/>
+        <test-runs-today n="4" ok-n="0" fail-n="3" else-n="1" last-run="no verdict" last-time="22:58:54"/>
+    </day>
+    <day year="2009" month="05" day="25">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:02:51"/>
+    </day>
+    <day year="2009" month="05" day="27">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="23:53:53"/>
+    </day>
+    <day year="2009" month="05" day="28">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="00:29:09"/>
+    </day>
+    <day year="2009" month="05" day="30">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="19:05:49"/>
+    </day>
+    <day year="2009" month="06" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:06:42"/>
+    </day>
+    <day year="2009" month="06" day="03">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:43:40"/>
+    </day>
+    <day year="2009" month="06" day="05">
+        <test-runs-today n="5" ok-n="0" fail-n="3" else-n="2" last-run="no verdict" last-time="22:28:39"/>
+    </day>
+    <day year="2009" month="06" day="10">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="18:48:28"/>
+    </day>
+    <day year="2009" month="06" day="16">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:06:45"/>
+    </day>
+    <day year="2009" month="06" day="17">
+        <test-runs-today n="3" ok-n="0" fail-n="2" else-n="1" last-run="no verdict" last-time="19:10:24"/>
+    </day>
+    <day year="2009" month="06" day="18">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="22:20:56"/>
+    </day>
+    <day year="2009" month="06" day="22">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="20:25:26"/>
+    </day>
+    <day year="2009" month="06" day="27">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:33:00"/>
+    </day>
+    <day year="2009" month="07" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:54:39"/>
+    </day>
+    <day year="2009" month="07" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:08:58"/>
+    </day>
+    <day year="2009" month="07" day="04">
+        <crc-error time="22:43:36" application="bug-1885304.sh" choice="" database-crc="-2081809384" real-crc="-744489845"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="23:25:39"/>
+    </day>
+    <day year="2009" month="07" day="05">
+        <test-runs-today n="5" ok-n="0" fail-n="3" else-n="2" last-run="failure" last-time="20:16:43"/>
+    </day>
+    <day year="2009" month="07" day="06">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="23:11:12"/>
+    </day>
+    <day year="2009" month="07" day="09">
+        <test-runs-today n="3" ok-n="0" fail-n="2" else-n="1" last-run="failure" last-time="22:28:45"/>
+    </day>
+    <day year="2009" month="07" day="10">
+        <test-runs-today n="5" ok-n="0" fail-n="4" else-n="1" last-run="failure" last-time="22:37:56"/>
+    </day>
+    <day year="2009" month="07" day="14">
+        <test-runs-today n="7" ok-n="0" fail-n="4" else-n="3" last-run="failure" last-time="21:47:06"/>
+    </day>
+    <day year="2009" month="07" day="15">
+        <crc-error time="12:54:28" application="bug-2209142.sh" choice="error" database-crc="-1161141958" real-crc="1446065790"/>
+        <crc-error time="12:54:33" application="bug-2209142.sh" choice="good" database-crc="-1960676627" real-crc="-1309674102"/>
+        <crc-error time="12:54:54" application="bug-2277660.sh" choice="" database-crc="-2010250218" real-crc="-144384570"/>
+        <crc-error time="12:55:19" application="bug-2257908.sh" choice="" database-crc="776137798" real-crc="1803228892"/>
+        <crc-error time="12:55:33" application="bug-1889321.sh" choice="" database-crc="-1229420355" real-crc="-396174589"/>
+        <crc-error time="12:55:53" application="bug-1895500.sh" choice="" database-crc="1893955623" real-crc="1197719310"/>
+        <crc-error time="12:56:02" application="bug-2095970-ntq.sh" choice="Normal" database-crc="283518767" real-crc="1751048447"/>
+        <crc-error time="12:56:22" application="bug-2095970-ntq.sh" choice="NoModeDetection_ErrorCase" database-crc="1142660451" real-crc="1466795843"/>
+        <crc-error time="12:56:26" application="bug-2095970.sh" choice="Normal" database-crc="283518767" real-crc="1751048447"/>
+        <crc-error time="12:56:36" application="bug-2095970.sh" choice="NoModeDetection" database-crc="2110564504" real-crc="-92411746"/>
+        <crc-error time="12:56:46" application="bug-2095970.sh" choice="NoModeDetection_ErrorCase" database-crc="1142660451" real-crc="1466795843"/>
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="12:57:22"/>
+    </day>
+    <day year="2009" month="07" day="16">
+        <test-runs-today n="3" ok-n="0" fail-n="1" else-n="2" last-run="no verdict" last-time="20:51:30"/>
+    </day>
+    <day year="2009" month="07" day="18">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="23:48:28"/>
+    </day>
+    <day year="2009" month="07" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="11:01:14"/>
+    </day>
+    <day year="2009" month="07" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:27:07"/>
+    </day>
+    <day year="2009" month="07" day="23">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="22:09:48"/>
+    </day>
+    <day year="2009" month="07" day="24">
+        <crc-error time="09:50:14" application="bug-1885304.sh" choice="" database-crc="-987822903" real-crc="-293672306"/>
+        <test-runs-today n="2" ok-n="0" fail-n="1" else-n="1" last-run="no verdict" last-time="09:50:24"/>
+    </day>
+    <day year="2009" month="07" day="25">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="23:30:12"/>
+    </day>
+    <day year="2009" month="07" day="26">
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="07:03:14"/>
+    </day>
+    <day year="2009" month="07" day="27">
+        <crc-error time="20:03:28" application="bug-2599228.sh" choice="Developper" database-crc="-936007043" real-crc="1254842863"/>
+        <crc-error time="20:24:20" application="bug-2599228.sh" choice="Developper" database-crc="1254842863" real-crc="-1913077483"/>
+        <crc-error time="20:24:24" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-971723312" real-crc="1374981030"/>
+        <crc-error time="20:24:25" application="bug-1885304.sh" choice="" database-crc="104966448" real-crc="-1529356144"/>
+        <crc-error time="20:25:44" application="bug-1885304.sh" choice="" database-crc="-1529356144" real-crc="-1871850471"/>
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="21:03:24"/>
+    </day>
+    <day year="2009" month="07" day="28">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:11:25"/>
+    </day>
+    <day year="2009" month="07" day="30">
+        <crc-error time="19:43:13" application="bug-2599228.sh" choice="Developper" database-crc="-1913077483" real-crc="-728745740"/>
+        <crc-error time="19:43:14" application="bug-1885304.sh" choice="" database-crc="-1871850471" real-crc="-15626994"/>
+        <test-runs-today n="5" ok-n="3" fail-n="2" else-n="0" last-run="oll korrekt" last-time="22:25:25"/>
+    </day>
+    <day year="2009" month="08" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:13:05"/>
+    </day>
+    <day year="2009" month="08" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="10:03:16"/>
+    </day>
+    <day year="2009" month="08" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="09:45:54"/>
+    </day>
+    <day year="2009" month="08" day="07">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:59:42"/>
+    </day>
+    <day year="2009" month="08" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:40:48"/>
+    </day>
+    <day year="2009" month="08" day="12">
+        <crc-error time="13:33:55" application="bug-1885304.sh" choice="" database-crc="810182880" real-crc="-453861975"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="13:35:31"/>
+    </day>
+    <day year="2009" month="08" day="13">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="09:08:23"/>
+    </day>
+    <day year="2009" month="08" day="14">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:17:42"/>
+    </day>
+    <day year="2009" month="08" day="15">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="11:17:43"/>
+    </day>
+    <day year="2009" month="08" day="18">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="20:23:21"/>
+    </day>
+    <day year="2009" month="08" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:31:06"/>
+    </day>
+    <day year="2009" month="08" day="20">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="failure" last-time="21:50:19"/>
+    </day>
+    <day year="2009" month="08" day="22">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="20:22:15"/>
+    </day>
+    <day year="2009" month="08" day="23">
+        <test-runs-today n="7" ok-n="2" fail-n="5" else-n="0" last-run="oll korrekt" last-time="07:45:45"/>
+    </day>
+    <day year="2009" month="08" day="24">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="21:14:38"/>
+    </day>
+    <day year="2009" month="08" day="25">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="21:23:34"/>
+    </day>
+    <day year="2009" month="08" day="26">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="failure" last-time="22:56:08"/>
+    </day>
+    <day year="2009" month="08" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:10:18"/>
+    </day>
+    <day year="2009" month="08" day="28">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:25:04"/>
+    </day>
+    <day year="2009" month="08" day="29">
+        <crc-error time="00:02:27" application="bug-1885304.sh" choice="" database-crc="332296870" real-crc="1691415206"/>
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="21:46:59"/>
+    </day>
+    <day year="2009" month="08" day="30">
+        <crc-error time="00:51:52" application="bug-1885304.sh" choice="" database-crc="1455424180" real-crc="1777892756"/>
+        <crc-error time="00:51:52" application="bug-1895066.sh" choice="" database-crc="755526840" real-crc="2010093227"/>
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="20:54:03"/>
+    </day>
+    <day year="2009" month="08" day="31">
+        <test-runs-today n="7" ok-n="3" fail-n="4" else-n="0" last-run="oll korrekt" last-time="20:46:59"/>
+    </day>
+    <day year="2009" month="09" day="02">
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="21:14:26"/>
+    </day>
+    <day year="2009" month="09" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:03:29"/>
+    </day>
+    <day year="2009" month="09" day="05">
+        <crc-error time="04:14:04" application="bug-2395200.sh" choice="lexer" database-crc="-1698293288" real-crc="996387563"/>
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="05:07:14"/>
+    </day>
+    <day year="2009" month="09" day="12">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:06:29"/>
+    </day>
+    <day year="2009" month="09" day="13">
+        <crc-error time="13:26:54" application="bug-2395200.sh" choice="error-lexer" database-crc="-86429098" real-crc="1453330538"/>
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="20:33:08"/>
+    </day>
+    <day year="2009" month="09" day="16">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:58:21"/>
+    </day>
+    <day year="2009" month="09" day="17">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="21:01:45"/>
+    </day>
+    <day year="2009" month="09" day="19">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="13:13:25"/>
+    </day>
+    <day year="2009" month="09" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:09:24"/>
+    </day>
+    <day year="2009" month="09" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:52:39"/>
+    </day>
+    <day year="2009" month="09" day="23">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="21:14:35"/>
+    </day>
+    <day year="2009" month="09" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:56:16"/>
+    </day>
+    <day year="2009" month="09" day="30">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:15:21"/>
+    </day>
+    <day year="2009" month="10" day="01">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="21:23:28"/>
+    </day>
+    <day year="2009" month="10" day="04">
+        <crc-error time="01:26:28" application="bug-2395200.sh" choice="lexer" database-crc="996387563" real-crc="1523076112"/>
+        <crc-error time="01:26:35" application="bug-1885304.sh" choice="" database-crc="646912166" real-crc="-216702775"/>
+        <crc-error time="01:26:45" application="bug-1905768.sh" choice="" database-crc="2013131169" real-crc="2115228101"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:27:20"/>
+    </day>
+    <day year="2009" month="10" day="05">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:29:46"/>
+    </day>
+    <day year="2009" month="10" day="06">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="20:45:17"/>
+    </day>
+    <day year="2009" month="10" day="07">
+        <crc-error time="19:11:30" application="bug-2599228.sh" choice="Developper" database-crc="-627807066" real-crc="-530750543"/>
+        <crc-error time="19:11:30" application="bug-2599228.sh" choice="FilesExist" database-crc="1752598686" real-crc="1329967682"/>
+        <crc-error time="19:24:51" application="bug-1885304.sh" choice="" database-crc="-216702775" real-crc="-2137285576"/>
+        <crc-error time="19:24:51" application="bug-1895066.sh" choice="" database-crc="-1770815875" real-crc="-300999480"/>
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="19:27:45"/>
+    </day>
+    <day year="2009" month="10" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:30:15"/>
+    </day>
+    <day year="2009" month="10" day="13">
+        <crc-error time="20:51:47" application="bug-1885304.sh" choice="" database-crc="-2137285576" real-crc="913778437"/>
+        <crc-error time="20:52:24" application="bug-2799244.sh" choice="error" database-crc="-1211975543" real-crc="1466498155"/>
+        <crc-error time="20:52:26" application="bug-2799244.sh" choice="test" database-crc="1969512305" real-crc="1622488250"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:52:38"/>
+    </day>
+    <day year="2009" month="10" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:31:07"/>
+    </day>
+    <day year="2009" month="10" day="15">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:07:03"/>
+    </day>
+    <day year="2009" month="10" day="16">
+        <crc-error time="21:31:12" application="bug-2001787.sh" choice="" database-crc="1539990261" real-crc="343422378"/>
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="23:37:19"/>
+    </day>
+    <day year="2009" month="10" day="17">
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="21:07:20"/>
+    </day>
+    <day year="2009" month="10" day="21">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:17:34"/>
+    </day>
+    <day year="2009" month="10" day="24">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:41:10"/>
+    </day>
+    <day year="2009" month="10" day="25">
+        <test-runs-today n="5" ok-n="2" fail-n="3" else-n="0" last-run="failure" last-time="21:56:11"/>
+    </day>
+    <day year="2009" month="11" day="12">
+        <crc-error time="06:50:30" application="feature-2251359.sh" choice="good" database-crc="1011991432" real-crc="2015813150"/>
+        <crc-error time="06:50:38" application="bug-1885304.sh" choice="" database-crc="-273152587" real-crc="1826019201"/>
+        <crc-error time="06:50:50" application="bug-1905768.sh" choice="" database-crc="1095045170" real-crc="1499129260"/>
+        <crc-error time="06:51:14" application="bug-2796383.sh" choice="case-1" database-crc="-1829622869" real-crc="884949207"/>
+        <crc-error time="06:51:14" application="bug-2796383.sh" choice="case-2" database-crc="-2115998451" real-crc="-434755922"/>
+        <crc-error time="06:51:14" application="bug-2796383.sh" choice="case-3" database-crc="-2115998451" real-crc="-434755922"/>
+        <crc-error time="06:51:14" application="bug-2796383.sh" choice="case-4" database-crc="-2115998451" real-crc="-434755922"/>
+        <crc-error time="06:51:14" application="bug-2796383.sh" choice="case-5" database-crc="-1869761737" real-crc="-535972939"/>
+        <crc-error time="06:51:15" application="bug-2799244.sh" choice="error" database-crc="1466498155" real-crc="-1211975543"/>
+        <crc-error time="06:51:18" application="bug-2799244.sh" choice="test" database-crc="1622488250" real-crc="1969512305"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="07:01:20"/>
+    </day>
+    <day year="2009" month="11" day="13">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:52:42"/>
+    </day>
+    <day year="2009" month="11" day="24">
+        <crc-error time="20:45:16" application="feature-2251359.sh" choice="good" database-crc="2015813150" real-crc="1011991432"/>
+        <crc-error time="20:45:25" application="bug-1885304.sh" choice="" database-crc="1826019201" real-crc="-1950470803"/>
+        <crc-error time="20:47:12" application="bug-2796383.sh" choice="case-1" database-crc="884949207" real-crc="-1829622869"/>
+        <crc-error time="20:47:33" application="bug-2796383.sh" choice="case-2" database-crc="-434755922" real-crc="-2115998451"/>
+        <crc-error time="20:47:33" application="bug-2796383.sh" choice="case-3" database-crc="-434755922" real-crc="-2115998451"/>
+        <crc-error time="20:47:33" application="bug-2796383.sh" choice="case-4" database-crc="-434755922" real-crc="-2115998451"/>
+        <crc-error time="20:47:33" application="bug-2796383.sh" choice="case-5" database-crc="-535972939" real-crc="-1869761737"/>
+        <test-runs-today n="9" ok-n="0" fail-n="9" else-n="0" last-run="failure" last-time="21:29:27"/>
+    </day>
+    <day year="2009" month="11" day="25">
+        <crc-error time="12:19:18" application="bug-2002070.sh" choice="" database-crc="1826900866" real-crc="-1043122407"/>
+        <crc-error time="12:23:51" application="bug-1895500.sh" choice="" database-crc="-1998590117" real-crc="-1827347253"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="12:23:54"/>
+        <crc-error time="12:23:54" application="bug-2163753.sh" choice="" database-crc="95821098" real-crc="-843508805"/>
+    </day>
+    <day year="2009" month="11" day="28">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="17:14:03"/>
+    </day>
+    <day year="2009" month="11" day="29">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:47:03"/>
+    </day>
+    <day year="2009" month="12" day="02">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:20:05"/>
+    </day>
+    <day year="2009" month="12" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:29:12"/>
+    </day>
+    <day year="2009" month="12" day="05">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="14:19:31"/>
+    </day>
+    <day year="2009" month="12" day="06">
+        <crc-error time="04:48:46" application="bug-2599228.sh" choice="FilesExist" database-crc="-750977899" real-crc="-177028364"/>
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="21:30:18"/>
+    </day>
+    <day year="2009" month="12" day="10">
+        <crc-error time="13:51:33" application="bug-1952133.sh" choice="29" database-crc="1505512407" real-crc="-1061142085"/>
+        <crc-error time="13:51:38" application="bug-1952133.sh" choice="30" database-crc="387670809" real-crc="-630736507"/>
+        <crc-error time="13:51:44" application="bug-1952133.sh" choice="127" database-crc="976425" real-crc="-1826490750"/>
+        <crc-error time="13:51:49" application="bug-1952133.sh" choice="128" database-crc="1698499542" real-crc="2075811687"/>
+        <crc-error time="13:51:54" application="bug-1952133.sh" choice="129" database-crc="1869434055" real-crc="-1301601134"/>
+        <crc-error time="13:52:00" application="bug-1952133.sh" choice="2499" database-crc="-599761138" real-crc="1124787203"/>
+        <crc-error time="13:52:05" application="bug-1952133.sh" choice="2500" database-crc="1821141860" real-crc="-2119259764"/>
+        <crc-error time="13:52:10" application="bug-1952133.sh" choice="2501" database-crc="-1139908422" real-crc="-122485437"/>
+        <crc-error time="13:52:15" application="bug-1952133.sh" choice="2502" database-crc="385448601" real-crc="1939206162"/>
+    </day>
+    <day year="2009" month="12" day="11">
+        <crc-error time="22:45:21" application="feature-2078087.sh" choice="GOSUB" database-crc="-1351758578" real-crc="389993657"/>
+        <crc-error time="22:46:13" application="feature-2078087.sh" choice="GOSUB-2" database-crc="-1916716939" real-crc="2077073256"/>
+        <crc-error time="22:47:09" application="bug-1895066.sh" choice="" database-crc="1910298297" real-crc="-300999480"/>
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="22:57:27"/>
+    </day>
+    <day year="2009" month="12" day="12">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:31:13"/>
+    </day>
+    <day year="2009" month="12" day="13">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:40:57"/>
+    </day>
+    <day year="2009" month="12" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="11:04:41"/>
+    </day>
+    <day year="2009" month="12" day="20">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:59:49"/>
+    </day>
+    <day year="2009" month="12" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="13:09:07"/>
+    </day>
+    <day year="2009" month="12" day="23">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="23:29:46"/>
+    </day>
+    <day year="2009" month="12" day="24">
+        <crc-error time="08:22:39" application="bug-1885304.sh" choice="" database-crc="-778075319" real-crc="1136555291"/>
+        <test-runs-today n="5" ok-n="0" fail-n="5" else-n="0" last-run="failure" last-time="09:18:42"/>
+    </day>
+    <day year="2009" month="12" day="25">
+        <crc-error time="13:46:36" application="bug-2599228.sh" choice="Developper" database-crc="-1213091670" real-crc="-1782361947"/>
+        <crc-error time="13:46:36" application="bug-2599228.sh" choice="FilesExist" database-crc="-177028364" real-crc="-612696572"/>
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:19:58"/>
+    </day>
+    <day year="2009" month="12" day="26">
+        <crc-error time="13:11:13" application="bug-2277660.sh" choice="" database-crc="-316369004" real-crc="-389983954"/>
+        <crc-error time="13:16:24" application="bug-2209142.sh" choice="error" database-crc="1446065790" real-crc="-345837213"/>
+        <crc-error time="13:16:26" application="bug-2209142.sh" choice="good" database-crc="-1309674102" real-crc="-16339222"/>
+        <crc-error time="13:16:37" application="bug-2257908.sh" choice="" database-crc="-644952685" real-crc="1789738560"/>
+        <crc-error time="13:16:45" application="bug-1895500.sh" choice="" database-crc="-1827347253" real-crc="104669226"/>
+        <crc-error time="13:16:47" application="bug-2095970-ntq.sh" choice="Normal" database-crc="-1893520865" real-crc="704590843"/>
+        <crc-error time="13:16:48" application="bug-2095970-ntq.sh" choice="NormalNoAsserts" database-crc="-1082393461" real-crc="941900985"/>
+        <crc-error time="13:16:50" application="bug-2095970-ntq.sh" choice="NoModeDetection" database-crc="214531898" real-crc="743503348"/>
+        <crc-error time="13:16:52" application="bug-2095970-ntq.sh" choice="NoModeDetectionNoAsserts" database-crc="1353294940" real-crc="-1217687261"/>
+        <crc-error time="13:16:53" application="bug-2095970-ntq.sh" choice="NoModeDetection_ErrorCase" database-crc="1711466454" real-crc="-412537409"/>
+        <crc-error time="13:16:55" application="bug-2095970.sh" choice="Normal" database-crc="-1893520865" real-crc="704590843"/>
+        <crc-error time="13:16:58" application="bug-2095970.sh" choice="NormalNoAsserts" database-crc="-1082393461" real-crc="941900985"/>
+        <crc-error time="13:17:00" application="bug-2095970.sh" choice="NoModeDetection" database-crc="1814876242" real-crc="102998945"/>
+        <crc-error time="13:17:02" application="bug-2095970.sh" choice="NoModeDetectionNoAsserts" database-crc="849823661" real-crc="-1569213271"/>
+        <crc-error time="13:17:04" application="bug-2095970.sh" choice="NoModeDetection_ErrorCase" database-crc="1711466454" real-crc="-412537409"/>
+        <crc-error time="13:17:05" application="bug-2798423.sh" choice="" database-crc="-179153926" real-crc="1215339133"/>
+        <crc-error time="13:17:05" application="feature-2146712.sh" choice="Normal" database-crc="391818426" real-crc="-1629670224"/>
+        <crc-error time="19:46:22" application="feature-1948456.sh" choice="" database-crc="-1449445453" real-crc="-798578584"/>
+        <test-runs-today n="9" ok-n="2" fail-n="7" else-n="0" last-run="failure" last-time="23:39:04"/>
+    </day>
+    <day year="2009" month="12" day="27">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="00:38:09"/>
+    </day>
+    <day year="2009" month="12" day="31">
+        <crc-error time="00:50:22" application="bug-2599228.sh" choice="Developper" database-crc="-1782361947" real-crc="-1537861067"/>
+        <crc-error time="00:50:22" application="bug-2599228.sh" choice="FilesExist" database-crc="-612696572" real-crc="-1107591456"/>
+        <crc-error time="12:09:54" application="feature-2251359.sh" choice="good" database-crc="1011991432" real-crc="-557387011"/>
+        <crc-error time="12:34:57" application="feature-2251359.sh" choice="good" database-crc="-557387011" real-crc="1014359874"/>
+        <crc-error time="13:13:31" application="bug-1887163.sh" choice="" database-crc="-1023013568" real-crc="-2029114095"/>
+        <crc-error time="13:37:19" application="bug-1889692.sh" choice="" database-crc="1602687125" real-crc="1009222158"/>
+        <test-runs-today n="10" ok-n="2" fail-n="8" else-n="0" last-run="oll korrekt" last-time="13:49:10"/>
+    </day>
+    <day year="2010" month="01" day="01">
+        <crc-error time="00:06:30" application="bug-2395200.sh" choice="lexer" database-crc="1523076112" real-crc="-54830250"/>
+        <crc-error time="00:06:30" application="bug-1885304.sh" choice="" database-crc="537517272" real-crc="-647594932"/>
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:07:11"/>
+    </day>
+    <day year="2010" month="01" day="02">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="13:41:47"/>
+    </day>
+    <day year="2010" month="01" day="03">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:02:37"/>
+    </day>
+    <day year="2010" month="01" day="04">
+        <crc-error time="21:41:41" application="bug-1885304.sh" choice="" database-crc="-647594932" real-crc="774843867"/>
+        <crc-error time="21:41:41" application="bug-1895066.sh" choice="" database-crc="1007765139" real-crc="547577270"/>
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="21:51:09"/>
+    </day>
+    <day year="2010" month="01" day="09">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:33:04"/>
+    </day>
+    <day year="2010" month="01" day="10">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:04:42"/>
+    </day>
+    <day year="2010" month="01" day="11">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:06:20"/>
+    </day>
+    <day year="2010" month="01" day="12">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:13:26"/>
+    </day>
+    <day year="2010" month="01" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="12:33:42"/>
+    </day>
+    <day year="2010" month="01" day="15">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="17:56:09"/>
+    </day>
+    <day year="2010" month="01" day="16">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="22:40:02"/>
+    </day>
+    <day year="2010" month="01" day="17">
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="21:41:03"/>
+    </day>
+    <day year="2010" month="01" day="19">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="13:17:53"/>
+    </day>
+    <day year="2010" month="01" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="12:44:57"/>
+    </day>
+    <day year="2010" month="01" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="11:44:40"/>
+    </day>
+    <day year="2010" month="01" day="23">
+        <crc-error time="21:18:52" application="bug-2799244.sh" choice="error" database-crc="-1211975543" real-crc="1053420069"/>
+        <crc-error time="21:18:53" application="bug-2799244.sh" choice="good-2" database-crc="1658979746" real-crc="783410629"/>
+        <test-runs-today n="7" ok-n="2" fail-n="5" else-n="0" last-run="oll korrekt" last-time="21:54:12"/>
+    </day>
+    <day year="2010" month="01" day="24">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="13:33:21"/>
+    </day>
+    <day year="2010" month="01" day="26">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:25:33"/>
+    </day>
+    <day year="2010" month="01" day="29">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:25:37"/>
+    </day>
+    <day year="2010" month="01" day="30">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="22:20:32"/>
+    </day>
+    <day year="2010" month="01" day="31">
+        <crc-error time="18:54:30" application="bug-2599228.sh" choice="Developper" database-crc="-1537861067" real-crc="-849812776"/>
+        <crc-error time="18:54:30" application="bug-2599228.sh" choice="FilesExist" database-crc="-1107591456" real-crc="119506643"/>
+        <crc-error time="19:03:30" application="bug-2395200.sh" choice="error-lexer" database-crc="-1597113891" real-crc="-1622611652"/>
+        <crc-error time="19:03:30" application="bug-2799244.sh" choice="good-2" database-crc="-766183585" real-crc="1348704881"/>
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="21:37:14"/>
+    </day>
+    <day year="2010" month="02" day="01">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:30:36"/>
+    </day>
+    <day year="2010" month="02" day="02">
+        <crc-error time="21:54:04" application="bug-1885304.sh" choice="" database-crc="-287692630" real-crc="1811856274"/>
+        <test-runs-today n="5" ok-n="0" fail-n="5" else-n="0" last-run="failure" last-time="22:03:40"/>
+    </day>
+    <day year="2010" month="02" day="03">
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="22:39:16"/>
+    </day>
+    <day year="2010" month="02" day="04">
+        <crc-error time="05:44:50" application="bug-1885304.sh" choice="" database-crc="-542586022" real-crc="-1832443456"/>
+        <test-runs-today n="6" ok-n="3" fail-n="3" else-n="0" last-run="oll korrekt" last-time="22:28:01"/>
+    </day>
+    <day year="2010" month="02" day="05">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:31:39"/>
+    </day>
+    <day year="2010" month="02" day="07">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="22:06:20"/>
+    </day>
+    <day year="2010" month="02" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:07:19"/>
+    </day>
+    <day year="2010" month="02" day="09">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="07:08:49"/>
+    </day>
+    <day year="2010" month="02" day="10">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="23:18:56"/>
+    </day>
+    <day year="2010" month="02" day="11">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:37:36"/>
+    </day>
+    <day year="2010" month="02" day="13">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="11:36:13"/>
+    </day>
+    <day year="2010" month="02" day="14">
+        <crc-error time="21:40:22" application="bug-1885304.sh" choice="" database-crc="-772952781" real-crc="1822518084"/>
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="21:40:24"/>
+    </day>
+    <day year="2010" month="02" day="15">
+        <crc-error time="00:06:14" application="bug-2087087.sh" choice="" database-crc="-1226532902" real-crc="1298936639"/>
+        <test-runs-today n="9" ok-n="0" fail-n="9" else-n="0" last-run="failure" last-time="22:56:31"/>
+    </day>
+    <day year="2010" month="02" day="16">
+        <crc-error time="20:28:19" application="bug-1885304.sh" choice="" database-crc="1822518084" real-crc="1233430063"/>
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="20:30:19"/>
+    </day>
+    <day year="2010" month="02" day="19">
+        <crc-error time="22:09:15" application="bug-1885304.sh" choice="" database-crc="1233430063" real-crc="-962037126"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:09:48"/>
+    </day>
+    <day year="2010" month="02" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="19:32:38"/>
+    </day>
+    <day year="2010" month="03" day="02">
+        <crc-error time="21:19:09" application="bug-2004927.sh" choice="iconv" database-crc="1526844723" real-crc="-416551666"/>
+        <crc-error time="21:19:11" application="bug-2004927.sh" choice="icu" database-crc="1526844723" real-crc="-416551666"/>
+        <crc-error time="21:19:12" application="bug-2004927.sh" choice="codec" database-crc="1526844723" real-crc="-416551666"/>
+        <test-runs-today n="19" ok-n="9" fail-n="10" else-n="0" last-run="failure" last-time="21:31:57"/>
+    </day>
+    <day year="2010" month="03" day="04">
+        <crc-error time="06:59:29" application="feature-2078087.sh" choice="GOTO" database-crc="1035729243" real-crc="356593217"/>
+        <crc-error time="07:00:13" application="feature-2078087.sh" choice="GOTO-2" database-crc="687010895" real-crc="748508738"/>
+        <crc-error time="07:00:15" application="feature-2078087.sh" choice="GOSUB" database-crc="389993657" real-crc="1387546028"/>
+        <crc-error time="07:00:16" application="feature-2078087.sh" choice="GOSUB-2" database-crc="2077073256" real-crc="1451610864"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="07:00:38"/>
+        <crc-error time="17:48:37" application="bug-2277660.sh" choice="" database-crc="-933003058" real-crc="-389983954"/>
+        <crc-error time="17:49:18" application="bug-2796383.sh" choice="case-1" database-crc="708317951" real-crc="-1829622869"/>
+    </day>
+    <day year="2010" month="03" day="05">
+        <crc-error time="21:14:11" application="bug-2209142.sh" choice="error" database-crc="-135114151" real-crc="-345837213"/>
+        <crc-error time="21:14:13" application="bug-2209142.sh" choice="good" database-crc="124521232" real-crc="-16339222"/>
+    </day>
+    <day year="2010" month="03" day="06">
+        <crc-error time="21:09:23" application="bug-1885304.sh" choice="" database-crc="1904797574" real-crc="-363452848"/>
+        <crc-error time="21:09:25" application="bug-1889321.sh" choice="" database-crc="-1229420355" real-crc="-396174589"/>
+        <crc-error time="23:47:13" application="bug-2095970.sh" choice="Normal" database-crc="704590843" real-crc="294451224"/>
+        <crc-error time="23:47:23" application="bug-2095970.sh" choice="NormalNoAsserts" database-crc="941900985" real-crc="294451224"/>
+        <crc-error time="23:47:31" application="bug-2095970.sh" choice="NoModeDetection" database-crc="102998945" real-crc="1409311744"/>
+        <crc-error time="23:47:43" application="bug-2095970.sh" choice="NoModeDetectionNoAsserts" database-crc="-1569213271" real-crc="1409311744"/>
+        <crc-error time="23:47:54" application="bug-2095970.sh" choice="NoModeDetection_ErrorCase" database-crc="-412537409" real-crc="2147147637"/>
+        <crc-error time="23:56:08" application="feature-2078087.sh" choice="GOTO" database-crc="356593217" real-crc="519256649"/>
+    </day>
+    <day year="2010" month="03" day="07">
+        <crc-error time="12:40:50" application="bug-1885304.sh" choice="" database-crc="-363452848" real-crc="-2025237747"/>
+        <crc-error time="12:55:15" application="feature-2078087.sh" choice="GOTO" database-crc="519256649" real-crc="1024113534"/>
+        <crc-error time="12:55:24" application="feature-2078087.sh" choice="GOTO-2" database-crc="477178602" real-crc="1237404641"/>
+        <crc-error time="12:55:36" application="feature-2078087.sh" choice="GOSUB" database-crc="1387546028" real-crc="-432805994"/>
+        <crc-error time="12:55:52" application="feature-2078087.sh" choice="GOSUB-2" database-crc="1451610864" real-crc="539787465"/>
+        <crc-error time="13:37:38" application="bug-2161098.sh" choice="c_comments" database-crc="297957937" real-crc="1207500596"/>
+        <crc-error time="13:37:44" application="bug-2161098.sh" choice="shell_comments" database-crc="1465844714" real-crc="-1243350819"/>
+        <crc-error time="13:37:57" application="bug-2161098.sh" choice="funny_comments" database-crc="-1994449763" real-crc="1841865805"/>
+        <crc-error time="13:38:45" application="bug-2349109.sh" choice="newline-skipper" database-crc="694127258" real-crc="1823189381"/>
+        <crc-error time="13:38:51" application="bug-2349109.sh" choice="newline-skipper-utf8" database-crc="1738530804" real-crc="-2033201796"/>
+        <crc-error time="13:38:58" application="bug-2349109.sh" choice="non-newline-skipper" database-crc="1576730543" real-crc="-1392445156"/>
+    </day>
+    <day year="2010" month="03" day="13">
+        <crc-error time="11:11:15" application="bug-2161098.sh" choice="c_comments" database-crc="1207500596" real-crc="-1318920176"/>
+        <crc-error time="14:47:47" application="bug-2209142.sh" choice="error" database-crc="-345837213" real-crc="2100550299"/>
+        <crc-error time="14:57:52" application="bug-2209142.sh" choice="error" database-crc="2100550299" real-crc="-345837213"/>
+        <crc-error time="14:58:41" application="bug-2209142.sh" choice="error" database-crc="-345837213" real-crc="-329091836"/>
+        <crc-error time="14:59:00" application="bug-2209142.sh" choice="good" database-crc="-16339222" real-crc="-1387283693"/>
+        <crc-error time="15:05:37" application="bug-2349109.sh" choice="newline-skipper" database-crc="1823189381" real-crc="1020942195"/>
+        <crc-error time="15:06:44" application="bug-2349109.sh" choice="non-newline-skipper" database-crc="-1392445156" real-crc="-678107284"/>
+        <crc-error time="15:10:07" application="bug-2349109.sh" choice="newline-skipper-utf8" database-crc="-2033201796" real-crc="1170844959"/>
+        <crc-error time="15:21:38" application="feature-2078087.sh" choice="GOTO" database-crc="1024113534" real-crc="1277117499"/>
+        <crc-error time="15:21:55" application="feature-2078087.sh" choice="GOTO-2" database-crc="1237404641" real-crc="-379796549"/>
+        <crc-error time="15:22:18" application="bug-2161098.sh" choice="c_comments" database-crc="-924116793" real-crc="650655650"/>
+        <crc-error time="15:22:28" application="bug-2161098.sh" choice="shell_comments" database-crc="-802451363" real-crc="921117228"/>
+        <crc-error time="15:22:37" application="bug-2161098.sh" choice="funny_comments" database-crc="700817178" real-crc="1159308889"/>
+        <crc-error time="15:23:01" application="bug-2209142.sh" choice="error" database-crc="-329091836" real-crc="906739692"/>
+        <crc-error time="15:23:13" application="bug-2209142.sh" choice="good" database-crc="-1387283693" real-crc="-403344399"/>
+        <crc-error time="15:23:42" application="bug-2349109.sh" choice="newline-skipper" database-crc="-1984590273" real-crc="-2019518639"/>
+        <crc-error time="15:24:10" application="bug-2349109.sh" choice="newline-skipper-utf8" database-crc="1211240286" real-crc="1185823580"/>
+        <crc-error time="15:24:21" application="bug-2349109.sh" choice="non-newline-skipper" database-crc="1470005868" real-crc="-955676472"/>
+        <crc-error time="15:24:54" application="bug-2095970.sh" choice="Normal" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:25:09" application="bug-2095970.sh" choice="NormalNoAsserts" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:25:18" application="bug-2095970.sh" choice="NoModeDetection" database-crc="-435492385" real-crc="497399015"/>
+        <crc-error time="15:25:26" application="bug-2095970.sh" choice="NoModeDetectionNoAsserts" database-crc="-435492385" real-crc="497399015"/>
+        <crc-error time="15:26:28" application="bug-2095970-ntq.sh" choice="Normal" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:26:39" application="bug-2095970-ntq.sh" choice="NormalNoAsserts" database-crc="-1511001242" real-crc="-1188795240"/>
+        <crc-error time="15:27:07" application="bug-2095970-ntq.sh" choice="NoModeDetection" database-crc="1623301494" real-crc="-552687673"/>
+        <crc-error time="15:27:20" application="bug-2095970-ntq.sh" choice="NoModeDetectionNoAsserts" database-crc="1623301494" real-crc="-552687673"/>
+        <crc-error time="20:29:24" application="bug-2891125.sh" choice="" database-crc="1173379770" real-crc="-1922924063"/>
+    </day>
+    <day year="2010" month="03" day="14">
+        <crc-error time="05:32:50" application="bug-1892809.sh" choice="" database-crc="-301696769" real-crc="166552554"/>
+        <crc-error time="05:33:28" application="bug-2163753.sh" choice="" database-crc="-1856051308" real-crc="1958343215"/>
+    </day>
+    <day year="2010" month="03" day="20">
+        <crc-error time="07:12:19" application="feature-1948456.sh" choice="" database-crc="-798578584" real-crc="1624294961"/>
+        <crc-error time="07:13:04" application="bug-2894648.sh" choice="" database-crc="-265886163" real-crc="-930753240"/>
+        <crc-error time="07:13:35" application="bug-1885304.sh" choice="" database-crc="870543699" real-crc="149281387"/>
+    </day>
+    <day year="2010" month="03" day="25">
+        <crc-error time="20:24:07" application="feature-1948456.sh" choice="" database-crc="1624294961" real-crc="-1132816517"/>
+        <crc-error time="20:26:27" application="feature-2251359.sh" choice="good" database-crc="1014359874" real-crc="-1155322857"/>
+    </day>
+    <day year="2010" month="03" day="26">
+        <crc-error time="06:47:11" application="bug-1895066.sh" choice="" database-crc="1910298297" real-crc="-1540404576"/>
+        <crc-error time="06:47:40" application="bug-2799244.sh" choice="good-2" database-crc="569582961" real-crc="-581797415"/>
+    </day>
+    <day year="2010" month="06" day="01">
+        <crc-error time="03:31:03" application="bug-1885304.sh" choice="" database-crc="-1279697908" real-crc="31809231"/>
+        <crc-error time="04:39:42" application="bug-1885304.sh" choice="" database-crc="31809231" real-crc="872459379"/>
+        <crc-error time="05:14:47" application="bug-1885304.sh" choice="" database-crc="872459379" real-crc="-1111920313"/>
+    </day>
+    <day year="2010" month="06" day="06">
+        <crc-error time="06:04:55" application="bug-2619679.sh" choice="" database-crc="1996328833" real-crc="-1094321800"/>
+    </day>
+    <day year="2010" month="06" day="09">
+        <crc-error time="05:39:14" application="bug-1885304.sh" choice="" database-crc="627397946" real-crc="-581616474"/>
+    </day>
+    <day year="2010" month="06" day="13">
+        <crc-error time="14:23:30" application="bug-1885304.sh" choice="" database-crc="-581616474" real-crc="859398555"/>
+    </day>
+    <day year="2010" month="06" day="20">
+        <crc-error time="17:36:03" application="bug-1885304.sh" choice="" database-crc="1187110783" real-crc="316591336"/>
+    </day>
+    <day year="2010" month="06" day="26">
+        <crc-error time="05:27:20" application="feature-2251359.sh" choice="good" database-crc="-1155322857" real-crc="-811994155"/>
+        <crc-error time="05:28:15" application="feature-1948456.sh" choice="" database-crc="-1132816517" real-crc="1332949281"/>
+    </day>
+    <day year="2010" month="07" day="07">
+        <crc-error time="05:52:26" application="bug-3025173.sh" choice="" database-crc="164705510" real-crc="-504670646"/>
+    </day>
+    <day year="2010" month="07" day="08">
+        <crc-error time="03:17:23" application="bug-1908092.sh" choice="" database-crc="1449736643" real-crc="646967436"/>
+        <crc-error time="03:17:44" application="bug-1908092.sh" choice="" database-crc="646967436" real-crc="-950896971"/>
+    </day>
+    <day year="2010" month="07" day="13">
+        <crc-error time="04:12:37" application="bug-1895500.sh" choice="iconv" database-crc="-94562967" real-crc="-1482504339"/>
+        <crc-error time="04:34:35" application="bug-2799244.sh" choice="good-2" database-crc="-581797415" real-crc="-1916167"/>
+    </day>
+    <day year="2010" month="07" day="14">
+        <crc-error time="04:26:08" application="bug-1952133.sh" choice="29" database-crc="-1061142085" real-crc="125506198"/>
+        <crc-error time="04:26:11" application="bug-1952133.sh" choice="30" database-crc="-630736507" real-crc="125506198"/>
+        <crc-error time="04:26:19" application="bug-1952133.sh" choice="30" database-crc="125506198" real-crc="783389291"/>
+        <crc-error time="04:26:22" application="bug-1952133.sh" choice="127" database-crc="-1826490750" real-crc="125506198"/>
+        <crc-error time="04:26:29" application="bug-1952133.sh" choice="127" database-crc="125506198" real-crc="-817250260"/>
+        <crc-error time="04:26:33" application="bug-1952133.sh" choice="128" database-crc="2075811687" real-crc="125506198"/>
+        <crc-error time="04:26:40" application="bug-1952133.sh" choice="128" database-crc="125506198" real-crc="1133967653"/>
+        <crc-error time="04:26:43" application="bug-1952133.sh" choice="129" database-crc="-1301601134" real-crc="125506198"/>
+        <crc-error time="04:26:50" application="bug-1952133.sh" choice="129" database-crc="125506198" real-crc="-308434255"/>
+        <crc-error time="04:26:53" application="bug-1952133.sh" choice="2499" database-crc="1124787203" real-crc="125506198"/>
+        <crc-error time="04:26:59" application="bug-1952133.sh" choice="2499" database-crc="125506198" real-crc="1274987542"/>
+        <crc-error time="04:27:03" application="bug-1952133.sh" choice="2500" database-crc="-2119259764" real-crc="125506198"/>
+        <crc-error time="04:27:11" application="bug-1952133.sh" choice="2500" database-crc="125506198" real-crc="1457347780"/>
+        <crc-error time="04:27:15" application="bug-1952133.sh" choice="2501" database-crc="-122485437" real-crc="125506198"/>
+        <crc-error time="04:27:21" application="bug-1952133.sh" choice="2501" database-crc="125506198" real-crc="-120189104"/>
+        <crc-error time="04:27:25" application="bug-1952133.sh" choice="2502" database-crc="1939206162" real-crc="125506198"/>
+        <crc-error time="04:29:02" application="bug-1952133.sh" choice="2502" database-crc="125506198" real-crc="-776274515"/>
+        <crc-error time="04:51:45" application="bug-2819022.sh" choice="0" database-crc="924833233" real-crc="-1370866432"/>
+        <crc-error time="04:51:59" application="bug-2819022.sh" choice="1" database-crc="-687795300" real-crc="-1838097774"/>
+        <crc-error time="04:52:06" application="bug-2819022.sh" choice="2" database-crc="1923590724" real-crc="-1650840420"/>
+        <crc-error time="04:52:14" application="bug-2819022.sh" choice="3" database-crc="-556417700" real-crc="-845320683"/>
+    </day>
+    <day year="2010" month="08" day="01">
+        <crc-error time="06:38:30" application="bug-2937342.sh" choice="2" database-crc="-587067459" real-crc="-114712102"/>
+        <crc-error time="06:38:30" application="bug-2937342.sh" choice="4" database-crc="1529693976" real-crc="-1998612403"/>
+        <crc-error time="06:38:30" application="bug-2937342.sh" choice="5" database-crc="31004219" real-crc="436945311"/>
+        <crc-error time="06:40:04" application="bug-1898125.sh" choice="" database-crc="1414329022" real-crc="1289694907"/>
+        <crc-error time="06:41:50" application="bug-2891125.sh" choice="" database-crc="-1922924063" real-crc="-1877463517"/>
+        <crc-error time="06:50:00" application="bug-1887163.sh" choice="" database-crc="-1351534098" real-crc="1510346924"/>
+        <crc-error time="07:07:42" application="bug-1889086.sh" choice="" database-crc="-920743287" real-crc="1314140379"/>
+        <crc-error time="07:11:00" application="bug-1898125.sh" choice="" database-crc="1289694907" real-crc="934070554"/>
+        <crc-error time="10:46:49" application="feature-2251359.sh" choice="good" database-crc="-1499129362" real-crc="-63597415"/>
+        <crc-error time="10:47:15" application="feature-2251359.sh" choice="good" database-crc="-63597415" real-crc="-2123425497"/>
+        <crc-error time="10:47:48" application="feature-2251359.sh" choice="good" database-crc="-2123425497" real-crc="1519131440"/>
+        <crc-error time="11:00:03" application="feature-2251359.sh" choice="2" database-crc="167645209" real-crc="433983726"/>
+        <crc-error time="11:00:03" application="feature-2251359.sh" choice="3" database-crc="-1571764502" real-crc="-2070980201"/>
+        <crc-error time="11:00:03" application="feature-2251359.sh" choice="4" database-crc="-182585680" real-crc="-9379937"/>
+    </day>
+    <day year="2010" month="08" day="03">
+        <crc-error time="05:20:35" application="bug-2891125.sh" choice="" database-crc="-1877463517" real-crc="-855273899"/>
+    </day>
+    <day year="2010" month="08" day="08">
+        <crc-error time="19:07:26" application="bug-2001787.sh" choice="icu" database-crc="1067683007" real-crc="-1133373463"/>
+        <crc-error time="19:09:33" application="bug-2209142.sh" choice="error" database-crc="906739692" real-crc="-665310968"/>
+        <crc-error time="19:22:08" application="feature-2251359.sh" choice="5" database-crc="-1858167329" real-crc="-175903510"/>
+        <crc-error time="19:22:26" application="bug-2209142.sh" choice="good" database-crc="-403344399" real-crc="-952518389"/>
+    </day>
+    <day year="2010" month="08" day="15">
+        <crc-error time="15:42:00" application="bug-2599228.sh" choice="Developper" database-crc="-1779309284" real-crc="-1940706061"/>
+        <crc-error time="15:42:00" application="bug-2599228.sh" choice="FilesExist" database-crc="-1559136015" real-crc="-547514962"/>
+    </day>
+    <day year="2010" month="08" day="16">
+        <crc-error time="05:20:03" application="bug-3025852.sh" choice="" database-crc="-1116785470" real-crc="-1040657596"/>
+    </day>
+    <day year="2010" month="09" day="01">
+        <crc-error time="06:11:29" application="bug-2891125.sh" choice="" database-crc="-855273899" real-crc="-1428663242"/>
+    </day>
+    <day year="2010" month="09" day="14">
+        <crc-error time="10:38:43" application="bug-2599228.sh" choice="Developper" database-crc="-1940706061" real-crc="1553152748"/>
+        <crc-error time="10:38:43" application="bug-2599228.sh" choice="FilesExist" database-crc="-547514962" real-crc="-1280778560"/>
+        <crc-error time="10:39:27" application="bug-2161098.sh" choice="funny_comments" database-crc="1383126279" real-crc="1159308889"/>
+    </day>
+    <day year="2010" month="09" day="18">
+        <crc-error time="10:50:15" application="bug-2161098.sh" choice="funny_comments" database-crc="1159308889" real-crc="1621260951"/>
+    </day>
+    <day year="2010" month="09" day="22">
+        <crc-error time="10:29:27" application="feature-3038088.sh" choice="" database-crc="-1594241488" real-crc="9489325"/>
+        <crc-error time="10:29:34" application="feature-2251359.sh" choice="good" database-crc="1519131440" real-crc="978781837"/>
+        <crc-error time="10:29:48" application="bug-1885304.sh" choice="" database-crc="1701591519" real-crc="69624869"/>
+    </day>
+    <day year="2010" month="09" day="24">
+        <crc-error time="10:25:18" application="bug-1885304.sh" choice="" database-crc="-121682214" real-crc="1986578240"/>
+    </day>
+    <day year="2010" month="09" day="25">
+        <crc-error time="07:29:41" application="bug-1885304.sh" choice="" database-crc="1986578240" real-crc="1792779399"/>
+    </day>
+    <day year="2010" month="09" day="30">
+        <crc-error time="09:11:16" application="bug-2891125.sh" choice="" database-crc="-1428663242" real-crc="60301392"/>
+        <crc-error time="09:11:16" application="bug-1885304.sh" choice="" database-crc="1792779399" real-crc="-1305559504"/>
+    </day>
+    <day year="2010" month="10" day="05">
+        <crc-error time="10:19:46" application="bug-1889086.sh" choice="" database-crc="1314140379" real-crc="649471339"/>
+        <crc-error time="12:36:52" application="feature-3038088.sh" choice="" database-crc="1961261926" real-crc="2113850869"/>
+        <crc-error time="12:36:54" application="feature-2251359.sh" choice="good" database-crc="-1983961287" real-crc="1728033802"/>
+    </day>
+    <day year="2010" month="10" day="15">
+        <crc-error time="06:06:33" application="bug-1885304.sh" choice="" database-crc="-17089065" real-crc="-1790023316"/>
+    </day>
+    <day year="2010" month="10" day="17">
+        <crc-error time="07:55:33" application="bug-1885304.sh" choice="" database-crc="-1790023316" real-crc="928715419"/>
+    </day>
+    <day year="2010" month="10" day="18">
+        <crc-error time="07:30:58" application="bug-2161098.sh" choice="c_comments" database-crc="650655650" real-crc="1808645575"/>
+        <crc-error time="07:32:47" application="bug-2161098.sh" choice="shell_comments" database-crc="921117228" real-crc="1263467179"/>
+        <crc-error time="07:32:49" application="bug-2161098.sh" choice="funny_comments" database-crc="1621260951" real-crc="-1261259321"/>
+        <crc-error time="10:59:33" application="bug-2161098.sh" choice="c_comments" database-crc="1808645575" real-crc="-327096098"/>
+        <crc-error time="11:03:48" application="bug-2161098.sh" choice="c_comments" database-crc="-327096098" real-crc="-1308704859"/>
+        <crc-error time="12:22:13" application="bug-2161098-x.sh" choice="funny_comments" database-crc="-541386602" real-crc="497102226"/>
+    </day>
+    <day year="2010" month="10" day="25">
+        <crc-error time="06:53:48" application="feature-3032877.sh" choice="icu" database-crc="-66829373" real-crc="-1415051801"/>
+        <crc-error time="07:09:13" application="feature-3032877.sh" choice="normal" database-crc="-66829373" real-crc="-306000030"/>
+        <crc-error time="08:23:29" application="feature-3032877.sh" choice="normal" database-crc="-1170858530" real-crc="1770375190"/>
+        <crc-error time="08:23:31" application="feature-3032877.sh" choice="icu" database-crc="1724777837" real-crc="1387090489"/>
+        <crc-error time="08:23:32" application="feature-3032877.sh" choice="codec" database-crc="-593407909" real-crc="-1055496271"/>
+    </day>
+    <day year="2010" month="10" day="30">
+        <crc-error time="22:37:17" application="bug-2599228.sh" choice="Developper" database-crc="1553152748" real-crc="411530463"/>
+        <crc-error time="22:37:17" application="bug-2599228.sh" choice="FilesExist" database-crc="-1280778560" real-crc="1689946735"/>
+    </day>
+    <day year="2010" month="11" day="03">
+        <crc-error time="00:04:19" application="bug-2796383.sh" choice="case-1" database-crc="-1829622869" real-crc="-28827932"/>
+        <crc-error time="00:07:47" application="bug-2799244.sh" choice="good-2" database-crc="-1916167" real-crc="863943101"/>
+        <crc-error time="00:08:30" application="feature-3079986.sh" choice="nnn" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:08:31" application="feature-3079986.sh" choice="nnc" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:08:31" application="feature-3079986.sh" choice="ncc" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:08:32" application="feature-3079986.sh" choice="ccc" database-crc="157612946" real-crc="-1425824638"/>
+        <crc-error time="00:09:21" application="feature-3030640.sh" choice="PlainC" database-crc="826517308" real-crc="703520829"/>
+        <crc-error time="00:10:57" application="bug-2599228.sh" choice="Developper" database-crc="411530463" real-crc="1346908960"/>
+        <crc-error time="00:10:57" application="bug-2599228.sh" choice="FilesExist" database-crc="1689946735" real-crc="762666300"/>
+        <crc-error time="00:10:57" application="feature-1948456.sh" choice="" database-crc="1332949281" real-crc="-1132816517"/>
+    </day>
+    <day year="2010" month="11" day="04">
+        <crc-error time="23:11:42" application="bug-3102035.sh" choice="1" database-crc="-1130594875" real-crc="1013943797"/>
+        <crc-error time="23:11:59" application="bug-3102035.sh" choice="3" database-crc="1875743717" real-crc="1256498702"/>
+        <crc-error time="23:12:15" application="bug-3102035.sh" choice="1" database-crc="1013943797" real-crc="-1584378685"/>
+    </day>
+    <day year="2010" month="11" day="21">
+        <crc-error time="23:26:09" application="bug-3109479.sh" choice="1" database-crc="615650260" real-crc="691526119"/>
+        <crc-error time="23:26:09" application="bug-3109479.sh" choice="2" database-crc="-1166045509" real-crc="1298818167"/>
+    </day>
+    <day year="2010" month="11" day="22">
+        <crc-error time="00:21:26" application="bug-1895066.sh" choice="" database-crc="2122938420" real-crc="449735738"/>
+    </day>
+    <day year="2010" month="11" day="23">
+        <crc-error time="21:35:52" application="feature-2262537.sh" choice="" database-crc="1717643944" real-crc="-474418922"/>
+        <crc-error time="21:37:06" application="bug-3102035.sh" choice="2" database-crc="682537455" real-crc="-1474666640"/>
+        <crc-error time="21:37:07" application="bug-3109479.sh" choice="1" database-crc="691526119" real-crc="818163954"/>
+        <crc-error time="21:37:07" application="bug-3109479.sh" choice="2" database-crc="1298818167" real-crc="1783765944"/>
+    </day>
+    <day year="2010" month="11" day="24">
+        <crc-error time="21:34:01" application="bug-3102035.sh" choice="4" database-crc="512511567" real-crc="-2109073766"/>
+        <crc-error time="21:34:03" application="bug-3109479.sh" choice="3" database-crc="-503924490" real-crc="1097270163"/>
+        <crc-error time="21:34:04" application="bug-3109479.sh" choice="4" database-crc="-1166045509" real-crc="-1687333515"/>
+    </day>
+    <day year="2010" month="11" day="26">
+        <crc-error time="07:26:22" application="bug-3115741.sh" choice="undo-line-colum-count" database-crc="-230296806" real-crc="-415264187"/>
+        <crc-error time="07:26:44" application="bug-1895066.sh" choice="" database-crc="1579031102" real-crc="868616112"/>
+    </day>
+    <day year="2010" month="11" day="27">
+        <crc-error time="09:30:40" application="bug-3102035.sh" choice="1" database-crc="-1584378685" real-crc="273932922"/>
+        <crc-error time="09:30:41" application="bug-3102035.sh" choice="3" database-crc="1256498702" real-crc="962376534"/>
+    </day>
+    <day year="2010" month="12" day="15">
+        <crc-error time="20:11:03" application="bug-2891125.sh" choice="" database-crc="60301392" real-crc="-1497960207"/>
+    </day>
+    <day year="2010" month="12" day="18">
+        <crc-error time="21:13:46" application="bug-1885304.sh" choice="" database-crc="608142154" real-crc="-313847571"/>
+    </day>
+    <day year="2010" month="12" day="23">
+        <crc-error time="21:19:17" application="feature-2219383.sh" choice="" database-crc="776931317" real-crc="-2115980623"/>
+        <crc-error time="21:19:18" application="bug-1885304.sh" choice="" database-crc="-313847571" real-crc="1629538735"/>
+        <crc-error time="21:19:18" application="bug-1885855.sh" choice="" database-crc="-1985832794" real-crc="324817468"/>
+        <crc-error time="21:19:23" application="bug-2798423.sh" choice="" database-crc="1215339133" real-crc="-900694115"/>
+        <crc-error time="21:19:25" application="bug-2819022.sh" choice="0" database-crc="-1370866432" real-crc="1880288301"/>
+        <crc-error time="21:19:28" application="bug-2819022.sh" choice="1" database-crc="-1838097774" real-crc="-377643209"/>
+        <crc-error time="21:19:31" application="bug-2819022.sh" choice="2" database-crc="-1650840420" real-crc="905939572"/>
+        <crc-error time="21:19:33" application="bug-2819022.sh" choice="3" database-crc="-845320683" real-crc="172421666"/>
+    </day>
+    <day year="2010" month="12" day="25">
+        <crc-error time="12:10:23" application="feature-2219383.sh" choice="" database-crc="-2115980623" real-crc="1520609401"/>
+        <crc-error time="12:10:23" application="feature-3142578.sh" choice="" database-crc="-1163110788" real-crc="1152736058"/>
+        <crc-error time="12:10:24" application="bug-1885855.sh" choice="" database-crc="324817468" real-crc="-1417634922"/>
+        <crc-error time="12:10:26" application="bug-2798423.sh" choice="" database-crc="-900694115" real-crc="-160753900"/>
+        <crc-error time="12:10:28" application="bug-2819022.sh" choice="0" database-crc="1880288301" real-crc="-2092852096"/>
+        <crc-error time="12:10:30" application="bug-2819022.sh" choice="1" database-crc="-377643209" real-crc="-2134356076"/>
+        <crc-error time="12:10:31" application="bug-2819022.sh" choice="2" database-crc="905939572" real-crc="-1909022004"/>
+        <crc-error time="12:10:33" application="bug-2819022.sh" choice="3" database-crc="172421666" real-crc="1412739442"/>
+    </day>
+    <day year="2011" month="01" day="03">
+        <crc-error time="05:33:38" application="bug-1885304.sh" choice="" database-crc="1629538735" real-crc="-1733960342"/>
+        <crc-error time="05:33:52" application="bug-1936707.sh" choice="" database-crc="-2094704639" real-crc="-1386866744"/>
+    </day>
+    <day year="2011" month="01" day="14">
+        <crc-error time="22:46:37" application="bug-1889702.sh" choice="" database-crc="52687214" real-crc="263853875"/>
+    </day>
+    <day year="2011" month="01" day="19">
+        <crc-error time="21:05:18" application="bug-1885304.sh" choice="" database-crc="-1733960342" real-crc="1029675633"/>
+        <crc-error time="21:05:18" application="bug-1889692.sh" choice="" database-crc="1009222158" real-crc="-645088531"/>
+    </day>
+    <day year="2011" month="02" day="04">
+        <crc-error time="23:15:58" application="feature-3032877.sh" choice="icu" database-crc="1387090489" real-crc="-592549451"/>
+        <crc-error time="23:21:29" application="bug-2891125.sh" choice="" database-crc="-1497960207" real-crc="2006921105"/>
+    </day>
+    <day year="2011" month="02" day="06">
+        <crc-error time="07:01:43" application="feature-3032877.sh" choice="codec" database-crc="-1055496271" real-crc="2076431773"/>
+        <crc-error time="07:09:48" application="feature-2146712.sh" choice="Normal" database-crc="-1629670224" real-crc="-720821260"/>
+        <crc-error time="07:10:15" application="feature-2146712.sh" choice="NotExist" database-crc="-922288264" real-crc="-1000626739"/>
+        <crc-error time="07:10:33" application="feature-2146712.sh" choice="NoWrite" database-crc="-1078705625" real-crc="-1293346670"/>
+    </day>
+    <day year="2011" month="02" day="11">
+        <crc-error time="22:14:18" application="feature-3032877.sh" choice="icu" database-crc="-592549451" real-crc="1048199997"/>
+        <crc-error time="22:35:29" application="feature-1948456.sh" choice="" database-crc="-1132816517" real-crc="-1737686789"/>
+    </day>
+    <day year="2011" month="02" day="12">
+        <crc-error time="22:25:21" application="bug-2395200.sh" choice="lexer" database-crc="-54830250" real-crc="758028465"/>
+        <crc-error time="22:25:29" application="bug-1885304.sh" choice="" database-crc="642243735" real-crc="-876862191"/>
+    </day>
+    <day year="2011" month="02" day="20">
+        <crc-error time="20:17:28" application="bug-2163753.sh" choice="" database-crc="1958343215" real-crc="1900270082"/>
+    </day>
+    <day year="2011" month="02" day="26">
+        <crc-error time="08:03:04" application="feature-2078087.sh" choice="GOTO" database-crc="1277117499" real-crc="-1133265397"/>
+        <crc-error time="08:03:06" application="feature-2078087.sh" choice="GOTO-2" database-crc="-379796549" real-crc="684249566"/>
+        <crc-error time="08:03:08" application="feature-2078087.sh" choice="GOSUB" database-crc="-432805994" real-crc="-1411242081"/>
+        <crc-error time="08:03:10" application="feature-2078087.sh" choice="GOSUB-2" database-crc="539787465" real-crc="-1161120435"/>
+        <crc-error time="08:13:07" application="bug-2894648.sh" choice="" database-crc="-930753240" real-crc="561401439"/>
+    </day>
+    <day year="2011" month="03" day="15">
+        <crc-error time="21:21:55" application="feature-3079986.sh" choice="nnn" database-crc="-1425824638" real-crc="736777157"/>
+        <crc-error time="21:22:04" application="feature-3079986.sh" choice="nnc" database-crc="-1425824638" real-crc="736777157"/>
+        <crc-error time="21:22:05" application="feature-3079986.sh" choice="ncc" database-crc="-1425824638" real-crc="736777157"/>
+        <crc-error time="21:22:06" application="feature-3079986.sh" choice="ccc" database-crc="-1425824638" real-crc="736777157"/>
+    </day>
+    <day year="2011" month="03" day="16">
+        <crc-error time="06:25:06" application="bug-1885304.sh" choice="" database-crc="-876862191" real-crc="780847664"/>
+        <crc-error time="06:28:20" application="bug-1895066.sh" choice="" database-crc="610862543" real-crc="-1715157199"/>
+    </day>
+    <day year="2011" month="03" day="18">
+        <crc-error time="06:31:42" application="feature-2078087.sh" choice="GOTO" database-crc="-1133265397" real-crc="1854564033"/>
+        <crc-error time="06:38:29" application="bug-2395200.sh" choice="lexer" database-crc="758028465" real-crc="1749018048"/>
+        <crc-error time="06:39:22" application="bug-2395200.sh" choice="lexer" database-crc="1749018048" real-crc="-1289487908"/>
+    </day>
+    <day year="2011" month="03" day="24">
+        <crc-error time="01:27:36" application="bug-3178600.sh" choice="" database-crc="1342115051" real-crc="-1207199507"/>
+        <crc-error time="02:33:37" application="bug-1885304.sh" choice="" database-crc="709403249" real-crc="-557002180"/>
+    </day>
+</history>

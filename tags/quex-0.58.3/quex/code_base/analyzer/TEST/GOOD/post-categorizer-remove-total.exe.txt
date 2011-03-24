@@ -1,0 +1,5 @@
+        [EMPTY]
+        /
+[T]he only node: 77
+        \
+        [EMPTY]
