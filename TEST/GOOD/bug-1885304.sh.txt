@@ -2749,7 +2749,7 @@ _248:
     {
 
 #   line 27 "dos_lf_2.qx"
-self_write_token_p()->number = atoi((char*)Lexeme);
+self_write_token_p()->number = atoi((char*)(Lexeme));
 self_send(QUEX_TKN_NUMBER);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 

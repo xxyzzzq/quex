@@ -302,16 +302,22 @@ def __create_token_sender_by_token_name(fh, TokenName):
             if idx != -1:
                 if idx != 0 and value[idx-1] == "(":
                     pass
-                elif Setup.language.upper() != "C++":
-                    error_msg("Brief token sender contains member assignment of 'Lexeme' pointer.\n"
+                else:
+                    error_msg("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
                               "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
-                              "Proposals:\n"
-                              "   -- Surround 'Lexeme' by brackets, that is \"(Lexeme)\" to pretend\n"
-                              "      that you are aware of the danger.\n"
-                              "   -- Use token senders without named arguments, for example\n"
-                              "          \"QUEX_TKN_MINE(Lexeme+1, LexemeEnd-2)\"\n"
-                              "      These token senders create a copy of the lexeme and let the token\n"
-                              "      own it.", fh)
+                              "\n"
+                              "Proposals:\n\n"
+                              "   (1) Use '(Lexeme)', i.e. surround 'Lexeme' by brackets to indicate\n"
+                              "       that you are aware of the danger. Do this, if at the end of the\n"
+                              "       process, the member can be assumed to relate to an object that\n"
+                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
+                              "       true if the member is of type 'std::string'. Its constructor\n"
+                              "       creates a copy of the zero terminated string.\n\n"
+                              "   (2) Use token senders without named arguments, for example\n"
+                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
+                              "          \"%s(Lexeme)\"\n" % TokenName + 
+                              "       These token senders create a copy of the lexeme and let the token\n"
+                              "       own it.", fh)
 
             access = lexer_mode.token_type_definition.get_member_access(member_name)
             txt += "self_write_token_p()->%s = %s;\n" % (access, value.strip())

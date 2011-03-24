@@ -54,7 +54,7 @@ mode PROGRAM :
     ";"         => QUEX_TKN_SEMICOLON;
 
     [a-z]+      { self_send1(QUEX_TKN_IDENTIFIER, Lexeme); }
-    {P_NUMBER}  => QUEX_TKN_NUMBER(number=atoi((const char*)Lexeme));
+    {P_NUMBER}  => QUEX_TKN_NUMBER(number=atoi((const char*)(Lexeme)));
 
     [ \t\n]     { }
 

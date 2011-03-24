@@ -29,7 +29,7 @@ mode ONE_AND_ONLY
     ";"         => QUEX_TKN_SEMICOLON;
     "{"         => QUEX_TKN_BRACKET_OPEN;
     "}"         => QUEX_TKN_BRACKET_CLOSE;
-    [0-9]+      => QUEX_TKN_NUMBER(number=(size_t)atoi((char*)Lexeme));
+    [0-9]+      => QUEX_TKN_NUMBER(number=(size_t)atoi((char*)(Lexeme)));
     [_a-zA-Z]+  { self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; }
 }
 

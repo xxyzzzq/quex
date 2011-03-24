@@ -1,5 +1,140 @@
 """
-(1) Lexeme Pointer Required ___________________________________________________
+(C) 2011 Frank-Rene Schaefer
+
+Track Analysis
+==============
+
+The goal of track analysis is to profit from the static relations of 
+states inside the state machine, so that the run-time effort can be 
+reduced. At the end of the process, each state is decorated with a
+set of attributes that indicate how it is to be implemented as code.
+
+Consider simple state of a state machine
+
+       ( 1 )-- 'x' --> ...
+
+The implementation of the state has the following basic elements:
+
+       Input:           Access the input character.
+
+       SuccessorInfo:   [OPTIONAL] Store information to be used by successor states.
+
+       TransitionBlock: Transit on a character to specific successor state.
+
+       DropOut:         Handle the case that character does not trigger.
+
+The following discussion shows how these elements are configured. Consider
+the simple state machine:
+
+      ( 1 )-- 'a' -->( 2 )-- 'b' -->(( 3 ))
+                                          "ab"
+
+Is says that state 1 transits on 'a' to state 2. State 2 transits on 'b'
+to state 3. State 3 is an acceptance state that indicates that pattern "ab" 
+has been matched. This state machine can be implemented as follows:
+
+        State1:
+            /* Input */            input = *input_p;   
+            /* TransitionBlock */  if( input == 'a' ) goto State2;
+            /* DropOut */          goto Failure;
+
+        State2:
+            /* Input */            ++input_p;
+                                   input = *input_p;   
+            /* TransitionBlock */  if( input == 'b' ) goto State3;
+            /* DropOut */          goto Failure;
+
+        State2:
+            /* Input */            ++input_p;
+            /* DropOut */          goto Terminal('ab');
+
+The following rules can already be derived:
+
+    Input:   -- The init state does not increment the input_p,
+             -- All other states do.
+
+    DropOut: 
+             -- if no pattern ever matched the drop-out must be 'goto Failure'.
+
+             -- if the state is an acceptance state, then the drop-out must
+                be 'goto Terminal;' where 'Terminal' is the address of the 
+                action code that relates to the matching pattern.
+
+A somewhat more complicated state machine may be the following:
+
+    ( 1 )-- 'a' -->(( 2 ))-- 'b' -->( 3 )-- 'c' -->(( 4 ))
+                         "a"                             "abc"
+
+Here, state 2 looks different since it is an acceptance state and contains a
+transition on 'b' to state 3. However, with the above rules it still behaves
+as expected. If something different from 'b' arrives, then the input pointer
+stands on the position right after the matched character 'a' and we transit
+to the terminal of pattern "a". 
+
+State 3 is interesting. If no 'c' is detected then, still, pattern "a" 
+has matched already. So, state 3 can actually goto Terminal("a"), but
+the input position must be decreased by 1 so that it points directly
+behind the matched character "a". A new rule can be stated about the 
+DropOut:
+
+     DropOut: -- If a state itself is not an acceptance state, but there
+                 is some state before it is an acceptance state, then 
+                 
+                    -- set the input pointer back to the position 
+                       where the last acceptance state matched.
+                    -- goto the terminal of the last acceptance
+                       state.
+
+In the case above, the resetting of the input pointer is trivial. Now, 
+consider the state machine
+                                     'd'
+                                    ,---.
+                                    \   /
+    ( 1 )-- 'a' -->(( 2 ))-- 'b' -->( 3 )-- 'c' -->(( 4 ))
+                         "a"                             "abc"
+
+Now, an arbitrary number of 'd's may occur before state 3 drops out.
+This requires, that state 2 must store the acceptance position and 
+state 3 must reset the acceptance position from a variable. Two
+new rules:
+
+    SuccessorInfo: -- If there is a non-acceptance successor state 
+                      that is reached via a path of arbitrary length 
+                      (i.e. there is a loop somewhere), then the 
+                      acceptance position must be stored in a variable
+                      'last_acceptance_position'.
+
+    DropOut: -- For a non-acceptance state; If the path from the last 
+                acceptance state to this state is of arbitrary length, 
+                then the input position must be set to what 
+                'last_acceptance_position' indicated.
+
+An even more complicated case may be mentioned here:
+
+    ( 1 )-- 'a' -->(( 5 ))-- 'b' ---.
+       \                 "a|abc"     \
+        \                             \
+         `-- 'b' -->(( 2 ))-- 'b' -->( 3 )-- 'c' -->(( 4 ))
+                          "b"                             "a|abc"
+
+The pattern "a|abc" wins in state 5 and state 4. Pattern "b" wins
+in state 2. Now, it cannot be said upfront what pattern has matched
+if state 3 is reached. Thus, the acceptance state must store
+information about the acceptance:
+
+    SuccessorInfo: -- If there is a non-acceptance successor that
+                      can be reached from different acceptance states,
+                      then the state must store the information about
+                      the acceptance in a variable 'last_acceptance'.
+
+    DropOut: -- For non-acceptance state; If the state can be reached
+                by different acceptance states, or if there are 
+                preceding acceptance states and a path without acceptance,
+                then the terminal store in 'last_acceptance' must 
+                be entered.
+
+
+(1) lexeme_start_p Required ___________________________________________________
 
     The buffer reload can be more effective, if the lexeme is actually not
     important. In this analyzis, it is determined whether at the end

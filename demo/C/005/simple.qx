@@ -62,8 +62,8 @@ mode MAIN
         RETURN;
     }
 
-    "("         => QUEX_TKN_BRACKET_OPEN(text=LexemeNull);
-    ")"         => QUEX_TKN_BRACKET_CLOSE(text=LexemeNull);
+    "("         => QUEX_TKN_BRACKET_OPEN(LexemeNull);
+    ")"         => QUEX_TKN_BRACKET_CLOSE(LexemeNull);
     //
     "include"   { 
         self_send1(QUEX_TKN_INCLUDE, LexemeNull); 
