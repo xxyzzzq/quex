@@ -16,7 +16,7 @@ mode ONE : <skip: [ \t\n]>
     2      => GOTO(TWO,    TK_GOTO(Lexeme));
     3      => GOTO(THREE,  TK_GOTO(Lexeme));
     sub2   => GOSUB(TWO,   TK_GOSUB_TO_MODE(Lexeme));
-    sub3   => GOSUB(THREE, TK_GOSUB_TO_MODE(text=Lexeme));
+    sub3   => GOSUB(THREE, TK_GOSUB_TO_MODE(Lexeme));
     .      => TK_IGNORED(Lexeme);
 
     <<EOF>> => TK_TERMINATION(LexemeNull);
