@@ -15,13 +15,22 @@ Consider simple state of a state machine
 
 The implementation of the state has the following basic elements:
 
-       Input:           Access the input character.
+*-----------------------------------------------------------------------------*
 
-       SuccessorInfo:   [OPTIONAL] Store information to be used by successor states.
+   Input:           Access the input character.
 
-       TransitionBlock: Transit on a character to specific successor state.
+   SuccessorInfo:   [OPTIONAL] Store information to be used by successor states.
 
-       DropOut:         Handle the case that character does not trigger.
+   TransitionBlock: Transit on a character to specific successor state.
+
+   DropOut:         Handle the case that character does not trigger.
+
+*-----------------------------------------------------------------------------*
+
+_____________________
+                     |
+Acceptance Detection |__________________________________________________________
+---------------------'
 
 The following discussion shows how these elements are configured. Consider
 the simple state machine:
@@ -50,15 +59,19 @@ has been matched. This state machine can be implemented as follows:
 
 The following rules can already be derived:
 
-    Input:   -- The init state does not increment the input_p,
-             -- All other states do.
+*-----------------------------------------------------------------------------*
 
-    DropOut: 
-             -- if no pattern ever matched the drop-out must be 'goto Failure'.
+  Input:   -- The init state does not increment the input_p,
+           -- All other states do.
 
-             -- if the state is an acceptance state, then the drop-out must
-                be 'goto Terminal;' where 'Terminal' is the address of the 
-                action code that relates to the matching pattern.
+  DropOut: 
+           -- if no pattern ever matched the drop-out must be 'goto Failure'.
+
+           -- if the state is an acceptance state, then the drop-out must
+              be 'goto Terminal;' where 'Terminal' is the address of the 
+              action code that relates to the matching pattern.
+
+*-----------------------------------------------------------------------------*
 
 A somewhat more complicated state machine may be the following:
 
@@ -66,24 +79,27 @@ A somewhat more complicated state machine may be the following:
                          "a"                             "abc"
 
 Here, state 2 looks different since it is an acceptance state and contains a
-transition on 'b' to state 3. However, with the above rules it still behaves
-as expected. If something different from 'b' arrives, then the input pointer
-stands on the position right after the matched character 'a' and we transit
-to the terminal of pattern "a". 
+transition on 'b' to state 3. However, with the above rules it still behaves as
+expected. If something different from 'b' arrives, then the input pointer
+stands on the position right after the matched character 'a' and we transit to
+the terminal of pattern "a". 
 
-State 3 is interesting. If no 'c' is detected then, still, pattern "a" 
-has matched already. So, state 3 can actually goto Terminal("a"), but
-the input position must be decreased by 1 so that it points directly
-behind the matched character "a". A new rule can be stated about the 
-DropOut:
+State 3 is interesting. If no 'c' is detected then, still, pattern "a" has
+matched already. So, state 3 can actually goto Terminal("a"), but the input
+position must be decreased by 1 so that it points directly behind the matched
+character "a". A new rule can be stated about the DropOut:
 
-     DropOut: -- If a state itself is not an acceptance state, but there
-                 is some state before it is an acceptance state, then 
-                 
-                    -- set the input pointer back to the position 
-                       where the last acceptance state matched.
-                    -- goto the terminal of the last acceptance
-                       state.
+*-----------------------------------------------------------------------------*
+
+   DropOut: -- If a state itself is not an acceptance state, but there
+               is some state before it is an acceptance state, then 
+               
+                  -- set the input pointer back to the position 
+                     where the last acceptance state matched.
+                  -- goto the terminal of the last acceptance
+                     state.
+
+*-----------------------------------------------------------------------------*
 
 In the case above, the resetting of the input pointer is trivial. Now, 
 consider the state machine
@@ -93,21 +109,28 @@ consider the state machine
     ( 1 )-- 'a' -->(( 2 ))-- 'b' -->( 3 )-- 'c' -->(( 4 ))
                          "a"                             "abc"
 
-Now, an arbitrary number of 'd's may occur before state 3 drops out.
-This requires, that state 2 must store the acceptance position and 
-state 3 must reset the acceptance position from a variable. Two
-new rules:
+Now, an arbitrary number of 'd's may occur before state 3 drops out.  This
+requires, that state 2 must store the acceptance position and state 3 must
+reset the acceptance position from a variable. Two new rules:
 
-    SuccessorInfo: -- If there is a non-acceptance successor state 
-                      that is reached via a path of arbitrary length 
-                      (i.e. there is a loop somewhere), then the 
-                      acceptance position must be stored in a variable
-                      'last_acceptance_position'.
+*-----------------------------------------------------------------------------*
 
-    DropOut: -- For a non-acceptance state; If the path from the last 
-                acceptance state to this state is of arbitrary length, 
-                then the input position must be set to what 
-                'last_acceptance_position' indicated.
+  SuccessorInfo: -- If there is a non-acceptance successor state 
+                    that is reached via a path of arbitrary length 
+                    (i.e. there is a loop somewhere), then the 
+                    acceptance position must be stored in a variable
+                    'last_acceptance_position'.
+
+  DropOut: -- For a non-acceptance state; If the path from the last 
+              acceptance state to this state is of arbitrary length, 
+              then the input position must be set to what 
+              'last_acceptance_position' indicated.
+
+              The same is true, if the state can be reached by 
+              multiple acceptance states that have a different
+              distance to this state.
+
+*-----------------------------------------------------------------------------*
 
 An even more complicated case may be mentioned here:
 
@@ -117,10 +140,11 @@ An even more complicated case may be mentioned here:
          `-- 'b' -->(( 2 ))-- 'b' -->( 3 )-- 'c' -->(( 4 ))
                           "b"                             "a|abc"
 
-The pattern "a|abc" wins in state 5 and state 4. Pattern "b" wins
-in state 2. Now, it cannot be said upfront what pattern has matched
-if state 3 is reached. Thus, the acceptance state must store
-information about the acceptance:
+The pattern "a|abc" wins in state 5 and state 4. Pattern "b" wins in state 2.
+Now, it cannot be said upfront what pattern has matched if state 3 is reached.
+Thus, the acceptance state must store information about the acceptance:
+
+*-----------------------------------------------------------------------------*
 
     SuccessorInfo: -- If there is a non-acceptance successor that
                       can be reached from different acceptance states,
@@ -133,94 +157,112 @@ information about the acceptance:
                 then the terminal store in 'last_acceptance' must 
                 be entered.
 
+*-----------------------------------------------------------------------------*
 
-(1) lexeme_start_p Required ___________________________________________________
+_____________________
+                     |
+Pre-Contexts         |__________________________________________________________
+---------------------'
 
-    The buffer reload can be more effective, if the lexeme is actually not
-    important. In this analyzis, it is determined whether at the end
-    of subsequent transitions the lexeme is actually required or not.
+Note, that 'Acceptance' may be dependent on pre-contexts, that is the
+acceptance of a state generally is determine by a sequence of checks:
 
-    The TrackInfo object provides a member function
+    if     ( pre_context[...] ) acceptance X
+    else if( pre_context[...] ) acceptance Y
+    else                        acceptance Z
 
-        .necessary_to_maintain_lexeme(StateIndex)
+where X has higher priority than Y and Y has higher priority than Z. Z is the
+highest priority pattern without pre-context. All pre-context dependent
+acceptance states are neglected because they are dominated by Z. 
 
-    which returns 'True' in case that the lexeme has to be preserved, and 
-    'False' in case that the lexeme start pointer can be dropped upon reload.
+Pre-context flags, however, are constant as soon as the forward lexical
+analysis starts. Thus, the comparison of two acceptance chains is enough to
+judge whether the acceptance of two states is equivalent. Now, consider the
+state machine:
 
-(2) Acceptance Investigations _________________________________________________
+      ( 1 )-- 'a' -->( 2 )-- 'b' -->( 3 )-- 'c' -->(( 4 ))
+                                                         "xyz/abc/"
 
-Consider the patterns 
+which means that pattern "abc" must be preceded by pattern "xyz" in order to
+match. All successor acceptance states of state 1, though, depend on the
+pre-context "xyz". Thus, state 1 could actually drop-out immediately if the
+pre-context is not met. It is not necessary to transit through states 2, 3, and
+4 to find out finally, that pattern "xyz/abc/" fails because of the
+pre-context. A new rule can be defined
 
-             21    'a'
-             37    'abc'
+*-----------------------------------------------------------------------------*
 
-A state machine that is able to detect those two patterns is the following:
+   SuccessorInfo: -- If all successor acceptance states depend on 
+                     a certain pre-context flag being raised, then
+                     the first state on that path can drop-out 
+                     on the condition that the pre-context is not met.
 
-        (0)-- 'a' --> ((1))-- 'b' --> (2)-- 'c' --> ((3))
-                          21                            37
+*-----------------------------------------------------------------------------*
 
-where ((1)) is the acceptance state for pattern 21 ('a') and state ((3)) is the
-acceptance state for pattern 37 ('abc'). 
+_____________________
+                     |
+Post-Contexts        |__________________________________________________________
+---------------------'
 
-    Input:        'abd'
-    Transitions:  (0)-- 'a' .->((1))-- 'b' -->(2)- 'd' --> drop out
+Post contexts are patterns that must be present after the core pattern, but
+after the match the analysis continues at the end of the core pattern- not the
+complete post-contexted pattern. Example:
 
-But, pattern 21 ('a') has already matched. The state machine must keep track of
-the last acceptance state and the input position where it was achieved. Thus,
-it could store in state ((1))
 
-   last_acceptance          = 21;
-   last_acceptance_position = input_position;
+      ( 1 )-- 'a' -->( 2 )-- 'b' -->( 3 )-- ':' -->(( 4 ))
+                                      S("abc")           "abc/:"
 
-Then, in the drop-out of state (2) a 'goto last_acceptance' would
+That is pattern "ab" must be followed by ":". After the match, though, the
+analysis starts with ':' not with what comes after it. If a post-contexted
+patten is matched the position of the end of the core pattern must be 
+restored. Similar to the acceptance discussion about new rules can 
+be introduced:
 
-   input_position = last_acceptance_position;
-   ... route to 'last_acceptance terminal' ...
+*-----------------------------------------------------------------------------*
 
-However, in most cases it is not necessary to store the last acceptance
-position and last acceptance information in a variable at run time. In the
-above example, it is clear the state (2) is **only** entered by state ((1)) and
-thus the last acceptance is always 21. Also the input position is one position
-ahead of where '21' matched. Thus, the drop-out of state (2) could look like
+   SuccessorInfo: -- If the length of the path from the end-of-core-pattern
+                     to the final end-of-post context is arbitrary (due to
+                     loops), then the input position of the end-of-core
+                     pattern must be stored in a variable 'post_context_position[i]'.
 
-    input_position -= 1;
-    goto TERMINAL_21;
+   DropOut: -- If the match is the end of a post context, then 
+               the position of the core pattern needs to be restored.
 
-an nothing would have to be stored at the entry of state ((1)). This could save
-a significant amount of time. To support this, the TrackInfo object provides
-the member functions
+               -- If the distance to the end of the core pattern can be 
+                  determined statically, then the input position is decremented
+                  accordingly.
 
-    .all_successors_have_distinct_acceptance_on_drop_out(StateIndex)
+               -- Else, the input position must be set to what is indicated
+                  by variable 'post_context_position[i]'.
+               
+*-----------------------------------------------------------------------------*
 
-        True --> There are subsequent non-acceptance states where 
-                 the acceptance cannot be derived from its predecessors.
+Note, that it is not necessary to store what core pattern has matched, since
+the fact that it end of the core pattern has been reached testifies what
+core pattern is concerned. Further, if there are multiple post-context
+with the same core-patterns, then the 'post_context_position' can be shared.
+It is stored in exactly the same states.
 
-                 In this case, variables 'last_acceptance' and 
-                 'last_acceptance_position' **must** be used to 
-                 communicate the back-track requirements.
+_____________________
+                     |
+Lexeme Start Pointer |__________________________________________________________
+---------------------'
 
-        False --> Either there are no subsequent non-acceptance states,
-                  or each subsequent non-acceptance state is of determined
-                  acceptance in the sense of the exaplanation above.
+On reload, in general, the current lexeme must be maintained so that is 
+can be accessed in the pattern-action. However, if for a state it 
+can be determined that no successor acceptance state cares about the lexeme,
+then the lexeme start pointer can be set to the current input position. 
+This allows to quickly skip large 'comment' section that span regions that
+are even bigger than the current input buffer size. 
 
-                  Then, the acceptance state does not need to store 
-                  information about last acceptance and its position.
+A new rule concerning the reload behavior can be defined:
 
-        NOTE: This function is **only** to be called for acceptance states.
+    OnReload:
 
-    .acceptance_info_on_drop_out(StateIndex)
-
-        Returns: PatternID, BackStepN
-
-        PatternID --> identifier of the pattern that is the determined
-                      winner in case of drop-out in the given state.
-
-                      -1   --> definitively failure
-                      None --> the winner cannot be determined. It
-                               needs to be referred to last_acceptance.
-
-        BackStepN --> number of positions to step back in the input
-                      to the place where the acceptance occured.
+    -- If no successor acceptance state 'cares' about the lexeme and
+       a 'dont-care' acceptance state has been passed, then then reload
+       can set the lexeme_start_p to the current input position and 
+       reload the buffer from start.
 """
 from quex.input.setup import setup as Setup
 from copy import copy
