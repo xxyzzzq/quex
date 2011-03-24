@@ -9,10 +9,6 @@ states inside the state machine, so that the run-time effort can be
 reduced. At the end of the process, each state is decorated with a
 set of attributes that indicate how it is to be implemented as code.
 
-Consider simple state of a state machine
-
-       ( 1 )-- 'x' --> ...
-
 The implementation of the state has the following basic elements:
 
 *-----------------------------------------------------------------------------*
@@ -21,12 +17,24 @@ The implementation of the state has the following basic elements:
 
    SuccessorInfo:   [OPTIONAL] Store information to be used by successor states.
 
-   TransitionBlock: Transit on a character to specific successor state.
+   TriggerMap:      Transit on a character to specific successor state.
 
    DropOut:         Handle the case that character does not trigger.
 
 *-----------------------------------------------------------------------------*
 
+Accordingly, each state will be represented by a new 'state' consisting
+of four objects:
+
+    .input          <-- class Input
+    .successor_info <-- class SuccessorInfo
+    .trigger_map    <-- list of pairs (interval, target_state_index)
+    .drop_out       <-- class DropOut
+
+The following sections elaborate on the four sections and how they have
+to perform. The classes 'Input', 'SuccessorInfo' and 'DropOut' allow
+to access the information that resulted from the track analyzis. After
+reading the following, review their class interfaces.
 _____________________
                      |
 Acceptance Detection |__________________________________________________________
@@ -266,6 +274,42 @@ A new rule concerning the reload behavior can be defined:
 """
 from quex.input.setup import setup as Setup
 from copy import copy
+
+class Input:
+    def move_input_position(self):
+        """1    --> increment by one before dereferencing
+           -1   --> decrement by one before dereferencing
+           None --> neither increment nor decrement.
+        """
+        return self.__move_input_position
+
+class SuccessorInfo:
+    def store_acceptance_info(self):
+        pass
+
+    def store_acceptance_position(self):
+        pass
+
+    def store_post_context_position(self):
+        pass
+
+    def drop_out_on_non_pre_context(self):
+        pass
+
+class DropOut:
+    def move_input_position(self):
+        """Integer --> move input position forward/backward
+                       according to integer.
+           None    --> restore 'last_acceptance_position'.
+        """
+        pass
+
+    def goto_terminal(self):
+        """None          --> goto 'last_acceptance'.
+           AcceptanceObj --> ...
+        """
+        pass
+
 
 class AcceptanceCondition:
     def __init__(self, PatternID, PreContextID, PreContextBeginOfLineF):
