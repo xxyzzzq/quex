@@ -6,9 +6,9 @@ from   quex.exception                      import RegularExpressionException
 from   quex.core_engine.interval_handling  import NumberSet, Interval
 from   quex.core_engine.state_machine.core import StateMachine 
 import quex.lexer_mode                                              as lexer_mode
-import quex.core_engine.regular_expression.engine                   as regex
-import quex.core_engine.regular_expression.character_set_expression as charset_expression
-import quex.core_engine.regular_expression.snap_character_string    as snap_character_string
+import quex.input.regular_expression.engine                   as regex
+import quex.input.regular_expression.character_set_expression as charset_expression
+import quex.input.regular_expression.snap_character_string    as snap_character_string
 
 def parse(fh, AllowNothingIsFineF=False):
 

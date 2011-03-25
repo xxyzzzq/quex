@@ -21,7 +21,7 @@ import quex.core_engine.state_machine.nfa_to_dfa                 as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization      as hopcroft
 import quex.core_engine.state_machine.character_counter          as character_counter    
 from   quex.core_engine.state_machine.core                       import StateMachine, SideInfo
-import quex.core_engine.regular_expression.snap_character_string as snap_character_string
+import quex.input.regular_expression.snap_character_string as snap_character_string
 from   quex.input.setup                                          import setup as Setup
 import StringIO
 

@@ -14,7 +14,7 @@ from quex.frs_py.file_in                                            import get_f
                                                                            error_msg, \
                                                                            verify_word_in_list
 from quex.core_engine.interval_handling                             import Interval, NumberSet
-from quex.core_engine.regular_expression.snap_backslashed_character import __parse_hex_number
+from quex.input.regular_expression.snap_backslashed_character import __parse_hex_number
 
 __codec_list_db = []
 __supported_codec_list = []

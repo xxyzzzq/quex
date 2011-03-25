@@ -26,10 +26,10 @@
 #                 set_expression
 # 
 import quex.input.codec_db as codec_db
-import quex.core_engine.regular_expression.traditional_character_set as traditional_character_set
-import quex.core_engine.regular_expression.property                  as property
-import quex.core_engine.regular_expression.auxiliary                 as aux
-import quex.core_engine.regular_expression.case_fold_expression      as case_fold_expression
+import quex.input.regular_expression.traditional_character_set as traditional_character_set
+import quex.input.regular_expression.property                  as property
+import quex.input.regular_expression.auxiliary                 as aux
+import quex.input.regular_expression.case_fold_expression      as case_fold_expression
 #
 from quex.core_engine.state_machine.core import StateMachine
 from quex.core_engine.interval_handling  import Interval
@@ -39,7 +39,7 @@ from quex.frs_py.file_in                 import read_until_letter, \
                                                 skip_whitespace, \
                                                 verify_word_in_list, \
                                                 check
-from quex.core_engine.regular_expression.auxiliary import __snap_until, \
+from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
                                                           snap_replacement

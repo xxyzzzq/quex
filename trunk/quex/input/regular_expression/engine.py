@@ -35,7 +35,7 @@ from quex.frs_py.file_in  import *
 from quex.exception                      import RegularExpressionException
 from quex.core_engine.interval_handling  import *
 from quex.core_engine.state_machine.core import StateMachine
-from quex.core_engine.regular_expression.auxiliary import __snap_until, \
+from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
                                                           __debug_print, \
@@ -44,11 +44,11 @@ from quex.core_engine.regular_expression.auxiliary import __snap_until, \
 from   quex.input.setup                                       import setup as Setup
 from   quex.core_engine.state_machine.utf16_state_split       import ForbiddenRange
 import quex.core_engine.utf8                                  as utf8
-import quex.core_engine.regular_expression.character_set_expression   as character_set_expression
-import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
-import quex.core_engine.regular_expression.snap_character_string      as snap_character_string
-import quex.core_engine.regular_expression.case_fold_expression       as case_fold_expression
-import quex.core_engine.regular_expression.construct                  as construct
+import quex.input.regular_expression.character_set_expression   as character_set_expression
+import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
+import quex.input.regular_expression.snap_character_string      as snap_character_string
+import quex.input.regular_expression.case_fold_expression       as case_fold_expression
+import quex.input.regular_expression.construct                  as construct
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat

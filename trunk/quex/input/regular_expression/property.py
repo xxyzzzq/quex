@@ -2,7 +2,7 @@ from quex.input.ucs_db_parser    import ucs_property_db
 from quex.frs_py.file_in         import skip_whitespace
 from quex.exception              import RegularExpressionException
 
-from quex.core_engine.regular_expression.auxiliary import __snap_until 
+from quex.input.regular_expression.auxiliary import __snap_until 
 
 def do(stream):
     """Property expression: '\P{...}'
