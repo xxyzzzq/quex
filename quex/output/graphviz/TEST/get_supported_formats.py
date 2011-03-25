@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-import quex.input.query as query
+import quex.input.command_line.query as query
 import quex.output.graphviz.interface as plotter
 
 
