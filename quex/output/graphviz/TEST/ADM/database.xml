@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.67" date="Fri Mar 25 07:50:58 2011">
+<test-database execution-time-sec="0.67" date="Fri Mar 25 08:21:43 2011">
     <last-used-diff-display-program name=""/>
     <test title="Check supported formats." time-sum-sec="0.08"> 
         <application file-name="get_supported_formats.py" info-request-time="1301033108L" vanished="False"/>
@@ -19,10 +19,10 @@
                <choice name="" result="OK" time_sec="0.25" crc="8704193"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." time-sum-sec="0.20"> 
+        <test title="Pre-Context." time-sum-sec="0.19"> 
             <application file-name="plot-pre-context.py" info-request-time="1301034635L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.20" crc="-151252750"/>
+               <choice name="" result="OK" time_sec="0.19" crc="-151252750"/>
             </choice-list>
         </test>
     </group>
