@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.74" date="Fri Mar 25 21:51:27 2011">
+<test-database execution-time-sec="1.10" date="Fri Mar 25 23:32:21 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." time-sum-sec="0.09"> 
+    <test title="Check supported formats." time-sum-sec="0.38"> 
         <application file-name="get_supported_formats.py" info-request-time="1301033108L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.09" crc="1006187675"/>
+           <choice name="" result="OK" time_sec="0.38" crc="1006187675"/>
         </choice-list>
     </test>
     <group name="Plot">
@@ -13,10 +13,10 @@
                <choice name="" result="OK" time_sec="0.16" crc="1071426012"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.27"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.34"> 
             <application file-name="plot-papc.py" info-request-time="1301082528L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.27" crc="8704193"/>
+               <choice name="" result="OK" time_sec="0.34" crc="8704193"/>
             </choice-list>
         </test>
         <test title="Pre-Context." time-sum-sec="0.22"> 
