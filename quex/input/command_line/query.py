@@ -5,7 +5,7 @@ from StringIO import StringIO
 from quex.engine.misc.file_in       import error_msg
 from quex.engine.utf8     import map_unicode_to_utf8
 from quex.engine.interval_handling     import NumberSet, Interval
-from quex.engine.uncode_db.parser  import ucs_property_db
+from quex.engine.unicode_db.parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 
 from   quex.engine.misc.GetPot                        import GetPot

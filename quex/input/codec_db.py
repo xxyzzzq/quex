@@ -8,12 +8,12 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import codecs
 
-from quex.DEFINITIONS     import QUEX_PATH
-from quex.engine.misc.file_in                                            import get_file_content_or_die, \
-                                                                           open_file_or_die, \
-                                                                           error_msg, \
-                                                                           verify_word_in_list
-from quex.engine.interval_handling                             import Interval, NumberSet
+from quex.DEFINITIONS         import QUEX_PATH
+from quex.engine.misc.file_in import get_file_content_or_die, \
+                                     open_file_or_die, \
+                                     error_msg, \
+                                     verify_word_in_list
+from quex.engine.interval_handling                            import Interval, NumberSet
 from quex.input.regular_expression.snap_backslashed_character import __parse_hex_number
 
 __codec_list_db = []

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import os
 import sys
-from quex.frs_py.file_in import extract_identifiers_with_specific_prefix
+from quex.engine.misc.file_in import extract_identifiers_with_specific_prefix
 
 unique_option_db = {}
 dubious = {}
