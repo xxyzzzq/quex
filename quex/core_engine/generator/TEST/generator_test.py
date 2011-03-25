@@ -19,7 +19,7 @@ import quex.core_engine.generator.core                  as generator
 import quex.core_engine.generator.skipper.character_set as character_set_skipper
 import quex.core_engine.generator.skipper.range         as range_skipper
 import quex.core_engine.generator.skipper.nested_range  as nested_range_skipper
-import quex.core_engine.regular_expression.core         as regex
+import quex.input.regular_expression.engine         as regex
 #
 from   quex.input.setup import setup as Setup
 
