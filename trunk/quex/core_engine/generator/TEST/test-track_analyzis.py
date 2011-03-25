@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core_engine.regular_expression.core  as regex
+import quex.input.regular_expression.engine  as regex
 from   quex.core_engine.generator.base           import get_combined_state_machine
 from   quex.core_engine.generator.track_analyzis import TrackInfo
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
