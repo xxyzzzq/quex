@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.05" date="Thu Mar 24 02:49:07 2011">
+<test-database execution-time-sec="0.05" date="Fri Mar 25 07:44:54 2011">
     <last-used-diff-display-program name=""/>
     <test title="data/bocu1.txt" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="bom.exe" info-request-time="1300931346L" vanished="False"/>

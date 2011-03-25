@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.34" date="Thu Mar 24 02:55:01 2011">
+<test-database execution-time-sec="0.29" date="Fri Mar 25 07:50:44 2011">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
@@ -7,10 +7,10 @@
                <choice name="" result="OK" time_sec="0.03" crc="-957083127"/>
             </choice-list>
         </test>
-        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.04"> 
+        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.03"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
         <test title="Function delete_comment(...)" time-sum-sec="0.03"> 
@@ -21,15 +21,15 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.22"> 
+        <test title="read_integer(...)" time-sum-sec="0.18"> 
             <application file-name="test-read_integer.py" info-request-time="1297454632L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.03" crc="952788026"/>
                <choice name="octal" result="OK" time_sec="0.03" crc="1921488222"/>
                <choice name="decimal" result="OK" time_sec="0.03" crc="-1709956949"/>
                <choice name="binary" result="OK" time_sec="0.03" crc="245398371"/>
-               <choice name="roman" result="OK" time_sec="0.05" crc="832665557"/>
-               <choice name="misc" result="OK" time_sec="0.04" crc="731748549"/>
+               <choice name="roman" result="OK" time_sec="0.03" crc="832665557"/>
+               <choice name="misc" result="OK" time_sec="0.03" crc="731748549"/>
             </choice-list>
         </test>
     </group>

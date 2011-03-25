@@ -14,7 +14,7 @@ import quex.core_engine.generator.state_coder.indentation_counter as indentation
 from   quex.core_engine.generator.action_info   import PatternActionInfo, \
                                                        UserCodeFragment_straighten_open_line_pragmas, \
                                                        CodeFragment
-import quex.input.quex_file_parser              as quex_file_parser
+import quex.input.files.core                    as quex_file_parser
 import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.output.cpp.token_class_maker        as token_class_maker
 import quex.output.cpp.core                     as quex_class_out

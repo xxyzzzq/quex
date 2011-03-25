@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-import quex.input.query as query
+import quex.input.command_line.query as query
 import quex.output.graphviz.interface as plotter
-import quex.core_engine.regular_expression.core as regex
+import quex.input.regular_expression.engine as regex
 from   quex.core_engine.generator.action_info   import PatternActionInfo
 
 if "--hwut-info" in sys.argv:

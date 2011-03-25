@@ -10,7 +10,7 @@ import quex.lexer_mode                        as lexer_mode
 import quex.core_engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup                       import HEADER, HEADER_IMPLEMTATION
-from   quex.input.setup_parser                import __prepare_file_name
+from   quex.input.command_line.core           import __prepare_file_name
 
 
 def do():
