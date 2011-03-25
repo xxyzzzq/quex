@@ -34,7 +34,7 @@ import quex.input.regular_expression.case_fold_expression      as case_fold_expr
 from quex.engine.state_machine.core import StateMachine
 from quex.engine.interval_handling  import Interval
 from quex.exception                      import RegularExpressionException
-from quex.frs_py.file_in                 import read_until_letter, \
+from quex.engine.misc.file_in                 import read_until_letter, \
                                                 read_identifier, \
                                                 skip_whitespace, \
                                                 verify_word_in_list, \

@@ -1,4 +1,4 @@
-from   quex.frs_py.file_in                        import error_msg
+from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info     import PatternActionInfo
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.parallelize           as parallelize

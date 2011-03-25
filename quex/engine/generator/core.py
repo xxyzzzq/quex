@@ -11,7 +11,7 @@ import quex.engine.generator.state_machine_coder              as     state_machi
 from   quex.engine.generator.state_machine_decorator          import StateMachineDecorator
 import quex.engine.generator.state_router                     as     state_router
 from   quex.input.setup                                            import setup as Setup
-from   quex.frs_py.string_handling                                 import blue_print
+from   quex.engine.misc.string_handling                                 import blue_print
 from   copy                                                        import copy
 #
 from   quex.engine.generator.base                             import GeneratorBase

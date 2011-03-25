@@ -1,5 +1,5 @@
-from quex.frs_py.file_in         import is_identifier_start, is_identifier_continue
-from quex.frs_py.string_handling import blue_print
+from quex.engine.misc.file_in         import is_identifier_start, is_identifier_continue
+from quex.engine.misc.string_handling import blue_print
 
 import quex.engine.state_machine.index as index
 from quex.engine.generator.languages.address     import *

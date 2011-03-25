@@ -1,6 +1,6 @@
 import sys
 
-from   quex.frs_py.file_in import error_msg, verify_word_in_list
+from   quex.engine.misc.file_in import error_msg, verify_word_in_list
 import quex.lexer_mode     as     lexer_mode
 from   quex.engine.generator.action_info             import CodeFragment
 import quex.engine.state_machine.commonality_checker as     commonality_checker

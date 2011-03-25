@@ -1,4 +1,4 @@
-from   quex.frs_py.string_handling import blue_print
+from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
 from   quex.input.setup            import get_file_reference
 import quex.output.cpp.action_code_formatter    as action_code_formatter

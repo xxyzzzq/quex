@@ -1,5 +1,5 @@
 from copy import copy
-from quex.frs_py.string_handling import blue_print
+from quex.engine.misc.string_handling import blue_print
 db={}
 
 def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):

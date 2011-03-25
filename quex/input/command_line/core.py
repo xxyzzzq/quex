@@ -1,19 +1,16 @@
-from   quex.DEFINITIONS import *
-from   copy import copy, deepcopy
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   StringIO import StringIO
 
-from   quex.GetPot                 import GetPot
-from   quex.frs_py.file_in         import error_msg,                \
-                                          verify_word_in_list,      \
-                                          read_namespaced_name,     \
-                                          read_integer
-import quex.lexer_mode  as lexer_mode
+from   quex.engine.misc.GetPot    import GetPot
+from   quex.engine.misc.file_in   import error_msg,                \
+                                         verify_word_in_list,      \
+                                         read_namespaced_name,     \
+                                         read_integer
+import quex.lexer_mode                    as lexer_mode
 import quex.input.codec_db                as codec_db
 import quex.input.command_line.validation as validation
-from   quex.output.cpp.token_id_maker import parse_token_id_file
+from   quex.output.cpp.token_id_maker     import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG,    \
                                NEGATED_FLAG, DEPRECATED, HEADER, \
@@ -24,6 +21,10 @@ from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG,    \
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
 from   quex.engine.generator.action_info import CodeFragment
+
+from   quex.DEFINITIONS import *
+from   copy     import copy, deepcopy
+from   StringIO import StringIO
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 

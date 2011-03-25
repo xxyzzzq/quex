@@ -2,13 +2,13 @@ import sys
 
 from StringIO import StringIO
 
-from quex.frs_py.file_in       import error_msg
+from quex.engine.misc.file_in       import error_msg
 from quex.engine.utf8     import map_unicode_to_utf8
 from quex.engine.interval_handling     import NumberSet, Interval
 from quex.input.ucs_db_parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 
-from   quex.GetPot                        import GetPot
+from   quex.engine.misc.GetPot                        import GetPot
 import quex.input.codec_db                as codec_db
 import quex.input.regular_expression.core as regular_expression
 

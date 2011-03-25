@@ -1,11 +1,11 @@
 # (C) 2005-2010 Frank-Rene Schaefer
 # ABSOLUTELY NO WARANTY
 from   quex.DEFINITIONS                       import QUEX_PATH
-from   quex.frs_py.file_in                    import error_msg, \
+from   quex.engine.misc.file_in                    import error_msg, \
                                                      get_include_guard_extension, \
                                                      write_safely_and_close, open_file_or_die, \
                                                      make_safe_identifier
-from   quex.frs_py.string_handling            import blue_print
+from   quex.engine.misc.string_handling            import blue_print
 import quex.lexer_mode                        as lexer_mode
 import quex.engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup

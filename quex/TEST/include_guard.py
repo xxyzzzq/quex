@@ -3,7 +3,7 @@ import os
 import sys
 from   operator import attrgetter
 sys.path.append(os.environ["QUEX_PATH"])
-from quex.frs_py.file_in import skip_whitespace, get_current_line_info_number
+from quex.engine.misc.file_in import skip_whitespace, get_current_line_info_number
 
 class info:
     def __init__(self, FileName, LineN, Name):

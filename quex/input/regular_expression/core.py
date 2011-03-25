@@ -1,7 +1,7 @@
 from StringIO import StringIO
 from   quex.input.setup import setup as Setup
 
-from   quex.frs_py.file_in                 import EndOfStreamException, error_msg
+from   quex.engine.misc.file_in                 import EndOfStreamException, error_msg
 from   quex.exception                      import RegularExpressionException
 from   quex.engine.interval_handling  import NumberSet, Interval
 from   quex.engine.state_machine.core import StateMachine 

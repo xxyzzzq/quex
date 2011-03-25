@@ -1,4 +1,4 @@
-from   quex.frs_py.file_in import *
+from   quex.engine.misc.file_in import *
 import quex.lexer_mode     as     lexer_mode
 from   quex.output.cpp.token_id_maker         import TokenInfo
 from   quex.input.setup                       import setup as Setup

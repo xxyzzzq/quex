@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   StringIO            import StringIO
-from   quex.frs_py.file_in import read_integer
+from   quex.engine.misc.file_in import read_integer
 
 
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import sys
-from   quex.frs_py.file_in import error_msg
+from   quex.engine.misc.file_in import error_msg
 from   quex.engine.state_machine.core import *
 import quex.engine.state_machine.ambiguous_post_context as apc
 

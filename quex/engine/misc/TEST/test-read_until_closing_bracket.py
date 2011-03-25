@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.frs_py.file_in import read_until_closing_bracket
+from quex.engine.misc.file_in import read_until_closing_bracket
 from StringIO            import StringIO
 
 if "--hwut-info" in sys.argv:

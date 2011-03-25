@@ -1,5 +1,5 @@
 from quex.input.ucs_db_parser    import ucs_property_db
-from quex.frs_py.file_in         import skip_whitespace
+from quex.engine.misc.file_in         import skip_whitespace
 from quex.exception              import RegularExpressionException
 
 from quex.input.regular_expression.auxiliary import __snap_until 

@@ -9,7 +9,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 import codecs
 
 from quex.DEFINITIONS     import QUEX_PATH
-from quex.frs_py.file_in                                            import get_file_content_or_die, \
+from quex.engine.misc.file_in                                            import get_file_content_or_die, \
                                                                            open_file_or_die, \
                                                                            error_msg, \
                                                                            verify_word_in_list

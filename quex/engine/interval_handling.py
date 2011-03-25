@@ -16,7 +16,7 @@
 
 from copy import copy, deepcopy
 
-from   quex.frs_py.file_in                       import error_msg
+from   quex.engine.misc.file_in                       import error_msg
 # import quex.engine.generator.languages.core as languages
 import sys
 import quex.engine.utf8 as utf8
