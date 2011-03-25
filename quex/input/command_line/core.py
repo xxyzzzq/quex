@@ -11,8 +11,8 @@ from   quex.frs_py.file_in         import error_msg,                \
                                           read_namespaced_name,     \
                                           read_integer
 import quex.lexer_mode  as lexer_mode
-import quex.input.codec_db            as codec_db
-import quex.input.setup_validation    as validation
+import quex.input.codec_db                as codec_db
+import quex.input.command_line.validation as validation
 from   quex.output.cpp.token_id_maker import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG,    \
@@ -27,7 +27,7 @@ from   quex.core_engine.generator.action_info import CodeFragment
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
-       quex.input.token_type.py. Names and functions must remain
+       quex.input.files.token_type.py. Names and functions must remain
        as they are for compatibility.
     """
     def __init__(self, FileName, ClassName, NameSpace, ClassNameSafe, TokenIDType):

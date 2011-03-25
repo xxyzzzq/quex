@@ -10,7 +10,7 @@ quex.input.setup.setup.token_class_name_space = ""
 quex.input.setup.setup.token_class_name_safe = ""
 quex.input.setup.setup.token_class_name = "Token"
 
-from quex.input.token_type import *
+from quex.input.files.token_type import *
 from StringIO import StringIO
 
 

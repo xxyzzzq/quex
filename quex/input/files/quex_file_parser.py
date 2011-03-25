@@ -18,12 +18,12 @@
 from   quex.frs_py.file_in              import *
 from   quex.output.cpp.token_id_maker   import TokenInfo
 from   quex.exception                   import RegularExpressionException
-import quex.lexer_mode               as lexer_mode
-import quex.input.mode_definition    as mode_definition
-import quex.input.token_type         as token_type_definition
-import quex.input.regular_expression as regular_expression
-import quex.input.code_fragment      as code_fragment
-from   quex.input.setup             import setup as Setup
+import quex.lexer_mode                as lexer_mode
+import quex.input.files.mode          as mode
+import quex.input.files.token_type         as token_type
+import quex.input.files.code_fragment      as code_fragment
+import quex.input.regular_expression.core  as regular_expression
+from   quex.input.setup               import setup as Setup
 from   quex.core_engine.generator.action_info import UserCodeFragment
 
 def do(file_list):
@@ -166,7 +166,7 @@ def parse_section(fh):
                           fh)
        
             if lexer_mode.token_type_definition == None:
-                lexer_mode.token_type_definition = token_type_definition.parse(fh)
+                lexer_mode.token_type_definition = token_type.parse(fh)
                 return
 
             # Error case:
@@ -190,7 +190,7 @@ def parse_section(fh):
                 sub_fh.close()
                 default_token_type_definition_triggered_by_mode_definition_f = True
 
-            mode_definition.parse(fh)
+            mode.parse(fh)
             return
 
         else:

@@ -6,9 +6,9 @@ from StringIO import StringIO
 
 
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.input.indentation_setup as     indentation
-from   quex.core_engine.utf8        import map_unicode_to_utf8
-from   quex.frs_py.file_in          import EndOfStreamException, error_msg
+import quex.input.files.indentation_setup as indentation
+from   quex.core_engine.utf8              import map_unicode_to_utf8
+from   quex.frs_py.file_in                import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"
