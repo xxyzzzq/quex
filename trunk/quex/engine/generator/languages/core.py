@@ -15,7 +15,7 @@
 import quex.engine.generator.languages.cpp     as cpp
 import quex.engine.generator.languages.python  as python
 from   quex.engine.generator.languages.address import *
-from   quex.frs_py.string_handling import blue_print
+from   quex.engine.misc.string_handling import blue_print
 from   copy import deepcopy, copy
 
 #________________________________________________________________________________

@@ -1,4 +1,4 @@
-from   quex.frs_py.file_in                    import *
+from   quex.engine.misc.file_in                    import *
 from   quex.engine.generator.action_info import UserCodeFragment, CodeFragment
 import quex.input.files.code_fragment         as code_fragment
 from   quex.input.setup                       import setup as Setup

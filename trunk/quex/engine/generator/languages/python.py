@@ -1,4 +1,4 @@
-from quex.frs_py.string_handling import blue_print
+from quex.engine.misc.string_handling import blue_print
 from copy import copy
 from operator import itemgetter
 

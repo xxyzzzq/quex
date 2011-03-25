@@ -3,7 +3,7 @@ import quex.engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.engine.generator.languages.core              import get_address, get_label, Address
 
 from   quex.input.setup            import setup as Setup
-from   quex.frs_py.string_handling import blue_print
+from   quex.engine.misc.string_handling import blue_print
 
 LanguageDB = None
 

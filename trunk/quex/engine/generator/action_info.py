@@ -1,5 +1,5 @@
 import os
-from quex.frs_py.file_in import is_identifier_start, \
+from quex.engine.misc.file_in import is_identifier_start, \
                                 is_identifier_continue, \
                                 open_file_or_die, \
                                 write_safely_and_close

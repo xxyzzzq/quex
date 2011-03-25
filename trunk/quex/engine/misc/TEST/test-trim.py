@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.frs_py.string_handling import trim
+from quex.engine.misc.string_handling import trim
 
 if "--hwut-info" in sys.argv:
     print "String Handling: Trim (replaced by string.strip(..))"

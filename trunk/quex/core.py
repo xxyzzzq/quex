@@ -2,7 +2,7 @@ from copy import copy
 import os
 import sys
 
-from   quex.frs_py.file_in import error_msg, write_safely_and_close, open_file_or_die
+from   quex.engine.misc.file_in import error_msg, write_safely_and_close, open_file_or_die
 
 from   quex.input.setup                         import setup as Setup
 import quex.output.cpp.source_package           as source_package

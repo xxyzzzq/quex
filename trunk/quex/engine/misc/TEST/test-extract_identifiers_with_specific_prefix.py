@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.frs_py.file_in import extract_identifiers_with_specific_prefix
+from quex.engine.misc.file_in import extract_identifiers_with_specific_prefix
 
 if "--hwut-info" in sys.argv:
     print "File Input: Function extract_identifiers_with_specific_prefix(...)"

@@ -6,7 +6,7 @@ from StringIO import StringIO
 from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
-from quex.frs_py.string_handling import blue_print
+from quex.engine.misc.string_handling import blue_print
 from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #

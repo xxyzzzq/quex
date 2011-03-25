@@ -1,4 +1,4 @@
-from   quex.frs_py.string_handling                   import       blue_print
+from   quex.engine.misc.string_handling                   import       blue_print
 from   quex.input.setup                              import       setup as Setup
 import quex.engine.state_machine.index          as           sm_index
 import quex.engine.generator.state_coder.transition_block as transition_block

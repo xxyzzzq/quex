@@ -6,7 +6,7 @@ from   quex.engine.generator.languages.variable_db        import Variable
 from   quex.engine.generator.skipper.common               import *
 from   quex.engine.state_machine.transition_map           import TransitionMap 
 from   quex.input.setup                                        import setup as Setup
-from   quex.frs_py.string_handling                             import blue_print
+from   quex.engine.misc.string_handling                             import blue_print
 
 def do(Data):
     LanguageDB   = Setup.language_db

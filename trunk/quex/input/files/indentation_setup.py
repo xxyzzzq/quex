@@ -1,5 +1,5 @@
 
-from quex.frs_py.file_in import get_current_line_info_number, \
+from quex.engine.misc.file_in import get_current_line_info_number, \
                                 error_msg, \
                                 check, \
                                 skip_whitespace, \

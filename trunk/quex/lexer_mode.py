@@ -21,7 +21,7 @@ import sys
 import os
 
 from copy                import copy, deepcopy
-from quex.frs_py.file_in import error_msg, verify_word_in_list, get_current_line_info_number
+from quex.engine.misc.file_in import error_msg, verify_word_in_list, get_current_line_info_number
 from quex.engine.generator.action_info import *
 import quex.engine.state_machine.subset_checker   as subset_checker
 import quex.engine.state_machine.identity_checker as identity_checker

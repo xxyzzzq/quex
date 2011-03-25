@@ -5,7 +5,7 @@ from   quex.engine.generator.languages.variable_db import Variable
 import quex.output.cpp.action_code_formatter     as     action_code_formatter
 import quex.engine.utf8                     as     utf8
 from   quex.input.setup                          import setup as Setup
-from   quex.frs_py.string_handling               import blue_print
+from   quex.engine.misc.string_handling               import blue_print
 import quex.lexer_mode                           as     lexer_mode
 from   copy                                      import copy
 

@@ -1,4 +1,4 @@
-from   quex.frs_py.string_handling import blue_print
+from   quex.engine.misc.string_handling import blue_print
 #
 from   quex.engine.interval_handling        import NumberSet, Interval
 import quex.engine.state_machine.index      as     state_machine_index

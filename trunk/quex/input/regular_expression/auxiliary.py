@@ -1,4 +1,4 @@
-from quex.frs_py.file_in                 import *
+from quex.engine.misc.file_in                 import *
 from quex.exception                      import RegularExpressionException
 from quex.engine.state_machine.core import StateMachine
 

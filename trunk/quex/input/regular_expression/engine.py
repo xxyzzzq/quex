@@ -30,7 +30,7 @@
 import sys
 from StringIO import StringIO
 
-from quex.frs_py.file_in  import *
+from quex.engine.misc.file_in  import *
 
 from quex.exception                      import RegularExpressionException
 from quex.engine.interval_handling  import *

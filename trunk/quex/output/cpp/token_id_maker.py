@@ -4,9 +4,9 @@ import os
 import sys
 import re
 
-from quex.GetPot import GetPot
+from quex.engine.misc.GetPot import GetPot
 
-from quex.frs_py.file_in  import open_file_or_die, \
+from quex.engine.misc.file_in  import open_file_or_die, \
                                  write_safely_and_close, \
                                  delete_comment, \
                                  extract_identifiers_with_specific_prefix, \
@@ -15,7 +15,7 @@ from quex.frs_py.file_in  import open_file_or_die, \
 
 import quex.lexer_mode             as lexer_mode
 from   quex.lexer_mode             import token_id_db
-from   quex.frs_py.string_handling import blue_print
+from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
 from   quex.input.setup            import get_file_reference
 

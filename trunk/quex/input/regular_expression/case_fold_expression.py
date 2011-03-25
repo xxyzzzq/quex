@@ -1,4 +1,4 @@
-from   quex.frs_py.file_in                import check, error_msg, read_until_character, skip_whitespace
+from   quex.engine.misc.file_in                import check, error_msg, read_until_character, skip_whitespace
 from   quex.engine.interval_handling import Interval
 import quex.input.ucs_db_case_fold_parser as     ucs_case_fold
 
