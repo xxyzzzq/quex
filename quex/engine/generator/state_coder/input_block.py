@@ -1,5 +1,5 @@
 from quex.input.setup import setup as Setup
-from   quex.core_engine.generator.languages.address import get_label
+from   quex.engine.generator.languages.address import get_label
 
 def do(StateIdx, InitStateF, SMD):
     """Generate the code fragment that produce the 'input' character for

@@ -10,7 +10,7 @@ import os
 sys.path.append(os.environ["QUEX_PATH"])
 
 import quex.input.ucs_db_case_fold_parser as parser
-from   quex.core_engine.utf8              import map_unicode_to_utf8
+from   quex.engine.utf8              import map_unicode_to_utf8
 
 
 if "--hwut-info" in sys.argv:

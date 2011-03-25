@@ -16,18 +16,18 @@ import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.setup import setup                as Setup
-import quex.core_engine.generator.languages.core    as languages
-from   quex.core_engine.generator.languages.address import __label_db
+import quex.engine.generator.languages.core    as languages
+from   quex.engine.generator.languages.address import __label_db
 Setup.language_db = languages.db["Python"]
 
-from quex.core_engine.interval_handling     import NumberSet, Interval
-from quex.core_engine.state_machine.core    import State, StateMachine
-import quex.core_engine.state_machine.index as index
+from quex.engine.interval_handling     import NumberSet, Interval
+from quex.engine.state_machine.core    import State, StateMachine
+import quex.engine.state_machine.index as index
 
-import quex.core_engine.generator.languages.core               as languages
-import quex.core_engine.generator.languages.address            as address
-import quex.core_engine.generator.state_coder.transition_block as transition_block
-from   quex.core_engine.generator.state_machine_decorator      import StateMachineDecorator
+import quex.engine.generator.languages.core               as languages
+import quex.engine.generator.languages.address            as address
+import quex.engine.generator.state_coder.transition_block as transition_block
+from   quex.engine.generator.state_machine_decorator      import StateMachineDecorator
 
 address.init_address_handling({})
 

@@ -7,20 +7,20 @@ import quex.input.regular_expression.core as regular_expression
 import quex.input.files.code_fragment     as code_fragment
 import quex.input.files.indentation_setup as indentation_setup
 
-from   quex.core_engine.generator.action_info                     import GeneratedCode, UserCodeFragment
-from   quex.core_engine.generator.languages.address               import get_label
-import quex.core_engine.generator.skipper.character_set           as     skip_character_set
-import quex.core_engine.generator.skipper.range                   as     skip_range
-import quex.core_engine.generator.skipper.nested_range            as     skip_nested_range
-import quex.core_engine.generator.state_coder.indentation_counter as     indentation_counter
+from   quex.engine.generator.action_info                     import GeneratedCode, UserCodeFragment
+from   quex.engine.generator.languages.address               import get_label
+import quex.engine.generator.skipper.character_set           as     skip_character_set
+import quex.engine.generator.skipper.range                   as     skip_range
+import quex.engine.generator.skipper.nested_range            as     skip_nested_range
+import quex.engine.generator.state_coder.indentation_counter as     indentation_counter
 
-import quex.core_engine.state_machine.index                      as index
-import quex.core_engine.state_machine.sequentialize              as sequentialize
-import quex.core_engine.state_machine.repeat                     as repeat
-import quex.core_engine.state_machine.nfa_to_dfa                 as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization      as hopcroft
-import quex.core_engine.state_machine.character_counter          as character_counter    
-from   quex.core_engine.state_machine.core                       import StateMachine, SideInfo
+import quex.engine.state_machine.index                      as index
+import quex.engine.state_machine.sequentialize              as sequentialize
+import quex.engine.state_machine.repeat                     as repeat
+import quex.engine.state_machine.nfa_to_dfa                 as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization      as hopcroft
+import quex.engine.state_machine.character_counter          as character_counter    
+from   quex.engine.state_machine.core                       import StateMachine, SideInfo
 import quex.input.regular_expression.snap_character_string as snap_character_string
 from   quex.input.setup                                          import setup as Setup
 import StringIO

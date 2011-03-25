@@ -17,8 +17,8 @@
 #
 import sys
 
-from quex.core_engine.state_machine.core import *
-from quex.core_engine.interval_handling import *
+from quex.engine.state_machine.core import *
+from quex.engine.interval_handling import *
 
 # (*) set up some state machines
 #

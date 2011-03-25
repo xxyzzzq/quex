@@ -21,9 +21,9 @@ from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG,    \
                                global_extension_db,              \
                                global_character_type_db
 
-from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
+from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 
-from   quex.core_engine.generator.action_info import CodeFragment
+from   quex.engine.generator.action_info import CodeFragment
 
 class ManualTokenClassSetup:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 

@@ -6,8 +6,8 @@ from copy import deepcopy
 sys.path.append("../")
 sys.path.append("../../")
 
-import quex.core_engine.state_machine
-from quex.core_engine.state_machine.core import StateMachine
+import quex.engine.state_machine
+from quex.engine.state_machine.core import StateMachine
 
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.

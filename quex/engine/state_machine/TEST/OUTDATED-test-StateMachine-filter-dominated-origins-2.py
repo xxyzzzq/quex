@@ -5,9 +5,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.state_machine.index import get_state_machine_by_id, \
+from quex.engine.state_machine.index import get_state_machine_by_id, \
                                 state_machine_ranking_db_register
-from quex.core_engine.state_machine.core  import StateMachine, State, StateOriginInfo
+from quex.engine.state_machine.core  import StateMachine, State, StateOriginInfo
 
 if "--hwut-info" in sys.argv:
     print "Ranking of State Machines: Filter Dominated Origins - Part 2"

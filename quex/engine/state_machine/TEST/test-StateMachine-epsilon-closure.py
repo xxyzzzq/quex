@@ -4,8 +4,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-import quex.core_engine.state_machine.repeat as repeat 
-from   quex.core_engine.state_machine.TEST.test_state_machines import *
+import quex.engine.state_machine.repeat as repeat 
+from   quex.engine.state_machine.TEST.test_state_machines import *
 
 if "--hwut-info" in sys.argv:
     print "NFA: Epsilon closure (single state)"

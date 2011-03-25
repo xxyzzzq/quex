@@ -1,5 +1,5 @@
 from copy import deepcopy
-from quex.core_engine.state_machine.state_core_info import StateCoreInfo
+from quex.engine.state_machine.state_core_info import StateCoreInfo
 
 class StateOriginList:
     def __init__(self):

@@ -3,7 +3,7 @@ import sys
 import os
 from copy import deepcopy
 sys.path.append(os.environ["QUEX_PATH"])
-from quex.core_engine.interval_handling import Interval, NumberSet
+from quex.engine.interval_handling import Interval, NumberSet
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Massive Mutual Consistency Check"

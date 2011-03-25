@@ -9,9 +9,9 @@ import quex.output.cpp.source_package           as source_package
 import quex.lexer_mode                          as lexer_mode
 
 import quex.consistency_check                   as consistency_check
-import quex.core_engine.generator.core          as     generator
-import quex.core_engine.generator.state_coder.indentation_counter as indentation_counter
-from   quex.core_engine.generator.action_info   import PatternActionInfo, \
+import quex.engine.generator.core          as     generator
+import quex.engine.generator.state_coder.indentation_counter as indentation_counter
+from   quex.engine.generator.action_info   import PatternActionInfo, \
                                                        UserCodeFragment_straighten_open_line_pragmas, \
                                                        CodeFragment
 import quex.input.files.core                    as quex_file_parser
@@ -199,7 +199,7 @@ def __get_indentation_counter_terminal_index(PatterActionPairList):
     return None
 
 def get_generator_input(Mode, IndentationSupportF):
-    """The module 'quex.core_engine.generator.core' produces the code for the 
+    """The module 'quex.engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
        adapts the mode information to this format. Additional code is added 
 

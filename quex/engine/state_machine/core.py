@@ -1,10 +1,10 @@
 from   quex.frs_py.string_handling import blue_print
 #
-from   quex.core_engine.interval_handling        import NumberSet, Interval
-import quex.core_engine.state_machine.index      as     state_machine_index
-from   quex.core_engine.state_machine.transition_map  import *
-from   quex.core_engine.state_machine.state_core_info import StateCoreInfo
-from   quex.core_engine.state_machine.origin_list     import StateOriginList
+from   quex.engine.interval_handling        import NumberSet, Interval
+import quex.engine.state_machine.index      as     state_machine_index
+from   quex.engine.state_machine.transition_map  import *
+from   quex.engine.state_machine.state_core_info import StateCoreInfo
+from   quex.engine.state_machine.origin_list     import StateOriginList
 
 import sys
 from   copy import copy, deepcopy

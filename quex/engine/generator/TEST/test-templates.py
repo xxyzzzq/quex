@@ -2,14 +2,14 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-import quex.core_engine.state_machine.compression.templates as templates
-from   quex.core_engine.state_machine.core                  import StateMachine, State
-import quex.core_engine.generator.template_coder            as coder
-from   quex.core_engine.generator.languages.variable_db     import variable_db
-from   quex.core_engine.generator.languages.address         import get_plain_strings
-import quex.core_engine.generator.state_router              as state_router  
-import quex.core_engine.generator.languages.cpp             as cpp
-from   quex.core_engine.generator.state_machine_decorator   import StateMachineDecorator
+import quex.engine.state_machine.compression.templates as templates
+from   quex.engine.state_machine.core                  import StateMachine, State
+import quex.engine.generator.template_coder            as coder
+from   quex.engine.generator.languages.variable_db     import variable_db
+from   quex.engine.generator.languages.address         import get_plain_strings
+import quex.engine.generator.state_router              as state_router  
+import quex.engine.generator.languages.cpp             as cpp
+from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
 from   quex.input.setup import setup as Setup
 from   generator_test   import __Setup_init_language_database
 

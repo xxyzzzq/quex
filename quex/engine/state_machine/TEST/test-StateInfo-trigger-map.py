@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.state_machine.core import *
+from quex.engine.state_machine.core import *
 
 if "--hwut-info" in sys.argv:
     print "DFA: Get Trigger Map (intervals --> target states)"

@@ -1,6 +1,6 @@
-import quex.core_engine.state_machine.index as     state_machine_index
-from   quex.core_engine.state_machine.core  import StateMachine
-from   quex.core_engine.state_machine.index import map_state_combination_to_index
+import quex.engine.state_machine.index as     state_machine_index
+from   quex.engine.state_machine.core  import StateMachine
+from   quex.engine.state_machine.index import map_state_combination_to_index
 
 class StateSet_List:
     def __init__(self, StateMachine):

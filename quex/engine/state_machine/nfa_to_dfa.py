@@ -1,5 +1,5 @@
-from   quex.core_engine.state_machine.core  import StateMachine
-from   quex.core_engine.state_machine.index import map_state_combination_to_index
+from   quex.engine.state_machine.core  import StateMachine
+from   quex.engine.state_machine.index import map_state_combination_to_index
 
 def do(SM):
     """Creates a deterministic finite automaton (DFA) from the current state 

@@ -1,10 +1,10 @@
-import quex.core_engine.state_machine.index                    as     sm_index
-import quex.core_engine.generator.state_coder.transition_block as     transition_block
-import quex.core_engine.generator.state_coder.transition       as     transition
-from   quex.core_engine.generator.languages.address            import get_label
-from   quex.core_engine.generator.languages.variable_db        import Variable
-from   quex.core_engine.generator.skipper.common               import *
-from   quex.core_engine.state_machine.transition_map           import TransitionMap 
+import quex.engine.state_machine.index                    as     sm_index
+import quex.engine.generator.state_coder.transition_block as     transition_block
+import quex.engine.generator.state_coder.transition       as     transition
+from   quex.engine.generator.languages.address            import get_label
+from   quex.engine.generator.languages.variable_db        import Variable
+from   quex.engine.generator.skipper.common               import *
+from   quex.engine.state_machine.transition_map           import TransitionMap 
 from   quex.input.setup                                        import setup as Setup
 from   quex.frs_py.string_handling                             import blue_print
 

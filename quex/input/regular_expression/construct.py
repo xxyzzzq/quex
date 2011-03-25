@@ -1,12 +1,12 @@
-from   quex.core_engine.state_machine.core                    import SideInfo
-from   quex.core_engine.interval_handling                     import UnicodeInterval, Interval
-import quex.core_engine.state_machine.character_counter       as character_counter
-import quex.core_engine.state_machine.setup_post_context      as setup_post_context
-import quex.core_engine.state_machine.setup_pre_context       as setup_pre_context
-import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
+from   quex.engine.state_machine.core                    import SideInfo
+from   quex.engine.interval_handling                     import UnicodeInterval, Interval
+import quex.engine.state_machine.character_counter       as character_counter
+import quex.engine.state_machine.setup_post_context      as setup_post_context
+import quex.engine.state_machine.setup_pre_context       as setup_pre_context
+import quex.engine.state_machine.setup_border_conditions as setup_border_conditions
 #
-import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
+import quex.engine.state_machine.nfa_to_dfa              as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization   as hopcroft
 #
 from   quex.input.setup                                       import setup as Setup
 from   quex.frs_py.file_in  import *
@@ -40,7 +40,7 @@ def do(core_sm,
 
     # Detect the 'Nothing is Necessary' error in a pattern.
     # (*) 'Nothing is necessary' cannot be accepted. See the discussion in the 
-    #     module "quex.core_engine.generator.core.py"
+    #     module "quex.engine.generator.core.py"
     if not AllowNothingIsNecessaryF:
         post_context_f = (post_context != None)
         __detect_path_of_nothing_is_necessary(pre_context,  "pre context",  post_context_f, fh)

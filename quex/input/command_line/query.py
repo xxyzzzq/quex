@@ -3,8 +3,8 @@ import sys
 from StringIO import StringIO
 
 from quex.frs_py.file_in       import error_msg
-from quex.core_engine.utf8     import map_unicode_to_utf8
-from quex.core_engine.interval_handling     import NumberSet, Interval
+from quex.engine.utf8     import map_unicode_to_utf8
+from quex.engine.interval_handling     import NumberSet, Interval
 from quex.input.ucs_db_parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 

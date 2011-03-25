@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from   quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
+from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 from   quex.frs_py.file_in                       import get_propperly_slash_based_file_name
 from   quex.DEFINITIONS import QUEX_PATH
 

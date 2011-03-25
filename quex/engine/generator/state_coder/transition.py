@@ -1,5 +1,5 @@
 from quex.input.setup import setup as Setup
-from quex.core_engine.generator.languages.address import get_address, get_label, Address
+from quex.engine.generator.languages.address import get_address, get_label, Address
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db

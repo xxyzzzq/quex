@@ -5,7 +5,7 @@ from copy import deepcopy
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.core_engine.interval_handling import Interval, NumberSet
+from quex.engine.interval_handling import Interval, NumberSet
 
 A6 = None
 def do(Title, func, PlotF=True):

@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 from quex.frs_py.file_in             import error_msg
-from quex.core_engine.generator.base import GeneratorBase
+from quex.engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):
     def __init__(self, PatternActionPairList, StateMachineName, GraphicFormat):

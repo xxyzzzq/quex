@@ -4,10 +4,10 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from   quex.core_engine.state_machine.core import *
-import quex.core_engine.state_machine.repeat     as repeat 
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa 
-## import quex.core_engine.state_machine.hopcroft_minimization as hopcroft 
+from   quex.engine.state_machine.core import *
+import quex.engine.state_machine.repeat     as repeat 
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa 
+## import quex.engine.state_machine.hopcroft_minimization as hopcroft 
 import quex.input.regular_expression.engine  as core
 
 if "--hwut-info" in sys.argv:

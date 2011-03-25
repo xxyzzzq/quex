@@ -75,20 +75,20 @@
             ...
             }
 """
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.core_engine.generator.state_coder.core             as state_coder
-import quex.core_engine.generator.state_coder.transition       as transition
-import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
-import quex.core_engine.generator.state_coder.transition_block as transition_block
-import quex.core_engine.generator.state_coder.drop_out         as drop_out
-import quex.core_engine.generator.state_coder.input_block      as input_block
-from   quex.core_engine.generator.languages.address            import get_address, get_label, get_label_of_address
-from   quex.core_engine.generator.languages.variable_db        import variable_db
-import quex.core_engine.state_machine.index                    as index
-import quex.core_engine.state_machine.core                     as state_machine
+import quex.engine.generator.state_coder.core             as state_coder
+import quex.engine.generator.state_coder.transition       as transition
+import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
+import quex.engine.generator.state_coder.transition_block as transition_block
+import quex.engine.generator.state_coder.drop_out         as drop_out
+import quex.engine.generator.state_coder.input_block      as input_block
+from   quex.engine.generator.languages.address            import get_address, get_label, get_label_of_address
+from   quex.engine.generator.languages.variable_db        import variable_db
+import quex.engine.state_machine.index                    as index
+import quex.engine.state_machine.core                     as state_machine
 
-import quex.core_engine.state_machine.compression.templates as templates 
+import quex.engine.state_machine.compression.templates as templates 
 
 
 from copy import deepcopy
@@ -242,7 +242,7 @@ class TemplateTarget(transition_block.TriggerAction):
 class TransitionMapMimiker:
     """Class that mimiks the TransitionMap of module
 
-                   quex.core_engine.state_machine.transition_map 
+                   quex.engine.state_machine.transition_map 
                    
        The goal is to enable 'TemplateState' to act as a normal state
        responding to the member function .transitions().

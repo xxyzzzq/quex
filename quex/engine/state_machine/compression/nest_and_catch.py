@@ -87,7 +87,7 @@ CHECK_IDENTIFIER:
 
    _____________________________________________________________________________
 """
-from quex.core_engine.interval_handling            import NumberSet
+from quex.engine.interval_handling            import NumberSet
 
 from math import log
 

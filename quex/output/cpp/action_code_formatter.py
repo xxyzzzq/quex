@@ -1,5 +1,5 @@
-from   quex.core_engine.interval_handling     import NumberSet
-from   quex.core_engine.generator.action_info import *
+from   quex.engine.interval_handling     import NumberSet
+from   quex.engine.generator.action_info import *
 from   quex.input.setup                       import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 

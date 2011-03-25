@@ -7,7 +7,7 @@ from   quex.frs_py.file_in                    import error_msg, \
                                                      make_safe_identifier
 from   quex.frs_py.string_handling            import blue_print
 import quex.lexer_mode                        as lexer_mode
-import quex.core_engine.generator.action_info as action_info
+import quex.engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup                       import HEADER, HEADER_IMPLEMTATION
 from   quex.input.command_line.core           import __prepare_file_name

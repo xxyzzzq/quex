@@ -4,8 +4,8 @@ from   quex.output.cpp.token_id_maker         import TokenInfo
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup                       import QuexSetup
 from   quex.input.ucs_db_parser               import ucs_property_db
-from   quex.core_engine.utf8                  import __read_one_utf8_code_from_stream
-from   quex.core_engine.generator.action_info import *
+from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
+from   quex.engine.generator.action_info import *
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 

@@ -4,9 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from   quex.core_engine.interval_handling import *
-import quex.core_engine.state_machine.compression.templates as templates 
-from   quex.core_engine.state_machine.compression.TEST.templates_aux import *
+from   quex.engine.interval_handling import *
+import quex.engine.state_machine.compression.templates as templates 
+from   quex.engine.state_machine.compression.TEST.templates_aux import *
 
 
 if "--hwut-info" in sys.argv:

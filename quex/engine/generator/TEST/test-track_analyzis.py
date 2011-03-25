@@ -4,9 +4,9 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
-from   quex.core_engine.generator.base           import get_combined_state_machine
-from   quex.core_engine.generator.track_analyzis import TrackInfo
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+from   quex.engine.generator.base           import get_combined_state_machine
+from   quex.engine.generator.track_analyzis import TrackInfo
+from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 
 
 if "--hwut-info" in sys.argv:

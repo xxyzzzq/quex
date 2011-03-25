@@ -5,8 +5,8 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core_engine.utf8  as utf8
-import quex.core_engine.utf16 as utf16
+import quex.engine.utf8  as utf8
+import quex.engine.utf16 as utf16
 
 def byte_4_split(Value):
     return "".join(map(chr, [Value & 0xFF, (Value >> 8) & 0xFF, (Value >> 16) & 0xFF, Value >> 24]))

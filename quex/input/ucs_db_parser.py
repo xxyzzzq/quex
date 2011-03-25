@@ -7,7 +7,7 @@ from quex.DEFINITIONS            import QUEX_PATH
 from quex.frs_py.file_in         import *
 from quex.frs_py.string_handling import *
 
-from quex.core_engine.interval_handling import Interval, NumberSet
+from quex.engine.interval_handling import Interval, NumberSet
 
 import re
 import fnmatch

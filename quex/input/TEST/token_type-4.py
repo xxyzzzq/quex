@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.input.setup         
-import quex.core_engine.generator.languages.core as languages
+import quex.engine.generator.languages.core as languages
 
 quex.input.setup.setup.token_class_take_text_check_f = False
 quex.input.setup.setup.output_token_class_file = ""

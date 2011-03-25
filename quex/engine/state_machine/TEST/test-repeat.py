@@ -4,9 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.state_machine.core import *
-import quex.core_engine.state_machine.repeat as repeat 
-from quex.core_engine.state_machine.TEST.test_state_machines import *
+from quex.engine.state_machine.core import *
+import quex.engine.state_machine.repeat as repeat 
+from quex.engine.state_machine.TEST.test_state_machines import *
 
 if "--hwut-info" in sys.argv:
     print "StateMachine Operations: Repetition with min and max repetition numbers"

@@ -73,12 +73,12 @@ import codecs
 from copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.core_engine.utf8                     import utf8_to_unicode, unicode_to_utf8
-from   quex.core_engine.interval_handling        import Interval
-import quex.core_engine.state_machine            as     state_machine
-from   quex.core_engine.state_machine.core       import State
-import quex.core_engine.state_machine.nfa_to_dfa as     nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization as hopcroft_minimization
+from   quex.engine.utf8                     import utf8_to_unicode, unicode_to_utf8
+from   quex.engine.interval_handling        import Interval
+import quex.engine.state_machine            as     state_machine
+from   quex.engine.state_machine.core       import State
+import quex.engine.state_machine.nfa_to_dfa as     nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization as hopcroft_minimization
 
 utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
 

@@ -24,7 +24,7 @@ import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
 from   quex.input.setup               import setup as Setup
-from   quex.core_engine.generator.action_info import UserCodeFragment
+from   quex.engine.generator.action_info import UserCodeFragment
 
 def do(file_list):
     global mode_db
