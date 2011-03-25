@@ -1,6 +1,6 @@
 from   quex.frs_py.file_in                    import *
 from   quex.core_engine.generator.action_info import UserCodeFragment, CodeFragment
-import quex.input.code_fragment               as code_fragment
+import quex.input.files.code_fragment         as code_fragment
 from   quex.input.setup                       import setup as Setup
 
 token_type_code_fragment_db = { 

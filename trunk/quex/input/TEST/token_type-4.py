@@ -14,7 +14,7 @@ quex.input.setup.setup.language_db = languages.db["C++"]
 
 
 
-from quex.input.token_type import *
+from quex.input.files.token_type import *
 from StringIO import StringIO
 
 

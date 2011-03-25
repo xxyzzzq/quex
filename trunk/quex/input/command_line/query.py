@@ -8,9 +8,9 @@ from quex.core_engine.interval_handling     import NumberSet, Interval
 from quex.input.ucs_db_parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 
-from   quex.GetPot                   import GetPot
-import quex.input.codec_db           as codec_db
-import quex.input.regular_expression as regular_expression
+from   quex.GetPot                        import GetPot
+import quex.input.codec_db                as codec_db
+import quex.input.regular_expression.core as regular_expression
 
 from quex.input.setup import setup as Setup
 
