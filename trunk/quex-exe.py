@@ -38,7 +38,7 @@ except:
 #        error_msg("Unknown exception occured -- please, report a bug under\n" + \
 #                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
-from quex.frs_py.file_in  import error_msg
+from quex.engine.misc.file_in  import error_msg
 
 def on_exception(x, Txt):
     if "--debug-exception" in sys.argv: 

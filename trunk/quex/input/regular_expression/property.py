@@ -1,4 +1,4 @@
-from quex.engine.uncode_db.parser    import ucs_property_db
+from quex.engine.unicode_db.parser    import ucs_property_db
 from quex.engine.misc.file_in         import skip_whitespace
 from quex.exception              import RegularExpressionException
 

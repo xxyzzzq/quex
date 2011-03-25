@@ -3,7 +3,7 @@ import quex.lexer_mode     as     lexer_mode
 from   quex.output.cpp.token_id_maker         import TokenInfo
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup                       import QuexSetup
-from   quex.engine.uncode_db.parser               import ucs_property_db
+from   quex.engine.unicode_db.parser               import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.engine.generator.action_info import *
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
