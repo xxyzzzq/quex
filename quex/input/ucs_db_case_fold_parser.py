@@ -2,7 +2,7 @@
    as described in Unicode Standard Annex #21 "CASE MAPPINGS", Section 1.3.
 
 """
-import quex.input.ucs_db_parser           as     ucs_db_parser
+import quex.engine.uncode_db.parser           as     ucs_db_parser
 
 class DB:
     def __init__(self):
