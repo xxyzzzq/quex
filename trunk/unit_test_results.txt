@@ -1758,7 +1758,7 @@ quex/core_engine/generator/TEST
 ==========================================================================================
 Regular Expression Parsing
 Thu Mar 24 02:54:49 2011
-quex/core_engine/regular_expression/TEST
+quex.input.regular_expression/TEST
 ------------------------------------------------------------------------------------------
  -- Case Folding
         test-case_fold.py set .............................................[OK]

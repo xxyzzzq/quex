@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.17" date="Fri Mar 25 07:44:55 2011">
+<test-database execution-time-sec="0.19" date="Fri Mar 25 08:15:40 2011">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="accumulator.exe" info-request-time="1300931349L" vanished="False"/>
@@ -19,11 +19,11 @@
                <choice name="" result="OK" time_sec="0.01" crc="1161278526"/>
             </choice-list>
         </test>
-        <test title="Without Indentation Count" make-dependent="True" time-sum-sec="0.00"> 
+        <test title="Without Indentation Count" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="counter-column_line.exe" info-request-time="1300931350L" vanished="False"/>
             <make-procedure success="True" time_sec="0.618424"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="821766212"/>
+               <choice name="" result="OK" time_sec="0.01" crc="821766212"/>
             </choice-list>
         </test>
     </group>
@@ -88,7 +88,7 @@
                <choice name="Ab" result="OK" time_sec="0.00" crc="156350769"/>
                <choice name="Ad" result="OK" time_sec="0.00" crc="-615592824"/>
                <choice name="Af" result="OK" time_sec="0.00" crc="-271613736"/>
-               <choice name="Ah" result="OK" time_sec="0.00" crc="-639697045"/>
+               <choice name="Ah" result="OK" time_sec="0.01" crc="-639697045"/>
                <choice name="Bb" result="OK" time_sec="0.00" crc="-1397501183"/>
                <choice name="Bd" result="OK" time_sec="0.00" crc="1509696768"/>
                <choice name="Bf" result="OK" time_sec="0.00" crc="1062816794"/>
