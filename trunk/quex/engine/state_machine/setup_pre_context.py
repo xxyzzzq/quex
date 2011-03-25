@@ -4,9 +4,9 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from copy import deepcopy
 
-from   quex.core_engine.state_machine.core import *
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
+from   quex.engine.state_machine.core import *
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 def do(the_state_machine, pre_context_state_machine):
     """Sets up a pre-condition to the given state machine. This process

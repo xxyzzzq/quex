@@ -1,10 +1,10 @@
 from quex.frs_py.file_in         import is_identifier_start, is_identifier_continue
 from quex.frs_py.string_handling import blue_print
 
-import quex.core_engine.state_machine.index as index
-from quex.core_engine.generator.languages.address     import *
-from quex.core_engine.generator.languages.variable_db import variable_db
-from quex.core_engine.interval_handling               import NumberSet
+import quex.engine.state_machine.index as index
+from quex.engine.generator.languages.address     import *
+from quex.engine.generator.languages.variable_db import variable_db
+from quex.engine.interval_handling               import NumberSet
 from copy     import copy
 from operator import itemgetter
 #

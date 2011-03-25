@@ -22,12 +22,12 @@ import os
 
 from copy                import copy, deepcopy
 from quex.frs_py.file_in import error_msg, verify_word_in_list, get_current_line_info_number
-from quex.core_engine.generator.action_info import *
-import quex.core_engine.state_machine.subset_checker   as subset_checker
-import quex.core_engine.state_machine.identity_checker as identity_checker
-import quex.core_engine.state_machine.transformation   as transformation
-import quex.core_engine.state_machine.index            as index
-from   quex.core_engine.interval_handling              import Interval
+from quex.engine.generator.action_info import *
+import quex.engine.state_machine.subset_checker   as subset_checker
+import quex.engine.state_machine.identity_checker as identity_checker
+import quex.engine.state_machine.transformation   as transformation
+import quex.engine.state_machine.index            as index
+from   quex.engine.interval_handling              import Interval
 
 # ModeDescription/Mode Objects:
 #

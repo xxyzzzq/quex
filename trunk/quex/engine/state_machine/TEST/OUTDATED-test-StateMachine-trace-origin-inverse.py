@@ -4,11 +4,11 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.state_machine.core import *
-import quex.core_engine.state_machine.parallelize as parallelize 
-from quex.core_engine.state_machine.TEST.test_state_machines import *
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
+from quex.engine.state_machine.core import *
+import quex.engine.state_machine.parallelize as parallelize 
+from quex.engine.state_machine.TEST.test_state_machines import *
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: Inverse"

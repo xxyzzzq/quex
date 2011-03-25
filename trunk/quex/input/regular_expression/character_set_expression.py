@@ -31,8 +31,8 @@ import quex.input.regular_expression.property                  as property
 import quex.input.regular_expression.auxiliary                 as aux
 import quex.input.regular_expression.case_fold_expression      as case_fold_expression
 #
-from quex.core_engine.state_machine.core import StateMachine
-from quex.core_engine.interval_handling  import Interval
+from quex.engine.state_machine.core import StateMachine
+from quex.engine.interval_handling  import Interval
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.file_in                 import read_until_letter, \
                                                 read_identifier, \

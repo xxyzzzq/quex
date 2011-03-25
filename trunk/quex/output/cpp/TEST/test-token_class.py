@@ -5,7 +5,7 @@ from StringIO import StringIO
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.cpp.token_class_maker         as token_class
 import quex.input.files.token_type               as parser
-import quex.core_engine.generator.languages.core as languages
+import quex.engine.generator.languages.core as languages
 import quex.input.setup         
 
 quex.input.setup.setup.buffer_element_size     = 1

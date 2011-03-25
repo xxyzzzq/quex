@@ -1,6 +1,6 @@
 from quex.frs_py.file_in                 import *
 from quex.exception                      import RegularExpressionException
-from quex.core_engine.state_machine.core import StateMachine
+from quex.engine.state_machine.core import StateMachine
 
 __debug_recursion_depth  = -1
 __debug_output_enabled_f = False # True / False 

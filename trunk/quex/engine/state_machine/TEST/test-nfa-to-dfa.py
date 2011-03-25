@@ -4,10 +4,10 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from   quex.core_engine.state_machine.TEST.test_state_machines import sm3
-from   quex.core_engine.state_machine.core       import *
-import quex.core_engine.state_machine.repeat     as repeat
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+from   quex.engine.state_machine.TEST.test_state_machines import sm3
+from   quex.engine.state_machine.core       import *
+import quex.engine.state_machine.repeat     as repeat
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 if "--hwut-info" in sys.argv:
     print "NFA: Conversion to DFA (subset construction)"

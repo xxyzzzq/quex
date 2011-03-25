@@ -75,22 +75,22 @@
             ...
             }
 """
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.core_engine.generator.state_coder.core             as state_coder
-import quex.core_engine.generator.state_coder.transition       as transition
-import quex.core_engine.generator.state_coder.input_block      as input_block
-import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
-import quex.core_engine.generator.state_coder.transition_block as transition_block
-import quex.core_engine.generator.state_coder.drop_out         as drop_out
-import quex.core_engine.generator.template_coder               as template_coder
-from   quex.core_engine.generator.languages.address            import Address, get_label, get_address, get_label_of_address
-from   quex.core_engine.generator.languages.variable_db        import variable_db
-import quex.core_engine.state_machine.index                    as index
-import quex.core_engine.state_machine.core                     as state_machine
-import quex.core_engine.state_machine.compression.paths        as paths 
-from   quex.core_engine.interval_handling                      import Interval
-import quex.core_engine.utf8                                   as utf8  
+import quex.engine.generator.state_coder.core             as state_coder
+import quex.engine.generator.state_coder.transition       as transition
+import quex.engine.generator.state_coder.input_block      as input_block
+import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
+import quex.engine.generator.state_coder.transition_block as transition_block
+import quex.engine.generator.state_coder.drop_out         as drop_out
+import quex.engine.generator.template_coder               as template_coder
+from   quex.engine.generator.languages.address            import Address, get_label, get_address, get_label_of_address
+from   quex.engine.generator.languages.variable_db        import variable_db
+import quex.engine.state_machine.index                    as index
+import quex.engine.state_machine.core                     as state_machine
+import quex.engine.state_machine.compression.paths        as paths 
+from   quex.engine.interval_handling                      import Interval
+import quex.engine.utf8                                   as utf8  
 
 from   quex.input.setup import setup as Setup
 

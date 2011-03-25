@@ -1,4 +1,4 @@
-import quex.core_engine.state_machine.compression.templates as templates 
+import quex.engine.state_machine.compression.templates as templates 
 
 def get_combination(TriggerMap, StateList):
     """Creates A Template Combination Object for the given Trigger Map

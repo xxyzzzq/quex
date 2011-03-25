@@ -80,7 +80,7 @@
    loss.
 
 """
-from quex.core_engine.interval_handling import NumberSet, Interval
+from quex.engine.interval_handling import NumberSet, Interval
 from copy                               import deepcopy, copy
 
 

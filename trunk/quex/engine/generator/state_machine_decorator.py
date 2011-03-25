@@ -1,6 +1,6 @@
 from copy import deepcopy
-import quex.core_engine.state_machine.dead_end_analyzis as dead_end_analyzis
-import quex.core_engine.generator.languages.address     as address 
+import quex.engine.state_machine.dead_end_analyzis as dead_end_analyzis
+import quex.engine.generator.languages.address     as address 
 
 class StateMachineDecorator:
     def __init__(self, SM, Name, PostContextSM_ID_List, 

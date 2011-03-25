@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.core_engine.state_machine.core import *
+from quex.engine.state_machine.core import *
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Replace Drop-Out with Adjacent Target"

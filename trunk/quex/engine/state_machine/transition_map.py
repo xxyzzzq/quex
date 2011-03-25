@@ -1,6 +1,6 @@
 # import array
 
-from   quex.core_engine.interval_handling import NumberSet, Interval
+from   quex.engine.interval_handling import NumberSet, Interval
 from   quex.frs_py.file_in                import error_msg
 
 from   copy import deepcopy

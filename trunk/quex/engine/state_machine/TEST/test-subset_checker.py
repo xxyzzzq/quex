@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine      as regex
-import quex.core_engine.state_machine.subset_checker as subset_checker
+import quex.engine.state_machine.subset_checker as subset_checker
 
 if "--hwut-info" in sys.argv:
     print "Pattern Subset Determination"

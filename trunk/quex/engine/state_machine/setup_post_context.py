@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 import sys
 from   quex.frs_py.file_in import error_msg
-from   quex.core_engine.state_machine.core import *
-import quex.core_engine.state_machine.ambiguous_post_context as apc
+from   quex.engine.state_machine.core import *
+import quex.engine.state_machine.ambiguous_post_context as apc
 
 
 def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False, fh=-1):

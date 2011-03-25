@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine as core
-import quex.core_engine.state_machine.character_counter as counter
+import quex.engine.state_machine.character_counter as counter
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters since Newline"

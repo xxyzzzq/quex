@@ -1,4 +1,4 @@
-from quex.core_engine.interval_handling import Interval, NumberSet
+from quex.engine.interval_handling import Interval, NumberSet
 
 # Distance Database: Store the distance from state (given by index)
 #                    to the acceptance state, i.e. map:

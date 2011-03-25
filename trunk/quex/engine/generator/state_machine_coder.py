@@ -1,13 +1,13 @@
 from copy import deepcopy
 
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.core_engine.generator.languages.core         as languages
-import quex.core_engine.generator.languages.address      as address
-import quex.core_engine.generator.state_coder.core       as state_coder
-import quex.core_engine.generator.state_coder.transition as transition
-import quex.core_engine.generator.template_coder         as template_coder
-import quex.core_engine.generator.paths_coder            as paths_coder
+import quex.engine.generator.languages.core         as languages
+import quex.engine.generator.languages.address      as address
+import quex.engine.generator.state_coder.core       as state_coder
+import quex.engine.generator.state_coder.transition as transition
+import quex.engine.generator.template_coder         as template_coder
+import quex.engine.generator.paths_coder            as paths_coder
 from   quex.input.setup                                  import setup as Setup
 
 def do(SMD, TemplateHasBeenCodedBeforeF=False):

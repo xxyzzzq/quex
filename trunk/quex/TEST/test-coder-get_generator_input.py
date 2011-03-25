@@ -7,9 +7,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.setup
 import quex.core                                as coder
 import quex.input.regular_expression.engine as regex
-import quex.core_engine.generator.core          as generator
+import quex.engine.generator.core          as generator
 from   quex.lexer_mode                          import ModeDescription, Mode
-from   quex.core_engine.generator.action_info   import CodeFragment
+from   quex.engine.generator.action_info   import CodeFragment
 
 
 if "--hwut-info" in sys.argv:

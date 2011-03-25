@@ -5,7 +5,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.state_machine.index import *
+from quex.engine.state_machine.index import *
 
 if "--hwut-info" in sys.argv:
     print "Ranking of state machines: Pattern priorization"

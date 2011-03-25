@@ -10,8 +10,8 @@ from quex.frs_py.file_in import get_current_line_info_number, \
                                 read_integer
 
 from   quex.lexer_mode                     import LocalizedParameter
-from   quex.core_engine.interval_handling  import NumberSet
-from   quex.core_engine.state_machine.core import StateMachine
+from   quex.engine.interval_handling  import NumberSet
+from   quex.engine.state_machine.core import StateMachine
 import quex.input.regular_expression.core  as     regular_expression
 
 class IndentationSetup:

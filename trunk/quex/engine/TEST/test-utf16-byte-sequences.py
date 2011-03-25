@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
-from quex.core_engine.utf16 import unicode_to_utf16, utf16_to_unicode
+from quex.engine.utf16 import unicode_to_utf16, utf16_to_unicode
 import codecs
 
 if "--hwut-info" in sys.argv:

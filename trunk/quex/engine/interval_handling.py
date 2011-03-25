@@ -17,9 +17,9 @@
 from copy import copy, deepcopy
 
 from   quex.frs_py.file_in                       import error_msg
-# import quex.core_engine.generator.languages.core as languages
+# import quex.engine.generator.languages.core as languages
 import sys
-import quex.core_engine.utf8 as utf8
+import quex.engine.utf8 as utf8
 
 class Interval:
     """Representing an interval with a minimum and a maximum border. Implements

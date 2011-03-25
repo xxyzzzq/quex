@@ -5,8 +5,8 @@ from   copy import deepcopy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.interval_handling import *
-from quex.core_engine.state_machine.compression.paths import __filter_redundant_paths, CharacterPath
+from quex.engine.interval_handling import *
+from quex.engine.state_machine.compression.paths import __filter_redundant_paths, CharacterPath
 
 if "--hwut-info" in sys.argv:
     print "Paths: filter_redundant_paths;"

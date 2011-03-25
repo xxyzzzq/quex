@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.cpp.codec_converter_helper as codec_converter_helper
-import quex.core_engine.generator.languages.core as languages
+import quex.engine.generator.languages.core as languages
 import quex.input.codec_db       as codec_db
 import quex.input.setup
 

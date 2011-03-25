@@ -4,8 +4,8 @@ import os
 import StringIO
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.core_engine.interval_handling import Interval
-import quex.core_engine.utf8            as utf8
+from quex.engine.interval_handling import Interval
+import quex.engine.utf8            as utf8
 
 if "--hwut-info" in sys.argv:
     print "UTF8: Map UTF8 String To Unicode Values"

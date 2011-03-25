@@ -1,6 +1,6 @@
-from quex.core_engine.state_machine.core import StateMachine
-import quex.core_engine.state_machine.setup_post_context as setup_post_context
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+from quex.engine.state_machine.core import StateMachine
+import quex.engine.state_machine.setup_post_context as setup_post_context
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     """DOS_CarriageReturnNewlineF == True:  

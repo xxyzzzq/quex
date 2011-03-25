@@ -10,15 +10,15 @@ from quex.frs_py.string_handling import blue_print
 from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #
-from   quex.core_engine.generator.languages.core import db
-import quex.core_engine.generator.languages.address as address
-from   quex.core_engine.generator.languages.cpp  import  __local_variable_definitions
-from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
-import quex.core_engine.generator.core                  as generator
-# import quex.core_engine.generator.skipper.core          as skipper
-import quex.core_engine.generator.skipper.character_set as character_set_skipper
-import quex.core_engine.generator.skipper.range         as range_skipper
-import quex.core_engine.generator.skipper.nested_range  as nested_range_skipper
+from   quex.engine.generator.languages.core import db
+import quex.engine.generator.languages.address as address
+from   quex.engine.generator.languages.cpp  import  __local_variable_definitions
+from   quex.engine.generator.action_info    import PatternActionInfo, CodeFragment
+import quex.engine.generator.core                  as generator
+# import quex.engine.generator.skipper.core          as skipper
+import quex.engine.generator.skipper.character_set as character_set_skipper
+import quex.engine.generator.skipper.range         as range_skipper
+import quex.engine.generator.skipper.nested_range  as nested_range_skipper
 import quex.input.regular_expression.engine         as regex
 #
 from   quex.input.setup import setup as Setup

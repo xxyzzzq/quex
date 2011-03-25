@@ -3,10 +3,10 @@ import os
 import sys
 import codecs
 from copy import copy
-import quex.core_engine.state_machine.utf8_state_split  as utf8_state_split
-import quex.core_engine.state_machine.utf16_state_split as utf16_state_split
-import quex.core_engine.state_machine.nfa_to_dfa            as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.utf8_state_split  as utf8_state_split
+import quex.engine.state_machine.utf16_state_split as utf16_state_split
+import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization as hopcroft
 from   quex.frs_py.file_in                              import error_msg
 from   quex.input.setup                                 import setup as Setup
 

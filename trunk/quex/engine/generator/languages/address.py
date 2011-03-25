@@ -1,4 +1,4 @@
-import quex.core_engine.state_machine.index         as index
+import quex.engine.state_machine.index         as index
 from   copy import copy
 
 def __nice(SM_ID): 

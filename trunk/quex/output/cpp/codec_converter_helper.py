@@ -3,7 +3,7 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
 from quex.DEFINITIONS                   import QUEX_PATH
-from quex.core_engine.interval_handling import Interval
+from quex.engine.interval_handling import Interval
 from quex.frs_py.string_handling        import blue_print
 from quex.frs_py.file_in                import write_safely_and_close, make_safe_identifier, get_file_content_or_die
 from quex.input.setup                   import setup as Setup

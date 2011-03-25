@@ -1,6 +1,6 @@
-import quex.core_engine.state_machine.core                    as state_machine
-import quex.core_engine.generator.state_coder.acceptance_info as acceptance_info
-from   quex.core_engine.generator.languages.core              import get_address, get_label, Address
+import quex.engine.state_machine.core                    as state_machine
+import quex.engine.generator.state_coder.acceptance_info as acceptance_info
+from   quex.engine.generator.languages.core              import get_address, get_label, Address
 
 from   quex.input.setup            import setup as Setup
 from   quex.frs_py.string_handling import blue_print

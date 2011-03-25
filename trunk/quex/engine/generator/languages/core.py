@@ -12,9 +12,9 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-import quex.core_engine.generator.languages.cpp     as cpp
-import quex.core_engine.generator.languages.python  as python
-from   quex.core_engine.generator.languages.address import *
+import quex.engine.generator.languages.cpp     as cpp
+import quex.engine.generator.languages.python  as python
+from   quex.engine.generator.languages.address import *
 from   quex.frs_py.string_handling import blue_print
 from   copy import deepcopy, copy
 

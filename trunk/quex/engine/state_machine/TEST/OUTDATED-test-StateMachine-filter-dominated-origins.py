@@ -5,12 +5,12 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.core_engine.state_machine.TEST.test_state_machines import *
-from quex.core_engine.state_machine.index import *
-import quex.core_engine.state_machine.parallelize as parallelize
-import quex.core_engine.state_machine.repeat as repeat
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
+from quex.engine.state_machine.TEST.test_state_machines import *
+from quex.engine.state_machine.index import *
+import quex.engine.state_machine.parallelize as parallelize
+import quex.engine.state_machine.repeat as repeat
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "Ranking of state machines: Filter dominated origins"

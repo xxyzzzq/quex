@@ -6,7 +6,7 @@ from StringIO import StringIO
 from quex.exception import RegularExpressionException
 
 import quex.input.regular_expression.traditional_character_set as character_set
-from   quex.core_engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.core import StateMachine
 
 if "--hwut-info" in sys.argv:
     print "Basics: Map character *range* to state machine"

@@ -1,6 +1,6 @@
-import quex.core_engine.generator.state_coder.transition as transition
+import quex.engine.generator.state_coder.transition as transition
 from   quex.input.setup                                  import setup as Setup
-from   quex.core_engine.interval_handling                import Interval
+from   quex.engine.interval_handling                import Interval
 
 import sys
 from   math import log

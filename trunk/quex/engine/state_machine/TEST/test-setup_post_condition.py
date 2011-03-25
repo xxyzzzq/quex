@@ -3,10 +3,10 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core_engine.state_machine.setup_post_context as setup_post_context
-from   quex.core_engine.state_machine.TEST.test_state_machines import *
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
-import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.setup_post_context as setup_post_context
+from   quex.engine.state_machine.TEST.test_state_machines import *
+import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "StateMachine Operations: Append Post Condition"

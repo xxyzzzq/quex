@@ -1,11 +1,11 @@
-from   quex.core_engine.state_machine.core         import State 
-import quex.core_engine.generator.languages.core   as languages
-from   quex.core_engine.generator.languages.address            import Address, get_address, get_label
-import quex.core_engine.generator.state_coder.transition_block as transition_block
-import quex.core_engine.generator.state_coder.transition       as transition
-import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
-import quex.core_engine.generator.state_coder.drop_out         as drop_out
-import quex.core_engine.generator.state_coder.input_block      as input_block
+from   quex.engine.state_machine.core         import State 
+import quex.engine.generator.languages.core   as languages
+from   quex.engine.generator.languages.address            import Address, get_address, get_label
+import quex.engine.generator.state_coder.transition_block as transition_block
+import quex.engine.generator.state_coder.transition       as transition
+import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
+import quex.engine.generator.state_coder.drop_out         as drop_out
+import quex.engine.generator.state_coder.input_block      as input_block
 from   quex.input.setup                                        import setup as Setup
 from   copy import deepcopy
 

@@ -2,9 +2,9 @@ import sys
 
 from   quex.frs_py.file_in import error_msg, verify_word_in_list
 import quex.lexer_mode     as     lexer_mode
-from   quex.core_engine.generator.action_info             import CodeFragment
-import quex.core_engine.state_machine.commonality_checker as     commonality_checker
-import quex.core_engine.state_machine.subset_checker      as     subset_checker
+from   quex.engine.generator.action_info             import CodeFragment
+import quex.engine.state_machine.commonality_checker as     commonality_checker
+import quex.engine.state_machine.subset_checker      as     subset_checker
 
 
 def do(ModeDB):

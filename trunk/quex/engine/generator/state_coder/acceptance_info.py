@@ -1,7 +1,7 @@
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
-import quex.core_engine.state_machine.core                as     state_machine 
+from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
+import quex.engine.state_machine.core                as     state_machine 
 #
-from   quex.core_engine.generator.languages.address import __nice, get_address, get_label
+from   quex.engine.generator.languages.address import __nice, get_address, get_label
 from   quex.input.setup                             import setup as Setup
 
 LanguageDB = None

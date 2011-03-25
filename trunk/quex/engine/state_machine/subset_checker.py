@@ -1,4 +1,4 @@
-from quex.core_engine.state_machine.core import StateMachine
+from quex.engine.state_machine.core import StateMachine
 
 class Checker:
     def __init__(self, SuperSM, AllegedSubSM):

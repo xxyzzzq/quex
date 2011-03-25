@@ -1,20 +1,20 @@
-import quex.core_engine.generator.languages.core                   as     languages
-from   quex.core_engine.generator.languages.variable_db            import variable_db
-from   quex.core_engine.generator.languages.address                import get_label, get_address, \
+import quex.engine.generator.languages.core                   as     languages
+from   quex.engine.generator.languages.variable_db            import variable_db
+from   quex.engine.generator.languages.address                import get_label, get_address, \
                                                                           get_label_of_address, \
                                                                           get_plain_strings, \
                                                                           init_address_handling, \
                                                                           get_address_set_subject_to_routing, \
                                                                           is_label_referenced
 
-import quex.core_engine.generator.state_machine_coder              as     state_machine_coder
-from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
-import quex.core_engine.generator.state_router                     as     state_router
+import quex.engine.generator.state_machine_coder              as     state_machine_coder
+from   quex.engine.generator.state_machine_decorator          import StateMachineDecorator
+import quex.engine.generator.state_router                     as     state_router
 from   quex.input.setup                                            import setup as Setup
 from   quex.frs_py.string_handling                                 import blue_print
 from   copy                                                        import copy
 #
-from   quex.core_engine.generator.base                             import GeneratorBase
+from   quex.engine.generator.base                             import GeneratorBase
 
 bwd_prolog = """
 #include <quex/code_base/temporary_macros_on>
