@@ -6,7 +6,7 @@ from   quex.input.setup                       import QuexSetup
 from   quex.input.ucs_db_parser               import ucs_property_db
 from   quex.core_engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.core_engine.generator.action_info import *
-import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
+import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 
 

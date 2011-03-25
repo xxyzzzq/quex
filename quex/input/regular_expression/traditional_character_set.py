@@ -1,7 +1,7 @@
 import sys
 import StringIO
 import quex.core_engine.utf8 as utf8
-import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
+import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 from quex.core_engine.interval_handling  import *
 from quex.exception                      import RegularExpressionException
 from quex.input.setup import setup as Setup
