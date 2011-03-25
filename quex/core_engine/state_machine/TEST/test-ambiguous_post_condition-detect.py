@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.exception import RegularExpressionException
 from quex.core_engine.state_machine.core import *
-import quex.core_engine.regular_expression.core              as regex
+import quex.input.regular_expression.engine              as regex
 import quex.core_engine.state_machine.ambiguous_post_context as apc
 
 if "--hwut-info" in sys.argv:

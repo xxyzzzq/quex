@@ -4,12 +4,12 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
-import quex.core_engine.regular_expression.core        as regex
+import quex.input.regular_expression.engine        as regex
 from   quex.core_engine.state_machine.core             import StateMachine
 from   quex.core_engine.interval_handling              import NumberSet, Interval
 import quex.core_engine.state_machine.utf8_state_split as trafo
 from   quex.core_engine.state_machine.utf8_state_split import unicode_to_utf8
-import quex.core_engine.regular_expression.character_set_expression as charset_expression
+import quex.input.regular_expression.character_set_expression as charset_expression
 from   quex.core_engine.generator.base                 import get_combined_state_machine
 
 if "--hwut-info" in sys.argv:

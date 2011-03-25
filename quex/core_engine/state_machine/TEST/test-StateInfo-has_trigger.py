@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core_engine.regular_expression.core         as core
+import quex.input.regular_expression.engine         as core
 import quex.core_engine.state_machine.character_counter as counter
 
 if "--hwut-info" in sys.argv:
