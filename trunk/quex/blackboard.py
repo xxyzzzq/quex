@@ -30,32 +30,6 @@ from   quex.input.setup                  import QuexSetup
 #-----------------------------------------------------------------------------------------
 mode_db = {}
 
-class LocalizedParameter:
-    def __init__(self, Name, Default, FH=-1):
-        self.name      = Name
-        self.__default = Default
-        if FH == -1:
-            self.__value   = None
-            self.file_name = ""
-            self.line_n    = -1
-        else:
-            self.__value   = Default
-            self.file_name = FH.name
-            self.line_n    = get_current_line_info_number(FH)
-
-    def set(self, Value, fh):
-        if self.__value != None:
-            error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
-            error_msg("previous definition has been here.\n", self.file_name, self.line_n)
-                      
-        self.__value   = Value
-        self.file_name = fh.name
-        self.line_n    = get_current_line_info_number(fh)
-
-    def get(self):
-        if self.__value != None: return self.__value
-        return self.__default
-
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
 #-----------------------------------------------------------------------------------------
