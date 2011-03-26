@@ -9,7 +9,7 @@ from quex.engine.unicode_db.parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 
 from   quex.engine.misc.GetPot                        import GetPot
-import quex.input.codec_db                as codec_db
+import quex.engine.codec_db.core                as codec_db
 import quex.input.regular_expression.core as regular_expression
 
 from quex.input.setup import setup as Setup

@@ -8,7 +8,7 @@ from   quex.engine.misc.file_in   import error_msg,                \
                                          read_namespaced_name,     \
                                          read_integer
 import quex.blackboard                    as blackboard
-import quex.input.codec_db                as codec_db
+import quex.engine.codec_db.core                as codec_db
 import quex.input.command_line.validation as validation
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
 
