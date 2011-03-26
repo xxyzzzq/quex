@@ -1,4 +1,4 @@
-<test-database execution-time-sec="145.40" date="Sat Mar 26 11:55:29 2011">
+<test-database execution-time-sec="145.40" date="Sat Mar 26 12:15:00 2011">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.12"> 
         <application file-name="makefile-diff.sh" info-request-time="1301122831L" vanished="False"/>
