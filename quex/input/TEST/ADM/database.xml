@@ -1,12 +1,12 @@
-<test-database execution-time-sec="11.16" date="Sat Mar 26 10:10:42 2011">
+<test-database execution-time-sec="11.21" date="Sat Mar 26 11:55:43 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.32"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.34"> 
         <application file-name="indentation_setup.py" info-request-time="1301122830L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="OK" time_sec="0.06" crc="-1318928622"/>
+           <choice name="basic" result="OK" time_sec="0.07" crc="-1318928622"/>
            <choice name="twice" result="OK" time_sec="0.06" crc="-233475326"/>
            <choice name="intersection" result="OK" time_sec="0.09" crc="1982684346"/>
-           <choice name="intersection-2" result="OK" time_sec="0.06" crc="-1389949999"/>
+           <choice name="intersection-2" result="OK" time_sec="0.07" crc="-1389949999"/>
            <choice name="non-numeric" result="OK" time_sec="0.05" crc="654413883"/>
         </choice-list>
     </test>
@@ -28,10 +28,10 @@
                <choice name="" result="OK" time_sec="0.78" crc="-1557359517"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="5.94"> 
+        <test title="Information about Properties" time-sum-sec="5.97"> 
             <application file-name="test-query.py" info-request-time="1301122830L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="PropertyList" result="OK" time_sec="5.30" crc="-1044464938"/>
+               <choice name="PropertyList" result="OK" time_sec="5.33" crc="-1044464938"/>
                <choice name="PropertyInfo" result="OK" time_sec="0.64" crc="86685460"/>
             </choice-list>
         </test>

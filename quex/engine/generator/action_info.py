@@ -1,8 +1,9 @@
 import os
 from quex.engine.misc.file_in import is_identifier_start, \
-                                is_identifier_continue, \
-                                open_file_or_die, \
-                                write_safely_and_close
+                                     is_identifier_continue, \
+                                     open_file_or_die, \
+                                     write_safely_and_close, \
+                                     get_current_line_info_number
 from quex.input.setup import setup as Setup
 
 class CodeFragment:
@@ -206,4 +207,30 @@ class PatternActionInfo:
             txt += "self.line_n            = " + repr(self.action().line_n) + "\n"
         txt += "self.pattern_index     = " + repr(self.pattern_state_machine().core().id()) + "\n"
         return txt
+
+class LocalizedParameter:
+    def __init__(self, Name, Default, FH=-1):
+        self.name      = Name
+        self.__default = Default
+        if FH == -1:
+            self.__value   = None
+            self.file_name = ""
+            self.line_n    = -1
+        else:
+            self.__value   = Default
+            self.file_name = FH.name
+            self.line_n    = get_current_line_info_number(FH)
+
+    def set(self, Value, fh):
+        if self.__value != None:
+            error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
+            error_msg("previous definition has been here.\n", self.file_name, self.line_n)
+                      
+        self.__value   = Value
+        self.file_name = fh.name
+        self.line_n    = get_current_line_info_number(fh)
+
+    def get(self):
+        if self.__value != None: return self.__value
+        return self.__default
 
