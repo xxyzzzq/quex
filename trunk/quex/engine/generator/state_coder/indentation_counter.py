@@ -1,12 +1,12 @@
-from   quex.engine.misc.string_handling                   import       blue_print
-from   quex.input.setup                              import       setup as Setup
+from   quex.input.setup                         import       setup as Setup
 import quex.engine.state_machine.index          as           sm_index
 import quex.engine.generator.state_coder.transition_block as transition_block
 from   quex.engine.generator.languages.variable_db        import Variable
 from   quex.engine.generator.languages.address  import       get_label, Address
 from   quex.engine.interval_handling            import       Interval
-import quex.output.cpp.action_code_formatter         as           action_code_formatter
-import quex.lexer_mode                               as           lexer_mode
+from   quex.engine.misc.string_handling         import       blue_print
+import quex.output.cpp.action_code_formatter    as           action_code_formatter
+import quex.blackboard                          as           blackboard
 
 from   math import log
 import sys
@@ -137,7 +137,7 @@ def do(Data):
     LanguageDB = Setup.language_db
     Mode = None
     if IndentationSetup.containing_mode_name() != "":
-        Mode = lexer_mode.mode_db[IndentationSetup.containing_mode_name()]
+        Mode = blackboard.mode_db[IndentationSetup.containing_mode_name()]
 
     counter_index = sm_index.get()
     

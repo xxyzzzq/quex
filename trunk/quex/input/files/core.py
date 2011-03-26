@@ -15,16 +15,16 @@
 #
 ################################################################################
 #
-from   quex.engine.misc.file_in              import *
-from   quex.output.cpp.token_id_maker   import TokenInfo
-from   quex.exception                   import RegularExpressionException
-import quex.lexer_mode                as lexer_mode
-import quex.input.files.mode          as mode
+from   quex.engine.misc.file_in            import *
+from   quex.output.cpp.token_id_maker      import TokenInfo
+from   quex.exception                      import RegularExpressionException
+import quex.blackboard                     as blackboard
+import quex.input.files.mode               as mode
 import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
-from   quex.input.setup               import setup as Setup
-from   quex.engine.generator.action_info import UserCodeFragment
+from   quex.input.setup                    import setup as Setup
+from   quex.engine.generator.action_info   import UserCodeFragment
 
 def do(file_list):
     global mode_db
@@ -41,52 +41,10 @@ def do(file_list):
         except RegularExpressionException, x:
             error_msg(x.message, fh)
         
-    return lexer_mode.mode_description_db
-
-def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, ElementNames, MinElementN):   
-    """Returns list of lists, where 
-     
-         record_list[i][k]  means element 'k' of line 'i'
-
-       NOTE: record_list[i][-1] contains the line 'i' as it appeared as a whole.
-             record_list[i][-2] contains the line number of line in the given file.
-
-    """       
-    start_line_n = get_current_line_info_number(fh)
-    if check(fh, "{") == False: 
-        error_msg("missing '{' after %s statement" % CodeFragmentName, fh)
-    #
-    line_n = start_line_n       
-    record_list = []
-    while 1 + 1 == 2:
-        line = fh.readline()
-        line_n += 1
-        #
-        if line == "": 
-            error_msg("found end of file while parsing a '%s' range.\n" % CodeFragmentName + \
-                      "range started here.", fh, start_line_n)    
-        line = line.strip()
-        if line == "":                           continue           # empty line
-        elif line[0] == '}':                     return record_list # end of define range
-        elif len(line) > 1 and line[:2] == "//": continue           # comment
-
-        # -- interpret line as list of whitespace separated record elements
-        fields = line.split()    
-        if fields != [] and is_identifier(fields[0]) == False:
-            error_msg("'%s' is not a valid identifier." % fields[0], fh)
-
-        if len(fields) < MinElementN: 
-            format_str = ""
-            for element in ElementNames:
-                format_str += "%s   " % element 
-            error_msg("syntax error in definition list\n" + \
-                      "format: %s  NEWLINE" % format_str , fh, line_n)
-        record_list.append(fields + [line_n, line])    
-
-    assert True == False, "this code section should have never been reached!"
-
-
-#
+    # After all modes have been defined, they can be translated 
+    # into 'real' modes => call 'finalize()'!
+    mode.finalize()
+    return
 
 default_token_type_definition_triggered_by_mode_definition_f = False
 
@@ -101,7 +59,7 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + blackboard.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
@@ -121,31 +79,31 @@ def parse_section(fh):
         #     -- 'token { ... }'    => define token ids
         #     -- 'token_type { ... }'  => define a customized token type
         #
-        if word in lexer_mode.fragment_db.keys():
-            element_name = lexer_mode.fragment_db[word]
+        if word in blackboard.fragment_db.keys():
+            element_name = blackboard.fragment_db[word]
             fragment     = code_fragment.parse(fh, word, AllowBriefTokenSenderF=False)        
-            lexer_mode.__dict__[element_name] = fragment
+            blackboard.__dict__[element_name] = fragment
             return
 
         elif word == "start":
             mode_name = parse_identifier_assignment(fh)
             if mode_name == "":
                 error_msg("Missing mode_name after 'start ='", fh)
-            elif lexer_mode.initial_mode.get_pure_code() != "":
+            elif blackboard.initial_mode.get_pure_code() != "":
                 error_msg("start mode defined more than once!", fh, DontExitF=True)
                 error_msg("previously defined here",
-                          lexer_mode.initial_mode.filename,
-                          lexer_mode.initial_mode.line_n)
+                          blackboard.initial_mode.filename,
+                          blackboard.initial_mode.line_n)
         
-            lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, 
+            blackboard.initial_mode = UserCodeFragment(mode_name, fh.name, 
                                                        get_current_line_info_number(fh))
             return
 
         elif word == "repeated_token":
-            lexer_mode.token_repetition_token_id_list = parse_token_id_definitions(fh, NamesOnlyF=True)
-            for token_name in lexer_mode.token_repetition_token_id_list:
+            blackboard.token_repetition_token_id_list = parse_token_id_definitions(fh, NamesOnlyF=True)
+            for token_name in blackboard.token_repetition_token_id_list:
                 verify_word_in_list(token_name[len(Setup.token_id_prefix):],
-                                    lexer_mode.token_id_db.keys(),
+                                    blackboard.token_id_db.keys(),
                                     "Token ID '%s' not yet defined." % token_name,
                                     fh, ExitF=False)
             return
@@ -165,8 +123,8 @@ def parse_section(fh):
                           "the file %s to contain a manually written token class." % repr(Setup.token_class_file),
                           fh)
        
-            if lexer_mode.token_type_definition == None:
-                lexer_mode.token_type_definition = token_type.parse(fh)
+            if blackboard.token_type_definition == None:
+                blackboard.token_type_definition = token_type.parse(fh)
                 return
 
             # Error case:
@@ -175,14 +133,14 @@ def parse_section(fh):
             else:
                 error_msg("Section 'token_type' has been defined twice.", fh, DontExitF=True)
                 error_msg("Previously defined here.",
-                          lexer_mode.token_type_definition.file_name_of_token_type_definition,
-                          lexer_mode.token_type_definition.line_n_of_token_type_definition)
+                          blackboard.token_type_definition.file_name_of_token_type_definition,
+                          blackboard.token_type_definition.line_n_of_token_type_definition)
             return
 
         elif word == "mode":
             # When the first mode is parsed then a token_type definition must be 
             # present. If not, the default token type definition is considered.
-            if lexer_mode.token_type_definition == None:
+            if blackboard.token_type_definition == None:
                 sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
                                           + Setup.language_db["$code_base"] 
                                           + Setup.language_db["$token-default-file"])
@@ -245,8 +203,8 @@ def parse_pattern_name_definitions(fh):
             error_msg("Pattern definition with pre- and/or post-context.\n" + \
                       "This pattern cannot be used in replacements.", fh, DontExitF=True)
 
-        lexer_mode.shorthand_db[pattern_name] = \
-                lexer_mode.PatternShorthand(pattern_name, state_machine, 
+        blackboard.shorthand_db[pattern_name] = \
+                blackboard.PatternShorthand(pattern_name, state_machine, 
                                             fh.name, get_current_line_info_number(fh),
                                             regular_expression_str)
 
@@ -257,7 +215,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
     token_prefix_plain = Setup.token_id_prefix_plain # i.e. without name space included
 
     if NamesOnlyF: db = {}
-    else:          db = lexer_mode.token_id_db
+    else:          db = blackboard.token_id_db
 
     skip_whitespace(fh)
     if not check(fh, "{"):

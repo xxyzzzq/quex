@@ -1,5 +1,5 @@
 from   quex.engine.misc.file_in import *
-import quex.lexer_mode     as     lexer_mode
+import quex.blackboard     as     blackboard
 from   quex.output.cpp.token_id_maker         import TokenInfo
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup                       import QuexSetup
@@ -192,7 +192,7 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
     # The '--' will prevent the token name from being printed
     prefix_less_token_name = "UCS_0x%06X" % CharacterCode
     token_id_str           = "0x%06X" % CharacterCode 
-    lexer_mode.token_id_db["--" + prefix_less_token_name] = \
+    blackboard.token_id_db["--" + prefix_less_token_name] = \
             TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
     return "self_send(%s);\n" % token_id_str
 
@@ -213,20 +213,20 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
     prefix_less_TokenName = cut_token_prefix_or_die(fh, TokenName)
 
     # Occasionally add token id automatically to database
-    if not lexer_mode.token_id_db.has_key(prefix_less_TokenName):
+    if not blackboard.token_id_db.has_key(prefix_less_TokenName):
         # DO NOT ENFORCE THE TOKEN ID TO BE DEFINED, BECAUSE WHEN THE TOKEN ID
         # IS DEFINED IN C-CODE, THE IDENTIFICATION IS NOT 100% SAFE.
         msg = "Token id '%s' defined implicitly." % TokenName
-        if TokenName in lexer_mode.token_id_db.keys():
+        if TokenName in blackboard.token_id_db.keys():
             msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
                    (Setup.token_id_prefix + TokenName)
             msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
             error_msg(msg, fh, DontExitF=True)
         else:
-            lexer_mode.token_id_implicit_list.append([prefix_less_TokenName, fh.name, get_current_line_info_number(fh)])
+            blackboard.token_id_implicit_list.append([prefix_less_TokenName, fh.name, get_current_line_info_number(fh)])
 
         # Enter the implicit token id definition in the database
-        lexer_mode.token_id_db[prefix_less_TokenName] = \
+        blackboard.token_id_db[prefix_less_TokenName] = \
                 TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
 
 def __create_token_sender_by_token_name(fh, TokenName):
@@ -243,7 +243,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
     for arg in argument_list:
         if arg.find("=") != -1: explicit_member_names_f = True
 
-    assert lexer_mode.token_type_definition != None, \
+    assert blackboard.token_type_definition != None, \
            "A valid token_type_definition must have been parsed at this point."
 
     if not explicit_member_names_f:
@@ -295,7 +295,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
                       "Found member assignment: '%s' = '%s'." % (member, value), fh)
         else:
             member_name = member.strip()
-            verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
+            verify_word_in_list(member_name, blackboard.token_type_definition.get_member_db(), 
                                 "No member:   '%s' in token type description." % member_name, 
                                 fh)
             idx = value.find("Lexeme")
@@ -319,7 +319,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
                               "       These token senders create a copy of the lexeme and let the token\n"
                               "       own it.", fh)
 
-            access = lexer_mode.token_type_definition.get_member_access(member_name)
+            access = blackboard.token_type_definition.get_member_access(member_name)
             txt += "self_write_token_p()->%s = %s;\n" % (access, value.strip())
 
 

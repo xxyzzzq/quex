@@ -1,10 +1,10 @@
 import sys
 
 from   quex.engine.misc.file_in import error_msg, verify_word_in_list
-import quex.lexer_mode     as     lexer_mode
+import quex.blackboard                               as     blackboard
 from   quex.engine.generator.action_info             import CodeFragment
-import quex.engine.state_machine.commonality_checker as     commonality_checker
-import quex.engine.state_machine.subset_checker      as     subset_checker
+import quex.engine.state_machine.commonality_checker as commonality_checker
+import quex.engine.state_machine.subset_checker      as subset_checker
 
 
 def do(ModeDB):
@@ -88,7 +88,6 @@ def do(ModeDB):
                           % newline_suppressor_info.pattern_str, 
                           newline_suppressor_info.file_name, newline_suppressor_info.line_n)
 
-
 def __commonality(mode, Info, ReferenceSM, Name):
     for pattern_action_pair in mode.get_pattern_action_pair_list():
         if pattern_action_pair.comment in ["indentation newline", "indentation newline suppressor"]: 
@@ -111,11 +110,11 @@ def __start_mode(applicable_mode_name_list, mode_name_list):
     """
     assert len(applicable_mode_name_list) != 0
 
-    start_mode = lexer_mode.initial_mode.get_pure_code()
+    start_mode = blackboard.initial_mode.get_pure_code()
     if start_mode == "":
         # Choose an applicable mode as start mode
         start_mode              = applicable_mode_name_list[0]
-        lexer_mode.initial_mode = CodeFragment(start_mode)
+        blackboard.initial_mode = CodeFragment(start_mode)
         if len(applicable_mode_name_list) > 1:
             error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
                       "Use for example 'start = %s;' in the quex source file to define an initial mode." \
@@ -123,8 +122,8 @@ def __start_mode(applicable_mode_name_list, mode_name_list):
         # This Branch: start mode is applicable and present
 
     else: 
-        FileName = lexer_mode.initial_mode.filename
-        LineN    = lexer_mode.initial_mode.line_n
+        FileName = blackboard.initial_mode.filename
+        LineN    = blackboard.initial_mode.line_n
         # Start mode present and applicable?
         verify_word_in_list(start_mode, mode_name_list,
                             "Start mode '%s' is not defined." % start_mode,
@@ -142,7 +141,7 @@ def __entry_exit_transitions(mode, mode_name_list):
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
                             (mode.name, mode_name), FileName, LineN)
 
-        that_mode = lexer_mode.mode_description_db[mode_name]
+        that_mode = blackboard.mode_db[mode_name]
 
         # Other mode allows all entries => don't worry.
         if len(that_mode.options["entry"]) == 0: continue
@@ -164,7 +163,7 @@ def __entry_exit_transitions(mode, mode_name_list):
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
                             (mode.name, mode_name), FileName, LineN)
 
-        that_mode = lexer_mode.mode_description_db[mode_name]
+        that_mode = blackboard.mode_db[mode_name]
         # Other mode allows all exits => don't worry.
         if len(that_mode.options["exit"]) == 0: continue
 

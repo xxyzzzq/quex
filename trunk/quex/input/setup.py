@@ -1,12 +1,25 @@
 #! /usr/bin/env python
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
-from   quex.engine.misc.file_in                       import get_propperly_slash_based_file_name
-from   quex.DEFINITIONS import QUEX_PATH
+from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name
+from   quex.DEFINITIONS                     import QUEX_PATH
 
 import os.path as path
 import sys
 
 class QuexSetup:
+    def __init__(self, SetupInfo):
+        for key, entry in SetupInfo.items():
+            if type(entry) != list:        default_value = entry
+            elif entry[1] == LIST:         default_value = []
+            elif entry[1] == FLAG:         default_value = False
+            elif entry[1] == NEGATED_FLAG: default_value = True
+            else:                          default_value = entry[1]
+            self.__dict__[key] = default_value
+
+        # Default values, maybe overiden later on.
+        self.language_db = quex_core_engine_generator_languages_db["C++"]
+        self.language_db = global_extension_db["C++"]
+        self.buffer_codec_transformation_info = None
 
     def get_character_value_limit(self):
         """RETURNS: Integer = supremo of possible character range, i.e.
@@ -83,9 +96,6 @@ class QuexSetup:
                 return clean(full_file_name[len(full_source_package_dir):])
 
         return clean(FileName)
-
-class something:
-    pass
 
 LIST         = -1111
 FLAG         = -2222
@@ -343,20 +353,5 @@ global_extension_db = {
    }
 }
 
-setup = QuexSetup()
-for key, entry in SETUP_INFO.items():
-    if type(entry) != list:        default_value = entry
-    elif entry[1] == LIST:         default_value = []
-    elif entry[1] == FLAG:         default_value = False
-    elif entry[1] == NEGATED_FLAG: default_value = True
-    else:                          default_value = entry[1]
-    setup.__dict__[key] = default_value
-
-# Default values, maybe overiden later on.
-setup.language_db = quex_core_engine_generator_languages_db["C++"]
-setup.language_db = global_extension_db["C++"]
-setup.buffer_codec_transformation_info = None
-
-def get_file_reference(FileName):
-    return setup.get_file_reference(FileName)
+setup = QuexSetup(SETUP_INFO)
 

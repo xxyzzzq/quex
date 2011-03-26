@@ -8,7 +8,7 @@ import quex.input.setup
 import quex.core                                as coder
 import quex.input.regular_expression.engine as regex
 import quex.engine.generator.core          as generator
-from   quex.lexer_mode                          import ModeDescription, Mode
+from   quex.blackboard                          import ModeDescription, Mode
 from   quex.engine.generator.action_info   import CodeFragment
 
 

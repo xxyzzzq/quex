@@ -1,6 +1,5 @@
 from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
-from   quex.input.setup            import get_file_reference
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 
 def do(Modes):
@@ -9,8 +8,8 @@ def do(Modes):
     DerivedClassName            = Setup.analyzer_derived_class_name
     DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
 
-    if DerivedClassHeaderFileName != "": txt = "#include <" + get_file_reference(DerivedClassHeaderFileName) +">\n"
-    else:                                txt = "#include \"" + get_file_reference(Setup.output_header_file) +"\"\n"
+    if DerivedClassHeaderFileName != "": txt = "#include <" + Setup.get_file_reference(DerivedClassHeaderFileName) +">\n"
+    else:                                txt = "#include \"" + Setup.get_file_reference(Setup.output_header_file) +"\"\n"
 
     txt += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
 

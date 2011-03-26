@@ -6,7 +6,7 @@ from   quex.engine.misc.file_in                    import error_msg, \
                                                      write_safely_and_close, open_file_or_die, \
                                                      make_safe_identifier
 from   quex.engine.misc.string_handling            import blue_print
-import quex.lexer_mode                        as lexer_mode
+import quex.blackboard                        as blackboard
 import quex.engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup
 from   quex.input.setup                       import HEADER, HEADER_IMPLEMTATION
@@ -14,13 +14,13 @@ from   quex.input.command_line.core           import __prepare_file_name
 
 
 def do():
-    assert lexer_mode.token_type_definition != None
+    assert blackboard.token_type_definition != None
 
-    if lexer_mode.token_type_definition.manually_written():
+    if blackboard.token_type_definition.manually_written():
         # User has specified a manually written token class
         return "", ""
 
-    txt, txt_i = _do(lexer_mode.token_type_definition)
+    txt, txt_i = _do(blackboard.token_type_definition)
 
     return txt, txt_i
 
