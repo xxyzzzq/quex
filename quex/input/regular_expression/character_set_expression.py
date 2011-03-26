@@ -25,7 +25,7 @@
 #                 "inverse"      '(' set_term ')'
 #                 set_expression
 # 
-import quex.input.codec_db as codec_db
+import quex.engine.codec_db.core as codec_db
 import quex.input.regular_expression.traditional_character_set as traditional_character_set
 import quex.input.regular_expression.property                  as property
 import quex.input.regular_expression.auxiliary                 as aux
