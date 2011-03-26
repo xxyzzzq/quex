@@ -9,12 +9,11 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                           make_safe_identifier
 
 from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
-import quex.lexer_mode  as     lexer_mode
+import quex.blackboard  as     blackboard
 from   quex.input.setup import setup as Setup
-from   quex.input.setup import get_file_reference
 
 def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
-    assert lexer_mode.token_type_definition != None
+    assert blackboard.token_type_definition != None
 
     header_engine_txt, code_engine_txt = write_engine_header(ModeDB)
     header_configuration_txt           = write_configuration_header(ModeDB, 
@@ -52,7 +51,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
 
     # Token repetition support
     token_repeat_test_txt = ""
-    for token_id_str in lexer_mode.token_repetition_token_id_list:
+    for token_id_str in blackboard.token_repetition_token_id_list:
         token_repeat_test_txt += "TokenID == %s || " % token_id_str
     if token_repeat_test_txt != "":
         token_repeat_test_txt = token_repeat_test_txt[:-3]
@@ -85,7 +84,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_BUFFER_BASED_ANALYZIS",         Setup.buffer_based_analyzis_f)
 
     # -- token class related definitions
-    token_descr = lexer_mode.token_type_definition
+    token_descr = blackboard.token_type_definition
     namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
     # -- name of the character codec
@@ -108,7 +107,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$CODEC_NAME$$",                 codec_name],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension( Setup.language_db["$namespace-ref"](Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
-             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % lexer_mode.initial_mode.get_pure_code()],
+             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % blackboard.initial_mode.get_pure_code()],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_CLASS_NAME_SAFE$$",      Setup.analyzer_name_safe],
@@ -152,11 +151,11 @@ def write_constructor_and_memento_functions(ModeDB):
 
     func_txt = blue_print(func_txt,
             [
-                ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
-                ["$$CONVERTER_HELPER_I$$",                      get_file_reference(Setup.output_buffer_codec_header_i)],
+                ["$$CONSTRUCTOR_EXTENSTION$$",                  blackboard.class_constructor_extension.get_code()],
+                ["$$CONVERTER_HELPER_I$$",                      Setup.get_file_reference(Setup.output_buffer_codec_header_i)],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values())],
-                ["$$MEMENTO_EXTENSIONS_PACK$$",                 lexer_mode.memento_pack_extension.get_code()],
-                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               lexer_mode.memento_unpack_extension.get_code()],
+                ["$$MEMENTO_EXTENSIONS_PACK$$",                 blackboard.memento_pack_extension.get_code()],
+                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               blackboard.memento_unpack_extension.get_code()],
                 ])
     return func_txt
 
@@ -193,9 +192,9 @@ def write_engine_header(ModeDB):
     else:
         derived_class_type_declaration = "class %s;" % Setup.analyzer_derived_class_name
 
-    token_class_file_name = lexer_mode.token_type_definition.get_file_name()
-    token_class_name      = lexer_mode.token_type_definition.class_name
-    token_class_name_safe = lexer_mode.token_type_definition.class_name_safe
+    token_class_file_name = blackboard.token_type_definition.get_file_name()
+    token_class_name      = blackboard.token_type_definition.class_name
+    token_class_name_safe = blackboard.token_type_definition.class_name_safe
 
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
@@ -208,28 +207,28 @@ def write_engine_header(ModeDB):
     txt = blue_print(template_code_txt,
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
-                ["$$CLASS_BODY_EXTENSION$$",             lexer_mode.class_body_extension.get_code()],
-                ["$$CONVERTER_HELPER$$",                 get_file_reference(Setup.output_buffer_codec_header)],
+                ["$$CLASS_BODY_EXTENSION$$",             blackboard.class_body_extension.get_code()],
+                ["$$CONVERTER_HELPER$$",                 Setup.get_file_reference(Setup.output_buffer_codec_header)],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
                 ["$$LEXER_CLASS_NAME_SAFE$$",            Setup.analyzer_name_safe],
-                ["$$LEXER_CONFIG_FILE$$",                get_file_reference(Setup.output_configuration_file)],
+                ["$$LEXER_CONFIG_FILE$$",                Setup.get_file_reference(Setup.output_configuration_file)],
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",         Setup.analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",         mode_id_definition_str],
-                ["$$MEMENTO_EXTENSIONS$$",               lexer_mode.memento_class_extension.get_code()],
+                ["$$MEMENTO_EXTENSIONS$$",               blackboard.memento_class_extension.get_code()],
                 ["$$MODE_CLASS_FRIENDS$$",               friend_txt],
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
                 ["$$QUEX_TEMPLATE_DIR$$",                QUEX_PATH + Setup.language_db["$code_base"]],
                 ["$$QUEX_VERSION$$",                     QUEX_VERSION],
-                ["$$TOKEN_CLASS_DEFINITION_FILE$$",      get_file_reference(token_class_file_name)],
+                ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.get_file_reference(token_class_file_name)],
                 ["$$TOKEN_CLASS$$",                      token_class_name],
                 ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],
-                ["$$TOKEN_ID_DEFINITION_FILE$$",         get_file_reference(Setup.output_token_id_file)],
+                ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.get_file_reference(Setup.output_token_id_file)],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_converter_coding_name_str],
-                ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
+                ["$$USER_DEFINED_HEADER$$",              blackboard.header.get_code() + "\n"],
              ])
 
     return txt, function_code_txt

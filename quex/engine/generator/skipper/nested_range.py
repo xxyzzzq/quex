@@ -4,7 +4,7 @@ from   quex.input.setup                             import setup as Setup
 from   quex.engine.misc.string_handling                  import blue_print
 from   quex.engine.generator.languages.address import __nice, get_label
 from   quex.engine.generator.languages.variable_db import Variable
-import quex.lexer_mode                              as     lexer_mode
+import quex.blackboard                              as     blackboard
 
 def do(Data):
 
@@ -20,7 +20,7 @@ def do(Data):
 
     Mode = None
     if ModeName != "":
-        Mode = lexer_mode.mode_db[ModeName]
+        Mode = blackboard.mode_db[ModeName]
 
     code_str, db = get_skipper(OpeningSequence, ClosingSequence, 
                                Mode=Mode, 

@@ -6,7 +6,7 @@ import quex.output.cpp.action_code_formatter     as     action_code_formatter
 import quex.engine.utf8                     as     utf8
 from   quex.input.setup                          import setup as Setup
 from   quex.engine.misc.string_handling               import blue_print
-import quex.lexer_mode                           as     lexer_mode
+import quex.blackboard                           as     blackboard
 from   copy                                      import copy
 
 def do(Data):
@@ -22,7 +22,7 @@ def do(Data):
 
     Mode = None
     if ModeName != "":
-        Mode = lexer_mode.mode_db[ModeName]
+        Mode = blackboard.mode_db[ModeName]
 
     code_str, db = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
 

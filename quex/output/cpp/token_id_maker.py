@@ -13,11 +13,10 @@ from quex.engine.misc.file_in  import open_file_or_die, \
                                  get_include_guard_extension, \
                                  error_msg
 
-import quex.lexer_mode             as lexer_mode
-from   quex.lexer_mode             import token_id_db
+import quex.blackboard             as blackboard
+from   quex.blackboard             import token_id_db
 from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
-from   quex.input.setup            import get_file_reference
 
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
@@ -122,15 +121,15 @@ def __is_token_id_occupied(TokenID):
     return TokenID in map(lambda x: x.number, token_id_db.values())
 
 def __propose_implicit_token_definitions():
-    if len(lexer_mode.token_id_implicit_list) == 0: return
+    if len(blackboard.token_id_implicit_list) == 0: return
 
-    file_name = lexer_mode.token_id_implicit_list[0][1]
-    line_n    = lexer_mode.token_id_implicit_list[0][2]
+    file_name = blackboard.token_id_implicit_list[0][1]
+    line_n    = blackboard.token_id_implicit_list[0][2]
     error_msg("Detected implicit token identifier definitions. Proposal:\n"
               "   token {" , file_name, line_n, 
               DontExitF=True, WarningF=True)
 
-    for token_name, file_name, line_n in lexer_mode.token_id_implicit_list:
+    for token_name, file_name, line_n in blackboard.token_id_implicit_list:
         error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
     error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
 
@@ -149,7 +148,7 @@ def do(setup, IndentationSupportF):
     for standard_token_id in standard_token_id_list:
         assert token_id_db.has_key(standard_token_id)
 
-    assert lexer_mode.token_type_definition != None, \
+    assert blackboard.token_type_definition != None, \
            "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
            "handle this."
 
@@ -189,7 +188,7 @@ def do(setup, IndentationSupportF):
                        % (setup.token_id_prefix_plain, token.name, space(token.name), token.number))
 
     if setup.token_id_foreign_definition_file != "":
-        token_id_txt = ["#include \"%s\"\n" % get_file_reference(setup.token_id_foreign_definition_file)]
+        token_id_txt = ["#include \"%s\"\n" % Setup.get_file_reference(setup.token_id_foreign_definition_file)]
 
     else:
         if setup.language == "C": 
@@ -226,12 +225,12 @@ def do(setup, IndentationSupportF):
                           
         token_id_txt.append(epilog)
 
-    tc_descr   = lexer_mode.token_type_definition
+    tc_descr   = blackboard.token_type_definition
 
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        "".join(token_id_txt)],
                           ["$$DATE$$",                        time.asctime()],
-                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", get_file_reference(lexer_mode.token_type_definition.get_file_name())],
+                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(
                                                                   LanguageDB["$namespace-ref"](tc_descr.name_space) 
                                                                   + "__" + tc_descr.class_name)],

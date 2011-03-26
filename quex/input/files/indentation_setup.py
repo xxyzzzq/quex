@@ -1,15 +1,14 @@
-
 from quex.engine.misc.file_in import get_current_line_info_number, \
-                                error_msg, \
-                                check, \
-                                skip_whitespace, \
-                                read_identifier, \
-                                verify_word_in_list, \
-                                parse_assignment, \
-                                read_until_whitespace, \
-                                read_integer
+                                     error_msg, \
+                                     check, \
+                                     skip_whitespace, \
+                                     read_identifier, \
+                                     verify_word_in_list, \
+                                     parse_assignment, \
+                                     read_until_whitespace, \
+                                     read_integer
 
-from   quex.lexer_mode                     import LocalizedParameter
+from   quex.blackboard                     import LocalizedParameter
 from   quex.engine.interval_handling  import NumberSet
 from   quex.engine.state_machine.core import StateMachine
 import quex.input.regular_expression.core  as     regular_expression

@@ -4,7 +4,6 @@ from quex.engine.misc.file_in import is_identifier_start, \
                                 open_file_or_die, \
                                 write_safely_and_close
 from quex.input.setup import setup as Setup
-from quex.input.setup import get_file_reference
 
 class CodeFragment:
     def __init__(self, Code="", RequireTerminatingZeroF=False):
@@ -85,7 +84,7 @@ class UserCodeFragment(CodeFragment):
         if Code.strip() == "": return Code
 
         # Even under Windows (tm), the '/' is accepted. Thus do not rely on 'normpath'
-        norm_filename = get_file_reference(self.filename) 
+        norm_filename = Setup.get_file_reference(self.filename) 
         txt  = '\n#   line %i "%s"\n' % (self.line_n, norm_filename)
         txt += self.pretty_format(Code)
         if ReturnToSourceF:
@@ -120,7 +119,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
         return
 
     fh = open_file_or_die(filename)
-    norm_filename = get_file_reference(filename)
+    norm_filename = Setup.get_file_reference(filename)
 
     new_content = ""
     line_n      = 0

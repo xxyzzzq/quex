@@ -7,7 +7,7 @@ from   quex.engine.misc.file_in   import error_msg,                \
                                          verify_word_in_list,      \
                                          read_namespaced_name,     \
                                          read_integer
-import quex.lexer_mode                    as lexer_mode
+import quex.blackboard                    as blackboard
 import quex.input.codec_db                as codec_db
 import quex.input.command_line.validation as validation
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
@@ -138,7 +138,7 @@ def do(argv):
                               "token class (options --token-class, --tc)")
 
     if setup.token_class_file != "":
-        lexer_mode.token_type_definition = \
+        blackboard.token_type_definition = \
                 ManualTokenClassSetup(setup.token_class_file,
                                       setup.token_class_name,
                                       setup.token_class_name_space,

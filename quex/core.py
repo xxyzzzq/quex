@@ -6,14 +6,13 @@ from   quex.engine.misc.file_in import error_msg, write_safely_and_close, open_f
 
 from   quex.input.setup                         import setup as Setup
 import quex.output.cpp.source_package           as source_package
-import quex.lexer_mode                          as lexer_mode
+import quex.blackboard                          as blackboard
 
-import quex.consistency_check                   as consistency_check
 import quex.engine.generator.core          as     generator
 import quex.engine.generator.state_coder.indentation_counter as indentation_counter
 from   quex.engine.generator.action_info   import PatternActionInfo, \
-                                                       UserCodeFragment_straighten_open_line_pragmas, \
-                                                       CodeFragment
+                                                  UserCodeFragment_straighten_open_line_pragmas, \
+                                                  CodeFragment
 import quex.input.files.core                    as quex_file_parser
 import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.output.cpp.token_class_maker        as token_class_maker
@@ -32,8 +31,8 @@ def do():
 
     mode_db = __get_mode_db(Setup)
 
-    IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
-    BeginOfLineSupportF = lexer_mode.requires_begin_of_line_condition_support(mode_db)
+    IndentationSupportF = blackboard.requires_indentation_count(mode_db)
+    BeginOfLineSupportF = blackboard.requires_begin_of_line_condition_support(mode_db)
 
     # (*) Implement the 'quex' core class from a template
     # -- do the coding of the class framework
@@ -105,14 +104,14 @@ def do():
         write_safely_and_close(Setup.output_code_file, source_txt)
 
     if token_class_h != "":
-        write_safely_and_close(lexer_mode.token_type_definition.get_file_name(), 
+        write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                token_class_h)
 
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_header_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
-    # assert lexer_mode.token_type_definition != None
-    UserCodeFragment_straighten_open_line_pragmas(lexer_mode.token_type_definition.get_file_name(), "C")
+    # assert blackboard.token_type_definition != None
+    UserCodeFragment_straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
 
     if Setup.source_package_directory != "":
         source_package.do()
@@ -208,7 +207,7 @@ def get_generator_input(Mode, IndentationSupportF):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
-    assert isinstance(Mode, lexer_mode.Mode)
+    assert Mode.__class__.__name__ == "Mode"
     variable_db              = {}
     pattern_action_pair_list = Mode.get_pattern_action_pair_list()
 
@@ -249,7 +248,7 @@ def __get_post_context_n(match_info_list):
 def do_plot():
 
     mode_db             = __get_mode_db(Setup)
-    IndentationSupportF = lexer_mode.requires_indentation_count(mode_db)
+    IndentationSupportF = blackboard.requires_indentation_count(mode_db)
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
@@ -271,16 +270,9 @@ def __get_mode_db(Setup):
     # (1) input: do the pattern analysis, in case exact counting of newlines is required
     #            (this might speed up the lexer, but nobody might care ...)
     #            pattern_db = analyse_patterns.do(pattern_file)    
-    mode_description_db = quex_file_parser.do(Setup.input_mode_files)
+    quex_file_parser.do(Setup.input_mode_files)
 
-    # (*) Translate each mode description int a 'real' mode
-    for mode_name, mode_descr in mode_description_db.items():
-        lexer_mode.mode_db[mode_name] = lexer_mode.Mode(mode_descr)
-
-    # (*) perform consistency check 
-    consistency_check.do(lexer_mode.mode_db)
-
-    return lexer_mode.mode_db
+    return blackboard.mode_db
 
 #########################################################################################
 # Allow to check wether the exception handlers are all in place

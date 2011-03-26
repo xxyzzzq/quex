@@ -5,7 +5,7 @@ from   quex.engine.misc.file_in                 import EndOfStreamException, err
 from   quex.exception                      import RegularExpressionException
 from   quex.engine.interval_handling  import NumberSet, Interval
 from   quex.engine.state_machine.core import StateMachine 
-import quex.lexer_mode                                              as lexer_mode
+import quex.blackboard                                              as blackboard
 import quex.input.regular_expression.engine                   as regex
 import quex.input.regular_expression.character_set_expression as charset_expression
 import quex.input.regular_expression.snap_character_string    as snap_character_string
@@ -15,7 +15,7 @@ def parse(fh, AllowNothingIsFineF=False):
     start_position = fh.tell()
     try:
         # (*) parse regular expression, build state machine
-        pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
+        pattern_state_machine = regex.do(fh, blackboard.shorthand_db, 
                                          DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f,
                                          AllowNothingIsNecessaryF   = AllowNothingIsFineF)
 
@@ -57,7 +57,7 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
 
     try:
         # -- parse regular expression, build state machine
-        character_set = charset_expression.snap_set_expression(sh, lexer_mode.shorthand_db)
+        character_set = charset_expression.snap_set_expression(sh, blackboard.shorthand_db)
 
         if character_set == None:
             error_msg("No valid regular character set expression detected.", sh_ref)

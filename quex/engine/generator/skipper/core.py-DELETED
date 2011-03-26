@@ -6,7 +6,7 @@ from   quex.input.setup                                 import setup as Setup
 import quex.engine.generator.skipper.character_set as character_set
 import quex.engine.generator.skipper.range         as range
 import quex.engine.generator.skipper.nested_range  as nested_range
-import quex.lexer_mode                                  as lexer_mode
+import quex.blackboard                                  as blackboard
 
 def do(SkipperDescriptor):
     """RETURNS: code_str --  a string containing source code of the skipper

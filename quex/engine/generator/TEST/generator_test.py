@@ -8,7 +8,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 #
 from quex.engine.misc.string_handling import blue_print
 from quex.exception              import RegularExpressionException
-from quex.lexer_mode             import PatternShorthand
+from quex.blackboard             import PatternShorthand
 #
 from   quex.engine.generator.languages.core import db
 import quex.engine.generator.languages.address as address
