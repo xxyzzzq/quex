@@ -8,7 +8,7 @@ from   quex.engine.misc.file_in   import error_msg,                \
                                          read_namespaced_name,     \
                                          read_integer
 import quex.blackboard                    as blackboard
-import quex.engine.codec_db.core                as codec_db
+import quex.engine.codec_db.core          as codec_db
 import quex.input.command_line.validation as validation
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
 
@@ -178,6 +178,23 @@ def do(argv):
     if setup.source_package_directory != "" and setup.output_directory == "":
         setup.output_directory = setup.source_package_directory
 
+    if setup.buffer_codec in ["utf8", "utf16"]:
+        setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"
+
+    elif setup.buffer_codec != "":
+        setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
+
+    elif setup.buffer_codec_file != "":
+        try: 
+            setup.buffer_codec = os.path.splitext(os.path.basename(setup.buffer_codec_file))[0]
+        except:
+            error_msg("cannot interpret string following '--codec-file'")
+
+        setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(FileName=setup.buffer_codec_file)
+
+    if setup.buffer_codec != "":
+        setup.buffer_element_size_irrelevant = True
+    
     # (*) Output files
     prepare_file_names(setup)
 
@@ -195,9 +212,6 @@ def do(argv):
     if setup.buffer_element_type == "wchar_t":
         setup.converter_ucs_coding_name = "WCHAR_T"
 
-    if setup.buffer_codec != "":
-        setup.buffer_element_size_irrelevant = True
-    
     make_numbers(setup)
 
     # (*) Determine buffer element type and size (in bytes)
@@ -222,11 +236,6 @@ def do(argv):
             error_msg("Buffer element type cannot be determined for size '%i' which\n" \
                       % setup.buffer_element_size + 
                       "has been specified by '-b' or '--buffer-element-size'.")
-
-    if setup.buffer_codec in ["utf8", "utf16"]:
-        setup.buffer_codec_transformation_info = setup.buffer_codec + "-state-split"
-    elif setup.buffer_codec != "":
-        setup.buffer_codec_transformation_info = codec_db.get_codec_transformation_info(setup.buffer_codec)
 
     setup.converter_f = False
     if setup.converter_iconv_f or setup.converter_icu_f:

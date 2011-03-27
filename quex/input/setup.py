@@ -108,6 +108,7 @@ SETUP_INFO = {
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            ""],
+    "buffer_codec_file":              [["--codec-file"],                       ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
     "buffer_element_size_irrelevant": [["--buffer-element-size-irrelevant"],   FLAG],  

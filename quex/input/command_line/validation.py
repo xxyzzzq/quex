@@ -163,9 +163,10 @@ def do(setup, command_line, argv):
                   "Consult command line argument '--buffer-element-size'.")
 
     if setup.buffer_codec != "":
-        verify_word_in_list(setup.buffer_codec,
-                            codec_db.get_supported_codec_list() + ["utf8", "utf16"],
-                            "Codec '%s' is not supported." % setup.buffer_codec)
+        if setup.buffer_codec_file == "":
+            verify_word_in_list(setup.buffer_codec,
+                                codec_db.get_supported_codec_list() + ["utf8", "utf16"],
+                                "Codec '%s' is not supported." % setup.buffer_codec)
         __codec_vs_buffer_element_size("utf8", 1)
         __codec_vs_buffer_element_size("utf16", 2)
 

@@ -22,11 +22,11 @@ token {
 mode X :
 <skip: [ \t\n]>
 {
-    {WORD}   => TKN_WORD(Lexeme);
-    {NUMBER} => TKN_NUMBER(Lexeme);
-    {UNIT}   => TKN_UNIT(Lexeme);
-    "."      => TKN_PERIOD(Lexeme);
-    "("      => TKN_B_OPEN(Lexeme);
-    ")"      => TKN_B_CLOSE(Lexeme);
-    .        => TKN_UNKNOWN(Lexeme);
+    {WORD}   => QUEX_TKN_WORD(Lexeme);
+    {NUMBER} => QUEX_TKN_NUMBER(Lexeme);
+    {UNIT}   => QUEX_TKN_UNIT(Lexeme);
+    "."      => QUEX_TKN_PERIOD(Lexeme);
+    "("      => QUEX_TKN_B_OPEN(Lexeme);
+    ")"      => QUEX_TKN_B_CLOSE(Lexeme);
+    .        => QUEX_TKN_UNKNOWN(Lexeme);
 }
