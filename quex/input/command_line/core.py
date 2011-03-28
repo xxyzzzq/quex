@@ -2,11 +2,11 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.misc.GetPot    import GetPot
-from   quex.engine.misc.file_in   import error_msg,                \
-                                         verify_word_in_list,      \
-                                         read_namespaced_name,     \
-                                         read_integer
+from   quex.input.command_line.GetPot import GetPot
+from   quex.engine.misc.file_in       import error_msg,                \
+                                             verify_word_in_list,      \
+                                             read_namespaced_name,     \
+                                             read_integer
 import quex.blackboard                    as blackboard
 import quex.engine.codec_db.core          as codec_db
 import quex.input.command_line.validation as validation

@@ -3,19 +3,21 @@ import sys
 from StringIO import StringIO
 
 from quex.engine.misc.file_in       import error_msg
-from quex.engine.utf8     import map_unicode_to_utf8
-from quex.engine.interval_handling     import NumberSet, Interval
+from quex.engine.utf8               import map_unicode_to_utf8
+from quex.engine.interval_handling  import NumberSet, Interval
 from quex.engine.unicode_db.parser  import ucs_property_db
-from quex.exception            import RegularExpressionException
 
-from   quex.engine.misc.GetPot                        import GetPot
-import quex.engine.codec_db.core                as codec_db
+from quex.exception                 import RegularExpressionException
+
+from   quex.input.command_line.GetPot     import GetPot
 import quex.input.regular_expression.core as regular_expression
+import quex.engine.codec_db.core          as codec_db
 
 from quex.input.setup import setup as Setup
 
 OPTION_DB = {
         "--codec-info":         ["Information about supported characters of a codec."],
+        "--codec-file-info":    ["Information about supported characters of a codec file."],
         "--codec-for-language": ["Lists possible codecs for a given language."],
         "--property":           ["Querying properties"],
         "--set-by-property":    ["Determining character set by property"],
@@ -67,6 +69,7 @@ def do(ARGV):
     try:
         success_f = True
         if   search_and_validate(cl, "--codec-info"):         __handle_codec(cl)
+        elif search_and_validate(cl, "--codec-file-info"):    __handle_codec_file(cl)
         elif search_and_validate(cl, "--codec-for-language"): __handle_codec_for_language(cl)
         elif search_and_validate(cl, "--property"):           __handle_property(cl)
         elif search_and_validate(cl, "--set-by-property"):    __handle_set_by_property(cl)
@@ -95,12 +98,17 @@ def __handle_codec(cl):
         txt = txt[:-2] + "."
         error_msg(txt)
 
-    character_set = codec_db.get_supported_unicode_character_set(codec_name)
+    character_set = codec_db.get_supported_unicode_character_set(CodecAlias=codec_name)
     __display_set(character_set, cl)
 
     print
     print "Codec is designed for:"
     print repr(codec_db.get_supported_language_list(codec_name))[1:-1]
+
+def __handle_codec_file(cl):
+    file_name = cl.follow("", "--codec-file-info")
+    character_set = codec_db.get_supported_unicode_character_set(FileName=file_name)
+    __display_set(character_set, cl)
 
 def __handle_codec_for_language(cl):
     language_name = cl.follow("", "--codec-for-language")

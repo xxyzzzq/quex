@@ -11,6 +11,11 @@ The usage of codecs is facilitated with the following query options:
    codec name is omitted, the list of all supported codecs is printed on the
    screen.
 
+.. cmdoption:: `--codec-file-info`  filename.dat
+
+   Displays the characters that are covered by a user written codec mapping 
+   file.
+
 .. cmdoption:: `--codec-for-language` [language-name]
 
    Displays all supported codecs which are designed for the specified (human)
