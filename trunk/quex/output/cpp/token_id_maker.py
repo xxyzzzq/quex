@@ -4,8 +4,6 @@ import os
 import sys
 import re
 
-from quex.engine.misc.GetPot import GetPot
-
 from quex.engine.misc.file_in  import open_file_or_die, \
                                  write_safely_and_close, \
                                  delete_comment, \
@@ -14,9 +12,9 @@ from quex.engine.misc.file_in  import open_file_or_die, \
                                  error_msg
 
 import quex.blackboard             as blackboard
-from   quex.blackboard             import token_id_db
+from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
-from   quex.input.setup            import setup as Setup
+from   quex.input.setup                 import setup as Setup
 
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):

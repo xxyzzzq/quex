@@ -450,6 +450,39 @@ options:
         That means, the option ``--buffer-element-size-irrelevant`` is set 
         automatically.
 
+.. cmdoption:: --codec-file  filename.dat
+
+        By means of this option a freely customized codec can be defined. The
+        follower ``filename.dat`` determines at the same time the file where
+        the codec mapping is described and the codec's name. The codec's name
+        is the directory-stripped and extension-less part of the given
+        follower.  Each line of such a file must consist of three numbers, that
+        specify 'source interval begin', 'source interval length', and 'target
+        interval end. Such a line specifies how a cohesive Unicode character
+        range is mapped to the number range of the customized codec. For
+        example, the mapping for codec iso8859-6 looks like the following::
+
+                    0x000 0xA1 0x00
+                    0x0A4 0x1  0xA4
+                    0x0AD 0x1  0xAD
+                    0x60C 0x1  0xAC
+                    0x61B 0x1  0xBB
+                    0x61F 0x1  0xBF
+                    0x621 0x1A 0xC1
+                    0x640 0x13 0xE0
+
+        Here, the Unicode range from 0 to 0xA1 is mapped one to one from Unicode to 
+        the codec. 0xA4 and 0xAD are also the same as in Unicode. The remaining
+        lines describe how Unicode characters from the 0x600-er page are mapped 
+        inside the range somewhere from 0xAC to 0xFF.
+
+        Note, that this option is only to be used, if quex does not support the codec
+        directly. The options ``--codec-info`` and ``--codec-for-language`` help to
+        find out whether Quex directly supports a specific codec. If a ``--codec-file``
+        is required, it is advisable to use ``--codec-file-info  filename.dat`` to
+        see if the mapping is in fact as desired.
+
+
 Template and Path Compression can be controlled with the following command line options:
 
 .. cmdoption:: --template-compression
@@ -503,6 +536,12 @@ the following.
    Displays the characters that are covered by the given codec's name. If the
    name is omitted, a list of all supported codecs is printed. Engine internal
    character encoding is discussed in section :ref:`sec-engine-internal-coding`.
+
+.. cmdoption:: --codec-file-info filenname.dat
+
+   Displays the characters that are covered by the codec provided in the
+   given file. This makes sense in conjunction with ``--codec-file`` where 
+   customized codecs can be defined.
 
 .. cmdoption:: --codec-for-language [language]
 

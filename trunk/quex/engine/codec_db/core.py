@@ -12,7 +12,10 @@ from quex.DEFINITIONS         import QUEX_PATH
 from quex.engine.misc.file_in import get_file_content_or_die, \
                                      open_file_or_die, \
                                      error_msg, \
-                                     verify_word_in_list
+                                     verify_word_in_list, \
+                                     EndOfStreamException, \
+                                     read_integer, \
+                                     skip_whitespace
 from quex.engine.interval_handling                            import Interval, NumberSet
 from quex.input.regular_expression.snap_backslashed_character import __parse_hex_number
 
@@ -138,25 +141,34 @@ def get_codec_transformation_info(Codec=None, FileName=None, FH=-1, LineN=None):
 
     # Read coding into data structure
     transformation_list = []
-    if 1:
-        line_n = -1
-        for line in fh.readlines():
-            line_n += 1
-            if line == "" or line[0] == "#": continue
-            fields = line.split()
-            source_begin = int("0x" + fields[0], 16)
-            source_end   = source_begin + int("0x" + fields[1], 16)
-            target_begin = int("0x" + fields[2], 16)
+    try:
+        while 1 + 1 == 2:
+            skip_whitespace(fh)
+            source_begin = read_integer(fh)
+            if source_begin == None:
+                error_msg("Missing integer (source interval begin) in codec file.", fh)
+            skip_whitespace(fh)
+            source_size = read_integer(fh)
+            if source_size == None:
+                error_msg("Missing integer (source interval size) in codec file.", fh)
+            skip_whitespace(fh)
+            target_begin = read_integer(fh)
+            if target_begin == None:
+                error_msg("Missing integer (target interval begin) in codec file.", fh)
 
+            source_end = source_begin + source_size
             transformation_list.append([source_begin, source_end, target_begin])
-    else:
-        error_msg("Syntax error in database file for codec '%s'." % Codec, fh.name, line_n)
+    except EndOfStreamException:
+        pass
 
     return transformation_list
 
-def get_supported_unicode_character_set(CodecAlias, FH=-1, LineN=None):
-    result = NumberSet()
-    for source_begin, source_end, target_begin in get_codec_transformation_info(CodecAlias, None, FH, LineN):
+def get_supported_unicode_character_set(CodecAlias=None, FileName=None, FH=-1, LineN=None):
+    assert CodecAlias != None or FileName != None
+
+    mapping_list = get_codec_transformation_info(CodecAlias, FileName, FH, LineN)
+    result       = NumberSet()
+    for source_begin, source_end, target_begin in mapping_list:
         result.add_interval(Interval(source_begin, source_end))
     return result
 
@@ -226,11 +238,11 @@ def __AUX_create_database_file(TargetEncoding, TargetEncodingName):
         self.__db.append((interval, target_interval_begin))
 
     fh = open_file_or_die(__codec_db_path + "/%s.dat" % TargetEncoding, "wb")
-    fh.write("# Describes mapping from Unicode Code pointer to Character code in %s (%s)\n" \
+    fh.write("// Describes mapping from Unicode Code pointer to Character code in %s (%s)\n" \
              % (TargetEncoding, TargetEncodingName))
-    fh.write("# [SourceInterval.begin] [SourceInterval.Size]  [TargetInterval.begin] (all in hexidecimal)\n")
+    fh.write("// [SourceInterval.begin] [SourceInterval.Size]  [TargetInterval.begin] (all in hexidecimal)\n")
     for i, t in db:
-        fh.write("%X %X %X\n" % (i.begin, i.end - i.begin, t))
+        fh.write("0x%X %i 0x%X\n" % (i.begin, i.end - i.begin, t))
     fh.close()
 
     return True
