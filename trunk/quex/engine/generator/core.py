@@ -1,34 +1,21 @@
-import quex.engine.generator.languages.core                   as     languages
-from   quex.engine.generator.languages.variable_db            import variable_db
-from   quex.engine.generator.languages.address                import get_label, get_address, \
-                                                                          get_label_of_address, \
-                                                                          get_plain_strings, \
-                                                                          init_address_handling, \
-                                                                          get_address_set_subject_to_routing, \
-                                                                          is_label_referenced
+import quex.engine.generator.languages.core            as     languages
+from   quex.engine.generator.languages.variable_db     import variable_db
+from   quex.engine.generator.languages.address         import get_label, get_address, \
+                                                              get_label_of_address, \
+                                                              get_plain_strings, \
+                                                              init_address_handling, \
+                                                              get_address_set_subject_to_routing, \
+                                                              is_label_referenced
 
-import quex.engine.generator.state_machine_coder              as     state_machine_coder
-from   quex.engine.generator.state_machine_decorator          import StateMachineDecorator
-import quex.engine.generator.state_router                     as     state_router
-from   quex.input.setup                                            import setup as Setup
-from   quex.engine.misc.string_handling                                 import blue_print
-from   copy                                                        import copy
+import quex.engine.generator.state_machine_coder       as     state_machine_coder
+from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
+import quex.engine.generator.state_router              as     state_router
+from   quex.engine.misc.string_handling                import blue_print
+from   quex.engine.generator.base                      import GeneratorBase
+
+from   quex.input.setup                                import setup as Setup
 #
-from   quex.engine.generator.base                             import GeneratorBase
-
-bwd_prolog = """
-#include <quex/code_base/temporary_macros_on>
-QUEX_INLINE void 
-PAPC_input_postion_backward_detector_$$ID$$(QUEX_TYPE_ANALYZER* me) 
-{
-"""
-
-bwd_epilog = """
-    __quex_assert_no_passage();
-    goto $$INIT_STATE_ID$$; /* Reference the init state to prevent compiler warnings. */ 
-}
-#include <quex/code_base/temporary_macros_off>
-"""
+from   copy import copy
 
 class Generator(GeneratorBase):
 
@@ -59,12 +46,6 @@ class Generator(GeneratorBase):
 
         txt = [ LanguageDB["$header-definitions"](LanguageDB) ]
 
-        # (*) Backward Input Position Detectors 
-        #     If they are required (for pseudo ambiguous post conditions), then paste
-        #     the **before** the regular analyzer function.
-        for sm in self.papc_backward_detector_state_machine_list:
-            txt.extend(self.backward_detector_function_get(sm))
-        
         # (*) Main analyzer function
         txt.extend(self.analyzer_function_get(RequiredLocalVariablesDB))
 
@@ -72,15 +53,14 @@ class Generator(GeneratorBase):
 
     def backward_detector_function_get(self, sm):
         assert sm.get_orphaned_state_index_list() == []
+        
+        BIPD_ID = sm.get_id()
 
         dsm = StateMachineDecorator(sm, 
                                     "BACKWARD_DETECTOR_" + repr(sm.get_id()),
                                     PostContextSM_ID_List           = [], 
                                     BackwardLexingF                 = True, 
                                     BackwardInputPositionDetectionF = True)
-
-        variable_db.init()
-        init_address_handling(dsm.get_direct_transition_to_terminal_db())
 
         function_body = state_machine_coder.do(dsm)
 
@@ -96,10 +76,11 @@ class Generator(GeneratorBase):
         terminal = []
         terminal.append("\n")
         terminal.append("    __quex_assert_no_passage();\n")
-        terminal.append(get_label("$terminal-general-bw") + ":\n")
+        terminal.append(get_label("$bipd-terminal", BIPD_ID) + ":\n")
+        terminal.append('    __quex_assert("backward input position %i detected");' % BIPD_ID)
         terminal.append("    " + self.language_db["$input/seek_position"]("end_of_core_pattern_position") + "\n")
         terminal.append("    " + self.language_db["$input/increment"] + "\n")
-        terminal.append("    return;\n")
+        terminal.append("    goto %s;\n" % get_label("$bipd-return", BIPD_ID, U=True))
 
         routed_address_set = get_address_set_subject_to_routing()
 
@@ -109,21 +90,16 @@ class Generator(GeneratorBase):
             state_router_txt       = state_router.do(routed_state_info_list)
             variable_db.require("target_state_index", Condition_ComputedGoto=False)
 
-        variable_db.require("input")
-        variable_db.require("end_of_core_pattern_position")
-
-        local_variable_definition = self.language_db["$local-variable-defs"](variable_db.get())
-
         # Put all things together
         txt = []
-        txt.append(bwd_prolog.replace("$$ID$$", repr(sm.get_id()).replace("L", "")))
-        txt.extend(local_variable_definition)
+        txt.append("    __quex_assert_no_passage();\n")
+        txt.append("%s:\n" % get_label("$bipd-entry", BIPD_ID))
+        txt.append('    __quex_debug("backward input position detection %i");\n' % BIPD_ID)
         txt.extend(comment)
         txt.extend(function_body)
         txt.extend(terminal)
-        txt.append(state_router_txt)
-        txt.append(bwd_epilog.replace("$$INIT_STATE_ID$$", get_label_of_address(sm.init_state_index)))
 
+        variable_db.require("end_of_core_pattern_position")
         return get_plain_strings(txt)
 
     def analyzer_function_get(self, RequiredLocalVariablesDB):
@@ -144,7 +120,7 @@ class Generator(GeneratorBase):
         # (*) Pre Context State Machine
         #     All pre-context combined in single backward analyzer.
         if self.pre_context_sm_list != []:
-            code = self.__backward_analyzer()
+            code = self.__pre_condition_state_coder()
             function_body.extend(code)
             
         # -- now, consider core state machine
@@ -163,6 +139,11 @@ class Generator(GeneratorBase):
             variable_db.require("target_state_else_index")
             variable_db.require("target_state_index")
 
+        # Backward input position detection
+        # (Pseudo-Ambigous Post Contexts)
+        for sm in self.papc_backward_detector_state_machine_list:
+            function_body.extend(self.backward_detector_function_get(sm))
+
         # Following function refers to the global 'variable_db'
         variable_definitions = self.language_db["$variable-definitions"](self.post_contexted_sm_id_list,
                                                                          self.pre_context_sm_id_list, 
@@ -179,7 +160,7 @@ class Generator(GeneratorBase):
 
         return get_plain_strings(analyzer_function)
 
-    def __backward_analyzer(self):
+    def __pre_condition_state_coder(self):
         LanguageDB = self.language_db
 
         assert self.pre_context_sm.get_orphaned_state_index_list() == []

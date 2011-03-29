@@ -89,6 +89,9 @@ def do(State, StateIdx, SMD):
     else:
         if SMD.forward_lexing_f(): 
             txt.extend(__get_forward_goto_terminal_str(State, StateIdx, SMD.sm()))
+        elif SMD.backward_input_position_detection_f():
+            bipd_id = SMD.sm().get_id()
+            txt.extend(["    goto %s;" % get_label("$bipd-terminal", bipd_id, U=True)])
         else:
             txt.extend(["    goto %s;" % get_label("$terminal-general-bw", U=True)])
 

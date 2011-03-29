@@ -91,9 +91,10 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
         # When searching backwards for the end of the core pattern, and one reaches
         # a dead end state, then no position needs to be stored extra since it was
         # stored at the entry of the state.
+        bipd_id = SMD.sm().get_id()
         return [ LanguageDB["$input/decrement"], "\n"] + \
                acceptance_info.backward_lexing_find_core_pattern(state.origins().get_list()) + \
-               [ "goto %s;" % get_label("$terminal-general-bw", U=True) ] 
+               [ "goto %s;" % get_label("$bipd-terminal", bipd_id, U=True) ] 
 
     assert False, \
            "Unknown mode '%s' in terminal stub code generation." % Mode
