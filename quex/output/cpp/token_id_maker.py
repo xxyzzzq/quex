@@ -5,13 +5,13 @@ import sys
 import re
 
 from quex.engine.misc.file_in  import open_file_or_die, \
-                                 write_safely_and_close, \
-                                 delete_comment, \
-                                 extract_identifiers_with_specific_prefix, \
-                                 get_include_guard_extension, \
-                                 error_msg
+                                      write_safely_and_close, \
+                                      delete_comment, \
+                                      extract_identifiers_with_specific_prefix, \
+                                      get_include_guard_extension, \
+                                      error_msg
 
-import quex.blackboard             as blackboard
+import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup                 import setup as Setup

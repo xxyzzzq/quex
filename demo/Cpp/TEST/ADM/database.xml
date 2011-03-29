@@ -1,4 +1,4 @@
-<test-database execution-time-sec="249.95" date="Sat Mar 26 13:30:58 2011">
+<test-database execution-time-sec="250.55" date="Tue Mar 29 08:06:26 2011">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Intel's icpc" time-sum-sec="26.63"> 
@@ -91,11 +91,11 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="6.08"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="6.68"> 
             <application file-name="006.sh" info-request-time="1301139227L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="3.22" crc="67355700"/>
-               <choice name="DEBUG" result="OK" time_sec="2.86" crc="67355700"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="3.87" crc="67355700"/>
+               <choice name="DEBUG" result="FAIL" time_sec="2.81" crc="67355700"/>
             </choice-list>
         </test>
     </group>
