@@ -1,14 +1,9 @@
-from copy import deepcopy
-
 from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.engine.generator.languages.core         as languages
-import quex.engine.generator.languages.address      as address
-import quex.engine.generator.state_coder.core       as state_coder
-import quex.engine.generator.state_coder.transition as transition
-import quex.engine.generator.template_coder         as template_coder
-import quex.engine.generator.paths_coder            as paths_coder
-from   quex.input.setup                                  import setup as Setup
+import quex.engine.generator.state_coder.core as state_coder
+import quex.engine.generator.template_coder   as template_coder
+import quex.engine.generator.paths_coder      as paths_coder
+from   quex.input.setup                       import setup as Setup
 
 def do(SMD, TemplateHasBeenCodedBeforeF=False):
     """Returns the program code implementing the StateMachine's behavior.
@@ -27,70 +22,57 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
 
     state_machine = SMD.sm()
     
-    txt                  = []
-    done_state_index_set = set([])
+    # Track what states are treated with different methods
+    remainder = set(state_machine.states.keys())
 
-    init_state = state_machine.states[state_machine.init_state_index]
-    # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
-    #       case, end of file needs to cause a drop out! After the drop out, lexing
-    #       starts at furthest right before the EndOfFile and the init state transits
-    #       into the TERMINAL_END_OF_FILE.
-    #       (state_coder identifies the 'init_state' by its own, no need mentioning)
-    txt.extend(state_coder.do(init_state, state_machine.init_state_index, SMD))
+    # (*) Init State
+    init_state = state_coder.do(state_machine.states[state_machine.init_state_index], 
+                                state_machine.init_state_index, 
+                                SMD)
+    remainder.discard(state_machine.init_state_index)
 
-    # -- Coding path states [Optional]
+    # (*) [Optional] Path-Compressed States
+    path_compressed_states = []
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
-        code, state_index_set = paths_coder.do(SMD, Setup.compression_path_uniform_f)
-        txt.extend(code)
-        done_state_index_set.update(state_index_set)
+        path_compressed_states, state_index_set = paths_coder.do(SMD, Setup.compression_path_uniform_f)
+        remainder.difference_update(state_index_set)
     
-    # -- Coding templated states [Optional]
-    #    (those states do not have to be coded later)
+    # (*) [Optional] Template-Compressed States
+    template_compressed_states = []
     if Setup.compression_template_f:
-        code, state_index_set = template_coder.do(SMD, Setup.compression_template_coef)
-        txt.extend(code)
-        done_state_index_set.update(state_index_set)
-        
-    # -- all other states
-    state_list = get_sorted_state_list(state_machine.states)
-    # -- The init state has been coded already.
-    # -- Some states may have been subject to path and template compression.
-    state_list = filter(lambda x:     x[0] not in done_state_index_set \
-                                  and x[0] != state_machine.init_state_index, state_list)
+        template_compressed_states, state_index_set = template_coder.do(SMD, Setup.compression_template_coef)
+        remainder.difference_update(state_index_set)
+    
+    # (*) All other (normal) states
+    normal_states = []
+    for state_index, state in get_sorted_state_list(state_machine.states, remainder):
+        normal_states.extend(state_coder.do(state, state_index, SMD))
 
-    for state_index, state in state_list:
+    return init_state + \
+           normal_states + \
+           path_compressed_states + \
+           template_compressed_states 
 
-        # Get the code for the state
-        state_code = state_coder.do(state, state_index, SMD)
-
-        # Some states are not coded (some dead end states)
-        if len(state_code) == 0: continue
-
-        txt.append("\n")
-        txt.extend(state_code)
-        txt.append("\n")
-
-    return txt
-
-def get_sorted_state_list(StateDict):
+def get_sorted_state_list(StateDict, RemainderStateIndexList):
     """Sort the list in a away, so that states that are used more
        often appear earlier. This happens in the hope of more 
        cache locality. 
     """
-    # Database that counts the number of entries into a state
-    # "db[state_index] = Sum" means that the state with 'state_index'
-    # is entered 'Sum' times.
-    db = {}
-    for state_index in StateDict.iterkeys():
-        db[state_index] = 0
-
-    for state in StateDict.values():
+    # Count number of transitions to a state: frequency_db
+    frequency_db = {}
+    for state in StateDict.itervalues():
         for target_index in state.transitions().get_map().iterkeys():
-            db[target_index] += 1
+            if frequency_db.has_key(target_index): frequency_db[target_index] += 1
+            else:                                  frequency_db[target_index]  = 1
 
-    state_list = StateDict.items()
-    # x[0] -- state index; 
-    # db[x[0]] is the frequence that state 'state_index' as entered.
-    state_list.sort(key=lambda x: db[x[0]], reverse=True)
+    # Only list states that remain to be coded.
+    state_list = []
+    for index, state in StateDict.iteritems():
+        if index not in RemainderStateIndexList: continue
+        state_list.append((index, state))
+
+    # x[0]               -- state index; 
+    # frequency_db[x[0]] -- frequency that state 'state_index' is entered.
+    state_list.sort(key=lambda x: frequency_db[x[0]], reverse=True)
     return state_list
 

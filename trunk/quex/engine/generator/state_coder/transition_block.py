@@ -345,23 +345,14 @@ def __create_transition_code(txt, TriggerMapEntry):
        the trigger map entry.
     """
     LanguageDB = Setup.language_db
-    comment_function = LanguageDB["$comment"]
-    comment          = lambda interval: comment_function(interval.get_utf8_string())
 
     interval           = TriggerMapEntry[0]
     target_state_index = TriggerMapEntry[1]       
-    #  target state != None, then the machine is still eating
-    #                        => transition to subsequent state.
-    #
-    #  target state == None, drop into a terminal state (defined by origins).
-    #
-    #  for details about $transition, see the __transition() function of the
-    #  respective language module.
-    #
+
     txt.append(1)                              # indent one scope
     txt.extend(target_state_index.get_code())
 
-    if Setup.buffer_codec == "": txt.append("    " + comment(interval) + "\n")
+    if Setup.buffer_codec == "": txt.append("    " + LanguageDB["$comment"](interval) + "\n")
     else:                        txt.append("\n")
 
     return 

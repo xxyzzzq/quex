@@ -41,12 +41,13 @@ def do(state, StateIdx, SMD=False):
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
     #                        # => Here, the trigger map cannot be empty.
 
-    txt = []
+    txt = ["\n"]
     txt.extend(input_block.do(StateIdx, InitStateF, SMD))
     txt.extend(acceptance_info.do(state, StateIdx, SMD))
     txt.extend(transition_block.do(TriggerMap, StateIdx, SMD))
     txt.extend(drop_out.do(state, StateIdx, SMD))
     txt.extend(get_epilog(StateIdx, InitStateF, SMD))
+    txt.append("\n")
     
     return txt 
 

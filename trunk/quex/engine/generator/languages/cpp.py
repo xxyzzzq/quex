@@ -511,8 +511,12 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         #    pattern. However, after a match a backward detection of the end
         #    of the core pattern is done. Here, we first need to go to the point
         #    where the 'normal' pattern ended, then we can do a backward detection.
-        bipd_id = state_machine.core().post_context_backward_input_position_detector_sm_id()
-        txt.append("    goto %s;\n" % get_label("$bipd-entry", bipd_id, U=True))
+
+        # The entry into the backward input position detector, is its init state
+        entry_id = state_machine.core().post_context_backward_input_position_detector_sm().init_state_index
+        txt.append("    goto %s;\n" % get_label("$entry", entry_id, U=True))
+        # After having finished the analyzis, enter the terminal code, here.
+        bipd_id  = state_machine.core().post_context_backward_input_position_detector_sm_id()
         txt.append("%s:\n" % get_label("$bipd-return", bipd_id))
 
     elif state_machine.core().post_context_id() != -1L: 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.08" date="Sat Mar 26 13:30:58 2011">
+<test-database execution-time-sec="1.13" date="Wed Mar 30 08:01:08 2011">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.43"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1301139207L" vanished="False"/>
@@ -30,11 +30,11 @@
            <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.47"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.52"> 
         <application file-name="include_guard.py" info-request-time="1301139207L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.24" crc="1196150108"/>
-           <choice name="undefinition" result="OK" time_sec="0.23" crc="1693599369"/>
+           <choice name="convention" result="OK" time_sec="0.26" crc="1196150108"/>
+           <choice name="undefinition" result="OK" time_sec="0.26" crc="1693599369"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
