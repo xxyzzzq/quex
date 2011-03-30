@@ -477,7 +477,7 @@ def __find_begin(sm, StateIndex, InitStateIndex):
 
     transition_map = State.transitions().get_map()
     single_char_transition_found_f = False
-    for target_idx, trigger_set in transition_map.items():
+    for target_idx, trigger_set in transition_map.iteritems():
         if __find_begin_touched_state_idx_list.has_key(target_idx): continue
         __find_begin_touched_state_idx_list[target_idx] = True
 

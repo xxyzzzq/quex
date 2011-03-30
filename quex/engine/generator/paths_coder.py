@@ -77,7 +77,6 @@
 """
 from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 
-import quex.engine.generator.state_coder.core             as state_coder
 import quex.engine.generator.state_coder.transition       as transition
 import quex.engine.generator.state_coder.input_block      as input_block
 import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
@@ -90,7 +89,6 @@ import quex.engine.state_machine.index                    as index
 import quex.engine.state_machine.core                     as state_machine
 import quex.engine.state_machine.compression.paths        as paths 
 from   quex.engine.interval_handling                      import Interval
-import quex.engine.utf8                                   as utf8  
 
 from   quex.input.setup import setup as Setup
 
