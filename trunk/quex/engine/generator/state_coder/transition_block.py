@@ -344,16 +344,15 @@ def __create_transition_code(txt, TriggerMapEntry):
     """Creates the transition code to a given target based on the information in
        the trigger map entry.
     """
-    LanguageDB = Setup.language_db
-
-    interval           = TriggerMapEntry[0]
+    # LanguageDB = Setup.language_db
+    # interval   = TriggerMapEntry[0]
     target_state_index = TriggerMapEntry[1]       
 
     txt.append(1)                              # indent one scope
     txt.extend(target_state_index.get_code())
 
-    if Setup.buffer_codec == "": txt.append("    " + LanguageDB["$comment"](interval) + "\n")
-    else:                        txt.append("\n")
+    # if Setup.buffer_codec == "": txt.append("    " + LanguageDB["$comment"](interval) + "\n")
+    # else:                        txt.append("\n")
 
     return 
 
