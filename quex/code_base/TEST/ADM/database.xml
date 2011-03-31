@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.05" date="Wed Mar 30 08:01:50 2011">
+<test-database execution-time-sec="0.08" date="Thu Mar 31 07:44:40 2011">
     <last-used-diff-display-program name=""/>
     <test title="data/bocu1.txt" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="bom.exe" info-request-time="1301459706L" vanished="False"/>
@@ -8,9 +8,9 @@
         </choice-list>
     </test>
     <group name="StrangeStream">
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.02"> 
-            <application file-name="strange_stream.exe" info-request-time="1301459706L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.497710"/>
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="strange_wstream.exe" info-request-time="1301459707L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.485660"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.01" crc="2006234070"/>
                <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>
@@ -18,9 +18,9 @@
                <choice name="5" result="OK" time_sec="0.01" crc="252659001"/>
             </choice-list>
         </test>
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="strange_wstream.exe" info-request-time="1301459707L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.485660"/>
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="strange_stream.exe" info-request-time="1301459706L" vanished="False"/>
+            <make-procedure success="True" time_sec="0.497710"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.01" crc="2006234070"/>
                <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>

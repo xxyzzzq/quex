@@ -1,7 +1,7 @@
-<test-database execution-time-sec="19.34" date="Wed Mar 30 08:01:49 2011">
+<test-database execution-time-sec="19.34" date="Thu Mar 31 07:44:40 2011">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="10.19"> 
+        <test title="C++" time-sum-sec="10.18"> 
             <application file-name="test-cpp.sh" info-request-time="1301139206L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="plain" result="OK" time_sec="0.78" crc="1735895320"/>
