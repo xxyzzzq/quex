@@ -73,7 +73,13 @@ The following rules can already be derived:
 *-----------------------------------------------------------------------------*
 
   Input:   (1) The init state does not increment the input_p,
-           (2) All other states do.
+
+           (2) If the state is the terminal of a post-context pattern
+               without further transitions, then the input position
+               is set to the end of the core pattern. Thus, it does
+               not need to be incremented.
+
+           (3) All other states increment/decrement the input position.
 
   DropOut: 
            (3) if no pattern ever matched the drop-out must be 'goto Failure'.
@@ -289,40 +295,98 @@ A new rule concerning the reload behavior can be defined:
 
     OnReload:
 
-    -- If no successor acceptance state 'cares' about the lexeme and
-       a 'dont-care' acceptance state has been passed, then then reload
-       can set the lexeme_start_p to the current input position and 
-       reload the buffer from start.
+    (16) If no successor acceptance state 'cares' about the lexeme and
+         a 'dont-care' acceptance state has been passed, then then reload
+         can set the lexeme_start_p to the current input position and 
+         reload the buffer from start.
+
+    (17) All non-acceptance states that immediately follow a 'skipper
+         state' must cause 'skip-failure' on drop-out.
 """
 from quex.input.setup import setup as Setup
 from copy import copy
 
 class Input:
+    def __init__(self, AcceptanceInfo):
+        self.__move_input_position = None
+        self.__immediate_drop_out_if_not_pre_context_list = None
+
     def move_input_position(self):
-        """1    --> increment by one before dereferencing
+        """ 1   --> increment by one before dereferencing
            -1   --> decrement by one before dereferencing
-           None --> neither increment nor decrement.
+            0 --> neither increment nor decrement.
         """
         return self.__move_input_position
 
+    def immediate_drop_out_if_not_pre_context_list(self):
+        """If all successor states require the list of given
+           pre-contexts, then the state can check whether 
+           at least one of them is hit. Otherwise, it 
+           could immediately drop out.
+        """
+        return self.__immediate_drop_out_if_not_pre_context_list
+
+    def set_move_input_position(self, Value):
+        self.__move_input_position = Value
+
+
 class SuccessorInfo:
-    def store_acceptance_info(self):
-        pass
+    def __init__(self):
+        self.__store_acceptance_f          = None
+        self.__store_acceptance_position_f = False
 
-    def store_acceptance_position(self):
-        pass
+    def store_acceptance_f(self):
+        """Acceptance to be stored upon entry in this function.
+           True  --> store acceptance information
+           False  --> no acceptance is to be stored.
+        """
+        return self.__store_acceptance
 
-    def store_post_context_position(self):
-        pass
+    def store_acceptance_position_f(self):
+        """True  --> position needs to be stored in last_acceptance.
+           False --> position does not need to be stored in last_acceptance.
 
-    def drop_out_on_non_pre_context(self):
-        pass
+           This may influence, the way that the acceptance object is
+           interpreted. For example, if the acceptance requires a pre-context
+           to be fulfilled, the last_acceptance is stored inside the 
+           pre-context if-block.
+        """
+        return self.__store_acceptance_position_f
+
+    def store_post_context_position_list(self):
+        """[]   --> No post contexts related to the state.
+           List --> list of integers that indicate that the current state needs 
+                    to store
+
+                            post_context_position[i] = input_p
+
+                    for all 'i' in List.
+        """
+        return self.__post_context_index_list
+
+    def set_store_acceptance_f(self, Value):
+        assertt type(Value) == AcceptanceCondition
+        self.__store_acceptance_f = Value
+
+    def set_store_acceptance_position_f(self)
+        self.__store_acceptance_position_f = True
 
 class DropOut:
-    def move_input_position(self):
+    def modify_input_position(self):
         """Integer --> move input position forward/backward
                        according to integer.
            None    --> restore 'last_acceptance_position'.
+                       or, goto 'post_context_position[i]'
+                       where 'i' is returned by 
+                       'post_context_index()'
+        """
+        pass
+
+    def post_context_index(self):
+        """None    --> State has nothing to do with post contexts
+           Integer --> Index of the post context that is to
+                       be used for 'post_context_position[i]' when
+                       the end of the core pattern is restored.
         """
         pass
 
@@ -402,95 +466,6 @@ class AcceptanceConditionList:
                         repr(acceptance.pre_context_begin_of_line_f)))
         return "".join(txt)
 
-class AcceptanceInfo:
-    def __init__(self, 
-                 OnEntryAcceptance,   
-                 OnEntryStoreInputPositionF,
-                 OnEntryBeginOfPostContextList, 
-                 OnDropOutAcceptance, 
-                 OnDropOutAdjustInputPosition):
-
-        assert    OnEntryAcceptance == None \
-               or isinstance(OnEntryAcceptance, AcceptanceConditionList)
-        assert type(OnEntryStoreInputPositionF) == bool
-        assert    OnDropOutAcceptance == None \
-               or isinstance(OnDropOutAcceptance, AcceptanceConditionList)
-        assert    OnDropOutAdjustInputPosition       == None \
-               or type(OnDropOutAdjustInputPosition) == int
-        assert type(OnEntryBeginOfPostContextList) == list
-
-        self.__on_entry_store_acceptance           = OnEntryAcceptance
-        self.__on_entry_store_input_position_f     = OnEntryStoreInputPositionF
-        self.__on_entry_begin_of_post_context_list = OnEntryBeginOfPostContextList
-        #
-        self.__on_drop_out_acceptance              = OnDropOutAcceptance
-        self.__on_drop_out_adjust_input_position   = OnDropOutAdjustInputPosition
-
-    def on_entry_store_acceptance(self):
-        """None                    -- Do not store any acceptance.
-           AcceptanceConditionList -- Object containing information about how to store
-                                      acceptance.
-        """
-        return self.__on_entry_store_acceptance
-
-    def on_entry_store_input_position_f(self):
-        """True,  if all successor states have a distinct acceptance
-                  that can be determined from the state machine structure.
-                  Then, no storage of the acceptance in an acceptance
-                  variable is necessary.
-           False, if there are subsequent states that are of void 
-                  acceptance that can only be determined at run-time.
-                  Then, the 'last_acceptance' variable is required.
-        """
-        return self.__on_entry_store_input_position_f
-
-    def on_entry_store_begin_of_post_context_position_list(self):
-        return self.__on_entry_store_begin_of_post_condition_list
-
-    def on_drop_out_acceptance(self):
-        """None                 -- Acceptance cannot be determined based on the
-                                   structure of the state machine. At run-time 
-                                   it must be restored what is saved in variable
-                                   'last_acceptance'.
-           AcceptanceConditionList -- Object containing information about acceptance.
-        """
-        return self.__on_drop_out_acceptance
-
-    def on_drop_out_adjust_input_position(self):
-        """None    -- Acceptance position undetermined. Restore what is 
-                      stored in 'last_acceptance_position'.
-           integer -- number of characters to go forward/backward to set 
-                      the input right after the last acceptance position.
-
-           NOTE: This function is not to be called if the drop-out acceptance
-                 is FAILURE. In that case, the input position is always set
-                 to lexeme start + 1.
-        """
-        assert    self.__on_drop_out_acceptance              == None \
-               or self.__on_drop_out_acceptance.is_failure() == False
-
-        return self.__on_drop_out_adjust_input_position
-
-    def on_reload_maintain_lexeme_start_pointer(self, StateIndex):
-        """If an acceptance has been passed, that does not care about the
-           lexeme and if all subsequent possible acceptance states do not care
-           about the lexeme, the lexeme start pointer bended. On reload, the
-           lexeme start does not have to lie inside the buffer and, therefore are
-           larger section can be reloaded.
-        """
-        return True
-
-    def __repr__(self):
-        txt = []
-        txt.append("OnEntry:   store acceptance      = %s;\n" % repr(self.on_entry_store_acceptance()))
-        txt.append("           store input position  = %s;\n" % repr(self.on_entry_store_input_position_f()))
-        txt.append("OnDropOut: acceptance            = %s;\n" % repr(self.on_drop_out_acceptance()))
-        if      self.on_drop_out_acceptance() != None \
-            and self.on_drop_out_acceptance().is_failure():
-            txt.append("           adjust input position = <set to lexeme start + 1>;\n")
-        else:
-            txt.append("           adjust input position = %s;\n" % repr(self.on_drop_out_adjust_input_position()))
-        return "".join(txt)
 
 class TrackInfo:
     def __init__(self, DSM):
@@ -505,10 +480,18 @@ class TrackInfo:
         self.__loop_states = set([])
         #     -- Acceptance Database.
         #        Store for each state the information about what acceptance 
-        #        states lie on the way to them. Further store the path, so
+        #        states lie on the way to it. Further store the path, so
         #        that later on it can be determined whether the number of 
         #        transitions can be determined beforehand.
         self.__acceptance_db = {}
+        #     -- post context configurations
+        #        If multiple post-contexts share the same core pattern, then they
+        #        can share the 'post_context_position[i]' variable. The following
+        #        data structure stores pairs of 
+        #
+        #         (state index list that store input position) , (list of related post contexts)
+        self.__post_context_configurations = self.__post_context_storage_configurations()
+
         #     Dive to get the information above.
         self.__dive(self.__sm.init_state_index, []) 
 
@@ -535,19 +518,18 @@ class TrackInfo:
         # (3) Adorn each state in the state machine with acceptance information
         for state_index, state in self.__sm.states.iteritems():
 
+            acceptance = self.__acceptance_db[state_index]
+
             # -- On State Entry (before any transition)
+            input = Input()
             if state_index in self.__acceptance_states_with_necessity_to_store_last_acceptance:
                 assert state.is_acceptance()
                 info = self.__acceptance_db[state_index]
                 assert len(info) == 1
-                on_entry_store_acceptance = self.__db[state_index][0]
-            else:
-                on_entry_store_acceptance = None
+                input.set_store_acceptance_f(self.__db[state_index][0])
 
             if state_index in self.__acceptance_states_with_necessity_to_store_last_acceptance_position:
-                on_entry_store_acceptance_position_f = True
-            else:
-                on_entry_store_acceptance_position_f = False
+                input.set_store_acceptance_position_f(True)
             
             on_entry_begin_of_post_context_list = []
             for origin in state.origins().get_list(): 
@@ -576,7 +558,7 @@ class TrackInfo:
                                                      on_drop_out_adjust_input_position)
 
     def __acceptance_db_add(self, LastAcceptanceStateInde, PathSinceLastAcceptance):
-        self.__acceptance_db.setdefault(StateIndex, []).append((LastAcceptanceStateInde, 
+        self.__acceptance_db.setdefault(StateIndex, []).append((LastAcceptanceStateIndex, 
                                                                 copy(PathSinceLastAcceptance)))
 
     def __dive(self, StateIndex, path, last_acceptance_state_index=-1, path_since_last_acceptance=[]):
@@ -680,3 +662,122 @@ class TrackInfo:
 
             self.__db[state_index] = (acceptance, transition_n_since_last_acceptance)
 
+    def __post_context_position_store_conifigurations(self):
+        """Determine the groups of post contexts that store their input
+           positions at the same set of states.
+        """
+
+        # post context id --> list of states where the input position is to be stored.
+        db = {}
+        for index, state in self.__sm.iteritems():
+            for origin in state.origins().get_list():
+                if origin.store_input_position_f():
+                    db.setdefault(origin.origin.post_context_id(), []).append(index)
+
+        # Combine those post contexts that share the same set of states where 
+        # positions are to be stored.
+        group_list = []
+        for post_context_id, state_index_list in db.iteritems():
+            # See whether there is already a group with the same state index list
+            for group in group_list:
+                if db[group[0]] == state_index_list: 
+                    group.append(post_constex_id)
+                    break
+            else:
+                # Build your own group
+                group_list.append([post_context_id])
+
+        self.__post_context_group_list = group_list
+
+
+
+
+class AcceptanceInfo:
+    def __init__(self, 
+                 OnEntryAcceptance,   
+                 OnEntryStoreInputPositionF,
+                 OnEntryBeginOfPostContextList, 
+                 OnDropOutAcceptance, 
+                 OnDropOutAdjustInputPosition):
+
+        assert    OnEntryAcceptance == None \
+               or isinstance(OnEntryAcceptance, AcceptanceConditionList)
+        assert type(OnEntryStoreInputPositionF) == bool
+        assert    OnDropOutAcceptance == None \
+               or isinstance(OnDropOutAcceptance, AcceptanceConditionList)
+        assert    OnDropOutAdjustInputPosition       == None \
+               or type(OnDropOutAdjustInputPosition) == int
+        assert type(OnEntryBeginOfPostContextList) == list
+
+        self.__on_entry_store_acceptance           = OnEntryAcceptance
+        self.__on_entry_store_input_position_f     = OnEntryStoreInputPositionF
+        self.__on_entry_begin_of_post_context_list = OnEntryBeginOfPostContextList
+        #
+        self.__on_drop_out_acceptance              = OnDropOutAcceptance
+        self.__on_drop_out_adjust_input_position   = OnDropOutAdjustInputPosition
+
+    def on_entry_store_acceptance(self):
+        """None                    -- Do not store any acceptance.
+           AcceptanceConditionList -- Object containing information about how to store
+                                      acceptance.
+        """
+        return self.__on_entry_store_acceptance
+
+    def on_entry_store_input_position_f(self):
+        """True,  if all successor states have a distinct acceptance
+                  that can be determined from the state machine structure.
+                  Then, no storage of the acceptance in an acceptance
+                  variable is necessary.
+           False, if there are subsequent states that are of void 
+                  acceptance that can only be determined at run-time.
+                  Then, the 'last_acceptance' variable is required.
+        """
+        return self.__on_entry_store_input_position_f
+
+    def on_entry_store_begin_of_post_context_position_list(self):
+        return self.__on_entry_store_begin_of_post_condition_list
+
+    def on_drop_out_acceptance(self):
+        """None                 -- Acceptance cannot be determined based on the
+                                   structure of the state machine. At run-time 
+                                   it must be restored what is saved in variable
+                                   'last_acceptance'.
+           AcceptanceConditionList -- Object containing information about acceptance.
+        """
+        return self.__on_drop_out_acceptance
+
+    def on_drop_out_adjust_input_position(self):
+        """None    -- Acceptance position undetermined. Restore what is 
+                      stored in 'last_acceptance_position'.
+           integer -- number of characters to go forward/backward to set 
+                      the input right after the last acceptance position.
+
+           NOTE: This function is not to be called if the drop-out acceptance
+                 is FAILURE. In that case, the input position is always set
+                 to lexeme start + 1.
+        """
+        assert    self.__on_drop_out_acceptance              == None \
+               or self.__on_drop_out_acceptance.is_failure() == False
+
+        return self.__on_drop_out_adjust_input_position
+
+    def on_reload_maintain_lexeme_start_pointer(self, StateIndex):
+        """If an acceptance has been passed, that does not care about the
+           lexeme and if all subsequent possible acceptance states do not care
+           about the lexeme, the lexeme start pointer bended. On reload, the
+           lexeme start does not have to lie inside the buffer and, therefore are
+           larger section can be reloaded.
+        """
+        return True
+
+    def __repr__(self):
+        txt = []
+        txt.append("OnEntry:   store acceptance      = %s;\n" % repr(self.on_entry_store_acceptance()))
+        txt.append("           store input position  = %s;\n" % repr(self.on_entry_store_input_position_f()))
+        txt.append("OnDropOut: acceptance            = %s;\n" % repr(self.on_drop_out_acceptance()))
+        if      self.on_drop_out_acceptance() != None \
+            and self.on_drop_out_acceptance().is_failure():
+            txt.append("           adjust input position = <set to lexeme start + 1>;\n")
+        else:
+            txt.append("           adjust input position = %s;\n" % repr(self.on_drop_out_adjust_input_position()))
+        return "".join(txt)
