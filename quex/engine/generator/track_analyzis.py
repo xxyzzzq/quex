@@ -307,9 +307,9 @@ from quex.input.setup import setup as Setup
 from copy import copy
 
 class Input:
-    def __init__(self, AcceptanceInfo):
-        self.__move_input_position = None
-        self.__immediate_drop_out_if_not_pre_context_list = None
+    def __init__(self, MoveInputPosition, ImmediateDropOutIfNotPreContextList=None):
+        self.__move_input_position                        = MoveInputPosition
+        self.__immediate_drop_out_if_not_pre_context_list = ImmediateDropOutIfNotPreContextList
 
     def move_input_position(self):
         """ 1   --> increment by one before dereferencing
@@ -326,11 +326,13 @@ class Input:
         """
         return self.__immediate_drop_out_if_not_pre_context_list
 
-    def set_move_input_position(self, Value):
-        self.__move_input_position = Value
-
-
 class SuccessorInfo:
+    """The 'successor info' description is a list of 'SuccessorInfo' elements.
+       Each instance of class SuccessorInfo describes what happens if a certain
+       pre-context is fulfilled.
+
+       PreContextID == None --> no pre-context
+    """
     def __init__(self):
         self.__store_acceptance_f          = None
         self.__store_acceptance_position_f = False
@@ -364,37 +366,44 @@ class SuccessorInfo:
         """
         return self.__post_context_index_list
 
-    def set_store_acceptance_f(self, Value):
-        assertt type(Value) == AcceptanceCondition
-        self.__store_acceptance_f = Value
-
-    def set_store_acceptance_position_f(self)
-        self.__store_acceptance_position_f = True
 
 class DropOut:
-    def modify_input_position(self):
-        """Integer --> move input position forward/backward
-                       according to integer.
-           None    --> restore 'last_acceptance_position'.
-                       or, goto 'post_context_position[i]'
-                       where 'i' is returned by 
-                       'post_context_index()'
-        """
-        pass
+    """The 'drop out' description is a list of 'DropOut' elements.
+       Each instance of class DropOut describes what happens if a 
+       certain pre-context is fulfilled.
 
-    def post_context_index(self):
-        """None    --> State has nothing to do with post contexts
-           Integer --> Index of the post context that is to
-                       be used for 'post_context_position[i]' when
-                       the end of the core pattern is restored.
+       PreContextID == None --> no pre-context
+    """
+    def __init__(self, PreContextID, MoveInputPosition, Terminal):
+        assert PreContextID == None      or type(PreContextID) in [int, long]
+        assert MoveInputPosition == None or MoveInputPosition < 0
+        assert Terminal == None          or type(Terminal) in [int, long]
+
+        self.__pre_context_id      = PreContextID
+        self.__move_input_position = MoveInputPosition
+        self.__terminal            = Terminal
+
+    def pre_context_id(self):
+        """Returns the pre-context id (i.e. the id of the pre-context's state machine)
+           For which the drop-out instruction is defined. 
+
+           None --> No pre-context (the very usual case).
         """
-        pass
+        return self.__pre_context_id
+
+    def move_input_position(self):
+        """N < 0   --> move input position backward according to integer.
+           None    --> move input position to 'last_acceptance_position', or
+                       move input position to 'post_context_position[i]'
+                       where 'i' is determined by the acceptance object.
+        """
+        return self.__move_input_position
 
     def goto_terminal(self):
-        """None          --> goto 'last_acceptance'.
-           AcceptanceObj --> ...
+        """None    --> goto 'last_acceptance'.
+           N > 0   --> goto terminal N
         """
-        pass
+        return self.__terminal
 
 
 class AcceptanceCondition:
@@ -470,7 +479,8 @@ class AcceptanceConditionList:
 class TrackInfo:
     def __init__(self, DSM):
         """SM -- state machine to be investigated.  """
-        self.__sm = DSM.sm()
+        self.__dsm = DSM
+        self.__sm  = DSM.sm()
 
         # (1) Analyze recursively in the state machine:
         #     -- Collect states that are part of a loop in the state machine.
@@ -489,8 +499,8 @@ class TrackInfo:
         #        can share the 'post_context_position[i]' variable. The following
         #        data structure stores pairs of 
         #
-        #         (state index list that store input position) , (list of related post contexts)
-        self.__post_context_configurations = self.__post_context_storage_configurations()
+        #         [(list of ids of post contexts that share the same register) .... ]
+        self.__post_context_configurations = self.__post_context_position_store_conifigurations()
 
         #     Dive to get the information above.
         self.__dive(self.__sm.init_state_index, []) 
@@ -517,45 +527,60 @@ class TrackInfo:
 
         # (3) Adorn each state in the state machine with acceptance information
         for state_index, state in self.__sm.states.iteritems():
+            input          = self.get_input(state_index, state)
+            successor_info = self.get_successor_info(state_index, state)
+            drop_out       = self.get_drop_out(state_index, state)
 
-            acceptance = self.__acceptance_db[state_index]
 
-            # -- On State Entry (before any transition)
-            input = Input()
-            if state_index in self.__acceptance_states_with_necessity_to_store_last_acceptance:
-                assert state.is_acceptance()
-                info = self.__acceptance_db[state_index]
-                assert len(info) == 1
-                input.set_store_acceptance_f(self.__db[state_index][0])
+    def get_input(self, StateIndex, TheState):
+        """RULES: (1) Init state forward does not increment input_p ...
+                  (2) Also, if the state is the terminal of a post-context pattern ...
+                  (3) All other states do increment/decrement.
+        """
+        if self.__dsm.forward_lexing_f():
+            # Rules (1), (2), and (3)
+            if   StateIndex == self.__sm.init_state_index:        move_input_position = 0
+            elif     self.is_dead_end_state(StateIndex) \
+                 and self.is_post_context_acceptance(StateIndex): move_input_position = 0
+            else:                                                 move_input_position = +1
+        else:
+            # Backward lexing --> rule (3)
+            move_input_position = -1
 
-            if state_index in self.__acceptance_states_with_necessity_to_store_last_acceptance_position:
-                input.set_store_acceptance_position_f(True)
-            
-            on_entry_begin_of_post_context_list = []
-            for origin in state.origins().get_list(): 
-                if not origin.is_end_of_post_contexted_core_pattern(): continue
-                # Assumption about origin based on assumption about single pattern state machine:
-                #
-                #    According to 'setup_post_context.py' (currently line 121) no acceptance
-                #    state of a post context can store the input position. This has been made 
-                #    impossible! Otherwise, the post context would have zero length.
-                #
-                #    Post-conditions via backward search, i.e. pseudo ambiguous post conditions,
-                #    are a different ball-game.
-                assert origin.is_acceptance() == False
+        return Input(move_input_position)
 
-                # Store current input position, to be restored when post condition really matches
-                post_context_index = DSM.get_post_context_index(origin.state_machine_id)
-                on_entry_begin_of_post_context_list.append(post_context_index)
+    def get_successor_info(self, StateIndex, TheState):
+        store_acceptance_f = state_index \
+                             in self.__acceptance_states_with_necessity_to_store_last_acceptance
 
-            # -- On Drop-Out (no transition triggered)
-            on_drop_out_acceptance, on_drop_out_adjust_input_position = self.__db[state_index]
+        store_acceptance_position_f = state_index \
+                                      in self.__acceptance_states_with_necessity_to_store_last_acceptance_position
+        
+        begin_of_post_context_list = []
+        for origin in state.origins().get_list(): 
+            if not origin.is_end_of_post_contexted_core_pattern(): continue
+            # Assumption about origin based on assumption about single pattern state machine:
+            #
+            #    According to 'setup_post_context.py' (currently line 121) no acceptance
+            #    state of a post context can store the input position. This has been made 
+            #    impossible! Otherwise, the post context would have zero length.
+            #
+            #    Post-conditions via backward search, i.e. pseudo ambiguous post conditions,
+            #    are a different ball-game.
+            assert origin.is_acceptance() == False
 
-            state.acceptance_tracer = AcceptanceInfo(on_entry_store_acceptance, 
-                                                     on_entry_store_acceptance_position_f,
-                                                     on_entry_begin_of_post_context_list,
-                                                     on_drop_out_acceptance,
-                                                     on_drop_out_adjust_input_position)
+            # Store current input position, to be restored when post condition really matches
+            post_context_index = self.get_post_context_index(origin.state_machine_id)
+            begin_of_post_context_list.append(post_context_index)
+
+        return SuccessorInfo(store_acceptance_f, 
+                             store_acceptance_position_f, 
+                             begin_of_post_context_list)
+
+
+    def get_drop_out(self, StateIndex, TheState):
+        move_input_position = self.__db[state_index]
+        return DropOut(move_input_position, terminal)
 
     def __acceptance_db_add(self, LastAcceptanceStateInde, PathSinceLastAcceptance):
         self.__acceptance_db.setdefault(StateIndex, []).append((LastAcceptanceStateIndex, 
@@ -665,6 +690,11 @@ class TrackInfo:
     def __post_context_position_store_conifigurations(self):
         """Determine the groups of post contexts that store their input
            positions at the same set of states.
+
+           RETURNS: List of Lists of post context ids.
+
+                    Each the list elements contain post context ids that 
+                    can share the same post_context_position[...] register.
         """
 
         # post context id --> list of states where the input position is to be stored.
@@ -687,7 +717,7 @@ class TrackInfo:
                 # Build your own group
                 group_list.append([post_context_id])
 
-        self.__post_context_group_list = group_list
+        return group_list
 
 
 

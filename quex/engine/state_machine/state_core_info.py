@@ -35,7 +35,7 @@ class StateCoreInfo:
           that is used to go backwards to search the end of the core
           condition.
           In the large majority of cases, where there is no pseudo 
-          ambiguous post condition (e.g. x*/x), it is set it is -1L. 
+          ambiguous post condition (e.g. x*/x), it is set to -1L. 
     """    
     def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
                  PostContextID=-1L, PreContext_StateMachineID=-1L,
