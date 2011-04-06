@@ -306,17 +306,52 @@ A new rule concerning the reload behavior can be defined:
 from quex.input.setup import setup as Setup
 from copy import copy
 
-def do(sm):
-    track_info = TrackInfo(sm)
+class AnalyzerState:
+    def __init__(self, StateIndex, StorePostContextPositions, TheInput, TheStoreAcceptance, TheDropOut):
+        assert type(StateIndex) in [int, long]
+        assert type(TheDropOut) == list
 
-    for state_index, state in self.__sm.states.iteritems():
-        acceptance_condition = AcceptanceCondition(state_index)
+        self.index                        = StateIndex
+        self.input                        = TheInput
+        self.store_post_context_positions = StorePostContextPositions
+        self.store_acceptance             = TheStoreAcceptance
+        self.drop_out                     = TheDropOut
 
-        state.input          = Input(state_index, state, track_info)
-        state.successor_info = SuccessorInfo(state_index, state, track_info)
-        state.drop_out       = DropOut(state_index, state, track_info)
+    def __repr__(self):
+        txt  = ".state_index = %i" % StateIndex
+        txt += ".input.move_input_position                        = " + repr(self.input.move_input_position())
+        txt += "      .immediate_drop_out_if_not_pre_context_list = " + repr(self.input.immediate_drop_out_if_not_pre_context_list())
+        txt += ".store_acceptance = [\n"
+        for element in store_acceptance:
+            if element.pre_context_id() != None: 
+                txt += "(pre_context_id = %i, " % element.pre_context_id()
+            else:
+                txt += "("
+            txt += "store_acceptance = %s, "             + repr(element.store_acceptance())
+            txt += "store_acceptance_position_f = %s)\n" + repr(element.store_acceptance_position_f())
+        txt += "]\n"
+        txt += ".drop_out = [" 
+        for element in drop_out:
+            if element.pre_context_id() != None: 
+                txt += "(pre_context_id = %i, " % element.pre_context_id()
+            else:
+                txt += "("
+            txt += "move_input_p = %s, " + repr(element.move_input_position())
+            txt += "terminal = %s)\n"    + repr(element.terminal())
+        txt += "]\n"
 
-        state.acceptance_condition = acceptance_condition
+def do(sm, ForwardF):
+    track_info = TrackInfo(sm, ForwardF)
+
+    for state_index, state in sm.states.iteritems():
+
+        state._i_ = AnalyzerState(state_index,
+                                  track_info.get_post_context_position_to_be_stored(state_index),
+                                  get_StoreAcceptance(state_index, state, track_info),
+                                  Input(state_index, state, track_info),
+                                  get_DropOut(state_index, state, track_info))
+
+    return sm.values()
 
 class Input:
     def __init__(self, StateIndex, track_info):
@@ -355,34 +390,19 @@ class Input:
         """
         return self.__immediate_drop_out_if_not_pre_context_list
 
-class SuccessorInfo:
-    def __init__(self, StateIndex, OriginList, track_info):
-        self.__store_acceptance_f          = track_info.must_store_last_acceptance(StateIndex)
+class StoreAcceptance:
+    def __init__(self, PreContextID, track_info):
+        self.__pre_context_id              = PreContextID
+        self.__store_acceptance            = track_info.must_store_last_acceptance(StateIndex)
         self.__store_acceptance_position_f = track_info.must_store_last_acceptance_position(StateIndex)
         
-        self.__begin_of_post_context_list = []
-        for origin in OriginList:
-            if not origin.is_end_of_post_contexted_core_pattern(): continue
-            # Assumption about origin based on assumption about single pattern state machine:
-            #
-            #    According to 'setup_post_context.py' (currently line 121) no acceptance
-            #    state of a post context can store the input position. This has been made 
-            #    impossible! Otherwise, the post context would have zero length.
-            #
-            #    Post-conditions via backward search, i.e. pseudo ambiguous post conditions,
-            #    are a different ball-game.
-            assert origin.is_acceptance() == False
+    def pre_context_id(self):
+        """Returns the pre-context id (i.e. the id of the pre-context's state machine)
+           For which the drop-out instruction is defined. 
 
-            # Store current input position, to be restored when post condition really matches
-            post_context_index = self.get_post_context_index(origin.state_machine_id)
-            self.__begin_of_post_context_list.append(post_context_index)
-
-    def store_acceptance_f(self):
-        """Acceptance to be stored upon entry in this function.
-           True  --> store acceptance information
-           False  --> no acceptance is to be stored.
+           None --> No pre-context (the very usual case).
         """
-        return self.__store_acceptance_f
+        return self.__pre_context_id
 
     def store_acceptance_position_f(self):
         """True  --> position needs to be stored in last_acceptance.
@@ -395,22 +415,19 @@ class SuccessorInfo:
         """
         return self.__store_acceptance_position_f
 
-    def store_post_context_position_list(self):
-        """[]   --> No post contexts related to the state.
-           List --> list of integers that indicate that the current state needs 
-                    to store
-
-                            post_context_position[i] = input_p
-
-                    for all 'i' in List.
+    def store_acceptance(self):
+        """Acceptance to be stored upon entry in this function.
+           N (integer) --> store acceptance information, Winner = N
+           None        --> no acceptance is to be stored.
         """
-        return self.__post_context_index_list
+        return self.__store_acceptance
 
 
 class DropOut:
     def __init__(self, StateIndex, track_info):
         self.__move_input_position = track_info.acceptance_location(StateIndex)
         self.__pre_context_id      = PreContextID
+        self.__terminal            = TerminalID
 
     def pre_context_id(self):
         """Returns the pre-context id (i.e. the id of the pre-context's state machine)
@@ -428,6 +445,9 @@ class DropOut:
            N == 1   --> move input position to 'lexeme begin + 1'
         """
         return self.__move_input_position
+
+    def terminal(self):
+        return self.__terminal
 
 class AcceptanceCondition:
 
@@ -543,7 +563,7 @@ class TrackInfo:
         # -- Database of Reachable Acceptance States
         #    Store for each state what acceptance states are reachable.
         #   
-        #    map:  state_index  ---> list of pattern ids
+        #    map:  state_index  ---> list of acceptance state indices
         #
         self.__reachable_acceptance_db = {}
 
@@ -598,20 +618,22 @@ class TrackInfo:
         assert type(path) == list
 
         state = self.__sm.states[StateIndex]
+
         if state.is_acceptance(): 
             last_acceptance_state_index = StateIndex
             path_since_last_acceptance  = []
+            for state_index in path:
+                self.__reachable_acceptance_db[state_index] = StateIndex
 
-        for origin in state.origins().get_list():
-            if origin.is_end_of_post_contexted_core_pattern():
-                post_context_id = origin.post_context_id()
-                last_post_context_id[post_context_id]   = True
-                last_post_context_path[post_context_id] = []
+        #for origin in state.origins().get_list():
+        #    if origin.is_end_of_post_contexted_core_pattern():
+        #        post_context_id = origin.post_context_id()
+        #        last_post_context_id[post_context_id]   = True
+        #        last_post_context_path[post_context_id] = []
 
         if StateIndex in path:
-            # All states in the detected loop must be marked as being part of
-            # a recursion. Thus, if a path contains any one of those states the
-            # distance cannot be determined.
+            # Mark all states that are part of a loop. The length of a path that 
+            # contains such a state can only be determined at run-time.
             idx = path.index(StateIndex)
             self.__loop_states.update(path[idx:])
             return
@@ -720,10 +742,10 @@ class TrackInfo:
 
         # post context id --> list of states where the input position is to be stored.
         db = {}
-        for index, state in self.__sm.iteritems():
+        for index, state in self.__sm.states.iteritems():
             for origin in state.origins().get_list():
                 if origin.store_input_position_f():
-                    db.setdefault(origin.origin.post_context_id(), []).append(index)
+                    db.setdefault(origin.post_context_id(), []).append(index)
 
         # Combine those post contexts that share the same set of states where 
         # positions are to be stored.
@@ -739,4 +761,25 @@ class TrackInfo:
                 group_list.append([post_context_id])
 
         return group_list
+
+    def get_post_context_position_to_be_stored(self, StateIndex):
+        OriginList = self.__sm.states[StateIndex].origins().get_list()
+
+        result = []
+        for origin in OriginList:
+            if not origin.is_end_of_post_contexted_core_pattern(): continue
+            # Assumption about origin based on assumption about single pattern state machine:
+            #
+            #    According to 'setup_post_context.py' (currently line 121) no acceptance
+            #    state of a post context can store the input position. This has been made 
+            #    impossible! Otherwise, the post context would have zero length.
+            #
+            #    Post-conditions via backward search, i.e. pseudo ambiguous post conditions,
+            #    are a different ball-game.
+            assert origin.is_acceptance() == False
+
+            # Store current input position, to be restored when post condition really matches
+            post_context_index = self.get_post_context_index(origin.state_machine_id)
+            result.append(post_context_index)
+
 
