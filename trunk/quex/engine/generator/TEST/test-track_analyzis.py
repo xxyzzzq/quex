@@ -4,10 +4,8 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
-from   quex.engine.generator.base           import get_combined_state_machine
-from   quex.engine.generator.track_analyzis import TrackInfo
-from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
-
+from   quex.engine.generator.base            import get_combined_state_machine
+import quex.engine.generator.track_analyzis  as track_analyzis
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Necessity of storing acceptance;"
@@ -35,17 +33,17 @@ else:
 
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
-sm = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-dsm = StateMachineDecorator(sm, "TrackTest", 
-                            PostContextSM_ID_List           = [], 
-                            BackwardLexingF                 = False, 
-                            BackwardInputPositionDetectionF = False)
+#dsm = StateMachineDecorator(sm, "TrackTest", 
+#                            PostContextSM_ID_List           = [], 
+#                            BackwardLexingF                 = False, 
+#                            BackwardInputPositionDetectionF = False)
 
 print sm.get_string(NormalizeF=False)
 
-ti = TrackInfo(dsm)
+analyzer = track_analyzis.do(sm, ForwardF=True)
 
-for state_index, state in sm.states.iteritems():
-    print "State = %i" % state_index + "____________________________________"
-    print state.acceptance_tracer
+for state in analyzer:
+    print "State = %i" % state._i_.state_index + "____________________________________"
+    print state._i_
