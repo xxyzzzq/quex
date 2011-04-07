@@ -638,10 +638,15 @@ implements an example.
 .. note::
 
    The ``Pointing`` method is very seductive to be used in the context of
-   hardware input buffers or shared memory. In such cases care is to be taken,
-   because at the time of this writing, a quex generated engine is not
-   able to work on read-only memory.  It needs to be able to place
-   the buffer limit code in an arbitrary position inside the buffer.
+   hardware input buffers or shared memory. In such cases care is to be taken.
+   The quex engine may put a terminating zero at the end of each a lexeme
+   in order to facilitate the string processing. The definition of the 
+   macro 
+
+                QUEX_OPTION_TERMINATION_ZERO_DISABLED
+
+   prevents this, but the buffer limit code must still be set at the borders
+   or the end of the content.
 
 
 Character Conversions

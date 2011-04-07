@@ -307,15 +307,14 @@ from quex.input.setup import setup as Setup
 from copy import copy
 
 class AnalyzerState:
-    def __init__(self, StateIndex, StorePostContextPositions, TheInput, TheStoreAcceptance, TheDropOut):
+    def __init__(self, StateIndex, TheInput, TheEntryActions, TheDropOut):
         assert type(StateIndex) in [int, long]
         assert type(TheDropOut) == list
 
-        self.index                        = StateIndex
-        self.input                        = TheInput
-        self.store_post_context_positions = StorePostContextPositions
-        self.store_acceptance             = TheStoreAcceptance
-        self.drop_out                     = TheDropOut
+        self.index         = StateIndex
+        self.input         = TheInput
+        self.entry_actions = TheEntryActions
+        self.drop_out      = TheDropOut
 
     def __repr__(self):
         txt  = ".state_index = %i" % StateIndex
@@ -346,10 +345,9 @@ def do(sm, ForwardF):
     for state_index, state in sm.states.iteritems():
 
         state._i_ = AnalyzerState(state_index,
-                                  track_info.get_post_context_position_to_be_stored(state_index),
-                                  get_StoreAcceptance(state_index, state, track_info),
+                                  EntryActions(state_index, state, track_info),
                                   Input(state_index, state, track_info),
-                                  get_DropOut(state_index, state, track_info))
+                                  DropOut(state_index, acceptance_info, track_info))
 
     return sm.values()
 
@@ -401,6 +399,7 @@ class StoreAcceptance:
            For which the drop-out instruction is defined. 
 
            None --> No pre-context (the very usual case).
+           -1   --> Pre-context = Begin of Line
         """
         return self.__pre_context_id
 
@@ -422,12 +421,42 @@ class StoreAcceptance:
         """
         return self.__store_acceptance
 
+class EntryActions:
+    def __init__(self, StateIndex, State, track_info):
+        self.__store_post_context_position_list = track_info.get_post_context_position_to_be_stored(StateIndex)
 
-class DropOut:
-    def __init__(self, StateIndex, track_info):
-        self.__move_input_position = track_info.acceptance_location(StateIndex)
+    def store_post_context_position_list(self):
+        """What post context positions have to be stored. Return list of
+           register indices. That is for each element 'i' in the list the
+           position needs to be stored:
+
+                    post_context_position[i] = input_p;
+        """
+        return self.__store_post_context_position_list
+
+    def mark_pre_context_fulfilled_list(self):
+        """This is only relevant during backward lexical analyzis while
+           searching for pre-contexts. The list that is returned tells
+           that the given pre-contexts are fulfilled in the current state
+           and must be set, e.g.
+
+                    pre_context_fulfilled[i] = true; 
+        """
+        return self.__pre_context_fulfilled_list
+
+    def store_acceptance_list(self):
+        """Returns a list of tuples that indicate what acceptance information 
+           has to be stored depending on what pre-context being fulfilled.
+           It is a list of objects of class 'StoreAcceptance'.
+        """
+        return self.__store_acceptance_list
+
+
+class DropOutElement:
+    def __init__(self, StateIndex, PreContextID, TerminalID, track_info):
+        self.__move_input_position = track_info.last_acceptance_location(StateIndex)
         self.__pre_context_id      = PreContextID
-        self.__terminal            = TerminalID
+        self.__terminal_id         = TerminalID
 
     def pre_context_id(self):
         """Returns the pre-context id (i.e. the id of the pre-context's state machine)
@@ -446,38 +475,41 @@ class DropOut:
         """
         return self.__move_input_position
 
-    def terminal(self):
-        return self.__terminal
+    def terminal_id(self):
+        """ N > 0       pattern id of the winning pattern.
+            None        terminal = end of file/stream
+            -1          terminal = failure
+        """
+        return self.__terminal_id
+
+class DropOut:
+    def __init__(self, StateIndex, TheAcceptanceInfo):
+        for info in TheAcceptanceInfo:
+            self.__list.append(DropOutElement(StateIndex, info.pre_context_id, info.pattern_id))
+
 
 class AcceptanceCondition:
-
     """This object simply tells that a specific pattern wins if the pre-context
-       or a begin of line is fulfilled. An acceptance independent of pre-contexts
-       is indicated by 
-                            pre_context_id            == -1
-                            begin_of_line_condition_f == False
-
-       In this case, the pattern id is simply the acceptance pattern.
+       or a begin of line is fulfilled. 
     """
-    def __init__(self, PatternID, PreContextID, PreContextBeginOfLineF):
-        # PatternID                   => ID of the pattern that accepts.
-        #
-        # PreContextID                => pre-context that must be fulfilled so that 
-        #                                pattern id is the winner. 
-        #                   == -1     => no pre-context
-        # PreContextBeginOfLineF      
-        #                   == True   => For the acceptance PatternID
-        #                                The begin of line must be fulfilled
-        #                   == False  => no begin of line condition
-        #
-        # The normal case of a pattern without pre-context and begin-of-line 
-        # condition is the (N, -1, False), where N is some integer.
-        self.pre_context_id              = PreContextID
-        self.pre_context_begin_of_line_f = PreContextBeginOfLineF
-        self.pattern_id                  = PatternID
+    def __init__(self, PatternID, PreContextID):
+        """PatternID     => ID of the pattern that accepts.
+                            None --> end of file
+                            -1   --> failure
+           PreContextID  => pre-context that must be fulfilled so that 
+                            pattern id is the winner. 
+                            None --> no pre-context whatsoever
+                            - 1  --> pre-context = begin of line
+          
+           The normal case of a pattern without pre-context and begin-of-line 
+           condition is the (None, PatternID). Normal case for end of file
+           is (None, None). Normal case for 'failure' is (None, -1).
+        """
+        self.pre_context_id = PreContextID
+        self.pattern_id     = PatternID
 
     def is_conditional(self):
-        return self.pre_context_id != -1 or self.pre_context_begin_of_line_f
+        return self.pre_context_id != None 
 
 class AcceptanceInfo:
     def __init__(self, OriginList=None):
@@ -494,9 +526,10 @@ class AcceptanceInfo:
         for origin in origin_list:
             if not origin.is_acceptance(): continue
 
-            info = AcceptanceCondition(origin.state_machine_id,
-                                       origin.pre_context_id(),
-                                       origin.pre_context_begin_of_line_f())
+            if   origin.pre_context_begin_of_line_f(): pre_context_id = -1
+            elif origin.pre_context_id() == -1:        pre_context_id = None
+            else:                                      pre_context_id = origin.pre_context_id()
+            info = AcceptanceCondition(origin.state_machine_id, pre_context_id)
             
             self.__acceptance_condition_list.append(info)
 
@@ -605,7 +638,7 @@ class TrackInfo:
     def forward_f(self):
         return self.__forward_f
 
-    def acceptance_location(self, StateIndex):
+    def last_acceptance_location(self, StateIndex):
         return self.__acceptance_location_db[StateIndex]
 
     def must_store_last_acceptance(self, StateIndex):

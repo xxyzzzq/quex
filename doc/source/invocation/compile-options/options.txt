@@ -85,6 +85,12 @@ the suffix enables something, the option with the suffix disables the 'something
 
    Alternatively, one might consider opening the stream in binary mode.
 
+.. cmacro:: QUEX_OPTION_TERMINATION_ZERO_DISABLED
+
+   If this macro is defined, the setting of the terminating zero at the end of
+   a lexeme is disabled. This may cause some speed-up, but it is necessary
+   in order to run the lexical analyzer on read-only memory.
+
 .. cmacro:: QUEX_OPTION_STRING_ACCUMULATOR
 
    Enables/disables an optional accumulator which can collect some longer string.
