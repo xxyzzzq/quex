@@ -512,14 +512,14 @@ class AcceptanceCondition:
         return self.pre_context_id != None 
 
 class AcceptanceInfo:
-    def __init__(self, OriginList=None):
+    def __init__(self, TheState):
         LanguageDB = Setup.language_db
 
-        if OriginList == None:  # Acceptance = Failure
+        if TheState.is_acceptance() == False:  # Acceptance = Failure
             self.__acceptance_condition_list = []
             return
 
-        origin_list = OriginList.get_list()
+        origin_list = TheState.origins().get_list()
         origin_list.sort()
         # Store information about the 'acceptance behavior' of a state.
         self.__acceptance_condition_list = []
@@ -533,8 +533,8 @@ class AcceptanceInfo:
             
             self.__acceptance_condition_list.append(info)
 
-            # If an unconditioned acceptance occurred, 
-            # then no further consideration is necessary.
+            # If an unconditioned acceptance occurred, then no further consideration!
+            # (Rest of acceptance candidates is dominated).
             if not info.is_conditional(): break
 
         # Here: no acceptance => len(self.__acceptance_condition_list) == 0 
@@ -546,21 +546,26 @@ class AcceptanceInfo:
         if len(self.__acceptance_condition_list) == 0: return False
         # Only the last condition in the acceptance condition list is unconditional.
         # Thus, if there are more than one condition --> conditional
-        elif len(self.__acceptance_condition_list) > 1: return False
+        elif len(self.__acceptance_condition_list) > 1: return True
         # The only one acceptance may still be condition, so check ...
         return self.__acceptance_condition_list[0].is_conditional()
+
+    def get_pattern_id_list(self):
+        return map(lambda x: x[0], self.__acceptance_condition_list)
 
     def __eq__(self, Other):
         if not isinstance(Other, AcceptanceInfo): return False
         return self.__acceptance_condition_list == Other.__acceptance_condition_list
 
     def __repr__(self):
-        if len(self.__info) == 0: return "Failure"
+        if len(self.__acceptance_condition_list) == 0: return "(Failure)"
         txt = []
-        for acceptance in self.__info:
-            txt.append("(A = %i; pre-context = %i, begin_of_line=%s), " % 
-                       (acceptance.pattern_id, acceptance.pre_context_id, 
-                        repr(acceptance.pre_context_begin_of_line_f)))
+        for acceptance in self.__acceptance_condition_list:
+            if   acceptance.pre_context_id == None: pre_context_str = "None"
+            elif acceptance.pre_context_id != -1:   pre_context_str = "%i" % self.pre_context_id
+            else:                                   pre_context_str = "begin-of-line"
+            txt.append("(A = %i; pre = %s), " % 
+                       (acceptance.pattern_id, pre_context_str)
         return "".join(txt)
 
 class TrackInfo:
@@ -569,6 +574,14 @@ class TrackInfo:
         assert type(ForwardF) == bool
         self.__sm        = SM
         self.__forward_f = ForwardF
+
+        # (0) Acceptance DB
+        #
+        # -- Provide for each acceptance state an 'acceptance info' that tells 
+        #    what pattern id wins under what pre_context.  
+        self.__acceptance_db = {}
+        for index, state in self.__sm.itervalues():
+            self.__acceptance_db[index] = AcceptanceInfo(state)
 
         # (1) Analyze recursively in the state machine:
         #
@@ -600,7 +613,7 @@ class TrackInfo:
         #
         self.__reachable_acceptance_db = {}
 
-        #     Dive to get the information above.
+        #     Dive recursively to get the information above.
         self.__dive(self.__sm.init_state_index, []) 
 
         # (*) Post Context Configurations
@@ -647,14 +660,14 @@ class TrackInfo:
     def must_store_last_acceptance_position(self, StateIndex):
         return StateIndex in self.__acceptance_states_with_necessity_to_store_last_acceptance_position
 
-    def __dive(self, StateIndex, path, last_acceptance_state_index=-1, path_since_last_acceptance=[]):
+    def __dive(self, StateIndex, path, acceptance_trace={}):
         assert type(path) == list
 
         state = self.__sm.states[StateIndex]
 
         if state.is_acceptance(): 
-            last_acceptance_state_index = StateIndex
-            path_since_last_acceptance  = []
+            for pattern_id in self.__acceptance_db[StateIndex].get_pattern_id_list():
+                acceptance_trace[pattern_id] = []
             for state_index in path:
                 self.__reachable_acceptance_db[state_index] = StateIndex
 
@@ -671,16 +684,17 @@ class TrackInfo:
             self.__loop_states.update(path[idx:])
             return
 
-        # Add the information that the current state has a path where the last acceptance
-        # lies n transitions backward.
-        self.__passed_acceptance_db.setdefault(StateIndex, []).append(
-                (last_acceptance_state_index, copy(path_since_last_acceptance)))
+        for pattern_id, path_since_acceptance in acceptance_trace.iteritems():
+            # There were acceptance states on the path to this state. Note down what
+            # acceptance states and the path from them to this state.
+            self.__passed_acceptance_db.setdefault(StateIndex, []).append((pattern_id, copy(path_since_acceptance)))
 
         path.append(StateIndex)
-        path_since_last_acceptance.append(StateIndex)
+        for path in acceptance_trace.values():
+            path.append(StateIndex)
 
         for state_index in state.transitions().get_target_state_index_list():
-            self.__dive(state_index, path, last_acceptance_state_index, path_since_last_acceptance)
+            self.__dive(state_index, path, acceptance_trace)
 
     def __determine_acceptance_dbs(self):
 
