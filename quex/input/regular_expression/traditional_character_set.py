@@ -97,10 +97,7 @@ def do(sh):
             tracker.consider_interval(char_code, char_code_2 + 1)
 
     if tracker.negation_f: 
-        result = tracker.match_set.inverse()
-        if Setup.get_character_value_limit() != sys.maxint:
-            result.intersect_with(Interval(0, Setup.get_character_value_limit()))
-        return result
+        return tracker.match_set.inverse()
     else:                  
         return tracker.match_set
 
