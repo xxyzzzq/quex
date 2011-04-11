@@ -315,6 +315,18 @@ A new rule concerning the reload behavior can be defined:
 from quex.input.setup import setup as Setup
 from copy import copy
 
+def do(sm, ForwardF):
+    track_info = TrackInfo(sm, ForwardF)
+
+    for state_index, state in sm.states.iteritems():
+
+        state._i_ = AnalyzerState(state_index,
+                                  EntryActions(state_index, state, track_info),
+                                  Input(state_index, state, track_info),
+                                  DropOut(state_index, acceptance_info, track_info))
+
+    return sm.values()
+
 class AnalyzerState:
     def __init__(self, StateIndex, TheInput, TheEntryActions, TheDropOut):
         assert type(StateIndex) in [int, long]
@@ -348,18 +360,6 @@ class AnalyzerState:
             txt += "terminal = %s)\n"    + repr(element.terminal())
         txt += "]\n"
 
-def do(sm, ForwardF):
-    track_info = TrackInfo(sm, ForwardF)
-
-    for state_index, state in sm.states.iteritems():
-
-        state._i_ = AnalyzerState(state_index,
-                                  EntryActions(state_index, state, track_info),
-                                  Input(state_index, state, track_info),
-                                  DropOut(state_index, acceptance_info, track_info))
-
-    return sm.values()
-
 class Input:
     def __init__(self, StateIndex, track_info):
         """RULES: (1) Init state forward does not increment input_p ...
@@ -370,9 +370,9 @@ class Input:
             # Rules (1), (2), and (3)
             if   track_info.is_init_state_index(StateIndex):        
                 self.__move_input_position = 0
-            elif     track_info.is_dead_end_state(StateIndex) \
-                 and track_info.is_post_context_acceptance(StateIndex): 
-                self.__move_input_position = 0
+            # elif     track_info.is_dead_end_state(StateIndex) \
+            #     and track_info.is_post_context_acceptance(StateIndex): 
+            #    self.__move_input_position = 0
             else:                                                 
                 self.__move_input_position = +1
         else:
@@ -383,57 +383,46 @@ class Input:
         self.__immediate_drop_out_if_not_pre_context_list = False
 
     def move_input_position(self):
-        """ 1   --> increment by one before dereferencing
-           -1   --> decrement by one before dereferencing
+        """+1 --> increment by one before dereferencing
+           -1 --> decrement by one before dereferencing
             0 --> neither increment nor decrement.
         """
         return self.__move_input_position
 
     def immediate_drop_out_if_not_pre_context_list(self):
-        """If all successor states require the list of given
-           pre-contexts, then the state can check whether 
-           at least one of them is hit. Otherwise, it 
+        """If all successor states require the list of given pre-contexts, then 
+           the state can check whether at least one of them is hit. Otherwise, it 
            could immediately drop out.
         """
         return self.__immediate_drop_out_if_not_pre_context_list
 
-class StoreAcceptance:
-    def __init__(self, PreContextID, track_info):
-        self.__pre_context_id              = PreContextID
-        self.__store_acceptance            = track_info.must_store_last_acceptance(StateIndex)
-        self.__store_acceptance_position_f = track_info.must_store_last_acceptance_position(StateIndex)
-        
-    def pre_context_id(self):
-        """Returns the pre-context id (i.e. the id of the pre-context's state machine)
+class EntryActionElement:
+    def __init__(self):
+        """Pre-context id (i.e. the id of the pre-context's state machine)
            For which the drop-out instruction is defined. 
 
            None --> No pre-context (the very usual case).
-           -1   --> Pre-context = Begin of Line
         """
-        return self.__pre_context_id
-
-    def store_acceptance_position_f(self):
-        """True  --> position needs to be stored in last_acceptance.
+        self.pre_context_id              = PreContextID
+        """Store id of accepting (winning) pattern. 
+           None --> no acceptance id to be stored
+        """
+        self.store_acceptance_id         = StoreAcceptanceID
+        """True  --> position needs to be stored in last_acceptance_position.
            False --> position does not need to be stored in last_acceptance.
-
-           This may influence, the way that the acceptance object is
-           interpreted. For example, if the acceptance requires a pre-context
-           to be fulfilled, the last_acceptance is stored inside the 
-           pre-context if-block.
         """
-        return self.__store_acceptance_position_f
-
-    def store_acceptance(self):
-        """Acceptance to be stored upon entry in this state.
-           N (integer) --> store acceptance information, Winner = N
-           None        --> no acceptance is to be stored.
-        """
-        return self.__store_acceptance
+        self.store_acceptance_position_f = StoreAcceptancePositionF
 
 class EntryActions:
-    def __init__(self, StateIndex, State, track_info):
-        self.__store_post_context_position_list = track_info.get_post_context_position_to_be_stored(StateIndex)
+    def __init__(self, StoreAcceptanceF,       StoreAcceptancePositionF, 
+                 StorePostContextPositionList, StorePreContextFulfilledList):
+        self.__store_post_context_position_list = StorePostContextPositionList
+        self.__pre_context_fulfilled_list       = StorePreContextFulfilledList
+        self.__list = ...
 
+    def get_list(self):
+        return self.__list
+        
     def store_post_context_position_list(self):
         """What post context positions have to be stored. Return list of
            register indices. That is for each element 'i' in the list the
@@ -453,43 +442,26 @@ class EntryActions:
         """
         return self.__pre_context_fulfilled_list
 
-    def store_acceptance_list(self):
-        """Returns a list of tuples that indicate what acceptance information 
-           has to be stored depending on what pre-context being fulfilled.
-           It is a list of objects of class 'StoreAcceptance'.
-        """
-        return self.__store_acceptance_list
-
-
 class DropOutElement:
     def __init__(self, StateIndex, PreContextID, TerminalID, track_info):
-        self.__move_input_position = track_info.last_acceptance_location(StateIndex)
-        self.__pre_context_id      = PreContextID
-        self.__terminal_id         = TerminalID
-
-    def pre_context_id(self):
-        """Returns the pre-context id (i.e. the id of the pre-context's state machine)
+        """Pre-context id (i.e. the id of the pre-context's state machine)
            For which the drop-out instruction is defined. 
 
            None --> No pre-context (the very usual case).
         """
-        return self.__pre_context_id
-
-    def move_input_position(self):
+        self.pre_context_id      = PreContextID
         """N <= 0   --> move input position backward according to integer.
            None     --> move input position to 'last_acceptance_position', or
                         move input position to 'post_context_position[i]'
                         where 'i' is determined by the acceptance object.
            N == 1   --> move input position to 'lexeme begin + 1'
         """
-        return self.__move_input_position
-
-    def terminal_id(self):
+        self.move_input_position = track_info.last_acceptance_location(StateIndex)
         """ N > 0       pattern id of the winning pattern.
             None        terminal = end of file/stream
             -1          terminal = failure
         """
-        return self.__terminal_id
+        self.terminal_id         = TerminalID
 
 class DropOut:
     def __init__(self, StateIndex, TheAcceptanceInfo):
@@ -687,6 +659,18 @@ class TrackInfo:
         #      and acceptance position).
         self.__analyze_acceptance()
 
+    def is_init_state_index(self, StateIndex):
+        return self.__sm.init_state_index == StateIndex
+
+    #    def is_dead_end_state(self, StateIndex):
+    #        return StateIndex in self.__dead_end_state_index_list
+    #
+    #    def is_post_context_acceptance(self, StateIndex):
+    #        state = self.__sm[StateIndex]
+    #        for origin in state.origins().get_list():
+    #            if origin.is_acceptance() and origin.post_context_id(): return True
+    #        return False
+
     def forward_f(self):
         return self.__forward_f
 
@@ -723,6 +707,9 @@ class TrackInfo:
 
         state = self.__sm.states[StateIndex]
         if state.is_acceptance(): 
+            # IMPORTANT: The "path.append(StateIndex)" **must** come before this!
+            # Otherwise, if the last state was part of a loop it could not be detected 
+            # that the distance from acceptance state to it is run-time dependent.
             last_acceptance_i = current_i
             # Notify all states in the path that they may reach this acceptance state
             for state_index in path:
