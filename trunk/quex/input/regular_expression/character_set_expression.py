@@ -164,10 +164,7 @@ def snap_set_term(stream, PatternDict):
             if L > 1:
                 for character_set in set_list[1:]:
                     result.unite_with(character_set)
-            result = result.inverse()
-            if Setup.get_character_value_limit() != -1:
-                result.intersect_with(Interval(0, Setup.get_character_value_limit()))
-            return __debug_exit(result, stream)
+            return __debug_exit(result.inverse(), stream)
 
         if L < 2:
             raise RegularExpressionException("Regular Expression: A %s operation needs at least\n" % word + \
