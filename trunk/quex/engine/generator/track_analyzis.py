@@ -472,7 +472,7 @@ class DropOut:
         self.__sequence = []
         for x in TheAcceptanceInfo.get_list():
             element = DropOutElement(x.pre_context_id, 
-                                     track_info.last_acceptance_location(x.pre_context_id, StateIndex), 
+                                     track_info.acceptance_location_db[StateIndex][x.pre_context_id]
                                      x.pattern_id)
             self.__sequence.append(element)
 
@@ -596,9 +596,7 @@ class TrackInfo:
         #
         # -- Provide for each acceptance state an 'acceptance info' that tells 
         #    what pattern id wins under what pre_context.  
-        self.__acceptance_db = {}
-        for index, state in self.__sm.states.iteritems():
-            self.__acceptance_db[index] = AcceptanceInfo(state)
+        self.__acceptance_db = dict([ (i, AcceptanceInfo(state) for i, state in self.__sm.states.iteritems() ])
 
         # (1) Analyze recursively in the state machine:
         #
@@ -618,10 +616,10 @@ class TrackInfo:
         #    can be determined whether the number of transitions can be
         #    determined beforehand.
         # 
-        #    map:  state_index  --> list of (AcceptanceStateIndex, 
-        #                                    Path from AcceptanceStateIndex to state_index)
+        #    map:  state_index, pre_context_id  --> list of (AcceptanceStateIndex, 
+        #                                           Path from AcceptanceStateIndex to state_index)
         #
-        self.__passed_acceptance_db = {}
+        self.__passed_acceptance_db = dict([ (i, {}) for i in state_index_list ])
 
         # -- Post Context Database
         #    Store for each post context end state the information about paths from 
@@ -666,17 +664,12 @@ class TrackInfo:
         #                  (if acceptance = failure)
         #      <= 0    --> number of characters to move backward
         #                  to last acceptance position.
-        self.__acceptance_location_db = {}
+        self.acceptance_location_db = dict([ (i, {}) for i in state_index_list ])
 
         #     Analyze to build the databases mentioned above.
         #     (store in acceptance info objects the necessity to store acceptance 
         #      and acceptance position).
         self.__analyze_acceptance()
-
-    def __acceptance_location_db_add(self, StateIndex, PreContextID, Move):
-        x = self.__acceptance_location_db.get(StateIndex)
-        if x != None: self.__acceptance_location_db[PreContextID] = Move
-        else:         self.__acceptance_location_db = { PreContextID: Move }
 
     def __passed_acceptance_location_db_add(self, StateIndex, PreContextID, Move):
         x = self.__acceptance_location_db.get(StateIndex)
@@ -686,7 +679,6 @@ class TrackInfo:
     def is_init_state_index(self, StateIndex):
         return self.__sm.init_state_index == StateIndex
 
-    def last_acceptance_location(self, PreContextID, StateIndex):
         return self.__acceptance_location_db[StateIndex]
 
     def __get_path_from_state_index_to_end(self, Path, StateIndex):
@@ -724,7 +716,7 @@ class TrackInfo:
             # Otherwise, if the last state was part of a loop it could not be detected 
             # that the distance from acceptance state to it is run-time dependent.
             for origin in state.origins().get_list():
-                last_acceptance_i[origin.pre_context_id()] = current_i
+                last_acceptance_i_db[origin.pre_context_id()] = current_i
             # Notify all states in the path that they may reach this acceptance state
             for state_index in path:
                 self.__reachable_acceptance_db[state_index].append(StateIndex)
@@ -746,7 +738,7 @@ class TrackInfo:
         for pre_context_id, path_index in last_acceptance_i_db.iteritems():
             # Acceptance states on the path 
             # => Store path from last acceptance to here
-            self.__passed_acceptance_db[StateIndex][pre_context_id].append(path[path_index:])   
+            self.__passed_acceptance_db[StateIndex].setdefault(pre_context_id, []).append(path[path_index:])   
 
         for state_index in state.transitions().get_target_state_index_list():
             self.__dive(state_index, path, last_acceptance_i_db, last_post_context_i_db)
@@ -800,7 +792,7 @@ class TrackInfo:
                 if len(path_list) == 0:
                     # The last acceptance state is the state itself and the last 
                     # acceptance position lies zero characters backward.
-                    self.__acceptance_location_db_add(state_index, pre_context_id, 0)
+                    self.acceptance_location_db[state_index][pre_context_id] = 0
                     continue
 
                 acceptance, path_length = analyze_this(path_list)
@@ -819,9 +811,9 @@ class TrackInfo:
                     for acceptance_state_index in map(lambda x: x[0], path_list):
                         x = self.__acceptance_db[acceptance_state_index]
                         x.set_necessary_to_store_last_acceptance_position_f(post_conted_id)
-                    self.__acceptance_location_db_add(state_index, pre_context_id, None)
+                    self.acceptance_location_db[state_index][pre_context_id] = None
                 else:
-                    self.__acceptance_location_db_add(state_index, pre_context_id, - path_length)
+                    self.acceptance_location_db[state_index][pre_context_id] = - path_length
 
     def __post_context_position_store_conifigurations(self):
         """Determine the groups of post contexts that store their input
