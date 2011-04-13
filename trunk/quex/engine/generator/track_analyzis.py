@@ -313,7 +313,7 @@ A new rule concerning the reload behavior can be defined:
          state' must cause 'skip-failure' on drop-out.
 """
 from quex.input.setup import setup as Setup
-from copy import copy
+from copy import copy, deepcopy
 
 def do(sm, ForwardF):
     track_info = TrackInfo(sm, ForwardF)
@@ -741,7 +741,11 @@ class TrackInfo:
             self.__passed_acceptance_db[StateIndex].setdefault(pre_context_id, []).append(path[path_index:])   
 
         for state_index in state.transitions().get_target_state_index_list():
-            self.__dive(state_index, path, last_acceptance_i_db, last_post_context_i_db)
+            if len(last_acceptance_i_db) == 0: i_db = last_acceptance_i_db
+            else:                              i_db = deepcopy(last_acceptance_i_db)
+            if len(last_post_context_i_db) == 0: pi_db = last_post_context_i_db
+            else:                                pi_db = deepcopy(last_post_context_i_db)
+            self.__dive(state_index, path, last_acceptance_i_db, pi_db)
 
     def __analyze_acceptance(self):
 
