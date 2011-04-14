@@ -62,10 +62,10 @@ def check():
         print "error:", QUEX_INSTALLATION_DIR
         sys.exit(-1) # sys.exit(-1) is acceptable
 
-    # -- Check for version 2.4 or higher
+    # -- Check for version 2.5 or higher
     if sys.version_info[0] < 2 or \
-       (sys.version_info[0] == 2 and sys.version_info[1] < 4):
-        print "error: Quex requires Python version 2.4 or higher. Detected version '%i.%i'." % \
+       (sys.version_info[0] == 2 and sys.version_info[1] < 5):
+        print "error: Quex requires Python version 2.5 or higher. Detected version '%i.%i'." % \
               (sys.version_info[0], sys.version_info[1])
         print "error: Please, visit http://www.python.org and download an appropriate release."
         sys.exit(-1) # sys.exit(-1) is acceptable

@@ -81,7 +81,8 @@
 
 """
 from quex.engine.interval_handling import NumberSet, Interval
-from copy                               import deepcopy, copy
+from copy                          import deepcopy, copy
+from collections                   import defaultdict
 
 
 def do(SM, UniformityF):
@@ -151,14 +152,14 @@ def __select_longest_intersecting_paths(path_list):
        Function modifies 'path_list'.
     """
     # The intersection db maps: intersection state --> involved path indices
-    intersection_db = {}
+    intersection_db = defaultdict(list)
     for i, path_i in enumerate(path_list):
         k = i # is incremented to 'i+1' in the first iteration
         for path_k in path_list[i + 1:]:
             k += 1
             intersection_state_list = path_i.get_intersections(path_k)
             for state_index in intersection_state_list:
-                intersection_db.setdefault(state_index, []).extend([i, k])
+                intersection_db[state_index].extend([i, k])
 
     return filter_longest_options(path_list, intersection_db)
 

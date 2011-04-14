@@ -313,7 +313,8 @@ A new rule concerning the reload behavior can be defined:
          state' must cause 'skip-failure' on drop-out.
 """
 from quex.input.setup import setup as Setup
-from copy import copy, deepcopy
+from copy             import copy, deepcopy
+from collections      import defaultdict
 
 def do(sm, ForwardF):
     track_info = TrackInfo(sm, ForwardF)
@@ -412,15 +413,21 @@ class EntryActionElement:
 
 class EntryActions:
     def __init__(self, TheAcceptanceInfo, StorePostContextPositionList, StorePreContextFulfilledList):
-        self.__sequence = []
-        for x in TheAcceptanceInfo.get_list():
-            if TheAcceptanceInfo.necessary_to_store_last_acceptance_f(): acceptance_id = None
-            else:                                                        acceptance_id = x.pattern_id
-            element = EntryActionElement(x.pre_context_id,
-                                         acceptance_id,
-                                         TheAcceptanceInfo.necessary_to_store_last_acceptance_position_f())
+
+        def get_entry_action(x):
+            if TheAcceptanceInfo.necessary_to_store_last_acceptance_f(x.pre_context_id): 
+                acceptance_id = x.pattern_id
+            else:
+                acceptance_id = None
+
+            store_acceptance_position_f = \
+                    TheAcceptanceInfo.necessary_to_store_last_acceptance_position_f(pre_context_id)
+
+            element = EntryActionElement(x.pre_context_id, acceptance_id, store_acceptance_position_f)
+                                         
             self.__sequence.append(element)
 
+        self.__sequence                         = map(get_entry_action, TheAcceptanceInfo.get_list())
         self.__store_post_context_position_list = StorePostContextPositionList
         self.__pre_context_fulfilled_list       = StorePreContextFulfilledList
 
@@ -530,8 +537,9 @@ class AcceptanceInfo:
             if not info.is_conditional(): break
         # If: no acceptance => len(self.__acceptance_condition_list) == 0 
 
-        self.__necessary_to_store_last_acceptance_f = False
-        self.__necessary_to_store_last_acceptance_position_f = False
+        # Each necessity is related to a pre-context
+        self.__necessary_to_store_last_acceptance_f          = {}
+        self.__necessary_to_store_last_acceptance_position_f = {}
 
     def is_failure(self):
         return len(self.__acceptance_condition_list) == 0
@@ -556,17 +564,17 @@ class AcceptanceInfo:
         if not isinstance(Other, AcceptanceInfo): return False
         return self.__acceptance_condition_list == Other.__acceptance_condition_list
 
-    def set_necessary_to_store_last_acceptance_f(self):
-        self.__necessary_to_store_last_acceptance_f = True
+    def set_necessary_to_store_last_acceptance_f(self, PreContextID):
+        self.__necessary_to_store_last_acceptance_f[PreContextID]  = True
 
-    def necessary_to_store_last_acceptance_f(self):
-        return self.__necessary_to_store_last_acceptance_f 
+    def necessary_to_store_last_acceptance_f(self, PreContextID):
+        return self.__necessary_to_store_last_acceptance_f[PreContextID]
 
-    def set_necessary_to_store_last_acceptance_position_f(self):
-        self.__necessary_to_store_last_acceptance_position_f = True
+    def set_necessary_to_store_last_acceptance_position_f(self, PreContextID):
+        self.__necessary_to_store_last_acceptance_position_f[PreContextID] = True
 
-    def necessary_to_store_last_acceptance_position_f(self):
-        return self.__necessary_to_store_last_acceptance_position_f
+    def necessary_to_store_last_acceptance_position_f(self, PreContextID):
+        return self.__necessary_to_store_last_acceptance_position_f[PreContextID]
 
     def __repr__(self):
         if len(self.__acceptance_condition_list) == 0: return "(Failure)"
@@ -585,12 +593,6 @@ class TrackInfo:
         assert type(ForwardF) == bool
         self.__sm        = SM
         self.__forward_f = ForwardF
-
-        def empty_db():
-            db = {}
-            for state_index in self.__sm.states.iterkeys():
-                db[state_index] = []
-            return db
 
         # (0) Acceptance DB
         #
@@ -616,25 +618,29 @@ class TrackInfo:
         #    can be determined whether the number of transitions can be
         #    determined beforehand.
         # 
-        #    map:  state_index, pre_context_id  --> list of (AcceptanceStateIndex, 
-        #                                           Path from AcceptanceStateIndex to state_index)
+        #    map:  state_index, pre_context_id  --> list of paths
         #
-        self.__passed_acceptance_db = dict([ (i, {}) for i in state_index_list ])
+        #    path = from last acceptance state to state_index.
+        #    path[0] = index of the acceptance state
+        #
+        self.__passed_acceptance_db = dict([(i, defaultdict(list)) for i in state_index_list])
 
         # -- Post Context Database
         #    Store for each post context end state the information about paths from 
         #    the begin of the post context (= end of core pattern).
         #
-        #    map: state_index  --> list of (PostContextID,
-        #                                   Path from last post context begin to state_index)
-        self.__post_context_db = empty_db()
+        #    map: state_index, post_context_id --> list of paths
+        #
+        #    path = path from last state where post context started to the 
+        #           state given by state_index.
+        self.__post_context_db = dict([(i, defaultdict(list)) for i in state_index_list])
 
         # -- Database of Reachable Acceptance States
         #    Store for each state what acceptance states are reachable.
         #   
         #    map:  state_index  ---> list of acceptance state indices
         #
-        self.__reachable_acceptance_db = empty_db()
+        self.__reachable_acceptance_db = dict([(i, []) for i in state_index_list])
 
         #     Dive recursively to get the information above.
         self.__dive(self.__sm.init_state_index, 
@@ -690,13 +696,15 @@ class TrackInfo:
         """StateIndex -- current state
            path       -- path from init state to current state (state index list)
 
-           last_acceptance_i_db[k] -- index in 'path' of the last acceptance state. 'k' is
-                                      the pre_context_id. That is 
-                                      "path[last_acceptance_i_db[k]] == state index" of last acceptance state.
+           last_acceptance_i_db[k] -- index in 'path' of the last acceptance state. 
+                                      'k' is the pre_context_id. 
+                                      path[last_acceptance_i_db[k]] == state index of 
+                                      last acceptance state.
 
            last_post_context_i_db[k] -- index in 'path' of the last state where post context 
-                                        'k' begins. That is path[last_post_context_i_db[k] 
-                                        == state index of last state where post context k begins.
+                                        'k' begins. 
+                                        path[last_post_context_i_db[k] == state index 
+                                        of last state where post context k begins.
         """
         assert type(path) == list
 
@@ -724,9 +732,7 @@ class TrackInfo:
             # Store the post-context path. Later, it will be determined if the
             # path contains states that are part of a loop.
             for post_context_id, begin_i in last_post_context_i_db.iteritems():
-                self.__post_context_db[StateIndex].append(
-                    (post_context_id, path[begin_i:])
-                )
+                self.__post_context_db[StateIndex][post_context_id].append(path[begin_i:])
 
         # If begin of post-context.
         # => store the path from the end of the core pattern to here.
@@ -738,14 +744,19 @@ class TrackInfo:
         for pre_context_id, path_index in last_acceptance_i_db.iteritems():
             # Acceptance states on the path 
             # => Store path from last acceptance to here
-            self.__passed_acceptance_db[StateIndex].setdefault(pre_context_id, []).append(path[path_index:])   
+            self.__passed_acceptance_db[StateIndex][pre_context_id].append(path[path_index:])   
 
+        # Determine whether a deepcopy is necessary for subsequent recursions
+        copy_i_f  = (len(last_acceptance_i_db) == 0)
+        copy_pi_f = (len(last_post_context_i_db) == 0)
         for state_index in state.transitions().get_target_state_index_list():
-            if len(last_acceptance_i_db) == 0: i_db = last_acceptance_i_db
-            else:                              i_db = deepcopy(last_acceptance_i_db)
-            if len(last_post_context_i_db) == 0: pi_db = last_post_context_i_db
-            else:                                pi_db = deepcopy(last_post_context_i_db)
-            self.__dive(state_index, path, last_acceptance_i_db, pi_db)
+            # Avoid the 'deepcopy' if unnecessary, to spare computation time.
+            if copy_i_f:  i_db = deepcopy(last_acceptance_i_db)
+            else:         i_db = last_acceptance_i_db
+            if copy_pi_f: pi_db = deepcopy(last_post_context_i_db)
+            else:         pi_db = last_post_context_i_db
+            # Dive further down the recursive tree
+            self.__dive(state_index, path, i_db, pi_db)
 
     def __analyze_acceptance(self):
 
@@ -769,16 +780,20 @@ class TrackInfo:
             for path in PathList:
                 acceptance_state_index = path[0]
                 # (1) AcceptanceInfo
-                acceptance_id = self.__acceptance_db[acceptance_state_index].get_acceptance_id(PreContextID)
+                acceptance_info = self.__acceptance_db[acceptance_state_index]
+                acceptance_id   = acceptance_info.get_acceptance_id(PreContextID)
                 if acceptance != None:
                     if   acceptance == -1:            acceptance = acceptance_id
                     elif acceptance != acceptance_id: acceptance = None   # unequal detected
 
                 # (2) Length of path from acceptance state
-                if not self.__loop_states.isdisjoint(path): # A state which is part of loop
-                    path_length = None                      # makes the length void until run-time.
-                elif acceptance_info.can_fail(): # If acceptance is 'failure' in case of
-                    path_length = None           # missing pre-context, then length = void.
+                if self.__loop_states.isdisjoint(path) == False: 
+                    # If one of the states in the path is a 'loop state' then the state machine 
+                    # could loop on the way from the begin to the end. Thus, the length of the 
+                    # path cannot be determined.
+                    path_length = None       
+                elif acceptance_info.can_fail():            # If acceptance is 'failure' in case of
+                    path_length = None                      # missing pre-context, then length = void.
                 elif path_length != None:
                     length = len(path)
                     if   path_length == -1: path_length = length
