@@ -587,6 +587,29 @@ class AcceptanceInfo:
                        (acceptance.pattern_id, pre_context_str))
         return "".join(txt)
 
+class AcceptanceTrace:
+    def __init__(self):
+        self.__sequence = []
+
+    def update(self, TheState):
+        if TheState.is_acceptance(): 
+            # IMPORTANT: The "path.append(StateIndex)" **must** come before this!
+            # Otherwise, if the last state was part of a loop it could not be detected 
+            # that the distance from acceptance state to it is run-time dependent.
+            last_acceptance_i = current_i
+
+            # Store the post-context path. Later, it will be determined if the
+            # path contains states that are part of a loop.
+            for post_context_id, begin_i in last_post_context_i_db.iteritems():
+                self.__post_context_db[StateIndex][post_context_id].append(path[begin_i:])
+
+        # If begin of post-context.
+        # => store the path from the end of the core pattern to here.
+        for origin in state.origins().get_list():
+            post_context_id = origin.post_context_id()
+            if origin.store_input_position_f() and post_context_id != -1:
+                last_post_context_i_db[post_context_id] = current_i # store begin of post context
+
 class TrackInfo:
     def __init__(self, SM, ForwardF):
         """SM -- state machine to be investigated."""
@@ -611,6 +634,7 @@ class TrackInfo:
         #    set of state indices that are part of a loop.
         #
         self.__loop_states = set([])
+        self.__loop_states_search(self.__sm.init_state_index, path=[])
 
         # -- Database of Passed Acceptance States
         #    Store for each state the information about what acceptance states
@@ -677,22 +701,26 @@ class TrackInfo:
         #      and acceptance position).
         self.__analyze_acceptance()
 
-    def __passed_acceptance_location_db_add(self, StateIndex, PreContextID, Move):
-        x = self.__acceptance_location_db.get(StateIndex)
-        if x != None: self.__acceptance_location_db[PreContextID] = Move
-        else:         self.__acceptance_location_db = { PreContextID: Move }
+    def __loop_states_search(self, StateIndex, path):
+        if StateIndex in path:
+            # Mark all states that are part of a loop. The length of a path that 
+            # contains such a state can only be determined at run-time.
+            idx = path.index(StateIndex)
+            self.__loop_states.update(path[idx:])
+            return
+
+        path.append(StateIndex)
+        target_state_index_list = state.transitions().get_target_state_index_list()
+        for state_index in target_state_index_list:
+            if len(target_state_index_list) > 1: p = copy(path)
+            else:                                p = path
+            self.__loop_states_search(state_index, p)
+        return
 
     def is_init_state_index(self, StateIndex):
         return self.__sm.init_state_index == StateIndex
 
-        return self.__acceptance_location_db[StateIndex]
-
-    def __get_path_from_state_index_to_end(self, Path, StateIndex):
-        # We **must** assume that the state index is in the path.
-        index = Path.index(StateIndex)
-        return Path[index:]
-
-    def __dive(self, StateIndex, path, last_acceptance_i, last_post_context_i_db):
+    def __dive(self, StateIndex, path, acceptance_trace = []):
         """StateIndex -- current state
            path       -- path from init state to current state (state index list)
 
@@ -707,51 +735,31 @@ class TrackInfo:
         """
         assert type(path) == list
 
-        if StateIndex in path:
-            # Mark all states that are part of a loop. The length of a path that 
-            # contains such a state can only be determined at run-time.
-            idx = path.index(StateIndex)
-            self.__loop_states.update(path[idx:])
-            return
+        # Loops do not have to be considered further
+        if StateIndex in path: return
 
         current_i = len(path)    # path[current_i] == StateIndex
         path.append(StateIndex)
 
         state = self.__sm.states[StateIndex]
-        if state.is_acceptance(): 
-            # IMPORTANT: The "path.append(StateIndex)" **must** come before this!
-            # Otherwise, if the last state was part of a loop it could not be detected 
-            # that the distance from acceptance state to it is run-time dependent.
-            last_acceptance_i = current_i
-
-            # Notify all states in the path that they may reach this acceptance state
-            for state_index in path:
-                self.__reachable_acceptance_db[state_index].append(StateIndex)
-
-            # Store the post-context path. Later, it will be determined if the
-            # path contains states that are part of a loop.
-            for post_context_id, begin_i in last_post_context_i_db.iteritems():
-                self.__post_context_db[StateIndex][post_context_id].append(path[begin_i:])
-
-        # If begin of post-context.
-        # => store the path from the end of the core pattern to here.
-        for origin in state.origins().get_list():
-            post_context_id = origin.post_context_id()
-            if origin.store_input_position_f() and post_context_id != -1:
-                last_post_context_i_db[post_context_id] = current_i # store begin of post context
+        acceptance_trace.update(state)
 
         if last_acceptance_i != -1:
             # Store path from last acceptance state to current state
             self.__passed_acceptance_db[StateIndex].append(path[last_acceptance_i:])   
 
-        # Determine whether a deepcopy is necessary for subsequent recursions
-        copy_pi_f = (len(last_post_context_i_db) == 0)
-        for state_index in state.transitions().get_target_state_index_list():
+        target_state_index_list = state.transitions().get_target_state_index_list()
+        # Determine whether a copy is necessary for subsequent recursions
+        copy_pi_f   = (len(last_post_context_i_db) == 0)
+        copy_path_f = (len(target_state_index_list) > 1)
+        for state_index in target_state_index_list:
             # Avoid the 'deepcopy' if unnecessary, to spare computation time.
             if copy_pi_f: pi_db = deepcopy(last_post_context_i_db)
             else:         pi_db = last_post_context_i_db
+            if copy_path_f: p = copy(path)
+            else:           p = path
             # Dive further down the recursive tree
-            self.__dive(state_index, copy(path), last_acceptance_i, pi_db)
+            self.__dive(state_index, p, last_acceptance_i, pi_db)
 
     def __analyze_acceptance(self):
 
