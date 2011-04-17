@@ -587,28 +587,111 @@ class AcceptanceInfo:
                        (acceptance.pattern_id, pre_context_str))
         return "".join(txt)
 
+class AcceptanceTraceEntry:
+    def __init__(PreContextID, PatternID, MoveBackwardN, AcceptingStateIndex, PositioningStateIndex):
+        """PreContextID  --
+           PatternID     -- 
+           MoveBackwardN --
+           AcceptingStateIndex -- Index of the state that accepts the mentioned
+                                  pattern. This is used when we need to inform
+                                  the state that it needs to store the acceptance
+                                  information.
+           PositioningStateIndex -- Index of the state that positions the input pointer
+                                    in the case of acceptance. This is usually the 
+                                    acceptance state. For post-context patterns it is 
+                                    the state where the post context begins.
+        """
+        self.pre_context_id  = PreContextID
+        self.pattern_id      = PatternID
+        self.move_backward_n = MoveBackwardN
+        # 
+        self.accepting_state_index   = AcceptingStateIndex
+        self.positioning_state_index = PositioningStateIndex
+
 class AcceptanceTrace:
     def __init__(self):
-        self.__sequence = []
+        self.__info_table = []
 
-    def update(self, TheState):
-        if TheState.is_acceptance(): 
-            # IMPORTANT: The "path.append(StateIndex)" **must** come before this!
-            # Otherwise, if the last state was part of a loop it could not be detected 
-            # that the distance from acceptance state to it is run-time dependent.
-            last_acceptance_i = current_i
+    def update(self, StateIndex, TheState, path, LoopStateF):
+        # If the current state is a loop state, than all positions become void.
+        # This means that number of characters to reach this state can no longer
+        # be determined by the state machine structure itself.
+        if LoopStateF:
+            for entry in self.__info_table:
+                entry.move_backward_n = None
+        else:
+            for entry in self.__info_table:
+                entry.move_backward_n += 1
 
-            # Store the post-context path. Later, it will be determined if the
-            # path contains states that are part of a loop.
-            for post_context_id, begin_i in last_post_context_i_db.iteritems():
-                self.__post_context_db[StateIndex][post_context_id].append(path[begin_i:])
+        if not TheState.is_acceptance(): return
 
-        # If begin of post-context.
-        # => store the path from the end of the core pattern to here.
-        for origin in state.origins().get_list():
-            post_context_id = origin.post_context_id()
-            if origin.store_input_position_f() and post_context_id != -1:
-                last_post_context_i_db[post_context_id] = current_i # store begin of post context
+        least_priviledged_pattern_id = self.__info_table[-1].pattern_id
+
+        # For each pre-context make an entry
+        origin_list = TheState.origins().get_list()
+        for origin in sorted(origin_list):
+            if not origin.is_acceptance(): continue
+
+            # (0) The pattern's ID
+            pattern_id = origin.state_machine_id
+            if pattern_id > least_priviledged_pattern_id: break
+
+            # (1) The Pre-Context under which it triggers
+            if   origin.pre_context_begin_of_line_f(): pre_context_id = -1
+            elif origin.pre_context_id() != -1:        pre_context_id = origin.pre_context_id()
+            else:                                      pre_context_id = None
+
+            # (2) The position where the input pointer has to be set if the 
+            #     pattern is accepted (how many characters to go backwards).
+            if origin.post_context_id() == -1: 
+                move_backward_n = 0
+            else:
+                move_backward_n = self.__find_last_post_context_begin(origin.post_context_id(), 
+                                                                      path, track_info.states_db())
+            
+            # (*) Make the entry in the database
+            self.__info_table.append(AcceptanceTraceEntry(pre_context_id, pattern_id, move_backward_n))
+
+            if pre_context_id == None:
+                # The lists ends now, since no other pre-context can be considered
+                self.__info_table = filter(lambda x: x.pattern_id > pattern_id, self.__info_table)
+                break
+
+        # Make sure, that pattern prioritization is maintained.
+        self.__info_table.sort(key=attrgetter("pattern_id"))
+
+        # Assume that the last entry is always the 'default' where no pre-context is required.
+        assert len(self.__info_table) >= 1
+        assert self.__info_table[-1].pre_context_id == None
+
+    def __eq__(self, Other):
+        return None
+
+    def __find_last_post_context_begin(self, PostContextID, Path, track_info):
+        """Walk the path backwards until the state is found that stores the position
+           of the acceptance.
+        """
+        distance = 0
+        successor_is_loop_state_f = track_info.is_loop_state(state_index)
+        for state_index in reversed(path[:-1]):
+            distance += 1
+            if successor_is_loop_state_f:
+                # If the state is part of a loop, then the distance backwards cannot be 
+                # determined from the structure of the state machine.
+                return None
+
+            for origin in track_info.get_origin_list(state_index):
+                if     origin.post_context_id() == PostContextID \
+                   and origin.store_input_position_f(): 
+                    return distance
+
+            successor_is_loop_state_f = track_info.is_loop_state(state_index)
+        
+        # This function is only to be called to find the beginning of a post context. It
+        # **must** be impossible to reach a post-context end without passing the place where
+        # the post context begins. Thus, the path **must** contain a state that stores this
+        # position. If we reach this position here, then something is seriously wrong. 
+        assert False
 
 class TrackInfo:
     def __init__(self, SM, ForwardF):
@@ -633,44 +716,17 @@ class TrackInfo:
         #
         #    set of state indices that are part of a loop.
         #
-        self.__loop_states = set([])
-        self.__loop_states_search(self.__sm.init_state_index, path=[])
+        self.__loop_state_set = set([])
+        self.__loop_state_search(self.__sm.init_state_index, path=[])
 
         # -- Database of Passed Acceptance States
-        #    Store for each state the information about what acceptance states
-        #    lie on the way to it. Further store the path, so that later on it
-        #    can be determined whether the number of transitions can be
-        #    determined beforehand.
         # 
-        #    map:  state_index, pre_context_id  --> list of paths
+        #    map:  state_index  --> list of AcceptanceTrace objects.
         #
-        #    path = from last acceptance state to state_index.
-        #    path[0] = index of the acceptance state
-        #
-        self.__passed_acceptance_db = dict([(i, []) for i in self.__sm.states.iterkeys()])
-
-        # -- Post Context Database
-        #    Store for each post context end state the information about paths from 
-        #    the begin of the post context (= end of core pattern).
-        #
-        #    map: state_index, post_context_id --> list of paths
-        #
-        #    path = path from last state where post context started to the 
-        #           state given by state_index.
-        self.__post_context_db = dict([(i, defaultdict(list)) for i in self.__sm.states.iterkeys()])
-
-        # -- Database of Reachable Acceptance States
-        #    Store for each state what acceptance states are reachable.
-        #   
-        #    map:  state_index  ---> list of acceptance state indices
-        #
-        self.__reachable_acceptance_db = dict([(i, []) for i in self.__sm.states.iterkeys()])
-
-        #     Dive recursively to get the information above.
-        self.__dive(self.__sm.init_state_index, 
-                    path                   = [], 
-                    last_acceptance_i      = -1, 
-                    last_post_context_i_db = {})
+        self.__acceptance_trace_db = dict([(i, []) for i in self.__sm.states.iterkeys()])
+        self.__acceptance_trace_search(self.__sm.init_state_index, 
+                                       path             = [], 
+                                       acceptance_trace = AcceptanceTrace())
 
         # (*) Post Context Configurations
         # 
@@ -701,26 +757,37 @@ class TrackInfo:
         #      and acceptance position).
         self.__analyze_acceptance()
 
-    def __loop_states_search(self, StateIndex, path):
+    def __loop_state_search(self, StateIndex, path):
+        """Determine the indices of states that are part of a loop. Whenever
+           such a state appears in a path from one state A to another state B, 
+           then the number of transitions from A to B cannot be determined 
+           from the state machine itself.
+
+           Recursion Terminal: When a state has no target state that has not
+                               yet been handled in the path.
+        """
         if StateIndex in path:
-            # Mark all states that are part of a loop. The length of a path that 
-            # contains such a state can only be determined at run-time.
-            idx = path.index(StateIndex)
-            self.__loop_states.update(path[idx:])
             return
 
+        # (1) Add current state index to path
         path.append(StateIndex)
-        target_state_index_list = state.transitions().get_target_state_index_list()
-        for state_index in target_state_index_list:
-            if len(target_state_index_list) > 1: p = copy(path)
-            else:                                p = path
-            self.__loop_states_search(state_index, p)
-        return
 
-    def is_init_state_index(self, StateIndex):
-        return self.__sm.init_state_index == StateIndex
+        # (2) Iterate over all target states
+        for state_index in state.transitions().get_target_state_index_list()
+            if x in path: 
+                # Mark all states that are part of a loop. The length of a path that 
+                # contains such a state can only be determined at run-time.
+                idx = path.index(StateIndex)
+                self.__loop_state_set.update(path[idx:])
+                continue # Do not dive into done states
 
-    def __dive(self, StateIndex, path, acceptance_trace = []):
+            self.__loop_state_search(state_index, p)
+
+        # (3) Remove current state index --> path is as before
+        x = path.pop()
+        assert x == StateIndex
+
+    def __acceptance_trace_search(self, StateIndex, path, acceptance_trace):
         """StateIndex -- current state
            path       -- path from init state to current state (state index list)
 
@@ -732,34 +799,28 @@ class TrackInfo:
                                         'k' begins. 
                                         path[last_post_context_i_db[k] == state index 
                                         of last state where post context k begins.
+
+           Recursion Terminal: When state has no target state that has not yet been
+                               handled in the 'path'.
         """
-        assert type(path) == list
-
-        # Loops do not have to be considered further
-        if StateIndex in path: return
-
-        current_i = len(path)    # path[current_i] == StateIndex
+        # (1) Add current state to path
         path.append(StateIndex)
 
-        state = self.__sm.states[StateIndex]
-        acceptance_trace.update(state)
+        # (2) Update the information about the 'trace of acceptances'
+        acceptance_trace.update(StateIndex, self.__sm.states[StateIndex], self)
 
-        if last_acceptance_i != -1:
-            # Store path from last acceptance state to current state
-            self.__passed_acceptance_db[StateIndex].append(path[last_acceptance_i:])   
+        # (3) Mark the current state with its acceptance trace
+        if acceptance_trace.is_empty() == False:
+            self.__acceptance_trace_db[StateIndex].append(deepcopy(acceptance_trace))
 
-        target_state_index_list = state.transitions().get_target_state_index_list()
-        # Determine whether a copy is necessary for subsequent recursions
-        copy_pi_f   = (len(last_post_context_i_db) == 0)
-        copy_path_f = (len(target_state_index_list) > 1)
-        for state_index in target_state_index_list:
-            # Avoid the 'deepcopy' if unnecessary, to spare computation time.
-            if copy_pi_f: pi_db = deepcopy(last_post_context_i_db)
-            else:         pi_db = last_post_context_i_db
-            if copy_path_f: p = copy(path)
-            else:           p = path
-            # Dive further down the recursive tree
-            self.__dive(state_index, p, last_acceptance_i, pi_db)
+        # (4) Recurse to all (undone) target states. 
+        for target_index in state.transitions().get_target_state_index_list():
+            if x in path: continue # Do not dive into done states
+            self.__acceptance_trace_search(target_index, path, acceptance_trace)
+
+        # (5) Remove current state index --> path is as before
+        x = path.pop()
+        assert x == StateIndex
 
     def __analyze_acceptance(self):
 
@@ -801,7 +862,7 @@ class TrackInfo:
                 elif acceptance_info.failure_possible():            
                     # If acceptance is 'failure' in case of missing pre-context, then length = void.
                     length = None                      
-                elif self.__loop_states.isdisjoint(path) == False: 
+                elif self.__loop_state_set.isdisjoint(path) == False: 
                     # If one of the states in the path is a 'loop state' then the state machine 
                     # could loop on the way from the begin to the end. Thus, the length of the 
                     # path cannot be determined from the state machine alone.
@@ -819,7 +880,7 @@ class TrackInfo:
             return acceptance, path_length
                    
         # Determine for each state whether the acceptance is definite
-        for state_index, path_list in self.__passed_acceptance_db.iteritems():
+        for state_index, acceptance_trace in self.__acceptance_trace_db.iteritems():
 
             # Determine how consistent the different paths are.
             acceptance, path_length = analyze_this(path_list)
@@ -842,6 +903,15 @@ class TrackInfo:
                 self.acceptance_location_db[state_index] = None
             else:
                 self.acceptance_location_db[state_index] = - path_length
+
+    def get_origin_list(self, StateIndex):
+        return self.__sm.states[StateIndex].origins().get_list():
+
+    def is_loop_state(self, StateIndex):
+        return StateIndex in self.__loop_state_set
+
+    def is_init_state_index(self, StateIndex):
+        return self.__sm.init_state_index == StateIndex
 
     def __post_context_position_store_conifigurations(self):
         """Determine the groups of post contexts that store their input
