@@ -465,7 +465,6 @@ class DropOut:
     def acceptance_sequence(self):
         return self.__sequence
 
-
 class AcceptanceInfoElement:
     """This object simply tells that a specific pattern wins if the pre-context
        or a begin of line is fulfilled. 
@@ -600,6 +599,8 @@ class AcceptanceTraceEntry:
                                     in the case of acceptance. This is usually the 
                                     acceptance state. For post-context patterns it is 
                                     the state where the post context begins.
+
+           PositioningStateIndex != AcceptingStateIndex => It is a post context pattern
         """
         self.pre_context_id  = PreContextID
         self.pattern_id      = PatternID
@@ -607,6 +608,8 @@ class AcceptanceTraceEntry:
         # 
         self.accepting_state_index   = AcceptingStateIndex
         self.positioning_state_index = PositioningStateIndex
+        #
+        self.post_context_f          = (PositioningStateIndex != AcceptingStateIndex)
 
 class AcceptanceTrace:
     def __init__(self):
@@ -692,6 +695,19 @@ class AcceptanceTrace:
         # the post context begins. Thus, the path **must** contain a state that stores this
         # position. If we reach this position here, then something is seriously wrong. 
         assert False
+
+def AcceptanceTrace_analyzis(AcceptanceTraceList):
+    """For a given state of AcceptanceTraces that belong to a state, check:
+
+       (1) On DropOut: -- does the state have to restore the accepting pattern id,
+                          or is it clear from the state machine's structure?
+
+                       -- where to put the input position? Does it have to rely on 
+                          stored acceptance ids?
+
+       For all pattern id and acceptance position that is restored, the state that
+       stores it needs to know about it.
+    """
 
 class TrackInfo:
     def __init__(self, SM, ForwardF):
