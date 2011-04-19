@@ -49,7 +49,7 @@ def do(state_machine):
                 #     Terminals are reached via a 'router'. nevertheless, they are reached 
                 #     without a seek.
                 winner_origin_list = []
-                for origin in state.origins().get_list():
+                for origin in state.origins():
                     if not origin.is_acceptance(): continue
                     winner_origin_list.append(origin)
                 # pre-context dependency = True

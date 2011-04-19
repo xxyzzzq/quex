@@ -134,7 +134,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
                       "The initial state is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")
 
-        if filter(lambda origin: origin.is_acceptance(), init_state.origins().get_list()) != []:
+        if filter(lambda origin: origin.is_acceptance(), init_state.origins()) != []:
             error_msg("After '%s'" % Place + "\n" + \
                       "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")

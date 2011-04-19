@@ -26,6 +26,10 @@ class StateOriginList:
     def get_list(self):
         return self.__list
 
+    def __iter__(self):
+        for x in self.__list:
+            yield x
+
     def __add(self, Origin):
         """Check if origin has already been mentioned, else append the new origin.
         """

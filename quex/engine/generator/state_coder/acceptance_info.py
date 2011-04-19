@@ -15,8 +15,8 @@ def do(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
     
     mode = SMD.mode()
     if   mode == "ForwardLexing":                  txt = forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF)
-    elif mode == "BackwardLexing":                 txt = backward_lexing(State.origins().get_list())
-    elif mode == "BackwardInputPositionDetection": txt = backward_lexing_find_core_pattern(State.origins().get_list())
+    elif mode == "BackwardLexing":                 txt = backward_lexing(State.origins())
+    elif mode == "BackwardInputPositionDetection": txt = backward_lexing_find_core_pattern(State.origins())
     else:
         assert False, "This part of the code should never be reached"
     assert type(txt) == list
@@ -306,7 +306,7 @@ def subsequent_states_require_save_last_acceptance(StateIdx, State, SM):
         if state.is_acceptance() == False: return True
         # Is there at least one origin that is unconditioned? If not,
         # the trailing last acceptance must be stored.
-        for origin in state.origins().get_list():
+        for origin in state.origins():
             if   not origin.is_acceptance():                      continue
             elif origin.pre_context_begin_of_line_f():            continue
             elif origin.pre_context_id() != -1L:                  continue

@@ -493,11 +493,9 @@ class AcceptanceInfo:
             self.__acceptance_condition_list = []
             return
 
-        origin_list = TheState.origins().get_list()
-        origin_list.sort()
         # Store information about the 'acceptance behavior' of a state.
         self.__acceptance_condition_list = []
-        for origin in origin_list:
+        for origin in sorted(TheState.origins()):
             if not origin.is_acceptance(): continue
 
             if   origin.pre_context_begin_of_line_f(): pre_context_id = -1
@@ -631,8 +629,7 @@ class AcceptanceTrace:
         least_priviledged_pattern_id = self.__info_table[-1].pattern_id
 
         # For each pre-context make an entry
-        origin_list = TheState.origins().get_list()
-        for origin in sorted(origin_list):
+        for origin in sorted(TheState.origins()):
             if not origin.is_acceptance(): continue
 
             # (0) The pattern's ID
@@ -899,13 +896,11 @@ class TrackInfo:
             related_states_must_store_acceptance_position_f = analyze_trace(acceptance_trace)
 
             if related_states_must_store_acceptance_f:
-                for trace in acceptance_trace:
-                    for element in trace.get_table():
-                        self.__analyzer_states[element.accepting_state_index].store_acceptance_f_set()
+                for state_index in acceptance_trace.accepting_state_index_list():
+                    self.__analyzer_states[state_index].store_acceptance_f_set()
             if related_states_must_store_acceptance_f:
-                for trace in acceptance_trace:
-                    for element in trace.get_table():
-                        self.__analyzer_states[element.accepting_state_index].store_acceptance_position_f_set()
+                for state_index in acceptance_trace.positioning_state_index_list():
+                    self.__analyzer_states[state_index].store_acceptance_position_f_set()
 
     def get_origin_list(self, StateIndex):
         return self.__sm.states[StateIndex].origins().get_list():
@@ -929,7 +924,7 @@ class TrackInfo:
         # post context id --> list of states where the input position is to be stored.
         db = {}
         for index, state in self.__sm.states.iteritems():
-            for origin in state.origins().get_list():
+            for origin in state.origins():
                 if origin.store_input_position_f():
                     db.setdefault(origin.post_context_id(), []).append(index)
 

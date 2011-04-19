@@ -78,7 +78,7 @@ def __dead_end_state_stub(DeadEndStateInfo, SMD):
             def _on_detection_code(Origin):
                 return transition.get_transition_to_terminal(Origin)
 
-            return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
+            return acceptance_info.get_acceptance_detector(state.origins(), 
                                                            _on_detection_code)
 
     elif SMD.backward_lexing_f():

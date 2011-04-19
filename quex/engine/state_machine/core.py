@@ -802,7 +802,7 @@ class StateMachine:
 
         # Adapt all origins that depend on the old pre-context to the new context
         for state in self.states.values():
-            for origin in state.origins().get_list():
+            for origin in state.origins():
                 if origin.pre_context_id() != OldPreContextID: continue
                 origin.set_pre_context_id(NewPreContextID)
 
