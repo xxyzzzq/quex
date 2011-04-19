@@ -93,7 +93,7 @@ class StateSet_List:
         for state_index in acceptance_state_set:
             state = self.sm.states[state_index]
             origin_state_machine_ids = map(lambda origin: origin.state_machine_id, 
-                                           state.origins().get_list())
+                                           state.origins())
             state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
             db_add(state_combination_id, state_index)
 

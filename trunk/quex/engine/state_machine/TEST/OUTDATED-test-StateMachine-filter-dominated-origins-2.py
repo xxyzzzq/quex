@@ -49,7 +49,7 @@ def print_this(Title):
     print "(*) " + Title    
     print
 
-    for origin in si.origins().get_list():
+    for origin in si.origins():
         acceptance_mark = " "
         if origin.is_acceptance(): acceptance_mark = "*"
         print acceptance_mark + repr(origin)
