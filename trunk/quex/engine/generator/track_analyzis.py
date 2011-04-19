@@ -667,6 +667,9 @@ class AcceptanceTrace:
         assert len(self.__info_table) >= 1
         assert self.__info_table[-1].pre_context_id == None
 
+    def get_table(self):
+        return self.__info_table
+
     def __eq__(self, Other):
         return None
 
@@ -744,15 +747,6 @@ class TrackInfo:
                                        path             = [], 
                                        acceptance_trace = AcceptanceTrace())
 
-        # (*) Post Context Configurations
-        # 
-        #    If multiple post-contexts share the same core pattern, then they
-        #    can share the 'post_context_position[i]' variable. The following
-        #    data structure stores pairs of 
-        #
-        #    [(list of ids of post contexts that share the same register) ... ]
-        self.__post_context_configurations = self.__post_context_position_store_conifigurations()
-
         # (2) Acceptance Determination
         #
         #    The database that maps:  state_index --> MovesToAcceptancePosition
@@ -771,7 +765,7 @@ class TrackInfo:
         #     Analyze to build the databases mentioned above.
         #     (store in acceptance info objects the necessity to store acceptance 
         #      and acceptance position).
-        self.__analyze_acceptance()
+        self.__acceptance_analysis()
 
     def __loop_state_search(self, StateIndex, path):
         """Determine the indices of states that are part of a loop. Whenever
@@ -838,7 +832,7 @@ class TrackInfo:
         x = path.pop()
         assert x == StateIndex
 
-    def __analyze_acceptance(self):
+    def __acceptance_analysis(self):
 
         def analyze_this(PathList):
             """Find out whether:
@@ -897,28 +891,21 @@ class TrackInfo:
                    
         # Determine for each state whether the acceptance is definite
         for state_index, acceptance_trace in self.__acceptance_trace_db.iteritems():
+            state = self.__analyzer_states[state_index]
 
-            # Determine how consistent the different paths are.
-            acceptance, path_length = analyze_this(path_list)
+            state.on_drop_out.move_input_position,
+            state.on_drop_out.goto_terminal_id,
+            related_states_must_store_acceptance_f,
+            related_states_must_store_acceptance_position_f = analyze_trace(acceptance_trace)
 
-            if acceptance == None:
-                # Mark in all acceptance states involved, that there is a
-                # successor that has undetermined acceptance. Thus, those
-                # acceptance states need to the acceptance information.
-                for acceptance_state_index in map(lambda x: x[0], path_list):
-                    x = self.acceptance_db[acceptance_state_index]
-                    x.set_necessary_to_store_last_acceptance_f()
-
-            if path_length == None:
-                # If the last acceptance cannot be determined by structure,
-                # then all related last acceptance states need to store
-                # information about their acceptance position.
-                for acceptance_state_index in map(lambda x: x[0], path_list):
-                    x = self.acceptance_db[acceptance_state_index]
-                    x.set_necessary_to_store_last_acceptance_position_f()
-                self.acceptance_location_db[state_index] = None
-            else:
-                self.acceptance_location_db[state_index] = - path_length
+            if related_states_must_store_acceptance_f:
+                for trace in acceptance_trace:
+                    for element in trace.get_table():
+                        self.__analyzer_states[element.accepting_state_index].store_acceptance_f_set()
+            if related_states_must_store_acceptance_f:
+                for trace in acceptance_trace:
+                    for element in trace.get_table():
+                        self.__analyzer_states[element.accepting_state_index].store_acceptance_position_f_set()
 
     def get_origin_list(self, StateIndex):
         return self.__sm.states[StateIndex].origins().get_list():
