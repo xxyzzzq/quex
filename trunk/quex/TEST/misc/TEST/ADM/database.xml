@@ -1,15 +1,15 @@
-<test-database execution-time-sec="0.59" date="Thu Mar 31 07:44:40 2011">
+<test-database execution-time-sec="1.15" date="Wed Apr 20 06:43:42 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.25"> 
+    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.46"> 
         <application file-name="customized_codec.sh" info-request-time="1301230491L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.25" crc="1025570625"/>
+           <choice name="" result="OK" time_sec="0.46" crc="1025570625"/>
         </choice-list>
     </test>
-    <test title="Test code comments" time-sum-sec="0.34"> 
+    <test title="Test code comments" time-sum-sec="0.68"> 
         <application file-name="comment.sh" info-request-time="1301139206L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.34" crc="977201913"/>
+           <choice name="" result="OK" time_sec="0.68" crc="977201913"/>
         </choice-list>
     </test>
 </test-database>
