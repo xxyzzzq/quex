@@ -329,57 +329,16 @@ def do(sm, ForwardF):
 
     return sm.values()
 
-class AnalyzerState:
-    def __init__(self, StateIndex, TheInput, TheEntryActions, TheDropOut):
-        assert type(StateIndex) in [int, long]
-        assert type(TheDropOut) == list
-
-        self.index         = StateIndex
-        self.input         = TheInput
-        self.entry_actions = TheEntryActions
-        self.drop_out      = TheDropOut
-
-    def __repr__(self):
-        txt  = ".state_index = %i" % StateIndex
-        txt += ".input.move_input_position                        = " + repr(self.input.move_input_position())
-        txt += "      .immediate_drop_out_if_not_pre_context_list = " + repr(self.input.immediate_drop_out_if_not_pre_context_list())
-        txt += ".store_acceptance = [\n"
-        for element in store_acceptance:
-            if element.pre_context_id() != None: 
-                txt += "(pre_context_id = %i, " % element.pre_context_id()
-            else:
-                txt += "("
-            txt += "store_acceptance = %s, "             + repr(element.store_acceptance())
-            txt += "store_acceptance_position_f = %s)\n" + repr(element.store_acceptance_position_f())
-        txt += "]\n"
-        txt += ".drop_out = [" 
-        for element in drop_out:
-            if element.pre_context_id() != None: 
-                txt += "(pre_context_id = %i, " % element.pre_context_id()
-            else:
-                txt += "("
-            txt += "move_input_p = %s, " + repr(element.move_input_position())
-            txt += "terminal = %s)\n"    + repr(element.terminal())
-        txt += "]\n"
-
 class Input:
-    def __init__(self, StateIndex, track_info):
-        """RULES: (1) Init state forward does not increment input_p ...
-                  (2) Also, if the state is the terminal of a post-context pattern ...
-                  (3) All other states do increment/decrement.
-        """
-        if track_info.forward_lexing_f():
-            # Rules (1), (2), and (3)
-            if   track_info.is_init_state_index(StateIndex):        
-                self.__move_input_position = 0
-            else:                                                 
-                self.__move_input_position = +1
-        else:
-            # Backward lexing --> rule (3)
-            self.__move_input_position = -1
+    def __init__(self, InitStateF, ForwardF):
+        if ForwardF: # Rules (1), (2), and (3)
+            self.__move_input_position = + 1 if not InitStateF else 0
+        else:        # Backward lexing --> rule (3)
+            self.__move_input_position = - 1
 
-        # TODO: Required analysis
-        self.__immediate_drop_out_if_not_pre_context_list = False
+    def move_input_position(self):
+        return self.__move_input_position
+
 
     def move_input_position(self):
         """+1 --> increment by one before dereferencing
@@ -395,7 +354,7 @@ class Input:
         """
         return self.__immediate_drop_out_if_not_pre_context_list
 
-class EntryActions:
+class Entry:
     def __init__(self, TheAcceptanceInfo, StorePostContextPositionList, StorePreContextFulfilledList):
 
         self.__store_acceptance_f               = TheAcceptanceInfo.necessary_to_store_last_acceptance_f()
@@ -663,9 +622,35 @@ class AcceptanceTrace:
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__info_table) >= 1
         assert self.__info_table[-1].pre_context_id == None
+    
+    def has_same_acceptance_pattern(self, Other):
+        if len(self.__info_table) != len(Other.__info_table): return False
 
-    def get_table(self):
-        return self.__info_table
+        for x, y in zip(self.__info_table, Other.__info_table):
+            if x.pattern_id != y.pattern_id:                  return False
+        return True
+
+    def has_same_positioning_pattern(self, Other):
+        if len(self.__info_table) != len(Other.__info_table): return False
+
+        for x, y in zip(self.__info_table, Other.__info_table):
+            if x.move_backward_n != y.move_backward_n:        return False
+        return True
+
+    def is_conditional(self):
+        assert len(self.__info_table) != 0
+        return len(self.__info_table) != 1
+
+    def is_positioning_void(self):
+        for x in self.__info_table:
+            if x.move_backward_n == None: return True
+        return False
+
+    def get_positioning_state_index_list(self):
+        return map(lambda x: x.positioning_state_index, self.__info_table)
+
+    def get_accepting_state_index_list(self):
+        return map(lambda x: x.accepting_state_index_list, self.__info_table)
 
     def __eq__(self, Other):
         return None
@@ -829,79 +814,6 @@ class TrackInfo:
         x = path.pop()
         assert x == StateIndex
 
-    def __acceptance_analysis(self):
-
-        def analyze_this(PathList):
-            """Find out whether:
-               -- The acceptance on-drop-out based on passing previous states
-                  can be determined from the state machine itself.
-               -- The position of the last acceptance can be determined from
-                  the state machine.
-               
-               RETURNS: 
-                   acceptance_id > 0 => pattern id of accepted pattern - known
-                                        from the state machine constitution.
-                                 - 1 => Failure -- no acceptance
-                                None => acceptance depends on run-time
-
-                   path_length as integer => path length from last acceptance state
-                                             is distinct 
-                                  None    => path length from last acceptance state
-                                             must be determined at run-time.
-            """
-            acceptance  = -1   # '-1' means: not yet considered
-            path_length = -2   # '-2' means: not yet considered (-1 --> input_p = lexeme_start_p + 1)
-
-            # Iterate over the possible paths from the last acceptance state
-            # to the state under investigation.
-            for path in PathList:
-                acceptance_state_index = path[0]
-                # (1) AcceptanceInfo
-                acceptance_info = self.acceptance_db[acceptance_state_index]
-
-                if   acceptance == -1:              acceptance = acceptance_info
-                elif acceptance != acceptance_info: acceptance = None   # unequal detected
-                else:                               pass # No problem -- same acceptance 
-
-                # (2) Length of path from acceptance state
-                if   acceptance_info.failure_always():            
-                    length = -1  # Means: set input_p --> lexeme_start_p + 1 / on failure anyway
-                elif acceptance_info.failure_possible():            
-                    # If acceptance is 'failure' in case of missing pre-context, then length = void.
-                    length = None                      
-                elif self.__loop_state_set.isdisjoint(path) == False: 
-                    # If one of the states in the path is a 'loop state' then the state machine 
-                    # could loop on the way from the begin to the end. Thus, the length of the 
-                    # path cannot be determined from the state machine alone.
-                    length = None       
-                else:
-                    length = len(path) - 1
-
-                if   path_length == -2:     length      = path_length
-                elif path_length != length: path_length = None # unequal detected
-                else:                       pass # No problem -- same path length
-
-            # If no change happend --> values are undetermined.
-            if acceptance  == -1: acceptance  = None
-            if path_length == -2: path_length = None
-            return acceptance, path_length
-                   
-        # Determine for each state whether the acceptance is definite
-        for state_index, acceptance_trace in self.__acceptance_trace_db.iteritems():
-            state = self.__analyzer_states[state_index]
-
-            state.on_drop_out.move_input_position,
-            state.on_drop_out.goto_terminal_id,
-            related_states_must_store_acceptance_f,
-            related_states_must_store_acceptance_position_f = analyze_trace(acceptance_trace)
-
-            if related_states_must_store_acceptance_f:
-                for state_index in acceptance_trace.accepting_state_index_list():
-                    self.__analyzer_states[state_index].store_acceptance_f_set()
-            if related_states_must_store_acceptance_f:
-                for state_index in acceptance_trace.positioning_state_index_list():
-                    self.__analyzer_states[state_index].store_acceptance_position_f_set()
-
     def get_origin_list(self, StateIndex):
         return self.__sm.states[StateIndex].origins().get_list():
 
@@ -963,4 +875,110 @@ class TrackInfo:
             post_context_index = self.get_post_context_index(origin.state_machine_id)
             result.append(post_context_index)
 
+class AnalyzerState:
+    def __init__(self, StateIndex, InitStateF, ForwardF):
+        assert type(StateIndex) in [int, long]
+        assert type(TheDropOut) == list
 
+        self.index    = StateIndex
+        self.input    = Input(InitStateF, ForwardF)
+        self.entry    = Entry()
+        self.drop_out = DropOut()
+
+    def __repr__(self):
+        pass
+
+class Analyzer:
+    def __init__(self):
+        self.__state_db = dict([(i, AnalyzerState(i)) for i in AcceptanceDB.iterkeys()])
+        for state_index, acceptance_trace_list in AcceptanceDB.iteritems():
+            state = self.__state_db[state_index]
+            self.__analyze(state, acceptance_trace_list)
+
+    def __analyze(self, state, TheAcceptanceTraceList):
+                   
+        if len(TheAcceptanceTraceList) == 0: return 
+
+        prototype = TheAcceptanceTraceList[0]
+
+        # In a first approach: If the acceptance is conditional then the states need
+        #                      to store acceptance and acceptance position
+        same_acceptance_pattern_f  = not prototype.is_conditional()
+        same_positioning_pattern_f = not (prototype.is_conditional() or prototype.is_positioning_void())
+        # If any acceptance trace differs from the prototype in accepting or positioning
+        # => it needs to be stored and restored.
+        # Loop: 'first falsifies'
+        for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
+            if prototype.has_same_acceptance_pattern(x)  == False: same_acceptance_pattern_f  = False
+            if prototype.has_same_positioning_pattern(x) == False: same_positioning_pattern_f = False
+
+        state.drop_out.acceptance_pattern_set(prototype if same_acceptance_pattern_f else None)
+        state.drop_out.positioning_pattern_set(prototype if same_positioning_pattern_f else None)
+
+        # If a storage of acceptance is required, 
+        # => notify all related states they must store acceptance ids
+        if not same_acceptance_pattern_f:
+            state_index_list = chain(map(lambda x: x.accepting_state_index_list(), TheAcceptanceTraceList))
+            for state in map(lambda x: self.__states[x], state_index_list):
+                state.entry.store_acceptance_f_set()
+
+        if not same_positioning_pattern_f:
+            state_index_list = chain(map(lambda x: x.positioning_state_index_list(), TheAcceptanceTraceList))
+            for state in map(lambda x: self.__states[x], state_index_list):
+                state.entry.store_acceptance_position_f_set()
+
+
+#def analyze_this(PathList):
+#    """Find out whether:
+#       -- The acceptance on-drop-out based on passing previous states
+#          can be determined from the state machine itself.
+#       -- The position of the last acceptance can be determined from
+#          the state machine.
+#       
+#       RETURNS: 
+#           acceptance_id > 0 => pattern id of accepted pattern - known
+#                                from the state machine constitution.
+#                         - 1 => Failure -- no acceptance
+#                        None => acceptance depends on run-time
+#
+#           path_length as integer => path length from last acceptance state
+#                                     is distinct 
+#                          None    => path length from last acceptance state
+#                                     must be determined at run-time.
+#    """
+#    acceptance  = -1   # '-1' means: not yet considered
+#    path_length = -2   # '-2' means: not yet considered (-1 --> input_p = lexeme_start_p + 1)
+#
+#    # Iterate over the possible paths from the last acceptance state
+#    # to the state under investigation.
+#    for path in PathList:
+#        acceptance_state_index = path[0]
+#        # (1) AcceptanceInfo
+#        acceptance_info = self.acceptance_db[acceptance_state_index]
+#
+#        if   acceptance == -1:              acceptance = acceptance_info
+#        elif acceptance != acceptance_info: acceptance = None   # unequal detected
+#        else:                               pass # No problem -- same acceptance 
+#
+#        # (2) Length of path from acceptance state
+#        if   acceptance_info.failure_always():            
+#            length = -1  # Means: set input_p --> lexeme_start_p + 1 / on failure anyway
+#        elif acceptance_info.failure_possible():            
+#            # If acceptance is 'failure' in case of missing pre-context, then length = void.
+#            length = None                      
+#        elif self.__loop_state_set.isdisjoint(path) == False: 
+#            # If one of the states in the path is a 'loop state' then the state machine 
+#            # could loop on the way from the begin to the end. Thus, the length of the 
+#            # path cannot be determined from the state machine alone.
+#            length = None       
+#        else:
+#            length = len(path) - 1
+#
+#        if   path_length == -2:     length      = path_length
+#        elif path_length != length: path_length = None # unequal detected
+#        else:                       pass # No problem -- same path length
+#
+#    # If no change happend --> values are undetermined.
+#    if acceptance  == -1: acceptance  = None
+#    if path_length == -2: path_length = None
+#    return acceptance, path_length
