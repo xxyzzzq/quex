@@ -876,12 +876,12 @@ class TrackInfo:
             result.append(post_context_index)
 
 class AnalyzerState:
-    def __init__(self, StateIndex, InitStateF, ForwardF):
+    def __init__(self, StateIndex, SM, InitStateF, ForwardF):
         assert type(StateIndex) in [int, long]
         assert type(TheDropOut) == list
 
         self.index    = StateIndex
-        self.input    = Input(InitStateF, ForwardF)
+        self.input    = Input(StateIndex == SM.init_state_index, ForwardF)
         self.entry    = Entry()
         self.drop_out = DropOut()
 
@@ -889,8 +889,11 @@ class AnalyzerState:
         pass
 
 class Analyzer:
-    def __init__(self):
-        self.__state_db = dict([(i, AnalyzerState(i)) for i in AcceptanceDB.iterkeys()])
+    def __init__(self, SM, AcceptanceDB, ForwardF):
+
+        self.__state_db = dict([(i, AnalyzerState(i, SM, ForwardF)) 
+                                 for i in AcceptanceDB.iterkeys()])
+
         for state_index, acceptance_trace_list in AcceptanceDB.iteritems():
             state = self.__state_db[state_index]
             self.__analyze(state, acceptance_trace_list)
