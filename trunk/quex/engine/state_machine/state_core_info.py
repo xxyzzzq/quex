@@ -18,7 +18,7 @@ class StateCoreInfo:
           stored in a dedicated variable, because, multiple 
           patterns may be post conditioned and only the one (if one)
           succeeds, has to store set the input position to the position
-          where the first post conditioned acceptance occured.
+          where the first post conditioned acceptance occurred.
 
        -- if store input position is not required, this implies that
           the original state was the 'final acceptance' state, i.e.

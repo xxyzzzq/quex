@@ -329,101 +329,6 @@ def do(sm, ForwardF):
 
     return sm.values()
 
-class Input:
-    def __init__(self, InitStateF, ForwardF):
-        if ForwardF: # Rules (1), (2), and (3)
-            self.__move_input_position = + 1 if not InitStateF else 0
-        else:        # Backward lexing --> rule (3)
-            self.__move_input_position = - 1
-
-    def move_input_position(self):
-        return self.__move_input_position
-
-
-    def move_input_position(self):
-        """+1 --> increment by one before dereferencing
-           -1 --> decrement by one before dereferencing
-            0 --> neither increment nor decrement.
-        """
-        return self.__move_input_position
-
-    def immediate_drop_out_if_not_pre_context_list(self):
-        """If all successor states require the list of given pre-contexts, then 
-           the state can check whether at least one of them is hit. Otherwise, it 
-           could immediately drop out.
-        """
-        return self.__immediate_drop_out_if_not_pre_context_list
-
-class Entry:
-    def __init__(self, TheAcceptanceInfo, StorePostContextPositionList, StorePreContextFulfilledList):
-
-        self.__store_acceptance_f               = TheAcceptanceInfo.necessary_to_store_last_acceptance_f()
-        self.__store_acceptance_position_f      = TheAcceptanceInfo.necessary_to_store_last_acceptance_position_f()
-        self.__store_post_context_position_list = StorePostContextPositionList
-        self.__pre_context_fulfilled_list       = StorePreContextFulfilledList
-
-    def acceptance_sequence(self):
-        return self.__sequence
-
-    def store_acceptance_f(self):
-        return self.__store_acceptance_f
-
-    def store_acceptance_position_f(self):
-        return self.__store_acceptance_position_f
-        
-    def store_post_context_position_list(self):
-        """What post context positions have to be stored. Return list of
-           register indices. That is for each element 'i' in the list the
-           position needs to be stored:
-
-                    post_context_position[i] = input_p;
-        """
-        return self.__store_post_context_position_list
-
-    def mark_pre_context_fulfilled_list(self):
-        """This is only relevant during backward lexical analyzis while
-           searching for pre-contexts. The list that is returned tells
-           that the given pre-contexts are fulfilled in the current state
-           and must be set, e.g.
-
-                    pre_context_fulfilled[i] = true; 
-        """
-        return self.__pre_context_fulfilled_list
-
-class DropOutElement:
-    def __init__(self, StateIndex, PreContextID, MoveInputPosition, TerminalID):
-        """Pre-context id (i.e. the id of the pre-context's state machine)
-           For which the drop-out instruction is defined. 
-
-           None --> No pre-context (the very usual case).
-        """
-        self.pre_context_id      = PreContextID
-        """N <= 0   --> move input position backward according to integer.
-           None     --> move input position to 'last_acceptance_position', or
-                        move input position to 'post_context_position[i]'
-                        where 'i' is determined by the acceptance object.
-           N == 1   --> move input position to 'lexeme begin + 1'
-        """
-        self.move_input_position = MoveInputPosition
-        """ N > 0       pattern id of the winning pattern.
-            None        terminal = end of file/stream
-            -1          terminal = failure
-        """
-        self.terminal_id         = TerminalID
-
-class DropOut:
-    def __init__(self, StateIndex, TheAcceptanceInfo, track_info):
-        self.__sequence = []
-
-        for x in TheAcceptanceInfo.get_list():
-            element = DropOutElement(x.pre_context_id, 
-                                     track_info.acceptance_location_db[StateIndex],
-                                     x.pattern_id)
-            self.__sequence.append(element)
-
-    def acceptance_sequence(self):
-        return self.__sequence
-
 class AcceptanceInfoElement:
     """This object simply tells that a specific pattern wins if the pre-context
        or a begin of line is fulfilled. 
@@ -557,7 +462,8 @@ class AcceptanceTraceEntry:
                                     acceptance state. For post-context patterns it is 
                                     the state where the post context begins.
 
-           PositioningStateIndex != AcceptingStateIndex => It is a post context pattern
+           PostContextID   = -1  acceptance has nothing to do with post context
+                          != -1  acceptance is related to post context with given id.
         """
         self.pre_context_id  = PreContextID
         self.pattern_id      = PatternID
@@ -566,7 +472,7 @@ class AcceptanceTraceEntry:
         self.accepting_state_index   = AcceptingStateIndex
         self.positioning_state_index = PositioningStateIndex
         #
-        self.post_context_f          = (PositioningStateIndex != AcceptingStateIndex)
+        self.post_context_id         = PostContextID
 
 class AcceptanceTrace:
     def __init__(self):
@@ -578,7 +484,7 @@ class AcceptanceTrace:
         # be determined by the state machine structure itself.
         if LoopStateF:
             for entry in self.__info_table:
-                entry.move_backward_n = None
+                if entry.move_backward_n != 0: entry.move_backward_n = None
         else:
             for entry in self.__info_table:
                 entry.move_backward_n += 1
@@ -603,13 +509,21 @@ class AcceptanceTrace:
             # (2) The position where the input pointer has to be set if the 
             #     pattern is accepted (how many characters to go backwards).
             if origin.post_context_id() == -1: 
-                move_backward_n = 0
+                post_context_id         = -1
+                move_backward_n         = 0
+                positioning_state_index = StateIndex
             else:
-                move_backward_n = self.__find_last_post_context_begin(origin.post_context_id(), 
-                                                                      path, track_info.states_db())
+                post_context_id = origin.post_context_id()
+                move_backward_n,        \
+                positioning_state_index = self.__find_last_post_context_begin(origin.post_context_id(), 
+                                                                              path, track_info.states_db())
             
             # (*) Make the entry in the database
-            self.__info_table.append(AcceptanceTraceEntry(pre_context_id, pattern_id, move_backward_n))
+            entry = AcceptanceTraceEntry(pre_context_id, pattern_id, move_backward_n,
+                                         AcceptingStateIndex   = StateIndex, 
+                                         PositioningStateIndex = positioning_state_index, 
+                                         PostContextID         = post_context_id)
+            self.__info_table.append(entry)
 
             if pre_context_id == None:
                 # The lists ends now, since no other pre-context can be considered
@@ -874,61 +788,6 @@ class TrackInfo:
             # Store current input position, to be restored when post condition really matches
             post_context_index = self.get_post_context_index(origin.state_machine_id)
             result.append(post_context_index)
-
-class AnalyzerState:
-    def __init__(self, StateIndex, SM, InitStateF, ForwardF):
-        assert type(StateIndex) in [int, long]
-        assert type(TheDropOut) == list
-
-        self.index    = StateIndex
-        self.input    = Input(StateIndex == SM.init_state_index, ForwardF)
-        self.entry    = Entry()
-        self.drop_out = DropOut()
-
-    def __repr__(self):
-        pass
-
-class Analyzer:
-    def __init__(self, SM, AcceptanceDB, ForwardF):
-
-        self.__state_db = dict([(i, AnalyzerState(i, SM, ForwardF)) 
-                                 for i in AcceptanceDB.iterkeys()])
-
-        for state_index, acceptance_trace_list in AcceptanceDB.iteritems():
-            state = self.__state_db[state_index]
-            self.__analyze(state, acceptance_trace_list)
-
-    def __analyze(self, state, TheAcceptanceTraceList):
-                   
-        if len(TheAcceptanceTraceList) == 0: return 
-
-        prototype = TheAcceptanceTraceList[0]
-
-        # In a first approach: If the acceptance is conditional then the states need
-        #                      to store acceptance and acceptance position
-        same_acceptance_pattern_f  = not prototype.is_conditional()
-        same_positioning_pattern_f = not (prototype.is_conditional() or prototype.is_positioning_void())
-        # If any acceptance trace differs from the prototype in accepting or positioning
-        # => it needs to be stored and restored.
-        # Loop: 'first falsifies'
-        for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
-            if prototype.has_same_acceptance_pattern(x)  == False: same_acceptance_pattern_f  = False
-            if prototype.has_same_positioning_pattern(x) == False: same_positioning_pattern_f = False
-
-        state.drop_out.acceptance_pattern_set(prototype if same_acceptance_pattern_f else None)
-        state.drop_out.positioning_pattern_set(prototype if same_positioning_pattern_f else None)
-
-        # If a storage of acceptance is required, 
-        # => notify all related states they must store acceptance ids
-        if not same_acceptance_pattern_f:
-            state_index_list = chain(map(lambda x: x.accepting_state_index_list(), TheAcceptanceTraceList))
-            for state in map(lambda x: self.__states[x], state_index_list):
-                state.entry.store_acceptance_f_set()
-
-        if not same_positioning_pattern_f:
-            state_index_list = chain(map(lambda x: x.positioning_state_index_list(), TheAcceptanceTraceList))
-            for state in map(lambda x: self.__states[x], state_index_list):
-                state.entry.store_acceptance_position_f_set()
 
 
 #def analyze_this(PathList):

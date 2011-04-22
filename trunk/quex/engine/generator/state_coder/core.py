@@ -6,7 +6,7 @@ import quex.engine.generator.state_coder.transition       as transition
 import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.engine.generator.state_coder.drop_out         as drop_out
 import quex.engine.generator.state_coder.input_block      as input_block
-from   quex.input.setup                                        import setup as Setup
+from   quex.input.setup                                   import setup as Setup
 from   copy import deepcopy
 
 
