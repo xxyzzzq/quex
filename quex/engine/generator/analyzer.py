@@ -23,37 +23,46 @@ class Analyzer:
                    
         if len(TheAcceptanceTraceList) == 0: return 
 
-        prototype = TheAcceptanceTraceList[0]
+        common = TheAcceptanceTraceList[0]
+        common_pre_context_id_list = common.get_pre_context_id_list()
 
-        # In a first approach: If the acceptance is conditional then the states need
-        #                      to store acceptance and acceptance position
-        same_acceptance_pattern_f  = not prototype.is_conditional()
-        same_positioning_pattern_f = not (prototype.is_conditional() or prototype.is_positioning_void())
         # If any acceptance trace differs from the prototype in accepting or positioning
         # => it needs to be stored and restored.
         # Loop: 'first falsifies'
         for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
-            if prototype.has_same_acceptance_pattern(x)  == False: same_acceptance_pattern_f  = False
-            if prototype.has_same_positioning_pattern(x) == False: same_positioning_pattern_f = False
+            common_pre_context_id_list.update(acceptance_trace.get_pre_context_id_list())
+            for pre_context_id in common_pre_context_id_list:
+                common_entry = common.get_pre_context_id_entry(pre_context_id)
+                other_entry  = acceptance_trace.get_pre_context_id_entry(pre_context_id)
+                if common_entry == None:
+                    acceptance = None; positioning = None # Cannot be determined beforehand
+                    if other_entry != None:
+                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
 
-        state.drop_out.acceptance_pattern_set(prototype if same_acceptance_pattern_f else None)
-        state.drop_out.positioning_pattern_set(prototype if same_positioning_pattern_f else None)
+                if other_entry == None:
+                    acceptance = None; positioning = None # Cannot be determined beforehand
+                    if common_entry != None:
+                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
 
-        # If a storage of acceptance is required, 
-        # => notify all related states they must store acceptance ids
-        if not same_acceptance_pattern_f:
-            state_index_list = chain(map(lambda x: x.accepting_state_index_list(), TheAcceptanceTraceList))
-            for x in chain(TheAcceptanceTraceList):
-                self.__state_db[x.accepting_state_index].set_store_acceptance_f()
+                # pre_context_id present in both maps
+                if acceptance != None:
+                    if common_entry.pattern_id != other_entry.pattern_id:
+                        acceptance = None
+                        # Inform related states about the task to store acceptance
+                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                    if common_entry.positioning != other_entry.positioning:
+                        positioning = None
+                        # Inform related states about the task to store acceptance position
+                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
 
-        if not same_positioning_pattern_f:
-            for x in chain(TheAcceptanceTraceList):
-                if x.post_context_id == -1: 
-                    # Normal Acceptance => acceptance state stores the position
-                    self.__state_db[x.accepting_state_index].entry.set_store_acceptance_position_f()
-                else:
-                    # Post context related acceptance => begin of post context stores the position
-                    self.__state_db[x.positioning_state_index].entry.set_store_begin_of_post_context_position(x.post_context_id)
+                common[pre_context_id].pattern_id  = acceptance
+                common[pre_context_id].positioning = positioning
+
+        state.drop_out.set_sequence(common)
 
 class AnalyzerState:
     def __init__(self, StateIndex, SM, InitStateF, ForwardF):
