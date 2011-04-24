@@ -1,3 +1,24 @@
+"""Analyzer:
+
+   An object of class Analyzer is a representation of an analyzer state machine
+   (object of class StateMachine) that is suited for code generation. In
+   particular, track analysis results in 'decorations' for states which help to
+   implement efficient code.
+
+   Formally an Analyzer consists of a set of states that are related by their
+   transitions. Each state is an object of class AnalyzerState and has the 
+   following components:
+
+        * input:          what happens to get the next character.
+        * entry:          actions to be performed at the entry of the state.
+        * transition_map: a map that tells what state is to be entered 
+                          as a reaction to the current input character.
+        * drop_out:       what has to happen if no character triggers.
+
+    For administrative purposes, other data such as the 'state_index' is 
+    stored along with the AnalyzerState object.
+"""
+
 from quex.engine.generator.track_info import TrackInfo
 
 from quex.input.setup import setup as Setup
@@ -32,50 +53,57 @@ class Analyzer:
         for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
             common_pre_context_id_list.update(acceptance_trace.get_pre_context_id_list())
             for pre_context_id in common_pre_context_id_list:
+                
                 common_entry = common.get_pre_context_id_entry(pre_context_id)
                 other_entry  = acceptance_trace.get_pre_context_id_entry(pre_context_id)
+
+                # (0) If one of the two does not contain the pre_context_id then the 
+                #     common entry must 'void' the entry totally.
                 if common_entry == None:
-                    acceptance = None; positioning = None # Cannot be determined beforehand
+                    common[pre_context_id].pattern_id  = None
+                    common[pre_context_id].positioning = None
                     if other_entry != None:
                         self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                         self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    continue
 
                 if other_entry == None:
-                    acceptance = None; positioning = None # Cannot be determined beforehand
+                    common[pre_context_id].pattern_id  = None
+                    common[pre_context_id].positioning = None
                     if common_entry != None:
                         self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                         self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    continue
 
-                # pre_context_id present in both maps
-                if acceptance != None:
-                    if common_entry.pattern_id != other_entry.pattern_id:
-                        acceptance = None
-                        # Inform related states about the task to store acceptance
-                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                    if common_entry.positioning != other_entry.positioning:
-                        positioning = None
-                        # Inform related states about the task to store acceptance position
-                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                # (1) If both maps have an entry, then determine whether the pattern ids 
+                #     and the positioning differs.
+                if common_entry.pattern_id != other_entry.pattern_id:
+                    # Inform related states about the task to store acceptance
+                    self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                    common[pre_context_id].pattern_id = None
 
-                common[pre_context_id].pattern_id  = acceptance
-                common[pre_context_id].positioning = positioning
+                if common_entry.positioning != other_entry.positioning:
+                    # Inform related states about the task to store acceptance position
+                    self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    common[pre_context_id].positioning = None
 
         state.drop_out.set_sequence(common)
 
 class AnalyzerState:
     def __init__(self, StateIndex, SM, InitStateF, ForwardF):
         assert type(StateIndex) in [int, long]
-        assert type(TheDropOut) == list
+        assert type(InitStateF) == bool
+        assert type(ForwardF)   == bool
 
         state = SM.states[StateIndex]
 
-        self.index       = StateIndex
-        self.input       = Input(StateIndex == SM.init_state_index, ForwardF)
-        self.entry       = Entry(state.origins(), ForwardF)
-        self.trigger_map = state.transitions().get_trigger_map()
-        self.drop_out    = DropOut()
+        self.index          = StateIndex
+        self.input          = Input(StateIndex == SM.init_state_index, ForwardF)
+        self.entry          = Entry(state.origins(), ForwardF)
+        self.transition_map = state.transitions().get_trigger_map()
+        self.drop_out       = DropOut()
 
 class Input:
     def __init__(self, InitStateF, ForwardF):
