@@ -19,7 +19,7 @@
     stored along with the AnalyzerState object.
 """
 
-from quex.engine.generator.track_info import TrackInfo
+import quex.engine.generator.track_info as track_info
 
 from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
@@ -30,8 +30,8 @@ from exceptions       import AssertionError
 class Analyzer:
     def __init__(self, SM, ForwardF):
 
-        track_info = TrackInfo(SM)
-        acceptance_db = track_info.acceptance_db
+        track         = track_info.TrackInfo(SM)
+        acceptance_db = track.acceptance_db
 
         self.__state_db = dict([(i, AnalyzerState(i, SM, ForwardF)) 
                                  for i in acceptance_db.iterkeys()])
@@ -44,7 +44,9 @@ class Analyzer:
                    
         if len(TheAcceptanceTraceList) == 0: return 
 
-        common = TheAcceptanceTraceList[0]
+        common = {} 
+        for x in TheAcceptanceTraceList[0]:
+            common[x.pre_context_id] = x
         common_pre_context_id_list = common.get_pre_context_id_list()
 
         # If any acceptance trace differs from the prototype in accepting or positioning
@@ -60,19 +62,18 @@ class Analyzer:
                 # (0) If one of the two does not contain the pre_context_id then the 
                 #     common entry must 'void' the entry totally.
                 if common_entry == None:
-                    common[pre_context_id].pattern_id  = None
-                    common[pre_context_id].positioning = None
+                    common[pre_context_id] =  track_info.AcceptanceTraceEntry(pre_context_id, None, None, -1, -1)
                     if other_entry != None:
                         self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                         self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     continue
 
-                if other_entry == None:
-                    common[pre_context_id].pattern_id  = None
-                    common[pre_context_id].positioning = None
-                    if common_entry != None:
-                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                        self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                elif other_entry == None:
+                    common[pre_context_id].pattern_id  = None # accepting pattern unknown
+                    common[pre_context_id].positioning = None # positioning unknown
+                    # Here: common_entry != None
+                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     continue
 
                 # (1) If both maps have an entry, then determine whether the pattern ids 
@@ -83,11 +84,11 @@ class Analyzer:
                     self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                     common[pre_context_id].pattern_id = None
 
-                if common_entry.positioning != other_entry.positioning:
+                if common_entry.move_backward_n != other_entry.move_backward_n:
                     # Inform related states about the task to store acceptance position
                     self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    common[pre_context_id].positioning = None
+                    common[pre_context_id].move_backward_n = None
 
         state.drop_out.set_sequence(common)
 
@@ -241,11 +242,37 @@ class ConditionalDropOutAction:
         self.post_context_id = PostContextID
 
 class DropOut:
+    """The drop out has to do (at maximum) two things:
+
+       -- positioning the input pointer of the analyzer.
+       -- goto the related terminal.
+
+       This may happen depending on fulfilled pre_context's. Thus, there
+       is actually a sequence of checks:
+        
+            if     ( pre_context_0 ) { input_p = ... ; goto ...; }
+            else if( pre_context_1 ) { input_p = ... ; goto ...; }
+            else if( pre_context_2 ) { input_p = ... ; goto ...; }
+            else                     { input_p = ... ; goto ...; }
+
+       This is what is returned by 'get_sequence()' the elements are of class
+       'AcceptanceTraceEntry' where now only the members:
+
+                .pre_context_id   # The pre context id for which it is valid
+                .move_backward_n  # Positioning of the input pointer
+                .pattern_id       # Goto this particular terminal
+
+       are of interest.
+    """
     def __init__(self):
-        pass
+        self.__sequence = []
 
-    def set_restore_last_acceptance_f(self):
-        for x in self._sequence:
-            x.pattern_id = None
+    def set_sequence(self, CommonTrace):
+        for x in sorted(CommonTrace.itervalues(), key=attrgetter("pattern_id")):
+            assert x.__class__ = track_info.AcceptanceTraceEntry
+            self.__sequence.append(copy(x))
+            if x.pre_context_id == None: break
 
+    def get_sequence(self):
+        return self.__sequence
 
