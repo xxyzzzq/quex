@@ -560,6 +560,10 @@ class AcceptanceTrace:
             if x.move_backward_n == None: return True
         return False
 
+    def __iter__(self):
+        for x in self.__info_table:
+            yield x
+
     def get_positioning_state_index_list(self):
         return map(lambda x: x.positioning_state_index, self.__info_table)
 
