@@ -19,7 +19,7 @@
     stored along with the AnalyzerState object.
 """
 
-import quex.engine.generator.track_info as track_info
+import quex.engine.analyzer.track_info as track_info
 
 from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
@@ -269,7 +269,7 @@ class DropOut:
 
     def set_sequence(self, CommonTrace):
         for x in sorted(CommonTrace.itervalues(), key=attrgetter("pattern_id")):
-            assert x.__class__ = track_info.AcceptanceTraceEntry
+            assert x.__class__ == track_info.AcceptanceTraceEntry
             self.__sequence.append(copy(x))
             if x.pre_context_id == None: break
 

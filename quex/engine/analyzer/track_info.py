@@ -683,7 +683,7 @@ class TrackInfo:
         path.append(StateIndex)
 
         # (2) Iterate over all target states
-        for state_index in state.transitions().get_target_state_index_list()
+        for state_index in state.transitions().get_target_state_index_list():
             if x in path: 
                 # Mark all states that are part of a loop. The length of a path that 
                 # contains such a state can only be determined at run-time.
@@ -733,7 +733,7 @@ class TrackInfo:
         assert x == StateIndex
 
     def get_origin_list(self, StateIndex):
-        return self.__sm.states[StateIndex].origins().get_list():
+        return self.__sm.states[StateIndex].origins().get_list()
 
     def is_loop_state(self, StateIndex):
         return StateIndex in self.__loop_state_set

@@ -5,7 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
-import quex.engine.generator.track_analyzis  as track_analyzis
+import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Necessity of storing acceptance;"
@@ -42,7 +42,7 @@ sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' late
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = track_analyzis.do(sm, ForwardF=True)
+analyzer = core.Analyzer(sm, ForwardF=True)
 
 for state in analyzer:
     print "State = %i" % state._i_.state_index + "____________________________________"
