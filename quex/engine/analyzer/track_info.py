@@ -1,3 +1,8 @@
+from quex.input.setup import setup as Setup
+
+from collections      import defaultdict
+from copy             import copy, deepcopy
+import sys
 """
 Track Analysis
 
@@ -312,141 +317,6 @@ A new rule concerning the reload behavior can be defined:
     (17) All non-acceptance states that immediately follow a 'skipper
          state' must cause 'skip-failure' on drop-out.
 """
-from quex.input.setup import setup as Setup
-from copy             import copy, deepcopy
-from collections      import defaultdict
-
-def do(sm, ForwardF):
-    track_info = TrackInfo(sm, ForwardF)
-
-    for state_index, acceptance_info in track.acceptance_db.iteritems():
-            
-        state._i_ = AnalyzerState(state_index,
-                                  acceptance_info,
-                                  EntryActions(state_index, acceptance_info, [], []),
-                                  Input(state_index, track_info),
-                                  DropOut(state_index, acceptance_info, track_info))
-
-    return sm.values()
-
-class AcceptanceInfoElement:
-    """This object simply tells that a specific pattern wins if the pre-context
-       or a begin of line is fulfilled. 
-    """
-    def __init__(self, PatternID, PreContextID):
-        """PatternID     => ID of the pattern that accepts.
-                            None --> end of file
-                            -1   --> failure
-           PreContextID  => pre-context that must be fulfilled so that 
-                            pattern id is the winner. 
-                            None --> no pre-context whatsoever
-                            - 1  --> pre-context = begin of line
-          
-           The normal case of a pattern without pre-context and begin-of-line 
-           condition is the (None, PatternID). Normal case for end of file
-           is (None, None). Normal case for 'failure' is (None, -1).
-        """
-        self.pre_context_id = PreContextID
-        self.pattern_id     = PatternID
-
-class AcceptanceInfo:
-    def __init__(self, TheState):
-        LanguageDB = Setup.language_db
-
-        if TheState.is_acceptance() == False:  # Acceptance = Failure
-            self.__acceptance_condition_list = []
-            return
-
-        # Store information about the 'acceptance behavior' of a state.
-        self.__acceptance_condition_list = []
-        for origin in sorted(TheState.origins()):
-            if not origin.is_acceptance(): continue
-
-            if   origin.pre_context_begin_of_line_f(): pre_context_id = -1
-            elif origin.pre_context_id() == -1:        pre_context_id = None
-            else:                                      pre_context_id = origin.pre_context_id()
-            info = AcceptanceInfoElement(origin.state_machine_id, pre_context_id)
-            
-            self.__acceptance_condition_list.append(info)
-
-            # If an unconditioned acceptance occurred, then no further consideration!
-            # (Rest of acceptance candidates is dominated).
-            if pre_context_id != None: break
-        # If: no acceptance => len(self.__acceptance_condition_list) == 0 
-
-        # Each necessity is related to a pre-context
-        self.__necessary_to_store_last_acceptance_f          = False
-        self.__necessary_to_store_last_acceptance_position_f = False
-
-    def is_failure(self):
-        return len(self.__acceptance_condition_list) == 0
-
-    def get_acceptance_id(self, PreContextID):
-        """PatternID of the winning pattern, provided that PreContextID 
-                     is fulfilled.
-           -1        if state 'fails' in case of the given PreContextID.
-        """
-        for element in self.__acceptance_condition_list:
-            if element.pre_context_id == PreContextID: return element.pattern_id
-        return -1
-
-    def is_conditional(self):
-        if len(self.__acceptance_condition_list) == 0: return False
-        # Only the last condition in the acceptance condition list is unconditional.
-        # Thus, if there are more than one condition --> conditional
-        elif len(self.__acceptance_condition_list) > 1: return True
-        # The only one acceptance may still be condition, so check ...
-        return self.__acceptance_condition_list[0].pre_context_id != None
-
-    def failure_always(self):
-        return len(self.__acceptance_condition_list) == 0
-        
-    def failure_possible(self):
-        """Determines if it is possible that the state 'fails'. This may
-           happen, because:
-                         -- state is a 'failure' state
-                         -- state does not accept if there is no 
-                            pre-context fulfilled.
-        """
-        if len(self.__acceptance_condition_list) == 0: return True
-        # Only the last entry is possibly unconditional. If the last entry
-        # is conditional, this means there is no acceptance for the case
-        # that no pre-context holds.
-        last = self.__acceptance_condition_list[-1]
-        if last.pre_context_id != None:
-            return True
-        else:
-            return (last.pattern_id == -1) or (last.pattern_id == None)
-
-    def get_pattern_id_list(self):
-        return map(lambda x: x[0], self.__acceptance_condition_list)
-
-    def __eq__(self, Other):
-        if not isinstance(Other, AcceptanceInfo): return False
-        return self.__acceptance_condition_list == Other.__acceptance_condition_list
-
-    def set_necessary_to_store_last_acceptance_f(self):
-        self.__necessary_to_store_last_acceptance_f = True
-
-    def necessary_to_store_last_acceptance_f(self):
-        return self.__necessary_to_store_last_acceptance_f
-
-    def set_necessary_to_store_last_acceptance_position_f(self):
-        self.__necessary_to_store_last_acceptance_position_f = True
-
-    def necessary_to_store_last_acceptance_position_f(self):
-        return self.__necessary_to_store_last_acceptance_position_f
-
-    def __repr__(self):
-        if len(self.__acceptance_condition_list) == 0: return "(Failure)"
-        txt = []
-        for acceptance in self.__acceptance_condition_list:
-            if   acceptance.pre_context_id == None: pre_context_str = "None"
-            elif acceptance.pre_context_id != -1:   pre_context_str = "%i" % self.pre_context_id
-            else:                                   pre_context_str = "begin-of-line"
-            txt.append("(A = %i; pre = %s), " % 
-                       (acceptance.pattern_id, pre_context_str))
-        return "".join(txt)
 
 class AcceptanceTraceEntry:
     def __init__(PreContextID, PatternID, MoveBackwardN, AcceptingStateIndex, PositioningStateIndex):
@@ -478,23 +348,25 @@ class AcceptanceTrace:
     def __init__(self):
         self.__info_table = []
 
-    def update(self, StateIndex, TheState, path, LoopStateF):
+    def update(self, StateIndex, track_info, Path):
         # If the current state is a loop state, than all positions become void.
         # This means that number of characters to reach this state can no longer
         # be determined by the state machine structure itself.
-        if LoopStateF:
+        if StateIndex in track_info.loop_state_set:
             for entry in self.__info_table:
                 if entry.move_backward_n != 0: entry.move_backward_n = None
         else:
             for entry in self.__info_table:
                 entry.move_backward_n += 1
 
-        if not TheState.is_acceptance(): return
+        state = track_info.sm.states[StateIndex]
+        if not state.is_acceptance(): return
 
-        least_priviledged_pattern_id = self.__info_table[-1].pattern_id
+        least_priviledged_pattern_id = self.__info_table[-1].pattern_id \
+                                       if len(self.__info_table) != 0 else sys.maxint
 
         # For each pre-context make an entry
-        for origin in sorted(TheState.origins()):
+        for origin in sorted(state.origins()):
             if not origin.is_acceptance(): continue
 
             # (0) The pattern's ID
@@ -516,7 +388,8 @@ class AcceptanceTrace:
                 post_context_id = origin.post_context_id()
                 move_backward_n,        \
                 positioning_state_index = self.__find_last_post_context_begin(origin.post_context_id(), 
-                                                                              path, track_info.states_db())
+                                                                              Path, 
+                                                                              track_info)
             
             # (*) Make the entry in the database
             entry = AcceptanceTraceEntry(pre_context_id, pattern_id, move_backward_n,
@@ -537,20 +410,6 @@ class AcceptanceTrace:
         assert len(self.__info_table) >= 1
         assert self.__info_table[-1].pre_context_id == None
     
-    def has_same_acceptance_pattern(self, Other):
-        if len(self.__info_table) != len(Other.__info_table): return False
-
-        for x, y in zip(self.__info_table, Other.__info_table):
-            if x.pattern_id != y.pattern_id:                  return False
-        return True
-
-    def has_same_positioning_pattern(self, Other):
-        if len(self.__info_table) != len(Other.__info_table): return False
-
-        for x, y in zip(self.__info_table, Other.__info_table):
-            if x.move_backward_n != y.move_backward_n:        return False
-        return True
-
     def is_conditional(self):
         assert len(self.__info_table) != 0
         return len(self.__info_table) != 1
@@ -564,12 +423,6 @@ class AcceptanceTrace:
         for x in self.__info_table:
             yield x
 
-    def get_positioning_state_index_list(self):
-        return map(lambda x: x.positioning_state_index, self.__info_table)
-
-    def get_accepting_state_index_list(self):
-        return map(lambda x: x.accepting_state_index_list, self.__info_table)
-
     def __eq__(self, Other):
         return None
 
@@ -578,7 +431,7 @@ class AcceptanceTrace:
            of the acceptance.
         """
         distance = 0
-        successor_is_loop_state_f = track_info.is_loop_state(state_index)
+        successor_is_loop_state_f = (path[-1] in track_info.loop_state_set)
         for state_index in reversed(path[:-1]):
             distance += 1
             if successor_is_loop_state_f:
@@ -591,7 +444,7 @@ class AcceptanceTrace:
                    and origin.store_input_position_f(): 
                     return distance
 
-            successor_is_loop_state_f = track_info.is_loop_state(state_index)
+            successor_is_loop_state_f = (state_index in track_info.loop_state_set) 
         
         # This function is only to be called to find the beginning of a post context. It
         # **must** be impossible to reach a post-context end without passing the place where
@@ -599,31 +452,12 @@ class AcceptanceTrace:
         # position. If we reach this position here, then something is seriously wrong. 
         assert False
 
-def AcceptanceTrace_analyzis(AcceptanceTraceList):
-    """For a given state of AcceptanceTraces that belong to a state, check:
-
-       (1) On DropOut: -- does the state have to restore the accepting pattern id,
-                          or is it clear from the state machine's structure?
-
-                       -- where to put the input position? Does it have to rely on 
-                          stored acceptance ids?
-
-       For all pattern id and acceptance position that is restored, the state that
-       stores it needs to know about it.
-    """
-
 class TrackInfo:
     def __init__(self, SM, ForwardF):
         """SM -- state machine to be investigated."""
         assert type(ForwardF) == bool
-        self.__sm        = SM
+        self.sm        = SM
         self.__forward_f = ForwardF
-
-        # (0) Acceptance DB
-        #
-        # -- Provide for each acceptance state an 'acceptance info' that tells 
-        #    what pattern id wins under what pre_context.  
-        self.acceptance_db = dict([ (i, AcceptanceInfo(state)) for i, state in self.__sm.states.iteritems() ])
 
         # (1) Analyze recursively in the state machine:
         #
@@ -635,32 +469,16 @@ class TrackInfo:
         #
         #    set of state indices that are part of a loop.
         #
-        self.__loop_state_set = set([])
-        self.__loop_state_search(self.__sm.init_state_index, path=[])
+        self.loop_state_set = set([])
 
         # -- Database of Passed Acceptance States
         # 
         #    map:  state_index  --> list of AcceptanceTrace objects.
         #
-        self.__acceptance_trace_db = dict([(i, []) for i in self.__sm.states.iterkeys()])
-        self.__acceptance_trace_search(self.__sm.init_state_index, 
+        self.acceptance_trace_db = dict([(i, []) for i in self.sm.states.iterkeys()])
+        self.__acceptance_trace_search(self.sm.init_state_index, 
                                        path             = [], 
                                        acceptance_trace = AcceptanceTrace())
-
-        # (2) Acceptance Determination
-        #
-        #    The database that maps:  state_index --> MovesToAcceptancePosition
-        #
-        #    MovesToAcceptancePosition :
-        #    Number of 'moves' (passed characters) to set the input to the last
-        #    acceptance position.
-        #
-        #      == None --> undetermined (restore last_acceptance_position required)
-        #      == 1    --> new input position = 1 after lexeme begin
-        #                  (if acceptance = failure)
-        #      <= 0    --> number of characters to move backward
-        #                  to last acceptance position.
-        self.acceptance_location_db = dict([ (i, {}) for i in self.__sm.states.iterkeys() ])
 
         #     Analyze to build the databases mentioned above.
         #     (store in acceptance info objects the necessity to store acceptance 
@@ -674,24 +492,26 @@ class TrackInfo:
            from the state machine itself.
 
            Recursion Terminal: When a state has no target state that has not
-                               yet been handled in the path.
+                               yet been handled in the path. This is implemented
+                               int the loop itself.
         """
-        if StateIndex in path:
-            return
+        # if StateIndex in path: return
 
         # (1) Add current state index to path
         path.append(StateIndex)
 
+        state = self.sm.states[StateIndex]
+
         # (2) Iterate over all target states
         for state_index in state.transitions().get_target_state_index_list():
-            if x in path: 
+            if state_index in path: 
                 # Mark all states that are part of a loop. The length of a path that 
                 # contains such a state can only be determined at run-time.
                 idx = path.index(StateIndex)
-                self.__loop_state_set.update(path[idx:])
+                self.loop_state_set.update(path[idx:])
                 continue # Do not dive into done states
 
-            self.__loop_state_search(state_index, p)
+            self.__loop_state_search(state_index, path)
 
         # (3) Remove current state index --> path is as before
         x = path.pop()
@@ -717,15 +537,19 @@ class TrackInfo:
         path.append(StateIndex)
 
         # (2) Update the information about the 'trace of acceptances'
-        acceptance_trace.update(StateIndex, self.__sm.states[StateIndex], self)
+        acceptance_trace.update(StateIndex, self, path) 
 
         # (3) Mark the current state with its acceptance trace
-        if acceptance_trace.is_empty() == False:
-            self.__acceptance_trace_db[StateIndex].append(deepcopy(acceptance_trace))
+        self.acceptance_trace_db[StateIndex].append(deepcopy(acceptance_trace))
 
         # (4) Recurse to all (undone) target states. 
-        for target_index in state.transitions().get_target_state_index_list():
-            if x in path: continue # Do not dive into done states
+        for target_index in self.sm.states[StateIndex].transitions().get_target_state_index_list():
+            if target_index in path: 
+                # Mark all states that are part of a loop. The length of a path that 
+                # contains such a state can only be determined at run-time.
+                self.loop_state_set.update(path[path.index(StateIndex):])
+                continue # Do not dive into done states
+
             self.__acceptance_trace_search(target_index, path, acceptance_trace)
 
         # (5) Remove current state index --> path is as before
@@ -733,13 +557,13 @@ class TrackInfo:
         assert x == StateIndex
 
     def get_origin_list(self, StateIndex):
-        return self.__sm.states[StateIndex].origins().get_list()
+        return self.sm.states[StateIndex].origins().get_list()
 
     def is_loop_state(self, StateIndex):
-        return StateIndex in self.__loop_state_set
+        return StateIndex in self.loop_state_set
 
     def is_init_state_index(self, StateIndex):
-        return self.__sm.init_state_index == StateIndex
+        return self.sm.init_state_index == StateIndex
 
     def __post_context_position_store_conifigurations(self):
         """Determine the groups of post contexts that store their input
@@ -753,7 +577,7 @@ class TrackInfo:
 
         # post context id --> list of states where the input position is to be stored.
         db = {}
-        for index, state in self.__sm.states.iteritems():
+        for index, state in self.sm.states.iteritems():
             for origin in state.origins():
                 if origin.store_input_position_f():
                     db.setdefault(origin.post_context_id(), []).append(index)
@@ -774,7 +598,7 @@ class TrackInfo:
         return group_list
 
     def get_post_context_position_to_be_stored(self, StateIndex):
-        OriginList = self.__sm.states[StateIndex].origins().get_list()
+        OriginList = self.sm.states[StateIndex].origins().get_list()
 
         result = []
         for origin in OriginList:
@@ -832,7 +656,7 @@ class TrackInfo:
 #        elif acceptance_info.failure_possible():            
 #            # If acceptance is 'failure' in case of missing pre-context, then length = void.
 #            length = None                      
-#        elif self.__loop_state_set.isdisjoint(path) == False: 
+#        elif self.loop_state_set.isdisjoint(path) == False: 
 #            # If one of the states in the path is a 'loop state' then the state machine 
 #            # could loop on the way from the begin to the end. Thus, the length of the 
 #            # path cannot be determined from the state machine alone.

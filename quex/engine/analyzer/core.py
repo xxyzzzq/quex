@@ -30,8 +30,8 @@ from exceptions       import AssertionError
 class Analyzer:
     def __init__(self, SM, ForwardF):
 
-        track         = track_info.TrackInfo(SM)
-        acceptance_db = track.acceptance_db
+        track         = track_info.TrackInfo(SM, ForwardF)
+        acceptance_db = track.acceptance_trace_db
 
         self.__state_db = dict([(i, AnalyzerState(i, SM, ForwardF)) 
                                  for i in acceptance_db.iterkeys()])
