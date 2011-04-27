@@ -19,26 +19,30 @@
     stored along with the AnalyzerState object.
 """
 
-import quex.engine.analyzer.track_info as track_info
+import quex.engine.analyzer.track_analysis as track_analysis
 
 from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
 from collections      import defaultdict
 from operator         import attrgetter
 from exceptions       import AssertionError
+from itertools        import islice
 
 class Analyzer:
     def __init__(self, SM, ForwardF):
 
-        track         = track_info.TrackInfo(SM, ForwardF)
-        acceptance_db = track.acceptance_trace_db
+        acceptance_db = track_analysis.do(SM, ForwardF)
 
-        self.__state_db = dict([(i, AnalyzerState(i, SM, ForwardF)) 
-                                 for i in acceptance_db.iterkeys()])
+        self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, ForwardF)) 
+                                 for state_index in acceptance_db.iterkeys()])
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
             self.__analyze(state, acceptance_trace_list)
+
+    def __iter__(self):
+        for x in self.__state_db.values():
+            yield x
 
     def __analyze(self, state, TheAcceptanceTraceList):
                    
@@ -47,22 +51,22 @@ class Analyzer:
         common = {} 
         for x in TheAcceptanceTraceList[0]:
             common[x.pre_context_id] = x
-        common_pre_context_id_list = common.get_pre_context_id_list()
+        common_pre_context_id_set = set(common.keys())
 
         # If any acceptance trace differs from the prototype in accepting or positioning
         # => it needs to be stored and restored.
         # Loop: 'first falsifies'
         for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
-            common_pre_context_id_list.update(acceptance_trace.get_pre_context_id_list())
-            for pre_context_id in common_pre_context_id_list:
+            common_pre_context_id_set.update(acceptance_trace.get_pre_context_id_list())
+            for pre_context_id in common_pre_context_id_set:
                 
-                common_entry = common.get_pre_context_id_entry(pre_context_id)
-                other_entry  = acceptance_trace.get_pre_context_id_entry(pre_context_id)
+                common_entry = common.get(pre_context_id)
+                other_entry  = acceptance_trace.get(pre_context_id)
 
                 # (0) If one of the two does not contain the pre_context_id then the 
                 #     common entry must 'void' the entry totally.
                 if common_entry == None:
-                    common[pre_context_id] =  track_info.AcceptanceTraceEntry(pre_context_id, None, None, -1, -1)
+                    common[pre_context_id] = track_analysis.AcceptanceTraceEntry(pre_context_id, None, None, -1, -1, -1)
                     if other_entry != None:
                         self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                         self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
@@ -93,9 +97,8 @@ class Analyzer:
         state.drop_out.set_sequence(common)
 
 class AnalyzerState:
-    def __init__(self, StateIndex, SM, InitStateF, ForwardF):
+    def __init__(self, StateIndex, SM, ForwardF):
         assert type(StateIndex) in [int, long]
-        assert type(InitStateF) == bool
         assert type(ForwardF)   == bool
 
         state = SM.states[StateIndex]
@@ -106,16 +109,22 @@ class AnalyzerState:
         self.transition_map = state.transitions().get_trigger_map()
         self.drop_out       = DropOut()
 
+    def __repr__(self):
+        txt = [
+            "State %i:\n" % self.index,
+            "  .input: move position %i\n" % self.input.move_input_position(),
+            "  .entry:\n",                   repr(self.entry),
+            "  .transition_map:\n",          
+            "  .drop_out:\n",                repr(self.drop_out),
+        ]
+        return "".join(txt)
+
 class Input:
     def __init__(self, InitStateF, ForwardF):
         if ForwardF: # Rules (1), (2), and (3)
             self.__move_input_position = + 1 if not InitStateF else 0
         else:        # Backward lexing --> rule (3)
             self.__move_input_position = - 1
-
-    def move_input_position(self):
-        return self.__move_input_position
-
 
     def move_input_position(self):
         """+1 --> increment by one before dereferencing
@@ -149,29 +158,30 @@ class ConditionalEntryAction:
         self.store_acceptance_f          = False
         self.store_acceptance_position_f = False
 
-def extract_pre_context_id(Origin):
-    if   origin.pre_context_begin_of_line_f(): return -1
-    elif origin.pre_context_id() == -1:        return None
-    else:                                      return origin.pre_context_id()
+    def __repr__(self):
+        return "%s, %03d, %s, %s" % \
+               (repr(self.pre_context_id), self.pattern_id,
+                "true" if self.store_acceptance_f else "false",
+                "true" if self.store_acceptance_position_f else "false",)
 
 class Entry:
     def __init__(self, OriginList, ForwardF):
-        self.__origin_list                 = sorted(OriginList, key=attrgetter("state_machine_id"))
-        self.__sequence                    = None
+        self.__sequence    = None
 
         if ForwardF:
             self.__pre_context_fulfilled_set = None
             self.__sequence                  = []
-            for origin in self.__origin_list:
-                entry = ConditionalEntryAction(extract_pre_context_id(origin), pattern_id)
+            for origin in OriginList:
+                entry = ConditionalEntryAction(self.__extract_pre_context_id(origin), 
+                                               origin.state_machine_id)
                 self.__sequence.append(entry)
                 # If an unconditioned acceptance occurred, then no further consideration!
                 # (Rest of acceptance candidates is dominated).
-                if pre_context_id != None: break
+                if origin.pre_context_id != None: break
         else:
             self.__pre_context_fulfilled_set = set([])
             self.__sequence                  = None
-            for origin in self.__origin_list:
+            for origin in OriginList:
                 if not origin.store_input_position_f(): continue
                 assert origin.is_acceptance()
                 self.__pre_context_fulfilled_set.add(origin.state_machine_id)
@@ -179,24 +189,44 @@ class Entry:
         # List of post context begin positions that need to be stored at state entry
         self.__store_position_begin_of_post_context_id_set = set([])
 
+        # Only for 'assert' see member functions below
+        self.__origin_list = set(filter(lambda x: x != -1, 
+                                        map(lambda x: x.post_context_id(), OriginList)))
+
+    def __repr__(self):
+        txt = []
+        if self.__pre_context_fulfilled_set != None:
+            # (only possible in backward lexical analysis)
+            for x in self.__pre_context_fulfilled_set:
+                txt.append("        pre context id %i fulfilled\n" % x)
+        else:
+            for x in self.__sequence:
+                txt.append("        " + repr(x))
+            for x in self.__store_position_begin_of_post_context_id_set:
+                txt.append("        post context id %i begin" % x)
+        if len(txt) != 0: txt.append("\n")
+        return "".join(txt)
+
     def get_sequence(self):
         assert self__sequence != None
         return self.__sequence
 
-    def set_store_acceptance_f(self):
+    def set_store_acceptance_f(self, PreContextID):
         for x in self.__sequence: 
-            x.store_acceptance_f = True
+            if x.pre_context_id == PreContextID: 
+                x.store_acceptance_f = True
+                return
+        assert False, "PostContextID not mentioned in state"
 
-    def set_store_acceptance_position_f(self):
+    def set_store_acceptance_position_f(self, PreContextID):
         for x in self.__sequence: 
-            x.store_acceptance_position_f = True
+            if x.pre_context_id == PreContextID: 
+                x.store_acceptance_position_f = True
+                return
+        assert False, "PostContextID not mentioned in state"
 
     def set_store_begin_of_post_context_position(self, PostContextID):
-        if __debug__:
-            for origin in self.__origin_list:
-                if origin.post_context_id() == PostContextID: break
-            else:
-                assert AssertionError, "PostContextID not mentioned in state"
+        assert PostContextID in self.__post_context_id_list
 
         self.__store_position_begin_of_post_context_id_set.add(PostContextID)
 
@@ -211,35 +241,13 @@ class Entry:
         assert self.__pre_context_fulfilled_set != None
         return self.__pre_context_fulfilled_set
 
-class ConditionalDropOutAction:
-    """Objects of this class describe what has to happen, if a pre-context
-       is fulfilled. The related action may be written in pseudo code:
-
-           if( 'self.pre_context_id' fulfilled ) {
-                if( 'self.restore_acceptance_position_f' ) {
-                    input_p = last_acceptance_position;
-                }
-                else if( 'self.post_context_id' != None ) {
-                    input_p = position_register['self.post_context_id'];
-                }
-                if( 'self.pattern_id' == None ) {
-                    goto ROUTER(last_acceptance);
-                }
-                else  {
-                    goto 'self.pattern_id' terminal;
-                }
-           }
-            
-       Alternatives:
-
-           input_p = position_register[i];
-           goto TERMINAL_X;gt
-
-    """
-    def __init__(self):
-        self.pre_context_id  = PreContextID
-        self.pattern_id      = PatternID
-        self.post_context_id = PostContextID
+    def __extract_pre_context_id(self, Origin):
+        """This function basically describes how pre-context-ids and 
+           'begin-of-line' pre-context are expressed by an integer.
+        """
+        if   Origin.pre_context_begin_of_line_f(): return -1
+        elif Origin.pre_context_id() == -1:        return None
+        else:                                      return Origin.pre_context_id()
 
 class DropOut:
     """The drop out has to do (at maximum) two things:
@@ -267,9 +275,20 @@ class DropOut:
     def __init__(self):
         self.__sequence = []
 
+    def __repr__(self):
+        txt = []
+        for x in self.__sequence:
+            if x.pre_context_id == None:
+                txt.append("        (input_p -= %s, goto %s)\n" \
+                           % (repr(x.move_backward_n), repr(x.pattern_id)))
+            else:
+                txt.append("        if pre_context_%i: (input_p -= %s, goto %s)\n" \
+                           % (x.pre_context_id, repr(x.move_backward_n), repr(x.pattern_id)))
+        return "".join(txt)
+
     def set_sequence(self, CommonTrace):
         for x in sorted(CommonTrace.itervalues(), key=attrgetter("pattern_id")):
-            assert x.__class__ == track_info.AcceptanceTraceEntry
+            assert x.__class__ == track_analysis.AcceptanceTraceEntry
             self.__sequence.append(copy(x))
             if x.pre_context_id == None: break
 
