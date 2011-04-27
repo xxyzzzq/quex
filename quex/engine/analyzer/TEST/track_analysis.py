@@ -45,5 +45,4 @@ print sm.get_string(NormalizeF=False)
 analyzer = core.Analyzer(sm, ForwardF=True)
 
 for state in analyzer:
-    print "State = %i" % state._i_.state_index + "____________________________________"
-    print state._i_
+    print state
