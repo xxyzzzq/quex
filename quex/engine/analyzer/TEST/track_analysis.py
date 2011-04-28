@@ -35,14 +35,11 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-#dsm = StateMachineDecorator(sm, "TrackTest", 
-#                            PostContextSM_ID_List           = [], 
-#                            BackwardLexingF                 = False, 
-#                            BackwardInputPositionDetectionF = False)
-
 print sm.get_string(NormalizeF=False)
 
 analyzer = core.Analyzer(sm, ForwardF=True)
 
 for state in analyzer:
-    print state
+    if state.index == sm.init_state_index: assert state.input.move_input_position() == 0
+    else:                                  assert state.input.move_input_position() == 1 
+    print state.get_string(InputF=False, TransitionMapF=False)

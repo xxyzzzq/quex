@@ -109,15 +109,20 @@ class AnalyzerState:
         self.transition_map = state.transitions().get_trigger_map()
         self.drop_out       = DropOut()
 
+    def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
+        txt = [ "State %i:\n" % self.index ]
+        if InputF:         txt.append("  .input: move position %i\n" % self.input.move_input_position())
+        if EntryF:         txt.extend(["  .entry: ",         repr(self.entry)])
+        if TransitionMapF: txt.append("  .transition_map:\n")
+        if DropOutF:       txt.extend(["  .drop_out: ",    repr(self.drop_out)])
+        txt.append("\n")
+        return txt
+
+    def get_string(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
+        return "".join(self.get_string_array(InputF, EntryF, TransitionMapF, DropOutF))
+
     def __repr__(self):
-        txt = [
-            "State %i:\n" % self.index,
-            "  .input: move position %i\n" % self.input.move_input_position(),
-            "  .entry:\n",                   repr(self.entry),
-            "  .transition_map:\n",          
-            "  .drop_out:\n",                repr(self.drop_out),
-        ]
-        return "".join(txt)
+        return self.get_string()
 
 class Input:
     def __init__(self, InitStateF, ForwardF):
@@ -159,10 +164,19 @@ class ConditionalEntryAction:
         self.store_acceptance_position_f = False
 
     def __repr__(self):
-        return "%s, %03d, %s, %s" % \
-               (repr(self.pre_context_id), self.pattern_id,
-                "true" if self.store_acceptance_f else "false",
-                "true" if self.store_acceptance_position_f else "false",)
+        if self.store_acceptance_f == False and self.store_acceptance_position_f == False:
+            return ""
+
+        txt = []
+        if self.pre_context_id != None:
+            if self.pre_context_id == -1:    txt.append("BOF, ")
+            else:                            txt.append("PreContext%i, " % self.pre_context_id)
+        if self.pattern_id == None:          txt.append("Failure, ")
+        else:                                txt.append("Pattern%i, " % self.pattern_id)
+        if self.store_acceptance_f:          txt.append("StoreAcceptance, ")
+        if self.store_acceptance_position_f: txt.append("StoreAcceptancePosition, ")
+
+        return "".join(txt)
 
 class Entry:
     def __init__(self, OriginList, ForwardF):
@@ -194,17 +208,26 @@ class Entry:
                                         map(lambda x: x.post_context_id(), OriginList)))
 
     def __repr__(self):
-        txt = []
+        txt     = []
+        first_f = True
         if self.__pre_context_fulfilled_set != None:
             # (only possible in backward lexical analysis)
+            if first_f: first_f = False
+            else:       txt.append("          ") 
             for x in self.__pre_context_fulfilled_set:
-                txt.append("        pre context id %i fulfilled\n" % x)
+                txt.append("\npre context id %i fulfilled\n" % x)
         else:
             for x in self.__sequence:
-                txt.append("        " + repr(x))
+                if first_f: first_f = False
+                else:       txt.append("          ") 
+                txt.append(repr(x))
+                txt.append("\n")
             for x in self.__store_position_begin_of_post_context_id_set:
-                txt.append("        post context id %i begin" % x)
-        if len(txt) != 0: txt.append("\n")
+                if first_f: first_f = False
+                else:       txt.append("          ") 
+                txt.append("post context id %i begin\n" % x)
+
+        if len(txt) == 0: txt.append("\n")
         return "".join(txt)
 
     def get_sequence(self):
@@ -276,14 +299,30 @@ class DropOut:
         self.__sequence = []
 
     def __repr__(self):
+        if len(self.__sequence) == 0: return "Failure"
+
+        def write(txt, X):
+            if   X.move_backward_n == None: txt.append("pos = restore(StoredAcceptancePosition); ")
+            elif X.move_backward_n == 1:    txt.append("pos = lexeme_start + 1; ")
+            elif X.move_backward_n == 0:    pass # This state is an acceptance state
+            else:                           txt.append("pos -= %i; " % X.move_backward_n) 
+            if   X.pattern_id == None:      txt.append("goto StoredAcceptance;")
+            else:                           txt.append("goto Pattern%i;" % X.pattern_id)
+
         txt = []
-        for x in self.__sequence:
-            if x.pre_context_id == None:
-                txt.append("        (input_p -= %s, goto %s)\n" \
-                           % (repr(x.move_backward_n), repr(x.pattern_id)))
-            else:
-                txt.append("        if pre_context_%i: (input_p -= %s, goto %s)\n" \
-                           % (x.pre_context_id, repr(x.move_backward_n), repr(x.pattern_id)))
+        first_f = True
+        L = len(self.__sequence)
+        for i, x in enumerate(self.__sequence):
+            if first_f: first_f = False
+            else:       txt.append("             ")
+            if x.pre_context_id == None: 
+                write(txt, x)
+            else: 
+                txt.append("if pre_context_%i: " % x.pre_context_id)
+                write(txt, x)
+            if i != L - 1:
+                txt.append("\n")
+
         return "".join(txt)
 
     def set_sequence(self, CommonTrace):
