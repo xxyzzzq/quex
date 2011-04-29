@@ -9,13 +9,24 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Necessity of storing acceptance;"
-    print "CHOICES: 1, 2;"
+    print "CHOICES: 0, 1, 2;"
     sys.exit()
 
-if "1" in sys.argv:
+if "0" in sys.argv:
     pattern_list = [
-        'for',        
-        'forest',     
+        'a',        
+        'ab',     
+    ]
+elif "1" in sys.argv:
+    pattern_list = [
+        'a',        
+        'abc',     
+    ]
+elif "2" in sys.argv:
+    pattern_list = [
+        'a',        
+        'b',     
+        '[ab]c'
     ]
 elif "2" in sys.argv:
     pattern_list = [
@@ -27,6 +38,11 @@ elif "3" in sys.argv:
         'for',        
         'for([e]+)st',     
     ]
+elif "4" in sys.argv:
+    pattern_list = [
+        'aa|ba',        
+        'b',     
+   ]
 else:
     assert False
 

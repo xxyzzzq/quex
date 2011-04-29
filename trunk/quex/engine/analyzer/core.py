@@ -38,6 +38,9 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
+            # print "##DEBUG"
+            # if state_index == 38: print "##", acceptance_trace_list
+
             self.__analyze(state, acceptance_trace_list)
 
     def __iter__(self):
@@ -186,7 +189,7 @@ class Entry:
             self.__pre_context_fulfilled_set = None
             self.__sequence                  = []
             for origin in OriginList:
-                entry = ConditionalEntryAction(self.__extract_pre_context_id(origin), 
+                entry = ConditionalEntryAction(track_analysis.extract_pre_context_id(origin), 
                                                origin.state_machine_id)
                 self.__sequence.append(entry)
                 # If an unconditioned acceptance occurred, then no further consideration!
@@ -264,14 +267,6 @@ class Entry:
         assert self.__pre_context_fulfilled_set != None
         return self.__pre_context_fulfilled_set
 
-    def __extract_pre_context_id(self, Origin):
-        """This function basically describes how pre-context-ids and 
-           'begin-of-line' pre-context are expressed by an integer.
-        """
-        if   Origin.pre_context_begin_of_line_f(): return -1
-        elif Origin.pre_context_id() == -1:        return None
-        else:                                      return Origin.pre_context_id()
-
 class DropOut:
     """The drop out has to do (at maximum) two things:
 
@@ -303,7 +298,7 @@ class DropOut:
 
         def write(txt, X):
             if   X.move_backward_n == None: txt.append("pos = restore(StoredAcceptancePosition); ")
-            elif X.move_backward_n == 1:    txt.append("pos = lexeme_start + 1; ")
+            elif X.move_backward_n == -1:   txt.append("pos = lexeme_start + 1; ")
             elif X.move_backward_n == 0:    pass # This state is an acceptance state
             else:                           txt.append("pos -= %i; " % X.move_backward_n) 
             if   X.pattern_id == None:      txt.append("goto StoredAcceptance;")
