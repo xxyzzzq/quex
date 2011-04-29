@@ -408,7 +408,10 @@ class TrackInfo:
         path.append(StateIndex)
 
         # (2) Update the information about the 'trace of acceptances'
-        acceptance_trace.update(StateIndex, self, path) 
+        ## print "## State:", StateIndex, len(path)
+        ## print "## Trace:", len(acceptance_trace)
+        ## print "## ", acceptance_trace
+        acceptance_trace.update(self, path) 
 
         # (3) Mark the current state with its acceptance trace
         self.acceptance_trace_db[StateIndex].append(deepcopy(acceptance_trace))
@@ -451,17 +454,22 @@ class AcceptanceTrace:
        This can cause significant speed improvements.
     """
     def __init__(self):
-        self.__sequence = []
+        self.__sequence = {}
 
-    def update(self, StateIndex, track_info, Path):
+    def __len__(self):
+        return len(self.__sequence)
+
+    def update(self, track_info, Path):
         # If the current state is a loop state, than all positions become void.
         # This means that number of characters to reach this state can no longer
         # be determined by the state machine structure itself.
+        StateIndex = Path[-1]
+
         if StateIndex in track_info.loop_state_set:
-            for entry in self.__sequence:
+            for entry in self.__sequence.itervalues():
                 if entry.move_backward_n != 0: entry.move_backward_n = None
         else:
-            for entry in self.__sequence:
+            for entry in self.__sequence.itervalues():
                 entry.move_backward_n += 1
 
         state = track_info.sm.states[StateIndex]
@@ -475,9 +483,7 @@ class AcceptanceTrace:
             pattern_id = origin.state_machine_id
 
             # (1) The Pre-Context under which it triggers
-            if   origin.pre_context_begin_of_line_f(): pre_context_id = -1
-            elif origin.pre_context_id() != -1:        pre_context_id = origin.pre_context_id()
-            else:                                      pre_context_id = None
+            pre_context_id = extract_pre_context_id(origin)
 
             # (2) The position where the input pointer has to be set if the 
             #     pattern is accepted (how many characters to go backwards).
@@ -497,39 +503,31 @@ class AcceptanceTrace:
                                          AcceptingStateIndex   = StateIndex, 
                                          PositioningStateIndex = positioning_state_index, 
                                          PostContextID         = post_context_id)
-            self.__sequence.append(entry)
+            self.__sequence[pre_context_id] = entry
 
-            if pre_context_id == None:
-                # The lists ends now, since no other pre-context can be considered
-                self.__sequence = filter(lambda x: x.pattern_id >= pattern_id, self.__sequence)
-                break
-
-        # Make sure, that pattern prioritization is maintained.
-        self.__sequence.sort(key=attrgetter("pattern_id"))
+        # No conditional pattern can ever be matched if it is dominated
+        # by an unconditional pattern acceptance.
+        min_pattern_id = self.__sequence[None].pattern_id
+        for key in self.__sequence.keys():  # NOT: iterkeys() here!
+            if self.__sequence[key].pattern_id > pattern_id: del self.__sequence[key]
 
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1
-        assert self.__sequence[-1].pre_context_id == None
     
-    def is_conditional(self):
-        assert len(self.__sequence) != 0
-        return len(self.__sequence) != 1
-
-    def is_positioning_void(self):
-        for x in self.__sequence:
-            if x.move_backward_n == None: return True
-        return False
-
     def get(self, PreContextID):
-        for x in self.__sequence:
-            if x.pre_context_id == PreContextID: return x
-        return None
+        return self.__sequence.get(PreContextID)
 
     def get_pre_context_id_list(self):
-        return map(lambda x: x.pre_context_id, self.__sequence)
+        return self.__sequence.keys()
+
+    def __repr__(self):
+        txt = []
+        for x in self.__sequence.itervalues():
+            txt.append(repr(x))
+        return "".join(txt)
 
     def __iter__(self):
-        for x in self.__sequence:
+        for x in self.__sequence.itervalues():
             yield x
 
     def __eq__(self, Other):
@@ -586,4 +584,22 @@ class AcceptanceTraceEntry:
         self.positioning_state_index = PositioningStateIndex
         #
         self.post_context_id         = PostContextID
+
+    def __repr__(self):
+        txt = []
+        txt.append("    .pre_context_id         = %s\n" % repr(self.pre_context_id))
+        txt.append("    .pattern_id             = %s\n" % repr(self.pattern_id))
+        txt.append("    .move_backward_n        = %s\n" % repr(self.move_backward_n))
+        txt.append("    .accepting_state_index  = %s\n" % repr(self.accepting_state_index))
+        txt.append("    .positioning_state_index= %s\n" % repr(self.positioning_state_index))
+        txt.append("    .post_context_id        = %s\n" % repr(self.post_context_id))
+        return "".join(txt)
+
+def extract_pre_context_id(Origin):
+    """This function basically describes how pre-context-ids and 
+       'begin-of-line' pre-context are expressed by an integer.
+    """
+    if   Origin.pre_context_begin_of_line_f(): return -1
+    elif Origin.pre_context_id() == -1:        return None
+    else:                                      return Origin.pre_context_id()
 
