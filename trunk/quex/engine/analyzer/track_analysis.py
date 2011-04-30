@@ -408,19 +408,18 @@ class TrackInfo:
         path.append(StateIndex)
 
         # (2) Update the information about the 'trace of acceptances'
-        ## print "## State:", StateIndex, len(path)
-        ## print "## Trace:", len(acceptance_trace)
-        ## print "## ", acceptance_trace
         acceptance_trace.update(self, path) 
 
         # (3) Mark the current state with its acceptance trace
-        self.acceptance_trace_db[StateIndex].append(deepcopy(acceptance_trace))
+        #     NOTE: When this function is called, acceptance_trace is already
+        #           an independent object, i.e. constructed or deepcopy()-ed.
+        self.acceptance_trace_db[StateIndex].append(acceptance_trace)
 
         # (4) Recurse to all (undone) target states. 
         for target_index in self.sm.states[StateIndex].transitions().get_target_state_index_list():
-            if target_index in path: 
-                continue # Do not dive into done states / this prevents recursion along loops.
-            self.__acceptance_trace_search(target_index, path, acceptance_trace)
+            # Do not dive into done states / prevents recursion along loops.
+            if target_index in path: continue 
+            self.__acceptance_trace_search(target_index, path, deepcopy(acceptance_trace))
 
         # (5) Remove current state index --> path is as before
         x = path.pop()

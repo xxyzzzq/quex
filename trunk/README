@@ -1,18 +1,8 @@
 Quex - A Mode Oriented Lexical Analyser Generator
-(C) 2005-2008 Frank-Rene Schaefer
+(C) 2005-2011 Frank-Rene Schaefer
 --------------------------------------------------------------------------------
 
 LICENSE:
-
-The Software is distributed under LGPL, provided the following restriction:
-
--- There is no license for products targeting military purpose.
-
-Note, that if any part of the LGPL contradicts with the former restrictions,
-the former restrictions have precedence. The 'no warranty clause' holds
-in any case. 
-
-The LGPL:
 
 Quex is  free software;  you can  redistribute it and/or  modify it  under the
 terms  of the  GNU Lesser  General  Public License  as published  by the  Free
@@ -27,6 +17,13 @@ details.
 You should have received a copy of the GNU Lesser General Public License along
 with this  library; if not,  write to the  Free Software Foundation,  Inc., 59
 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+--------------------------------------------------------------------------------
+
+Please, note that the author does not like this software to be used for
+military purposes or other kinds of purposes that might potentially harm
+mankind.
+
 --------------------------------------------------------------------------------
 
 BRIEF:
