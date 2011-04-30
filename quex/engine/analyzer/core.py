@@ -39,7 +39,7 @@ class Analyzer:
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
             # print "##DEBUG"
-            # if state_index == 38: print "##", acceptance_trace_list
+            # if state_index == 50: print "##", acceptance_trace_list
 
             self.__analyze(state, acceptance_trace_list)
 
