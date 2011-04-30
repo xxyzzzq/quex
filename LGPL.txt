@@ -1,26 +1,3 @@
-=================================================================
- || Hereby, I promise to report **AT LEAST ONE BUG**, if I find 
- || one that has not yet been reported. Bugs can be reported 
- || under the URL:
- ||
- || https://sourceforge.net/tracker/?group_id=168259&atid=846112
- ||
- || Alternatively, this page can easily be found starting from:
- || 
- || http://quex.sourceforge.net
- ||
-==================================================================
-
-The Software is free of charge, distributed open source under LGPL, 
-provided the following restriction:
-
--- There is no license for products targeting military purpose. --
-
-Note, that if any part of the LGPL contradicts with the former restriction,
-the former restriction has precedence. The 'no warranty clause' holds
-in any case. 
-___________________________________________________________________________
-
 		  GNU LESSER GENERAL PUBLIC LICENSE
 		       Version 2.1, February 1999
 

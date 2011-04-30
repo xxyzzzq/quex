@@ -8,8 +8,8 @@ from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
-    print "Track Analyzis: Necessity of storing acceptance;"
-    print "CHOICES: 0, 1, 2;"
+    print "Track Analyzis: Without Pre- and Post-Contexts;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -28,21 +28,22 @@ elif "2" in sys.argv:
         'b',     
         '[ab]c'
     ]
-elif "2" in sys.argv:
-    pattern_list = [
-        'aa|bca',        
-        'b',     
-    ]
 elif "3" in sys.argv:
     pattern_list = [
-        'for',        
-        'for([e]+)st',     
+        'a',        
+        'b',     
+        '[ab]cd'
     ]
 elif "4" in sys.argv:
     pattern_list = [
-        'aa|ba',        
-        'b',     
-   ]
+        'aa?',        
+        'aa?cd'
+    ]
+elif "5" in sys.argv:
+    pattern_list = [
+        'aa?',        
+        'aa?cd'
+    ]
 else:
     assert False
 
