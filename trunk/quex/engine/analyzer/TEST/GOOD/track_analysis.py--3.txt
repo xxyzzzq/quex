@@ -1,0 +1,37 @@
+init-state = 45L
+00045() <~ (11, 24), (1, 2), (3, 7)
+      == 'a' ==> 00046
+      == 'b' ==> 00047
+      <no epsilon>
+00046(A, S) <~ (1, 3, A, S), (11, 25)
+      == 'c' ==> 00048
+      <no epsilon>
+00048() <~ (11, 26)
+      == 'd' ==> 00049
+      <no epsilon>
+00049(A, S) <~ (11, 27, A, S)
+      <no epsilon>
+00047(A, S) <~ (3, 8, A, S), (11, 25)
+      == 'c' ==> 00048
+      <no epsilon>
+
+State 48:
+  .entry: 
+  .drop_out: pos -= 1; goto StoredAcceptance;
+
+State 49:
+  .entry: 
+  .drop_out: goto Pattern11;
+
+State 45:
+  .entry: 
+  .drop_out: Failure
+
+State 46:
+  .entry: Pattern1, StoreAcceptance, 
+  .drop_out: goto Pattern1;
+
+State 47:
+  .entry: Pattern3, StoreAcceptance, 
+  .drop_out: goto Pattern3;
+

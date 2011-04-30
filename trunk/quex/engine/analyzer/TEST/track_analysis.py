@@ -41,8 +41,8 @@ elif "4" in sys.argv:
     ]
 elif "5" in sys.argv:
     pattern_list = [
-        'aa?',        
-        'aa?cd'
+        '[ab]',        
+        '((aa?)|b)cd'
     ]
 else:
     assert False

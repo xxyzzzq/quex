@@ -1,12 +1,15 @@
-<test-database execution-time-sec="0.17" date="Fri Apr 29 07:25:05 2011">
+<test-database execution-time-sec="0.24" date="Sat Apr 30 07:43:21 2011">
     <last-used-diff-display-program name=""/>
     <group name="Track Analyzis">
-        <test title="Necessity of storing acceptance" time-sum-sec="0.17"> 
-            <application file-name="track_analysis.py" info-request-time="1304051250L" vanished="False"/>
-            <choice-list number="3" same_result="False">
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.24"> 
+            <application file-name="track_analysis.py" info-request-time="1304142129L" vanished="False"/>
+            <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.06" crc="-2050873724"/>
                <choice name="2" result="OK" time_sec="0.06" crc="448733857"/>
-               <choice name="0" result="OK" time_sec="0.05" crc="-586911195"/>
+               <choice name="0" result="OK" time_sec="0.06" crc="-586911195"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="-517169798"/>
+               <choice name="4" result="OK" time_sec="0.06" crc="322569553"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-2096998383"/>
             </choice-list>
         </test>
     </group>
