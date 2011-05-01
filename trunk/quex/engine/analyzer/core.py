@@ -27,6 +27,7 @@ from collections      import defaultdict
 from operator         import attrgetter
 from exceptions       import AssertionError
 from itertools        import islice
+import sys
 
 class Analyzer:
     def __init__(self, SM, ForwardF):
@@ -38,8 +39,8 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
-            # print "##DEBUG"
-            # if state_index == 50: print "##", acceptance_trace_list
+            ## print "##DEBUG"
+            ## if state_index in [56]: print "##", state_index, acceptance_trace_list
 
             self.__analyze(state, acceptance_trace_list)
 
@@ -48,21 +49,25 @@ class Analyzer:
             yield x
 
     def __analyze(self, state, TheAcceptanceTraceList):
+        """state                  -- State under investigation.
+           TheAcceptanceTraceList -- List of objects of type AcceptanceTrace.
+                                     Each object contains the Acceptance Trace 
+                                     for a possible path through the given state.
+        """
                    
         if len(TheAcceptanceTraceList) == 0: return 
 
-        common = {} 
-        for x in TheAcceptanceTraceList[0]:
-            common[x.pre_context_id] = x
-        common_pre_context_id_set = set(common.keys())
+        common = deepcopy(TheAcceptanceTraceList[0])
+        common_pre_context_id_set = set(common.get_pre_context_id_list())
 
         # If any acceptance trace differs from the prototype in accepting or positioning
         # => it needs to be stored and restored.
         # Loop: 'first falsifies'
+        ## print "##common 0:", common
         for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
+            ## print "##common n:", common
             common_pre_context_id_set.update(acceptance_trace.get_pre_context_id_list())
             for pre_context_id in common_pre_context_id_set:
-                
                 common_entry = common.get(pre_context_id)
                 other_entry  = acceptance_trace.get(pre_context_id)
 
@@ -97,6 +102,7 @@ class Analyzer:
                     self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     common[pre_context_id].move_backward_n = None
 
+        ## print "##COMMON", common
         state.drop_out.set_sequence(common)
 
 class AnalyzerState:
@@ -294,7 +300,7 @@ class DropOut:
         self.__sequence = []
 
     def __repr__(self):
-        if len(self.__sequence) == 0: return "Failure"
+        assert len(self.__sequence) != 0
 
         def write(txt, X):
             if   X.move_backward_n == None: txt.append("pos = restore(StoredAcceptancePosition); ")
@@ -302,6 +308,7 @@ class DropOut:
             elif X.move_backward_n == 0:    pass # This state is an acceptance state
             else:                           txt.append("pos -= %i; " % X.move_backward_n) 
             if   X.pattern_id == None:      txt.append("goto StoredAcceptance;")
+            elif X.pattern_id == -1:        txt.append("goto Failure;")
             else:                           txt.append("goto Pattern%i;" % X.pattern_id)
 
         txt = []
@@ -321,7 +328,18 @@ class DropOut:
         return "".join(txt)
 
     def set_sequence(self, CommonTrace):
-        for x in sorted(CommonTrace.itervalues(), key=attrgetter("pattern_id")):
+        def my_cmp(A, B):
+            """Priorities: (1) Max. Length
+                           (2) PatternID
+            """
+            result = cmp(A.move_backward_n if A.move_backward_n != -1 else sys.maxint, 
+                         B.move_backward_n if B.move_backward_n != -1 else sys.maxint)
+            if result != 0: return result
+            result = cmp(A.pattern_id if A.pattern_id != -1 else sys.maxint, 
+                         B.pattern_id if B.pattern_id != -1 else sys.maxint)
+            return result
+
+        for x in sorted(CommonTrace.itervalues(), cmp=my_cmp):
             assert x.__class__ == track_analysis.AcceptanceTraceEntry
             self.__sequence.append(copy(x))
             if x.pre_context_id == None: break

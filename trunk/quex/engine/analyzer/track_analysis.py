@@ -453,10 +453,20 @@ class AcceptanceTrace:
        This can cause significant speed improvements.
     """
     def __init__(self):
-        self.__sequence = {}
+        self.__sequence = { 
+            None: AcceptanceTraceEntry(PreContextID          = None, 
+                                       PatternID             = -1, # Failure
+                                       MoveBackwardN         = -1, # input_p = lexeme_start_p + 1
+                                       AcceptingStateIndex   = -1, 
+                                       PositioningStateIndex = -1, 
+                                       PostContextID         = -1),
+        }
 
     def __len__(self):
         return len(self.__sequence)
+
+    def itervalues(self):
+        return self.__sequence.itervalues()
 
     def update(self, track_info, Path):
         # If the current state is a loop state, than all positions become void.
@@ -466,9 +476,11 @@ class AcceptanceTrace:
 
         if StateIndex in track_info.loop_state_set:
             for entry in self.__sequence.itervalues():
+                if entry.pattern_id == -1: continue
                 if entry.move_backward_n != 0: entry.move_backward_n = None
         else:
             for entry in self.__sequence.itervalues():
+                if entry.pattern_id == -1: continue
                 entry.move_backward_n += 1
 
         state = track_info.sm.states[StateIndex]
@@ -513,6 +525,9 @@ class AcceptanceTrace:
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1
     
+    def __getitem__(self, PreContextID):
+        return self.__sequence[PreContextID]
+
     def get(self, PreContextID):
         return self.__sequence.get(PreContextID)
 
@@ -585,7 +600,7 @@ class AcceptanceTraceEntry:
         self.post_context_id         = PostContextID
 
     def __repr__(self):
-        txt = []
+        txt = ["---\n"]
         txt.append("    .pre_context_id         = %s\n" % repr(self.pre_context_id))
         txt.append("    .pattern_id             = %s\n" % repr(self.pattern_id))
         txt.append("    .move_backward_n        = %s\n" % repr(self.move_backward_n))

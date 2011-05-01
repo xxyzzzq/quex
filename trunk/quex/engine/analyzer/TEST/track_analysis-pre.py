@@ -14,28 +14,28 @@ if "--hwut-info" in sys.argv:
 
 if "0" in sys.argv:
     pattern_list = [
-        'a/a/',        
+        'x/a/',        
         'ab',     
     ]
 elif "1" in sys.argv:
     pattern_list = [
         'ab',     
-        'a/a/',        
+        'x/a/',        
     ]
 elif "2" in sys.argv:
     pattern_list = [
-        'a/a/',        
+        'x/a/',        
         'abc',        
     ]
 elif "3" in sys.argv:
     pattern_list = [
         'abc',        
-        'a/a/',        
+        'x/a/',        
     ]
 elif "4" in sys.argv:
     pattern_list = [
-        'aa?',        
-        'aa?cd'
+        'a',        
+        'x/abc/'
     ]
 elif "5" in sys.argv:
     pattern_list = [
