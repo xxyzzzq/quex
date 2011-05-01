@@ -17,7 +17,7 @@ State 40:
 
 State 37:
   .entry: 
-  .drop_out: Failure
+  .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 38:
   .entry: 

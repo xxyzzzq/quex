@@ -25,7 +25,7 @@ State 49:
 
 State 45:
   .entry: 
-  .drop_out: Failure
+  .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 46:
   .entry: Pattern1, StoreAcceptance, 

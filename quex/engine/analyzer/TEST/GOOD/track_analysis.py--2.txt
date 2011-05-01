@@ -14,7 +14,7 @@ init-state = 35L
 
 State 35:
   .entry: 
-  .drop_out: Failure
+  .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 36:
   .entry: 

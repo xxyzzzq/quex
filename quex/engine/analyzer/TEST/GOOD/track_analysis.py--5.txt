@@ -21,7 +21,7 @@ init-state = 68L
 
 State 68:
   .entry: 
-  .drop_out: Failure
+  .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 69:
   .entry: Pattern1, StoreAcceptancePosition, 
