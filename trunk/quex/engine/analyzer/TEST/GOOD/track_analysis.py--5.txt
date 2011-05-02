@@ -20,26 +20,26 @@ init-state = 68L
       <no epsilon>
 
 State 68:
-  .entry: 
+  .entry:    
   .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 69:
-  .entry: Pattern1, StoreAcceptancePosition, 
+  .entry:    Position[Acceptance] = pos, 
   .drop_out: goto Pattern1;
 
 State 70:
-  .entry: Pattern1, StoreAcceptancePosition, 
+  .entry:    Position[Acceptance] = pos, 
   .drop_out: goto Pattern1;
 
 State 71:
-  .entry: 
-  .drop_out: pos = restore(StoredAcceptancePosition); goto Pattern1;
+  .entry:    
+  .drop_out: pos = Position[Acceptance]; goto Pattern1;
 
 State 72:
-  .entry: 
+  .entry:    
   .drop_out: pos -= 1; goto Pattern1;
 
 State 73:
-  .entry: 
+  .entry:    
   .drop_out: goto Pattern20;
 

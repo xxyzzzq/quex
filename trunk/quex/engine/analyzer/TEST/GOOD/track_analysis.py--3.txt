@@ -16,22 +16,22 @@ init-state = 45L
       <no epsilon>
 
 State 48:
-  .entry: 
+  .entry:    
   .drop_out: pos -= 1; goto StoredAcceptance;
 
 State 49:
-  .entry: 
+  .entry:    
   .drop_out: goto Pattern11;
 
 State 45:
-  .entry: 
+  .entry:    
   .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 46:
-  .entry: Pattern1, StoreAcceptance, 
+  .entry:    StoreAcceptance 1, 
   .drop_out: goto Pattern1;
 
 State 47:
-  .entry: Pattern3, StoreAcceptance, 
+  .entry:    StoreAcceptance 3, 
   .drop_out: goto Pattern3;
 

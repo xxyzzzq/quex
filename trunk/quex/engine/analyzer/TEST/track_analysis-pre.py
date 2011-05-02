@@ -8,8 +8,8 @@ from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
-    print "Track Analyzis: Without Pre-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5;"
+    print "Track Analyzis: With Pre-Contexts;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -39,8 +39,17 @@ elif "4" in sys.argv:
     ]
 elif "5" in sys.argv:
     pattern_list = [
-        '[ab]',        
-        '((aa?)|b)cd'
+        'a',
+        'x/a/',
+        'x/ab/',
+        'x/abc/',
+    ]
+elif "6" in sys.argv:
+    pattern_list = [
+        'a',
+        'b',
+        'x/abc/',
+        'x/bbc/',
     ]
 else:
     assert False
