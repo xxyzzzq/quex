@@ -552,18 +552,19 @@ class AcceptanceTrace:
            of the acceptance.
         """
         distance = 0
-        successor_is_loop_state_f = (path[-1] in track_info.loop_state_set)
-        for state_index in reversed(path[:-1]):
-            distance += 1
+        successor_is_loop_state_f = (Path[-1] in track_info.loop_state_set)
+        for state_index in reversed(Path[:-1]):
+            if distance != None: distance += 1
+
             if successor_is_loop_state_f:
                 # If the state is part of a loop, then the distance backwards cannot be 
                 # determined from the structure of the state machine.
-                return None
+                distance = None
 
-            for origin in track_info.sm.states[StateIndex].origins():
+            for origin in track_info.sm.states[state_index].origins():
                 if     origin.post_context_id() == PostContextID \
                    and origin.store_input_position_f(): 
-                    return distance
+                    return distance, state_index
 
             successor_is_loop_state_f = (state_index in track_info.loop_state_set) 
         
