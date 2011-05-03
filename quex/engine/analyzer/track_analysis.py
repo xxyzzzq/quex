@@ -328,7 +328,7 @@ class TrackInfo:
     def __init__(self, SM, ForwardF):
         """SM -- state machine to be investigated."""
         assert type(ForwardF) == bool
-        self.sm        = SM
+        self.sm          = SM
         self.__forward_f = ForwardF
 
         # (1) Analyze recursively in the state machine:
