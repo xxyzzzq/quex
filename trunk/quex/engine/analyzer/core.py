@@ -322,11 +322,9 @@ class DropOut:
             else:                           txt.append("goto Pattern%i;" % X.pattern_id)
 
         txt = []
-        first_f = True
         L = len(self.__sequence)
         for i, x in enumerate(self.__sequence):
-            if first_f: first_f = False
-            else:       txt.append("             ")
+            if len(txt) != 0: txt.append("             ")
             if x.pre_context_id == None: 
                 write(txt, x)
             else: 
