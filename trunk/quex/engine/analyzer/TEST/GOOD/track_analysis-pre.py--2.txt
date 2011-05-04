@@ -12,20 +12,21 @@ init-state = 51L
       <no epsilon>
 
 State 51:
-  .entry: 
+  .entry:    
   .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 52:
-  .entry: 
+  .entry:    
   .drop_out: if pre_context_6: goto Pattern8;
              pos = lexeme_start + 1; goto Failure;
 
 State 53:
-  .entry: 
+  .entry:    
   .drop_out: if pre_context_6: pos -= 1; goto Pattern8;
              pos = lexeme_start + 1; goto Failure;
 
 State 54:
-  .entry: 
-  .drop_out: goto Pattern16;
+  .entry:    
+  .drop_out: if pre_context_6: pos -= 2; goto Pattern8;
+             goto Pattern16;
 
