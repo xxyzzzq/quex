@@ -17,14 +17,14 @@ State 56:
              pos -= 2; goto Pattern1;
 
 State 53:
-  .entry: 
+  .entry:    
   .drop_out: pos = lexeme_start + 1; goto Failure;
 
 State 54:
-  .entry: 
+  .entry:    
   .drop_out: goto Pattern1;
 
 State 55:
-  .entry: 
+  .entry:    
   .drop_out: pos -= 1; goto Pattern1;
 
