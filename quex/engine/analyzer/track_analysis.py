@@ -407,12 +407,17 @@ class TrackInfo:
         # (1) Add current state to path
         path.append(StateIndex)
 
+        ## print "## ----------------"
         # (2) Update the information about the 'trace of acceptances'
         acceptance_trace.update(self, path) 
 
         # (3) Mark the current state with its acceptance trace
         #     NOTE: When this function is called, acceptance_trace is already
         #           an independent object, i.e. constructed or deepcopy()-ed.
+        ##if StateIndex == 91:
+        ##    print "## ", StateIndex
+        ##    print "## ", path
+        ##    print "## ", acceptance_trace
         self.acceptance_trace_db[StateIndex].append(acceptance_trace)
 
         # (4) Recurse to all (undone) target states. 
@@ -476,18 +481,24 @@ class AcceptanceTrace:
 
         if StateIndex in track_info.loop_state_set:
             for entry in self.__sequence.itervalues():
-                if entry.pattern_id == -1: continue
+                if entry.pattern_id == -1:     continue # For 'failure' positioning is not important
                 if entry.move_backward_n != 0: entry.move_backward_n = None
+                # From now on, the distance since the last acceptance is undetermined,
+                # but it can be set that it is at least the current. '-x' means at 
+                # least 'x' transitions since acceptance.
+                ## entry.transition_n_since_acceptance = - abs(entry.transition_n_since_acceptance)
         else:
             for entry in self.__sequence.itervalues():
-                if entry.pattern_id == -1: continue
+                if entry.pattern_id == -1: continue # For 'failure' positioning is not important
                 entry.move_backward_n += 1
+                ## if entry.transition_n_since_acceptance >= 0: entry.transition_n_since_acceptance += 1
+                ## else:                                        entry.transition_n_since_acceptance -= 1
 
         state = track_info.sm.states[StateIndex]
         if not state.is_acceptance(): return
 
         # For each pre-context make an entry
-        for origin in sorted(state.origins()):
+        for origin in sorted(state.origins(), key=attrgetter("state_machine_id")):
             if not origin.is_acceptance(): continue
 
             # (0) The pattern's ID
@@ -515,6 +526,9 @@ class AcceptanceTrace:
                                          PositioningStateIndex = positioning_state_index, 
                                          PostContextID         = post_context_id)
             self.__sequence[pre_context_id] = entry
+
+            # The rest of the traces is dominated
+            if pre_context_id == None: break
 
         # No conditional pattern can ever be matched if it is dominated
         # by an unconditional pattern acceptance.
@@ -594,6 +608,21 @@ class AcceptanceTraceEntry:
         self.pre_context_id  = PreContextID
         self.pattern_id      = PatternID
         self.move_backward_n = MoveBackwardN
+        # Transitions Since Acceptance 
+        # 
+        # For non-post context patterns this is equal to 'MoveBackwardN'.
+        # However, for post context patterns, the input position is stored at
+        # the begin of post context, i.e. before the actual acceptance (end of
+        # post context).
+        #
+        # The number of transitions since the acceptance is required to
+        # determine the 'length' of a pattern in a particular state. Quex
+        # implements 'longest match', i.e. the last acceptance state. 
+        #
+        #  x >= 0 :   acceptance happend **exactly** x transitions before.
+        #  x <  0 :   acceptance happend **at least** x transitions before.
+        # self.transition_n_since_acceptance = 0
+
         # 
         self.accepting_state_index   = AcceptingStateIndex
         self.positioning_state_index = PositioningStateIndex
