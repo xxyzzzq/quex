@@ -40,7 +40,7 @@ class Analyzer:
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
             ## print "##DEBUG"
-            ## if state_index in [42]: print "##", state_index, acceptance_trace_list
+            ## if state_index in [91]: print "##", state_index, acceptance_trace_list
 
             self.__analyze(state, acceptance_trace_list)
 
@@ -90,7 +90,11 @@ class Analyzer:
 
                 # (1) If both maps have an entry, then determine whether the pattern ids 
                 #     and the positioning differs.
-                if common_entry.pattern_id != other_entry.pattern_id:
+                if pre_context_id != None:
+                    # Different pre-context-ids must refer to different patterns.
+                    assert common_entry.pattern_id != other_entry.pattern_id
+
+                elif common_entry.pattern_id != other_entry.pattern_id:
                     # Inform related states about the task to store acceptance
                     self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                     self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
@@ -336,13 +340,17 @@ class DropOut:
         return "".join(txt)
 
     def set_sequence(self, CommonTrace):
+        """This function receives a 'common trace', that means that it receives (something)
+           like a list of pairs (pre_context_id, AcceptanceTraceEntry) for every pre-
+           context that ever appeared in any path for a given state.
+        """
         def my_cmp(A, B):
             """Priorities: (1) Max. Length
                            (2) PatternID
             """
-            result = cmp(A.move_backward_n if A.move_backward_n != -1 else sys.maxint, 
-                         B.move_backward_n if B.move_backward_n != -1 else sys.maxint)
-            if result != 0: return result
+            ##result = cmp(A.move_backward_n if A.move_backward_n != -1 else sys.maxint, 
+            ##             B.move_backward_n if B.move_backward_n != -1 else sys.maxint)
+            ## if result != 0: return result
             result = cmp(A.pattern_id if A.pattern_id != -1 else sys.maxint, 
                          B.pattern_id if B.pattern_id != -1 else sys.maxint)
             return result

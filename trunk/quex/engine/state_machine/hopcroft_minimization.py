@@ -232,7 +232,6 @@ def create_state_machine(SM, StateSetList):
 
     return result    
 
-
 def adapt_state_machine(sm, StateSetList):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case nothing is to be done.
