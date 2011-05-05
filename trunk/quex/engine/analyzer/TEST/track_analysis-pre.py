@@ -9,7 +9,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -50,6 +50,13 @@ elif "6" in sys.argv:
         'b',
         'x/abc/',
         'x/bbc/',
+    ]
+elif "7" in sys.argv:
+    pattern_list = [
+        "x/a|bb",            # This case is important because it highlights the 
+        "b",                 # importance of lexeme length on the determination of
+        "((a|bb)c+d|be+f)g", # the winning pattern. In the given case, the length 
+        #                    # cannot be determined.
     ]
 else:
     assert False
