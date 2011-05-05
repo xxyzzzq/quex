@@ -478,7 +478,6 @@ class AcceptanceTrace:
         # be determined by the state machine structure itself.
         StateIndex = Path[-1]
 
-        ## print "##loop", track_info.loop_state_set
         if StateIndex in track_info.loop_state_set:
             # If there is a loop, then the number of transitions from one state to the
             # other may be not be determined from the state machine structure.
