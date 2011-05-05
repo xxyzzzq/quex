@@ -39,8 +39,8 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
-            ## print "##DEBUG"
-            ## if state_index in [91]: print "##", state_index, acceptance_trace_list
+            ## print "##DEBUG", state_index
+            ##if state_index in [53, 53, 54]: print "##", state_index, acceptance_trace_list
 
             self.__analyze(state, acceptance_trace_list)
 
@@ -100,16 +100,16 @@ class Analyzer:
                     self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                     common[pre_context_id].pattern_id = None
 
-                if common_entry.move_backward_n != other_entry.move_backward_n:
+                if common_entry.transition_n_since_positioning != other_entry.transition_n_since_positioning:
                     # Inform related states about the task to store acceptance position
                     self.__state_db[other_entry.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     self.__state_db[common_entry.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    common[pre_context_id].move_backward_n = None
+                    common[pre_context_id].transition_n_since_positioning = None
 
         # Even, if there is only one trace: If the backward position is undetermined
         # then it the 'positioning state' must store the input position.
         for entry in common:
-            if entry.move_backward_n != None: continue
+            if entry.transition_n_since_positioning != None: continue
             if entry.post_context_id == -1:   continue
             self.__state_db[entry.positioning_state_index].entry.set_store_begin_of_post_context_position(entry.post_context_id)
 
@@ -298,12 +298,12 @@ class DropOut:
        'AcceptanceTraceEntry' where now only the members:
 
                 .pre_context_id   # The pre context id for which it is valid
-                .move_backward_n  # Positioning of the input pointer
+                .transition_n_since_positioning  # Positioning of the input pointer
                 .pattern_id       # Goto this particular terminal
 
        are of interest.
 
-       Special Case: if .move_backward_n == None and .post_context_id != -1
+       Special Case: if .transition_n_since_positioning == None and .post_context_id != -1
                      => restore post_context_position[.post_context_id]
     """
     def __init__(self):
@@ -313,14 +313,14 @@ class DropOut:
         assert len(self.__sequence) != 0
 
         def write(txt, X):
-            if   X.move_backward_n == None: 
+            if   X.transition_n_since_positioning == None: 
                 if X.post_context_id == -1:
                     txt.append("pos = Position[Acceptance]; ")
                 else:
                     txt.append("pos = Position[PostContext_%i]; " % X.post_context_id)
-            elif X.move_backward_n == -1:   txt.append("pos = lexeme_start + 1; ")
-            elif X.move_backward_n == 0:    pass # This state is an acceptance state
-            else:                           txt.append("pos -= %i; " % X.move_backward_n) 
+            elif X.transition_n_since_positioning == -1:   txt.append("pos = lexeme_start + 1; ")
+            elif X.transition_n_since_positioning == 0:    pass # This state is an acceptance state
+            else:                           txt.append("pos -= %i; " % X.transition_n_since_positioning) 
             if   X.pattern_id == None:      txt.append("goto StoredAcceptance;")
             elif X.pattern_id == -1:        txt.append("goto Failure;")
             else:                           txt.append("goto Pattern%i;" % X.pattern_id)
@@ -348,9 +348,25 @@ class DropOut:
             """Priorities: (1) Max. Length
                            (2) PatternID
             """
-            ##result = cmp(A.move_backward_n if A.move_backward_n != -1 else sys.maxint, 
-            ##             B.move_backward_n if B.move_backward_n != -1 else sys.maxint)
-            ## if result != 0: return result
+            # transition_n_since_acceptance < 0: At least 'transition_n_since_acceptance'
+            #                                    transitions since last acceptance, but
+            #                                    may be more.
+            if A.transition_n_since_acceptance >= 0:
+                if B.transition_n_since_acceptance >= 0:
+                    result = cmp(A.transition_n_since_acceptance, B.transition_n_since_acceptance)
+                else:
+                    # transition_n(B) >= abs(B.transition_n_since_acceptance)
+                    result = cmp(A.transition_n_since_acceptance, - B.transition_n_since_acceptance)
+            else:
+                # transition_n(A) >= abs(A.transition_n_since_acceptance)
+                if B.transition_n_since_acceptance >= 0:
+                    result = cmp(- A.transition_n_since_acceptance, B.transition_n_since_acceptance)
+                else:
+                    # Both are undetermined => no difference at this point
+                    result = 0
+
+            if result != 0: return result
+
             result = cmp(A.pattern_id if A.pattern_id != -1 else sys.maxint, 
                          B.pattern_id if B.pattern_id != -1 else sys.maxint)
             return result

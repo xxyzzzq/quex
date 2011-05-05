@@ -414,10 +414,9 @@ class TrackInfo:
         # (3) Mark the current state with its acceptance trace
         #     NOTE: When this function is called, acceptance_trace is already
         #           an independent object, i.e. constructed or deepcopy()-ed.
-        ##if StateIndex == 91:
-        ##    print "## ", StateIndex
-        ##    print "## ", path
-        ##    print "## ", acceptance_trace
+        ## print "## ", StateIndex
+        ## print "## ", path
+        ## print "## ", acceptance_trace
         self.acceptance_trace_db[StateIndex].append(acceptance_trace)
 
         # (4) Recurse to all (undone) target states. 
@@ -461,7 +460,7 @@ class AcceptanceTrace:
         self.__sequence = { 
             None: AcceptanceTraceEntry(PreContextID          = None, 
                                        PatternID             = -1, # Failure
-                                       MoveBackwardN         = -1, # input_p = lexeme_start_p + 1
+                                       TransitionN_SincePositioning = -1, # input_p = lexeme_start_p + 1
                                        AcceptingStateIndex   = -1, 
                                        PositioningStateIndex = -1, 
                                        PostContextID         = -1),
@@ -479,20 +478,25 @@ class AcceptanceTrace:
         # be determined by the state machine structure itself.
         StateIndex = Path[-1]
 
+        ## print "##loop", track_info.loop_state_set
         if StateIndex in track_info.loop_state_set:
+            # If there is a loop, then the number of transitions from one state to the
+            # other may be not be determined from the state machine structure.
             for entry in self.__sequence.itervalues():
-                if entry.pattern_id == -1:     continue # For 'failure' positioning is not important
-                if entry.move_backward_n != 0: entry.move_backward_n = None
-                # From now on, the distance since the last acceptance is undetermined,
-                # but it can be set that it is at least the current. '-x' means at 
-                # least 'x' transitions since acceptance.
-                ## entry.transition_n_since_acceptance = - abs(entry.transition_n_since_acceptance)
+                entry.transition_n_since_acceptance = - abs(entry.transition_n_since_acceptance)
+                if entry.transition_n_since_positioning > 0: 
+                    # == 0 means 'current state' so positioning still happens
+                    #  < 0 means 'lexeme_start_p + 1' so we would not 'voidify' it
+                    entry.transition_n_since_positioning = None
         else:
+            # Add '1' to the distance between:
+            #       positioning state --> transition_n_since_positioning
+            #       acceptance state  --> transition_n_since_acceptance
             for entry in self.__sequence.itervalues():
-                if entry.pattern_id == -1: continue # For 'failure' positioning is not important
-                entry.move_backward_n += 1
-                ## if entry.transition_n_since_acceptance >= 0: entry.transition_n_since_acceptance += 1
-                ## else:                                        entry.transition_n_since_acceptance -= 1
+                if entry.transition_n_since_positioning != -1 and entry.transition_n_since_positioning != None:
+                    entry.transition_n_since_positioning += 1
+                if entry.transition_n_since_acceptance >= 0: entry.transition_n_since_acceptance += 1
+                else:                                        entry.transition_n_since_acceptance -= 1
 
         state = track_info.sm.states[StateIndex]
         if not state.is_acceptance(): return
@@ -511,20 +515,21 @@ class AcceptanceTrace:
             #     pattern is accepted (how many characters to go backwards).
             if origin.post_context_id() == -1: 
                 post_context_id         = -1
-                move_backward_n         = 0
+                transition_n_since_positioning         = 0
                 positioning_state_index = StateIndex
             else:
                 post_context_id = origin.post_context_id()
-                move_backward_n,        \
+                transition_n_since_positioning,        \
                 positioning_state_index = self.__find_last_post_context_begin(origin.post_context_id(), 
                                                                               Path, 
                                                                               track_info)
             
             # (*) Make the entry in the database
-            entry = AcceptanceTraceEntry(pre_context_id, pattern_id, move_backward_n,
-                                         AcceptingStateIndex   = StateIndex, 
-                                         PositioningStateIndex = positioning_state_index, 
-                                         PostContextID         = post_context_id)
+            entry = AcceptanceTraceEntry(pre_context_id, pattern_id, 
+                                         TransitionN_SincePositioning = transition_n_since_positioning,
+                                         AcceptingStateIndex          = StateIndex, 
+                                         PositioningStateIndex        = positioning_state_index, 
+                                         PostContextID                = post_context_id)
             self.__sequence[pre_context_id] = entry
 
             # The rest of the traces is dominated
@@ -589,10 +594,12 @@ class AcceptanceTrace:
         assert False
 
 class AcceptanceTraceEntry:
-    def __init__(self, PreContextID, PatternID, MoveBackwardN, AcceptingStateIndex, PositioningStateIndex, PostContextID):
+    def __init__(self, PreContextID, PatternID, TransitionN_SincePositioning, 
+                 AcceptingStateIndex, PositioningStateIndex, PostContextID):
         """PreContextID  --
            PatternID     -- 
-           MoveBackwardN --
+           TransitionN_SincePositioning -- Number of transitions since the 'positioning'
+                                           state has been reached.
            AcceptingStateIndex -- Index of the state that accepts the mentioned
                                   pattern. This is used when we need to inform
                                   the state that it needs to store the acceptance
@@ -607,7 +614,7 @@ class AcceptanceTraceEntry:
         """
         self.pre_context_id  = PreContextID
         self.pattern_id      = PatternID
-        self.move_backward_n = MoveBackwardN
+        self.transition_n_since_positioning = TransitionN_SincePositioning
         # Transitions Since Acceptance 
         # 
         # For non-post context patterns this is equal to 'MoveBackwardN'.
@@ -621,7 +628,7 @@ class AcceptanceTraceEntry:
         #
         #  x >= 0 :   acceptance happend **exactly** x transitions before.
         #  x <  0 :   acceptance happend **at least** x transitions before.
-        # self.transition_n_since_acceptance = 0
+        self.transition_n_since_acceptance = 0
 
         # 
         self.accepting_state_index   = AcceptingStateIndex
@@ -631,12 +638,13 @@ class AcceptanceTraceEntry:
 
     def __repr__(self):
         txt = ["---\n"]
-        txt.append("    .pre_context_id         = %s\n" % repr(self.pre_context_id))
-        txt.append("    .pattern_id             = %s\n" % repr(self.pattern_id))
-        txt.append("    .move_backward_n        = %s\n" % repr(self.move_backward_n))
-        txt.append("    .accepting_state_index  = %s\n" % repr(self.accepting_state_index))
-        txt.append("    .positioning_state_index= %s\n" % repr(self.positioning_state_index))
-        txt.append("    .post_context_id        = %s\n" % repr(self.post_context_id))
+        txt.append("    .pre_context_id                 = %s\n" % repr(self.pre_context_id))
+        txt.append("    .pattern_id                     = %s\n" % repr(self.pattern_id))
+        txt.append("    .transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning))
+        txt.append("    .transition_n_since_acceptance  = %s\n" % repr(self.transition_n_since_acceptance))
+        txt.append("    .accepting_state_index          = %s\n" % repr(self.accepting_state_index))
+        txt.append("    .positioning_state_index        = %s\n" % repr(self.positioning_state_index))
+        txt.append("    .post_context_id                = %s\n" % repr(self.post_context_id))
         return "".join(txt)
 
 def extract_pre_context_id(Origin):

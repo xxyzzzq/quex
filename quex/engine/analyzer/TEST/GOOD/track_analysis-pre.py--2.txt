@@ -27,6 +27,5 @@ State 53:
 
 State 54:
   .entry:    
-  .drop_out: if pre_context_6: pos -= 2; goto Pattern8;
-             goto Pattern16;
+  .drop_out: goto Pattern16;
 
