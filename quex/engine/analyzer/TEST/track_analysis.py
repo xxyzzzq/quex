@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf8 -*-
 import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
@@ -13,6 +14,11 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 if "0" in sys.argv:
+    """
+    ╔════╗  a   ╔════╗  b   ╔════╗
+    ║ 26 ║ ───▶ ║ 27 ║ ───▶ ║ 28 ║
+    ╚════╝      ╚════╝      ╚════╝
+    """
     pattern_list = [
         'a',        
         'ab',     
@@ -51,6 +57,12 @@ else:
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+
+if False:
+    fh = open("tmp.dot", "wb")
+    fh.write( sm.get_graphviz_string() )
+    fh.close()
+    os.system("graph-easy --input=tmp.dot --as boxart")
 
 print sm.get_string(NormalizeF=False)
 
