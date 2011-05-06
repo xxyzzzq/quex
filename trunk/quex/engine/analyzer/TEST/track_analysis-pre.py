@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf8 -*-
 import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
@@ -9,7 +10,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -51,13 +52,6 @@ elif "6" in sys.argv:
         'x/abc/',
         'x/bbc/',
     ]
-elif "7" in sys.argv:
-    pattern_list = [
-        "x/a|bb",            # This case is important because it highlights the 
-        "b",                 # importance of lexeme length on the determination of
-        "((a|bb)c+d|be+f)g", # the winning pattern. In the given case, the length 
-        #                    # cannot be determined.
-    ]
 else:
     assert False
 
@@ -65,6 +59,12 @@ else:
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+
+if False:
+    fh = open("tmp.dot", "wb")
+    fh.write( sm.get_graphviz_string() )
+    fh.close()
+    os.system("graph-easy --input=tmp.dot --as boxart")
 
 print sm.get_string(NormalizeF=False)
 

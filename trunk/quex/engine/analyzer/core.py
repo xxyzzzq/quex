@@ -20,6 +20,8 @@
 """
 
 import quex.engine.analyzer.track_analysis as track_analysis
+from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry
+
 
 from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
@@ -39,7 +41,7 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
-            ## print "##DEBUG", state_index
+            print "##DEBUG", state_index
             ##if state_index in [53, 53, 54]: print "##", state_index, acceptance_trace_list
 
             self.__analyze(state, acceptance_trace_list)
@@ -57,61 +59,69 @@ class Analyzer:
                    
         if len(TheAcceptanceTraceList) == 0: return 
 
-        common = deepcopy(TheAcceptanceTraceList[0])
-        common_pre_context_id_set = set(common.get_pre_context_id_list())
+        pre_context_id_set = set([])
+        for acceptance_trace in TheAcceptanceTraceList:
+            pre_context_id_set.update(acceptance_trace.get_pre_context_id_list())
 
         # If any acceptance trace differs from the prototype in accepting or positioning
         # => it needs to be stored and restored.
         # Loop: 'first falsifies'
-        ## print "##common 0:", common
-        for acceptance_trace in islice(TheAcceptanceTraceList, 1, None):
-            ## print "##common n:", common
-            common_pre_context_id_set.update(acceptance_trace.get_pre_context_id_list())
-            for pre_context_id in common_pre_context_id_set:
-                common_entry = common.get(pre_context_id)
-                other_entry  = acceptance_trace.get(pre_context_id)
+        ##print "##common 0:", common
+        for pre_context_id in pre_context_id_set:
 
-                # (0) If one of the two does not contain the pre_context_id then the 
-                #     common entry must 'void' the entry totally.
-                if common_entry == None:
-                    common[pre_context_id] = track_analysis.AcceptanceTraceEntry(pre_context_id, None, None, -1, -1, -1)
-                    if other_entry != None:
-                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                        self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    continue
+            entry_list = map(lambda x: x.get(pre_context_id), TheAcceptanceTraceList)
+            # If a 'pre_context_id' is in 'pre_context_id_set' this means that at least one
+            # path triggers on the given 'pre_context_id' to acceptance. If on the other hand
+            # one single trace does not trigger on the given pre-context to acceptance, then
+            # this means that the acceptance and positioning depends on the path taken at
+            # runtime.
+            if None in entry_list:
+                # One path does not trigger on given pre-context-id
+                common[pre_context_id] = AcceptanceTraceEntry(pre_context_id, 
+                                                              None, # Acceptance not determined
+                                                              None, # Positioning not det.
+                                                              -1, -1, -1)
+                for that in ifilter(lambda x: x != None, entry_list):
+                    if that.accepting_state_index == -1: continue
+                    self.__state_db[that.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                    self.__state_db[that.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                continue
 
-                elif other_entry == None:
-                    common[pre_context_id].pattern_id  = None # accepting pattern unknown
-                    common[pre_context_id].positioning = None # positioning unknown
-                    # Here: common_entry != None
-                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    continue
+            this = entry_list[0]
+            print "##pre-context-id:", repr(pre_context_id)
+            for that in islice(entry_list, 1, None):
+                print "##common_entry:", this
+                print "##other_entry:", that
 
                 # (1) If both maps have an entry, then determine whether the pattern ids 
                 #     and the positioning differs.
-                if pre_context_id != None:
-                    # Different pre-context-ids must refer to different patterns.
-                    assert common_entry.pattern_id != other_entry.pattern_id
+                if pre_context_id == None:
+                    if this.pattern_id != that.pattern_id:
+                        # Inform related states about the task to store acceptance
+                        if that.accepting_state_index != -1:
+                            self.__state_db[that.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                        if this.accepting_state_index != -1:
+                            self.__state_db[this.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                        common[pre_context_id].pattern_id = None
+                else:
+                    # Same pre-context-ids must refer the same patterns.
+                    assert this.pattern_id == that.pattern_id
 
-                elif common_entry.pattern_id != other_entry.pattern_id:
-                    # Inform related states about the task to store acceptance
-                    self.__state_db[other_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                    self.__state_db[common_entry.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                    common[pre_context_id].pattern_id = None
-
-                if common_entry.transition_n_since_positioning != other_entry.transition_n_since_positioning:
+                if this.transition_n_since_positioning != that.transition_n_since_positioning:
                     # Inform related states about the task to store acceptance position
-                    self.__state_db[other_entry.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    self.__state_db[common_entry.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    if that.positioning_state_index != -1:
+                        self.__state_db[that.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    if this.positioning_state_index != -1:
+                        self.__state_db[this.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     common[pre_context_id].transition_n_since_positioning = None
 
         # Even, if there is only one trace: If the backward position is undetermined
         # then it the 'positioning state' must store the input position.
-        for entry in common:
-            if entry.transition_n_since_positioning != None: continue
-            if entry.post_context_id == -1:   continue
-            self.__state_db[entry.positioning_state_index].entry.set_store_begin_of_post_context_position(entry.post_context_id)
+        for x in common:
+            if x.transition_n_since_positioning != None: continue
+            if x.post_context_id == -1:                  continue
+            if x.positioning_state_index == -1:          continue
+            self.__state_db[x.positioning_state_index].entry.set_store_begin_of_post_context_position(x.post_context_id)
 
         ## print "##COMMON", common
         state.drop_out.set_sequence(common)
@@ -372,7 +382,7 @@ class DropOut:
             return result
 
         for x in sorted(CommonTrace.itervalues(), cmp=my_cmp):
-            assert x.__class__ == track_analysis.AcceptanceTraceEntry
+            assert x.__class__ == AcceptanceTraceEntry
             self.__sequence.append(copy(x))
             if x.pre_context_id == None: break
 
