@@ -113,7 +113,7 @@ class Analyzer:
                         self.__state_db[that.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     if this.positioning_state_index != -1:
                         self.__state_db[this.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    common[pre_context_id].transition_n_since_positioning = None
+                    this.transition_n_since_positioning = None
 
         # Even, if there is only one trace: If the backward position is undetermined
         # then it the 'positioning state' must store the input position.
