@@ -20,7 +20,8 @@
 """
 
 import quex.engine.analyzer.track_analysis as track_analysis
-from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry
+from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
+                                                  AcceptanceTraceEntry_Void
 
 
 from quex.input.setup import setup as Setup
@@ -91,9 +92,12 @@ class Analyzer:
             if None in entry_list:
                 # One path does not trigger on given pre-context-id
                 common[pre_context_id] = AcceptanceTraceEntry(pre_context_id, 
-                                                              None, # Acceptance not determined
-                                                              None, # Positioning not det.
-                                                              -1, -1, -1)
+                                                              PatternID                    = None, # Undetermined
+                                                              TransitionN_ToAcceptance     = -1,
+                                                              AcceptingStateIndex          = -1, 
+                                                              TransitionN_SincePositioning = -1,   # Undetermined
+                                                              PositioningStateIndex        = -1, 
+                                                              PostContextID                = -1)
                 for that in ifilter(lambda x: x != None, entry_list):
                     if that.accepting_state_index == -1: continue
                     self.__state_db[that.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
@@ -143,12 +147,12 @@ class Analyzer:
         assert len(Common) != 0
 
         def __voidify(trace):
-            for x in trace:
+            for x in ifilter(lambda x: x.accepting_state_index != -1, trace):
                 self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f(x.pre_context_id)
                 self.__state_db[x.positioning_state_index].entry.set_store_acceptance_f(x.pre_context_id)
             # Set a totally undetermined acceptance trace, that is:
             # restore acceptance and acceptance position
-            state.drop_out.set_sequence([AcceptanceTrace()])
+            state.drop_out.set_sequence([AcceptanceTraceEntry_Void])
             return
 
         trace = Common.values()
@@ -176,14 +180,14 @@ class Analyzer:
                  or x_min_transition_n      != - x.transition_n_to_acceptance:
                 # 'count > 0' there was an element with 'n < 0' before and the
                 # accepting state was different.
-                return __voidify(common)
+                return __voidify(trace)
 
         if x_min_transition_n != -1:
             # The 'min_transition_n' must dominate all others, otherwise, 
             # no sorting can happen.
             for x in ifilter(lambda x: x.transition_n_to_acceptance >= 0, trace):
                 if x_min_transition_n <= x.transition_n_to_acceptance:
-                    return __voidify(common)
+                    return __voidify(trace)
 
         # (2) Sort Entries
         #     Since we know that the min. accepted distance for the undetermined
