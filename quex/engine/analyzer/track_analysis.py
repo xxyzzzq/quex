@@ -652,6 +652,14 @@ class AcceptanceTraceEntry:
         txt.append("    .post_context_id                = %s\n" % repr(self.post_context_id))
         return "".join(txt)
 
+AcceptanceTraceEntry_Void = AcceptanceTraceEntry(PreContextID                 = None, 
+                                                 PatternID                    = None, # Undetermined
+                                                 TransitionN_ToAcceptance     = 0,
+                                                 AcceptingStateIndex          = -1, 
+                                                 TransitionN_SincePositioning = -1, # input_p = lexeme_start_p + 1
+                                                 PositioningStateIndex        = -1, 
+                                                 PostContextID                = -1)
+
 def extract_pre_context_id(Origin):
     """This function basically describes how pre-context-ids and 
        'begin-of-line' pre-context are expressed by an integer.
