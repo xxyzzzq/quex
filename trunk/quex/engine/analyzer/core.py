@@ -28,7 +28,7 @@ from copy             import copy, deepcopy
 from collections      import defaultdict
 from operator         import attrgetter
 from exceptions       import AssertionError
-from itertools        import islice
+from itertools        import islice, ifilter, takewhile
 import sys
 
 class Analyzer:
@@ -41,20 +41,32 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
-            print "##DEBUG", state_index
-            ##if state_index in [53, 53, 54]: print "##", state_index, acceptance_trace_list
+            ## print "##DEBUG", state_index
+            ## if state_index in [43]: print "##", state_index, acceptance_trace_list
 
-            self.__analyze(state, acceptance_trace_list)
+            common = self.__horizontal_analysis(state, acceptance_trace_list)
+            self.__vertical_analysis(state, common)
 
     def __iter__(self):
         for x in self.__state_db.values():
             yield x
 
-    def __analyze(self, state, TheAcceptanceTraceList):
-        """state                  -- State under investigation.
-           TheAcceptanceTraceList -- List of objects of type AcceptanceTrace.
-                                     Each object contains the Acceptance Trace 
-                                     for a possible path through the given state.
+    def __horizontal_analysis(self, state, TheAcceptanceTraceList):
+        """For a given state, there might be multiple paths through it. For
+           each of those paths there exists an 'acceptance trace' that has been
+           accumulated since the init state. An acceptance trace tells what
+           happens if a pre-context is fulfilled. The horizontal analysis
+           combines the multiple acceptance traces into a single 'common'
+           acceptance trace, i.e.
+
+           Trace[0]       Trace[1]       Trace[2]           Common
+           
+           (pre 0 => A)   (pre 0 => A)                      (pre 0 => A)  
+                          (pre 1 => B)                      (pre 1 => B)                    
+           (pre 2 => C)                  (pre 4 => C)  --\  (pre 2 => C)  
+           (pre 3 => D)                  (pre 5 => E)  --/  (pre 3 => None)  
+                                                            (pre 4 => E)              
+           (None  => F)   (None  => H)   (None  => G)       (None  => None)  
         """
                    
         if len(TheAcceptanceTraceList) == 0: return 
@@ -63,6 +75,7 @@ class Analyzer:
         for acceptance_trace in TheAcceptanceTraceList:
             pre_context_id_set.update(acceptance_trace.get_pre_context_id_list())
 
+        common = {}
         # If any acceptance trace differs from the prototype in accepting or positioning
         # => it needs to be stored and restored.
         # Loop: 'first falsifies'
@@ -88,10 +101,8 @@ class Analyzer:
                 continue
 
             this = entry_list[0]
-            print "##pre-context-id:", repr(pre_context_id)
+            common[pre_context_id] = this
             for that in islice(entry_list, 1, None):
-                print "##common_entry:", this
-                print "##other_entry:", that
 
                 # (1) If both maps have an entry, then determine whether the pattern ids 
                 #     and the positioning differs.
@@ -102,7 +113,7 @@ class Analyzer:
                             self.__state_db[that.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
                         if this.accepting_state_index != -1:
                             self.__state_db[this.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                        common[pre_context_id].pattern_id = None
+                        common[pre_context_id].pattern_id = None # Winner determined at run-time
                 else:
                     # Same pre-context-ids must refer the same patterns.
                     assert this.pattern_id == that.pattern_id
@@ -113,18 +124,87 @@ class Analyzer:
                         self.__state_db[that.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
                     if this.positioning_state_index != -1:
                         self.__state_db[this.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    this.transition_n_since_positioning = None
+                    this.transition_n_since_positioning = None # Distance determined at run-time
 
         # Even, if there is only one trace: If the backward position is undetermined
         # then it the 'positioning state' must store the input position.
-        for x in common:
+        for x in common.itervalues():
             if x.transition_n_since_positioning != None: continue
             if x.post_context_id == -1:                  continue
             if x.positioning_state_index == -1:          continue
             self.__state_db[x.positioning_state_index].entry.set_store_begin_of_post_context_position(x.post_context_id)
 
-        ## print "##COMMON", common
-        state.drop_out.set_sequence(common)
+        return common
+
+    def __vertical_analysis(self, state, Common):
+        """Takes a 'common' acceptance trace as a result from the horizontal 
+           analysis and sorts and filters its elements. 
+        """
+        assert len(Common) != 0
+
+        def __voidify(trace):
+            for x in trace:
+                self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f(x.pre_context_id)
+                self.__state_db[x.positioning_state_index].entry.set_store_acceptance_f(x.pre_context_id)
+            # Set a totally undetermined acceptance trace, that is:
+            # restore acceptance and acceptance position
+            state.drop_out.set_sequence([AcceptanceTrace()])
+            return
+
+        trace = Common.values()
+        if len(trace) == 1: 
+            assert trace[0].pre_context_id == None
+            state.drop_out.set_sequence(trace)
+            return 
+
+        # (1) Length of the Match
+        #
+        # -- If length of match cannot be determined for more than one entry
+        #    then no comparison can be made at all. Thus, acceptance can only
+        #    be determined at run-time.
+        # -- If all entries are of undetermined length, but they all accept
+        #    at the same state, then the trace can still be treated before
+        #    run-time.
+        x_min_transition_n      = -1
+        x_accepting_state_index = -1
+        for x in ifilter(lambda x: x.transition_n_to_acceptance < 0, trace):
+            if x_accepting_state_index == -1: 
+                # 'count == 0' there was no element with 'n < 0' before.
+                x_min_transition_n      = - x.transition_n_to_acceptance
+                x_accepting_state_index = x.accepting_state_index
+            elif    x_accepting_state_index != x.accepting_state_index \
+                 or x_min_transition_n      != - x.transition_n_to_acceptance:
+                # 'count > 0' there was an element with 'n < 0' before and the
+                # accepting state was different.
+                return __voidify(common)
+
+        if x_min_transition_n != -1:
+            # The 'min_transition_n' must dominate all others, otherwise, 
+            # no sorting can happen.
+            for x in ifilter(lambda x: x.transition_n_to_acceptance >= 0, trace):
+                if x_min_transition_n <= x.transition_n_to_acceptance:
+                    return __voidify(common)
+
+        # (2) Sort Entries
+        #     Since we know that the min. accepted distance for the undetermined
+        #     case dominates all others, we can put them all on the same scale.
+        #     Longer patterns must sort 'higher', thus me must make sure that 
+        #     all entries are negative.
+        # 
+        #     (Equal race: make sure that 'at least N' enters the race as 'N' 
+        #                  'n < 0' means 'at least n', 'n >= 0' means exactly 'n')
+        for x in ifilter(lambda x: x.transition_n_to_acceptance >= 0, trace):
+            x.transition_n_to_acceptance = - x.transition_n_to_acceptance
+
+        trace.sort(key=attrgetter("transition_n_to_acceptance", "pattern_id"))
+
+        # (3) Filter anything that is dominated by the unconditional acceptance
+        result = []
+        for x in trace:
+            result.append(x)
+            if x.pre_context_id == None: break
+
+        state.drop_out.set_sequence(result)
 
 class AnalyzerState:
     def __init__(self, StateIndex, SM, ForwardF):
@@ -354,37 +434,10 @@ class DropOut:
            like a list of pairs (pre_context_id, AcceptanceTraceEntry) for every pre-
            context that ever appeared in any path for a given state.
         """
-        def my_cmp(A, B):
-            """Priorities: (1) Max. Length
-                           (2) PatternID
-            """
-            # transition_n_since_acceptance < 0: At least 'transition_n_since_acceptance'
-            #                                    transitions since last acceptance, but
-            #                                    may be more.
-            if A.transition_n_since_acceptance >= 0:
-                if B.transition_n_since_acceptance >= 0:
-                    result = cmp(A.transition_n_since_acceptance, B.transition_n_since_acceptance)
-                else:
-                    # transition_n(B) >= abs(B.transition_n_since_acceptance)
-                    result = cmp(A.transition_n_since_acceptance, - B.transition_n_since_acceptance)
-            else:
-                # transition_n(A) >= abs(A.transition_n_since_acceptance)
-                if B.transition_n_since_acceptance >= 0:
-                    result = cmp(- A.transition_n_since_acceptance, B.transition_n_since_acceptance)
-                else:
-                    # Both are undetermined => no difference at this point
-                    result = 0
-
-            if result != 0: return result
-
-            result = cmp(A.pattern_id if A.pattern_id != -1 else sys.maxint, 
-                         B.pattern_id if B.pattern_id != -1 else sys.maxint)
-            return result
-
-        for x in sorted(CommonTrace.itervalues(), cmp=my_cmp):
-            assert x.__class__ == AcceptanceTraceEntry
-            self.__sequence.append(copy(x))
-            if x.pre_context_id == None: break
+        assert len(CommonTrace) != 0
+        for x in CommonTrace:
+            assert isinstance(x, AcceptanceTraceEntry)
+        self.__sequence = CommonTrace
 
     def get_sequence(self):
         return self.__sequence
