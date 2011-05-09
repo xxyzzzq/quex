@@ -3,7 +3,6 @@
 from   quex.engine.interval_handling import NumberSet, Interval
 from   quex.engine.misc.file_in                import error_msg
 
-from   copy import deepcopy
 import sys
 import bisect
 from   operator import attrgetter
@@ -30,6 +29,11 @@ class TransitionMap:
         ## OPTIMIZATION OPTION: Store the trigger map in a 'cache' variable. This, however,
         ## requires that all possible changes to the database need to annulate the cache value.
         ## self.__DEBUG_trigger_map = None
+
+    def clone(self):
+        clone = TransitionMap(dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]))
+        clone.__epsilon_target_index_list = list(self.__epsilon_target_index_list)
+        return clone
 
     def clear(self, TriggerMap=-1):
         if TriggerMap != -1: 
@@ -207,21 +211,6 @@ class TransitionMap:
         """
         # (*) create a 'history', i.e. note down any change on the trigger set combination
         #     (here the alphabet plays the role of a time scale)
-        class history_item:
-            def __init__(self, Position, ChangeF, TargetIdx):
-                self.position   = Position
-                self.change     = ChangeF
-                self.target_idx = TargetIdx 
-                
-            def __repr__(self):         
-                if self.change == INTERVAL_BEGIN: ChangeStr = "begin"
-                else:                             ChangeStr = "end"
-                return "%i: %s %s" % (self.position, ChangeStr, self.target_idx)
-
-            def __eq__(self, Other):
-                return     self.position   == Other.position \
-                       and self.change     == Other.change   \
-                       and self.target_idx == Other.target_idx 
                 
         history = []
         # NOTE: This function only deals with non-epsilon triggers. Empty
@@ -486,3 +475,21 @@ class TransitionMap:
         elif TargetState in self.__epsilon_target_index_list: return True
         else:                                                 return False
 
+class history_item(object):
+    """To be used by: member function 'get_trigger_set_line_up(self)'
+    """
+    __slots__ = ('position', 'change', 'target_idx')
+    def __init__(self, Position, ChangeF, TargetIdx):
+        self.position   = Position
+        self.change     = ChangeF
+        self.target_idx = TargetIdx 
+        
+    def __repr__(self):         
+        if self.change == INTERVAL_BEGIN: ChangeStr = "begin"
+        else:                             ChangeStr = "end"
+        return "%i: %s %s" % (self.position, ChangeStr, self.target_idx)
+
+    def __eq__(self, Other):
+        return     self.position   == Other.position \
+               and self.change     == Other.change   \
+               and self.target_idx == Other.target_idx 
