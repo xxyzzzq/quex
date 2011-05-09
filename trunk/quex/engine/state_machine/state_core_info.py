@@ -6,7 +6,7 @@ StateOriginInfo_POST_CONDITIONED_ACCEPTANCE = 4
 StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE = 5
 StateOriginInfo_ERROR                       = -1
 
-class StateCoreInfo:
+class StateCoreInfo: 
     """-- store input position: if an origin is flagged that way it 
           imposes that the input position is to be stored.
 
@@ -37,6 +37,12 @@ class StateCoreInfo:
           In the large majority of cases, where there is no pseudo 
           ambiguous post condition (e.g. x*/x), it is set to -1L. 
     """    
+
+    ## Much Slower with:
+    ## __slots__ = ("state_machine_id", "state_index", "__acceptance_f", "__store_input_position_f",
+    ##             "__post_context_id", "__pre_context_id", "__pre_context_begin_of_line_f",
+    ##             "__pseudo_ambiguous_post_context_id")
+
     def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
                  PostContextID=-1L, PreContext_StateMachineID=-1L,
                  PreContext_BeginOfLineF=False,
@@ -78,6 +84,14 @@ class StateCoreInfo:
         # -- id of state machine that is used to go backwards from the end
         #    of a post condition that is pseudo-ambiguous. 
         self.__pseudo_ambiguous_post_context_id = PseudoAmbiguousPostConditionID
+
+    def clone(self):
+        return StateCoreInfo(self.state_machine_id, self.state_index, self.__acceptance_f,
+                             self.__store_input_position_f,
+                             self.__post_context_id,
+                             self.__pre_context_id,
+                             self.__pre_context_begin_of_line_f,
+                             self.__pseudo_ambiguous_post_context_id)
 
     def is_equivalent(self, Other):
         if self.__acceptance_f != Other.__acceptance_f:         return False

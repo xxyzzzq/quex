@@ -5,6 +5,11 @@ class StateOriginList:
     def __init__(self):
         self.__list = []
 
+    def clone(self):
+        clone = StateOriginList()
+        clone.__list = [x.clone() for x in self.__list]
+        return clone
+
     def is_equivalent(self, Other):
         # Loop over all origins in list and search for counterparts in Other
         for origin in self.__list:

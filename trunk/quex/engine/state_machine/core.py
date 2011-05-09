@@ -99,7 +99,7 @@ class State:
            determined in the ReplacementDictionary."""
         result = State()
         result.__core           = deepcopy(self.__core)
-        result.__transition_map = deepcopy(self.__transition_map)
+        result.__transition_map = self.__transition_map.clone()
         result.__origin_list    = deepcopy(self.__origin_list)
         # if replacement of indices is desired, than do it
         if ReplacementDictionary != None:

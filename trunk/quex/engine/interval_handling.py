@@ -14,7 +14,7 @@
 # ABSOLUTELY NO WARRANTY
 ################################################################################
 
-from copy import copy, deepcopy
+from copy import copy
 
 from   quex.engine.misc.file_in                       import error_msg
 # import quex.engine.generator.languages.core as languages
@@ -25,6 +25,9 @@ class Interval:
     """Representing an interval with a minimum and a maximum border. Implements
     basic operations on intervals: union, intersection, and difference.
     """
+    ## was much slower: __slots__ = ('begin', 'end')
+    ## may be caused by some deepcopy
+
     def __init__(self, Begin=None, End=None):
         """NOTE: Begin = End signifies **empty** interval.
 
@@ -274,13 +277,19 @@ class NumberSet:
 
         elif arg_type == NumberSet:
             if ArgumentIsYoursF:  self.__intervals = Arg.__intervals
-            else:                 self.__intervals = deepcopy(Arg.__intervals)
+            else:                 self.__intervals = Arg.__clone_intervals()
 
         elif arg_type == int:
             self.__intervals = [ Interval(Arg) ]
 
         else:
             self.__intervals = []
+
+    def __clone_intervals(self):
+        return [ Interval(x.begin, x.end) for x in self.__intervals ]
+
+    def clone(self):
+        return NumberSet([Interval(x.begin, x.end) for x in self.__intervals], ArgumentIsYoursF=True)
 
     def quick_append_interval(self, Other, SortF=True):
         """This function assumes that there are no intersections with other intervals.
@@ -534,7 +543,7 @@ class NumberSet:
 
     def get_intervals(self, PromiseToTreatWellF=False):
         if PromiseToTreatWellF: return self.__intervals
-        else:                   return deepcopy(self.__intervals)
+        else:                   return self.__clone_intervals()
 
     def unite_with(self, Other):
         Other_type = Other.__class__
@@ -554,7 +563,7 @@ class NumberSet:
         assert Other_type == Interval or Other_type == NumberSet, \
                "Error, argument of type %s" % Other.__class__.__name__
 
-        clone = deepcopy(self)
+        clone = self.clone() 
 
         if Other_type == Interval: 
             clone.add_interval(Other)
@@ -684,7 +693,7 @@ class NumberSet:
 
         # NOTE: If, for any reason this function does not rely on intersect_with(), then
         #       the function intersect_with() is no longer under unit test!
-        result = deepcopy(self)
+        result = self.clone()
         result.intersect_with(Other)
         return result
 
@@ -710,7 +719,8 @@ class NumberSet:
     def difference(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
-        clone = deepcopy(self)
+        clone = self.clone()
+
         if Other.__class__ == Interval: 
             clone.cut_interval(Other)
             return clone
@@ -743,10 +753,10 @@ class NumberSet:
               A&B             [----]    [----]
               A^B   [--------]     [----]    [--]      [------------]
         """
-        clone0 = deepcopy(self)
+        clone0 = self.clone()
         clone0.unite_with(Other)
 
-        clone1 = deepcopy(self)
+        clone1 = self.clone()
         clone1.intersect_with(Other)
         
         clone0.subtract(clone1)
