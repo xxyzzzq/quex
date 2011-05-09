@@ -42,10 +42,11 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
-            ## print "##DEBUG", state_index
-            ## if state_index in [43]: print "##", state_index, acceptance_trace_list
+            print "##DEBUG", state_index
+            if state_index in [172]: print "##", state_index, acceptance_trace_list
 
             common = self.__horizontal_analysis(state, acceptance_trace_list)
+            if state_index in [172]: print "##common:", common
             self.__vertical_analysis(state, common)
 
     def __iter__(self):
@@ -53,28 +54,45 @@ class Analyzer:
             yield x
 
     def __horizontal_analysis(self, state, TheAcceptanceTraceList):
-        """For a given state, there might be multiple paths through it. For
-           each of those paths there exists an 'acceptance trace' that has been
-           accumulated since the init state. An acceptance trace tells what
-           happens if a pre-context is fulfilled. The horizontal analysis
-           combines the multiple acceptance traces into a single 'common'
-           acceptance trace, i.e.
+        """A state may be reached via multiple paths. For each path there is 
+           a separate AcceptanceTrace. Each AcceptanceTrace tells what has to
+           happen in the state depending on the pre-contexts being fulfilled 
+           or not (if there are even any pre-context patterns).
 
-           Trace[0]       Trace[1]       Trace[2]           Common
-           
-           (pre 0 => A)   (pre 0 => A)                      (pre 0 => A)  
-                          (pre 1 => B)                      (pre 1 => B)                    
-           (pre 2 => C)                  (pre 4 => C)  --\  (pre 2 => C)  
-           (pre 3 => D)                  (pre 5 => E)  --/  (pre 3 => None)  
-                                                            (pre 4 => E)              
-           (None  => F)   (None  => H)   (None  => G)       (None  => None)  
+           This function computes a single object that indicates what has to
+           happen in the current state based on the given list of acceptance
+           traces. And, the two rule are simple:
+
+             (1) If there is the slightest difference between the acceptances
+                 of the acceptance traces, then the acceptance depends on the 
+                 path.
+
+             (2) For a given pre-context, if the positioning backwards differs
+                 for one entry, or is undetermined, then the positions must be
+                 stored by the related state and restored in the current state.
         """
-                   
-        if len(TheAcceptanceTraceList) == 0: return 
+        assert len(TheAcceptanceTraceList) != 0
 
-        pre_context_id_set = set([])
-        for acceptance_trace in TheAcceptanceTraceList:
-            pre_context_id_set.update(acceptance_trace.get_pre_context_id_list())
+        prototype = TheAcceptanceTraceList[0]
+        remainder = islice(TheAcceptanceTraceList, 1, None)
+
+        # (1) Acceptance
+        result = {}
+        pre_context_id_set = set(prototype.get_pre_context_id_list())
+        result = dict([x, AcceptanceTraceEntry(x)] for x in pre_context_id_set])
+        for acceptance_trace in remainder:
+            if pre_context_id_set != acceptance_trace.get_pre_context_id_list():
+                for state_index in AllAcceptingStates:
+                    self.store_acceptance(state_index, pre_context_id_set)
+                result = AcceptanceTrace() # All void
+
+        # (2) Positioning
+        for pre_context_id in pre_context_id_set:
+            for acceptance_trace in ifilter(labmda x: x.get(pre_context_id) == None, TheAcceptanceTraceList:
+                # If one does not have an entry then positioning is void
+                for pre_context_id in pre_context_id_set:
+                    result[pre_context_id].transition_n_since_positioning = None
+                    self.store_position(acceptance_trace[pre_context_id].positioning_state_index, pre_context_id)
 
         common = {}
         # If any acceptance trace differs from the prototype in accepting or positioning
@@ -82,26 +100,18 @@ class Analyzer:
         # Loop: 'first falsifies'
         ##print "##common 0:", common
         for pre_context_id in pre_context_id_set:
-
             entry_list = map(lambda x: x.get(pre_context_id), TheAcceptanceTraceList)
-            # If a 'pre_context_id' is in 'pre_context_id_set' this means that at least one
-            # path triggers on the given 'pre_context_id' to acceptance. If on the other hand
-            # one single trace does not trigger on the given pre-context to acceptance, then
-            # this means that the acceptance and positioning depends on the path taken at
-            # runtime.
+            #   If a 'pre_context_id' is in 'pre_context_id_set' 
+            #   => at least one path triggers on 'pre_context_id' to acceptance. 
+            # + If one single trace does not trigger on 'pre_context_id' to acceptance, 
+            #   => the acceptance depends on the path taken at runtime.
             if None in entry_list:
                 # One path does not trigger on given pre-context-id
-                common[pre_context_id] = AcceptanceTraceEntry(pre_context_id, 
-                                                              PatternID                    = None, # Undetermined
-                                                              TransitionN_ToAcceptance     = -1,
-                                                              AcceptingStateIndex          = -1, 
-                                                              TransitionN_SincePositioning = -1,   # Undetermined
-                                                              PositioningStateIndex        = -1, 
-                                                              PostContextID                = -1)
+                common[pre_context_id] = deepcopy(AcceptanceTraceEntry_Void)
                 for that in ifilter(lambda x: x != None, entry_list):
                     if that.accepting_state_index == -1: continue
-                    self.__state_db[that.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                    self.__state_db[that.accepting_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    self.store_acceptance(that.accepting_state_index, pre_context_id)
+                    self.store_position(that.accepting_state_index, pre_context_id)
                 continue
 
             this = entry_list[0]
@@ -113,10 +123,8 @@ class Analyzer:
                 if pre_context_id == None:
                     if this.pattern_id != that.pattern_id:
                         # Inform related states about the task to store acceptance
-                        if that.accepting_state_index != -1:
-                            self.__state_db[that.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
-                        if this.accepting_state_index != -1:
-                            self.__state_db[this.accepting_state_index].entry.set_store_acceptance_f(pre_context_id)
+                        self.store_acceptance(that.accepting_state_index, pre_context_id)
+                        self.store_acceptance(this.accepting_state_index, pre_context_id)
                         common[pre_context_id].pattern_id = None # Winner determined at run-time
                 else:
                     # Same pre-context-ids must refer the same patterns.
@@ -124,10 +132,8 @@ class Analyzer:
 
                 if this.transition_n_since_positioning != that.transition_n_since_positioning:
                     # Inform related states about the task to store acceptance position
-                    if that.positioning_state_index != -1:
-                        self.__state_db[that.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
-                    if this.positioning_state_index != -1:
-                        self.__state_db[this.positioning_state_index].entry.set_store_acceptance_position_f(pre_context_id)
+                    self.store_position(that.positioning_state_index, pre_context_id)
+                    self.store_position(this.positioning_state_index, pre_context_id)
                     this.transition_n_since_positioning = None # Distance determined at run-time
 
         # Even, if there is only one trace: If the backward position is undetermined
@@ -139,6 +145,21 @@ class Analyzer:
             self.__state_db[x.positioning_state_index].entry.set_store_begin_of_post_context_position(x.post_context_id)
 
         return common
+    
+    def store_acceptance(self, StateIndex, PreContextID):
+        ## print "##", StateIndex, PreContextID
+        if StateIndex == -1: 
+            return
+        elif type(PreContextID) == set:
+            for pre_context_id in PreContextID:
+                self.__state_db[StateIndex].entry.set_store_acceptance_f(pre_context_id)
+        else:
+            self.__state_db[StateIndex].entry.set_store_acceptance_f(PreContextID)
+
+    def store_position(self, StateIndex, PreContextID):
+        if StateIndex == -1: return
+        print "##", StateIndex, PreContextID
+        self.__state_db[StateIndex].entry.set_store_acceptance_position_f(PreContextID)
 
     def __vertical_analysis(self, state, Common):
         """Takes a 'common' acceptance trace as a result from the horizontal 
@@ -148,8 +169,9 @@ class Analyzer:
 
         def __voidify(trace):
             for x in ifilter(lambda x: x.accepting_state_index != -1, trace):
-                self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f(x.pre_context_id)
-                self.__state_db[x.positioning_state_index].entry.set_store_acceptance_f(x.pre_context_id)
+                print "##voidify", x.accepting_state_index, x.positioning_state_index, x.pre_context_id
+                self.store_acceptance(x.accepting_state_index, x.pre_context_id)
+                self.store_position(x.positioning_state_index, x.pre_context_id)
             # Set a totally undetermined acceptance trace, that is:
             # restore acceptance and acceptance position
             state.drop_out.set_sequence([AcceptanceTraceEntry_Void])
@@ -157,7 +179,7 @@ class Analyzer:
 
         trace = Common.values()
         if len(trace) == 1: 
-            assert trace[0].pre_context_id == None
+            ## assert trace[0].pre_context_id == None
             state.drop_out.set_sequence(trace)
             return 
 
@@ -300,7 +322,7 @@ class Entry:
         if ForwardF:
             self.__pre_context_fulfilled_set  = None
             self.__sequence                   = []
-            for origin in OriginList:
+            for origin in ifilter(lambda x: x.is_acceptance(), OriginList):
                 entry = ConditionalEntryAction(track_analysis.extract_pre_context_id(origin), 
                                                origin.state_machine_id)
                 self.__sequence.append(entry)
@@ -347,10 +369,9 @@ class Entry:
         return self.__sequence
 
     def set_store_acceptance_f(self, PreContextID):
-        for x in self.__sequence: 
-            if x.pre_context_id == PreContextID: 
-                x.store_acceptance_f = True
-                return
+        for x in ifilter(lambda x: x.pre_context_id == PreContextID, self.__sequence): 
+            x.store_acceptance_f = True
+            return
         assert False, "PostContextID not mentioned in state"
 
     def set_store_acceptance_position_f(self, PreContextID):

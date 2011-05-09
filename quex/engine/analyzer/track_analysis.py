@@ -430,16 +430,26 @@ class TrackInfo:
         assert x == StateIndex
 
 class AcceptanceTrace:
-    """An AcceptanceTrace somehow collects the 'history of acceptance' for a
-       particular considered path of state transitions. Note, that if a state
-       can be reached by different paths, it may have more than one acceptance
-       trace related to it.
+    """For one particular STATE that is reached via one particular PATH 
+       an AcceptanceTrace accumulates information about what pattern 'ACCEPTS'
+       and where the INPUT POSITION is to be placed.
+
+       This behavior may depend on pre-contexts being fulfilled.
+
+       In other words, an AcceptanceTrace of a state provides information
+       about what pattern would be accepted and what the input positioning
+       should be if the current path was the only path to the state.
+
+       The acceptance information is **priorized**. That means, that it is
+       important in what order the pre-contexts are checked. 
 
        Example:
 
        ( 0 )----->(( 1 ))----->( 2 )----->(( 3 ))----->( 4 )------>( 5 ) ....
                    8 wins                 pre 4 -> 5 wins                    
                                           pre 3 -> 7 wins
+
+       AcceptanceTrace-s for each state:
 
        State 0: has no acceptance trace, only '(no pre-context, failure)'.
        State 1: (pattern 8 wins, input position = current)
@@ -451,10 +461,6 @@ class AcceptanceTrace:
                 (if pre context 3 fulfilled: 7 wins, input position = current - 1)
                 (else,                       8 wins, input position = current - 3)
        ...
-       
-       Keeping track of the acceptance trace makes it possible to avoid storing
-       the last acceptance and the acceptance position at the entry of the state(s).
-       This can cause significant speed improvements.
     """
     def __init__(self):
         self.__sequence = { 
@@ -466,14 +472,22 @@ class AcceptanceTrace:
                                        PositioningStateIndex        = -1, 
                                        PostContextID                = -1),
         }
+        self.__last_transition_n_to_acceptance = 0
 
     def __len__(self):
         return len(self.__sequence)
 
     def itervalues(self):
-        return self.__sequence.itervalues()
+        return sorted(self.__sequence.itervalues(), key=attrgetter("transition_n_to_acceptance"), reverse=True)
 
     def update(self, track_info, Path):
+        # It is essential for a meaningful accumulation of the match information
+        # that the entries are accumulated from the begin of a path towards its 
+        # end. Otherwise, the 'longest match' cannot be applied by overwriting
+        # existing entries.
+        assert abs(self.__last_transition_n_to_acceptance) < len(Path)
+        self.__last_transition_n_to_acceptance = len(Path)
+
         # If the current state is a loop state, than all positions become void.
         # This means that number of characters to reach this state can no longer
         # be determined by the state machine structure itself.
@@ -497,7 +511,7 @@ class AcceptanceTrace:
         state = track_info.sm.states[StateIndex]
         if not state.is_acceptance(): return
 
-        # For each pre-context make an entry
+        # Assumption:
         for origin in sorted(state.origins(), key=attrgetter("state_machine_id")):
             if not origin.is_acceptance(): continue
 
@@ -535,6 +549,10 @@ class AcceptanceTrace:
                                          TransitionN_SincePositioning = transition_n_since_positioning,
                                          PositioningStateIndex        = positioning_state_index, 
                                          PostContextID                = post_context_id)
+            # ((*)) IMPORTANT: What is happening here is a simple **overwriting**
+            #                  of existing entries, but this works only if the path
+            #                  is transversed from begin to end. Then this implements 
+            #                  implicitly **longest match**, i.e. latest wins.
             self.__sequence[pre_context_id] = entry
 
             # The rest of the traces is dominated
@@ -543,8 +561,8 @@ class AcceptanceTrace:
         # No conditional pattern can ever be matched if it is dominated
         # by an unconditional pattern acceptance.
         min_pattern_id = self.__sequence[None].pattern_id
-        for key in self.__sequence.keys():  # NOT: iterkeys() here!
-            if self.__sequence[key].pattern_id > pattern_id: del self.__sequence[key]
+        for key in ifilter(lambda x: x.pattern_id > pattern_id, self.__sequence.keys()):  # NOT: iterkeys() here!
+            del self.__sequence[key]
 
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1
@@ -656,7 +674,7 @@ AcceptanceTraceEntry_Void = AcceptanceTraceEntry(PreContextID                 = 
                                                  PatternID                    = None, # Undetermined
                                                  TransitionN_ToAcceptance     = 0,
                                                  AcceptingStateIndex          = -1, 
-                                                 TransitionN_SincePositioning = -1, # input_p = lexeme_start_p + 1
+                                                 TransitionN_SincePositioning = None, # Undetermined
                                                  PositioningStateIndex        = -1, 
                                                  PostContextID                = -1)
 
