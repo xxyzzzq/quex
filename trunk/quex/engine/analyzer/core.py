@@ -67,6 +67,11 @@ class Analyzer:
                  of the acceptance traces, then the acceptance depends on the 
                  path.
 
+                 In that case, if one of the concerned states does not have a 
+                 pre-context-free acceptance, than it is possible that failure
+                 occurs. Thus, there is no chance that the acceptance position
+                 might be the same.
+
              (2) For a given pre-context, if the positioning backwards differs
                  for one entry, or is undetermined, then the positions must be
                  stored by the related state and restored in the current state.
@@ -77,22 +82,47 @@ class Analyzer:
         remainder = islice(TheAcceptanceTraceList, 1, None)
 
         # (1) Acceptance
-        result = {}
-        pre_context_id_set = set(prototype.get_pre_context_id_list())
-        result = dict([x, AcceptanceTraceEntry(x)] for x in pre_context_id_set])
+        prototype_pre_context_id_set = set(prototype.get_pre_context_id_list())
         for acceptance_trace in remainder:
-            if pre_context_id_set != acceptance_trace.get_pre_context_id_list():
-                for state_index in AllAcceptingStates:
-                    self.store_acceptance(state_index, pre_context_id_set)
-                result = AcceptanceTrace() # All void
+            if prototype_pre_context_id_set == acceptance_trace.get_pre_context_id_list(): continue
+
+            # Acceptance depends on path --> must be stored
+            self.store_acceptance_all(TheAcceptanceTraceList)
+            break
+
+        # A pre-context-id always corresponds to the same pattern. So, there cannot be
+        # different pattern ids for the same pre-context-id. For the 'normal case', though,
+        # this is different.
+
+        # (1.1) Normal Acceptance (without pre-contexts)
+        prototype_default_acceptance = prototype.get(None)
+        for acceptance_trace in remainder:
+            if acceptance_trace.get(None) == prototype_default_acceptance: continue
+
+            # Acceptance depends on path --> must be stored
+            self.store_acceptance_all(TheAcceptanceTraceList)
+            break
+
 
         # (2) Positioning
-        for pre_context_id in pre_context_id_set:
-            for acceptance_trace in ifilter(labmda x: x.get(pre_context_id) is None, TheAcceptanceTraceList:
-                # If one does not have an entry then positioning is void
-                for pre_context_id in pre_context_id_set:
-                    result[pre_context_id].transition_n_since_positioning = None
-                    self.store_position(acceptance_trace[pre_context_id].positioning_state_index, pre_context_id)
+        for pre_context_id in all_pre_context_id_set:
+            # Does any state differ from the behavior for a given pre-context-id?
+            entry = prototype.get(pre_context_id)
+            if entry == None:
+                # All related states with the pre-context must store the position
+                self.store_position(TheAcceptanceTraceList, pre_context_id)
+                continue
+
+            prototype_transition_n_since_positioning = entry.transition_n_since_positioning
+
+            for acceptance_trace in TheAcceptanceTraceList:
+                if acceptance_trace.get(pre_context_id) == None:
+                    self.store_position(TheAcceptanceTraceList, pre_context_id)
+                    break
+                if entry.transition_n_since_positioning != prototype_transition_n_since_positioning:
+                    self.store_position(TheAcceptanceTraceList, pre_context_id)
+                    break
+
 
         common = {}
         # If any acceptance trace differs from the prototype in accepting or positioning

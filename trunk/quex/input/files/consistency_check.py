@@ -46,7 +46,7 @@ def do(ModeDB):
 
     # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
     for mode in ModeDB.values():
-        if len(mode.name in applicable_mode_name_list and mode.get_pattern_action_pair_list()) == 0:
+        if mode.name in applicable_mode_name_list and len(mode.get_pattern_action_pair_list()) == 0:
             error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % mode.name + \
                       "However, it contains no matches--only event handlers. Without pattern\n"     + \
                       "matches it cannot act as a pattern detecting state machine, and thus\n"      + \

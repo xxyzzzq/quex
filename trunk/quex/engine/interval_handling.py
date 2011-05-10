@@ -14,12 +14,14 @@
 # ABSOLUTELY NO WARRANTY
 ################################################################################
 
-from copy import copy
 
 from   quex.engine.misc.file_in                       import error_msg
 # import quex.engine.generator.languages.core as languages
-import sys
 import quex.engine.utf8 as utf8
+
+import sys
+from   copy import copy
+from   itertools import izip
 
 class Interval(object):
     """Representing an interval with a minimum and a maximum border. Implements
@@ -487,10 +489,7 @@ class NumberSet(object):
         """Assume: All intervals are sorted and adjacent intervals are combined.
         """
         if len(self.__intervals) != len(Other.__intervals): return False
-        i = -1
-        for interval in self.__intervals:
-            i += 1
-            other = Other.__intervals[i]
+        for interval, other in izip(self.__intervals, Other.__intervals):
             if   interval.begin != other.begin: return False
             elif interval.end   != other.end:   return False
         return True
