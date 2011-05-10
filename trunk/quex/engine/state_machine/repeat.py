@@ -32,7 +32,7 @@ def do(the_state_machine, min_repetition_n = 0, max_repetition_n = -1):
         # to be repeated 'physically'. No new 'repeated' version of the state machine
         # is computed.
         # NOTE: sequentialize clones the given state machines 
-        if initial_state_machine != None: 
+        if initial_state_machine is not None: 
             return sequentialize.do([initial_state_machine] 
                                     + [the_state_machine] * (max_repetition_n - min_repetition_n),
                                     LeaveIntermediateAcceptanceStatesF = True)
@@ -47,7 +47,7 @@ def do(the_state_machine, min_repetition_n = 0, max_repetition_n = -1):
     # (*) clone the state machine
     #     NOTE: kleene_closure() clones the state machine.
     pure_repetition = kleene_closure(the_state_machine)
-    if initial_state_machine != None: 
+    if initial_state_machine is not None: 
         return sequentialize.do([initial_state_machine] + [ pure_repetition ],
                                 LeaveIntermediateAcceptanceStatesF = True)
     else:

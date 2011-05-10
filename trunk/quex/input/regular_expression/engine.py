@@ -77,7 +77,7 @@ def do(UTF8_String_or_Stream, PatternDict,
     if type(UTF8_String_or_Stream) == str: stream = StringIO(UTF8_String_or_Stream)
     else:                                  stream = UTF8_String_or_Stream    
 
-    if PatternDict == None: PatternDict = {}
+    if PatternDict is None: PatternDict = {}
 
     initial_position = stream.tell()
 
@@ -88,7 +88,7 @@ def do(UTF8_String_or_Stream, PatternDict,
     # -- MAIN: transform the pattern into a state machine
     pre, core, post = snap_conditional_expression(stream, PatternDict)
 
-    if core == None: 
+    if core is None: 
         stream.seek(initial_position)
         return None
 
@@ -126,7 +126,7 @@ def snap_conditional_expression(stream, PatternDict):
 
     # -- expression
     pattern_0 = snap_expression(stream, PatternDict) 
-    if pattern_0 == None: 
+    if pattern_0 is None: 
         return None, None, None
     
     # -- '/'
@@ -137,7 +137,7 @@ def snap_conditional_expression(stream, PatternDict):
         
     # -- expression
     pattern_1 = snap_expression(stream, PatternDict) 
-    if pattern_1 == None: 
+    if pattern_1 is None: 
         return None, pattern_0, None
     
     # -- '/'
@@ -148,7 +148,7 @@ def snap_conditional_expression(stream, PatternDict):
 
     # -- expression
     pattern_2 = snap_expression(stream, PatternDict) 
-    if pattern_2 == None: 
+    if pattern_2 is None: 
         # (3) expression with only a pre condition
         #     NOTE: setup_pre_context() marks the state origins!
         return pattern_0, pattern_1, None
@@ -163,7 +163,7 @@ def snap_expression(stream, PatternDict):
     __debug_entry("expression", stream)    
     # -- term
     result = snap_term(stream, PatternDict) 
-    if result == None: 
+    if result is None: 
         return __debug_exit(None, stream)
 
     # -- optional '|'
@@ -176,7 +176,7 @@ def snap_expression(stream, PatternDict):
     # -- expression
     result_2 = snap_expression(stream, PatternDict) 
     __debug_print("expression(in expression):",  result_2)
-    if result_2 == None:
+    if result_2 is None:
         stream.seek(position_1) 
         return __debug_exit(result, stream)
 
@@ -192,13 +192,13 @@ def snap_term(stream, PatternDict):
     # -- primary
     result = snap_primary(stream, PatternDict) 
     __debug_print("##primary(in term):", result)
-    if result == None: return __debug_exit(None, stream)
+    if result is None: return __debug_exit(None, stream)
     position_1 = stream.tell()
 
     # -- optional 'term' 
     result_2 = snap_term(stream, PatternDict) 
     __debug_print("##term(in term):",  result_2)
-    if result_2 == None: 
+    if result_2 is None: 
         stream.seek(position_1)
         return __debug_exit(result, stream)
     
@@ -247,10 +247,10 @@ def snap_primary(stream, PatternDict):
         else:
             stream.seek(-1, 1)
             trigger_set = character_set_expression.snap_property_set(stream)
-            if trigger_set == None:
+            if trigger_set is None:
                 stream.seek(1, 1)  # snap_property_set() leaves tream right before '\\'
                 char_code = snap_backslashed_character.do(stream)
-                if char_code == None:
+                if char_code is None:
                     raise RegularExpressionException("Backslash followed by unrecognized character code.")
                 trigger_set = char_code
             result = StateMachine()
@@ -274,7 +274,7 @@ def snap_primary(stream, PatternDict):
     # -- optional repetition command? 
     result_repeated = __snap_repetition_range(result, stream) 
     ## print "##imr:", result.get_string(NormalizeF=False)
-    if result_repeated != None: result = result_repeated
+    if result_repeated is not None: result = result_repeated
     return __debug_exit(construct.beautify(result), stream)
     
 def snap_non_control_character(stream, PatternDict):
@@ -365,7 +365,7 @@ def snap_bracketed_expression(stream, PatternDict):
                                          + "Note, that patterns end with the first non-quoted whitespace.\n" \
                                          + "Also, closing brackets in quotes do not close a syntax block.")
 
-    if result == None:
+    if result is None:
         length = stream.tell() - position
         stream.seek(position)
         raise RegularExpressionException("expression in brackets has invalid syntax '%s'" % \

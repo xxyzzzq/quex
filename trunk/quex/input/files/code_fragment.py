@@ -134,7 +134,7 @@ def read_character_code(fh):
 
     fh.seek(pos)
     character_code = read_integer(fh)
-    if character_code != None: return character_code
+    if character_code is not None: return character_code
 
     # Try to interpret it as something else ...
     fh.seek(pos)
@@ -243,7 +243,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
     for arg in argument_list:
         if arg.find("=") != -1: explicit_member_names_f = True
 
-    assert blackboard.token_type_definition != None, \
+    assert blackboard.token_type_definition is not None, \
            "A valid token_type_definition must have been parsed at this point."
 
     if not explicit_member_names_f:

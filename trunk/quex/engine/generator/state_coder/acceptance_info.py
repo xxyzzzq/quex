@@ -4,6 +4,8 @@ import quex.engine.state_machine.core                as     state_machine
 from   quex.engine.generator.languages.address import __nice, get_address, get_label
 from   quex.input.setup                             import setup as Setup
 
+from   operator import attrgetter
+
 LanguageDB = None
 
 def do(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
@@ -147,7 +149,7 @@ def backward_lexing(OriginList):
                                       origin.pre_context_id() != -1L or
                                       origin.post_context_id() != -1L,
                                       OriginList)
-    assert inadmissible_origin_list == [], \
+    assert len(inadmissible_origin_list) == 0, \
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
@@ -217,8 +219,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
     debug_txt = []
     first_if_statement_f         = True
     unconditional_case_treated_f = False
-    OriginList.sort()
-    for origin in OriginList:
+    for origin in sorted(OriginList, key=attrgetter("state_machine_id")):
         if not origin.is_acceptance(): continue
 
         info = get_on_detection_code_fragment(origin)
@@ -272,7 +273,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
     if unconditional_case_treated_f == False:
         debug_txt.append(1)
         default_action = get_on_detection_code_fragment(None)
-        assert default_action != None
+        assert default_action is not None
         txt.extend(default_action)
 
     return debug_txt + txt

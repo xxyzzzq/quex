@@ -505,7 +505,7 @@ class AcceptanceTrace:
             # Add '1' to the distance between:
             #       positioning state --> transition_n_since_positioning
             for entry in self.__sequence.itervalues():
-                if entry.transition_n_since_positioning != -1 and entry.transition_n_since_positioning != None:
+                if entry.transition_n_since_positioning != -1 and entry.transition_n_since_positioning is not None:
                     entry.transition_n_since_positioning += 1
 
         state = track_info.sm.states[StateIndex]
@@ -556,7 +556,7 @@ class AcceptanceTrace:
             self.__sequence[pre_context_id] = entry
 
             # The rest of the traces is dominated
-            if pre_context_id == None: break
+            if pre_context_id is None: break
 
         # No conditional pattern can ever be matched if it is dominated
         # by an unconditional pattern acceptance.
@@ -596,7 +596,7 @@ class AcceptanceTrace:
         distance = 0
         successor_is_loop_state_f = (Path[-1] in track_info.loop_state_set)
         for state_index in reversed(Path[:-1]):
-            if distance != None: distance += 1
+            if distance is not None: distance += 1
 
             if successor_is_loop_state_f:
                 # If the state is part of a loop, then the distance backwards cannot be 

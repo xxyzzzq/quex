@@ -1,4 +1,3 @@
-from copy import deepcopy
 import quex.engine.state_machine.dead_end_analyzis as dead_end_analyzis
 import quex.engine.generator.languages.address     as address 
 
@@ -16,7 +15,7 @@ class StateMachineDecorator:
 
         self.__name                   = Name
         self.__state_machine          = SM
-        self.__post_condition_id_list = deepcopy(PostContextSM_ID_List)
+        self.__post_condition_id_list = list(PostContextSM_ID_List)
         self.__post_condition_id_list.sort()
 
         self.__mode = "ForwardLexing"

@@ -50,7 +50,7 @@ def get_character_code_sequence(sh):
 
         elif char_code == ord("\\"): 
             char_code = snap_backslashed_character.do(sh)
-            if char_code == None: 
+            if char_code is None: 
                 raise RegularExpressionException("Unidentified backslash-sequence in quoted string.")
 
         elif char_code == ord('"'):

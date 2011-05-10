@@ -21,13 +21,13 @@ if "--hwut-info" in sys.argv:
 def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):    
     result = sm.clone()
     print "##-- %i -----------------------------------------------------------------------" % Idx
-    if sm_pre != None: 
+    if sm_pre is not None: 
         setup_pre_context.do(result, sm_pre)
         print " -- pre-condition  = True"
     else:
         print " -- pre-condition  = False"
         
-    if sm_post != None:
+    if sm_post is not None:
         setup_post_context.do(result, sm_post)
         print " -- post-condition = True"
     else:
@@ -49,7 +49,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     #
     print
     print "result sm.id     = ", result.get_id()
-    if result.core().pre_context_sm() != None:
+    if result.core().pre_context_sm() is not None:
         print "result pre sm.id = ", result.core().pre_context_sm().get_id()
     print "result = ", result
     print "trivially pre-conditioned = ", result.core().pre_context_begin_of_line_f()

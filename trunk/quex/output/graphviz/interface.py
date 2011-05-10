@@ -30,7 +30,7 @@ class Generator(GeneratorBase):
 
         self.__do(self.sm, self.state_machine_name + "." + self.graphic_format, Option)
 
-        if self.pre_context_sm != None:
+        if self.pre_context_sm is not None:
             file_name = "%s-pre-condition.%s" % (self.state_machine_name, self.graphic_format)
             self.pre_context_file_name = file_name
             self.__do(self.pre_context_sm, file_name, Option)

@@ -2,7 +2,7 @@ from copy import copy
 
 class Variable:
     def __init__(self, Name, Type, ElementN, InitialValue, Condition=None, ConditionNegatedF=False, PriorityF=False):
-        """ElementN == None --> scalar value
+        """ElementN is None --> scalar value
                     is int  --> array of dimension ElementN
         """
         assert type(ElementN) in [int, long] or None == ElementN, \
@@ -49,7 +49,7 @@ class VariableDB:
         self.__db = {}
 
     def init(self, InitialDB=None):
-        if InitialDB == None: self.__db.clear()
+        if InitialDB is None: self.__db.clear()
         else:                 self.__db = copy(InitialDB)
 
     def get(self):
@@ -57,7 +57,7 @@ class VariableDB:
 
     def __enter(self, Name, Type, ElementN, InitialValues, Condition, ConditionNegatedF, PriorityF):
         # (*) Determine unique key for Name, Condition, and ConditionNegatedF.
-        if Condition == None: 
+        if Condition is None: 
             key = Name
         else:
             key = "%s/%s" % (Condition, Name)
@@ -67,7 +67,7 @@ class VariableDB:
         self.__db[key] = Variable(Name, Type, ElementN, InitialValues, Condition, ConditionNegatedF, PriorityF)
 
     def __condition(self, Condition_ComputedGoto):
-        if Condition_ComputedGoto == None:
+        if Condition_ComputedGoto is None:
             return None, None
         else:
             assert type(Condition_ComputedGoto) == bool
@@ -81,9 +81,9 @@ class VariableDB:
         # Name --> Type(0), InitialValue(1), PriorityF(2)
         x = _candidate_db[Name]
 
-        if Index != None:   Name = Name % Index
+        if Index is not None:   Name = Name % Index
 
-        if Initial != None: initial = Initial
+        if Initial is not None: initial = Initial
         else:               initial = x[1]
 
         self.__enter(Name, x[0], None, initial, condition, condition_negated_f, x[2])
@@ -96,7 +96,7 @@ class VariableDB:
         # Name --> Type(0), InitialValue(1), PriorityF(2)
         x = _candidate_db[Name]
 
-        if Index != None: Name = Name % Index
+        if Index is not None: Name = Name % Index
         self.__enter(Name, x[0], ElementN, Initial, condition, condition_negated_f, x[2])
 
 variable_db = VariableDB()

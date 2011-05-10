@@ -18,7 +18,7 @@ def test(Input, Cmp=None):
     try:
         output = read_integer(StringIO(Input))
         print output,
-        if Cmp == None: print
+        if Cmp is None: print
         else:           print Cmp == output
     except:
         pass

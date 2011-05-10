@@ -42,7 +42,7 @@ def do(core_sm,
     # (*) 'Nothing is necessary' cannot be accepted. See the discussion in the 
     #     module "quex.engine.generator.core.py"
     if not AllowNothingIsNecessaryF:
-        post_context_f = (post_context != None)
+        post_context_f = (post_context is not None)
         __detect_path_of_nothing_is_necessary(pre_context,  "pre context",  post_context_f, fh)
         __detect_path_of_nothing_is_necessary(core_sm,      "core pattern", post_context_f, fh)
         __detect_path_of_nothing_is_necessary(post_context, "post context", post_context_f, fh)
@@ -54,19 +54,19 @@ def do(core_sm,
 
     side_info    = SideInfo(newline_n, character_n)
 
-    if   pre_context == None and post_context == None:
+    if   pre_context is None and post_context is None:
         result = core_sm
         # -- can't get more beautiful ...
     
-    elif pre_context == None and post_context != None:
+    elif pre_context is None and post_context is not None:
         result = setup_post_context.do(core_sm, post_context, fh=fh)
         result = beautify(result)
 
-    elif pre_context != None and post_context == None:
+    elif pre_context is not None and post_context is None:
         result = setup_pre_context.do(core_sm, pre_context)
         result = beautify(result)
 
-    elif pre_context != None and post_context != None:
+    elif pre_context is not None and post_context is not None:
         # NOTE: pre-condition needs to be setup **after** post condition, because
         #       post condition deletes all origins!
         #       (is this still so? 07y7m6d fschaef)
@@ -85,20 +85,20 @@ def do(core_sm,
     return __validate(result, fh)
 
 def beautify(the_state_machine):
-    ## assert the_state_machine.get_orphaned_state_index_list() == [], \
+    ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "before conversion to DFA: orphaned states " + repr(the_state_machine)
     result = nfa_to_dfa.do(the_state_machine)
-    ## assert the_state_machine.get_orphaned_state_index_list() == [], \
+    ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
     result = hopcroft.do(result, CreateNewStateMachineF=False)
-    ## assert the_state_machine.get_orphaned_state_index_list() == [], \
+    ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
 
     return result
   
 def __detect_initial_orphaned_states(sm, fh):
 
-    if sm == None: return
+    if sm is None: return
 
     if sm.has_orphaned_states() == False: return
 
@@ -110,7 +110,7 @@ def __detect_initial_orphaned_states(sm, fh):
 def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
     assert Name in ["core pattern", "pre context", "post context"]
 
-    if sm == None: return
+    if sm is None: return
 
     msg = "The %s contains in a 'nothing is necessary' path in the state machine.\n"   \
           % Name                                                                     + \
@@ -143,7 +143,7 @@ def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
 def __delete_forbidden_transitions(sm, fh):
     # !! Let the orphaned state check NOT happen before this, because states
     # !! may become orphan in the frame of the following procedure.
-    if sm == None: return
+    if sm is None: return
 
     # (*) The buffer limit code has to appear absolutely nowhere!
     if Setup.buffer_limit_code != -1: __delete_forbidden_character(sm, Setup.buffer_limit_code)
@@ -208,10 +208,10 @@ def __delete_forbidden_ranges(sm, fh):
                 state.transitions().delete_transitions_to_target(target_state_index)
 
 def __delete_orphaned_states(sm, fh):
-    if sm == None: return
+    if sm is None: return
 
     new_orhpan_state_list = sm.get_orphaned_state_index_list()
-    if new_orhpan_state_list == []: return
+    if len(new_orhpan_state_list) == 0: return
 
     error_msg("Pattern contained solely forbidden characters in a state transition.\n"
               "The resulting target state is deleted since no other state triggered to it.", 
@@ -223,7 +223,7 @@ def __delete_orphaned_states(sm, fh):
 
 def __validate(sm, fh):
     # Anything produced by the parser must contain side information about
-    assert sm == None or sm.side_info != None, \
+    assert sm is None or sm.side_info is not None, \
            "Missing side info in " + repr(sm)
 
     # (*) It is essential that state machines defined as patterns do not 

@@ -90,10 +90,10 @@ def create_intermediate_states(sm, StartStateIdx, EndStateIdx, X):
     # unicode values that are represented in utf16 via 2 and 4 bytes (1 and 2 words).
     interval_1word, intervals_2word = get_contigous_intervals(X)
 
-    if interval_1word != None:
+    if interval_1word is not None:
         sm.add_transition(StartStateIdx, interval_1word, EndStateIdx)
 
-    if intervals_2word != None:
+    if intervals_2word is not None:
         for interval in intervals_2word:
             # Introduce intermediate state
             trigger_seq = get_trigger_sequence_for_interval(interval)

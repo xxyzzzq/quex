@@ -15,7 +15,7 @@ def test(state):
     tm = state.transitions().get_trigger_map()
     # (*) print the trigger map entries
     for trigger_interval, target_index in tm:
-        if target_index == None:
+        if target_index is None:
             print trigger_interval.gnuplot_string(-1) + "\n"
         else:   
             print trigger_interval.gnuplot_string(target_index) + "\n"

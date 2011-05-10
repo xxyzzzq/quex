@@ -39,7 +39,7 @@ class X:
                 for word in utf16_seq:
                     s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(word)
 
-                assert s_idx != None, \
+                assert s_idx is not None, \
                        "No acceptance for %X in [%X,%X] --> %s" % \
                        (i, interval.begin, interval.end - 1, repr(map(lambda x: "%04X." % x, utf16_seq)))
 
@@ -62,8 +62,8 @@ def check_negative(SM, ImpossibleIntervals):
             s_idx = result.init_state_index
             for word in utf16_seq:
                 s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(word)
-                if s_idx == None: break
-            if s_idx == None: continue
+                if s_idx is None: break
+            if s_idx is None: continue
 
             # An acceptance state cannot be reached by a unicode value in ImpossibleIntervals
             for origin in result.states[s_idx].origins():

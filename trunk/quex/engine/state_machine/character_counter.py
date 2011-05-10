@@ -29,7 +29,7 @@ def get_newline_n(state_machine):
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
-    if result == None: return -1
+    if result is None: return -1
     else:              return result
 
 def get_character_n(state_machine):
@@ -55,7 +55,7 @@ def get_character_n(state_machine):
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
-    if result == None: return -1
+    if result is None: return -1
     else:              return result
 
 def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx, Character):
@@ -112,7 +112,7 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     total_path_length = ____dive(state_machine, state_index, character_n, 
                                  passed_state_list, CharacterToCount)
 
-    if total_path_length != None:
+    if total_path_length is not None:
         if state_index not in passed_state_list:
             # Distance to acceptance:   total path length from start to acceptance state 
             #                         - path length       from start to current state
@@ -153,7 +153,7 @@ def ____dive(state_machine, state_index, character_n, passed_state_list, Charact
         character_n += increment
 
         if state.is_acceptance(): 
-            if prev_characters_found_n == None:          prev_characters_found_n = character_n
+            if prev_characters_found_n is None:          prev_characters_found_n = character_n
             elif prev_characters_found_n != character_n: return -1
 
         trigger_dict = state.transitions().get_map()
@@ -182,10 +182,10 @@ def ____dive(state_machine, state_index, character_n, passed_state_list, Charact
                                     new_passed_state_list, CharacterToCount)
 
         if   characters_found_n      == -1:                 return -1
-        elif prev_characters_found_n == None:               prev_characters_found_n = characters_found_n
+        elif prev_characters_found_n is None:               prev_characters_found_n = characters_found_n
         elif prev_characters_found_n != characters_found_n: return -1
 
-    if prev_characters_found_n == None: return -1
+    if prev_characters_found_n is None: return -1
     else:                               return prev_characters_found_n
 
 def __get_increment(trigger_set, CharacterToCount):

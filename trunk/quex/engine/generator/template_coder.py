@@ -154,7 +154,7 @@ def _do(CombinationList, SMD):
         prototype           = get_uniform_prototype(SMD, involved_state_list)
 
         # -- create template state for combination object
-        #    prototype == None, tells that there state entries differ and there
+        #    prototype is None, tells that there state entries differ and there
         #                       is no representive state.
         template = TemplateState(combination, SMD.sm().get_id(), index.get(), 
                                  prototype)
@@ -208,7 +208,7 @@ class TemplateTarget(transition_block.TriggerAction):
         return not self.__eq__(Other)
 
     def recursive(self):
-        return self.target_index == None
+        return self.target_index is None
 
     def uniform_state_entries_f(self):
         """If the state entries are not uniform, then recursion must
@@ -325,15 +325,15 @@ class TemplateState(state_machine.State):
                              the template. All states of a template must
                              be equivalent, so any of them can do.
 
-                             If == None, then it means that state entries
+                             If is None, then it means that state entries
                              differ and there is no representive state.
         """
         assert isinstance(Combi, templates.TemplateCombination)
-        assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState == None
+        assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState is None
         assert type(StateIndex) == long
 
         # (0) Components required to be a 'State'
-        if RepresentiveState != None:
+        if RepresentiveState is not None:
             self.__uniform_state_entries_f = True
             core        = deepcopy(RepresentiveState.core())
             origin_list = deepcopy(RepresentiveState.origins())
@@ -371,7 +371,7 @@ def __transition_target_data_structures(TheTemplate, SMD):
     def __array_to_code(Array, ComputedGotoF=False):
         txt = ["{ "]
         for index in Array:
-            if index != None: elm = "QUEX_LABEL(%i)" % get_address("$entry", index, U=True, R=True)
+            if index is not None: elm = "QUEX_LABEL(%i)" % get_address("$entry", index, U=True, R=True)
             else:             elm = "QUEX_LABEL(%i)" % get_address("$drop-out", template_index, U=True, R=True)
             txt.append(elm + ", ")
         txt.append("}")

@@ -13,12 +13,12 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     """
     assert Mode.__class__.__name__  == "Mode"
     assert type(SafePatternStr)     == str
-    assert PatternStateMachine      == None or PatternStateMachine.__class__.__name__ == "StateMachine" 
+    assert PatternStateMachine      is None or PatternStateMachine.__class__.__name__ == "StateMachine" 
     assert type(Default_ActionF)    == bool
     assert type(EOF_ActionF)        == bool
     # We assume that any state machine presented here has been propperly created
     # and thus contains some side information about newline number, character number etc.
-    assert PatternStateMachine      == None or PatternStateMachine.side_info != None, \
+    assert PatternStateMachine      is None or PatternStateMachine.side_info is not None, \
            repr(PatternStateMachine)
 
     if type(CodeFragment_or_CodeFragments) == list:
@@ -87,7 +87,7 @@ def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
     if EOF_ActionF:
         return txt
 
-    if PatternStateMachine == None:
+    if PatternStateMachine is None:
         return txt + "    QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n"
 
     newline_n   = PatternStateMachine.side_info.get_newline_n()

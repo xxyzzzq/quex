@@ -22,18 +22,18 @@ class TransitionMap:
        __epsilon_target_index_list: list of target states that are entered via epsilon 
                                     transition.
     """
-    def __init__(self, DB=-1):
-        if DB == -1: self.__db = {}   
-        else:        self.__db = DB
-        self.__epsilon_target_index_list = [] # array.array("l", [])
+    def __init__(self, DB=None, ETIL=None):
+        if DB is None: self.__db = {}   
+        else:          self.__db = DB
+        if ETIL is None: self.__epsilon_target_index_list = [] 
+        else:            self.__epsilon_target_index_list = ETIL 
         ## OPTIMIZATION OPTION: Store the trigger map in a 'cache' variable. This, however,
         ## requires that all possible changes to the database need to annulate the cache value.
         ## self.__DEBUG_trigger_map = None
 
     def clone(self):
-        clone = TransitionMap(dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]))
-        clone.__epsilon_target_index_list = list(self.__epsilon_target_index_list)
-        return clone
+        return TransitionMap(DB = dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]),
+                             ETIL = list(self.__epsilon_target_index_list))
 
     def clear(self, TriggerMap=-1):
         if TriggerMap != -1: 
@@ -77,10 +77,10 @@ class TransitionMap:
         """Adds a transition according to trigger and target index.
            RETURNS: The target state index (may be created newly).
         """
-        assert type(TargetStateIdx) == long or TargetStateIdx == None
-        assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger == None
+        assert type(TargetStateIdx) == long or TargetStateIdx is None
+        assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger is None
 
-        if Trigger == None: # This is a shorthand to trigger via the remaining triggers
+        if Trigger is None: # This is a shorthand to trigger via the remaining triggers
             Trigger = self.get_trigger_set_union().inverse()
         elif type(Trigger) == long: Trigger = Interval(int(Trigger), int(Trigger+1))
         elif type(Trigger) == int:  Trigger = Interval(Trigger, Trigger+1)
@@ -246,9 +246,9 @@ class TransitionMap:
 
            The intervals are sorted and non-overlapping (use this function only for DFA).
 
-           A drop out on 'interval_i' is represented by 'target_i' == None.
+           A drop out on 'interval_i' is represented by 'target_i' is None.
         """
-        ## OPT: if self.__DEBUG_trigger_map != None: return self.__DEBUG_trigger_map
+        ## OPT: if self.__DEBUG_trigger_map is not None: return self.__DEBUG_trigger_map
         # At this point only DFAs shall be considered. Thus there cannot be any epsilon
         # target transitions.
         assert len(self.__epsilon_target_index_list) == 0, \
@@ -334,7 +334,7 @@ class TransitionMap:
         for target_state_index, trigger_set in sorted_transitions:
             if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
             else:                trigger_str = trigger_set.get_string(Option)
-            if StateIndexMap == None: target_str = "%05i" % target_state_index
+            if StateIndexMap is None: target_str = "%05i" % target_state_index
             else:                     target_str = "%05i" % StateIndexMap[target_state_index]
                 
             msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
@@ -363,13 +363,13 @@ class TransitionMap:
         for target_state_index, trigger_set in sorted_transitions:
             if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
             else:                trigger_str = trigger_set.get_string(Option)
-            if StateIndexMap == None: target_str  = "%i" % target_state_index
+            if StateIndexMap is None: target_str  = "%i" % target_state_index
             else:                     target_str  = "%i" % StateIndexMap[target_state_index]
             msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
 
         # epsilon transitions
         for ti in self.__epsilon_target_index_list:
-            if StateIndexMap == None: target_str = "%i" % int(ti) 
+            if StateIndexMap is None: target_str = "%i" % int(ti) 
             else:                     target_str = "%i" % int(StateIndexMap[ti]) 
             msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
 
@@ -390,7 +390,7 @@ class TransitionMap:
         for i in range(len(self.__epsilon_target_index_list)):
             target_idx     = self.__epsilon_target_index_list[i] 
             new_idx = ReplacementDict.get(target_idx)
-            if new_idx == None: continue
+            if new_idx is None: continue
             self.__epsilon_target_index_list[i] = new_idx
 
     def replace_target_index(self, Before, After):
@@ -423,12 +423,12 @@ class TransitionMap:
 
         # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
         # code points below 0.
-        assert trigger_map[0][1] == None
+        assert trigger_map[0][1] is None
         assert trigger_map[0][0].begin == - sys.maxint
 
         # The first interval mentioned after that must not point to 'drop out' since
         # the trigger map must collect the same targets into one single interval.
-        assert trigger_map[1][1] != None
+        assert trigger_map[1][1] is not None
 
         non_drop_out_target = trigger_map[1][1]
         self.add_transition(trigger_map[0][0], non_drop_out_target)
@@ -436,7 +436,7 @@ class TransitionMap:
         # NOTE: Here we know that len(trigger_map) >= 2
         for trigger_set, target in trigger_map[2:]:
 
-            if target == None: target = non_drop_out_target
+            if target is None: target = non_drop_out_target
             else:              non_drop_out_target = target
 
             self.add_transition(trigger_set, target)
@@ -467,7 +467,7 @@ class TransitionMap:
 
     def has_trigger(self, CharCode):
         assert type(CharCode) == int
-        if self.get_resulting_target_state_index(CharCode) == None: return False
+        if self.get_resulting_target_state_index(CharCode) is None: return False
         else:                                                       return True
 
     def has_target(self, TargetState):

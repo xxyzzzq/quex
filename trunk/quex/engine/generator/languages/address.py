@@ -37,7 +37,7 @@ class AddressDB:
 
         # If the thing is known, return its id immediately
         entry = self.__db.get(NameOrTerminalID)
-        if entry != None: return entry
+        if entry is not None: return entry
 
         # Generate unique id for the label: Use unique state index
         entry = index.get()
@@ -167,7 +167,7 @@ class Address:
         """
         self.label = get_label(LabelType, LabelTypeArg)
 
-        if   Code == None:       self.code = [ self.label, ":\n" ]
+        if   Code is None:       self.code = [ self.label, ":\n" ]
         elif type(Code) == list: self.code = Code
         else:                    self.code = [ Code ]
 

@@ -122,7 +122,7 @@ token_id_implicit_list = []
 #                           token before further analyzsis happens. For this,
 #                           the engine needs to know how to read and write the
 #                           repetition number in the token itself.
-# If the 'token_repetition_token_id_list' == None, then the token repetition feature
+# If the 'token_repetition_token_id_list' is None, then the token repetition feature
 # is disabled. Otherwise, token repetition in 'token-receiving.i' is enabled
 # and the token id that can be repeated is 'token_repetition_token_id'.
 #-----------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ def requires_indentation_count(ModeDB):
            or mode.has_code_fragment_list("on_dedent"):
             return True
 
-        if mode.options["indentation"] != None:
+        if mode.options["indentation"] is not None:
             assert mode.options["indentation"].__class__.__name__ == "IndentationSetup"
             return True
 

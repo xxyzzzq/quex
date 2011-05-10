@@ -4,17 +4,17 @@ db={}
 
 def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
     """
-        (1) StateIdx != None
+        (1) StateIdx is not None
             jump label for state machine state entry    
-        (2) StateIdx == None:  terminal state
-            (1a) SuccessfulOriginalStateMachineID == None: not acceptance terminal state
+        (2) StateIdx is None:  terminal state
+            (1a) SuccessfulOriginalStateMachineID is None: not acceptance terminal state
             (1b) else: acceptance terminal state
     """
     def nice(SM_ID): return repr(SM_ID).replace("L", "")
 
-    if StateIdx != None: 
+    if StateIdx is not None: 
         return "QUEX_LABEL_%s_ENTRY_%s" % (StateMachineName, nice(StateIdx))
-    elif SuccessfulOriginalStateMachineID == None:
+    elif SuccessfulOriginalStateMachineID is None:
         return "QUEX_LABEL_%s_TERMINAL" % StateMachineName
     else:       
         return "QUEX_LABEL_%s_TERMINAL_%s" % (StateMachineName, nice(SuccessfulOriginalStateMachineID))
@@ -26,7 +26,7 @@ def __cpp_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalSt
     return "goto %s;" % get_label(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID)
          
 def __cpp_acceptance_info(SuccessfulOriginalStateMachineID, LanguageDB):
-    if SuccessfulOriginalStateMachineID != None:
+    if SuccessfulOriginalStateMachineID is not None:
         txt =  "last_acceptance = %s;\n" % SuccessfulOriginalStateMachineID
         txt += LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n"
     else:

@@ -109,7 +109,7 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state, VisitList=[]):
     # If there is no subsequent path in SM0 or SM1, 
     # then we are at a leaf of the tree search. No
     # path to acceptance in SM0 lies in SM1.
-    if sm0_transition_list == [] or sm1_transition_list == []:
+    if len(sm0_transition_list) == 0 or len(sm1_transition_list) == 0:
         return False
 
     for sm0_target_state_index, sm0_trigger_set in sm0_transition_list:
@@ -292,7 +292,7 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
 
     # If there is no subsequent path in SM0 or SM1, then we are at a leaf of
     # the tree search. No path to acceptance in SM0 lies in SM1.
-    if sm0_transition_list == [] or sm1_transition_list == []: return 
+    if len(sm0_transition_list) == 0 or len(sm1_transition_list) == 0: return 
 
     for sm0_target_state_index, sm0_trigger_set in sm0_transition_list:
         for sm1_target_state_index, sm1_trigger_set in sm1_transition_list:

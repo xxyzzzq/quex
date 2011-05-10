@@ -108,7 +108,7 @@ class Generator(GeneratorBase):
 
         if len(self.pre_context_sm_list) == 0: return []
 
-        assert self.pre_context_sm.get_orphaned_state_index_list() == []
+        assert len(self.pre_context_sm.get_orphaned_state_index_list()) == 0
 
         dsm = StateMachineDecorator(self.pre_context_sm, 
                                     self.state_machine_name, 
@@ -135,7 +135,7 @@ class Generator(GeneratorBase):
         return txt
 
     def __code_main_state_machine(self, DSM):
-        assert self.sm.get_orphaned_state_index_list() == []
+        assert len(self.sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = self.language_db 
         txt        = []
@@ -175,7 +175,7 @@ class Generator(GeneratorBase):
         return result
 
     def __code_backward_input_position_detection_core(self, sm):
-        assert sm.get_orphaned_state_index_list() == []
+        assert len(sm.get_orphaned_state_index_list()) == 0
         
         BIPD_ID = sm.get_id()
 

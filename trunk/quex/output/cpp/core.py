@@ -13,7 +13,7 @@ import quex.blackboard  as     blackboard
 from   quex.input.setup import setup as Setup
 
 def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
-    assert blackboard.token_type_definition != None
+    assert blackboard.token_type_definition is not None
 
     header_engine_txt, code_engine_txt = write_engine_header(ModeDB)
     header_configuration_txt           = write_configuration_header(ModeDB, 
@@ -263,13 +263,13 @@ def __get_mode_init_call(mode):
     if mode.options["inheritable"] == "only": 
         analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
 
-    if mode.get_code_fragment_list("on_entry") == []:
+    if len(mode.get_code_fragment_list("on_entry")) == 0:
         on_entry = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if mode.get_code_fragment_list("on_exit") == []:
+    if len(mode.get_code_fragment_list("on_exit")) == 0:
         on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
 
-    if mode.get_code_fragment_list("on_indentation") == []:
+    if len(mode.get_code_fragment_list("on_indentation")) == 0:
         on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
 
     txt = blue_print(quex_mode_init_call_str,

@@ -47,7 +47,7 @@ class IndentationSetup:
                           bad.file_name, bad.line_n)
 
 
-        if self.newline_state_machine.get() == None:
+        if self.newline_state_machine.get() is None:
             sm   = StateMachine()
             end_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
             mid_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), AcceptanceF=False)
@@ -61,15 +61,15 @@ class IndentationSetup:
         return self.__containing_mode_name
 
     def __error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
-        """If Key != None, than 'Before' is a database."""
+        """If Key is not None, than 'Before' is a database."""
 
-        if Name in ["newline", "suppressor"] and Before.get() == None: return
+        if Name in ["newline", "suppressor"] and Before.get() is None: return
 
-        if Key == None:
+        if Key is None:
             if Before.get().is_empty(): return
             error_msg("'" + Before.name + "' has been defined before;", FH, DontExitF=True, WarningF=False)
             error_msg("at this place.", Before.file_name, Before.line_n)
-        if Key != None:
+        if Key is not None:
             if Before.has_key(Key) == False: return
             error_msg("'%s' has been defined before for %i;" % (Name, Key), FH, DontExitF=True, WarningF=False)
             error_msg("at this place.", Before[Key].file_name, Before[Key].line_n)
@@ -101,7 +101,7 @@ class IndentationSetup:
 
         if Name == "newline":
             assert Setting.__class__ == StateMachine
-            assert Setting != None
+            assert Setting is not None
             candidate = Setting.get_ending_character_set()
         else:
             assert Setting.__class__ == NumberSet
@@ -125,7 +125,7 @@ class IndentationSetup:
                 __error_character_set_intersection(self.bad_character_set)
 
         # 'newline'
-        if Name != "bad" and self.newline_state_machine.get() != None:
+        if Name != "bad" and self.newline_state_machine.get() is not None:
             # The 'bad' character set can very well appear as the end of newline, since it is
             # not used for indentation counting.
             ending_character_set = self.newline_state_machine.get().get_ending_character_set()
@@ -264,12 +264,12 @@ class IndentationSetup:
 
         txt += "Newline:\n"
         sm = self.newline_state_machine.get()
-        if sm == None: txt += "    <none>\n"
+        if sm is None: txt += "    <none>\n"
         else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
 
         txt += "Suppressor:\n"
         sm = self.newline_suppressor_state_machine.get()
-        if sm == None: txt += "    <none>\n"
+        if sm is None: txt += "    <none>\n"
         else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
 
         return txt
@@ -326,7 +326,7 @@ def do(fh):
         skip_whitespace(fh)
         if identifier == "space":
             value = read_integer(fh)
-            if value != None: 
+            if value is not None: 
                 indentation_setup.specify_space(pattern_str, trigger_set, value, fh)
             else:
                 # not a number received, is it an identifier?
@@ -338,7 +338,7 @@ def do(fh):
 
         elif identifier == "grid":
             value = read_integer(fh)
-            if value != None: 
+            if value is not None: 
                 indentation_setup.specify_grid(pattern_str, trigger_set, value, fh)
             else:
                 # not a number received, is it an identifier?

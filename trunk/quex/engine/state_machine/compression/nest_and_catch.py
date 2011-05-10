@@ -196,7 +196,7 @@ def get_private_map_for_child(Child, ParentCM):
 
     def add(private_tm, Target, TriggerSet):
         trigger_set = private_tm.get(Target)
-        if trigger_set == None:
+        if trigger_set is None:
             private_tm[Target] = deepcopy(TriggerSet)
         else:
             trigger_set.unite_with(TriggerSet)
@@ -212,7 +212,7 @@ def get_private_map_for_child(Child, ParentCM):
 
     for child_target, child_trigger in child_tm:
         parent_catch_trigger = ParentCM.has_key(child_target)
-        if parent_catch_trigger == None:
+        if parent_catch_trigger is None:
             # (A) Parent's catch map doesn't even transit to target
             add(private_tm, child_target, child_trigger)
 
@@ -314,9 +314,9 @@ def common_transition_db_get(A, B):
     global common_transition_db
 
     x = common_transition_db.get(A)
-    if x == None: return None
+    if x is None: return None
     y = x.get(B)
-    if y == None: return None
+    if y is None: return None
     return y
 
 def common_transition_db_clear(A, B):
@@ -370,7 +370,7 @@ class Info:
         assert self.__barren.has_key(TargetIndex)
 
         trigger_set = self.__fat.get(TargetIndex)
-        if trigger_set == None: self.__fat[TargetIndex] = self.__barren[TargetIndex]
+        if trigger_set is None: self.__fat[TargetIndex] = self.__barren[TargetIndex]
         else:                   trigger_set.unite_with(self.__barren[TargetIndex])
 
         del self.__barren[TargetIndex]
@@ -379,7 +379,7 @@ class Info:
         """The given wildcards become part of the fat transitions."""
         for target_index, trigger_set in WildcardMap.items():
             fat_trigger_set = self.__fat.get(target_index)
-            if fat_trigger_set == None: self.__fat[target_index] = trigger_set
+            if fat_trigger_set is None: self.__fat[target_index] = trigger_set
             else:                       fat_trigger_set.unite_with(trigger_set)
 
             self.__wildcard_set.subtract(trigger_set)
@@ -470,7 +470,7 @@ def categorize(SM, MaxComparisonN):
                     target_info        = tree_db[target_index]
                     required_wildcards = info.match(target_info)
                     #
-                    if required_wildcards == None:
+                    if required_wildcards is None:
                         # Misfit --> 'fat transition'
                         info.move_to_fat(target_index)
                         transition_change_f = True

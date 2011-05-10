@@ -173,7 +173,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
 def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
                          ConsiderDerivedClassesF=False):
     txt = Indentation
-    if ThoseModes == []:
+    if len(ThoseModes) == 0:
         return Indentation + "return false;"
     
 

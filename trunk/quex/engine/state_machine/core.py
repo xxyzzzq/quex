@@ -23,14 +23,37 @@ class State:
     # Objects of this class are to be used in class StateMachine, where a dictionary maps 
     # from a start state index to a State-object.
 
-    def __init__(self, AcceptanceF=False, StateMachineID=-1L, StateIndex=-1L):
+    ## Little Slower: __slots__ = ('__core', '__origin_list', '__transition_map')
+
+    def __init__(self, AcceptanceF=False, StateMachineID=-1L, StateIndex=-1L, 
+                 AltCore=None, AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
-        self.__core        = StateCoreInfo(StateMachineID, StateIndex, AcceptanceF=AcceptanceF)
-        self.__origin_list = StateOriginList()
+        if AltCore is None:
+            self.__core        = StateCoreInfo(StateMachineID, StateIndex, AcceptanceF=AcceptanceF)
+            self.__origin_list = StateOriginList()
 
-        # normal transitions: trigger, action, target-state-index
-        self.__transition_map = TransitionMap()
+            # normal transitions: trigger, action, target-state-index
+            self.__transition_map = TransitionMap()
+        else:
+            assert AltOriginList is not None
+            assert AltTM is not None
+            self.__core           = AltCore
+            self.__origin_list    = AltOriginList
+            self.__transition_map = AltTM
+
+    def clone(self, ReplacementDictionary=None):
+        """Creates a copy of all transitions, but replaces any state index with the ones 
+           determined in the ReplacementDictionary."""
+        result = State(AltCore       = self.__core.clone(),
+                       AltOriginList = self.__origin_list.clone(),
+                       AltTM         = self.__transition_map.clone())
+
+        # if replacement of indices is desired, than do it
+        if ReplacementDictionary is not None:
+            result.transitions().replace_target_indices(ReplacementDictionary)
+
+        return result
 
     def core(self):
         return self.__core
@@ -94,19 +117,6 @@ class State:
         """
         return self.__transition_map.transform(TrafoInfo)
     
-    def clone(self, ReplacementDictionary=None):
-        """Creates a copy of all transitions, but replaces any state index with the ones 
-           determined in the ReplacementDictionary."""
-        result = State()
-        result.__core           = deepcopy(self.__core)
-        result.__transition_map = self.__transition_map.clone()
-        result.__origin_list    = deepcopy(self.__origin_list)
-        # if replacement of indices is desired, than do it
-        if ReplacementDictionary != None:
-            result.transitions().replace_target_indices(ReplacementDictionary)
-
-        return result
-
     def __repr__(self):
         return self.get_string()
 
@@ -144,7 +154,7 @@ class StateMachineCoreInfo:
     def pre_context_sm(self):                      
         return self.__pre_context_sm
     def pre_context_sm_id(self):
-        if self.__pre_context_sm != None: return self.__pre_context_sm.core().id()
+        if self.__pre_context_sm is not None: return self.__pre_context_sm.core().id()
         else:                             return -1L
     def pre_context_begin_of_line_f(self):         
         return self.__pre_context_begin_of_line_f         
@@ -155,7 +165,7 @@ class StateMachineCoreInfo:
     def post_context_backward_input_position_detector_sm(self): 
         return self.__post_context_backward_input_position_detector_sm
     def post_context_backward_input_position_detector_sm_id(self): 
-        if self.__post_context_backward_input_position_detector_sm != None: 
+        if self.__post_context_backward_input_position_detector_sm is not None: 
             return self.__post_context_backward_input_position_detector_sm.core().id()
         else:
             return -1L
@@ -163,15 +173,15 @@ class StateMachineCoreInfo:
     def has_pre_or_post_context(self):
         return    self.__pre_context_single_character_list \
                or self.__pre_context_single_character_list != [] \
-               or self.__pre_context_sm != None \
+               or self.__pre_context_sm is not None \
                or self.__post_context_id != -1L \
-               or self.__post_context_backward_input_position_detector_sm != None
+               or self.__post_context_backward_input_position_detector_sm is not None
 
     def set_id(self, Value):                                  
         assert type(Value) == long
         self.__id = Value
     def set_pre_context_sm(self, Value):                      
-        assert Value.__class__.__name__ == "StateMachine" or Value == None
+        assert Value.__class__.__name__ == "StateMachine" or Value is None
         self.__pre_context_sm = Value
     def set_pre_context_begin_of_line_f(self, Value=True):         
         assert type(Value) == bool
@@ -183,7 +193,7 @@ class StateMachineCoreInfo:
         assert type(Value) == long
         self.__post_context_id = Value
     def set_post_context_backward_input_position_detector_sm(self, Value): 
-        assert Value.__class__.__name__ == "StateMachine" or Value == None
+        assert Value.__class__.__name__ == "StateMachine" or Value is None
         self.__post_context_backward_input_position_detector_sm = Value
 
 class SideInfo:
@@ -197,7 +207,7 @@ class SideInfo:
         """
         # Value is to be computed by 'character_counter.get_newline_n()'
         # for the core pattern, not for pre-conditions and not for post-conditions.
-        assert self.__newline_n != None, \
+        assert self.__newline_n is not None, \
                "Pattern state machine not constructed by regular_expresion.__construct(...)"
         return self.__newline_n
 
@@ -207,7 +217,7 @@ class SideInfo:
         """
         # Value is to be computed by 'character_counter.get_newline_n()'
         # for the core pattern, not for pre-conditions and not for post-conditions.
-        assert self.__character_n != None, \
+        assert self.__character_n is not None, \
                "Pattern state machine not constructed by regular_expresion.__construct(...)"
         return self.__character_n
 
@@ -216,7 +226,7 @@ class StateMachine:
     def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None):
 
         # print "##state_machine_init"
-        if InitStateIndex == None: self.init_state_index = state_machine_index.get()
+        if InitStateIndex is None: self.init_state_index = state_machine_index.get()
         else:                      self.init_state_index = InitStateIndex
             
         # State Index => State (information about what triggers transition to what target state).
@@ -226,7 +236,7 @@ class StateMachine:
         id = state_machine_index.get_state_machine_id()
 
         # Setup core information
-        if Core != None: 
+        if Core is not None: 
             self.__core = deepcopy(Core)
             self.__core.set_id(id)
         else:            
@@ -439,12 +449,12 @@ class StateMachine:
         ##             if not existing_trigger_set.has_intersection(trigger_set): continue
         ##             target_state_set.update(target_epsilon_closure)
         ##             # We want to subtract from the set, so now, the remaining_trigger_set must be present
-        ##             if remaining_trigger_set == None:
+        ##             if remaining_trigger_set is None:
         ##                 remaining_trigger_set = trigger_set.difference(existing_trigger_set)
         ##             else:
         ##                 remaining_trigger_set.subtract(existing_trigger_set)
         ##         
-        ##         if remaining_trigger_set == None:
+        ##         if remaining_trigger_set is None:
         ##             combination_list.append([set(target_epsilon_closure), trigger_set])
         ##             
         ##         elif not remaining_trigger_set.is_empty():
@@ -476,7 +486,7 @@ class StateMachine:
         ## DEBUG_print_history(history)
 
         # (*) build the elementary subset list 
-        combinations = {}                             # use dictionary for uniqueness
+        combinations           = {}          # use dictionary for uniqueness
         current_interval_begin = None
         current_target_indices = {}          # use dictionary for uniqueness
         current_target_epsilon_closure = []
@@ -485,16 +495,16 @@ class StateMachine:
             #    (only build interval when current begin is there, 
             #     when the interval size is not zero, and
             #     when the epsilon closure of target states is not empty)                   
-            if current_interval_begin != None and \
+            if current_interval_begin is not None and \
                current_interval_begin != item.position and \
-               current_target_indices.keys() != []:
+               len(current_target_indices) != 0:
 
                 interval = Interval(current_interval_begin, item.position)
 
                 current_target_epsilon_closure.sort()             
                 key_str  = repr(current_target_epsilon_closure)
                 combination = combinations.get(key_str)
-                if combination == None:
+                if combination is None:
                     combinations[key_str] = (current_target_epsilon_closure, \
                                              NumberSet(interval, ArgumentIsYoursF=True))
                 else:
@@ -517,7 +527,7 @@ class StateMachine:
     
             # -- re-compute the epsilon closure of the target states
             current_target_epsilon_closure = \
-                self.get_epsilon_closure_of_state_set(current_target_indices.keys(),
+                self.get_epsilon_closure_of_state_set(current_target_indices.iterkeys(),
                                                       epsilon_closure_db)
             # -- set the begin of interval to come
             current_interval_begin = item.position                      
@@ -562,7 +572,7 @@ class StateMachine:
         """
         #__________________________________________________________________________________________
         # TODO: See th above comment and think about it.
-        assert     self.__core.pre_context_sm() == None \
+        assert     self.__core.pre_context_sm() is None \
                and not self.core().pre_context_begin_of_line_f(), \
                "pre-conditioned state machines cannot be inverted via 'get_inverse()'"
 
@@ -575,7 +585,7 @@ class StateMachine:
 
         for state_index, state in self.states.items():
             for target_state_index, trigger_set in state.transitions().get_map().items():
-                result.states[target_state_index].add_transition(deepcopy(trigger_set), state_index)
+                result.states[target_state_index].add_transition(trigger_set.clone(), state_index)
 
             for target_state_index in state.transitions().get_epsilon_target_state_index_list():
                 result.states[target_state_index].transitions().add_epsilon_target_state(state_index)
@@ -638,7 +648,7 @@ class StateMachine:
         result = None
         for state_index, state in self.states.items():
             if state.transitions().has_target(TargetStateIndex):
-                if result == None: result = state_index
+                if result is None: result = state_index
                 else:              return None           # More than one state trigger to target
         return result
 
@@ -655,10 +665,10 @@ class StateMachine:
         """
         assert len(StateIndexList) != 0
         prototype = self.states.get(StateIndexList[0])
-        assert prototype != None
+        assert prototype is not None
         for state_index in StateIndexList[1:]:
             state = self.states.get(state_index)
-            assert state != None
+            assert state is not None
             if not prototype.is_equivalent(state):
                 return False
         return True
@@ -711,7 +721,7 @@ class StateMachine:
         return self.init_state_index
 
     def create_new_state(self, AcceptanceF=False, StateIdx=None):
-        if StateIdx == None:
+        if StateIdx is None:
             new_state_index = state_machine_index.get()
         else:
             new_state_index = StateIdx
@@ -731,11 +741,11 @@ class StateMachine:
         assert type(StartStateIdx) == long
         # NOTE: The Transition Constructor is very tolerant, so no tests on TriggerSet()
         #       assert TriggerSet.__class__.__name__ == "NumberSet"
-        assert type(TargetStateIdx) == long or TargetStateIdx == None
+        assert type(TargetStateIdx) == long or TargetStateIdx is None
         assert type(AcceptanceF) == bool
 
         # If target state is undefined (None) then a new one has to be created
-        if TargetStateIdx == None:                       TargetStateIdx = state_machine_index.get()
+        if TargetStateIdx is None:                       TargetStateIdx = state_machine_index.get()
         if self.states.has_key(StartStateIdx) == False:  self.states[StartStateIdx]  = State()        
         if self.states.has_key(TargetStateIdx) == False: self.states[TargetStateIdx] = State()
         if AcceptanceF:                                  self.states[TargetStateIdx].set_acceptance(True)
@@ -745,12 +755,12 @@ class StateMachine:
         return TargetStateIdx
             
     def add_epsilon_transition(self, StartStateIdx, TargetStateIdx=None, RaiseAcceptanceF=False):
-        assert TargetStateIdx == None or type(TargetStateIdx) == long
+        assert TargetStateIdx is None or type(TargetStateIdx) == long
 
         # create new state if index does not exist
         if not self.states.has_key(StartStateIdx):
             self.states[StartStateIdx] = State()
-        if TargetStateIdx == None:
+        if TargetStateIdx is None:
             TargetStateIdx = self.create_new_state(AcceptanceF=RaiseAcceptanceF)
         elif not self.states.has_key(TargetStateIdx):
             self.states[TargetStateIdx] = State()
@@ -813,7 +823,7 @@ class StateMachine:
         for state in self.states.values():
             if state.transform(TrafoInfo) == False: return False
 
-        if self.__core.pre_context_sm() != None:
+        if self.__core.pre_context_sm() is not None:
             for state in self.__core.pre_context_sm().values():
                 if state.transform(TrafoInfo) == False: return False
 
@@ -897,7 +907,7 @@ class StateMachine:
             state           = self.states[state_i]
             msg += "%05i" % printed_state_i + state.get_string(index_map, Option)
             
-        if self.__core.pre_context_sm() != None:
+        if self.__core.pre_context_sm() is not None:
             msg += "pre-condition inverted = "
             msg += repr(self.core().pre_context_sm())           
 

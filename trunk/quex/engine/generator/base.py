@@ -55,7 +55,7 @@ class GeneratorBase:
 
             # -- collect all pre-conditions and make one single state machine out of it
             pre_sm = sm.core().pre_context_sm()
-            if pre_sm != None:
+            if pre_sm is not None:
                 self.pre_context_sm_list.append(pre_sm)
                 self.pre_context_sm_id_list.append(pre_sm.get_id())
                 
@@ -74,7 +74,7 @@ class GeneratorBase:
         return get_combined_state_machine(self.state_machine_list)
 
     def __create_pre_context_state_machine(self):
-        if self.pre_context_sm_list == []: return None
+        if len(self.pre_context_sm_list) == 0: return None
 
         # -- add empty actions for the pre-condition terminal states
         for pre_sm in self.pre_context_sm_list:
@@ -90,7 +90,7 @@ class GeneratorBase:
         papc_sm_list = [] 
         for sm in self.state_machine_list:
             papc_sm = sm.core().post_context_backward_input_position_detector_sm()
-            if sm.core().post_context_backward_input_position_detector_sm() == None: continue
+            if sm.core().post_context_backward_input_position_detector_sm() is None: continue
             papc_sm_list.append(papc_sm)
             # -- code generation 'looks' for origins, so mark them.
             papc_sm.mark_state_origins()
@@ -121,7 +121,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
 
     def __check_on_orphan_states(Place, sm):
         orphan_state_list = sm.get_orphaned_state_index_list()
-        if orphan_state_list == []: return
+        if len(orphan_state_list) == 0: return
         error_msg("After '%s'" % Place + "\n" + \
                   "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \

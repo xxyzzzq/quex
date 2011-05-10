@@ -51,7 +51,7 @@ def special_character_set_db():
     """This is an 'access' function. It defines the dictionary only if it is required."""
     global __special_character_set_db
 
-    if __special_character_set_db == None:
+    if __special_character_set_db is None:
         __special_character_set_db = {
             # The closing ']' is to trigger the end of the traditional character set
             "alnum":  traditional_character_set.do_string("a-zA-Z0-9]"),
@@ -72,7 +72,7 @@ def special_character_set_db():
 def do(stream, PatternDict):
     trigger_set = snap_set_expression(stream, PatternDict)
 
-    if trigger_set == None: 
+    if trigger_set is None: 
         raise RegularExpressionException("Regular Expression: character_set_expression called for something\n" + \
                                          "that does not start with '[:', '[' or '\\P'")
     if trigger_set.is_empty():
@@ -92,7 +92,7 @@ def snap_set_expression(stream, PatternDict):
     __debug_entry("set_expression", stream)
 
     result = snap_property_set(stream)
-    if result != None: return result
+    if result is not None: return result
 
     x = stream.read(2)
     if   x == "\\C":
@@ -210,7 +210,7 @@ def snap_set_list(stream, set_operation_name, PatternDict):
     while 1 + 1 == 2:
         skip_whitespace(stream)
         result = snap_set_term(stream, PatternDict)
-        if result == None: 
+        if result is None: 
             raise RegularExpressionException("Missing set expression list after '%s' operation." % set_operation_name)
         set_list.append(result)
         skip_whitespace(stream)

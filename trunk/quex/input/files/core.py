@@ -123,7 +123,7 @@ def parse_section(fh):
                           "the file %s to contain a manually written token class." % repr(Setup.token_class_file),
                           fh)
        
-            if blackboard.token_type_definition == None:
+            if blackboard.token_type_definition is None:
                 blackboard.token_type_definition = token_type.parse(fh)
                 return
 
@@ -140,7 +140,7 @@ def parse_section(fh):
         elif word == "mode":
             # When the first mode is parsed then a token_type definition must be 
             # present. If not, the default token type definition is considered.
-            if blackboard.token_type_definition == None:
+            if blackboard.token_type_definition is None:
                 sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
                                           + Setup.language_db["$code_base"] 
                                           + Setup.language_db["$token-default-file"])
@@ -255,7 +255,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
         if check(fh, "="):
             skip_whitespace(fh)
             numeric_value = read_integer(fh)
-            if numeric_value == None:
+            if numeric_value is None:
                 error_msg("Missing number after '=' for token identifier '%s'." % candidate, fh)
 
         if check(fh, ";") == False:

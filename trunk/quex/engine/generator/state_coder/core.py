@@ -7,8 +7,6 @@ import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.engine.generator.state_coder.drop_out         as drop_out
 import quex.engine.generator.state_coder.input_block      as input_block
 from   quex.input.setup                                   import setup as Setup
-from   copy import deepcopy
-
 
 def do(state, StateIdx, SMD=False):
     """Produces code for all state transitions. Programming language is determined
@@ -26,7 +24,7 @@ def do(state, StateIdx, SMD=False):
     # (*) Dead End States 
     #     i.e. states with no further transitions.
     dead_end_state_info = SMD.dead_end_state_db().get(StateIdx)
-    if dead_end_state_info != None:
+    if dead_end_state_info is not None:
         state_stub = __dead_end_state_stub(dead_end_state_info, SMD)
         # Some states do not need 'stubs' to terminal since they are straight
         # forward transitions to the terminal.

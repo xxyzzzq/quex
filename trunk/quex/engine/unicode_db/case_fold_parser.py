@@ -33,7 +33,7 @@ def __init():
     global db_F
     global db_T
 
-    if db_CS != None: return
+    if db_CS is not None: return
 
     db_CS = DB()
     db_F  = DB()

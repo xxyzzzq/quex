@@ -39,7 +39,7 @@ def parse_character_string(Txt_or_File, PatternStringF=False):
         state_machine = snap_character_string.do(sh)
         state_machine = regex.__clean_and_validate(state_machine, AllowNothingIsNecessaryF=False, fh=sh)
 
-        if state_machine == None:
+        if state_machine is None:
             error_msg("No valid regular character string expression detected.", sh_ref)
 
     except RegularExpressionException, x:
@@ -59,7 +59,7 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
         # -- parse regular expression, build state machine
         character_set = charset_expression.snap_set_expression(sh, blackboard.shorthand_db)
 
-        if character_set == None:
+        if character_set is None:
             error_msg("No valid regular character set expression detected.", sh_ref)
 
         # -- character set is not supposed to contain buffer limit code
@@ -88,7 +88,7 @@ def __prepare_text_or_file_stream(Txt_or_File):
     return sh, sh_ref, sh.tell()
 
 def __post_process(fh, StartPosition, object, ReturnRE_StringF):
-    assert    object == None                   \
+    assert    object is None                   \
            or isinstance(object, StateMachine) \
            or isinstance(object, NumberSet)
 
@@ -103,7 +103,7 @@ def __post_process(fh, StartPosition, object, ReturnRE_StringF):
             fh.seek(-1, 1)
 
     # (*) error in regular expression?
-    if object == None:
+    if object is None:
         error_msg("No valid regular expression detected, found '%s'." % regular_expression, fh)
 
     # NOT: Do not transform here, since transformation might happen twice when patterns

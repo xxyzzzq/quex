@@ -21,36 +21,35 @@ from   quex.engine.misc.file_in                       import error_msg
 import sys
 import quex.engine.utf8 as utf8
 
-class Interval:
+class Interval(object):
     """Representing an interval with a minimum and a maximum border. Implements
     basic operations on intervals: union, intersection, and difference.
     """
-    ## was much slower: __slots__ = ('begin', 'end')
-    ## may be caused by some deepcopy
+    __slots__ = ('begin', 'end')
 
     def __init__(self, Begin=None, End=None):
         """NOTE: Begin = End signifies **empty** interval.
 
-        Begin == None and End == None   => Empty Interval
+        Begin is None and End is None   => Empty Interval
 
-        Begin == int and End == None    => Interval of size '1' (one number = Begin)
+        Begin == int and End is None    => Interval of size '1' (one number = Begin)
         
-        Begin and End != None           => Interval starting from 'Begin' and the last
+        Begin and End is not None           => Interval starting from 'Begin' and the last
                                            element is 'End-1'
 
         """
 
         # .begin = smallest integer that belogns to interval.
         # .end   = first integer > 'Begin' that does **not belong** to interval
-        if Begin == None and End == None:
+        if Begin is None and End is None:
             # empty interval
             self.begin = 0
             self.end   = 0
         else:
-            assert Begin != None, "Begin can only be 'None', if End is also 'None'!"
+            assert Begin is not None, "Begin can only be 'None', if End is also 'None'!"
 
             self.begin = Begin            
-            if End == None:  
+            if End is None:  
                 if self.begin != sys.maxint: self.end = self.begin + 1
                 else:                        self.end = self.begin
             else:    
@@ -205,11 +204,11 @@ class Interval:
         return txt
 
     def __eq__(self, Other):
-        if Other == None: return False
+        if Other is None: return False
         return self.begin == Other.begin and self.end == Other.end
 
     def __ne__(self, Other):
-        if Other == None: return True
+        if Other is None: return True
         return self.begin != Other.begin or self.end != Other.end
 
     def __lt__(self, Other):
@@ -247,19 +246,22 @@ class Interval:
         elif self.end   > Other.end:   return  1
         return 0
 
-class NumberSet:
+class NumberSet(object):
     """Represents an arbitrary set of numbers. The set is described
        in terms of intervals, i.e. objects of class 'Interval'. This
        class also provides basic operations such as union, intersection,
        and difference.
     """
+
+    __slots__ = ('__intervals')
+
     def __init__(self, Arg = None, ArgumentIsYoursF=False):
         """Arg = list     ==> list of initial intervals
            Arg = Interval ==> initial interval
            Arg = integer  ==> interval consisting of one number
            """
         arg_type = Arg.__class__
-        assert arg_type in  [Interval, NumberSet, int, list] or Arg == None
+        assert arg_type in  [Interval, NumberSet, int, list] or Arg is None
         
         if  arg_type == list:
             if ArgumentIsYoursF:
@@ -418,7 +420,7 @@ class NumberSet:
         toucher_front = i 
         toucher_back  = i
 
-        if remainder_up == None and i != len(self.__intervals) - 1:
+        if remainder_up is None and i != len(self.__intervals) - 1:
             for x in self.__intervals[i+1:]:
                 i += 1
                 # (1) last interval was swallowed complety, current interval has no intersection
@@ -436,8 +438,8 @@ class NumberSet:
         del self.__intervals[toucher_front:toucher_back+1]
 
         # insert the upper remainder first, so that it comes after the lower remainder
-        if remainder_up  != None: self.__intervals.insert(insertion_index, remainder_up)
-        if remainder_low != None: self.__intervals.insert(insertion_index, remainder_low)
+        if remainder_up  is not None: self.__intervals.insert(insertion_index, remainder_up)
+        if remainder_low is not None: self.__intervals.insert(insertion_index, remainder_low)
 
     def contains(self, Number):
         """True  => if Number in NumberSet

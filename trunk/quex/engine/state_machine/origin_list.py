@@ -1,14 +1,14 @@
-from copy import deepcopy
 from quex.engine.state_machine.state_core_info import StateCoreInfo
 
-class StateOriginList:
-    def __init__(self):
-        self.__list = []
+class StateOriginList(object):
+    __slots__ = ('__list')
+
+    def __init__(self, List=None):
+        if List is None: self.__list = []
+        else:            self.__list = List
 
     def clone(self):
-        clone = StateOriginList()
-        clone.__list = [x.clone() for x in self.__list]
-        return clone
+        return StateOriginList([x.clone() for x in self.__list])
 
     def is_equivalent(self, Other):
         # Loop over all origins in list and search for counterparts in Other
@@ -58,10 +58,10 @@ class StateOriginList:
             
         # -- entry checks 
         if X.__class__ == StateCoreInfo:
-            self.__add(deepcopy(X))
+            self.__add(X.clone())
         else:
             # -- create the origin data structure (X = state machine id)
-            if StoreInputPositionF == None: StoreInputPositionF = SelfAcceptanceF
+            if StoreInputPositionF is None: StoreInputPositionF = SelfAcceptanceF
             self.__add(StateCoreInfo(StateMachineID      = X, 
                                      StateIndex          = StateIndex, 
                                      AcceptanceF         = SelfAcceptanceF,
@@ -85,10 +85,10 @@ class StateOriginList:
     def set(self, OriginList, ArgumentIsYoursF=False):
         assert type(OriginList) == list
         if ArgumentIsYoursF: self.__list = OriginList
-        else:                self.__list = deepcopy(OriginList)
+        else:                self.__list = [ x.clone() for x in OriginList ]
 
     def is_empty(self):
-        return self.__list == []
+        return len(self.__list) == 0
 
     def is_from_single_state(self, StateMachineID, StateIdx):
         if len(self.__list) != 1:                             return False
@@ -201,7 +201,8 @@ class StateOriginList:
 
     def get_string(self):
         txt = " <~ "
-        if self.__list == []: return txt + "\n"
+        if len(self.__list) == 0: 
+            return txt + "\n"
         for origin in self.__list:
             txt += repr(origin) + ", "
         txt = (txt[:-2] + "\n").replace("L","")     
