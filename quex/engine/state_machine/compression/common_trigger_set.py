@@ -27,7 +27,7 @@ def do(TM_A, TM_B):
     candidate_db[None] = Candidate(None, trigger_set_drop_out_A, trigger_set_drop_out_B)
     for target_A, trigger_set_A in TM_A.iteritems():
         trigger_set_B = TM_B.get(target_A)
-        if trigger_set_B == None:                             continue
+        if trigger_set_B is None:                             continue
         if not trigger_set_A.has_intersection(trigger_set_B): continue
 
         candidate_db[target_A] = Candidate(target_A, trigger_set_A, trigger_set_B)

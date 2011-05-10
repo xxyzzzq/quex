@@ -42,11 +42,11 @@ def _do(X, TrafoInfo, FH, LineN):
     if X.__class__.__name__ == "StateMachine": 
         assert X.is_DFA_compliant()
 
-    if TrafoInfo == None:
+    if TrafoInfo is None:
         TrafoInfo = Setup.buffer_codec_transformation_info
-        if TrafoInfo == None: return X
+        if TrafoInfo is None: return X
 
-    assert TrafoInfo != None
+    assert TrafoInfo is not None
     if X.__class__.__name__ == "NumberSet": return do_set(X, TrafoInfo, FH, LineN)
 
     if type(TrafoInfo) == str:
@@ -71,7 +71,7 @@ def __get_DFA_compliant_state_machine(SM):
         result = hopcroft.do(result, CreateNewStateMachineF=False)
 
     pre_sm = result.core().pre_context_sm()
-    if pre_sm != None:
+    if pre_sm is not None:
         # If pre-context state machine is not DFA compliant, 
         # then make it compliant.
         if not pre_sm.is_DFA_compliant(): 
@@ -89,7 +89,7 @@ def __split(sm, splitter_module):
     """
     result = splitter_module.do(sm)
     pre_sm = sm.core().pre_context_sm()
-    if pre_sm == None: return result
+    if pre_sm is None: return result
 
     # There is a pre-context, state machine needs to be adapted
     new_pre_sm = splitter_module.do(pre_sm)
@@ -101,13 +101,13 @@ def do_set(number_set, TrafoInfo, FH=-1, LineN=None):
     """RETURNS: True  transformation successful
                 False transformation failed, number set possibly in inconsistent state!
     """
-    assert TrafoInfo != None
+    assert TrafoInfo is not None
     assert TrafoInfo.__class__.__name__ == "NumberSet"
 
     if type(TrafoInfo) == str:
         if TrafoInfo == "utf8-state-split": 
             result = utf8_state_split.do_set(number_set)
-            if result == None:
+            if result is None:
                 error_msg("Operation 'number set transformation' failed 'utf8'.\n" + \
                           "The given number set results in a state sequence not a single transition.", FH, LineN) 
             return result

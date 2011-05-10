@@ -88,7 +88,7 @@ class Analyzer:
 
         # (2) Positioning
         for pre_context_id in pre_context_id_set:
-            for acceptance_trace in ifilter(labmda x: x.get(pre_context_id) == None, TheAcceptanceTraceList:
+            for acceptance_trace in ifilter(labmda x: x.get(pre_context_id) is None, TheAcceptanceTraceList:
                 # If one does not have an entry then positioning is void
                 for pre_context_id in pre_context_id_set:
                     result[pre_context_id].transition_n_since_positioning = None
@@ -108,7 +108,7 @@ class Analyzer:
             if None in entry_list:
                 # One path does not trigger on given pre-context-id
                 common[pre_context_id] = deepcopy(AcceptanceTraceEntry_Void)
-                for that in ifilter(lambda x: x != None, entry_list):
+                for that in ifilter(lambda x: x is not None, entry_list):
                     if that.accepting_state_index == -1: continue
                     self.store_acceptance(that.accepting_state_index, pre_context_id)
                     self.store_position(that.accepting_state_index, pre_context_id)
@@ -120,7 +120,7 @@ class Analyzer:
 
                 # (1) If both maps have an entry, then determine whether the pattern ids 
                 #     and the positioning differs.
-                if pre_context_id == None:
+                if pre_context_id is None:
                     if this.pattern_id != that.pattern_id:
                         # Inform related states about the task to store acceptance
                         self.store_acceptance(that.accepting_state_index, pre_context_id)
@@ -139,7 +139,7 @@ class Analyzer:
         # Even, if there is only one trace: If the backward position is undetermined
         # then it the 'positioning state' must store the input position.
         for x in common.itervalues():
-            if x.transition_n_since_positioning != None: continue
+            if x.transition_n_since_positioning is not None: continue
             if x.post_context_id == -1:                  continue
             if x.positioning_state_index == -1:          continue
             self.__state_db[x.positioning_state_index].entry.set_store_begin_of_post_context_position(x.post_context_id)
@@ -179,7 +179,7 @@ class Analyzer:
 
         trace = Common.values()
         if len(trace) == 1: 
-            ## assert trace[0].pre_context_id == None
+            ## assert trace[0].pre_context_id is None
             state.drop_out.set_sequence(trace)
             return 
 
@@ -228,7 +228,7 @@ class Analyzer:
         result = []
         for x in trace:
             result.append(x)
-            if x.pre_context_id == None: break
+            if x.pre_context_id is None: break
 
         state.drop_out.set_sequence(result)
 
@@ -304,11 +304,11 @@ class ConditionalEntryAction:
             return ""
 
         txt = []
-        if self.pre_context_id != None:
+        if self.pre_context_id is not None:
             if self.pre_context_id == -1:    txt.append("BOF, ")
             else:                            txt.append("PreContext_%i, " % self.pre_context_id)
 
-        if self.pattern_id != None and self.store_acceptance_f:        
+        if self.pattern_id is not None and self.store_acceptance_f:        
             txt.append("StoreAcceptance %i, " % self.pattern_id)
         if self.store_acceptance_position_f: 
             txt.append("Position[Acceptance] = pos, ")
@@ -328,7 +328,7 @@ class Entry:
                 self.__sequence.append(entry)
                 # If an unconditioned acceptance occurred, then no further consideration!
                 # (Rest of acceptance candidates is dominated).
-                if origin.pre_context_id == None: break
+                if origin.pre_context_id is None: break
         else:
             self.__pre_context_fulfilled_set = set([])
             self.__sequence                  = None
@@ -346,7 +346,7 @@ class Entry:
 
     def __repr__(self):
         txt = []
-        if self.__pre_context_fulfilled_set != None:
+        if self.__pre_context_fulfilled_set is not None:
             # (only possible in backward lexical analysis)
             if len(txt): txt.append("          ") 
             for x in self.__pre_context_fulfilled_set:
@@ -365,7 +365,7 @@ class Entry:
         return "".join(txt)
 
     def get_sequence(self):
-        assert self__sequence != None
+        assert self__sequence is not None
         return self.__sequence
 
     def set_store_acceptance_f(self, PreContextID):
@@ -392,7 +392,7 @@ class Entry:
 
                     pre_context_fulfilled[i] = true; 
         """
-        assert self.__pre_context_fulfilled_set != None
+        assert self.__pre_context_fulfilled_set is not None
         return self.__pre_context_fulfilled_set
 
 class DropOut:
@@ -418,7 +418,7 @@ class DropOut:
 
        are of interest.
 
-       Special Case: if .transition_n_since_positioning == None and .post_context_id != -1
+       Special Case: if .transition_n_since_positioning is None and .post_context_id != -1
                      => restore post_context_position[.post_context_id]
     """
     def __init__(self):
@@ -428,7 +428,7 @@ class DropOut:
         assert len(self.__sequence) != 0
 
         def write(txt, X):
-            if   X.transition_n_since_positioning == None: 
+            if   X.transition_n_since_positioning is None: 
                 if X.post_context_id == -1:
                     txt.append("pos = Position[Acceptance]; ")
                 else:
@@ -436,7 +436,7 @@ class DropOut:
             elif X.transition_n_since_positioning == -1:   txt.append("pos = lexeme_start + 1; ")
             elif X.transition_n_since_positioning == 0:    pass # This state is an acceptance state
             else:                           txt.append("pos -= %i; " % X.transition_n_since_positioning) 
-            if   X.pattern_id == None:      txt.append("goto StoredAcceptance;")
+            if   X.pattern_id is None:      txt.append("goto StoredAcceptance;")
             elif X.pattern_id == -1:        txt.append("goto Failure;")
             else:                           txt.append("goto Pattern%i;" % X.pattern_id)
 
@@ -444,7 +444,7 @@ class DropOut:
         L = len(self.__sequence)
         for i, x in enumerate(self.__sequence):
             if len(txt) != 0: txt.append("             ")
-            if x.pre_context_id == None: 
+            if x.pre_context_id is None: 
                 write(txt, x)
             else: 
                 txt.append("if pre_context_%i: " % x.pre_context_id)

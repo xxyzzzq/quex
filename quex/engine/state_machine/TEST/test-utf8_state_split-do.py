@@ -58,8 +58,8 @@ def check_negative(SM, ImpossibleIntervals):
             s_idx = result.init_state_index
             for byte in utf8_seq:
                 s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(byte)
-                if s_idx == None: break
-            if s_idx == None: continue
+                if s_idx is None: break
+            if s_idx is None: continue
 
             # An acceptance state cannot be reached by a unicode value in ImpossibleIntervals
             for origin in result.states[s_idx].origins():

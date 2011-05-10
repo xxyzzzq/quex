@@ -65,7 +65,7 @@ UserCodeFragment_OpenLinePragma = {
 class UserCodeFragment(CodeFragment):
     def __init__(self, Code, Filename, LineN, LanguageDB=None):
         assert type(Code)       in [str, unicode]
-        assert type(LanguageDB) == dict or LanguageDB == None
+        assert type(LanguageDB) == dict or LanguageDB is None
         assert type(Filename)   in [str, unicode]
         assert type(LineN)      in [int, long, float]
 
@@ -73,7 +73,7 @@ class UserCodeFragment(CodeFragment):
         self.line_n   = LineN
 
         require_terminating_zero_f = False
-        if LanguageDB != None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, Code):
+        if LanguageDB is not None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, Code):
             require_terminating_zero_f = True
 
         CodeFragment.__init__(self, Code, require_terminating_zero_f)
@@ -155,11 +155,11 @@ class GeneratedCode(UserCodeFragment):
 class PatternActionInfo:
     def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName="", Comment=""):
 
-        assert Action == None or \
+        assert Action is None or \
                issubclass(Action.__class__, CodeFragment) or \
                type(Action) in [str, unicode]
         assert PatternStateMachine.__class__.__name__ == "StateMachine" \
-               or PatternStateMachine == None
+               or PatternStateMachine is None
 
 
         self.__pattern_state_machine = PatternStateMachine
@@ -177,7 +177,7 @@ class PatternActionInfo:
         return self.__action
 
     def set_action(self, Action):
-        assert Action == None or \
+        assert Action is None or \
                issubclass(Action.__class__, CodeFragment) or \
                type(Action) in [str, unicode]
         self.__action = Action
@@ -222,7 +222,7 @@ class LocalizedParameter:
             self.line_n    = get_current_line_info_number(FH)
 
     def set(self, Value, fh):
-        if self.__value != None:
+        if self.__value is not None:
             error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
             error_msg("previous definition has been here.\n", self.file_name, self.line_n)
                       
@@ -231,6 +231,6 @@ class LocalizedParameter:
         self.line_n    = get_current_line_info_number(fh)
 
     def get(self):
-        if self.__value != None: return self.__value
+        if self.__value is not None: return self.__value
         return self.__default
 

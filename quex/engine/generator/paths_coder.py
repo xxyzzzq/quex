@@ -251,15 +251,15 @@ class PathWalkerState(state_machine.State):
                              the path. If all states of a path are
                              equivalent, so any of them can do.
 
-                             If == None, then it means that state entries
+                             If is None, then it means that state entries
                              differ and there is no representive state.
         """
         assert type(PathList) == list
-        assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState == None
+        assert isinstance(RepresentiveState, state_machine.State) or RepresentiveState is None
         assert type(StateIndex) == long
 
         # (0) Components required to be a 'State'
-        if RepresentiveState != None:
+        if RepresentiveState is not None:
             self.__uniform_state_entries_f = True
             core        = deepcopy(RepresentiveState.core())
             origin_list = deepcopy(RepresentiveState.origins())
@@ -374,7 +374,7 @@ def __state_entries(txt, PathWalker, SMD):
             #        on the path.
             # But:
             #   The first state always needs an entry.
-            if prev_state_index != None:
+            if prev_state_index is not None:
                 candidate = sm.get_only_entry_to_state(state_index)
                 if PathWalker.uniform_state_entries_f() and prev_state_index == candidate:
                     prev_state_index = state_index
@@ -552,7 +552,7 @@ def __switch_case_state_router(txt, SMD, PathWalker, StateIndexList=None):
     case_code_list = []
     for path in PathWalker.path_list():
         for info in path.sequence():
-            if StateIndexList == None or info[0] in StateIndexList:
+            if StateIndexList is None or info[0] in StateIndexList:
                 case_code_list.append((memory_index, 
                                        transition.get_transition_to_state(info[0], SMD)))
             memory_index += 1

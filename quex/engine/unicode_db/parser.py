@@ -157,14 +157,14 @@ class PropertyInfo:
            'Value' can be a property value or a property value alias.
            For binary properties 'Value' must be None.
         """
-        assert self.type != "Binary" or Value == None
+        assert self.type != "Binary" or Value is None
 
-        if self.type != "Binary" and Value == None:
+        if self.type != "Binary" and Value is None:
             return "Property '%s' requires a value setting.\n" % self.name + \
                    "Possible Values: " + \
                    self.get_value_list_help()
 
-        if self.code_point_db == None:
+        if self.code_point_db is None:
             self.init_code_point_db()
 
         if self.type == "Binary": 
@@ -179,7 +179,7 @@ class PropertyInfo:
         else:
             # -- WILDCARD MATCH: Results in a list of property values  
             character_set = self.__wildcard_value_match(adapted_value)
-            if character_set == None:
+            if character_set is None:
                 return "Property '%s' cannot have a value or value alias '%s'.\n" % (self.name, Value) + \
                        "Possible Values: " + \
                        self.get_value_list_help()
@@ -270,7 +270,7 @@ class PropertyInfo:
             pass # see first check
 
     def get_value_list_help(self, MaxN=20, OpeningBracket="", ClosingBracket=""):
-        if self.code_point_db == None:
+        if self.code_point_db is None:
             self.init_code_point_db()
 
         the_list = self.code_point_db.keys()
@@ -306,7 +306,7 @@ class PropertyInfo:
         result = NumberSet()
 
         value_list = self.get_wildcard_value_matches(WildCardValue)
-        if value_list == []: 
+        if len(value_list) == 0: 
             return None
 
         for value in value_list:
@@ -333,7 +333,7 @@ class PropertyInfoDB:
             return "<unknown property or alias '%s'>" % PropertyName
 
     def get_property_value_matches(self, PropertyName, Value):
-        assert Value != None
+        assert Value is not None
 
         if self.db == {}: self.init_db()
 
@@ -344,7 +344,7 @@ class PropertyInfoDB:
             return txt
 
         if property.type == "Binary":
-            if Value != None:
+            if Value is not None:
                 return "Binary property '%s' cannot have a value.\n" % PropertyName + \
                        "Received '%s = %s'." % (PropertyName, Value)
 
@@ -369,11 +369,11 @@ class PropertyInfoDB:
             return txt
 
         if property.type == "Binary":
-            if Value != None:
+            if Value is not None:
                 return "Binary property '%s' cannot have a value.\n" % PropertyName + \
                        "Received '%s = %s'." % (PropertyName, Value)
 
-        elif Value == None:
+        elif Value is None:
             return "Non-Binary property '%s' must have a value.\n" % PropertyName + \
                    "Expected something like '%s = Value'.\n" % PropertyName + \
                    "Possible Values: " + \
@@ -506,7 +506,7 @@ class PropertyInfoDB:
         self.db["isc"].code_point_db = iso_comment_db       # ISO_Comment
 
     def map_code_point_to_character_name(self, CodePoint):
-        if self.db["na"].code_point_db == None:
+        if self.db["na"].code_point_db is None:
             self.load_UnicodeData()
         if len(self.__code_point_to_name_db) == 0:
             for key, value in self.db["na"].code_point_db.items():
@@ -532,7 +532,7 @@ class PropertyInfoDB:
                      property.name, " " * (L - len(property.name)),
                      property.type)
             property.init_code_point_db()
-            if property.code_point_db == None: 
+            if property.code_point_db is None: 
                txt += ", " + " " * (Lt - len(property.type)) + "<unsupported>" 
 
             txt += "\n"
@@ -586,7 +586,7 @@ class PropertyInfoDB:
             txt += "%s::\n\n" % property.name
 
             property.init_code_point_db()
-            if   property.code_point_db == None: 
+            if   property.code_point_db is None: 
                 txt += "    (not supported)\n" 
 
             elif property.name in ["Name", "Unicode_1_Name"]:

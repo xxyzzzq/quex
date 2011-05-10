@@ -325,7 +325,7 @@ class CharacterPath:
         ## ?? if self.__skeleton.has_key(TargetIdx): return False        ?? 
         ## ?? Why would it not? (fschaef9: 10y04m11d)
 
-        if self.__wildcard != None: wildcard_plug = None # unused
+        if self.__wildcard is not None: wildcard_plug = None # unused
         else:                       wildcard_plug = -1   # used before
 
         transition_map_key_set = set(TransitionMap.keys())
@@ -343,7 +343,7 @@ class CharacterPath:
 
         for target_idx in delta_set:
             if   target_idx == TargetIdx:    continue # (1.1)
-            elif wildcard_plug != None:                                        return None
+            elif wildcard_plug is not None:                                        return None
             elif not TransitionMap[target_idx].contains_only(self.__wildcard): return None
             wildcard_plug = target_idx                # (1.2)
 
@@ -385,7 +385,7 @@ class CharacterPath:
             if can_plug_to_equal(tm_trigger_set, TriggerCharToTarget, sk_trigger_set):
                 continue
 
-            elif wildcard_plug == None:
+            elif wildcard_plug is None:
                 # (3.2) Can difference between trigger sets be plugged by the wildcard?
                 if can_plug_to_equal(sk_trigger_set, self.__wildcard, tm_trigger_set): 
                     wildcard_plug = target_idx
@@ -402,7 +402,7 @@ class CharacterPath:
             # 'explain' that => skeleton does not fit.
             return None
 
-        if wildcard_plug == None: return -1 # No plugging necessary
+        if wildcard_plug is None: return -1 # No plugging necessary
         return wildcard_plug
 
     def plug_wildcard(self, WildcardPlug):
@@ -435,7 +435,7 @@ class CharacterPath:
         return "".join(["start    = %i;\n" % self.__start_state_index,
                         "path     = %s;\n" % sequence_txt,
                         "skeleton = %s\n"  % skeleton_txt, 
-                        "wildcard = %s;\n" % repr(self.__wildcard != None)])
+                        "wildcard = %s;\n" % repr(self.__wildcard is not None)])
 
     def __len__(self):
         return len(self.__sequence)
@@ -490,7 +490,7 @@ def __find_begin(sm, StateIndex, InitStateIndex):
 
         # Only single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
-        if path_char == None: continue
+        if path_char is None: continue
 
         # A new path begins, find the 'skeleton'.
         # The 'skeleton' is the transition map without the single transition
@@ -519,7 +519,7 @@ def __find_continuation(sm, StateIndex, the_path):
 
         # Only consider single character transitions can be element of a path.
         path_char = trigger_set.get_the_only_element()
-        if path_char == None: continue
+        if path_char is None: continue
 
         # A recursion cannot be covered by a 'path state'. We cannot extract a
         # state that contains recursions and replace it with a skeleton plus a
@@ -528,7 +528,7 @@ def __find_continuation(sm, StateIndex, the_path):
 
         # Does the rest of the transitions fit the 'skeleton'?
         plug = the_path.match_skeleton(transition_map, target_idx, path_char)
-        if plug == None: continue # No possible match
+        if plug is None: continue # No possible match
 
         # Deepcopy is required to completely isolate the transition map that
         # may now be changed by the wildcard plug.

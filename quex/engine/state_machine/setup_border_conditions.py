@@ -54,7 +54,7 @@ def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
         #
         #  A line begins always after '\n' so no check for '\r\n' is necessary.
         #  => DOS_CarriageReturnNewlineF = False
-        if sm.core().pre_context_sm() != None:
+        if sm.core().pre_context_sm() is not None:
             __add_line_border_at_end(sm.core().pre_context_sm(), 
                                      DOS_CarriageReturnNewlineF=False, InverseF=True)
         else:

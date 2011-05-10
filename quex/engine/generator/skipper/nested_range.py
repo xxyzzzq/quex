@@ -149,7 +149,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
-        assert IndentationCounterTerminalID != None
+        assert IndentationCounterTerminalID is not None
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
         goto_after_end_of_skipping_str = "goto %s;" % get_label("$terminal-direct", 

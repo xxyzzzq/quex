@@ -78,7 +78,7 @@ def get_supported_codec_list(IncludeAliasesF=False):
     else:               return __supported_codec_list
 
 def get_supported_language_list(CodecName=None):
-    if CodecName == None:
+    if CodecName is None:
         result = []
         for record in get_codec_list_db():
             for language in record[2]:
@@ -99,7 +99,7 @@ def get_codecs_for_language(Language):
         if codec not in get_supported_codec_list(): continue
         if Language in record[2]: 
             result.append(record[0])
-    if result == []:
+    if len(result) == 0:
         verify_word_in_list(Language, get_supported_language_list(),
                 "No codec found for language '%s'." % Language)
     return result
@@ -129,9 +129,9 @@ def get_codec_transformation_info(Codec=None, FileName=None, FH=-1, LineN=None):
 
        Arguments FH and LineN correspond to the arguments of error_msg.
     """
-    assert Codec != None or FileName != None
+    assert Codec is not None or FileName is not None
 
-    if FileName != None:
+    if FileName is not None:
         file_name = FileName
     else:
         distinct_codec = __get_distinct_codec_name_for_alias(Codec)
@@ -145,15 +145,15 @@ def get_codec_transformation_info(Codec=None, FileName=None, FH=-1, LineN=None):
         while 1 + 1 == 2:
             skip_whitespace(fh)
             source_begin = read_integer(fh)
-            if source_begin == None:
+            if source_begin is None:
                 error_msg("Missing integer (source interval begin) in codec file.", fh)
             skip_whitespace(fh)
             source_size = read_integer(fh)
-            if source_size == None:
+            if source_size is None:
                 error_msg("Missing integer (source interval size) in codec file.", fh)
             skip_whitespace(fh)
             target_begin = read_integer(fh)
-            if target_begin == None:
+            if target_begin is None:
                 error_msg("Missing integer (target interval begin) in codec file.", fh)
 
             source_end = source_begin + source_size
@@ -164,7 +164,7 @@ def get_codec_transformation_info(Codec=None, FileName=None, FH=-1, LineN=None):
     return transformation_list
 
 def get_supported_unicode_character_set(CodecAlias=None, FileName=None, FH=-1, LineN=None):
-    assert CodecAlias != None or FileName != None
+    assert CodecAlias is not None or FileName is not None
 
     mapping_list = get_codec_transformation_info(CodecAlias, FileName, FH, LineN)
     result       = NumberSet()

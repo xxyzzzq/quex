@@ -125,7 +125,7 @@ differences = []
 output_txt  = []
 for number in range(interval_end):
     expected_state_index = state.transitions().get_resulting_target_state_index(number)
-    if expected_state_index == None: expected_state_index = -1
+    if expected_state_index is None: expected_state_index = -1
     actual_state_index = example_func(number)
     try: 
         pass
@@ -133,7 +133,7 @@ for number in range(interval_end):
         for line in function.split("\n"):
             print "ERROR: %s" % line
         sys.exit()
-    if actual_state_index == None: actual_state_index = -1
+    if actual_state_index is None: actual_state_index = -1
     output_txt.append("%i %s %s\n" % (number, repr(actual_state_index), repr(expected_state_index)))
     if actual_state_index != expected_state_index:
         differences.append(number)

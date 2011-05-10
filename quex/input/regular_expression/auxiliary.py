@@ -28,7 +28,7 @@ def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
             open_bracket_n -= 1
 
         elif letter == OpeningDelimiter and not backslash_f: 
-            # NOTE: if OpeningDelimiter == None, then this can never be the case!
+            # NOTE: if OpeningDelimiter is None, then this can never be the case!
             open_bracket_n += 1
 
         # if a backslash would have appeared, we would have 'continue'd (see above)
@@ -112,7 +112,7 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
     else:
         # Get a cloned version of character set
         character_set = reference.get_character_set()
-        if character_set == None:
+        if character_set is None:
             error_msg("Replacement in character set expression must be a character set.\n"
                       "Specifier '%s' relates to a pattern state machine." % pattern_name, stream)
 

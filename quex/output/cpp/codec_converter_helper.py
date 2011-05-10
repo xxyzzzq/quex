@@ -13,7 +13,7 @@ def do():
     if Setup.buffer_codec == "": return
     if Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: return
 
-    assert Setup.buffer_codec_transformation_info != None
+    assert Setup.buffer_codec_transformation_info is not None
 
     txt, txt_i = _do(Setup.buffer_codec_transformation_info, 
                      Setup.buffer_codec)

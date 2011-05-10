@@ -15,7 +15,7 @@ token_type_code_fragment_db = {
 class TokenTypeDescriptorCore:
     """Object used during the generation of the TokenTypeDescriptor."""
     def __init__(self, Core=None):
-        if Core == None:
+        if Core is None:
             self._file_name                = Setup.output_token_class_file
             self._file_name_implementation = Setup.output_token_class_file_implementation
             if Setup.token_class_name.find("::") != -1:
@@ -273,7 +273,7 @@ def parse(fh):
         error_msg("Missing closing '}' at end of token_type definition.", fh);
 
     result = TokenTypeDescriptor(descriptor, fh.name, begin_line_n)
-    if     result.get_member_db().keys() == [] \
+    if     len(result.get_member_db()) == 0 \
        and result.class_name == "Token" \
        and result.token_id_type.__class__.__name__      == "CodeFragment" \
        and result.column_number_type.__class__.__name__ == "CodeFragment" \
@@ -368,7 +368,7 @@ def parse_standard_members(fh, descriptor, already_defined_list):
             fh.seek(position)
             error_msg("End of file reached while parsing token_type 'standard' section.", fh)
 
-        if result == None: return
+        if result is None: return
         type_code_fragment, name = result[0], result[1]
 
         __validate_definition(type_code_fragment, name,
@@ -413,7 +413,7 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
             fh.seek(position)
             error_msg("End of file reached while parsing token_type '%s' subsection." % SectionName, fh)
 
-        if result == None: return db
+        if result is None: return db
 
         # The type_descriptor can be:
         #  -- a UserCodeFragment with a string of the type
@@ -561,7 +561,7 @@ def something_different(fh):
     else:
         skip_whitespace(fh)
         array_element_n = read_integer(fh)
-        if array_element_n == None:
+        if array_element_n is None:
             error_msg("Missing integer after '[' in '%s' definition." % member_name, fh)
 
         skip_whitespace(fh)

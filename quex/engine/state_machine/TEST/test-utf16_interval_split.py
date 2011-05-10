@@ -34,11 +34,11 @@ def test(Begin, End):
     x0, list1 = trafo.get_contigous_intervals(X)
     print "Result:"
     print "   Interval < 0x10000:    ", 
-    if x0 != None: print "%s" % x0.get_string(Option="hex")
+    if x0 is not None: print "%s" % x0.get_string(Option="hex")
     else:          print "None"
     print "   Intervals >= 0x10000:  ",
     
-    if list1 == None: print "None"
+    if list1 is None: print "None"
     else:
         print
         previous_end = list1[0].begin

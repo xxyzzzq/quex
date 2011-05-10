@@ -205,7 +205,7 @@ def do(Data):
     #       -- column number = indentation at the end of the process
 
     end_procedure += "    __QUEX_IF_COUNT_COLUMNS_ADD(me->counter._indentation);\n"
-    if Mode == None or Mode.default_indentation_handler_sufficient():
+    if Mode is None or Mode.default_indentation_handler_sufficient():
         end_procedure += "    QUEX_NAME(on_indentation)(me, me->counter._indentation, reference_p);\n"
     else:
         # Definition of '%s_on_indentation' in mode_classes.py.
@@ -274,7 +274,7 @@ def arrange_trigger_map(trigger_map):
          previous_end = interval.end
 
 def get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
-    if Mode == None: return ""
+    if Mode is None: return ""
     if IndentationSetup.bad_character_set.get().is_empty(): return ""
 
     txt  = "INDENTATION_COUNTER_%i_BAD_CHARACTER:\n" % CounterIdx

@@ -182,7 +182,7 @@ def do(sm, CostCoefficient):
     # build any clusters. TemplateCombinations of states also take part in the race.
     while 1 + 1 == 2:
         i, i_trigger_map_db, k, k_trigger_map_db = trigger_map_db.pop_best_matching_pair()
-        if i == None: break
+        if i is None: break
 
         # Add new element: The combined pair
         new_index = index.get()
@@ -300,7 +300,7 @@ class TriggerMapDB:
         for state_index, state in SM.states.items():
             trigger_map = state.transitions().get_trigger_map()
             # Dead ends, cannot be part of the code generation
-            if trigger_map == []: continue
+            if len(trigger_map) == 0: continue
             self.__db[state_index] = trigger_map
 
         self.__cost_coefficient = float(CostCoefficient)
@@ -554,7 +554,7 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
         if combination not in equivalent_target_list:
             equivalent_target_list.append(combination)
 
-    # if PureStateIndex0 != None and PureStateIndex1 != None: __check = __check_pure_targets
+    # if PureStateIndex0 is not None and PureStateIndex1 is not None: __check = __check_pure_targets
     # else: __check = __check_targets
 
     i = 0 # iterator over interval list 0

@@ -24,7 +24,7 @@ def output_trigger_map(tm, BeforeF):
         fh = sys.stdout
 
     for trigger_interval, target_index in tm:
-        if target_index == None:
+        if target_index is None:
             fh.write(trigger_interval.gnuplot_string(-1) + "\n")
         else:   
             fh.write(trigger_interval.gnuplot_string(target_index) + "\n")

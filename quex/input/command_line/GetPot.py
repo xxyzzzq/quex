@@ -40,7 +40,7 @@ class GetPot:
         # strange things may occur, when somewhere the cursor
         # is set to len(Argv) - 1. Even if the user passes a dangerous
         # [], the case is caught.
-        if Argv == None: Argv = [""]
+        if Argv is None: Argv = [""]
 
         # in case a search for a specific argument failed,
         # it effects the next functions block.
@@ -63,7 +63,7 @@ class GetPot:
         self.__prefix         = ""
         # set up the internal database
 
-        if Filename != None:
+        if Filename is not None:
             Argv = [ Filename ]
             parsed_argv = self.__read_in_file(Filename)
             try:    Argv.extend(parsed_argv)
@@ -71,7 +71,7 @@ class GetPot:
 
         self.argv = self.__parse_argument_vector(Argv, SectionsEnabledF)
             
-        if self.argv == []: self.argv = [""]
+        if len(self.argv) == 0: self.argv = [""]
 
     def __parse_argument_vector(self, argv_, SectionsEnabledF=True):
 
@@ -105,7 +105,7 @@ class GetPot:
             for k in range(len(arg)-1):
                 if arg[k] == '=':
                     v = self.__find_variable(arg[0:k])
-                    if v == None:
+                    if v is None:
                         self.variables.append(GetPot_variable(arg[0:k], arg[k+1:]))
                     else:
                         v.take(arg[k+1:])
@@ -371,7 +371,7 @@ class GetPot:
     def get(self, Idx, Default):
         """Looks if the type of argv[Idx] matches the type of the default argument.
         If it does not, the default argument is returned."""
-        if self[Idx] == None: return Default
+        if self[Idx] is None: return Default
         return self.__convert_to_type(self[Idx], Default)
 
     def size(self):
@@ -391,7 +391,7 @@ class GetPot:
         if self.__prefix == "": return self.__convert_to_type(self.argv[self.cursor], Default)
 
         remain = self.__get_remaining_string(self.argv[self.cursor], self.__prefix)
-        if remain != None: return self.__convert_to_type(remain, Default)
+        if remain is not None: return self.__convert_to_type(remain, Default)
         else:              return Default
 
 
@@ -432,7 +432,7 @@ class GetPot:
     def direct_follow(self, Default, Arg):
         remaining_string = self.__match_starting_string(Arg)
 
-        if remaining_string == None:
+        if remaining_string is None:
             return Default
         self.cursor += 1
         if self.cursor >= len(self.argv): self.cursor = len(self.argv)
@@ -473,7 +473,7 @@ class GetPot:
         must be preceeded with it, e.g. 'pack-options/-cvx'."""
         for arg in self.argv:
             if self.__prefix != "": arg = self.__get_remaining_string(arg, self.__prefix)
-            if arg != None and len(arg) >= 2 and arg[0] == '-' and arg[1] != '-' \
+            if arg is not None and len(arg) >= 2 and arg[0] == '-' and arg[1] != '-' \
                and self.__check_flags(arg, FlagList) == 1: return 1
             
         return 0
@@ -494,7 +494,7 @@ class GetPot:
         no_matches = 0
         for i in range(len(self.argv)):
             remain = self.__get_remaining_string(self.argv[i], self.__prefix)
-            if remain != None:
+            if remain is not None:
                 no_matches += 1
                 if no_matches == Idx:
                     return self.__check_flags(remain, FlagList)
@@ -519,7 +519,7 @@ class GetPot:
         for i in self.__idx_nominus:
             nominus = self.argv[i]
             tmp = self.__get_remaining_string(nominus, self.__prefix)
-            if tmp != None: v_nm.append(tmp)
+            if tmp is not None: v_nm.append(tmp)
         return v_nm
 
     def nominus_size(self):
@@ -537,7 +537,7 @@ class GetPot:
         vars = []
         for v in self.variables:
             tmp = self.__get_remaining_string(v.name, self.__prefix)
-            if tmp != None: vars.append(tmp)
+            if tmp is not None: vars.append(tmp)
         return vars
 
     def get_section_names(self):
@@ -555,7 +555,7 @@ class GetPot:
     def __call__(self, VarName, Default, Idx=-1):
         """Returns 'None' in case variable was not found or type did not match."""
         v = self.__find_variable(VarName)
-        if v == None:
+        if v is None:
             return Default
         if Idx == -1:
             # variable has to be considered as a single value

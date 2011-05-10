@@ -19,7 +19,7 @@ def test_core(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString + "\""
     sm = core.do(TestString, {}, DOS_CarriageReturnNewlineF=True)
-    if sm == None: 
+    if sm is None: 
         print "pattern syntax error"
     else:
         print "state machine\n", sm 

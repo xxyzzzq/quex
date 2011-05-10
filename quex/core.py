@@ -68,7 +68,7 @@ def do():
 
         # accumulate inheritance information for comment
         code = get_code_for_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF) 
-        analyzer_code += code
+        analyzer_code += "".join(code)
 
         if Setup.comment_mode_patterns_f:
             inheritance_info_str += mode.get_documentation()
@@ -110,7 +110,7 @@ def do():
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_header_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
-    # assert blackboard.token_type_definition != None
+    # assert blackboard.token_type_definition is not None
     UserCodeFragment_straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
 
     if Setup.source_package_directory != "":
@@ -153,7 +153,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSuppor
     required_local_variables_db = {}
    
     # -- some modes only define event handlers that are inherited
-    if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
+    if len(Mode.get_pattern_action_pair_list()) == 0: return []
 
     # -- 'end of stream' action
     end_of_stream_action, db = __prepare_end_of_stream_action(Mode, IndentationSupportF)
@@ -179,7 +179,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSuppor
                                  RequiredLocalVariablesDB       = required_local_variables_db, 
                                  SupportBeginOfLineF            = BeginOfLineSupportF)
 
-    return "".join(analyzer_code)
+    return analyzer_code
 
 def __get_indentation_counter_terminal_index(PatterActionPairList):
     """Under some circumstances a terminal code need to jump to the indentation
@@ -265,7 +265,7 @@ def do_plot():
 
 def __get_mode_db(Setup):
     # (0) check basic assumptions
-    if Setup.input_mode_files == []: error_msg("No input files.")
+    if len(Setup.input_mode_files) == 0: error_msg("No input files.")
     
     # (1) input: do the pattern analysis, in case exact counting of newlines is required
     #            (this might speed up the lexer, but nobody might care ...)

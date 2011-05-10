@@ -53,7 +53,7 @@ def __local_variable_definitions(VariableDB):
         for variable in VariableDB.itervalues():
 
             variable_list = result.get(variable.condition)
-            if variable_list == None: 
+            if variable_list is None: 
                 variable_list              = [[], []]
                 result[variable.condition] = variable_list
 
@@ -67,7 +67,7 @@ def __local_variable_definitions(VariableDB):
         variable_init = variable.initial_value
         variable_name = variable.name
 
-        if variable.element_n != None: 
+        if variable.element_n is not None: 
             if variable.element_n != 0:
                 variable_name += "[%s]" % repr(variable.element_n)
                 if variable_type.find("QUEX_TYPE_GOTO_LABEL") != -1: 
@@ -76,7 +76,7 @@ def __local_variable_definitions(VariableDB):
                 variable_type += "*"
                 variable_init  = ["0x0"]
 
-        if variable_init == None: 
+        if variable_init is None: 
             value = ["/* un-initilized */"]
         else:
             if type(variable_init) != list: variable_init = [ variable_init ]
@@ -95,7 +95,7 @@ def __local_variable_definitions(VariableDB):
     for raw_name, variable in sorted(VariableDB.items()):
         if variable.priority_f == False: continue
 
-        if variable.condition != None:
+        if variable.condition is not None:
             if variable.condition_negated_f == False: 
                 txt.append("#   ifdef %s\n"  % variable.condition)
             else:
@@ -103,7 +103,7 @@ def __local_variable_definitions(VariableDB):
 
         __code(txt, variable)
 
-        if variable.condition != None:
+        if variable.condition is not None:
             txt.append("#   endif /* %s */\n" % variable.condition)
 
         del VariableDB[variable.name]
@@ -111,7 +111,7 @@ def __local_variable_definitions(VariableDB):
     grouped_variable_list = __group_by_condition(VariableDB)
     unconditioned_name_set = set([])
     for condition, groups in sorted(grouped_variable_list.iteritems()):
-        if condition != None: continue
+        if condition is not None: continue
         for variable in groups[0]:
             unconditioned_name_set.add(variable.name)
 
@@ -119,7 +119,7 @@ def __local_variable_definitions(VariableDB):
 
         condition_group, negated_condition_group = groups
 
-        if condition == None:
+        if condition is None:
             for variable in condition_group:
                 __code(txt, variable)
         else:
@@ -503,7 +503,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     #        then the input position must be after 'for' because B was not matched.
     #        The right terminal is reached via the terminal router, and the
     #        terminal router also resets the input position to 'last_acceptance_position'.
-    if state_machine.core().post_context_backward_input_position_detector_sm() != None:
+    if state_machine.core().post_context_backward_input_position_detector_sm() is not None:
         # Pseudo Ambiguous Post Contexts:
         # -- require that the end of the core pattern is to be searched! One 
         #    cannot simply restore some stored input position.
@@ -596,8 +596,8 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     on_failure.append(msg)
 
-    if PreConditionIDList == []: precondition_involved_f = "0"
-    else:                        precondition_involved_f = "1"
+    if len(PreConditionIDList) == 0: precondition_involved_f = "0"
+    else:                            precondition_involved_f = "1"
 
     prolog = __terminal_state_prolog  
 

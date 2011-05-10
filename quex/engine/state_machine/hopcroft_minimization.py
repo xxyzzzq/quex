@@ -185,7 +185,7 @@ def create_state_machine(SM, StateSetList):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case a simple copy of the original
     # state machine will do.
-    if filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list) == []:
+    if len(filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list)) == 0:
         return SM.clone()
     
     # Define a mapping from the state set to a new target state index
@@ -235,7 +235,7 @@ def create_state_machine(SM, StateSetList):
 def adapt_state_machine(sm, StateSetList):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case nothing is to be done.
-    if filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list) == []:
+    if len(filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list)) == 0:
         return sm
     
     # We know, that all states in a state set are equivalent. Thus, all but one

@@ -46,7 +46,7 @@ def do(ModeDB):
 
     # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
     for mode in ModeDB.values():
-        if mode.name in applicable_mode_name_list and mode.get_pattern_action_pair_list() == []:
+        if len(mode.name in applicable_mode_name_list and mode.get_pattern_action_pair_list()) == 0:
             error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % mode.name + \
                       "However, it contains no matches--only event handlers. Without pattern\n"     + \
                       "matches it cannot act as a pattern detecting state machine, and thus\n"      + \
@@ -61,15 +61,15 @@ def do(ModeDB):
     # (*) An indentation counter shall not interfer with whatsoever pattern
     for mode in ModeDB.values():
         indentation_setup = mode.options["indentation"]
-        if indentation_setup == None: continue
+        if indentation_setup is None: continue
 
         # The newline pattern shall not have intersections with other patterns!
         newline_info        = indentation_setup.newline_state_machine
-        assert newline_info != None
+        assert newline_info is not None
         __commonality(mode, newline_info, newline_info.get(), "indentation newline")
 
         newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
-        if newline_suppressor_info.get() != None:
+        if newline_suppressor_info.get() is not None:
             # Supressor *can* have commonalities with other patterns without confusion,
             # since it does not trigger indentation handling.
             # __commonality(mode, newline_suppressor_info, newline_suppressor_info.get(), 

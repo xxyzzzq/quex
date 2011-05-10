@@ -10,7 +10,7 @@ def __transition(CurrentStateIdx, StateIdx,
     # NOTE: This is a very rudimental implementation of the __goto_state, see the cpp implementation
     #       for a complete implementation.
     UserDefinedStateMachineName = "unimportant"
-    if StateIdx == None: 
+    if StateIdx is None: 
         return __goto_terminal_state(UserDefinedStateMachineName,  
                                      TargetStateIdx)  # specific terminal state
 
@@ -19,7 +19,7 @@ def __transition(CurrentStateIdx, StateIdx,
     return txt + "return %s" % repr(StateIdx)
         
 def __goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginalStateMachineID=None):
-    if SuccessfulOriginalStateMachineID == None:
+    if SuccessfulOriginalStateMachineID is None:
         txt = "# goto QUEX_LABEL_%s_TERMINAL;\n" % UserDefinedStateMachineName
     else:       
         txt = "# goto QUEX_LABEL_%s_TERMINAL_%s;\n" % (UserDefinedStateMachineName,
@@ -27,7 +27,7 @@ def __goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginalStateMa
     return txt + "return -1"    
 
 def __note_acceptance(SuccessfulOriginalStateMachineID, LanguageDB, BackwardLexingF=False, BackwardInputPositionDetectionF=False):
-    if SuccessfulOriginalStateMachineID != None:
+    if SuccessfulOriginalStateMachineID is not None:
         txt =  "# last_acceptance = %s\n" % SuccessfulOriginalStateMachineID
         txt += "# last_acceptance_input_position = stream.tell()\n"
     else:

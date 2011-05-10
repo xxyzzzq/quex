@@ -92,7 +92,7 @@ def do(argv):
                 setup.__dict__[variable_name] = []
             else:
                 the_list = command_line.nominus_followers(info[0])
-                if the_list == []:
+                if len(the_list) == 0:
                     error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
 
                 if setup.__dict__.has_key(variable_name):
@@ -123,14 +123,14 @@ def do(argv):
                               "derived analyzer class (options --derived-class, --dc)",
                               AllowEmptyF=True)
 
-    if setup.analyzer_name_space == []:
+    if len(setup.analyzer_name_space) == 0:
         setup.analyzer_name_space = ["quex"]
 
     if setup.token_class_name == "":
         setup.token_class_name = "%s::Token" % reduce(lambda a, b: a + "::" + b, setup.analyzer_name_space)
 
     # Token classes and derived classes have the freedom not to open a namespace,
-    # thus no check 'if namespace == []'.
+    # thus no check 'if namespace == empty'.
     setup.token_class_name,       \
     setup.token_class_name_space, \
     setup.token_class_name_safe = \
@@ -145,7 +145,7 @@ def do(argv):
                                       setup.token_class_name_safe,
                                       setup.token_id_type)
 
-    if setup.token_class_name_space == []:
+    if len(setup.token_class_name_space) == 0:
         setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
 
     setup.token_id_prefix_plain,      \
@@ -330,7 +330,7 @@ def __get_integer(MemberName):
     ValueStr = setup.__dict__[MemberName]
     if type(ValueStr) == int: return ValueStr
     result = read_integer(StringIO(ValueStr))
-    if result == None:
+    if result is None:
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
         error_msg("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, option_name) + \
                   "Use prefix '0x' for hexadecimal numbers.\n" + \

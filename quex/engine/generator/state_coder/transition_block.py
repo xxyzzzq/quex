@@ -53,7 +53,7 @@ class TriggerActionReload(TriggerAction):
 
     def get_code(self):
 
-        if self.__goto_reload_str != None: 
+        if self.__goto_reload_str is not None: 
             return [ self.__goto_reload_str ]
         else:
             return [ transition.get_transition_to_reload(self.__state_index, 
@@ -75,7 +75,7 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_
         if   target == -1:
             target = TriggerActionReload(GotoReload_Str, CurrentStateIdx, DSM, ReturnToState_Str)
 
-        elif target == None:
+        elif target is None:
             target = TriggerActionDropOut(CurrentStateIdx)
 
         elif type(target) in [int, long]:
@@ -88,14 +88,14 @@ def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_
     return result
 
 def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
-    """Target == None           ---> Drop Out
+    """Target is None           ---> Drop Out
        Target == -1             ---> Buffer Limit Code; Require Reload
                                      (this one is added by '__separate_buffer_limit_code_transition()'
        Target == Integer >= 0   ---> Transition to state with index 'Target'
        Target == string         ---> past code fragment 'Target' for given Interval
     """
     assert type(TriggerMap) == list
-    assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
+    assert DSM is None or DSM.__class__.__name__ == "StateMachineDecorator"
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
@@ -104,7 +104,7 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
     #       essential though for pseudo ambiguous post contexts.
     assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
     #                       # are not to be coded at this place.
-    if DSM == None: InitStateF = False
+    if DSM is None: InitStateF = False
     else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 
     TriggerMap = __prune_trigger_map_to_character_type_domain(TriggerMap)
@@ -508,7 +508,7 @@ def __switch_case_heuristic(TriggerMap,
 
               P = log2(len(trigger_map)) / sum(all interval) - sum(drop_out_intervals) 
     """
-    if size_all_intervals == None:
+    if size_all_intervals is None:
         size_all_intervals          = 0
         size_all_drop_out_intervals = 0
         for interval, target in TriggerMap:
@@ -535,7 +535,7 @@ def __separate_buffer_limit_code_transition(TriggerMap):
             # Transition 'buffer limit code --> -1' has been setup already
             return
 
-        elif target_index != None: 
+        elif target_index is not None: 
             continue
 
         elif not interval.contains(Setup.buffer_limit_code): 

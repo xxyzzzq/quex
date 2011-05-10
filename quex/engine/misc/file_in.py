@@ -238,7 +238,7 @@ def read_integer(fh):
     else:
         txt = first
 
-    if base == None:        base = 10;       digit_list = "0123456789"
+    if base is None:        base = 10;       digit_list = "0123456789"
 
     while 1 + 1 == 2:
         tmp = fh.read(1)
@@ -290,7 +290,7 @@ def __roman_number(Text, fh):
         count = 0
         while input[index: index + len(numeral)] == numeral:
             count += 1 # how many of this numeral we have
-            if maxcount != None and count > maxcount:
+            if maxcount is not None and count > maxcount:
                 error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
             result += value
             index  += len(numeral)
@@ -519,7 +519,7 @@ def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
         #    fh = reader(fh)
         return fh
     except:
-        if Env != None:
+        if Env is not None:
             error_msg("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
         error_msg("Cannot open file '%s'" % FileName)
 
@@ -615,7 +615,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
             line_n = LineN
             Filename = fh 
         else:
-            if fh != None:
+            if fh is not None:
                 line_n   = get_current_line_info_number(fh)
                 if hasattr(fh, "name"): Filename = fh.name
                 else:                   Filename = "command line"

@@ -90,7 +90,7 @@ class ModeDescription:
 
     def add_match(self, Pattern, Action, PatternStateMachine, Comment=""):
         assert PatternStateMachine.is_DFA_compliant()
-        assert PatternStateMachine.side_info != None, \
+        assert PatternStateMachine.side_info is not None, \
                "No side info for '%s'" % Pattern
 
         if self.__matches.has_key(Pattern):
@@ -143,7 +143,7 @@ class ModeDescription:
         if option_info.type == "list":
             self.options.setdefault(Option, []).append(Value)
         else:
-            if option_info.domain != None: assert Value in option_info.domain
+            if option_info.domain is not None: assert Value in option_info.domain
             self.options[Option] = Value
 
     def get_pattern_action_pair(self, PatternStr):
@@ -211,7 +211,7 @@ class Mode:
     def set_code_fragment_list(self, EventName, TheCodeFragment):
         assert isinstance(TheCodeFragment, CodeFragment)
         assert EventName in ["on_end_of_stream", "on_failure"]
-        assert self.__event_handler_code_fragment_list[EventName] == []
+        assert len(self.__event_handler_code_fragment_list[EventName]) == 0
         self.__event_handler_code_fragment_list[EventName] = [TheCodeFragment]
 
     def has_base_mode(self):
@@ -344,7 +344,7 @@ class Mode:
             
             for event_name in event_handler_db.keys():
                 fragment = mode_descr.events[event_name]
-                if fragment != None and fragment.get_code() != "":
+                if fragment is not None and fragment.get_code() != "":
                     self.__event_handler_code_fragment_list[event_name].append(fragment)
 
         return 
@@ -667,7 +667,7 @@ def __parse_option(fh, new_mode):
         return result
 
     identifier = read_option_start(fh)
-    if identifier == None: return False
+    if identifier is None: return False
 
     verify_word_in_list(identifier, mode_option_info_db.keys(),
                         "mode option", fh.name, get_current_line_info_number(fh))
@@ -768,7 +768,7 @@ def __parse_option(fh, new_mode):
         # -- Suppressed Newline = Suppressor followed by Newline,
         #    then newline does not trigger indentation counting.
         suppressed_newline_pattern = ""
-        if value.newline_suppressor_state_machine.get() != None:
+        if value.newline_suppressor_state_machine.get() is not None:
             suppressed_newline_pattern = \
                   "(" + value.newline_suppressor_state_machine.pattern_str + ")" \
                 + "(" + value.newline_state_machine.pattern_str + ")"
@@ -837,7 +837,7 @@ def __parse_option(fh, new_mode):
 
     # Is the option of the appropriate value?
     option_info = mode_option_info_db[identifier]
-    if option_info.domain != None and value not in option_info.domain:
+    if option_info.domain is not None and value not in option_info.domain:
         error_msg("Tried to set value '%s' for option '%s'. " % (Value, Option) + \
                   "Though, possible for this option are only: %s." % repr(oi.domain)[1:-1], fh)
 
@@ -895,7 +895,7 @@ def __parse_action(new_mode, fh, pattern, pattern_state_machine):
         position = fh.tell()
             
         code_obj = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
-        if code_obj != None:
+        if code_obj is not None:
             new_mode.add_match(pattern, code_obj, pattern_state_machine)
             return
 

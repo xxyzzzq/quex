@@ -41,7 +41,7 @@ def test(Text):
     except:
         print "Exception!"
 
-    if descr != None: print descr
+    if descr is not None: print descr
     print
 
 if "basic" in sys.argv:

@@ -146,7 +146,7 @@ def do(setup, IndentationSupportF):
     for standard_token_id in standard_token_id_list:
         assert token_id_db.has_key(standard_token_id)
 
-    assert blackboard.token_type_definition != None, \
+    assert blackboard.token_type_definition is not None, \
            "Token type has not been defined yet, see $QUEX_PATH/quex/core.py how to\n" + \
            "handle this."
 
@@ -204,7 +204,7 @@ def do(setup, IndentationSupportF):
         # Take the 'dummy_name' only to have the list sorted by name. The key 'dummy_name' 
         # may contain '--' to indicate a unicode value, so do not use it as name.
         for dummy_name, token in sorted(token_id_db.items()):
-            if token.number == None: 
+            if token.number is None: 
                 while __is_token_id_occupied(i):
                     i += 1
                 token.number = i; 

@@ -14,7 +14,7 @@ from   quex.input.command_line.core           import __prepare_file_name
 
 
 def do():
-    assert blackboard.token_type_definition != None
+    assert blackboard.token_type_definition is not None
 
     if blackboard.token_type_definition.manually_written():
         # User has specified a manually written token class
@@ -26,9 +26,9 @@ def do():
 
 def _do(Descr):
     # The following things must be ensured before the function is called
-    assert Descr != None
+    assert Descr is not None
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
-    ## ALLOW: Descr.get_member_db().keys() == []
+    ## ALLOW: Descr.get_member_db().keys() == empty
 
     TemplateFile = QUEX_PATH \
                    + Setup.language_db["$code_base"] \
@@ -211,7 +211,7 @@ def get_quick_setters(Descr):
     def __combined_quick_setters(member_db, AllOnlyF=False):
         txt = ""
         member_list = member_db.items()
-        if member_list == []: return ""
+        if len(member_list) == 0: return ""
 
         # sort the members with respect to their occurence in the token_type section
         member_list.sort(lambda x, y: cmp(x[1].line_n, y[1].line_n))

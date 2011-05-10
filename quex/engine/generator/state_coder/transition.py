@@ -6,7 +6,7 @@ def do(TargetInfo, CurrentStateIdx, SMD):
 
     # (*) Normal Transitions: goto + label
     #
-    if TargetInfo == None:
+    if TargetInfo is None:
         return get_transition_to_drop_out(CurrentStateIdx)
 
     elif TargetInfo == -1:
@@ -26,14 +26,14 @@ def get_transition_to_drop_out(CurrentStateIdx):
 def get_transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     LanguageDB = Setup.language_db
 
-    if SMD != None and SMD.backward_lexing_f(): direction = "BACKWARD"
+    if SMD is not None and SMD.backward_lexing_f(): direction = "BACKWARD"
     else:                                       direction = "FORWARD"
 
-    if SMD != None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
+    if SMD is not None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
         return "goto __RELOAD_INIT_STATE;" 
 
-    elif SMD == None or not SMD.backward_input_position_detection_f():
-        if ReturnStateIndexStr != None: 
+    elif SMD is None or not SMD.backward_input_position_detection_f():
+        if ReturnStateIndexStr is not None: 
             state_reference = ReturnStateIndexStr
         else:                           
             state_reference = "QUEX_LABEL(%i)" % get_address("$entry", StateIdx, R=True)
@@ -67,7 +67,7 @@ def get_transition_to_terminal(Origin):
 
 def get_index(StateIdx, SMD):
     # During forward lexing (main lexer process) there are dedicated terminal states.
-    if     SMD != None \
+    if     SMD is not None \
        and SMD.dead_end_state_db().has_key(StateIdx) \
        and SMD.forward_lexing_f():
         # The state is a dead-end-state. It transits immediately to a terminal.
@@ -83,7 +83,7 @@ def get_index(StateIdx, SMD):
 def get_real_address(TargetStateIdx, SMD):
     LanguageDB = Setup.language_db
 
-    if     SMD != None \
+    if     SMD is not None \
        and SMD.dead_end_state_db().has_key(TargetStateIdx) \
        and SMD.forward_lexing_f():
         # Transitions to 'dead-end-state'
@@ -109,7 +109,7 @@ def __get_address_of_dead_end_state(TargetStateIdx, SMD):
        not necessary to go to that state and then drop out, and then goto the
        terminal. The transition to the terminal can be done directly.  
     """
-    assert SMD != None
+    assert SMD is not None
     LanguageDB = Setup.language_db
 
     pre_context_dependency_f, \

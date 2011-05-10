@@ -140,7 +140,7 @@ def __handle_property(cl):
         # specific property => display information about it
         sys.stderr.write("(please, wait for database parsing to complete)\n")
         property = __get_property(property_follower)
-        if property == None: return True
+        if property is None: return True
         print property
 
 def __handle_property_match(cl):
@@ -160,7 +160,7 @@ def __handle_property_match(cl):
 
     # -- get the property from the database
     property = __get_property(name)
-    if property == None: 
+    if property is None: 
         return True
 
     # -- find the character set for the given expression
@@ -187,11 +187,11 @@ def __handle_set_by_property(cl):
 
         # -- get the property from the database
         property = __get_property(name)
-        if property == None: 
+        if property is None: 
             return True
 
         # -- find the character set for the given expression
-        if property.type == "Binary" and value != None:
+        if property.type == "Binary" and value is not None:
             error_msg("Binary property '%s' cannot have a value assigned to it.\n" % property.name + \
                       "Setting ignored. Printing set of characters with the given property.")
 
@@ -289,7 +289,7 @@ class CharacterList:
     def next(self):
         tmp = self.__current_character
 
-        if tmp == None: return None
+        if tmp is None: return None
 
         # Prepare the character for the next call
         self.__current_character += 1
@@ -325,7 +325,7 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
     last_horizontal_offset       = 0
     while 1 + 1 == 2:
         character_code = character_list.next()
-        if character_code == None: break
+        if character_code is None: break
 
         start_character_of_line = character_code - character_code % CharactersPerLine
         horizontal_offset       = character_code - start_character_of_line

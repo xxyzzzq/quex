@@ -4,17 +4,17 @@ db={}
 
 def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
     """
-        (1) StateIdx != None
+        (1) StateIdx is not None
             jump label for state machine state entry    
-        (2) StateIdx == None:  terminal state
-            (1a) SuccessfulOriginalStateMachineID == None: not acceptance terminal state
+        (2) StateIdx is None:  terminal state
+            (1a) SuccessfulOriginalStateMachineID is None: not acceptance terminal state
             (1b) else: acceptance terminal state
     """
     def nice(SM_ID): return repr(SM_ID).replace("L", "")
 
-    if StateIdx != None: 
+    if StateIdx is not None: 
         return "QUEX_LABEL_%s_ENTRY_%s" % (StateMachineName, nice(StateIdx))
-    elif SuccessfulOriginalStateMachineID == None:
+    elif SuccessfulOriginalStateMachineID is None:
         return "QUEX_LABEL_%s_TERMINAL" % StateMachineName
     else:       
         return "QUEX_LABEL_%s_TERMINAL_%s" % (StateMachineName, nice(SuccessfulOriginalStateMachineID))
@@ -173,7 +173,7 @@ db["Perl"]["$function_def"] = "sub $$function_name$$ {\n    input = shift\n"
 # Python
 #    
 def __python_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
-    if StateIdx == None: 
+    if StateIdx is None: 
         return __python_goto_terminal_state(UserDefinedStateMachineName,  
                                             SuccessfulOriginalStateMachineID)
     txt = "# QUEX_LABEL_%s_ENTRY_%s;\n" % (UserDefinedStateMachineName,
@@ -181,7 +181,7 @@ def __python_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOrigina
     return txt + "return %s" % repr(StateIdx)
          
 def __python_goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginalStateMachineID=None):
-    if SuccessfulOriginalStateMachineID == None:
+    if SuccessfulOriginalStateMachineID is None:
         txt = "# goto QUEX_LABEL_%s_TERMINAL;\n" % UserDefinedStateMachineName
     else:       
         txt = "# goto QUEX_LABEL_%s_TERMINAL_%s;\n" % (UserDefinedStateMachineName,
@@ -189,7 +189,7 @@ def __python_goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginal
     return txt + "return -1"    
 
 def __python_note_acceptance(SuccessfulOriginalStateMachineID):
-    if SuccessfulOriginalStateMachineID != None:
+    if SuccessfulOriginalStateMachineID is not None:
         txt =  "# last_acceptance = %s\n" % SuccessfulOriginalStateMachineID
         txt += "# last_acceptance_input_position = stream.tell()\n"
     else:

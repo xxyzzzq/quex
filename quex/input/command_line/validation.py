@@ -58,7 +58,7 @@ def do(setup, command_line, argv):
     for key, info in SETUP_INFO.items():
         if type(info) != list: continue
         if key in DEPRECATED: continue
-        if info[1] != None: options.extend(info[0])
+        if info[1] is not None: options.extend(info[0])
     options.sort(lambda a,b: cmp(a.replace("-",""), b.replace("-","")))
 
     ufos = command_line.unidentified_options(options)

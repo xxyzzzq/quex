@@ -33,10 +33,10 @@ def get_character_sequence(Sequence):
     return txt, length_txt, comment_txt
 
 def end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
-    if Mode == None: return False
+    if Mode is None: return False
 
     indentation_setup = Mode.options.get("indentation")
-    if indentation_setup == None: return False
+    if indentation_setup is None: return False
 
     return indentation_setup.newline_state_machine.get().does_sequence_match(EndSequence)
 
@@ -45,7 +45,7 @@ def get_on_skip_range_open(Mode, CloserSequence):
        have to generate a whole mode just to get the 'on_skip_range_open' 
        code fragment.
     """
-    if Mode == None: return ""
+    if Mode is None: return ""
 
     txt = ""
     if type(Mode) in [str, unicode]:

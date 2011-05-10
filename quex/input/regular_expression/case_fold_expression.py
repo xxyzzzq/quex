@@ -9,11 +9,11 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
        See function ucs_case_fold_parser.get_fold_set() for details
        about case folding.
 
-       snap_expression != None, then snap_expression is the function 
+       snap_expression is not None, then snap_expression is the function 
                                 to parse a RE and the caller
                                 expects a state machine.
 
-       snap_set_expression != None, then snap_set_expression is the
+       snap_set_expression is not None, then snap_set_expression is the
                                     function to parse a character 
                                     set and caller expects a 
                                     NumberSet object.
@@ -24,7 +24,7 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
     # -- parse the optional options in '(' ')' brackets
     if not check(sh, "("):
         # By default 'single' and 'multi' character case folds are active
-        if snap_set_expression != None: flag_txt = "s"
+        if snap_set_expression is not None: flag_txt = "s"
         else:                           flag_txt = "sm"
 
     else:
@@ -44,7 +44,7 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
                           "              'm' for multi character sequence case fold.\n" + \
                           "              't' for special turkish case fold rules.", sh)
 
-            if snap_set_expression != None and letter == "m":
+            if snap_set_expression is not None and letter == "m":
                 sh.seek(pos)
                 error_msg("Option 'm' not permitted as case fold option in set expression.\n" + \
                           "Set expressions cannot absorb multi character sequences.", sh)
@@ -57,9 +57,9 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
         error_msg("Missing '{' for case fold expression.", sh)
 
     skip_whitespace(sh)
-    if snap_set_expression != None:
+    if snap_set_expression is not None:
         trigger_set = snap_set_expression(sh, PatternDict)
-        if trigger_set == None:
+        if trigger_set is None:
             error_msg("Missing character set for case fold in set expression.\n" + 
                       "The content in '\\C{content}' should start with '[' or '[:'.", 
                       sh)
@@ -76,7 +76,7 @@ def do(sh, PatternDict, snap_expression=None, snap_set_expression=None):
 
     else:
         sm = snap_expression(sh, PatternDict)
-        if sm == None:
+        if sm is None:
             error_msg("Missing expression for case fold '\C'.\n" + 
                       "The content in '\\C{content}' should start with '[' or '[:'.", 
                       sh)

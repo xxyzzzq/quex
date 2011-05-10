@@ -57,7 +57,7 @@ def __build_child_db(SM, LimitEffort):
         for target_index, trigger_set in state.transitions().get_map().iteritems():
             if effort(trigger_set) < LimitEffort:
                 node = child_db.get(state_index)
-                if node == None: child_db[target_index] = TreeNode(state_index, target_index, trigger_set, trigger_map)
+                if node is None: child_db[target_index] = TreeNode(state_index, target_index, trigger_set, trigger_map)
                 else:            node.add_child(target_index)
 
     return child_db
@@ -136,10 +136,10 @@ def __get_common_trigger_set_to_target(TargetIndex, InfoList):
 
         trigger_set = tm.get(Target)
 
-        if trigger_set == None: 
+        if trigger_set is None: 
             return None
 
-        elif common_trigger_set != None and common_trigger_set.is_equal(trigger_set):
+        elif common_trigger_set is not None and common_trigger_set.is_equal(trigger_set):
             return -1
 
         common_trigger_set = trigger_set
@@ -230,7 +230,7 @@ def __get_common_transitions(InfoList):
 
         common_trigger_set = __get_common_trigger_set_to_target(target, InfoList)
 
-        if common_trigger_set == None: 
+        if common_trigger_set is None: 
             # There is simply no common transition to the target. Forget it.
             continue
 
@@ -315,7 +315,7 @@ def __get_common_transitions(InfoList):
 #        #     the transitions on their own.
 #        partly_common = get_common_transition(a_shadow_trigger_set, a_trigger_set,
 #                                              b_shadow_trigger_set, b_trigger_set)
-#        if partly_common != None:
+#        if partly_common is not None:
 #            common_tm[target]     = partly_common 
 #            a_adaption_db[target] = a_trigger_set.union(a_shadow_trigger_set).difference(partly_common)
 #            b_adaption_db[target] = b_trigger_set.union(a_shadow_trigger_set).difference(partly_common)
