@@ -102,8 +102,8 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
     #       AND states during backward input position detection!
     #       Empty states do not exist any longer, the backward input position is
     #       essential though for pseudo ambiguous post contexts.
-    assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
-    #                       # are not to be coded at this place.
+    assert len(TriggerMap) != 0 # states with empty trigger maps are 'dead end states'. those
+    #                           # are not to be coded at this place.
     if DSM is None: InitStateF = False
     else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 

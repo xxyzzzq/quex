@@ -65,7 +65,7 @@ def test(ByteSequenceDB):
     trafo.plug_state_sequence_for_trigger_set_sequence(sm, sm.init_state_index, end_index, 
                                                        ByteSequenceDB, L, first_different_byte_index)
 
-    if sm.get_orphaned_state_index_list() != []:
+    if len(sm.get_orphaned_state_index_list()) != 0:
         print "Error: Orphaned States Detected!"
 
     print sm.get_graphviz_string(Option="hex")

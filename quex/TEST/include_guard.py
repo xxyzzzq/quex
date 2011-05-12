@@ -114,7 +114,7 @@ def check_include_guard_undefinition():
 
     print "Following are undefined but nowhere defined:"
     stranger_list.sort()
-    if stranger_list != []:
+    if len(stranger_list) != 0:
         L = max(map(lambda name: len(name), stranger_list))
         for name in stranger_list:
             print "%s%s" % \

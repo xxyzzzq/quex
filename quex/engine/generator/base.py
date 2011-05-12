@@ -4,6 +4,8 @@ import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.parallelize           as parallelize
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
+from   itertools import ifilter
+
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF):
         assert type(PatternActionPair_List) == list
@@ -61,7 +63,7 @@ class GeneratorBase:
                 
             # [NOT IMPLEMENTED YET]    
             # # -- collect information about trivial (char code) pre-conditions 
-            # # if sm.get_trivial_pre_context_character_codes() != []:
+            # # if len(sm.get_trivial_pre_context_character_codes()) != 0:
             # #    trivial_pre_context_dict[sm.get_id()] = sm.get_trivial_pre_context_character_codes()
 
             # -- collect all ids of post conditioned state machines
@@ -134,7 +136,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
                       "The initial state is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")
 
-        if filter(lambda origin: origin.is_acceptance(), init_state.origins()) != []:
+        for dummy in ifilter(lambda origin: origin.is_acceptance(), init_state.origins()):
             error_msg("After '%s'" % Place + "\n" + \
                       "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")

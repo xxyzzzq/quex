@@ -663,7 +663,7 @@ class NumberSet(object):
                 if x.begin < y.end or y.begin < x.end:
                     replacement_list.append([max(x.begin, y.begin), min(x.end, y.end)])
 
-            if replacement_list != []:
+            if len(replacement_list) != 0:
                 x.begin, x.end = replacement_list.pop(0)
                 insertion_list.append([i, replacement_list])
             else:

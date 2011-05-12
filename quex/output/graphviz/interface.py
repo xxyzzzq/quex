@@ -35,7 +35,7 @@ class Generator(GeneratorBase):
             self.pre_context_file_name = file_name
             self.__do(self.pre_context_sm, file_name, Option)
 
-        if self.papc_backward_detector_state_machine_list != []:
+        if len(self.papc_backward_detector_state_machine_list) != 0:
             self.backward_detector_file_name = []
             for sm in self.papc_backward_detector_state_machine_list:
                 file_name = "%s_%i.%s" % (self.state_machine_name, sm.get_id(), self.graphic_format)

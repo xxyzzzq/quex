@@ -172,7 +172,7 @@ class StateMachineCoreInfo:
 
     def has_pre_or_post_context(self):
         return    self.__pre_context_single_character_list \
-               or self.__pre_context_single_character_list != [] \
+               or len(self.__pre_context_single_character_list) != 0 \
                or self.__pre_context_sm is not None \
                or self.__post_context_id != -1L \
                or self.__post_context_backward_input_position_detector_sm is not None

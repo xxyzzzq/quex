@@ -282,7 +282,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
     work_list    = [ ForeignTokenIdFile ] 
     done_list    = []
     unfound_list = []
-    while work_list != []:
+    while len(work_list) != 0:
         fh = open_file_or_die(work_list.pop(), Mode="rb")
         content = fh.read()
 

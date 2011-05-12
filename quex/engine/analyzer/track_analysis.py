@@ -576,6 +576,11 @@ class AcceptanceTrace:
     def get_pre_context_id_list(self):
         return self.__sequence.keys()
 
+    def get_sorted_sequence(self):
+        result = self.__sequence.values()
+        result.sort(key=attrgetter("transition_n_to_acceptance")
+        return result
+
     def __repr__(self):
         txt = []
         for x in self.__sequence.itervalues():

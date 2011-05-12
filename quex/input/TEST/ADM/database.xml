@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.81" date="Tue May 10 07:07:46 2011">
+<test-database execution-time-sec="10.70" date="Thu May 12 01:50:33 2011">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.32"> 
         <application file-name="indentation_setup.py" info-request-time="1305001372L" vanished="False"/>
@@ -6,33 +6,33 @@
            <choice name="basic" result="OK" time_sec="0.06" crc="-1318928622"/>
            <choice name="twice" result="OK" time_sec="0.06" crc="-233475326"/>
            <choice name="intersection" result="OK" time_sec="0.08" crc="1982684346"/>
-           <choice name="intersection-2" result="OK" time_sec="0.06" crc="-1389949999"/>
+           <choice name="intersection-2" result="OK" time_sec="0.07" crc="-1389949999"/>
            <choice name="non-numeric" result="OK" time_sec="0.05" crc="654413883"/>
         </choice-list>
     </test>
     <test title="Case Folding based on Unicode Database" time-sum-sec="0.34"> 
         <application file-name="case_fold.py" info-request-time="1305001372L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="s_simple" result="OK" time_sec="0.05" crc="-612045726"/>
-           <choice name="m_multi" result="OK" time_sec="0.06" crc="-864522074"/>
-           <choice name="sm" result="OK" time_sec="0.06" crc="-612045726"/>
-           <choice name="s_simple_turkish" result="OK" time_sec="0.06" crc="-1851514082"/>
-           <choice name="smt" result="OK" time_sec="0.06" crc="-1851514082"/>
+           <choice name="s_simple" result="OK" time_sec="0.08" crc="-612045726"/>
+           <choice name="m_multi" result="OK" time_sec="0.05" crc="-864522074"/>
+           <choice name="sm" result="OK" time_sec="0.05" crc="-612045726"/>
+           <choice name="s_simple_turkish" result="OK" time_sec="0.05" crc="-1851514082"/>
+           <choice name="smt" result="OK" time_sec="0.05" crc="-1851514082"/>
            <choice name="m_multi_turkish" result="OK" time_sec="0.05" crc="447292331"/>
         </choice-list>
     </test>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" time-sum-sec="0.86"> 
+        <test title="Character Sets for Property Settings II" time-sum-sec="0.83"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.86" crc="-1557359517"/>
+               <choice name="" result="OK" time_sec="0.83" crc="-1557359517"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="5.60"> 
+        <test title="Information about Properties" time-sum-sec="5.57"> 
             <application file-name="test-query.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="PropertyList" result="OK" time_sec="5.00" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time_sec="0.60" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time_sec="4.98" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time_sec="0.59" crc="86685460"/>
             </choice-list>
         </test>
         <test title="Wildcard Property Values" time-sum-sec="0.56"> 
@@ -41,10 +41,10 @@
                <choice name="" result="OK" time_sec="0.56" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="1.72"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="1.69"> 
             <application file-name="test-query-character-set.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.72" crc="-127967106"/>
+               <choice name="" result="OK" time_sec="1.69" crc="-127967106"/>
             </choice-list>
         </test>
     </group>

@@ -194,7 +194,8 @@ def get_plain_strings(txt_list, RoutingInfoF=True):
 
         elif elm.label in __referenced_label_set: 
             # If an address is referenced, the correspondent code is inserted.
-            txt_list = txt_list[:i] + elm.code + txt_list[i+1:]
+            txt_list[i:i+1] = elm.code
+            # txt_list = txt_list[:i] + elm.code + txt_list[i+1:]
             size += len(elm.code) - 1
             i    -= 1
         else:
