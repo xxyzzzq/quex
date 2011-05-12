@@ -93,30 +93,60 @@ class Analyzer:
             seq = map(lambda x: x.pre_context_id, trace.get_sorted_sequence())
             if seq == prototype_seq: continue
 
-            # Acceptance depends on path --> must be stored
+            # (*) Some pre-context-ids are different, or precedence differs
+            #     => Acceptance depends on path
+
+            # -- drop_out: if 'restore acceptance always' is set, then precedence
+            #              not an an issue for acceptance.
+            state.drop_out.set_restore_acceptance_always()
+
+            # -- other entries: store acceptance in any case
             self.store_acceptance(TheAcceptanceTraceList)
             break
 
         else:
+            # (*) All pre-context-ids are the same and have the same precedence
+
+            # -- drop_out: There is a common precedence scheme, follow it.
+            state.drop_out.set_precendence(prototype_seq)
+
             # All traces have the same pre-context-ids and they are equal in precedence
-            # It holds:  pre-context-id <---> acceptance (anyways)
-            # except for: pre-context-id == -1   (begin of line)
-            # and         pre-context-id == None (no pre context)
+            #
+            # It holds:   pre-context-id <-1:1-> acceptance (anyways)
+            # except for: -1 (begin of line) or 'None' (no prec ontext)
+
+            # -- drop_out: if pattern_id differs, the acceptance must be restored
+            # -- other entries: if pattern_id differs, the acceptance must be stored
+
+            # 'None' -- no pre-context (must be defined for every trace)
             prototype_acceptance_id = prototype.get(None).pattern_id
             for trace in remainder:
-                entry = trace.get(None)
-                if entry.pattern_id != prototype_acceptance_id:
+                x = trace.get(None)
+                if x.pattern_id == prototype_acceptance_id: continue
                     self.store_acceptance_specific(TheAcceptanceTraceList, None)
+                    state.drop_out.set_restore_acceptance(None)
                     break
 
-            entry = prototype.get(-1)
-            if entry is None:
+            # '-1' -- begin of line (not necessarily present in every trace)
+            x = prototype.get(-1)
+            if x is None:
+                # It is enough that one trace has the 'begin of line' condition
+                # => this means 'store/restore'
+                # Otherwise, not.
                 for trace in ifilter(lambda x: x.get(-1) is not None, remainder):
                     self.store_acceptance_specific(TheAcceptanceTraceList, -1)
+                    state.drop_out.set_restore_acceptance(-1)
             else:
-                for trace in ifilter(lambda x: x.get(-1) is not None, remainder):
-                    if trace.pattern_id != prototype_acceptance_id:
+                prototype_acceptance_id = x.pattern_id
+                for trace in remainder:
+                    x = trace.get(-1)
+                    if x is None:
+                        # This is already different from prototype => store/restore
                         self.store_acceptance_specific(TheAcceptanceTraceList, -1)
+                        state.drop_out.set_restore_acceptance(-1)
+                    if x.pattern_id != prototype_acceptance_id:
+                        self.store_acceptance_specific(TheAcceptanceTraceList, -1)
+                        state.drop_out.set_restore_acceptance(-1)
                         break
 
         # (2) Positioning
