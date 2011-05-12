@@ -36,8 +36,8 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     entry_handler_active_f = False
     exit_handler_active_f = False
     for mode in ModeDB.values():
-        if mode.get_code_fragment_list("on_entry") != []: entry_handler_active_f = True
-        if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
+        if len(mode.get_code_fragment_list("on_entry")) != 0: entry_handler_active_f = True
+        if len(mode.get_code_fragment_list("on_exit")) != 0:  exit_handler_active_f = True
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
     converter_f = False

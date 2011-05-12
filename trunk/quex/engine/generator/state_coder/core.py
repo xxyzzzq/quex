@@ -36,8 +36,8 @@ def do(state, StateIdx, SMD=False):
 
     # (*) Normal States
     TriggerMap = state.transitions().get_trigger_map()
-    assert TriggerMap != []  # Only dead end states have empty trigger maps.
-    #                        # => Here, the trigger map cannot be empty.
+    assert len(TriggerMap) != 0  # Only dead end states have empty trigger maps.
+    #                            # => Here, the trigger map cannot be empty.
 
     txt = ["\n"]
     txt.extend(input_block.do(StateIdx, InitStateF, SMD))

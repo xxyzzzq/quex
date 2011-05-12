@@ -247,14 +247,14 @@ class Mode:
                 txt += "      %s\n" % name
             txt += "\n"
 
-        if self.__history_deletion != []:
+        if len(self.__history_deletion) != 0:
             txt += "    DELETION ACTIONS:\n"
             for entry in self.__history_deletion:
                 txt += "      %s:  %s%s  (from mode %s)\n" % \
                        (entry[0], " " * (L - len(self.name)), entry[1], entry[2])
             txt += "\n"
 
-        if self.__history_repriorization != []:
+        if len(self.__history_repriorization) != 0:
             txt += "    PRIORITY-MARK ACTIONS:\n"
             self.__history_repriorization.sort(lambda x, y: cmp(x[4], y[4]))
             for entry in self.__history_repriorization:
@@ -262,7 +262,7 @@ class Mode:
                        (entry[0], " " * (L - len(self.name)), entry[1], entry[2], entry[3], entry[4])
             txt += "\n"
 
-        if self.__pattern_action_pair_list != []:
+        if len(self.__pattern_action_pair_list) != 0:
             txt += "    PATTERN-ACTION PAIRS:\n"
             self.__pattern_action_pair_list.sort(lambda x, y:
                             cmp(x.pattern_state_machine().get_id(),

@@ -45,7 +45,7 @@ def search_and_validate(CL, Option):
 
     # Validate command line
     ufos = CL.unidentified_options(OPTION_DB.keys())
-    if ufos != []:
+    if len(ufos) != 0:
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   get_supported_command_line_option_description())
     return True

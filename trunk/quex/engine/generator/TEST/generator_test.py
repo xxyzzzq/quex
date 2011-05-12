@@ -155,7 +155,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                                                        adapted_dict, 
                                                        BufferLimitCode)
 
-    if SecondPatternActionPairList != []:
+    if len(SecondPatternActionPairList) != 0:
         state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
                                                             PatternDictionary, 
                                                             BufferLimitCode,
@@ -514,7 +514,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     else:             show_position_str = "0"
 
     ml_txt = ""
-    if MarkerCharList != []:
+    if len(MarkerCharList) != 0:
         for character in MarkerCharList:
             ml_txt += "        if( input == %i ) break;\n" % character
     else:

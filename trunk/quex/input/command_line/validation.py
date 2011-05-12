@@ -62,7 +62,7 @@ def do(setup, command_line, argv):
     options.sort(lambda a,b: cmp(a.replace("-",""), b.replace("-","")))
 
     ufos = command_line.unidentified_options(options)
-    if ufos != []:
+    if len(ufos) != 0:
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   __get_supported_command_line_option_description(options))
 

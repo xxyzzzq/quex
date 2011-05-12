@@ -67,10 +67,11 @@ class Analyzer:
                  of the acceptance traces, then the acceptance depends on the 
                  path.
 
-                 In that case, if one of the concerned states does not have a 
-                 pre-context-free acceptance, than it is possible that failure
-                 occurs. Thus, there is no chance that the acceptance position
-                 might be the same.
+                 -- all pre-context-ids must be the same
+                 -- the precedence of the pre-context-ids must be the same
+
+                 Note, that precedence is first of all subject to length
+                 of the match, then it is subject to the pattern id.
 
              (2) For a given pre-context, if the positioning backwards differs
                  for one entry, or is undetermined, then the positions must be
@@ -81,115 +82,89 @@ class Analyzer:
         prototype = TheAcceptanceTraceList[0]
         remainder = islice(TheAcceptanceTraceList, 1, None)
 
+        what about the precendence of checks in common drop out?
+
         # (1) Acceptance
-        prototype_pre_context_id_set = set(prototype.get_pre_context_id_list())
-        for acceptance_trace in remainder:
-            if prototype_pre_context_id_set == acceptance_trace.get_pre_context_id_list(): continue
+        # The un-common pre-contexts are subject to 'store_acceptance' anyway.
+        # For the common pre-contexts, if they do not appear with the same
+        # precedence (due to length), then the whole state must rely on 'store_acceptance'.
+        prototype_seq = map(lambda x: x.pre_context_id, prototype.get_sorted_sequence())
+        for trace in remainder:
+            seq = map(lambda x: x.pre_context_id, trace.get_sorted_sequence())
+            if seq == prototype_seq: continue
 
             # Acceptance depends on path --> must be stored
-            self.store_acceptance_all(TheAcceptanceTraceList)
+            self.store_acceptance(TheAcceptanceTraceList)
             break
 
-        # A pre-context-id always corresponds to the same pattern. So, there cannot be
-        # different pattern ids for the same pre-context-id. For the 'normal case', though,
-        # this is different.
+        else:
+            # All traces have the same pre-context-ids and they are equal in precedence
+            # It holds:  pre-context-id <---> acceptance (anyways)
+            # except for: pre-context-id == -1   (begin of line)
+            # and         pre-context-id == None (no pre context)
+            prototype_acceptance_id = prototype.get(None).pattern_id
+            for trace in remainder:
+                entry = trace.get(None)
+                if entry.pattern_id != prototype_acceptance_id:
+                    self.store_acceptance_specific(TheAcceptanceTraceList, None)
+                    break
 
-        # (1.1) Normal Acceptance (without pre-contexts)
-        prototype_default_acceptance = prototype.get(None)
-        for acceptance_trace in remainder:
-            if acceptance_trace.get(None) == prototype_default_acceptance: continue
-
-            # Acceptance depends on path --> must be stored
-            self.store_acceptance_all(TheAcceptanceTraceList)
-            break
-
+            entry = prototype.get(-1)
+            if entry is None:
+                for trace in ifilter(lambda x: x.get(-1) is not None, remainder):
+                    self.store_acceptance_specific(TheAcceptanceTraceList, -1)
+            else:
+                for trace in ifilter(lambda x: x.get(-1) is not None, remainder):
+                    if trace.pattern_id != prototype_acceptance_id:
+                        self.store_acceptance_specific(TheAcceptanceTraceList, -1)
+                        break
 
         # (2) Positioning
-        for pre_context_id in all_pre_context_id_set:
-            # Does any state differ from the behavior for a given pre-context-id?
-            entry = prototype.get(pre_context_id)
-            if entry == None:
-                # All related states with the pre-context must store the position
-                self.store_position(TheAcceptanceTraceList, pre_context_id)
-                continue
+        #     For positioning it is not necessary what the precedence is, only 
+        #     (1) all pre-contexts are present
+        #     (2) all have the same 'transition_n_since_positioning'
+        #     (3) no 'transition_n_since_positioning' = None
+        prototype_transition_n_since_positioning = prototype.get(None).transition_n_since_positioning
+        if prototype_transition_n_since_positioning is None:
+            self.store_position(TheAcceptanceTraceList)
+            return 
 
-            prototype_transition_n_since_positioning = entry.transition_n_since_positioning
+        prototype_set = set(prototype_seq)
+        for trace in remainder:
+            pre_context_set = map(lambda x: x.pre_context_id, trace.get_sequence())
+            if pre_context_set != prototype_set:
+                self.store_position(TheAcceptanceTraceList)
+                return
 
-            for acceptance_trace in TheAcceptanceTraceList:
-                if acceptance_trace.get(pre_context_id) == None:
-                    self.store_position(TheAcceptanceTraceList, pre_context_id)
-                    break
-                if entry.transition_n_since_positioning != prototype_transition_n_since_positioning:
-                    self.store_position(TheAcceptanceTraceList, pre_context_id)
-                    break
-
-
-        common = {}
-        # If any acceptance trace differs from the prototype in accepting or positioning
-        # => it needs to be stored and restored.
-        # Loop: 'first falsifies'
-        ##print "##common 0:", common
-        for pre_context_id in pre_context_id_set:
-            entry_list = map(lambda x: x.get(pre_context_id), TheAcceptanceTraceList)
-            #   If a 'pre_context_id' is in 'pre_context_id_set' 
-            #   => at least one path triggers on 'pre_context_id' to acceptance. 
-            # + If one single trace does not trigger on 'pre_context_id' to acceptance, 
-            #   => the acceptance depends on the path taken at runtime.
-            if None in entry_list:
-                # One path does not trigger on given pre-context-id
-                common[pre_context_id] = deepcopy(AcceptanceTraceEntry_Void)
-                for that in ifilter(lambda x: x is not None, entry_list):
-                    if that.accepting_state_index == -1: continue
-                    self.store_acceptance(that.accepting_state_index, pre_context_id)
-                    self.store_position(that.accepting_state_index, pre_context_id)
-                continue
-
-            this = entry_list[0]
-            common[pre_context_id] = this
-            for that in islice(entry_list, 1, None):
-
-                # (1) If both maps have an entry, then determine whether the pattern ids 
-                #     and the positioning differs.
-                if pre_context_id is None:
-                    if this.pattern_id != that.pattern_id:
-                        # Inform related states about the task to store acceptance
-                        self.store_acceptance(that.accepting_state_index, pre_context_id)
-                        self.store_acceptance(this.accepting_state_index, pre_context_id)
-                        common[pre_context_id].pattern_id = None # Winner determined at run-time
-                else:
-                    # Same pre-context-ids must refer the same patterns.
-                    assert this.pattern_id == that.pattern_id
-
-                if this.transition_n_since_positioning != that.transition_n_since_positioning:
-                    # Inform related states about the task to store acceptance position
-                    self.store_position(that.positioning_state_index, pre_context_id)
-                    self.store_position(this.positioning_state_index, pre_context_id)
-                    this.transition_n_since_positioning = None # Distance determined at run-time
-
-        # Even, if there is only one trace: If the backward position is undetermined
-        # then it the 'positioning state' must store the input position.
-        for x in common.itervalues():
-            if x.transition_n_since_positioning is not None: continue
-            if x.post_context_id == -1:                  continue
-            if x.positioning_state_index == -1:          continue
-            self.__state_db[x.positioning_state_index].entry.set_store_begin_of_post_context_position(x.post_context_id)
-
-        return common
+        # All have the same set of 
+        for pre_context_id in prototype_set:
+            if    trace.get(pre_context_id).transition_n_since_positioning \
+               != prototype.get(pre_context_id).transition_n_since_positioning:
+                self.store_position_specific(TheAcceptanceTraceList, pre_context_id)
     
-    def store_acceptance(self, StateIndex, PreContextID):
-        ## print "##", StateIndex, PreContextID
-        if StateIndex == -1: 
-            return
-        elif type(PreContextID) == set:
-            for pre_context_id in PreContextID:
-                self.__state_db[StateIndex].entry.set_store_acceptance_f(pre_context_id)
-        else:
-            self.__state_db[StateIndex].entry.set_store_acceptance_f(PreContextID)
+    def store_acceptance_specific(self, TheAcceptanceTraceList, PreContextID):
+        for entry in imap(lambda x: x.get(PreContextID), TheAcceptanceTraceList):
+            if entry is None: continue
+            self.__state_db[entry.accepting_state_index].entry.set_store_acceptance_f()
+            state.drop_out.set_restore_acceptance_f(entry.pre_context_id)
 
-    def store_position(self, StateIndex, PreContextID):
-        if StateIndex == -1: return
-        print "##", StateIndex, PreContextID
-        self.__state_db[StateIndex].entry.set_store_acceptance_position_f(PreContextID)
+    def store_acceptance(self, TheAcceptanceTraceList):
+        for trace in TheAcceptanceTraceList:
+            for x in trace:
+                self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f()
+        state.drop_out.set_restore_acceptance_always()
+
+    def store_position_specific(self, TheAcceptanceTraceList, PreContextID):
+        for entry in imap(lambda x: x.get(PreContextID), TheAcceptanceTraceList):
+            if entry is None: continue
+            self.__state_db[entry.positioning_state_index].entry.set_store_position_f()
+            state.drop_out.set_restore_position_f(x.pre_context_id)
+
+    def store_position(self, TheAcceptanceTraceList):
+        for trace in TheAcceptanceTraceList:
+            for x in trace:
+                self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f()
+        state.drop_out.set_restore_position_always()
 
     def __vertical_analysis(self, state, Common):
         """Takes a 'common' acceptance trace as a result from the horizontal 
@@ -404,7 +379,7 @@ class Entry:
             return
         assert False, "PostContextID not mentioned in state"
 
-    def set_store_acceptance_position_f(self, PreContextID):
+    def set_store_position_f(self, PreContextID):
         for x in self.__sequence: 
             if x.pre_context_id == PreContextID: 
                 x.store_acceptance_position_f = True

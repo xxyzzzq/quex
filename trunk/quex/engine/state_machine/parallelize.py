@@ -97,7 +97,7 @@ def __add_free_pass(result_state_machine,
     """
     if TerminationStateIdx == -1:
         acceptance_state_index_list = result_state_machine.get_acceptance_state_index_list()
-        assert acceptance_state_index_list != [], \
+        assert len(acceptance_state_index_list) != 0, \
                "resulting state machine has no acceptance state!"
         TerminationStateIdx = acceptance_state_index_list[0]
 

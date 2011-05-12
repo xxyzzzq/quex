@@ -32,7 +32,7 @@ def get_codec_list_db():
        ...
     """
     global __codec_list_db
-    if __codec_list_db != []: return __codec_list_db
+    if len(__codec_list_db) != 0: return __codec_list_db
 
     fh = open_file_or_die(__codec_db_path + "/00-ALL.txt", "rb")
     # FIELD SEPARATOR:  ';'
@@ -59,7 +59,7 @@ def get_supported_codec_list(IncludeAliasesF=False):
     assert type(IncludeAliasesF) == bool
 
     global __supported_codec_list
-    if __supported_codec_list != []: 
+    if len(__supported_codec_list) != 0: 
         if IncludeAliasesF: return __supported_codec_list_plus_aliases
         else:               return __supported_codec_list
 

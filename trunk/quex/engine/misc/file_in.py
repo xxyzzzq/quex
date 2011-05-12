@@ -363,7 +363,7 @@ def read_until_closing_bracket(fh, Opener, Closer,
     backslash_f     = False
     txt     = ""
     CacheSz = max(len(Opener), len(Closer))
-    if IgnoreRegions != []: 
+    if len(IgnoreRegions) != 0: 
         # check for correct type, because this can cause terrible errors
         assert type(IgnoreRegions) == list
 
