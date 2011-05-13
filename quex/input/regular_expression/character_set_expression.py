@@ -135,7 +135,7 @@ def snap_property_set(stream):
         if check(stream, "{") == False:
             error_msg("Missing '{' after '\\E'.", stream)
         encoding_name = __snap_until(stream, "}").strip()
-        return codec_db.get_supported_unicode_character_set(encoding_name, stream)
+        return codec_db.get_supported_unicode_character_set(encoding_name, FH=stream)
     else:
         stream.seek(position)
         return None

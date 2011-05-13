@@ -267,6 +267,7 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
     for i, entry in enumerate(trigger_map):
         interval, target = entry
 
+        txt.append("\n")
         txt.append(0)
         if i == L - 1:
             # Drop-out 'else' can be omitted

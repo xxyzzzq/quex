@@ -42,14 +42,15 @@ _1:
 
         }
     } else {
+
         if( input == 0xA ) {
-            goto _100;    /* '\n' */
+            goto _100;
         } else if( input == 0xB ) {
-            goto _1;    /* '\v' */
+            goto _1;
         } else if( input == 0xC ) {
+
         } else {
             QUEX_GOTO_STATE(template_1_target_2[template_state_key]);
-    /* [\14, oo] */
 }
     }
 _2:

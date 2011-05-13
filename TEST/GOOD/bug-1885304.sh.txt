@@ -815,6 +815,7 @@ QUEX_NAME(ONE_AND_ONLY_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 __REENTRY:
     me->buffer._lexeme_start_p = me->buffer._input_p;
     QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);
+
 INIT_STATE_TRANSITION_BLOCK:
     __quex_debug_init_state();
     input = *(me->buffer._input_p);
@@ -896,6 +897,7 @@ _207:
 
     ++(me->buffer._input_p);
     goto INIT_STATE_TRANSITION_BLOCK;
+
 
     __quex_assert_no_passage();
 _217:
@@ -2585,7 +2587,7 @@ _265:
 self_send(QUEX_TKN_STRUCT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1908 "Simple.cpp"
+#   line 1910 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2605,7 +2607,7 @@ _255:
 self_send(QUEX_TKN_TYPE_INT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1928 "Simple.cpp"
+#   line 1930 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2625,7 +2627,7 @@ _277:
 self_send(QUEX_TKN_TYPE_DOUBLE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1948 "Simple.cpp"
+#   line 1950 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2645,7 +2647,7 @@ _260:
 self_send(QUEX_TKN_SEND);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1968 "Simple.cpp"
+#   line 1970 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2665,7 +2667,7 @@ _271:
 self_send(QUEX_TKN_EXPECT);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 1988 "Simple.cpp"
+#   line 1990 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2687,7 +2689,7 @@ _240:
 self_send(QUEX_TKN_SEMICOLON);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2010 "Simple.cpp"
+#   line 2012 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2709,7 +2711,7 @@ _238:
 self_send(QUEX_TKN_BRACKET_OPEN);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2032 "Simple.cpp"
+#   line 2034 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2731,7 +2733,7 @@ _239:
 self_send(QUEX_TKN_BRACKET_CLOSE);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2054 "Simple.cpp"
+#   line 2056 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2753,7 +2755,7 @@ self_write_token_p()->number = atoi((char*)(Lexeme));
 self_send(QUEX_TKN_NUMBER);
 QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
 
-#   line 2076 "Simple.cpp"
+#   line 2078 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2773,7 +2775,7 @@ _244:
 #   line 28 "dos_lf_2.qx"
  self_send1(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
 
-#   line 2096 "Simple.cpp"
+#   line 2098 "Simple.cpp"
 
     }
     goto __REENTRY_PREPARATION;
@@ -2790,7 +2792,7 @@ _289: /* TERMINAL: END_OF_STREAM */
 #   line 16 "dos_lf_2.qx"
 self_send(QUEX_TKN_TERMINATION);
 
-#   line 2113 "Simple.cpp"
+#   line 2115 "Simple.cpp"
 
     }
      /* End of Stream causes a return from the lexical analyzer, so that no
