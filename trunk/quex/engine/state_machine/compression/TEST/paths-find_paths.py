@@ -27,7 +27,7 @@ def construct_path(sm, StartStateIdx, String, Skeleton):
             sm.states[end].mark_self_as_origin(target_idx + 1000, end)
         
         state_idx = sm.add_transition(state_idx, char, None, True)
-        sm.states[state_idx].mark_self_as_origin(i + 10000, end)
+        sm.states[state_idx].mark_self_as_origin((long)(i + 10000), end)
 
     return state_idx # Return end of the string path
 
