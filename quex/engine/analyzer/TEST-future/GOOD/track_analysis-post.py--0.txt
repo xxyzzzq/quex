@@ -1,0 +1,29 @@
+init-state = 28L
+00028() <~ (8, 19)
+      == 'a' ==> 00029
+      <no epsilon>
+00029(S, P1) <~ (8, 20, S, P1)
+      == 'b' ==> 00030
+      <no epsilon>
+00030() <~ (8, 21)
+      == 'c' ==> 00031
+      <no epsilon>
+00031(A, P1) <~ (8, 22, A, P1)
+      <no epsilon>
+
+State 28:
+  .entry: 
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+
+State 29:
+  .entry: 
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+
+State 30:
+  .entry: 
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+
+State 31:
+  .entry: 
+  .drop_out: pos -= 2; goto Pattern8;
+
