@@ -783,11 +783,10 @@ def __get_switch_block(VariableName, CaseCodePairList):
         next_i += 1
         txt.append(1)
         case_label = "0x%X" % case
-        txt.append("case %s: " % case_label)
-        txt.append(" " * (7 - len(case_label)))
         if next_i != L and CaseCodePairList[next_i][1] == code:
-            txt.append("\n")
+            txt.append("case %s: %s\n" % (case_label, " " * (7 - len(case_label))))
         else:
+            txt.append("case %s: %s" % (case_label, " " * (7 - len(case_label))))
             if type(code) == list: txt.extend(code)
             else:                  txt.append(code)
             txt.append("\n")
