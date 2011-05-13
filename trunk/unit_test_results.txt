@@ -1,6 +1,6 @@
 ==========================================================================================
 Regression Tests on Fixed Bugs
-Thu Mar 24 03:33:37 2011
+Thu May 12 22:56:17 2011
 TEST
 ------------------------------------------------------------------------------------------
 
@@ -161,7 +161,7 @@ TEST
     2841726 0.44.2 Unknown exception on unicode properties
         bug-2841726.sh ....................................................[OK]
     2891125 0.45.1 bug in -- version
-        bug-2891125.sh ....................................................[OK]
+        bug-2891125.sh ..................................................[FAIL]
     2894648 0.46.2 Backslashed . is unknown to quex
         bug-2894648.sh ....................................................[OK]
 
@@ -272,7 +272,7 @@ TEST
     1969629 0.25.4 token list with just TERMINATION treated empty
         bug-1969629.sh ....................................................[OK]
     2087087 0.31.1 --set-by switches suppress command error diagnostics
-        bug-2087087.sh ....................................................[OK]
+        bug-2087087.sh ..................................................[FAIL]
     2095970 0.31.3 Mode change w/o immediate return. w/o token queue
         bug-2095970-ntq.sh Normal .........................................[OK]
                            NormalNoAsserts ................................[OK]
@@ -362,10 +362,12 @@ TEST
                                                                       | |_|/ - \ | | | |_
                                                                       |_|  |_|_| |_| |___| 
 ------------------------------------------------------------------------------------------
+    [FAIL] bug-2891125.sh
     [FAIL] bug-1885304.sh
+    [FAIL] bug-2087087.sh
 ==========================================================================================
 Demo-Applications for Plain C
-Thu Mar 24 02:43:49 2011
+Thu May 12 22:58:30 2011
 demo/C/TEST
 ------------------------------------------------------------------------------------------
  -- Makefile Differences to C++ Version
@@ -379,7 +381,7 @@ demo/C/TEST
                          008 ..............................................[OK]
                          009 ..............................................[OK]
                          010 ..............................................[OK]
-                         011 ..............................................[OK]
+                         011 ............................................[FAIL]
                          012 ..............................................[OK]
 
  -- demo/000:
@@ -490,13 +492,15 @@ demo/C/TEST
     Single Application/Multiple Lexical Analyzers
         012.sh NDEBUG .....................................................[OK]
                DEBUG ......................................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
+------------------------------------------------------------------------------------------
+    [FAIL] makefile-diff.sh _ 011
 ==========================================================================================
 Demo-Applications for C++
-Thu Mar 24 02:47:55 2011
+Fri May 13 07:00:20 2011
 demo/Cpp/TEST
 ------------------------------------------------------------------------------------------
 
@@ -508,7 +512,7 @@ demo/Cpp/TEST
                                  002 ......................................[OK]
                                  003 ......................................[OK]
                                  005 ......................................[OK]
-                                 006 ......................................[OK]
+                                 006 ....................................[FAIL]
 
  -- demo/000:
 
@@ -618,26 +622,28 @@ demo/Cpp/TEST
     Single Application/Multiple Lexical Analyzers
         012.sh NDEBUG .....................................................[OK]
                DEBUG ......................................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
+------------------------------------------------------------------------------------------
+    [FAIL] other-compilers-intel.sh _ 006
 ==========================================================================================
 Miscellaneous Basic Tests
-Thu Mar 24 02:47:56 2011
+Fri May 13 07:00:21 2011
 quex/TEST
 ------------------------------------------------------------------------------------------
  -- Check if the default configuration has been updated.
         check-default-configuration.sh ....................................[OK]
  -- Check that 'Lexeme' macro is not used.
-        no-use-of-lexeme-macro.sh .........................................[OK]
+        no-use-of-lexeme-macro.sh .......................................[FAIL]
  -- Double Check that Exception Handlers are in place
-        test-exceptions-in-place.sh .......................................[OK]
+        test-exceptions-in-place.sh .....................................[FAIL]
  -- Include Guards for C/C++
         include_guard.py convention .......................................[OK]
                          undefinition .....................................[OK]
  -- Prepare Pattern Information for Code Generation
-        test-coder-get_generator_input.py .................................[OK]
+        test-coder-get_generator_input.py ...............................[FAIL]
  -- Propper undefinition of configuration parameters.
         macro-check.py ....................................................[OK]
 
@@ -645,13 +651,17 @@ quex/TEST
 
     __parse_token_id_file
         test-token_id_file-find_ids.py ....................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
+------------------------------------------------------------------------------------------
+    [FAIL] no-use-of-lexeme-macro.sh
+    [FAIL] test-exceptions-in-place.sh
+    [FAIL] test-coder-get_generator_input.py
 ==========================================================================================
 Check Applications of 'Did you mean'.
-Thu Mar 24 02:47:59 2011
+Fri May 13 07:00:25 2011
 quex/TEST/did-you-mean/TEST
 ------------------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -664,7 +674,7 @@ quex/TEST/did-you-mean/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Thu Mar 24 02:47:59 2011
+Fri May 13 07:00:25 2011
 quex/TEST/errors-warnings/TEST
 ------------------------------------------------------------------------------------------
  -- Token identifier definition and orthography.
@@ -675,7 +685,7 @@ quex/TEST/errors-warnings/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Event Handlers
-Thu Mar 24 03:31:26 2011
+Fri May 13 07:00:25 2011
 quex/TEST/event-handling/TEST
 ------------------------------------------------------------------------------------------
  -- Customized on_skip_range_open event.
@@ -701,7 +711,7 @@ quex/TEST/event-handling/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Include Stack Handling
-Thu Mar 24 02:48:10 2011
+Fri May 13 07:00:25 2011
 quex/TEST/include-stack/TEST
 ------------------------------------------------------------------------------------------
 
@@ -729,7 +739,7 @@ quex/TEST/include-stack/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Indentation Based Blocks
-Thu Mar 24 02:48:19 2011
+Fri May 13 07:00:35 2011
 quex/TEST/indentation_count/TEST
 ------------------------------------------------------------------------------------------
  -- Bad character detection.
@@ -758,7 +768,7 @@ quex/TEST/indentation_count/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Match Precedence in Mode Inheritance Structures
-Thu Mar 24 02:48:25 2011
+Fri May 13 07:00:41 2011
 quex/TEST/match-precedence/TEST
 ------------------------------------------------------------------------------------------
  -- Local variables.
@@ -781,9 +791,11 @@ quex/TEST/match-precedence/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Thu Mar 24 02:48:26 2011
+Fri May 13 07:00:42 2011
 quex/TEST/misc/TEST
 ------------------------------------------------------------------------------------------
+ -- Customized codec files (option --codec-file)
+        customized_codec.sh ...............................................[OK]
  -- Test code comments
         comment.sh ........................................................[OK]
                                                                                ___  _  _
@@ -792,7 +804,7 @@ quex/TEST/misc/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 The 'Reset' Button
-Thu Mar 24 02:48:36 2011
+Fri May 13 07:00:42 2011
 quex/TEST/reset/TEST
 ------------------------------------------------------------------------------------------
  -- Normal Reset
@@ -864,7 +876,7 @@ quex/TEST/reset/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Thu Mar 24 02:48:55 2011
+Fri May 13 07:01:01 2011
 quex/TEST/source-package/TEST
 ------------------------------------------------------------------------------------------
 
@@ -902,7 +914,7 @@ quex/TEST/source-package/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Customized Token Class
-Thu Mar 24 02:48:59 2011
+Fri May 13 07:01:02 2011
 quex/TEST/token-class/TEST
 ------------------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -920,7 +932,7 @@ quex/TEST/token-class/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Tests related to token queues
-Thu Mar 24 02:49:06 2011
+Fri May 13 07:01:02 2011
 quex/TEST/token-policies/TEST
 ------------------------------------------------------------------------------------------
 
@@ -943,7 +955,7 @@ quex/TEST/token-policies/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Thu Mar 24 02:49:07 2011
+Fri May 13 07:01:02 2011
 quex/code_base/TEST
 ------------------------------------------------------------------------------------------
  -- data/bocu1.txt
@@ -967,7 +979,7 @@ quex/code_base/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Lexical Analyzer Class Template
-Thu Mar 24 02:49:13 2011
+Fri May 13 07:01:03 2011
 quex/code_base/analyzer/TEST
 ------------------------------------------------------------------------------------------
  -- Accumulator
@@ -1033,7 +1045,7 @@ quex/code_base/analyzer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Basic Buffer Functions
-Thu Mar 24 02:49:20 2011
+Fri May 13 07:01:10 2011
 quex/code_base/buffer/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1092,7 +1104,7 @@ quex/code_base/buffer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Input Buffers Based on the IConv - Library
-Thu Mar 24 02:49:28 2011
+Fri May 13 07:01:18 2011
 quex/code_base/buffer/converter/iconv/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1163,7 +1175,7 @@ quex/code_base/buffer/converter/iconv/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Testing the ICU Converter Adaption
-Thu Mar 24 02:49:37 2011
+Fri May 13 07:01:27 2011
 quex/code_base/buffer/converter/icu/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1234,7 +1246,7 @@ quex/code_base/buffer/converter/icu/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Plain Buffer Filler (without conversion)
-Thu Mar 24 02:49:53 2011
+Fri May 13 07:01:43 2011
 quex/code_base/buffer/plain/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1325,7 +1337,7 @@ quex/code_base/buffer/plain/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Thu Mar 24 02:49:57 2011
+Fri May 13 07:01:44 2011
 quex/code_base/converter_helper/TEST
 ------------------------------------------------------------------------------------------
  -- Test of complete character set on base converters (utf8, utf16, utf32)
@@ -1348,8 +1360,8 @@ quex/code_base/converter_helper/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Core Functionalities
-Thu Mar 24 02:50:35 2011
-quex/core_engine/TEST
+Fri May 13 07:02:34 2011
+quex/engine/TEST
 ------------------------------------------------------------------------------------------
 
  -- NumberSet:
@@ -1406,9 +1418,81 @@ quex/core_engine/TEST
                                                                              ( (_) | _ <
                                                                               \___/|_|\_) 
 ==========================================================================================
+<no file 'ADM/title.txt'>
+Fri May 13 07:02:35 2011
+quex/engine/analyzer/TEST
+------------------------------------------------------------------------------------------
+
+ -- Track Analyzis:
+
+    Nasty Examples
+        track_analysis-nasty.py 0 .......................................[FAIL]
+                                1 .......................................[FAIL]
+    With Post-Contexts
+        track_analysis-post.py 0 ........................................[FAIL]
+                               1 ........................................[FAIL]
+                               2 ........................................[FAIL]
+                               3 ........................................[FAIL]
+                               4 ........................................[FAIL]
+                               5 ........................................[FAIL]
+                               6 ........................................[FAIL]
+                               7 ........................................[FAIL]
+    With Pre- and Post-Contexts
+        track_analysis-pre-post.py 0 ....................................[FAIL]
+                                   1 ....................................[FAIL]
+                                   2 ....................................[FAIL]
+                                   3 ....................................[FAIL]
+    With Pre-Contexts
+        track_analysis-pre.py 0 .........................................[FAIL]
+                              1 .........................................[FAIL]
+                              2 .........................................[FAIL]
+                              3 .........................................[FAIL]
+                              4 .........................................[FAIL]
+                              5 .........................................[FAIL]
+                              6 .........................................[FAIL]
+    Without Pre- and Post-Contexts
+        track_analysis.py 1 .............................................[FAIL]
+                          2 .............................................[FAIL]
+                          0 .............................................[FAIL]
+                          3 .............................................[FAIL]
+                          4 .............................................[FAIL]
+                          5 .............................................[FAIL]
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
+------------------------------------------------------------------------------------------
+    [FAIL] track_analysis-nasty.py _ 0
+                                 \__ 1
+    [FAIL] track_analysis-post.py _ 0
+                                \__ 1
+                                \__ 2
+                                \__ 3
+                                \__ 4
+                                \__ 5
+                                \__ 6
+                                \__ 7
+    [FAIL] track_analysis-pre-post.py _ 0
+                                    \__ 1
+                                    \__ 2
+                                    \__ 3
+    [FAIL] track_analysis-pre.py _ 0
+                               \__ 1
+                               \__ 2
+                               \__ 3
+                               \__ 4
+                               \__ 5
+                               \__ 6
+    [FAIL] track_analysis.py _ 1
+                           \__ 2
+                           \__ 0
+                           \__ 3
+                           \__ 4
+                           \__ 5
+==========================================================================================
 Code Generation for Lexical Analyzer
-Thu Mar 24 02:54:46 2011
-quex/core_engine/generator/TEST
+Fri May 13 07:06:42 2011
+quex/engine/generator/TEST
 ------------------------------------------------------------------------------------------
  -- Basic Path Compression Test
         test-paths.py Single ..............................................[OK]
@@ -1416,8 +1500,8 @@ quex/core_engine/generator/TEST
                       NonUniform ..........................................[OK]
                       NonUniform2 .........................................[OK]
  -- Basic Template Compression Test
-        test-templates.py 1 ...............................................[OK]
-                          2 ...............................................[OK]
+        test-templates.py 1 .............................................[FAIL]
+                          2 .............................................[FAIL]
 
  -- Buffer Reload:
 
@@ -1751,80 +1835,50 @@ quex/core_engine/generator/TEST
                               DL=2 ........................................[OK]
                               DL=3 ........................................[OK]
                               DL=4 ........................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
-==========================================================================================
-Regular Expression Parsing
-Thu Mar 24 02:54:49 2011
-quex.input.regular_expression/TEST
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
 ------------------------------------------------------------------------------------------
- -- Case Folding
-        test-case_fold.py set .............................................[OK]
-                          pattern .........................................[OK]
- -- State Machine Pattern Matching
-        test-pattern-matching.py ..........................................[OK]
+    [FAIL] test-templates.py _ 1
+                           \__ 2
+==========================================================================================
+Frank-Rene Schaefers Little Python Library
+Fri May 13 07:06:43 2011
+quex/engine/misc/TEST
+------------------------------------------------------------------------------------------
 
- -- Backslashed Characters:
+ -- File Input:
 
-    General
-        test-snap_backslashed_character.py ................................[OK]
+    Function delete_comment(...)
+        test-delete_comment.py ............................................[OK]
+    Function extract_identifiers_with_specific_prefix(...)
+        test-extract_identifiers_with_specific_prefix.py ..................[OK]
+    Function read_until_closing_bracket(...)
+        test-read_until_closing_bracket.py ................................[OK]
 
- -- Basics:
+ -- Integer conversion:
 
-    Lonestanding characters
-        test-lonely-characters.py .........................................[OK]
-    Map character *range* to state machine
-        test-set.py .......................................................[OK]
-    Map character *string* to state machine
-        test-string.py ....................................................[OK]
-    Snap string until (low level function)
-        test-snap_until.py ................................................[OK]
+    read_integer(...)
+        test-read_integer.py hex ..........................................[OK]
+                             octal ........................................[OK]
+                             decimal ......................................[OK]
+                             binary .......................................[OK]
+                             roman ........................................[OK]
+                             misc .........................................[OK]
 
- -- Combination:
+ -- String Handling:
 
-    Alternative Expressions
-        test-alternatives.py ..............................................[OK]
-    Alternative Expressions
-        test-set-expressions.py ...........................................[OK]
-    Simple repeated expressions
-        test-repeated-expressions.py ......................................[OK]
-
- -- Conditional Analysis:
-
-    Begin of Line '^', End of Line '$'
-        test-bol-eol.py ...................................................[OK]
-    End of Line '$' (with DOS/Windows '\r\n')
-        test-eol-carriage-return-newline.py ...............................[OK]
-    post conditions
-        test-post-condition.py ............................................[OK]
-    pre conditions
-        test-pre-condition.py .............................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ....................................[OK]
-
- -- Replacement:
-
-    Character Sets
-        test-replacement-2.py .............................................[OK]
-    Regular Expression State Machines
-        test-replacement.py ...............................................[OK]
-
- -- Unicode properties:
-
-    Set Operations
-        test-properties-2.py ..............................................[OK]
-    Simple
-        test-properties.py ................................................[OK]
+    Trim (replaced by string.strip(..))
+        test-trim.py ......................................................[OK]
                                                                                ___  _  _
                                                                               / _ \| |/ )
                                                                              ( (_) | _ <
                                                                               \___/|_|\_) 
 ==========================================================================================
 State Machine Operations
-Thu Mar 24 02:54:59 2011
-quex/core_engine/state_machine/TEST
+Fri May 13 07:06:52 2011
+quex/engine/state_machine/TEST
 ------------------------------------------------------------------------------------------
  -- Commonality Checker
         test-commonality.py ...............................................[OK]
@@ -1870,7 +1924,7 @@ quex/core_engine/state_machine/TEST
     Epsilon closure (single state)
         test-StateMachine-epsilon-closure.py ..............................[OK]
     Get elementary trigger sets (target index --> trigger sets)
-        test-StateMachine-elementary_trigger_sets.py ......................[OK]
+        test-StateMachine-elementary_trigger_sets.py ....................[FAIL]
     Get elementary trigger sets II
         test-StateMachine-elementary_trigger_sets-2.py ....................[OK]
 
@@ -1931,7 +1985,7 @@ quex/core_engine/state_machine/TEST
     NFA to DFA (subset construction)
         test-StateMachine-trace-origin-create-DFA.py ......................[OK]
     NFA to DFA (subset construction) II
-        test-StateMachine-trace-origin-create-DFA-2.py ....................[OK]
+        test-StateMachine-trace-origin-create-DFA-2.py ..................[FAIL]
     Paralellization
         test-parallelize-trace-origin.py ..................................[OK]
 
@@ -1982,14 +2036,17 @@ quex/core_engine/state_machine/TEST
                                  4.2 ......................................[OK]
                                  4.3 ......................................[OK]
                                  4.4 ......................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
+------------------------------------------------------------------------------------------
+    [FAIL] test-StateMachine-elementary_trigger_sets.py
+    [FAIL] test-StateMachine-trace-origin-create-DFA-2.py
 ==========================================================================================
 Compression: Path and Table
-Thu Mar 24 02:55:01 2011
-quex/core_engine/state_machine/compression/TEST
+Fri May 13 07:06:54 2011
+quex/engine/state_machine/compression/TEST
 ------------------------------------------------------------------------------------------
 
  -- Paths:
@@ -2004,16 +2061,16 @@ quex/core_engine/state_machine/compression/TEST
                                         5b ................................[OK]
                                         6 .................................[OK]
     find_path
-        paths-find_paths.py 1 .............................................[OK]
-                            2 .............................................[OK]
-                            3 .............................................[OK]
-                            4 .............................................[OK]
-                            5 .............................................[OK]
-                            6 .............................................[OK]
+        paths-find_paths.py 1 ...........................................[FAIL]
+                            2 ...........................................[FAIL]
+                            3 ...........................................[FAIL]
+                            4 ...........................................[FAIL]
+                            5 ...........................................[FAIL]
+                            6 ...........................................[FAIL]
     find_path (mean tests)
-        paths-find_paths-2.py 1 ...........................................[OK]
-                              2 ...........................................[OK]
-                              3 ...........................................[OK]
+        paths-find_paths-2.py 1 .........................................[FAIL]
+                              2 .........................................[FAIL]
+                              3 .........................................[FAIL]
     is_difference_single_character
         paths-can_plug_to_equal.py 1_interval .............................[OK]
                                    2_intervals ............................[OK]
@@ -2060,46 +2117,23 @@ quex/core_engine/state_machine/compression/TEST
                               3 ...........................................[OK]
                               4 ...........................................[OK]
                               recursive ...................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
-==========================================================================================
-Frank-Rene Schaefers Little Python Library
-Thu Mar 24 02:55:01 2011
-quex/frs_py/TEST
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
 ------------------------------------------------------------------------------------------
-
- -- File Input:
-
-    Function delete_comment(...)
-        test-delete_comment.py ............................................[OK]
-    Function extract_identifiers_with_specific_prefix(...)
-        test-extract_identifiers_with_specific_prefix.py ..................[OK]
-    Function read_until_closing_bracket(...)
-        test-read_until_closing_bracket.py ................................[OK]
-
- -- Integer conversion:
-
-    read_integer(...)
-        test-read_integer.py hex ..........................................[OK]
-                             octal ........................................[OK]
-                             decimal ......................................[OK]
-                             binary .......................................[OK]
-                             roman ........................................[OK]
-                             misc .........................................[OK]
-
- -- String Handling:
-
-    Trim (replaced by string.strip(..))
-        test-trim.py ......................................................[OK]
-                                                                               ___  _  _
-                                                                              / _ \| |/ )
-                                                                             ( (_) | _ <
-                                                                              \___/|_|\_) 
+    [FAIL] paths-find_paths.py _ 1
+                             \__ 2
+                             \__ 3
+                             \__ 4
+                             \__ 5
+                             \__ 6
+    [FAIL] paths-find_paths-2.py _ 1
+                               \__ 2
+                               \__ 3
 ==========================================================================================
 Character Set Queries
-Thu Mar 24 02:55:14 2011
+Fri May 13 07:07:05 2011
 quex/input/TEST
 ------------------------------------------------------------------------------------------
  -- Case Folding based on Unicode Database
@@ -2175,8 +2209,78 @@ quex/input/TEST
                                                                              ( (_) | _ <
                                                                               \___/|_|\_) 
 ==========================================================================================
+Regular Expression Parsing
+Fri May 13 07:07:07 2011
+quex/input/regular_expression/TEST
+------------------------------------------------------------------------------------------
+ -- Case Folding
+        test-case_fold.py set .............................................[OK]
+                          pattern .........................................[OK]
+ -- State Machine Pattern Matching
+        test-pattern-matching.py ........................................[FAIL]
+
+ -- Backslashed Characters:
+
+    General
+        test-snap_backslashed_character.py ................................[OK]
+
+ -- Basics:
+
+    Lonestanding characters
+        test-lonely-characters.py .........................................[OK]
+    Map character *range* to state machine
+        test-set.py .......................................................[OK]
+    Map character *string* to state machine
+        test-string.py ....................................................[OK]
+    Snap string until (low level function)
+        test-snap_until.py ................................................[OK]
+
+ -- Combination:
+
+    Alternative Expressions
+        test-alternatives.py ..............................................[OK]
+    Alternative Expressions
+        test-set-expressions.py .........................................[FAIL]
+    Simple repeated expressions
+        test-repeated-expressions.py ......................................[OK]
+
+ -- Conditional Analysis:
+
+    Begin of Line '^', End of Line '$'
+        test-bol-eol.py ...................................................[OK]
+    End of Line '$' (with DOS/Windows '\r\n')
+        test-eol-carriage-return-newline.py ...............................[OK]
+    post conditions
+        test-post-condition.py ............................................[OK]
+    pre conditions
+        test-pre-condition.py .............................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ....................................[OK]
+
+ -- Replacement:
+
+    Character Sets
+        test-replacement-2.py .............................................[OK]
+    Regular Expression State Machines
+        test-replacement.py ...............................................[OK]
+
+ -- Unicode properties:
+
+    Set Operations
+        test-properties-2.py ..............................................[OK]
+    Simple
+        test-properties.py ..............................................[FAIL]
+                                                                       ___   _    _   _
+                                                                      |  _| / \  | | | |
+                                                                      | |_|/ - \ | | | |_
+                                                                      |_|  |_|_| |_| |___| 
+------------------------------------------------------------------------------------------
+    [FAIL] test-pattern-matching.py
+    [FAIL] test-set-expressions.py
+    [FAIL] test-properties.py
+==========================================================================================
 Basic Code Writing Functionality
-Thu Mar 24 02:55:15 2011
+Fri May 13 07:07:09 2011
 quex/output/cpp/TEST
 ------------------------------------------------------------------------------------------
  -- Token Class Template
@@ -2203,7 +2307,7 @@ quex/output/cpp/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Testing Statemachine Plots
-Thu Mar 24 02:55:16 2011
+Fri May 13 07:07:10 2011
 quex/output/graphviz/TEST
 ------------------------------------------------------------------------------------------
  -- Check supported formats.
@@ -2226,10 +2330,10 @@ SUMMARY:
 
  Fails: Verdict: Directory:
 
-     1   [FAIL]  TEST
-           [OK]  demo/C/TEST
-           [OK]  ..../Cpp/TEST
-           [OK]  quex/TEST
+     3   [FAIL]  TEST
+     1   [FAIL]  demo/C/TEST
+     1   [FAIL]  ..../Cpp/TEST
+     3   [FAIL]  quex/TEST
            [OK]  ..../TEST/did-you-mean/TEST
            [OK]  ........./errors-warnings/TEST
            [OK]  ........./event-handling/TEST
@@ -2248,20 +2352,21 @@ SUMMARY:
            [OK]  .............................../icu/TEST
            [OK]  ...................../plain/TEST
            [OK]  ............../converter_helper/TEST
-           [OK]  ..../core_engine/TEST
-           [OK]  ................/generator/TEST
-           [OK]  ................/regular_expression/TEST
-           [OK]  ................/state_machine/TEST
-           [OK]  ............................../compression/TEST
-           [OK]  ..../frs_py/TEST
+           [OK]  ..../engine/TEST
+    27   [FAIL]  .........../analyzer/TEST
+     2   [FAIL]  .........../generator/TEST
+           [OK]  .........../misc/TEST
+     2   [FAIL]  .........../state_machine/TEST
+     9   [FAIL]  ........................./compression/TEST
            [OK]  ..../input/TEST
+     3   [FAIL]  ........../regular_expression/TEST
            [OK]  ..../output/cpp/TEST
            [OK]  .........../graphviz/TEST
 ------------------------------------------------------------------------------------------
-     _____     _ _        ___                 
-    |  ___|_ _(_) |___   / _ \ _ __   ___ ___ 
-    | |_ / _` | | / __| | | | | '_ \ / __/ _ \
-    |  _| (_| | | \__ \ | |_| | | | | (_|  __/
-    |_|  \__,_|_|_|___/  \___/|_| |_|\___\___|
-    
+     _____     _ _          ____    _           
+    |  ___|_ _(_) |___     | ___|  / |    __  __
+    | |_ / _` | | / __|    |___ \  | |    \ \/ /
+    |  _| (_| | | \__ \     ___) | | |     >  < 
+    |_|  \__,_|_|_|___/    |____/  |_|    /_/\_\
+                       
 ==========================================================================================

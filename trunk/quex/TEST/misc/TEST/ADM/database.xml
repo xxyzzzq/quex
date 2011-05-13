@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.57" date="Thu May 12 01:44:06 2011">
+<test-database execution-time-sec="0.56" date="Fri May 13 07:00:42 2011">
     <last-used-diff-display-program name=""/>
     <test title="Customized codec files (option --codec-file)" time-sum-sec="0.22"> 
         <application file-name="customized_codec.sh" info-request-time="1301230491L" vanished="False"/>
@@ -6,10 +6,10 @@
            <choice name="" result="OK" time_sec="0.22" crc="1025570625"/>
         </choice-list>
     </test>
-    <test title="Test code comments" time-sum-sec="0.35"> 
+    <test title="Test code comments" time-sum-sec="0.34"> 
         <application file-name="comment.sh" info-request-time="1301139206L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.35" crc="977201913"/>
+           <choice name="" result="OK" time_sec="0.34" crc="977201913"/>
         </choice-list>
     </test>
 </test-database>

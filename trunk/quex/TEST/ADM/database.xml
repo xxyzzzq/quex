@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.12" date="Thu May 12 01:43:45 2011">
+<test-database execution-time-sec="1.11" date="Fri May 13 07:00:21 2011">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.42"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1305001315L" vanished="False"/>
@@ -6,10 +6,10 @@
            <choice name="" result="FAIL" time_sec="0.42" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.04"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.04" crc="1890706426"/>
+           <choice name="" result="FAIL" time_sec="0.03" crc="1890706426"/>
         </choice-list>
     </test>
     <test title="Check if the default configuration has been updated." time-sum-sec="0.01"> 

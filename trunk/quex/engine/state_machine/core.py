@@ -502,11 +502,14 @@ class StateMachine:
                 interval = Interval(current_interval_begin, item.position)
 
                 current_target_epsilon_closure.sort()             
-                key_str  = repr(current_target_epsilon_closure)
-                combination = combinations.get(key_str)
+                key = repr(current_target_epsilon_closure)
+                ## Caused 3 failures in unit test:
+                ## if len(current_target_epsilon_closure) == 1: key = current_target_epsilon_closure[0]  
+                ## else:                                        key = tuple(sorted(current_target_epsilon_closure))
+                combination = combinations.get(key)
                 if combination is None:
-                    combinations[key_str] = (current_target_epsilon_closure, \
-                                             NumberSet(interval, ArgumentIsYoursF=True))
+                    combinations[key] = (current_target_epsilon_closure, \
+                                         NumberSet(interval, ArgumentIsYoursF=True))
                 else:
                     combination[1].unite_with(interval)
            

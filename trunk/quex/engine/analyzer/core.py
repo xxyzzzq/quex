@@ -84,18 +84,36 @@ class Analyzer:
 
         what about the precendence of checks in common drop out?
 
+        # Require sequence to judge whether the sequence of pre-contexts is maintained
+        prototype_id_seq  = prototype.get_priorized_pre_context_id_list()
+        # Require 'sorted by id' to judge whether the set of pre-contexts is the same
+        prototype_id_set  = prototype.get_sorted_pre_context_id_list()
+
+        homogeneous_f = True  # All traces have the same pre-context-ids
+        harmonic_f    = True  # All traces have the same pre-context-ids and their
+        #                     # priorization is the same.
+        for trace in remainder:
+            # Try to find the 'inhomogeneous' case
+            if prototype_id_set != trace.get_sorted_pre_context_id_list():
+                homogeneous_f = False
+                harmonic_f  = False
+                break
+            if not harmonic_f: continue
+            # Try to find the 'disharmonic' case
+            if prototype_id_seq != trace.get_priorized_pre_context_id_list():
+                harmonic_f = False
+            id_seq = map(lambda x: x.pre_context_id, trace.get_sorted_sequence())
+            id_set = sorted(id_seq)
+            if id_set != 
+            
+
         # (1) Acceptance
+        #
         # The un-common pre-contexts are subject to 'store_acceptance' anyway.
         # For the common pre-contexts, if they do not appear with the same
         # precedence (due to length), then the whole state must rely on 'store_acceptance'.
-        prototype_seq = map(lambda x: x.pre_context_id, prototype.get_sorted_sequence())
-        for trace in remainder:
-            seq = map(lambda x: x.pre_context_id, trace.get_sorted_sequence())
-            if seq == prototype_seq: continue
-
-            # (*) Some pre-context-ids are different, or precedence differs
-            #     => Acceptance depends on path
-
+        if not harmonic_f:
+            # (*) Acceptance depends on path
             # -- drop_out: if 'restore acceptance always' is set, then precedence
             #              not an an issue for acceptance.
             state.drop_out.set_restore_acceptance_always()
@@ -108,7 +126,7 @@ class Analyzer:
             # (*) All pre-context-ids are the same and have the same precedence
 
             # -- drop_out: There is a common precedence scheme, follow it.
-            state.drop_out.set_precendence(prototype_seq)
+            state.drop_out.set_precendence(prototype_id_seq)
 
             # All traces have the same pre-context-ids and they are equal in precedence
             #
@@ -150,27 +168,35 @@ class Analyzer:
                         break
 
         # (2) Positioning
-        #     For positioning it is not necessary what the precedence is, only 
-        #     (1) all pre-contexts are present
-        #     (2) all have the same 'transition_n_since_positioning'
-        #     (3) no 'transition_n_since_positioning' = None
-        prototype_transition_n_since_positioning = prototype.get(None).transition_n_since_positioning
-        if prototype_transition_n_since_positioning is None:
-            self.store_position(TheAcceptanceTraceList)
-            return 
-
-        prototype_set = set(prototype_seq)
-        for trace in remainder:
-            pre_context_set = map(lambda x: x.pre_context_id, trace.get_sequence())
-            if pre_context_set != prototype_set:
-                self.store_position(TheAcceptanceTraceList)
+        #
+        # If traces are not harmonic, but homogeneous and all have the transition_n_since_positioning
+        # then the transition_n can still be determined.
+        if not harmonic_f:
+            if not homogeneous_f:
+                hopeless_case()
                 return
 
-        # All have the same set of 
-        for pre_context_id in prototype_set:
-            if    trace.get(pre_context_id).transition_n_since_positioning \
-               != prototype.get(pre_context_id).transition_n_since_positioning:
-                self.store_position_specific(TheAcceptanceTraceList, pre_context_id)
+            prototype_transition_n_since_positioning = prototype.get(None).transition_n_since_positioning
+            if prototype_transition_n_since_positioning is None:
+                hopeless_case()
+                return
+
+            for trace in TheAcceptanceTraceList:
+                for x in trace:
+                    if x.transition_n_since_positioning != prototype_transition_n_since_positioning:
+                        hopeless_case()
+                        return
+            # Precedence does not matter
+            state.drop_out.restore_position_always()
+            return
+
+        # -- Harmonic Case
+        for pre_context_id in prototype_id_set:
+            prototype_transition_n_since_positioning = prototype.get(pre_context_id).transition_n_since_positioning
+            for trace in TheAcceptanceTraceList:
+                if trace.get(pre_context_id) != prototype_transition_n_since_positioning:
+                    self.store_position_specific(TheAcceptanceTraceList, pre_context_id)
+                    state.drout_out.restore_position(pre_context_id)
     
     def store_acceptance_specific(self, TheAcceptanceTraceList, PreContextID):
         for entry in imap(lambda x: x.get(PreContextID), TheAcceptanceTraceList):
