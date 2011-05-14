@@ -1,6 +1,7 @@
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
+from   itertools import islice, ifilter
 
 class StateSet_List:
     def __init__(self, StateMachine):
@@ -29,16 +30,56 @@ class StateSet_List:
 
         # -- choose one arbitrary state (for example state 0) as a prototype
         #    which is compared against the remaining states in the state set.
-        prototype_index      = state_set[0]
+        if len(state_set) > 25:
+            prototype_index  = min(state_set, key=lambda x: len(self.sm.states[x].transitions().get_map()))
+            remainder        = ifilter(lambda x: x != prototype_index, state_set)
+        else:
+            prototype_index  = state_set[0]
+            remainder        = islice(state_set, 1, None)
+
         prototype            = self.sm.states[prototype_index]
         equivalent_state_set = [ prototype_index ] 
 
         # -- loop over all remaining states from state set
         i         = 1   # state_set[i] = state index
         element_n = N   # remaining number of elements in state set
-        for state_index in state_set[1:]:
+
+        def normalized_map(DB, ReferenceSet=None, Size=None):
+            result = {}
+            if ReferenceSet is None:
+                for target_index, trigger_map in DB.iteritems():
+                    # Target in terms of equivalent state sets
+                    target = self.map[target_index]
+                    result.setdefault(target, []).append(trigger_map)
+            else:
+                for target_index, trigger_map in DB.iteritems():
+                    # Target in terms of equivalent state sets
+                    target = self.map[target_index]
+                    if target not in ReferenceSet: return None
+                    result.setdefault(target, []).append(trigger_map)
+                if len(result) != Size: return None
+
+            for target, trigger_map_list in result.items():
+                if len(trigger_map_list) == 1: 
+                    result[target] = trigger_map_list[0]
+                else:
+                    union = trigger_map_list[0].union(trigger_map_list[1])
+                    for trigger_set in islice(trigger_map_list, 2, None):
+                        union.unite_with(trigger_set)
+                    result[target] = union
+            return result
+
+        prototype_map = normalized_map(prototype.transitions().get_map())
+        prototype_set = prototype_map.keys()
+        Size          = len(prototype_set)
+        for state_index in remainder:
             state = self.sm.states[state_index]
-            if self.__equivalence(prototype, state): 
+            state_map = normalized_map(state.transitions().get_map(), prototype_set, Size)
+            if state_map is None: 
+                continue
+            for target in prototype_set:
+                if not prototype_map[target].is_equal(state_map[target]): break
+            else:
                 equivalent_state_set.append(state_index)
 
         # -- Are all states equivalent?
@@ -97,7 +138,7 @@ class StateSet_List:
             state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
             db_add(state_combination_id, state_index)
 
-        # (2b) Enter the splitted acceptance state sets.
+        # (2b) Enter the split acceptance state sets.
         for state_set in db.values():
             self.__add_state_set(state_set)
 
@@ -112,44 +153,13 @@ class StateSet_List:
 
         return True
 
-    def __equivalence(self, This, That):
-        """Do state 'This' and state 'That' trigger on the same triggers to the
-           same target state?
-        """
-        map_0 = This.transitions().get_map()
-        map_1 = That.transitions().get_map()
-
-        if len(map_0) != len(map_1): return False
-
-        transition_list_0 = map_0.items()
-        transition_list_1 = map_1.items()
-
-        # Assumption: Transitions do not appear twice. Thus, both lists have the same
-        #             length and any element of A appears in B, the two must be equal.
-        for t0_target_state_index, t0_trigger_set in transition_list_0:
-            target_0 = self.map[t0_target_state_index]
-            
-            # Find transition in 'That' state that contains the same trigger set
-            for t1_target_state_index, t1_trigger_set in transition_list_1:
-                target_1 = self.map[t1_target_state_index]
-                # Only of t0_target_state_index and t1_target_state_index come from
-                # the same state set and have the same trigger, an equivalent transition
-                # is found.
-                if target_1 == target_0 and t0_trigger_set.is_equal(t1_trigger_set): 
-                    break
-            else:
-                # no trigger set found in 'That' that corresponds to 'This' => not equivalent
-                return False
-
-        return True
-
 def do(SM, CreateNewStateMachineF=True):
     """Reduces the number of states according to equivalence classes of states. It starts
        with two sets: 
        
             (1) the set of acceptance states, 
                 -- these states need to be splitted again according to their origin.
-                   acceptance of state machine A is not equal to acceptance of 
+                   Acceptance of state machine A is not equal to acceptance of 
                    state machine B.
             (2) the set of non-acceptance states.
        
@@ -173,7 +183,7 @@ def do(SM, CreateNewStateMachineF=True):
         state_set_list_changed_f = False
         while i < state_set_list.size:
             if state_set_list.split(i):           
-                state_set_list_changed_f = True   # -- a split happend, the state sets changed ...  
+                state_set_list_changed_f = True   # -- a split happened, the state sets changed ...  
             i += 1
 
     # If all states in the state sets trigger equivalently, then the state set remains

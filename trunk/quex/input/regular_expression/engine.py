@@ -180,7 +180,7 @@ def snap_expression(stream, PatternDict):
         stream.seek(position_1) 
         return __debug_exit(result, stream)
 
-    result = parallelize.do([result, result_2])    
+    result = parallelize.do([result, result_2], CloneF=False)    
     return __debug_exit(construct.beautify(result), stream)
         
 def snap_term(stream, PatternDict):
@@ -276,6 +276,7 @@ def snap_primary(stream, PatternDict):
     ## print "##imr:", result.get_string(NormalizeF=False)
     if result_repeated is not None: result = result_repeated
     return __debug_exit(construct.beautify(result), stream)
+    # return __debug_exit(result, stream)
     
 def snap_non_control_character(stream, PatternDict):
     __debug_entry("non-control characters", stream)
