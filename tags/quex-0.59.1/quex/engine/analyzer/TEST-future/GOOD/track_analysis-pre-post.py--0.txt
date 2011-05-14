@@ -1,0 +1,29 @@
+init-state = 30L
+00030() <~ (11, 23)
+      == 'a' ==> 00031
+      <no epsilon>
+00031(S, P3) <~ (11, 24, S, P3)
+      == 'b' ==> 00032
+      <no epsilon>
+00032(A, P3, pre=9) <~ (11, 25, A, P3, pre=9)
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001(A, S) <~ 
+      <no epsilon>
+
+State 32:
+  .entry:    
+  .drop_out: if pre_context_9: pos -= 1; goto Pattern11;
+             pos = lexeme_start + 1; goto Failure;
+
+State 30:
+  .entry:    
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+
+State 31:
+  .entry:    
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+

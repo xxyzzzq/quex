@@ -1,0 +1,4 @@
+simple.qx:3:warning: Detected implicit token identifier definitions. Proposal:
+simple.qx:3:warning:    token {
+simple.qx:3:warning:      2;
+simple.qx:3:warning:    }

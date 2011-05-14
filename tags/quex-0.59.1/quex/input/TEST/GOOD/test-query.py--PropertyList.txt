@@ -1,0 +1,94 @@
+warning: no database file for property `NFC_Quick_Check'.
+warning: no database file for property `NFD_Quick_Check'.
+warning: no database file for property `NFKC_Quick_Check'.
+warning: no database file for property `NFKD_Quick_Check'.
+# Abbreviation, Name, Type
+AHex,    ASCII_Hex_Digit,                    Binary
+Alpha,   Alphabetic,                         Binary
+Bidi_C,  Bidi_Control,                       Binary
+Bidi_M,  Bidi_Mirrored,                      Binary
+CE,      Composition_Exclusion,              Binary
+Comp_Ex, Full_Composition_Exclusion,         Binary
+DI,      Default_Ignorable_Code_Point,       Binary
+Dash,    Dash,                               Binary
+Dep,     Deprecated,                         Binary
+Dia,     Diacritic,                          Binary
+Ext,     Extender,                           Binary
+FC_NFKC, FC_NFKC_Closure,                    String,        <unsupported>
+GCB,     Grapheme_Cluster_Break,             Enumerated
+Gr_Base, Grapheme_Base,                      Binary
+Gr_Ext,  Grapheme_Extend,                    Binary
+Gr_Link, Grapheme_Link,                      Binary
+Hex,     Hex_Digit,                          Binary
+Hyphen,  Hyphen,                             Binary
+IDC,     ID_Continue,                        Binary
+IDS,     ID_Start,                           Binary
+IDSB,    IDS_Binary_Operator,                Binary
+IDST,    IDS_Trinary_Operator,               Binary
+Ideo,    Ideographic,                        Binary
+Join_C,  Join_Control,                       Binary
+LOE,     Logical_Order_Exception,            Binary
+Lower,   Lowercase,                          Binary
+Math,    Math,                               Binary
+NChar,   Noncharacter_Code_Point,            Binary
+NFC_QC,  NFC_Quick_Check,                    Enumerated,    <unsupported>
+NFD_QC,  NFD_Quick_Check,                    Enumerated,    <unsupported>
+NFKC_QC, NFKC_Quick_Check,                   Enumerated,    <unsupported>
+NFKD_QC, NFKD_Quick_Check,                   Enumerated,    <unsupported>
+OAlpha,  Other_Alphabetic,                   Binary
+ODI,     Other_Default_Ignorable_Code_Point, Binary
+OGr_Ext, Other_Grapheme_Extend,              Binary
+OIDC,    Other_ID_Continue,                  Binary
+OIDS,    Other_ID_Start,                     Binary
+OLower,  Other_Lowercase,                    Binary
+OMath,   Other_Math,                         Binary
+OUpper,  Other_Uppercase,                    Binary
+Pat_Syn, Pattern_Syntax,                     Binary
+Pat_WS,  Pattern_White_Space,                Binary
+QMark,   Quotation_Mark,                     Binary
+Radical, Radical,                            Binary
+SB,      Sentence_Break,                     Enumerated
+SD,      Soft_Dotted,                        Binary
+STerm,   STerm,                              Binary
+Term,    Terminal_Punctuation,               Binary
+UIdeo,   Unified_Ideograph,                  Binary
+URS,     Unicode_Radical_Stroke,             Miscellaneous, <unsupported>
+Upper,   Uppercase,                          Binary
+VS,      Variation_Selector,                 Binary
+WB,      Word_Break,                         Enumerated
+WSpace,  White_Space,                        Binary
+XIDC,    XID_Continue,                       Binary
+XIDS,    XID_Start,                          Binary
+XO_NFC,  Expands_On_NFC,                     Binary
+XO_NFD,  Expands_On_NFD,                     Binary
+XO_NFKC, Expands_On_NFKC,                    Binary
+XO_NFKD, Expands_On_NFKD,                    Binary
+age,     Age,                                Catalog
+bc,      Bidi_Class,                         Enumerated
+blk,     Block,                              Catalog
+bmg,     Bidi_Mirroring_Glyph,               String,        <unsupported>
+ccc,     Canonical_Combining_Class,          Enumerated
+cf,      Case_Folding,                       String,        <unsupported>
+dm,      Decomposition_Mapping,              String,        <unsupported>
+dt,      Decomposition_Type,                 Enumerated
+ea,      East_Asian_Width,                   Enumerated
+gc,      General_Category,                   Enumerated
+hst,     Hangul_Syllable_Type,               Enumerated
+isc,     ISO_Comment,                        Miscellaneous
+jg,      Joining_Group,                      Enumerated
+jt,      Joining_Type,                       Enumerated
+lb,      Line_Break,                         Enumerated
+lc,      Lowercase_Mapping,                  String,        <unsupported>
+na,      Name,                               Miscellaneous
+na1,     Unicode_1_Name,                     Miscellaneous
+nt,      Numeric_Type,                       Enumerated
+nv,      Numeric_Value,                      Numeric
+sc,      Script,                             Catalog
+scc,     Special_Case_Condition,             String,        <unsupported>
+sfc,     Simple_Case_Folding,                String,        <unsupported>
+slc,     Simple_Lowercase_Mapping,           String,        <unsupported>
+stc,     Simple_Titlecase_Mapping,           String,        <unsupported>
+suc,     Simple_Uppercase_Mapping,           String,        <unsupported>
+tc,      Titlecase_Mapping,                  String,        <unsupported>
+uc,      Uppercase_Mapping,                  String,        <unsupported>
+

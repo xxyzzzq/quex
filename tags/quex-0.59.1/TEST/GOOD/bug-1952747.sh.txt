@@ -1,0 +1,5 @@
+simple.qx:2:warning: Detected implicit token identifier definitions. Proposal:
+simple.qx:2:warning:    token {
+simple.qx:2:warning:      SOMETHING;
+simple.qx:2:warning:    }
+         user_specified_tkn_termination_handler(); 

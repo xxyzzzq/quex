@@ -1,0 +1,44 @@
+<history date="Sun May 15 00:14:06 2011" element-n="18">
+    <day year="2010" month="04" day="01">
+        <history-init time="16:04:08"/>
+    </day>
+    <day year="2010" month="04" day="02">
+        <crc-error time="04:52:46" application="paths-extract_admissible_single_transitions.py" choice="single" database-crc="1639748366" real-crc="1687192096"/>
+    </day>
+    <day year="2010" month="04" day="03">
+        <crc-error time="04:35:52" application="paths-find_skeleton.py" choice="more" database-crc="1895399711" real-crc="2145917462"/>
+    </day>
+    <day year="2010" month="04" day="04">
+        <crc-error time="13:28:14" application="paths-can_plug_to_equal.py" choice="2_intervals" database-crc="-1958215376" real-crc="1337704547"/>
+    </day>
+    <day year="2010" month="04" day="05">
+        <crc-error time="05:02:35" application="paths-can_plug_to_equal.py" choice="2_intervals" database-crc="1337704547" real-crc="1818477451"/>
+        <crc-error time="05:03:17" application="paths-find_skeleton.py" choice="more" database-crc="2145917462" real-crc="321385342"/>
+    </day>
+    <day year="2010" month="04" day="12">
+        <crc-error time="04:29:47" application="paths-find_paths.py" choice="2" database-crc="-402134190" real-crc="1986232386"/>
+    </day>
+    <day year="2010" month="04" day="13">
+        <crc-error time="04:48:33" application="paths-can_plug_to_equal.py" choice="2_intervals" database-crc="1818477451" real-crc="212610594"/>
+        <crc-error time="05:13:02" application="paths-find_paths.py" choice="5" database-crc="-1181816887" real-crc="610892895"/>
+    </day>
+    <day year="2010" month="04" day="18">
+        <crc-error time="15:37:29" application="templates-metric.py" choice="1" database-crc="-1578734527" real-crc="-1863779026"/>
+        <crc-error time="15:37:29" application="templates-metric.py" choice="2" database-crc="837096345" real-crc="-419042886"/>
+    </day>
+    <day year="2010" month="05" day="04">
+        <crc-error time="05:02:29" application="templates-combine-2.py" choice="recursive" database-crc="-1963475255" real-crc="-1772708121"/>
+    </day>
+    <day year="2010" month="05" day="19">
+        <crc-error time="05:56:21" application="templates-best_matching_pair.py" choice="0" database-crc="769148517" real-crc="765364563"/>
+    </day>
+    <day year="2010" month="06" day="16">
+        <crc-error time="07:13:02" application="paths-find_paths.py" choice="5" database-crc="-1164571765" real-crc="1404149728"/>
+    </day>
+    <day year="2010" month="12" day="08">
+        <crc-error time="20:25:00" application="templates-best_matching_pair.py" choice="0" database-crc="765364563" real-crc="-1344025935"/>
+        <crc-error time="20:26:50" application="templates-best_matching_pair.py" choice="recursive" database-crc="-1792872906" real-crc="392146388"/>
+        <crc-error time="20:34:38" application="templates-best_matching_pair.py" choice="recursive" database-crc="392146388" real-crc="-1792872906"/>
+        <crc-error time="20:34:38" application="templates-best_matching_pair.py" choice="0" database-crc="-1344025935" real-crc="765364563"/>
+    </day>
+</history>
