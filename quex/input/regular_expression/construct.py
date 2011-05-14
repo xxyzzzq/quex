@@ -8,8 +8,11 @@ import quex.engine.state_machine.setup_border_conditions as setup_border_conditi
 import quex.engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization   as hopcroft
 #
-from   quex.input.setup                                       import setup as Setup
+from   quex.input.setup                                  import setup as Setup
 from   quex.engine.misc.file_in  import *
+
+## import quex.engine.state_machine.identity_checker as DEBUG_identity_checker
+## from   copy import deepcopy
 
 
 def do(core_sm, 
@@ -90,7 +93,11 @@ def beautify(the_state_machine):
     result = nfa_to_dfa.do(the_state_machine)
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
+
+    ## DEBUG_before = deepcopy(result)
     result = hopcroft.do(result, CreateNewStateMachineF=False)
+    ## assert DEBUG_identity_checker.do(DEBUG_before, result)
+
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
 

@@ -6,12 +6,6 @@ endif
 
 all: iso8859-7-lexer utf8-lexer 
 
-Test.cpp: greek.qx
-	quex -i greek.qx           \
-		 --codec-file test-this.dat \
-		 --token-prefix TKN_   \
-		 -o ISO8859_7_Lex
-
 ISO8859_7_Lex.cpp: greek.qx
 	quex -i greek.qx         \
 		 --codec iso8859_7   \
