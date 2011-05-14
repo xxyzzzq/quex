@@ -158,7 +158,7 @@ def do(SM, CreateNewStateMachineF=True):
        with two sets: 
        
             (1) the set of acceptance states, 
-                -- these states need to be splitted again according to their origin.
+                -- these states need to be split again according to their origin.
                    Acceptance of state machine A is not equal to acceptance of 
                    state machine B.
             (2) the set of non-acceptance states.

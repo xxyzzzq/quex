@@ -14,6 +14,7 @@ import quex.engine.state_machine.hopcroft_minimization as hopcroft
 if "--hwut-info" in sys.argv:
     print "DFA: Hopcroft optimization (minimize state set) II"
     print "CHOICES: NEW, ADAPT;"
+    print "SAME;"
     sys.exit(0)
 
 if "NEW" in sys.argv:     CreateNewStateMachineF=True
@@ -364,3 +365,30 @@ n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
 sm.states[n2].add_origin(5555L, 1L)
 
 test(sm, txt)
+
+txt = """
+
+        ( 0 )-- a -->( 1 )-- a --> (( 2 ))
+           \\           \\
+            b             b                    (( 2 )) and (( 4 )) accept the same     
+             \\            '-------\\
+              '-->( 3 )-- [ab] --> (( 4 )) 
+"""
+sm = StateMachine()
+n0 = sm.init_state_index     
+
+# branch 1
+n1 = sm.add_transition(n0, ord('a'), AcceptanceF=False)
+n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
+sm.states[n2].add_origin(5555L, 1L)
+
+# branch 2
+n3 = sm.add_transition(n0, ord('b'),                         AcceptanceF=False)
+n4 = sm.add_transition(n3, Interval(ord('a'), ord('b') + 1), AcceptanceF=True)
+sm.states[n4].add_origin(5555L, 1L)
+
+# middle branch
+n4 = sm.add_transition(n1, ord('b'), n4, AcceptanceF=True)
+
+test(sm, txt)
+

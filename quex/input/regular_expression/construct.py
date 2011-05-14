@@ -104,7 +104,7 @@ def __detect_initial_orphaned_states(sm, fh):
 
     error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
               "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-              "Orphan state(s) = " + repr(sm.get_orphan_state_list()), 
+              "Orphan state(s) = " + repr(sm.get_orphaned_state_index_list()), 
               fh, DontExitF=True)
 
 def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):

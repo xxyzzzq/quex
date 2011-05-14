@@ -5,11 +5,11 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.setup
-import quex.core                                as coder
+import quex.core                            as coder
 import quex.input.regular_expression.engine as regex
-import quex.engine.generator.core          as generator
-from   quex.blackboard                          import ModeDescription, Mode
-from   quex.engine.generator.action_info   import CodeFragment
+import quex.engine.generator.core           as generator
+from   quex.input.files.mode                import ModeDescription, Mode
+from   quex.engine.generator.action_info    import CodeFragment
 
 
 if "--hwut-info" in sys.argv:
