@@ -1,9 +1,9 @@
-<test-database execution-time-sec="1.11" date="Fri May 13 07:00:21 2011">
+<test-database execution-time-sec="1.13" date="Sat May 14 01:48:55 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.42"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.44"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.42" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.44" crc="-1647352136"/>
         </choice-list>
     </test>
     <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
@@ -30,11 +30,11 @@
            <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.52"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.51"> 
         <application file-name="include_guard.py" info-request-time="1305087040L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="convention" result="OK" time_sec="0.26" crc="1196150108"/>
-           <choice name="undefinition" result="OK" time_sec="0.26" crc="1693599369"/>
+           <choice name="undefinition" result="FAIL" time_sec="0.25" crc="1693599369"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

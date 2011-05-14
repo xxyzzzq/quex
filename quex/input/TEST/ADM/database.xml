@@ -1,12 +1,12 @@
-<test-database execution-time-sec="10.45" date="Fri May 13 07:07:05 2011">
+<test-database execution-time-sec="10.52" date="Sat May 14 01:55:31 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.32"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.33"> 
         <application file-name="indentation_setup.py" info-request-time="1305001372L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="OK" time_sec="0.06" crc="-1318928622"/>
-           <choice name="twice" result="OK" time_sec="0.05" crc="-233475326"/>
-           <choice name="intersection" result="OK" time_sec="0.08" crc="1982684346"/>
-           <choice name="intersection-2" result="OK" time_sec="0.07" crc="-1389949999"/>
+           <choice name="twice" result="OK" time_sec="0.06" crc="-233475326"/>
+           <choice name="intersection" result="OK" time_sec="0.09" crc="1982684346"/>
+           <choice name="intersection-2" result="OK" time_sec="0.06" crc="-1389949999"/>
            <choice name="non-numeric" result="OK" time_sec="0.05" crc="654413883"/>
         </choice-list>
     </test>
@@ -35,21 +35,21 @@
                <choice name="PropertyInfo" result="OK" time_sec="0.59" crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Wildcard Property Values" time-sum-sec="0.56"> 
+        <test title="Wildcard Property Values" time-sum-sec="0.57"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.56" crc="-989951512"/>
+               <choice name="" result="OK" time_sec="0.57" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="1.67"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="1.65"> 
             <application file-name="test-query-character-set.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.67" crc="-127967106"/>
+               <choice name="" result="OK" time_sec="1.65" crc="-127967106"/>
             </choice-list>
         </test>
     </group>
     <group name="token_type">
-        <test title="Union Members" time-sum-sec="0.36"> 
+        <test title="Union Members" time-sum-sec="0.38"> 
             <application file-name="token_type-3.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="None" result="OK" time_sec="0.04" crc="-755544471"/>
@@ -63,17 +63,17 @@
                <choice name="Twice-2" result="OK" time_sec="0.04" crc="1768785304"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" time-sum-sec="0.20"> 
+        <test title="Constructor, Copy, Destructor" time-sum-sec="0.22"> 
             <application file-name="token_type-4.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Constructor" result="OK" time_sec="0.04" crc="-300396885"/>
                <choice name="Constructor-1" result="OK" time_sec="0.04" crc="-365070336"/>
                <choice name="Constructor-2" result="OK" time_sec="0.04" crc="-43917463"/>
-               <choice name="Destructor" result="OK" time_sec="0.04" crc="-185289580"/>
-               <choice name="Copy" result="OK" time_sec="0.04" crc="330406118"/>
+               <choice name="Destructor" result="OK" time_sec="0.05" crc="-185289580"/>
+               <choice name="Copy" result="OK" time_sec="0.05" crc="330406118"/>
             </choice-list>
         </test>
-        <test title="Class Name and Namespace" time-sum-sec="0.27"> 
+        <test title="Class Name and Namespace" time-sum-sec="0.29"> 
             <application file-name="token_type-5.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="0" result="OK" time_sec="0.04" crc="580574667"/>
@@ -85,7 +85,7 @@
                <choice name="6" result="OK" time_sec="0.04" crc="1236312933"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" time-sum-sec="0.32"> 
+        <test title="Buildt-In Members" time-sum-sec="0.33"> 
             <application file-name="token_type-1.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="None" result="OK" time_sec="0.04" crc="1321924226"/>
@@ -98,7 +98,7 @@
                <choice name="Error-2" result="OK" time_sec="0.04" crc="2076320285"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" time-sum-sec="0.24"> 
+        <test title="Distinct Members" time-sum-sec="0.25"> 
             <application file-name="token_type-2.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="None" result="OK" time_sec="0.04" crc="775994298"/>

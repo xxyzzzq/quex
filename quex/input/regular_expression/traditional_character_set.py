@@ -2,11 +2,9 @@ import sys
 import StringIO
 import quex.engine.utf8 as utf8
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
-from quex.engine.interval_handling  import *
-from quex.exception                      import RegularExpressionException
-from quex.input.setup import setup as Setup
-
-
+from   quex.engine.interval_handling  import *
+from   quex.exception                      import RegularExpressionException
+from   quex.input.setup import setup as Setup
 
 class Tracker:
     def __init__(self):
@@ -39,7 +37,6 @@ class DoubleQuoteChecker:
                 "Character '\"' appears twice in character range [ ... ] expression.\n"
                 "You cannot exempt characters this way. Please, use backslash or\n"
                 "split the character range expression.")
-
 
 def do(sh):
     """Transforms an expression of the form [a-z0-9A-Z] into a NumberSet of

@@ -313,7 +313,7 @@ class NumberSet(object):
         """Adds an interval and ensures that no overlap with existing
         intervals occurs. Note: the 'touch' test is faster here, because
         only one interval is checked against.!"""
-        if NewInterval.is_empty(): return
+        if NewInterval.begin == NewInterval.end: return
         
         # (1) determine if begin overlaps with the new interval
         if len(self.__intervals) == 0 or NewInterval.begin > self.__intervals[-1].end:
@@ -548,8 +548,8 @@ class NumberSet(object):
 
     def unite_with(self, Other):
         Other_type = Other.__class__
-        assert Other_type == Interval or Other_type == NumberSet, \
-               "Error, argument of type %s" % Other.__class__.__name__
+        # assert Other_type == Interval or Other_type == NumberSet, \
+        #       "Error, argument of type %s" % Other.__class__.__name__
 
         if Other_type == Interval:  
             self.add_interval(Other)
@@ -558,6 +558,29 @@ class NumberSet(object):
         # simply add all intervals to one single set
         for interval in Other.__intervals:
             self.add_interval(interval)
+
+#        if len(self.__intervals) == 0:
+#            if Other_type == Interval:  
+#                self.__intervals = [ copy(Other) ]
+#            else:
+#                self.__intervals = Other.__clone_intervals()
+#        else:
+#            if Other_type == Interval:  
+#                if self.__intervals[-1].end < Other.begin:
+#                    self.__intervals.append(copy(Other))
+#                elif self.__intervals[0].begin > Other.end:
+#                    self.__intervals.insert(0, copy(Other))
+#                else:
+#                    self.add_interval(Other)
+#
+#            elif len(Other.__intervals) != 0:
+#                if self.__intervals[-1].end < Other.__intervals[0].begin:
+#                    self.__intervals.extend(Other.__clone_intervals())
+#                elif self.__intervals[0].begin > Other.__intervals[-1].end:
+#                    self.__intervals[0:0] = Other.__clone_intervals()
+#                else:
+#                    for interval in Other.__intervals:
+#                        self.add_interval(interval)
 
     def union(self, Other):
         Other_type = Other.__class__

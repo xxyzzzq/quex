@@ -45,29 +45,21 @@ from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           snap_replacement
 from quex.input.setup import setup as Setup
 
-__special_character_set_db = None
-
-def special_character_set_db():
-    """This is an 'access' function. It defines the dictionary only if it is required."""
-    global __special_character_set_db
-
-    if __special_character_set_db is None:
-        __special_character_set_db = {
-            # The closing ']' is to trigger the end of the traditional character set
-            "alnum":  traditional_character_set.do_string("a-zA-Z0-9]"),
-            "alpha":  traditional_character_set.do_string("a-zA-Z]"),
-            "blank":  traditional_character_set.do_string(" \\t]"),
-            "cntrl":  traditional_character_set.do_string("\\x00-\\x1F\\x7F]"), 
-            "digit":  traditional_character_set.do_string("0-9]"),
-            "graph":  traditional_character_set.do_string("\\x21-\\x7E]"),
-            "lower":  traditional_character_set.do_string("a-z]"),
-            "print":  traditional_character_set.do_string("\\x20-\\x7E]"), 
-            "punct":  traditional_character_set.do_string("!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]"),
-            "space":  traditional_character_set.do_string(" \\t\\r\\n]"),
-            "upper":  traditional_character_set.do_string("A-Z]"),
-            "xdigit": traditional_character_set.do_string("a-fA-F0-9]"),
-        }
-    return __special_character_set_db
+special_character_set_db = {
+    # The closing ']' is to trigger the end of the traditional character set
+    "alnum":  "a-zA-Z0-9]",
+    "alpha":  "a-zA-Z]",
+    "blank":  " \\t]",
+    "cntrl":  "\\x00-\\x1F\\x7F]", 
+    "digit":  "0-9]",
+    "graph":  "\\x21-\\x7E]",
+    "lower":  "a-z]",
+    "print":  "\\x20-\\x7E]", 
+    "punct":  "!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]",
+    "space":  " \\t\\r\\n]",
+    "upper":  "A-Z]",
+    "xdigit": "a-fA-F0-9]",
+}
 
 def do(stream, PatternDict):
     trigger_set = snap_set_expression(stream, PatternDict)
@@ -141,10 +133,12 @@ def snap_property_set(stream):
         return None
 
 def snap_set_term(stream, PatternDict):
+    global special_character_set_db
+
     __debug_entry("set_term", stream)    
 
     operation_list     = [ "union", "intersection", "difference", "inverse"]
-    character_set_list = special_character_set_db().keys()
+    character_set_list = special_character_set_db.keys()
 
     skip_whitespace(stream)
     position = stream.tell()
@@ -181,7 +175,8 @@ def snap_set_term(stream, PatternDict):
                 result.subtract(set)
 
     elif word in character_set_list:
-        result = special_character_set_db()[word]
+        reg_expr = special_character_set_db[word]
+        result   = traditional_character_set.do_string(reg_expr)
 
     elif word != "":
         verify_word_in_list(word, character_set_list + operation_list, 

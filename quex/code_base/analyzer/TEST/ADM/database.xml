@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.18" date="Fri May 13 07:01:03 2011">
+<test-database execution-time-sec="0.24" date="Sat May 14 01:49:36 2011">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="accumulator.exe" info-request-time="1305157471L" vanished="False"/>
@@ -54,7 +54,7 @@
                <choice name="7" result="OK" time_sec="0.00" crc="312237205"/>
             </choice-list>
         </test>
-        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.09"> 
             <application file-name="post-categorizer-remove.exe" info-request-time="1305157473L" vanished="False"/>
             <make-procedure success="True" time_sec="0.793899"/>
             <choice-list number="8" same_result="True">
@@ -62,7 +62,7 @@
                <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ae" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ag" result="OK" time_sec="0.00" crc="1918139693"/>
-               <choice name="Ai" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ai" result="OK" time_sec="0.06" crc="1918139693"/>
                <choice name="Ba" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Bc" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Be" result="OK" time_sec="0.00" crc="1918139693"/>
