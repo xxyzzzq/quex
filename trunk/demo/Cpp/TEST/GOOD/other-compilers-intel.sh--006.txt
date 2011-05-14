@@ -3,6 +3,8 @@ cleaning ...
 make DSWITCH_ASSERTS=-DQUEX_OPTION_ASSERTS  COMPILER=icpc ##
 simple.qx:24:warning: Post context requires philosophical cut--handle with care!
 simple.qx:24:warning: Proposal: Isolate pattern and ensure results are as expected!
+EasyLexer.cpp(905): warning #279: controlling expression is constant
+EasyLexer.cpp(974): warning #279: controlling expression is constant
 executing ...
 ## Disable this message by compile option
 ##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'

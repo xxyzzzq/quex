@@ -263,7 +263,6 @@ class NumberSet(object):
            Arg = integer  ==> interval consisting of one number
            """
         arg_type = Arg.__class__
-        assert arg_type in  [Interval, NumberSet, int, list] or Arg is None
         
         if  arg_type == list:
             if ArgumentIsYoursF:
@@ -273,9 +272,8 @@ class NumberSet(object):
                 # use 'add_interval' to ensure consistency, i.e. touches, overlaps, etc.
                 for interval in Arg:
                     self.add_interval(copy(interval))
-            return
 
-        if   arg_type == Interval:
+        elif  arg_type == Interval:
             if ArgumentIsYoursF: self.__intervals = [ Arg ] 
             else:                self.__intervals = [ copy(Arg) ]
 
@@ -286,8 +284,12 @@ class NumberSet(object):
         elif arg_type == int:
             self.__intervals = [ Interval(Arg) ]
 
-        else:
+        elif Arg is None:
             self.__intervals = []
+
+        else:
+            # assert: arg_type in [Interval, NumberSet, int, list] or Arg is None
+            assert False 
 
     def __clone_intervals(self):
         return [ Interval(x.begin, x.end) for x in self.__intervals ]
