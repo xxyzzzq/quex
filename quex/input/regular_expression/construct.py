@@ -11,8 +11,11 @@ import quex.engine.state_machine.hopcroft_minimization   as hopcroft
 from   quex.input.setup                                  import setup as Setup
 from   quex.engine.misc.file_in  import *
 
-## import quex.engine.state_machine.identity_checker as DEBUG_identity_checker
-## from   copy import deepcopy
+DEBUG_hopcroft_f = False
+
+if DEBUG_hopcroft_f:
+    import quex.engine.state_machine.identity_checker as identity_checker
+    from   copy import deepcopy
 
 
 def do(core_sm, 
@@ -94,9 +97,9 @@ def beautify(the_state_machine):
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
 
-    ## DEBUG_before = deepcopy(result)
+    if DEBUG_hopcroft_f: DEBUG_before = deepcopy(result)
     result = hopcroft.do(result, CreateNewStateMachineF=False)
-    ## assert DEBUG_identity_checker.do(DEBUG_before, result)
+    if DEBUG_hopcroft_f: assert identity_checker.do(DEBUG_before, result)
 
     ## assert len(the_state_machine.get_orphaned_state_index_list()) == 0, \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)

@@ -2,6 +2,7 @@ import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
 from   itertools import islice, ifilter
+from   operator  import attrgetter
 
 class StateSet_List:
     def __init__(self, StateMachine):
@@ -11,11 +12,27 @@ class StateSet_List:
         self.map = {} 
         #
         # -- create: self.state_set_list by initial split of all states.
+        self.size           = 0
+        self.state_set_list = []
+        self.__todo         = set()
         self.__initial_split()
         self.size = len(self.state_set_list)
 
+    def todo(self):
+        return self.__todo
+
     def get(self, Index):
         return self.state_set_list[Index]
+
+    def group(self, StateSet):
+        """Group states in state set according to the target state sets."""
+        result = {}
+        for state in [self.sm[i] for i in StateSet]:
+            db = state.transitions().get_map()
+            target_set_index_list = tuple(set([self.map[i] for i in db.iterkeys()]))
+            # What target combination is triggered by what state?
+            result.setdefault(target_set_index_list, []).append(state_index)
+        return result
 
     def split(self, StateSetIndex):
         """RETURNS:  False   if StateSet does not need to be split up any further.
@@ -103,40 +120,41 @@ class StateSet_List:
            acceptance states are also returned.
 
         """   
-        self.state_set_list = []
 
         # (1) Split according to acceptance and non-acceptance
-        self.state_set_list.append([])  # state set '0': non-acceptance states
-        acceptance_state_set = []       # acceptance states
-        for state_index, state in self.sm.states.items():
-            if state.is_acceptance(): 
-                acceptance_state_set.append(state_index)
-            else:                     
-                self.state_set_list[0].append(state_index)  # put state into state set 0
-                self.map[state_index] = 0                   # note, that it is stored in state set '0'
+        non_acceptance_state_set = []
+        for state_index, state in ifilter(lambda x: not x[1].is_acceptance(), self.sm.states.iteritems()):
+            non_acceptance_state_set.append(state_index) 
 
         # NOTE: Under normal conditions, there **must** be at least one non-acceptance state,
         #       which happens to be the initial state (otherwise nothing would be acceptable).
-        #       But, for unit tests etc. we need to live with the possibility that the there 
-        #       might be no non-acceptance states.
-        if len(self.state_set_list[0]) == 0: del self.state_set_list[0]
-        # ... size matters from now on!
-        self.size = len(self.state_set_list)
+        #       But: The minimization might be called for sub-patterns such as 'a*' which
+        #       actually allow the first state to be acceptance.
+        if len(non_acceptance_state_set) != 0: 
+            self.__add_state_set(non_acceptance_state_set)
+
+        # BUT: There should always be at least one acceptance state.
+        assert len(self.sm.states) - len(non_acceptance_state_set) != 0
 
         # (2) Split the acceptance states according to their origin. An acceptance
         #     state maching the, for example, an identifier is not equivalent an 
         #     acceptance state thate that matches a number.
         db = {}   
-        def db_add(key, state_index):
-            if db.has_key(key): db[key].append(state_index)
-            else:               db[key] = [ state_index ]                             
-
-        for state_index in acceptance_state_set:
+        for state_index in ifilter(lambda i: i not in non_acceptance_state_set, self.sm.states.iterkeys()):
             state = self.sm.states[state_index]
-            origin_state_machine_ids = map(lambda origin: origin.state_machine_id, 
-                                           state.origins())
+            relevant_origins = filter(lambda origin: origin.store_input_position_f() or origin.is_acceptance(),
+                                      state.origins())
+
+            origin_state_machine_ids = []
+            for origin in sorted(relevant_origins, key=attrgetter("state_machine_id")):
+                origin_state_machine_ids.append(origin.state_machine_id)
+                if origin.pre_context_id() == -1 and not origin.pre_context_begin_of_line_f():
+                    # First unconditional acceptance dominates the test
+                    break
+            # BETTER: state_combination_id = tuple(origin_state_machine_ids) 
+            # BUT:    unit tests need to be adapted
             state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
-            db_add(state_combination_id, state_index)
+            db.setdefault(state_combination_id, []).append(state_index)
 
         # (2b) Enter the split acceptance state sets.
         for state_set in db.values():
@@ -149,6 +167,7 @@ class StateSet_List:
         for state_index in NewStateSet:
             self.map[state_index] = self.size
         # -- increase the size counter
+        self.__todo.add(self.size)
         self.size += 1 
 
         return True
