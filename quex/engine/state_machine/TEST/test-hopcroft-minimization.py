@@ -23,23 +23,24 @@ else:
     print "Require command line arguments: '--hwut-info', 'NEW', or 'ADAPT'"
     sys.exit(-1)
 
-print "_______________________________________________________________________________"
-print "Example A:"
-sm = StateMachine()
-n0 = sm.init_state_index     
-n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-sm = repeat.do(sm, 1)
-dfa = nfa_to_dfa.do(sm)
-print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
+if True:
+    print "_______________________________________________________________________________"
+    print "Example A:"
+    sm = StateMachine()
+    n0 = sm.init_state_index     
+    n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
+    sm = repeat.do(sm, 1)
+    dfa = nfa_to_dfa.do(sm)
+    print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
 
-print "_______________________________________________________________________________"
-print "Example B:"
-sm = StateMachine()
-n0 = sm.init_state_index     
-n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-sm = repeat.do(sm)
-dfa = nfa_to_dfa.do(sm)
-print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
+    print "_______________________________________________________________________________"
+    print "Example B:"
+    sm = StateMachine()
+    n0 = sm.init_state_index     
+    n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
+    sm = repeat.do(sm)
+    dfa = nfa_to_dfa.do(sm)
+    print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
 
 print "_______________________________________________________________________________"
 print "Example C:"
@@ -51,45 +52,46 @@ dfa = nfa_to_dfa.do(sm)
 # print dfa.get_string(NormalizeF=False)
 print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
 
-print "_______________________________________________________________________________"
-print "Example D:"
-sm = StateMachine()
-n0 = sm.init_state_index     
-n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-sm = repeat.do(sm, 3, 5)
-dfa = nfa_to_dfa.do(sm)
-print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
+if True:
+    print "_______________________________________________________________________________"
+    print "Example D:"
+    sm = StateMachine()
+    n0 = sm.init_state_index     
+    n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
+    sm = repeat.do(sm, 3, 5)
+    dfa = nfa_to_dfa.do(sm)
+    print hopcroft.do(dfa, CreateNewStateMachineF=CreateNewStateMachineF)
 
-print "_______________________________________________________________________________"
-print "Example E:"
-# (*) create a simple state machine:  
-#                                    ,-- 'b' --.
-#                                   /          |
-#                     ,-- 'b' -->((2)) <------'
-#                    /           /  '\ 
-#    (0)-- 'a' -->((1))        'c'   'b'
-#                    \           \,  /
-#                     '-- 'c' -->((3))<-------.
-#                                   \         |
-#                                    '-- 'c'--'
-#
-#    ((1)), ((2)), and ((3))  are the acceptance states.
-#
-sm = StateMachine()
-n0 = sm.init_state_index
-n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-n2 = sm.add_transition(n1, ord('b'), AcceptanceF=True)
-n3 = sm.add_transition(n1, ord('c'), AcceptanceF=True)
-sm.add_transition(n2, ord('b'), n2)
-sm.add_transition(n3, ord('c'), n3)
-sm.add_transition(n2, ord('c'), n3)
-sm.add_transition(n3, ord('b'), n2)
+    print "_______________________________________________________________________________"
+    print "Example E:"
+    # (*) create a simple state machine:  
+    #                                    ,-- 'b' --.
+    #                                   /          |
+    #                     ,-- 'b' -->((2)) <------'
+    #                    /           /  '\ 
+    #    (0)-- 'a' -->((1))        'c'   'b'
+    #                    \           \,  /
+    #                     '-- 'c' -->((3))<-------.
+    #                                   \         |
+    #                                    '-- 'c'--'
+    #
+    #    ((1)), ((2)), and ((3))  are the acceptance states.
+    #
+    sm = StateMachine()
+    n0 = sm.init_state_index
+    n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
+    n2 = sm.add_transition(n1, ord('b'), AcceptanceF=True)
+    n3 = sm.add_transition(n1, ord('c'), AcceptanceF=True)
+    sm.add_transition(n2, ord('b'), n2)
+    sm.add_transition(n3, ord('c'), n3)
+    sm.add_transition(n2, ord('c'), n3)
+    sm.add_transition(n3, ord('b'), n2)
 
-# (*) minimize the number of states using hopcroft optimization
-optimal_sm = hopcroft.do(sm, CreateNewStateMachineF=CreateNewStateMachineF)
-print optimal_sm
+    # (*) minimize the number of states using hopcroft optimization
+    optimal_sm = hopcroft.do(sm, CreateNewStateMachineF=CreateNewStateMachineF)
+    print optimal_sm
 
-print "_______________________________________________________________________________"
-print "Example F:"
-optimal_sm = hopcroft.do(sm3, CreateNewStateMachineF=CreateNewStateMachineF) # .get_string(NormalizeF=True)
-print optimal_sm
+    print "_______________________________________________________________________________"
+    print "Example F:"
+    optimal_sm = hopcroft.do(sm3, CreateNewStateMachineF=CreateNewStateMachineF) # .get_string(NormalizeF=True)
+    print optimal_sm

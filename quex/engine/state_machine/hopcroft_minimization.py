@@ -1,8 +1,7 @@
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
-from   itertools import islice, ifilter
-from   operator  import attrgetter
+from   itertools import islice, ifilter, imap
 
 class StateSet_List:
     def __init__(self, StateMachine):
@@ -12,28 +11,82 @@ class StateSet_List:
         self.map = {} 
         #
         # -- create: self.state_set_list by initial split of all states.
-        self.size           = 0
-        self.state_set_list = []
-        self.__todo         = set()
+        self.__todo = set([])
+        self.size   = 0
         self.__initial_split()
         self.size = len(self.state_set_list)
 
-    def todo(self):
-        return self.__todo
+    def todo_list(self):
+        return list(self.__todo)
 
-    def get(self, Index):
-        return self.state_set_list[Index]
+    def pre_split(self, state_set):
+        """Separate state_set into two state sets:
+           (1) The set of states that have the same target state sets,
+               as a arbitrarily chosen prototype := 'harmonic'.
+           (2) Those who differ from the prototype.
 
-    def group(self, StateSet):
-        """Group states in state set according to the target state sets."""
-        result = {}
-        for state in [self.sm[i] for i in StateSet]:
-            db = state.transitions().get_map()
-            target_set_index_list = tuple(set([self.map[i] for i in db.iterkeys()]))
-            # What target combination is triggered by what state?
-            result.setdefault(target_set_index_list, []).append(state_index)
-        return result
+           The state set that matches the prototype can be considered 
+           'harmonic' since it triggers for sure to the same target
+           state sets. The prototype is packed into a separate state
+           set. The other states remain in the old state set. 
 
+           If there was a prototype that separated the set then the
+           what does not match the prototype is possibly not-harmonic.
+
+           RETURNS: True  Split happened.
+                          The old state set is possible non-harmonic.
+                    False No split happened.
+                          The old state set and the prototype are
+                          identical.
+        """
+        def get_target_state_set_list(StateIndex):
+            state = self.sm.states[StateIndex]
+            target_list = state.transitions().get_map().iterkeys()
+            return set([self.map[i] for i in target_list])
+
+        def match(TargetSetIndexList, StateIndex):
+            state = self.sm.states[StateIndex]
+            L     = len(TargetSetIndexList)
+            count_n = 0
+            for target in state.transitions().get_map().iterkeys():
+                state_set_index = self.map[target]
+                if state_set_index not in TargetSetIndexList: return False
+                count_n += 1
+                if count_n > L: return False
+
+            print "##>", TargetSetIndexList
+            print "##<", map(lambda x: self.map[x], state.transitions().get_map().iterkeys())
+            print "##",  count_n, L
+            return count_n == L
+
+        prototype = get_target_state_set_list(state_set[0])
+
+        match_set = [ state_set[0] ] 
+        for state_index in islice(state_set, 1, None):
+            if match(prototype, state_index): match_set.append(state_index)
+
+        if len(match_set) == len(state_set): return False
+
+        # Cut the matching set and put it into a separate one
+        for state_index in match_set:
+            del state_set[state_set.index(state_index)]
+
+        self.__add_state_set(match_set)
+
+        return True
+
+    def harmonize(self):
+        """Splits the given state set into state sets that contain only 
+           states that transits to the same set of target state sets.
+        """
+        non_harmonic_set = list(self.__todo)
+        while len(non_harmonic_set) != 0:
+            i = non_harmonic_set[-1]
+            if not self.pre_split(self.state_set_list[i]):
+                non_harmonic_set.pop()
+            # If there was a split, then the new set is harmonic and the
+            # old state_set remains 'possibly unharmonic'
+            
     def split(self, StateSetIndex):
         """RETURNS:  False   if StateSet does not need to be split up any further.
                      True    if the state set requires a split.
@@ -43,7 +96,9 @@ class StateSet_List:
         N         = len(state_set)
         assert N != 0, "State set of size '0'. List = " + repr(state_set_list)
         # only one state in state set => no change possible
-        if N == 1: return False    
+        if N == 1: 
+            self.__todo.remove(StateSetIndex)
+            return False    
 
         # -- choose one arbitrary state (for example state 0) as a prototype
         #    which is compared against the remaining states in the state set.
@@ -120,8 +175,8 @@ class StateSet_List:
            acceptance states are also returned.
 
         """   
+        self.state_set_list = []
 
-        # (1) Split according to acceptance and non-acceptance
         non_acceptance_state_set = []
         for state_index, state in ifilter(lambda x: not x[1].is_acceptance(), self.sm.states.iteritems()):
             non_acceptance_state_set.append(state_index) 
@@ -140,21 +195,16 @@ class StateSet_List:
         #     state maching the, for example, an identifier is not equivalent an 
         #     acceptance state thate that matches a number.
         db = {}   
-        for state_index in ifilter(lambda i: i not in non_acceptance_state_set, self.sm.states.iterkeys()):
-            state = self.sm.states[state_index]
-            relevant_origins = filter(lambda origin: origin.store_input_position_f() or origin.is_acceptance(),
-                                      state.origins())
+        def db_add(key, state_index):
+            if db.has_key(key): db[key].append(state_index)
+            else:               db[key] = [ state_index ]                             
 
-            origin_state_machine_ids = []
-            for origin in sorted(relevant_origins, key=attrgetter("state_machine_id")):
-                origin_state_machine_ids.append(origin.state_machine_id)
-                if origin.pre_context_id() == -1 and not origin.pre_context_begin_of_line_f():
-                    # First unconditional acceptance dominates the test
-                    break
-            # BETTER: state_combination_id = tuple(origin_state_machine_ids) 
-            # BUT:    unit tests need to be adapted
+        for state_index in ifilter(lambda x: x not in non_acceptance_state_set, self.sm.states.iterkeys()): 
+            state = self.sm.states[state_index]
+            origin_state_machine_ids = map(lambda origin: origin.state_machine_id, 
+                                           state.origins())
             state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
-            db.setdefault(state_combination_id, []).append(state_index)
+            db_add(state_combination_id, state_index)
 
         # (2b) Enter the split acceptance state sets.
         for state_set in db.values():
@@ -166,8 +216,12 @@ class StateSet_List:
         # -- Mark in the map the states that have moved to the new state set at the end.
         for state_index in NewStateSet:
             self.map[state_index] = self.size
+
+        # -- Index of the last state set = size - 1
+        # if not DoneF: self.__todo.add(self.size)
+        if len(NewStateSet) != 1: self.__todo.add(self.size)
+
         # -- increase the size counter
-        self.__todo.add(self.size)
         self.size += 1 
 
         return True
@@ -177,7 +231,7 @@ def do(SM, CreateNewStateMachineF=True):
        with two sets: 
        
             (1) the set of acceptance states, 
-                -- these states need to be split again according to their origin.
+                -- these states need to be splitted again according to their origin.
                    Acceptance of state machine A is not equal to acceptance of 
                    state machine B.
             (2) the set of non-acceptance states.
@@ -198,12 +252,12 @@ def do(SM, CreateNewStateMachineF=True):
     while state_set_list_changed_f:
         # Loop over all sets in state set
         # by default the next state set list is the same
-        i                        = 0              # -- loop index of the state set
+        state_set_list.harmonize()
+
         state_set_list_changed_f = False
-        while i < state_set_list.size:
+        for i in state_set_list.todo_list():
             if state_set_list.split(i):           
                 state_set_list_changed_f = True   # -- a split happened, the state sets changed ...  
-            i += 1
 
     # If all states in the state sets trigger equivalently, then the state set remains
     # nothing has to be done to the new state_set list, because its by default setup that way 
