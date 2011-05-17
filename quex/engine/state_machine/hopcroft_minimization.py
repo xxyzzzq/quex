@@ -19,7 +19,7 @@ class StateSet_List:
     def todo_list(self):
         return list(self.__todo)
 
-    def pre_split(self, state_set):
+    def pre_split(self, StateSetIndex):
         """Separate state_set into two state sets:
            (1) The set of states that have the same target state sets,
                as a arbitrarily chosen prototype := 'harmonic'.
@@ -44,26 +44,13 @@ class StateSet_List:
             target_list = state.transitions().get_map().iterkeys()
             return set([self.map[i] for i in target_list])
 
-        def match(TargetSetIndexList, StateIndex):
-            state = self.sm.states[StateIndex]
-            L     = len(TargetSetIndexList)
-            count_n = 0
-            for target in state.transitions().get_map().iterkeys():
-                state_set_index = self.map[target]
-                if state_set_index not in TargetSetIndexList: return False
-                count_n += 1
-                if count_n > L: return False
-
-            print "##>", TargetSetIndexList
-            print "##<", map(lambda x: self.map[x], state.transitions().get_map().iterkeys())
-            print "##",  count_n, L
-            return count_n == L
-
+        state_set = self.state_set_list[StateSetIndex]
         prototype = get_target_state_set_list(state_set[0])
 
         match_set = [ state_set[0] ] 
         for state_index in islice(state_set, 1, None):
-            if match(prototype, state_index): match_set.append(state_index)
+            if prototype == get_target_state_set_list(state_index): 
+                match_set.append(state_index)
 
         if len(match_set) == len(state_set): return False
 
@@ -71,7 +58,9 @@ class StateSet_List:
         for state_index in match_set:
             del state_set[state_set.index(state_index)]
 
+        # len(match_set) == 1 => not added to __todo
         self.__add_state_set(match_set)
+        if len(state_set) == 1: self.__todo.remove(StateSetIndex)
 
         return True
 
@@ -79,13 +68,12 @@ class StateSet_List:
         """Splits the given state set into state sets that contain only 
            states that transits to the same set of target state sets.
         """
-        non_harmonic_set = list(self.__todo)
-        while len(non_harmonic_set) != 0:
-            i = non_harmonic_set[-1]
-            if not self.pre_split(self.state_set_list[i]):
-                non_harmonic_set.pop()
-            # If there was a split, then the new set is harmonic and the
-            # old state_set remains 'possibly unharmonic'
+        change_f = True
+        while change_f:
+            change_f = False
+            for i in list(self.__todo):
+                if self.pre_split(i):
+                    change_f = True
             
     def split(self, StateSetIndex):
         """RETURNS:  False   if StateSet does not need to be split up any further.
@@ -102,12 +90,8 @@ class StateSet_List:
 
         # -- choose one arbitrary state (for example state 0) as a prototype
         #    which is compared against the remaining states in the state set.
-        if len(state_set) > 25:
-            prototype_index  = min(state_set, key=lambda x: len(self.sm.states[x].transitions().get_map()))
-            remainder        = ifilter(lambda x: x != prototype_index, state_set)
-        else:
-            prototype_index  = state_set[0]
-            remainder        = islice(state_set, 1, None)
+        prototype_index  = state_set[0]
+        remainder        = islice(state_set, 1, None)
 
         prototype            = self.sm.states[prototype_index]
         equivalent_state_set = [ prototype_index ] 
@@ -116,20 +100,12 @@ class StateSet_List:
         i         = 1   # state_set[i] = state index
         element_n = N   # remaining number of elements in state set
 
-        def normalized_map(DB, ReferenceSet=None, Size=None):
+        def normalized_map(DB):
             result = {}
-            if ReferenceSet is None:
-                for target_index, trigger_map in DB.iteritems():
-                    # Target in terms of equivalent state sets
-                    target = self.map[target_index]
-                    result.setdefault(target, []).append(trigger_map)
-            else:
-                for target_index, trigger_map in DB.iteritems():
-                    # Target in terms of equivalent state sets
-                    target = self.map[target_index]
-                    if target not in ReferenceSet: return None
-                    result.setdefault(target, []).append(trigger_map)
-                if len(result) != Size: return None
+            for target_index, trigger_map in DB.iteritems():
+                # Target in terms of equivalent state sets
+                target = self.map[target_index]
+                result.setdefault(target, []).append(trigger_map)
 
             for target, trigger_map_list in result.items():
                 if len(trigger_map_list) == 1: 
@@ -142,20 +118,38 @@ class StateSet_List:
             return result
 
         prototype_map = normalized_map(prototype.transitions().get_map())
-        prototype_set = prototype_map.keys()
-        Size          = len(prototype_set)
+        if len(prototype_map) == 0:
+            # If there are no target states, then there can be no split.
+            # The state set is done.
+            self.__todo.remove(StateSetIndex)
+            return False
+
+        # Since all state sets are 'harmonized' at the entry of this function
+        # It can be assumed that the prototype contains all target_set indices
+        target_state_set_list = prototype_map.iterkeys()
         for state_index in remainder:
             state = self.sm.states[state_index]
-            state_map = normalized_map(state.transitions().get_map(), prototype_set, Size)
-            if state_map is None: 
-                continue
-            for target in prototype_set:
+            state_map = normalized_map(state.transitions().get_map())
+            for target in target_state_set_list:
                 if not prototype_map[target].is_equal(state_map[target]): break
             else:
                 equivalent_state_set.append(state_index)
 
-        # -- Are all states equivalent?
-        if len(equivalent_state_set) == N: return False  # no split! 
+        if len(equivalent_state_set) == N:
+            assert N != 1 # See function entry,
+            # Thus: self.__todo.remove(...) not necessary.
+            if self.__todo.isdisjoint(list(target_state_set_list)):
+                self.__todo.remove(StateSetIndex)
+            return False
+
+        # If len(equivalent_state_set) == 1, then it is not added to __todo
+        # Thus: self.__todo.remove(...) not necessary.
+        self.__add_state_set(equivalent_state_set)
+        if self.__todo.isdisjoint(list(target_state_set_list)):
+            self.__todo.remove(StateSetIndex)
+            if len(equivalent_state_set) != 1:
+                # last index = size - 1
+                self.__todo.remove(len(self.state_set_list) - 1) 
 
         # -- States that are not equivalent (probably most likely) remain in the 
         #    original state set and the ones that are equivalent are put into a new
@@ -166,7 +160,9 @@ class StateSet_List:
             i = state_set.index(state_index)
             del state_set[i]
 
-        self.__add_state_set(equivalent_state_set)
+        if len(state_set) == 1 and StateSetIndex in self.__todo: 
+            self.__todo.remove(StateSetIndex)
+
         return True
 
     def __initial_split(self):
@@ -258,6 +254,7 @@ def do(SM, CreateNewStateMachineF=True):
         for i in state_set_list.todo_list():
             if state_set_list.split(i):           
                 state_set_list_changed_f = True   # -- a split happened, the state sets changed ...  
+                break
 
     # If all states in the state sets trigger equivalently, then the state set remains
     # nothing has to be done to the new state_set list, because its by default setup that way 
