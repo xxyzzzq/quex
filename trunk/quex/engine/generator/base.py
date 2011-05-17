@@ -154,7 +154,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
         assert sm.is_DFA_compliant(), repr(sm)
     
     # (2) setup all patterns in paralell 
-    sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False)#, CloneF=False)
+    sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False) #, CloneF=False)
     __check("Parallelization", sm)
 
     # (3) convert the state machine to an DFA (paralellization created an NFA)
@@ -168,7 +168,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     # (5) perform hopcroft optimization
     #     Note, that hopcroft optimization does consider the original acceptance 
     #     states when deciding if two state sets are equivalent.   
-    sm = hopcroft.do(sm)
+    sm = hopcroft.do(sm) # , CreateNewStateMachineF=False)
     __check("Hopcroft Minimization", sm)
 
     return sm
