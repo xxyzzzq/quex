@@ -1,7 +1,7 @@
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
-from   itertools import islice, ifilter, imap
+from   itertools import islice, ifilter, imap, chain
 
 class StateSet_List:
     def __init__(self, StateMachine):
@@ -88,36 +88,26 @@ class StateSet_List:
             self.__todo.remove(StateSetIndex)
             return False    
 
+        def normalized_map(DB):
+            result = {}
+            for target_index, trigger_map in DB.iteritems():
+                # Target in terms of equivalent state sets
+                target = self.map[target_index]
+                entry  = result.get(target)
+                if entry == None: entry = trigger_map 
+                else:             entry = entry.union(trigger_map)
+                result[target] = entry
+            return result
+
         # -- choose one arbitrary state (for example state 0) as a prototype
         #    which is compared against the remaining states in the state set.
         prototype_index  = state_set[0]
         remainder        = islice(state_set, 1, None)
 
         prototype            = self.sm.states[prototype_index]
+        prototype_map        = normalized_map(prototype.transitions().get_map())
         equivalent_state_set = [ prototype_index ] 
 
-        # -- loop over all remaining states from state set
-        i         = 1   # state_set[i] = state index
-        element_n = N   # remaining number of elements in state set
-
-        def normalized_map(DB):
-            result = {}
-            for target_index, trigger_map in DB.iteritems():
-                # Target in terms of equivalent state sets
-                target = self.map[target_index]
-                result.setdefault(target, []).append(trigger_map)
-
-            for target, trigger_map_list in result.items():
-                if len(trigger_map_list) == 1: 
-                    result[target] = trigger_map_list[0]
-                else:
-                    union = trigger_map_list[0].union(trigger_map_list[1])
-                    for trigger_set in islice(trigger_map_list, 2, None):
-                        union.unite_with(trigger_set)
-                    result[target] = union
-            return result
-
-        prototype_map = normalized_map(prototype.transitions().get_map())
         if len(prototype_map) == 0:
             # If there are no target states, then there can be no split.
             # The state set is done.
@@ -126,11 +116,11 @@ class StateSet_List:
 
         # Since all state sets are 'harmonized' at the entry of this function
         # It can be assumed that the prototype contains all target_set indices
-        target_state_set_list = prototype_map.iterkeys()
+        # Loop over all remaining states from state set
         for state_index in remainder:
             state = self.sm.states[state_index]
             state_map = normalized_map(state.transitions().get_map())
-            for target in target_state_set_list:
+            for target in prototype_map.iterkeys():
                 if not prototype_map[target].is_equal(state_map[target]): break
             else:
                 equivalent_state_set.append(state_index)
@@ -138,18 +128,15 @@ class StateSet_List:
         if len(equivalent_state_set) == N:
             assert N != 1 # See function entry,
             # Thus: self.__todo.remove(...) not necessary.
-            if self.__todo.isdisjoint(list(target_state_set_list)):
+            if self.__todo.isdisjoint(list(prototype_map.iterkeys())):
                 self.__todo.remove(StateSetIndex)
             return False
 
+        i = self.__add_state_set(equivalent_state_set)
         # If len(equivalent_state_set) == 1, then it is not added to __todo
         # Thus: self.__todo.remove(...) not necessary.
-        self.__add_state_set(equivalent_state_set)
-        if self.__todo.isdisjoint(list(target_state_set_list)):
-            self.__todo.remove(StateSetIndex)
-            if len(equivalent_state_set) != 1:
-                # last index = size - 1
-                self.__todo.remove(len(self.state_set_list) - 1) 
+        if i != -1 and self.__todo.isdisjoint(list(prototype_map.iterkeys())):
+            self.__todo.remove(i)
 
         # -- States that are not equivalent (probably most likely) remain in the 
         #    original state set and the ones that are equivalent are put into a new
@@ -207,20 +194,28 @@ class StateSet_List:
             self.__add_state_set(state_set)
 
     def __add_state_set(self, NewStateSet):
+        """RETURNS: N >= 0 index of the new state set, if it is added to 
+                           the todo list
+                    - 1    if the new state set is not added to the todo list.
+        """
         #    Create the new state set at the end of the list
         self.state_set_list.append(NewStateSet)
         # -- Mark in the map the states that have moved to the new state set at the end.
         for state_index in NewStateSet:
             self.map[state_index] = self.size
 
-        # -- Index of the last state set = size - 1
-        # if not DoneF: self.__todo.add(self.size)
-        if len(NewStateSet) != 1: self.__todo.add(self.size)
-
         # -- increase the size counter
         self.size += 1 
 
-        return True
+        # -- Index of the last state set = size - 1
+        # if not DoneF: self.__todo.add(self.size)
+        if len(NewStateSet) != 1: 
+            self.__todo.add(self.size - 1)
+            return self.size - 1
+        else:
+            return -1
+
+DEBUG_F = True
 
 def do(SM, CreateNewStateMachineF=True):
     """Reduces the number of states according to equivalence classes of states. It starts
@@ -241,7 +236,11 @@ def do(SM, CreateNewStateMachineF=True):
        The original state set is replaced by the two new ones. This algorithm is 
        repeated until the state sets do not change anymore.
     """        
-    # (*) main algorithm    
+    global DEBUG_F
+    if DEBUG_F:
+        state_index_set = set(SM.states.iterkeys())
+
+    # (*) main algorithm ________________________________________________________________    
     state_set_list = StateSet_List(SM)
 
     state_set_list_changed_f = True   
@@ -253,8 +252,17 @@ def do(SM, CreateNewStateMachineF=True):
         state_set_list_changed_f = False
         for i in state_set_list.todo_list():
             if state_set_list.split(i):           
-                state_set_list_changed_f = True   # -- a split happened, the state sets changed ...  
+                state_set_list_changed_f = True   # split happened, state sets changed.
                 break
+    # ___________________________________________________________________________________
+
+    if DEBUG_F:
+        assert state_index_set == set(SM.states.iterkeys())
+        mentioned_state_index_set = set()
+        for state_set in state_set_list.state_set_list:
+            assert mentioned_state_index_set.isdisjoint(state_set)
+            mentioned_state_index_set.update(state_set)
+        assert state_index_set == mentioned_state_index_set
 
     # If all states in the state sets trigger equivalently, then the state set remains
     # nothing has to be done to the new state_set list, because its by default setup that way 
@@ -296,7 +304,7 @@ def create_state_machine(SM, StateSetList):
         representive = result.states[map_new_state_index[state_set_idx]]
 
         # The representive must have all transitions that the prototype has
-        for target_state_index, trigger_set in prototype.transitions().get_map().items():
+        for target_state_index, trigger_set in prototype.transitions().get_map().iteritems():
             target_state_set_index = StateSetList.map[target_state_index]
             representive.add_transition(trigger_set, 
                                         map_new_state_index[target_state_set_index])
@@ -315,7 +323,9 @@ def create_state_machine(SM, StateSetList):
 def adapt_state_machine(sm, StateSetList):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case nothing is to be done.
-    if len(filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list)) == 0:
+    for dummy in ifilter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list):
+        break
+    else:
         return sm
     
     # We know, that all states in a state set are equivalent. Thus, all but one
@@ -326,23 +336,21 @@ def adapt_state_machine(sm, StateSetList):
 
         # Merge all core information of the states inside the state set.
         prototype_index = state_set[0]
-        prototype       = sm.states[state_set[0]]
-        for state_idx in state_set[1:]:
+        prototype       = sm.states[prototype_index]
+        for state_idx in islice(state_set, 1, None):
             prototype.merge(sm.states[state_idx])
+            # The prototype takes over the role of all
+            replacement_dict[state_idx] = prototype_index
 
-        # Throw the meaningless states away. Transitions to them need to 
-        # point to the prototype
-        for state_index in state_set[1:]:
-            replacement_dict[state_index] = prototype_index
-            del sm.states[state_index]
+        for state_idx in islice(state_set, 1, None):
+            del sm.states[state_idx]
 
     # Replace the indices of the thrown out states
     if replacement_dict.has_key(sm.init_state_index):
        sm.init_state_index = replacement_dict[sm.init_state_index]
     
-    for state in sm.states.values():
+    for state in sm.states.itervalues():
        state.transitions().replace_target_indices(replacement_dict)
 
     return sm    
-
 
