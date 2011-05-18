@@ -1,20 +1,19 @@
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
-from   itertools import islice, ifilter, imap, chain
+from   itertools import islice, ifilter
 
 class StateSet_List:
     def __init__(self, StateMachine):
         self.sm = StateMachine
         #
-        # -- map: [state index]  -->  [index of the state set that contains it]
+        # -- map: state index --> index of the state set that contains it
         self.map = {} 
         #
         # -- create: self.state_set_list by initial split of all states.
         self.__todo = set([])
         self.size   = 0
         self.__initial_split()
-        self.size = len(self.state_set_list)
 
     def todo_list(self):
         return list(self.__todo)
