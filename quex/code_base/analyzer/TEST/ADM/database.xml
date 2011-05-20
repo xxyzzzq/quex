@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.18" date="Mon May 16 05:45:45 2011">
+<test-database execution-time-sec="0.17" date="Fri May 20 08:16:53 2011">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="accumulator.exe" info-request-time="1305157471L" vanished="False"/>
@@ -34,7 +34,7 @@
             <choice-list number="7" same_result="True">
                <choice name="0" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="1" result="OK" time_sec="0.00" crc="-978220029"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="-978220029"/>
                <choice name="3" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="4" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="5" result="OK" time_sec="0.00" crc="-978220029"/>

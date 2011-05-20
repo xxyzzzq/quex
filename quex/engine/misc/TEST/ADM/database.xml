@@ -1,22 +1,22 @@
-<test-database execution-time-sec="0.33" date="Mon May 16 05:51:23 2011">
+<test-database execution-time-sec="0.32" date="Fri May 20 08:22:16 2011">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.04"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.03"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1301139221L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.03" crc="-957083127"/>
             </choice-list>
         </test>
-        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.04"> 
+        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.03"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1301139221L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" time-sum-sec="0.04"> 
+        <test title="Function delete_comment(...)" time-sum-sec="0.03"> 
             <application file-name="test-delete_comment.py" info-request-time="1301139221L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.03" crc="1761513741"/>
             </choice-list>
         </test>
     </group>

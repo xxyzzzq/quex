@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.41" date="Mon May 16 05:46:26 2011">
+<test-database execution-time-sec="1.40" date="Fri May 20 08:17:34 2011">
     <last-used-diff-display-program name=""/>
     <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="from-utf8" info-request-time="1305001373L" vanished="False"/>
@@ -18,11 +18,11 @@
            <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="1140718619"/>
         </choice-list>
     </test>
-    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.37"> 
+    <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.36"> 
         <application file-name="characters" info-request-time="1305003760L" vanished="False"/>
         <make-procedure success="True" time_sec="0.478398"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.37" crc="705934895"/>
+           <choice name="" result="OK" time_sec="1.36" crc="705934895"/>
         </choice-list>
     </test>
     <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.01"> 
