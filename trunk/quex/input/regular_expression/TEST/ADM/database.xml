@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.29" date="Mon May 16 05:51:47 2011">
+<test-database execution-time-sec="2.28" date="Fri May 20 08:22:40 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1301139208L" vanished="False"/>
@@ -86,10 +86,10 @@
                <choice name="" result="OK" time_sec="0.07" crc="-561669938"/>
             </choice-list>
         </test>
-        <test title="post conditions" time-sum-sec="0.06"> 
+        <test title="post conditions" time-sum-sec="0.07"> 
             <application file-name="test-post-condition.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="30145240"/>
+               <choice name="" result="OK" time_sec="0.07" crc="30145240"/>
             </choice-list>
         </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.05"> 
@@ -120,10 +120,10 @@
                <choice name="" result="OK" time_sec="0.53" crc="-1397925985"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.58"> 
+        <test title="Set Operations" time-sum-sec="0.57"> 
             <application file-name="test-properties-2.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.58" crc="1108933321"/>
+               <choice name="" result="OK" time_sec="0.57" crc="1108933321"/>
             </choice-list>
         </test>
     </group>
