@@ -143,7 +143,9 @@ class HopcroftMinization:
                 else:             assert len(self.__non_harmonic) == sn
                 assert len(self.__todo) <= st + 1
 
-            # assert self.__non_harmonic.issubset(self.__todo)
+                if len(self.__non_harmonic) != 0: break
+
+            assert self.__non_harmonic.issubset(self.__todo)
 
         global DEBUG_cmp
         # print "##", DEBUG_cmp
@@ -367,7 +369,6 @@ class HopcroftMinization:
             origin_state_list = self.from_map[state_index]
             for state_set_index in [self.map[i] for i in origin_state_list]:
                 # Exception: state set is of size 'one', then it cannot be non-harmonic
-                pass#assert len(self.state_set_list[state_set_index]) != 0
                 if len(self.state_set_list[state_set_index]) != 1:
                     # A state_set cannot be 'done' if one of the target state_sets is not done
                     # Such a case, would be caught by the assert inside 'non_harmonic_add'.
