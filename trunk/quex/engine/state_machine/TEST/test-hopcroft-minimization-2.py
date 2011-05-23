@@ -3,6 +3,7 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
+from copy import deepcopy
 
 
 import quex.engine.state_machine.repeat as repeat
@@ -10,6 +11,7 @@ from   quex.engine.state_machine.core import *
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
+import quex.engine.state_machine.identity_checker as identity_checker
 
 if "--hwut-info" in sys.argv:
     print "DFA: Hopcroft optimization (minimize state set) II"
@@ -29,11 +31,18 @@ print "NOTE: '((4[a])) stands for 'state number 4 which has origin pattern 4'"
 test_i = 0
 def test(sm, txt):
     global test_i
+    backup_sm = deepcopy(sm)
     print "_______________________________________________________________________________"
     print ("(%i)" % test_i),
     print txt
-    print hopcroft.do(sm, CreateNewStateMachineF=CreateNewStateMachineF)
+    optimal_sm = hopcroft.do(sm, CreateNewStateMachineF=CreateNewStateMachineF)
+    print optimal_sm
     test_i += 1
+    orphan_state_index_list = optimal_sm.get_orphaned_state_index_list()
+    if len(orphan_state_index_list) != 0:
+        print "ERROR: orphan states found = ", orphan_state_index_list
+    if identity_checker.do(backup_sm, optimal_sm) == False:
+        print "ERROR: state machines not equivalent"
 
 txt = """
           (0)---a--->((1[a]))---a--->((2[b]))
@@ -389,6 +398,5 @@ sm.states[n4].add_origin(5555L, 1L)
 
 # middle branch
 n4 = sm.add_transition(n1, ord('b'), n4, AcceptanceF=True)
-
 test(sm, txt)
 

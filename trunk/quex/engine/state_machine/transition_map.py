@@ -377,17 +377,18 @@ class TransitionMap:
 
     def replace_target_indices(self, ReplacementDict):
         new_db = {}
-        for target_idx, trigger_set in self.__db.items():
+        for target_idx, trigger_set in self.__db.iteritems():
             # In case of no entry in the ReplacementDict, then
             # the old target index remains.
             new_idx = ReplacementDict.get(target_idx, target_idx)
-            if new_db.has_key(new_idx): new_db[new_idx].unite_with(trigger_set)
-            else:                       new_db[new_idx] = trigger_set
+            entry = new_db.get(new_idx)
+            if entry is not None: entry.unite_with(trigger_set)
+            else:                 new_db[new_idx] = trigger_set.clone()
 
         # By assigning a new_db, the old one is left for garbage collection
         self.__db = new_db
 
-        for i in range(len(self.__epsilon_target_index_list)):
+        for i in xrange(len(self.__epsilon_target_index_list)):
             target_idx     = self.__epsilon_target_index_list[i] 
             new_idx = ReplacementDict.get(target_idx)
             if new_idx is None: continue
