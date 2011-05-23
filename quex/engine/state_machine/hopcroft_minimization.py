@@ -1,7 +1,12 @@
+# (C) 2005-2011 Frank-Rene Schaefer
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
-from   itertools import islice, ifilter, chain
+from   itertools   import islice, ifilter, chain
+from   collections import defaultdict
+import sys
+
+DEBUG_cmp = defaultdict(int)
 
 class HopcroftMinization:
     """Combine sets of states that are equivalent. 
@@ -28,10 +33,43 @@ class HopcroftMinization:
         The algorithm below adapted the hopcroft algorithm in order to
         cope with the large trigger sets.
 
-        (1) Basic Idea of Hopcroft Minimization
+        (1) Basic Idea of Hopcroft Minimization _______________________________
 
-        (2) Frank-Rene Schaefer's Adaptations
+            (i) Define the initial state sets:
 
+                States that accept patterns --> each in the corresponding acceptance state set
+                Non-acceptance states       --> all together in one state set.
+
+                All states are marked 'to do', i.e. to be considered.
+
+            (ii) Loop over all 'to do' state sets:
+
+                 if all states in a state set trigger to the same target state sets,
+                 then they are equivalent. 
+
+                 if then, the target state set is 'done', the state set can be 
+                 considered done. (done = delete from 'to do').
+
+                 if not, the state set needs to be split. Add the new one to to do list.
+
+             (iii) Goto (ii) until to do list is empty.
+
+
+        (2) Frank-Rene Schaefer's Adaptations _________________________________
+
+             In many cases, already the difference in target_sets reveals that
+             a state set needs to be split. The term 'harmonic' is defined for
+             the algorithm below:
+
+             Harmonic: A state set is harmonic, if and only if all states in the
+                       state set trigger to target states that belong to the
+                       same state set.
+
+             The split is then separated into two repeated phases:
+
+                 (1) Split until all non-harmonic state sets disappear.
+                 (2) Split all states in the current to do list.
+                 Repeat
     """
     def __init__(self, StateMachine):
         self.sm = StateMachine
@@ -57,13 +95,12 @@ class HopcroftMinization:
     def todo_list(self):
         return list(self.__todo)
 
+    def todo_add(self, StateSetIndex):
+        self.__todo.add(StateSetIndex)
+
     def todo_remove(self, StateSetIndex):
-        assert StateSetIndex in xrange(len(self.state_set_list))
-        assert StateSetIndex in self.__todo
+        assert StateSetIndex not in self.__non_harmonic
         self.__todo.remove(StateSetIndex)
-        # A 'done' state set **must** be harmonic, i.e. all included states
-        # trigger to the same target state sets (They even do with same triggers).
-        self.non_harmonic_remove(StateSetIndex)
 
     def non_harmonic_list(self):
         return list(self.__non_harmonic)
@@ -72,10 +109,19 @@ class HopcroftMinization:
         if StateSetIndex in self.__non_harmonic: 
             self.__non_harmonic.remove(StateSetIndex)
 
+    def non_harmonic_add(self, StateSetIndex):
+        # assert StateSetIndex in self.__todo
+        self.__non_harmonic.add(StateSetIndex)
+
     def run(self):
         # It is conceivable (an appears in practise) that target state sets 
         # that are undone point to each other in loops. Then, they can never
         # be considered undone. Check against this by means of a change flag.
+
+        ## all_state_index_list = set(self.sm.states.iterkeys())
+
+        ## print "##SM:", self.sm.get_string()
+
         change_f = True
         while len(self.__todo) != 0 and change_f:
             # Loop over all sets in state set
@@ -84,13 +130,34 @@ class HopcroftMinization:
                 for i in list(self.__non_harmonic):
                     self.pre_split(i)
 
+            ## print "##_________________"
+            ## for i in sorted(self.__todo, key=lambda x: min(self.state_set_list[x])):
+            ##    print "##", self.state_set_list[i]
+
             change_f = False
             for i in list(sorted(self.__todo, key=lambda i: len(self.state_set_list[i]), reverse=True)): 
                 if i in self.__non_harmonic: continue
+
+                st = len(self.__todo); sn = len(self.__non_harmonic)
                 if self.split(i): change_f = True           
+                else:             assert len(self.__non_harmonic) == sn
+                assert len(self.__todo) <= st + 1
+
+            # assert self.__non_harmonic.issubset(self.__todo)
+
+        global DEBUG_cmp
+        # print "##", DEBUG_cmp
+        # 'self.state_set_list' now contains the state sets that represent
+        #                       the state machine. 
+        ## result_state_index_list = set()
+        ## for state_set in self.state_set_list:
+        ##    assert result_state_index_list.isdisjoint(state_set)
+        ##    result_state_index_list.update(state_set)
+        ## assert result_state_index_list == all_state_index_list
             
     def pre_split(self, StateSetIndex):
         """Separate state_set into two state sets:
+
            (1) The set of states that have the same target state sets,
                as a arbitrarily chosen prototype := 'harmonic'.
            (2) Those who differ from the prototype.
@@ -109,6 +176,17 @@ class HopcroftMinization:
                           The old state set and the prototype are
                           identical.
         """
+        assert StateSetIndex in self.__todo
+        assert StateSetIndex in self.__non_harmonic
+        state_set = self.state_set_list[StateSetIndex]
+        assert len(state_set) > 1
+
+        # NOTE: Previous experiments have shown, that the split does **not** become
+        #       faster, if all non-harmonic states are identified at once. The overhead
+        #       of the book-keeping is much higher than the benefit. Also, statistics
+        #       have shown that a very large majority of cases results in one or two
+        #       state sets only.
+
         def get_target_state_set_list(StateIndex):
             target_list = self.to_map[StateIndex].iterkeys()
             return set([self.map[i] for i in target_list])
@@ -121,28 +199,44 @@ class HopcroftMinization:
             if prototype == get_target_state_set_list(state_index): 
                 match_set.append(state_index)
 
-        if len(match_set) == len(state_set): 
-            # The state_set is therefore harmonic, i.e. all states trigger to the 
-            # same target state sets.
-            self.non_harmonic_remove(StateSetIndex)
-            return False
+        # NOW: match_set = harmonic
+        #      remainder = possibly not harmonic
 
-        # -- The new set (match_set) is always marked harmonic.
+        # To split, or not to split ...
+        if len(match_set) == len(state_set): 
+            self.non_harmonic_remove(StateSetIndex)
+            return False 
+
+        # The match set is now extracted from the original state set
+
+        # -- Delete all states that are put into other sets from the original state set
+        # -- Add the new set to the state_set_list
+        # -- Sets of size == 1: 1. are harmonic (trigger all to the same target state sets).
+        #                       2. cannot be split further => done.
+        self.__extract(StateSetIndex, state_set, match_set)
+        # (by default, the new set is not added to non_harmonic, which is true.)
+
         # -- Neither the new, nor the old state set can be labeled as 'done' because
-        #    the exact transitions have not been investigated. The only exception
-        #    is if len(match_set) == 1, because then it cannot be split anyway.
-        #    This exception is handled in '__add_state_set'.
-        return self.__split_state_set(StateSetIndex, state_set, match_set, DoneF=False)
+        #    the exact transitions have not been investigated, yet. The only exception
+        #    if len(state_set) == 1, because then it cannot be split anyway.
+        #    if len(match_set) == 1, it is not added to the todo list by __add_state_set().
+        if len(state_set) == 1: 
+            self.non_harmonic_remove(StateSetIndex)
+            self.todo_remove(StateSetIndex)
+
+        # -- The state set is split, thus state sets triggering to it may be non-harmonic
+        #    (this may include recursive states, so this has to come after anything above)
+        self.__check_dependencies(chain(state_set, match_set))
 
     def split(self, StateSetIndex):
         """RETURNS:  False   if StateSet does not need to be split up any further.
                      True    if the state set requires a split.
         """
-        assert StateSetIndex in self.__todo
+        pass#assert StateSetIndex in self.__todo
         state_set = self.state_set_list[StateSetIndex]
         #
         N         = len(state_set)
-        assert N != 0, "State set of size '0'. List = " + repr(state_set_list)
+        pass#assert N != 0, "State set of size '0'. List = " + repr(self.state_set_list)
         # only one state in state set => no change possible
         if N == 1: 
             self.todo_remove(StateSetIndex)
@@ -200,7 +294,19 @@ class HopcroftMinization:
             if done_f: self.todo_remove(StateSetIndex)
             return False
 
-        return self.__split_state_set(StateSetIndex, state_set, equivalent_state_set, DoneF=done_f)
+        # -- The state set is split, thus state sets triggering to it may be non-harmonic
+        #    (this may include recursive states, so this has to come after anything above)
+        self.__check_dependencies(state_set)
+
+        new_index = self.__extract(StateSetIndex, state_set, equivalent_state_set)
+
+        if len(state_set) == 1: self.non_harmonic_remove(StateSetIndex); self.todo_remove(StateSetIndex)
+        else:                   self.non_harmonic_add(StateSetIndex)
+        if done_f:
+            # if the new state state is of size one, it has not been added to 'todo' list
+            if len(equivalent_state_set) != 1: self.todo_remove(new_index)
+
+        return True
 
     def __initial_split(self):
         """Returns the set of states that are 'acceptance'. If the optional     
@@ -219,10 +325,11 @@ class HopcroftMinization:
         #       But: The minimization might be called for sub-patterns such as 'a*' which
         #       actually allow the first state to be acceptance.
         if len(non_acceptance_state_set) != 0: 
-            self.__add_state_set(non_acceptance_state_set, HarmonicF=False)
+            i = self.__add_state_set(non_acceptance_state_set)
+            if len(non_acceptance_state_set) != 1: self.non_harmonic_add(i)
 
         # BUT: There should always be at least one acceptance state.
-        assert len(self.sm.states) - len(non_acceptance_state_set) != 0
+        pass#assert len(self.sm.states) - len(non_acceptance_state_set) != 0
 
         # (2) Split the acceptance states according to their origin. An acceptance
         #     state maching the, for example, an identifier is not equivalent an 
@@ -238,34 +345,37 @@ class HopcroftMinization:
 
         # (2b) Enter the split acceptance state sets.
         for state_set in db.values():
-            self.__add_state_set(state_set, HarmonicF=False)
+            i = self.__add_state_set(state_set)
+            if len(state_set) != 1: self.non_harmonic_add(i)
 
-    def __split_state_set(self, MotherIdx, mother_state_set, EquivalentStateSet, DoneF):
-
-        self.__add_state_set(EquivalentStateSet, DoneF, HarmonicF=True)
-
-        # Cut the matching set and put it into a separate one
-        for state_index in EquivalentStateSet:
+    def __extract(self, MotherIdx, mother_state_set, NewStateSet):
+        # -- Delete states from the mother set
+        for state_index in NewStateSet:
             del mother_state_set[mother_state_set.index(state_index)]
 
-        # Sets of size == 1: 1. are harmonic (trigger all to the same target state sets).
-        #                    2. cannot be split further => done.
-        if len(mother_state_set) == 1: 
-            self.todo_remove(MotherIdx)
-        else:
-            # The state set is suspected to be non_harmonic
-            self.__non_harmonic.add(MotherIdx)
+        # (if all was to be extracted then the mother state set could remain
+        #  and the new state set be represented by the mother_state_set)
+        pass#assert len(mother_state_set) != 0
 
+        # -- Create a new state set in state_set_list
+        return self.__add_state_set(NewStateSet)
+
+    def __check_dependencies(self, StateSet):
         # If a state set is split, then every state set that triggered to it may be non-harmonic
         # origin_state_list = list of states that trigger to states inside mother_state_set.
-        for state_index in chain(mother_state_set, EquivalentStateSet):
+        for state_index in StateSet:
             origin_state_list = self.from_map[state_index]
             for state_set_index in [self.map[i] for i in origin_state_list]:
-                self.__non_harmonic.add(state_set_index)
+                # Exception: state set is of size 'one', then it cannot be non-harmonic
+                pass#assert len(self.state_set_list[state_set_index]) != 0
+                if len(self.state_set_list[state_set_index]) != 1:
+                    # A state_set cannot be 'done' if one of the target state_sets is not done
+                    # Such a case, would be caught by the assert inside 'non_harmonic_add'.
+                    self.non_harmonic_add(state_set_index)
 
         return True
 
-    def __add_state_set(self, NewStateSet, DoneF=False, HarmonicF=True):
+    def __add_state_set(self, NewStateSet):
         """DoneF -- The new state set does not need to be further investigated.
 
            HarmonicF -- All states of the new state set trigger to the same
@@ -275,9 +385,7 @@ class HopcroftMinization:
                            the todo list
                     - 1    if the new state set is not added to the todo list.
         """
-        if len(NewStateSet) == 0:
-            print "##occured"
-            return
+        pass#assert len(NewStateSet) != 0
 
         #    Create the new state set at the end of the list
         self.state_set_list.append(NewStateSet)
@@ -286,18 +394,19 @@ class HopcroftMinization:
             self.map[state_index] = self.size
 
         # -- Index of the last state set = size - 1
-        if not DoneF and len(NewStateSet) != 1: self.__todo.add(self.size)
-        if not HarmonicF:                       self.__non_harmonic.add(self.size)
+        if len(NewStateSet) != 1: self.todo_add(self.size)
 
         # -- increase the size counter
         self.size += 1 
+
+        return self.size - 1
 
 def do(SM, CreateNewStateMachineF=True):
     """Reduces the number of states according to equivalence classes of states. It starts
        with two sets: 
        
             (1) the set of acceptance states, 
-                -- these states need to be splitted again according to their origin.
+                -- these states need to be split again according to their origin.
                    Acceptance of state machine A is not equal to acceptance of 
                    state machine B.
             (2) the set of non-acceptance states.
@@ -313,8 +422,6 @@ def do(SM, CreateNewStateMachineF=True):
     """        
     result = HopcroftMinization(SM)
 
-    # If all states in the state sets trigger equivalently, then the state set remains
-    # nothing has to be done to the new state_set list, because its by default setup that way 
     if CreateNewStateMachineF: return create_state_machine(SM, result)
     else:                      return adapt_state_machine(SM, result)
 
@@ -326,9 +433,7 @@ def create_state_machine(SM, Result):
         return SM.clone()
     
     # Define a mapping from the state set to a new target state index
-    map_new_state_index = {}
-    for state_set_index in range(len(Result.state_set_list)):
-        map_new_state_index[state_set_index] = state_machine_index.get()
+    map_new_state_index = dict([(i, state_machine_index.get()) for i in xrange(len(Result.state_set_list))])
                 
     # The state set that contains the initial state becomes the initial state of 
     # the new state machine.   
@@ -344,7 +449,7 @@ def create_state_machine(SM, Result):
     state_set_idx = -1L
     for state_set in Result.state_set_list:
         state_set_idx += 1L
-        assert len(state_set) != 0, "State set of size '0'. List = " + repr(Result)
+        pass#assert len(state_set) != 0, "State set of size '0'. List = " + repr(Result)
 
         # The prototype: States in one set behave all equivalent with respect to target state sets
         # thus only one state from the start set has to be considered.      
@@ -384,22 +489,24 @@ def adapt_state_machine(sm, Result):
         if len(state_set) == 1: continue
 
         # Merge all core information of the states inside the state set.
-        prototype_index = state_set[0]
-        prototype       = sm.states[prototype_index]
-        for state_idx in islice(state_set, 1, None):
+        # Do not delete the init state
+        if sm.init_state_index in state_set: prototype_index = sm.init_state_index
+        else:                                prototype_index = state_set[0]  
+
+        prototype = sm.states[prototype_index]
+        for state_idx in ifilter(lambda x: x != prototype_index, state_set):
             prototype.merge(sm.states[state_idx])
             # The prototype takes over the role of all
             replacement_dict[state_idx] = prototype_index
 
-        for state_idx in islice(state_set, 1, None):
-            del sm.states[state_idx]
+    pass#assert sm.init_state_index not in replacement_dict.iterkeys()
 
     # Replace the indices of the thrown out states
-    if replacement_dict.has_key(sm.init_state_index):
-       sm.init_state_index = replacement_dict[sm.init_state_index]
-    
+    for state_idx in replacement_dict.iterkeys():
+        del sm.states[state_idx]
+
     for state in sm.states.itervalues():
-       state.transitions().replace_target_indices(replacement_dict)
+        state.transitions().replace_target_indices(replacement_dict)
 
     return sm    
 

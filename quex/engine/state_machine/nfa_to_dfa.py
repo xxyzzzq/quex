@@ -1,5 +1,6 @@
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
+from   itertools import imap
 
 def do(SM):
     """Creates a deterministic finite automaton (DFA) from the current state 
@@ -68,7 +69,7 @@ def do(SM):
                 result.add_transition(start_state_index, trigger_set, target_state_index)
                 # -- merge informations of combined states inside the target state
                 new_target_state = result.states[target_state_index]
-                for state in map(lambda idx: SM.states[idx], epsilon_closure_of_target_state_combination):
+                for state in imap(lambda idx: SM.states[idx], epsilon_closure_of_target_state_combination):
                     new_target_state.merge(state)
 
                 worklist.append((target_state_index, epsilon_closure_of_target_state_combination))  
