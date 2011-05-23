@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.28" date="Fri May 20 08:22:40 2011">
+<test-database execution-time-sec="2.31" date="Mon May 23 23:24:05 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1301139208L" vanished="False"/>
@@ -54,10 +54,10 @@
                <choice name="" result="OK" time_sec="0.08" crc="315440503"/>
             </choice-list>
         </test>
-        <test title="Simple repeated expressions" time-sum-sec="0.08"> 
+        <test title="Simple repeated expressions" time-sum-sec="0.09"> 
             <application file-name="test-repeated-expressions.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="-1359575045"/>
+               <choice name="" result="OK" time_sec="0.09" crc="-1359575045"/>
             </choice-list>
         </test>
         <test title="Alternative Expressions" time-sum-sec="0.05"> 
@@ -92,10 +92,10 @@
                <choice name="" result="OK" time_sec="0.07" crc="30145240"/>
             </choice-list>
         </test>
-        <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.05"> 
+        <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.06"> 
             <application file-name="test-eol-carriage-return-newline.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="648675644"/>
+               <choice name="" result="OK" time_sec="0.06" crc="648675644"/>
             </choice-list>
         </test>
     </group>
