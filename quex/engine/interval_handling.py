@@ -908,6 +908,9 @@ class NumberSet(object):
     def __repr__(self):
         return repr(self.__intervals)
 
+    def __cmp__(self, Other):
+        assert False, "No comparisons defined for class NumberSet"
+
     def get_the_only_element(self):
         if   len(self.__intervals) != 1: return None
         x = self.__intervals[0]

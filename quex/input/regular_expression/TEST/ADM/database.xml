@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.31" date="Mon May 23 23:24:05 2011">
+<test-database execution-time-sec="2.29" date="Thu May 26 07:49:54 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1301139208L" vanished="False"/>
@@ -92,10 +92,10 @@
                <choice name="" result="OK" time_sec="0.07" crc="30145240"/>
             </choice-list>
         </test>
-        <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.06"> 
+        <test title="End of Line '$' (with DOS/Windows '\r\n')" time-sum-sec="0.05"> 
             <application file-name="test-eol-carriage-return-newline.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="648675644"/>
+               <choice name="" result="OK" time_sec="0.05" crc="648675644"/>
             </choice-list>
         </test>
     </group>
@@ -114,10 +114,10 @@
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Simple" time-sum-sec="0.53"> 
+        <test title="Simple" time-sum-sec="0.52"> 
             <application file-name="test-properties.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.53" crc="-1397925985"/>
+               <choice name="" result="OK" time_sec="0.52" crc="-1397925985"/>
             </choice-list>
         </test>
         <test title="Set Operations" time-sum-sec="0.57"> 

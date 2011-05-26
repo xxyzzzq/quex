@@ -14,7 +14,6 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 3, 4, 5, 6;"
     sys.exit(0)
 
-
 def construct_path(sm, StartStateIdx, String, Skeleton):
     state_idx = StartStateIdx
     i = 0

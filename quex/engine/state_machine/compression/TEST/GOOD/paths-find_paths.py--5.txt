@@ -1,21 +1,22 @@
+## 0.59.1
 
         digraph state_machine_2 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 25; 20; 21; 22; 23; 24;
+	       node [shape = doublecircle]; 20; 21; 22; 23; 24; 25;
            node [shape = circle];
-           7777 -> 19 [label ="'0'"];
-19 -> 25 [label ="'a'"];
+           19 -> 25 [label ="'a'"];
 19 -> 20 [label ="'b', ['d', 'z']"];
 19 -> 23 [label ="'c'"];
-25 -> 20 [label ="'a', ['c', 'z']"];
-25 -> 21 [label ="'b'"];
 21 -> 20 [label ="['a', 'b'], ['d', 'z']"];
 21 -> 22 [label ="'c'"];
 23 -> 20 [label ="['a', 'c'], ['e', 'z']"];
 23 -> 24 [label ="'d'"];
 24 -> 20 [label ="['a', 'd'], ['f', 'z']"];
 24 -> 22 [label ="'e'"];
+25 -> 20 [label ="'a', ['c', 'z']"];
+25 -> 21 [label ="'b'"];
+7777 -> 19 [label ="'0'"];
 
         }
         

@@ -19,10 +19,17 @@ sm.add_transition(37L, 98, 100L)
 
 print "states machine = ", sm
 
+def show(ETS):
+    result = repr(ETS)
+    result = result.replace("(", "[")
+    result = result.replace(",)", ")")
+    result = result.replace(")", "]")
+    return result
+
 # (*) compute the elementary trigger set
 epsilon_closure_db = sm.get_epsilon_closure_db()
-ets = sm.get_elementary_trigger_sets([36, 37], epsilon_closure_db)
-print "elementary trigger sets = ", ets
+ets = sm.get_elementary_trigger_sets([36, 37], epsilon_closure_db).items()
+print "elementary trigger sets = ", show(ets)
 i = 10
 for target_indices, trigger_set in ets:
     i += 1
@@ -38,8 +45,8 @@ print "states machine = ", sm
 
 # (*) compute the elementary trigger set
 epsilon_closure_db = sm.get_epsilon_closure_db()
-ets = sm.get_elementary_trigger_sets([36, 37], epsilon_closure_db)
-print "elementary trigger sets = ", ets
+ets = sm.get_elementary_trigger_sets([36, 37], epsilon_closure_db).items()
+print "elementary trigger sets = ", show(ets)
 i = 10
 for target_indices, trigger_set in ets:
     i += 1

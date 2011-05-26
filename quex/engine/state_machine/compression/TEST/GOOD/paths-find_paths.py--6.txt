@@ -1,28 +1,29 @@
+## 0.59.1
 
         digraph state_machine_1 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 16; 19; 18; 17; 20;
+	       node [shape = doublecircle]; 16; 17; 18; 19; 20;
            node [shape = circle];
-           7777 -> 15 [label ="'0'"];
-15 -> 16 [label ="'c'"];
-15 -> 17 [label ="'d'"];
-16 -> 19 [label ="'c'"];
-16 -> 18 [label ="'d'"];
-18 -> 19 [label ="'c'"];
-18 -> 17 [label ="'d'"];
-18 -> 20 [label ="'e'"];
+           15 -> 17 [label ="'c'"];
+15 -> 16 [label ="'d'"];
+17 -> 18 [label ="'c'"];
+17 -> 19 [label ="'d'"];
+19 -> 18 [label ="'c'"];
+19 -> 16 [label ="'d'"];
+19 -> 20 [label ="'e'"];
+7777 -> 15 [label ="'0'"];
 
         }
         
 
-# start    = 16;
-# path     = (16)--'d'-->(18)--'e'-->[20];
-# skeleton = (17) by 'd'; (19) by 'c'; 
+# start    = 17;
+# path     = (17)--'d'-->(19)--'e'-->[20];
+# skeleton = (16) by 'd'; (18) by 'c'; 
 # wildcard = False;
 # 
 # start    = 15;
-# path     = (15)--'c'-->(16)--'d'-->(18)--'e'-->[20];
-# skeleton = (17) by 'd'; (19) by 'c'; 
+# path     = (15)--'c'-->(17)--'d'-->(19)--'e'-->[20];
+# skeleton = (16) by 'd'; (18) by 'c'; 
 # wildcard = False;
 # 

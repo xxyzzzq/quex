@@ -14,43 +14,8 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 3;"
     sys.exit(0)
 
+def test(sm):
 
-def construct_path(sm, StartStateIdx, String, Skeleton):
-    state_idx = StartStateIdx
-    i = 0
-    for letter in String:
-        i += 1
-        char = int(ord(letter))
-        for target_idx, trigger_set in Skeleton.items():
-            adapted_trigger_set = trigger_set.difference(NumberSet(char))
-            end = sm.add_transition(state_idx, trigger_set, target_idx, True)
-            sm.states[end].mark_self_as_origin(target_idx + 1000, end)
-        
-        state_idx = sm.add_transition(state_idx, char, None, True)
-        sm.states[state_idx].mark_self_as_origin(long(i + 10000), end)
-
-    return state_idx # Return end of the string path
-
-def number_set(IntervalList):
-    result = NumberSet(map(lambda x: Interval(x[0], x[1]), IntervalList))
-    return result
-
-def test(Skeleton, AddTransitionList, *StringPaths):
-    sm = core.StateMachine()
-
-    # def construct_path(sm, StartStateIdx, String, Skeleton):
-    idx0 = sm.init_state_index
-    for character_sequence in StringPaths:
-        idx = construct_path(sm, idx0, character_sequence, Skeleton)
-
-    sm = nfa_to_dfa.do(sm)
-    sm = hopcroft.do(sm)
-
-    for start_idx, end_idx, trigger_set in AddTransitionList:
-        sm.add_transition(long(start_idx), trigger_set, long(end_idx))
-
-    # Path analyzis may not consider the init state, so mount 
-    # an init state before everything.
     sm.add_transition(7777L, ord('0'), sm.init_state_index)
     sm.init_state_index = 7777L
 
@@ -61,44 +26,6 @@ def test(Skeleton, AddTransitionList, *StringPaths):
     for path in result:
         print "# " + repr(path).replace("\n", "\n# ")
 
-    print "## String paths were = " + repr(StringPaths)
-
-skeleton_0 = { 
-   66L: NumberSet(Interval(ord('a'))),
-}
-skeleton_1 = { 
-   6666L: NumberSet(Interval(ord('a'), ord('z')+1)),
-}
-
-skeleton_2 = {} 
-for char in "abc":
-    letter = ord(char)
-    random = (letter % 15) + 1000
-    trigger = NumberSet(Interval(letter))
-    skeleton_2.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
-
-skeleton_3 = {} 
-for char in "bc":
-    letter = ord(char)
-    random = (letter % 15) + 1000
-    trigger = NumberSet(Interval(letter))
-    skeleton_3.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
-
-skeleton_4 = {} 
-for char in "cd":
-    letter = ord(char)
-    random = (letter % 15) + 1000
-    # Add intervals that have an extend of '2' so that they do not
-    # add possible single paths.
-    trigger = NumberSet(Interval((letter % 2) * 2, (letter % 2) * 2 + 2))
-    skeleton_4.setdefault(long(random), NumberSet()).unite_with(NumberSet(int(letter)))
-
-add_transition_list_0 = [
-        (18, 18, ord('b')),
-        (18, 19, ord('c')),
-        (18, 16, ord('a')),
-        ]
-
 # Hint: Use 'dot' (graphviz utility) to print the graphs.
 # EXAMPLE:
 #          > ./paths-find_paths.py 2 > tmp.dot
@@ -108,16 +35,77 @@ if len(sys.argv) < 2:
     print "Call this with: --hwut-info"
     sys.exit(0)
 
+
+sm = core.StateMachine()
 if "1" in sys.argv: 
-    test(skeleton_0, [(8, 8, ord('b')), (8, 9, ord('a'))], "b")
+    """
+    00007() <~ 
+          == 'a' ==> 00009
+          == 'b' ==> 00008
+    00009(A, S) <~ (1066, 66, A, S)
+    00008(A, S) <~ (10001, 66, A, S)
+          == 'a' ==> 00009
+          == 'b' ==> 00008
+    """
+    sm.init_state_index = 7L
+    sm.add_transition(7L, ord('a'), 9L, AcceptanceF=True)
+    sm.add_transition(7L, ord('b'), 8L, AcceptanceF=True)
+    sm.add_transition(8L, ord('a'), 9L)
+    sm.add_transition(8L, ord('b'), 8L)
+
+    test(sm)
 
 elif "2" in sys.argv: 
-    test(skeleton_2, add_transition_list_0, "cb")
+    """
+    00014() <~ 
+          == 'a' ==> 00016
+          == 'b' ==> 00017
+          == 'c' ==> 00015
+    00016(A, S) <~ (2007, 1007, A, S)
+    00017(A, S) <~ (2008, 1008, A, S)
+    00015(A, S) <~ (10001, 1007, A, S), (2009, 1009, A, S)
+          == 'a' ==> 00016
+          == 'b' ==> 00018
+          == 'c' ==> 00019
+    00018(A, S) <~ (10002, 1007, A, S), (2008, 1008, A, S)
+          == 'a' ==> 00016
+          == 'b' ==> 00018
+          == 'c' ==> 00019
+    00019(A, S) <~ (2009, 1009, A, S)
+    """
+    sm.init_state_index = 14L
+    sm.add_transition(14L, ord('a'), 16L, AcceptanceF=True)
+    sm.add_transition(14L, ord('b'), 17L, AcceptanceF=True)
+    sm.add_transition(14L, ord('c'), 15L, AcceptanceF=True)
+    sm.add_transition(15L, ord('a'), 16L)
+    sm.add_transition(15L, ord('b'), 18L)
+    sm.add_transition(15L, ord('c'), 19L)
+    sm.add_transition(18L, ord('a'), 16L)
+    sm.add_transition(18L, ord('b'), 18L, AcceptanceF=True)
+    sm.add_transition(18L, ord('c'), 19L, AcceptanceF=True)
+
+    test(sm)
 
 elif "3" in sys.argv: 
-    test(skeleton_0, 
-         [(11, 11, ord('c'))], #[(8, 8, ord('b')), (8, 9, ord('a'))], 
-         "bb")
+    """
+    00010() <~ 
+          == 'a' ==> 00012
+          == 'b' ==> 00011
+    00012(A, S) <~ (1066, 66, A, S)
+    00011(A, S) <~ (10001, 66, A, S)
+          == 'a' ==> 00012
+          == 'b' ==> 00013
+          == 'c' ==> 00011
+    00013(A, S) <~ (10002, 66, A, S)
+    """
+    sm.init_state_index = 10L
+    sm.add_transition(10L, ord('a'), 12L, AcceptanceF=True)
+    sm.add_transition(10L, ord('b'), 11L, AcceptanceF=True)
+    sm.add_transition(11L, ord('a'), 12L)
+    sm.add_transition(11L, ord('b'), 13L, AcceptanceF=True)
+    sm.add_transition(11L, ord('c'), 11L)
+
+    test(sm)
 print "#"
 print "# Some recursions are possible, if the skeleton contains them."
 print "# In this case, the path cannot contain but the 'iterative' char"

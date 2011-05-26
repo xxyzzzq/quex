@@ -1,11 +1,10 @@
 
-        digraph state_machine_1 {
+        digraph state_machine_0 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 16; 17; 15; 18; 19;
+	       node [shape = doublecircle]; 15; 16; 17; 18; 19;
            node [shape = circle];
-           7777 -> 14 [label ="'0'"];
-14 -> 16 [label ="'a'"];
+           14 -> 16 [label ="'a'"];
 14 -> 17 [label ="'b'"];
 14 -> 15 [label ="'c'"];
 15 -> 16 [label ="'a'"];
@@ -14,6 +13,7 @@
 18 -> 16 [label ="'a'"];
 18 -> 18 [label ="'b'"];
 18 -> 19 [label ="'c'"];
+7777 -> 14 [label ="'0'"];
 
         }
         
@@ -43,7 +43,6 @@
 # skeleton = (16) by 'a'; (17) by 'b'; (19) by 'c'; 
 # wildcard = False;
 # 
-## String paths were = ('cb',)
 #
 # Some recursions are possible, if the skeleton contains them.
 # In this case, the path cannot contain but the 'iterative' char
