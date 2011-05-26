@@ -2,6 +2,7 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
+from operator import itemgetter
 
 
 from quex.engine.state_machine.core import *
@@ -38,8 +39,8 @@ for key, trigger_set in sm.states[10].transitions().get_map().items():
 
 # (*) compute the elementary trigger set
 epsilon_closure_db = sm.get_epsilon_closure_db()
-ets = sm.get_elementary_trigger_sets([10], epsilon_closure_db)
+ets = sm.get_elementary_trigger_sets([10], epsilon_closure_db).items()
 i = 10
-for target_indices, trigger_set in ets:
+for target_indices, trigger_set in sorted(ets, key=itemgetter(0)):
     i += 1
     print trigger_set.gnuplot_string(i)

@@ -9,6 +9,7 @@ from   quex.engine.state_machine.origin_list     import StateOriginList
 import sys
 from   copy import copy, deepcopy
 from   operator import attrgetter
+from   itertools import ifilter
 
 
 class State:
@@ -340,11 +341,10 @@ class StateMachine:
             index_list = state.transitions().get_epsilon_target_state_index_list()
 
             # Epsilon closure for current state
-            ec = { index: True }
+            ec = set([index]) 
             if len(index_list) != 0: 
-                for target_index in index_list:
-                    if ec.has_key(target_index): continue
-                    ec[target_index] = True
+                for target_index in ifilter(lambda x: x not in ec, index_list):
+                    ec.add(target_index)
                     self.__dive_for_epsilon_closure(target_index, ec)
 
             db[index] = ec
@@ -359,17 +359,16 @@ class StateMachine:
            EC_DB:        Epsilon closure database, as computed once by
                          'get_epsilon_closure_db()'.
         """
-        result = {}
+        result = set()
         for index in StateIdxList:
             result.update(EC_DB[index])
 
-        return result.keys()
+        return result
 
     def __dive_for_epsilon_closure(self, state_index, result):
         index_list = self.states[state_index].transitions().get_epsilon_target_state_index_list()
-        for target_index in index_list:
-            if result.has_key(target_index): continue
-            result[target_index] = True
+        for target_index in ifilter(lambda x: x not in result, index_list):
+            result.add(target_index)
             self.__dive_for_epsilon_closure(target_index, result)
 
     def get_epsilon_closure(self, StateIdx):
@@ -377,11 +376,11 @@ class StateMachine:
            transition."""
         assert self.states.has_key(StateIdx)
 
-        result = { StateIdx: True } 
+        result = set([StateIdx])
 
         self.__dive_for_epsilon_closure(StateIdx, result)
 
-        return result.keys()
+        return result
  
     def get_elementary_trigger_sets(self, StateIdxList, epsilon_closure_db):
         """NOTE: 'epsilon_closure_db' must previously be calculcated by 
@@ -438,38 +437,30 @@ class StateMachine:
         #
         #                             Also, it is not proven to be correct! 
         #
-        ## combination_list = []
-        ## for state_index in StateIdxList:
-        ##     state = self.states[state_index]
-        ##     for target_index, trigger_set in state.transitions().get_map().iteritems():
-        ##         target_epsilon_closure = epsilon_closure_db[target_index] 
-        ##         # Delay the 'deepcopy' of the trigger set to the point, when it is actually needed
-        ##         remaining_trigger_set  = None
-        ##         for target_state_set, existing_trigger_set in combination_list:
-        ##             if not existing_trigger_set.has_intersection(trigger_set): continue
-        ##             target_state_set.update(target_epsilon_closure)
-        ##             # We want to subtract from the set, so now, the remaining_trigger_set must be present
-        ##             if remaining_trigger_set is None:
-        ##                 remaining_trigger_set = trigger_set.difference(existing_trigger_set)
-        ##             else:
-        ##                 remaining_trigger_set.subtract(existing_trigger_set)
-        ##         
-        ##         if remaining_trigger_set is None:
-        ##             combination_list.append([set(target_epsilon_closure), trigger_set])
-        ##             
-        ##         elif not remaining_trigger_set.is_empty():
-        ##             combination_list.append([set(target_epsilon_closure), remaining_trigger_set])
-        ##             
-        ## return combination_list
+        ##    trigger_list = []
+        ##    for state_index in StateIdxList:
+        ##        state = self.states[state_index]
+        ##        for target_index, trigger_set in state.transitions().get_map().iteritems():
+        ##            target_epsilon_closure = epsilon_closure_db[target_index] 
+        ##            interval_list          = trigger_set.get_intervals(PromiseToTreatWellF=True)
+        ##            trigger_list.extend([x, target_epsilon_closure] for x in interval_list])
+        ##
+        ##    trigger_list.sort(key=lambda x: x[0].begin)
+        ##    for element in trigger_list:
+        ##        # ... continue as shown below
+        ##                
+        ##    return combination_list
 
+        ## Special Case -- Quickly Done: One State, One Target State
+        ##        proposal = None
+        ##        if len(StateIdxList) == 1:
+        ##           state_idx = list(StateIdxList)[0]
+        ##            if len(epsilon_closure_db[state_idx]) == 1:
+        ##                if len(self.states[state_idx].transitions().get_map()) == 1:
+        ##                    target, trigger_set = self.states[state_idx].transitions().get_map().items()[0]
+        ##                    proposal = { (target,): NumberSet(trigger_set) }
 
-        #def DEBUG_print_history(history):
-        #    txt = ""
-        #    for item in history:
-        #        txt += repr(item) + "\n"
-        #    print txt
-
-        # (*) accumulate the transitions for all states in the state list.
+        # (*) Accumulate the transitions for all states in the state list.
         #     transitions to the same target state are combined by union.
         history = []
         for state_idx in StateIdxList:
@@ -483,7 +474,6 @@ class StateMachine:
 
         # (*) sort history according to position
         history.sort(key = attrgetter("position")) # lambda a, b: cmp(a.position, b.position))
-        ## DEBUG_print_history(history)
 
         # (*) build the elementary subset list 
         combinations           = {}          # use dictionary for uniqueness
@@ -501,17 +491,16 @@ class StateMachine:
 
                 interval = Interval(current_interval_begin, item.position)
 
-                current_target_epsilon_closure.sort()             
-                key = repr(current_target_epsilon_closure)
+                # current_target_epsilon_closure.sort()             
+                key = tuple(sorted(current_target_epsilon_closure))
                 ## Caused 3 failures in unit test:
                 ## if len(current_target_epsilon_closure) == 1: key = current_target_epsilon_closure[0]  
                 ## else:                                        key = tuple(sorted(current_target_epsilon_closure))
                 combination = combinations.get(key)
                 if combination is None:
-                    combinations[key] = (current_target_epsilon_closure, \
-                                         NumberSet(interval, ArgumentIsYoursF=True))
+                    combinations[key] = NumberSet(interval, ArgumentIsYoursF=True)
                 else:
-                    combination[1].unite_with(interval)
+                    combination.unite_with(interval)
            
             # -- BEGIN / END of interval:
             #    add or delete a target state to the set of currently considered target states
@@ -535,8 +524,15 @@ class StateMachine:
             # -- set the begin of interval to come
             current_interval_begin = item.position                      
     
+        ## if proposal is not None:
+        ##    if    len(proposal)     != len(combinations) \
+        ##       or proposal.keys()   != combinations.keys() \
+        ##       or not proposal.values()[0].is_equal(combinations.values()[0]):
+        ##        print "##proposal:    ", proposal
+        ##        print "##combinations:", combinations
+
         # (*) create the list of pairs [target-index-combination, trigger_set] 
-        return combinations.values()
+        return combinations
 
     def get_acceptance_state_list(self, 
                                   ReturnNonAcceptanceTooF=False, 
@@ -935,7 +931,7 @@ class StateMachine:
 
         transition_str       = ""
         acceptance_state_str = ""
-        for state_i in index_sequence:
+        for state_i in sorted(index_sequence):
             printed_state_i = index_map[state_i]
             state           = self.states[state_i]
             if state.is_acceptance(): 

@@ -9,7 +9,7 @@ AUTHOR_EMAIL = '"fschaef@users.sourceforge.net"'
 AUTHOR_NAME  = "Frank-Rene Schaefer"
 COMPILER     = g++    # icpc # g++ 
 COMPILER_V   = "4.3.1"  # 10.1 # 4.3.1
-COMPILER_OPT = -Os # -O3 # -O3 -ggdb -Os
+COMPILER_OPT = -Os -march=native# -O3 # -O3 -ggdb -Os
 BUFFER_SIZE  = 65536
 CPU_NAME     = 'Intel Core Duo'
 CPU_CODE     = T2400

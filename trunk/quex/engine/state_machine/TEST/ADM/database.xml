@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.14" date="Mon May 23 23:24:05 2011">
+<test-database execution-time-sec="10.07" date="Thu May 26 07:49:39 2011">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Subset Determination" time-sum-sec="1.24"> 
         <application file-name="test-subset_checker.py" info-request-time="1301139218L" vanished="False"/>
@@ -12,16 +12,16 @@
            <choice name="Pre-Post-Conditions" result="OK" time_sec="0.10" crc="54741919"/>
         </choice-list>
     </test>
-    <test title="Commonality Checker" time-sum-sec="0.74"> 
+    <test title="Commonality Checker" time-sum-sec="0.75"> 
         <application file-name="test-commonality.py" info-request-time="1306004869L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.74" crc="360428126"/>
+           <choice name="" result="OK" time_sec="0.75" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="0.74"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.73"> 
         <application file-name="test-identity_checker.py" info-request-time="1305969414L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="True" result="OK" time_sec="0.37" crc="-390242573"/>
+           <choice name="True" result="OK" time_sec="0.36" crc="-390242573"/>
            <choice name="False" result="OK" time_sec="0.18" crc="554533910"/>
            <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.09" crc="-138569557"/>
            <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.10" crc="38876760"/>
@@ -41,7 +41,7 @@
                <choice name="ADAPT" result="OK" time_sec="0.09" crc="-880237011"/>
             </choice-list>
         </test>
-        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.28"> 
+        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.26"> 
             <application file-name="test-get_trigger_map.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="1903594752"/>
@@ -57,7 +57,7 @@
             <application file-name="test-hopcroft-minimization.py" info-request-time="1305999871L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NEW" result="OK" time_sec="0.06" crc="-123736635"/>
-               <choice name="ADAPT" result="OK" time_sec="0.05" crc="-123736635"/>
+               <choice name="ADAPT" result="OK" time_sec="0.06" crc="-123736635"/>
             </choice-list>
         </test>
     </group>
@@ -69,21 +69,21 @@
             </choice-list>
         </test>
         <test title="Get elementary trigger sets (target index --&gt; trigger sets)" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1301139218L" vanished="False"/>
+            <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1306382691L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-2002917491"/>
+               <choice name="" result="OK" time_sec="0.04" crc="1252592375"/>
             </choice-list>
         </test>
         <test title="Epsilon closure (single state)" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1305001373L" vanished="False"/>
+            <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1306212552L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.04" crc="941657240"/>
             </choice-list>
         </test>
         <test title="Get elementary trigger sets II" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1301139218L" vanished="False"/>
+            <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1306382703L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-431037261"/>
+               <choice name="" result="OK" time_sec="0.04" crc="1448813074"/>
             </choice-list>
         </test>
         <test title="Conversion to DFA - Special Case" time-sum-sec="0.06"> 
@@ -97,22 +97,22 @@
         <test title="Get graphviz string of state machine." time-sum-sec="0.08"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="1" result="OK" time_sec="0.04" crc="173145892"/>
-               <choice name="2" result="OK" time_sec="0.04" crc="-163746669"/>
+               <choice name="1" result="OK" time_sec="0.04" crc="115098591"/>
+               <choice name="2" result="OK" time_sec="0.04" crc="2123121172"/>
             </choice-list>
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Newlines" time-sum-sec="0.54"> 
+        <test title="Newlines" time-sum-sec="0.52"> 
             <application file-name="test-count_newline_n.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.54" crc="-901422866"/>
+               <choice name="" result="OK" time_sec="0.52" crc="-901422866"/>
             </choice-list>
         </test>
-        <test title="Characters" time-sum-sec="0.29"> 
+        <test title="Characters" time-sum-sec="0.28"> 
             <application file-name="test-count_character_n.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.29" crc="176871467"/>
+               <choice name="" result="OK" time_sec="0.28" crc="176871467"/>
             </choice-list>
         </test>
     </group>
@@ -123,10 +123,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="-694476263"/>
             </choice-list>
         </test>
-        <test title="Detection" time-sum-sec="0.36"> 
+        <test title="Detection" time-sum-sec="0.35"> 
             <application file-name="test-ambiguous_post_condition-detect.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.36" crc="-1686747106"/>
+               <choice name="" result="OK" time_sec="0.35" crc="-1686747106"/>
             </choice-list>
         </test>
         <test title="Mounting" time-sum-sec="0.10"> 
@@ -241,10 +241,10 @@
         </test>
     </group>
     <group name="UTF16 State Split">
-        <test title="Larger Number Sets" time-sum-sec="2.68"> 
+        <test title="Larger Number Sets" time-sum-sec="2.67"> 
             <application file-name="test-utf16_number_set_split.py" info-request-time="1305001373L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="2.68" crc="-603592541"/>
+               <choice name="" result="OK" time_sec="2.67" crc="-603592541"/>
             </choice-list>
         </test>
         <test title="Contigous Word Sequence Ranges" time-sum-sec="0.25"> 
@@ -292,14 +292,14 @@
                <choice name="1.2" result="OK" time_sec="0.04" crc="-1138281153"/>
                <choice name="2.1" result="OK" time_sec="0.04" crc="1143986531"/>
                <choice name="2.2" result="OK" time_sec="0.04" crc="-403483420"/>
-               <choice name="2.3" result="OK" time_sec="0.04" crc="-1392595164"/>
+               <choice name="2.3" result="OK" time_sec="0.04" crc="57743066"/>
                <choice name="3.1" result="OK" time_sec="0.04" crc="-1449874151"/>
                <choice name="3.2" result="OK" time_sec="0.04" crc="1069108854"/>
-               <choice name="3.3" result="OK" time_sec="0.04" crc="-1660238093"/>
-               <choice name="4.1" result="OK" time_sec="0.04" crc="770872882"/>
-               <choice name="4.2" result="OK" time_sec="0.04" crc="-19216328"/>
-               <choice name="4.3" result="OK" time_sec="0.04" crc="979899608"/>
-               <choice name="4.4" result="OK" time_sec="0.04" crc="2007223915"/>
+               <choice name="3.3" result="OK" time_sec="0.04" crc="1131355452"/>
+               <choice name="4.1" result="OK" time_sec="0.04" crc="-1043854843"/>
+               <choice name="4.2" result="OK" time_sec="0.04" crc="2004259444"/>
+               <choice name="4.3" result="OK" time_sec="0.04" crc="124938253"/>
+               <choice name="4.4" result="OK" time_sec="0.04" crc="94973705"/>
             </choice-list>
         </test>
         <test title="Larger Number Sets" time-sum-sec="0.06"> 

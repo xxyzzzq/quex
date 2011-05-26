@@ -49,7 +49,7 @@ def do(SM):
         ## DEBUG_print(start_state_combination, elementary_trigger_set_infos)
 
         # (*) loop over all elementary trigger sets
-        for epsilon_closure_of_target_state_combination, trigger_set in elementary_trigger_set_infos:
+        for epsilon_closure_of_target_state_combination, trigger_set in elementary_trigger_set_infos.iteritems():
             #  -- if there is no trigger to the given target state combination, then drop it
             if trigger_set.is_empty(): continue
 
