@@ -1,15 +1,15 @@
-<test-database execution-time-sec="2.18" date="Thu May 26 07:49:41 2011">
+<test-database execution-time-sec="2.20" date="Fri May 27 08:05:34 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_path" time-sum-sec="0.26"> 
+        <test title="find_path" time-sum-sec="0.27"> 
             <application file-name="paths-find_paths.py" info-request-time="1306289676L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="OK" time_sec="0.04" crc="1752605335"/>
+               <choice name="1" result="OK" time_sec="0.05" crc="1752605335"/>
                <choice name="2" result="OK" time_sec="0.04" crc="659149719"/>
                <choice name="3" result="OK" time_sec="0.04" crc="368726953"/>
                <choice name="4" result="OK" time_sec="0.05" crc="1671005403"/>
                <choice name="5" result="OK" time_sec="0.04" crc="76377710"/>
-               <choice name="6" result="OK" time_sec="0.04" crc="1334011203"/>
+               <choice name="6" result="OK" time_sec="0.05" crc="1334011203"/>
             </choice-list>
         </test>
         <test title="find_path (mean tests)" time-sum-sec="0.12"> 
@@ -33,7 +33,7 @@
                <choice name="6" result="OK" time_sec="0.04" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.21"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.22"> 
             <application file-name="paths-select_longest_paths.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.04" crc="773714092"/>

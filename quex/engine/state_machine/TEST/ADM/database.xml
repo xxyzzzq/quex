@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.07" date="Thu May 26 07:49:39 2011">
+<test-database execution-time-sec="10.10" date="Fri May 27 08:05:32 2011">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Subset Determination" time-sum-sec="1.24"> 
         <application file-name="test-subset_checker.py" info-request-time="1301139218L" vanished="False"/>
@@ -21,7 +21,7 @@
     <test title="Pattern Identity Determination" time-sum-sec="0.73"> 
         <application file-name="test-identity_checker.py" info-request-time="1305969414L" vanished="False"/>
         <choice-list number="4" same_result="False">
-           <choice name="True" result="OK" time_sec="0.36" crc="-390242573"/>
+           <choice name="True" result="OK" time_sec="0.37" crc="-390242573"/>
            <choice name="False" result="OK" time_sec="0.18" crc="554533910"/>
            <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.09" crc="-138569557"/>
            <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.10" crc="38876760"/>
@@ -34,11 +34,11 @@
                <choice name="" result="OK" time_sec="0.04" crc="-1738167192"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.19"> 
+        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.20"> 
             <application file-name="test-hopcroft-minimization-2.py" info-request-time="1305999959L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NEW" result="OK" time_sec="0.10" crc="-880237011"/>
-               <choice name="ADAPT" result="OK" time_sec="0.09" crc="-880237011"/>
+               <choice name="ADAPT" result="OK" time_sec="0.10" crc="-880237011"/>
             </choice-list>
         </test>
         <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.26"> 
@@ -57,15 +57,15 @@
             <application file-name="test-hopcroft-minimization.py" info-request-time="1305999871L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NEW" result="OK" time_sec="0.06" crc="-123736635"/>
-               <choice name="ADAPT" result="OK" time_sec="0.06" crc="-123736635"/>
+               <choice name="ADAPT" result="OK" time_sec="0.05" crc="-123736635"/>
             </choice-list>
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.04"> 
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.05"> 
             <application file-name="test-nfa-to-dfa.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="1185955343"/>
+               <choice name="" result="OK" time_sec="0.05" crc="1185955343"/>
             </choice-list>
         </test>
         <test title="Get elementary trigger sets (target index --&gt; trigger sets)" time-sum-sec="0.04"> 
@@ -94,7 +94,7 @@
         </test>
     </group>
     <group name="Plot">
-        <test title="Get graphviz string of state machine." time-sum-sec="0.08"> 
+        <test title="Get graphviz string of state machine." time-sum-sec="0.07"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="115098591"/>
@@ -103,10 +103,10 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Newlines" time-sum-sec="0.52"> 
+        <test title="Newlines" time-sum-sec="0.53"> 
             <application file-name="test-count_newline_n.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.52" crc="-901422866"/>
+               <choice name="" result="OK" time_sec="0.53" crc="-901422866"/>
             </choice-list>
         </test>
         <test title="Characters" time-sum-sec="0.28"> 
@@ -123,10 +123,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="-694476263"/>
             </choice-list>
         </test>
-        <test title="Detection" time-sum-sec="0.35"> 
+        <test title="Detection" time-sum-sec="0.36"> 
             <application file-name="test-ambiguous_post_condition-detect.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.35" crc="-1686747106"/>
+               <choice name="" result="OK" time_sec="0.36" crc="-1686747106"/>
             </choice-list>
         </test>
         <test title="Mounting" time-sum-sec="0.10"> 
@@ -157,10 +157,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="-2028065037"/>
             </choice-list>
         </test>
-        <test title="Inverse" time-sum-sec="0.04"> 
+        <test title="Inverse" time-sum-sec="0.05"> 
             <application file-name="test-StateMachine-inverse.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-420668726"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-420668726"/>
             </choice-list>
         </test>
         <test title="Repetition with min and max repetition numbers" time-sum-sec="0.04"> 
@@ -207,6 +207,12 @@
                <choice name="" result="OK" time_sec="0.04" crc="372081665"/>
             </choice-list>
         </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1301139218L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.04" crc="-1604145748"/>
+            </choice-list>
+        </test>
         <test title="Cloning" time-sum-sec="0.04"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -217,12 +223,6 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1301139218L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.04" crc="658399412"/>
-            </choice-list>
-        </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.04"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1301139218L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.05"> 
