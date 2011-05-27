@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.03" date="Thu May 26 07:49:51 2011">
+<test-database execution-time-sec="10.52" date="Fri May 27 08:05:45 2011">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.34"> 
         <application file-name="indentation_setup.py" info-request-time="1305001372L" vanished="False"/>
@@ -10,10 +10,10 @@
            <choice name="non-numeric" result="OK" time_sec="0.06" crc="654413883"/>
         </choice-list>
     </test>
-    <test title="Case Folding based on Unicode Database" time-sum-sec="0.33"> 
+    <test title="Case Folding based on Unicode Database" time-sum-sec="0.36"> 
         <application file-name="case_fold.py" info-request-time="1305001372L" vanished="False"/>
         <choice-list number="6" same_result="False">
-           <choice name="s_simple" result="OK" time_sec="0.06" crc="-612045726"/>
+           <choice name="s_simple" result="OK" time_sec="0.08" crc="-612045726"/>
            <choice name="m_multi" result="OK" time_sec="0.06" crc="-864522074"/>
            <choice name="sm" result="OK" time_sec="0.06" crc="-612045726"/>
            <choice name="s_simple_turkish" result="OK" time_sec="0.06" crc="-1851514082"/>
@@ -22,16 +22,16 @@
         </choice-list>
     </test>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" time-sum-sec="0.78"> 
+        <test title="Character Sets for Property Settings II" time-sum-sec="0.79"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.78" crc="-1557359517"/>
+               <choice name="" result="OK" time_sec="0.79" crc="-1557359517"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="5.04"> 
+        <test title="Information about Properties" time-sum-sec="5.46"> 
             <application file-name="test-query.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="PropertyList" result="OK" time_sec="4.48" crc="-1044464938"/>
+               <choice name="PropertyList" result="OK" time_sec="4.90" crc="-1044464938"/>
                <choice name="PropertyInfo" result="OK" time_sec="0.56" crc="86685460"/>
             </choice-list>
         </test>
@@ -41,10 +41,10 @@
                <choice name="" result="OK" time_sec="0.52" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="1.53"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="1.55"> 
             <application file-name="test-query-character-set.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.53" crc="-127967106"/>
+               <choice name="" result="OK" time_sec="1.55" crc="-127967106"/>
             </choice-list>
         </test>
     </group>
@@ -63,12 +63,12 @@
                <choice name="Twice-2" result="OK" time_sec="0.04" crc="1768785304"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" time-sum-sec="0.21"> 
+        <test title="Constructor, Copy, Destructor" time-sum-sec="0.22"> 
             <application file-name="token_type-4.py" info-request-time="1301139208L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="Constructor" result="OK" time_sec="0.04" crc="-300396885"/>
                <choice name="Constructor-1" result="OK" time_sec="0.04" crc="-365070336"/>
-               <choice name="Constructor-2" result="OK" time_sec="0.04" crc="-43917463"/>
+               <choice name="Constructor-2" result="OK" time_sec="0.05" crc="-43917463"/>
                <choice name="Destructor" result="OK" time_sec="0.04" crc="-185289580"/>
                <choice name="Copy" result="OK" time_sec="0.04" crc="330406118"/>
             </choice-list>
