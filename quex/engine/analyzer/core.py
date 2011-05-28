@@ -45,7 +45,7 @@ class Analyzer:
             print "##DEBUG", state_index
             if state_index in [172]: print "##", state_index, acceptance_trace_list
 
-            common = self.__horizontal_analysis(state, acceptance_trace_list)
+            common = self.analysis(state, acceptance_trace_list)
             if state_index in [172]: print "##common:", common
             self.__vertical_analysis(state, common)
 
@@ -53,7 +53,7 @@ class Analyzer:
         for x in self.__state_db.values():
             yield x
 
-    def __horizontal_analysis(self, state, TheAcceptanceTraceList):
+    def analysis(self, state, TheAcceptanceTraceList):
         """A state may be reached via multiple paths. For each path there is 
            a separate AcceptanceTrace. Each AcceptanceTrace tells what has to
            happen in the state depending on the pre-contexts being fulfilled 
@@ -70,8 +70,10 @@ class Analyzer:
                  -- all pre-context-ids must be the same
                  -- the precedence of the pre-context-ids must be the same
 
-                 Note, that precedence is first of all subject to length
-                 of the match, then it is subject to the pattern id.
+                 ===========================================================
+                 | Note, that precedence is first of all subject to length |
+                 | of the match, then it is subject to the pattern id.     |
+                 ===========================================================
 
              (2) For a given pre-context, if the positioning backwards differs
                  for one entry, or is undetermined, then the positions must be
@@ -80,7 +82,6 @@ class Analyzer:
         assert len(TheAcceptanceTraceList) != 0
 
         prototype = TheAcceptanceTraceList[0]
-        remainder = islice(TheAcceptanceTraceList, 1, None)
 
         what about the precendence of checks in common drop out?
 
@@ -89,23 +90,21 @@ class Analyzer:
         # Require 'sorted by id' to judge whether the set of pre-contexts is the same
         prototype_id_set  = prototype.get_sorted_pre_context_id_list()
 
-        homogeneous_f = True  # All traces have the same pre-context-ids
-        harmonic_f    = True  # All traces have the same pre-context-ids and their
-        #                     # priorization is the same.
-        for trace in remainder:
-            # Try to find the 'inhomogeneous' case
+        homogenous_f = True  # All traces have the same pre-context-ids
+        harmonic_f   = True  # All traces have the same pre-context-ids and their
+        #                    # priorization is the same.
+        # Iterate over remainder (prototype is not considered)
+        for trace in islice(TheAcceptanceTraceList, 1, None):
+            # Detect 'non-homogeneous' case
             if prototype_id_set != trace.get_sorted_pre_context_id_list():
-                homogeneous_f = False
-                harmonic_f  = False
+                homogenous_f = False
+                harmonic_f   = False
                 break
+            
+            # Detect 'non-harmonic' case (if it was not found yet)
             if not harmonic_f: continue
-            # Try to find the 'disharmonic' case
             if prototype_id_seq != trace.get_priorized_pre_context_id_list():
                 harmonic_f = False
-            id_seq = map(lambda x: x.pre_context_id, trace.get_sorted_sequence())
-            id_set = sorted(id_seq)
-            if id_set != 
-            
 
         # (1) Acceptance
         #
@@ -138,12 +137,13 @@ class Analyzer:
 
             # 'None' -- no pre-context (must be defined for every trace)
             prototype_acceptance_id = prototype.get(None).pattern_id
-            for trace in remainder:
+            # Iterate over remainder (prototype is not considered)
+            for trace in islice(TheAcceptanceTraceList, 1, None):
                 x = trace.get(None)
                 if x.pattern_id == prototype_acceptance_id: continue
-                    self.store_acceptance_specific(TheAcceptanceTraceList, None)
-                    state.drop_out.set_restore_acceptance(None)
-                    break
+                self.store_acceptance_specific(TheAcceptanceTraceList, None)
+                state.drop_out.set_restore_acceptance(None)
+                break
 
             # '-1' -- begin of line (not necessarily present in every trace)
             x = prototype.get(-1)
@@ -169,10 +169,10 @@ class Analyzer:
 
         # (2) Positioning
         #
-        # If traces are not harmonic, but homogeneous and all have the transition_n_since_positioning
+        # If traces are not harmonic, but homogenous and all have the transition_n_since_positioning
         # then the transition_n can still be determined.
         if not harmonic_f:
-            if not homogeneous_f:
+            if not homogenous_f:
                 hopeless_case()
                 return
 
