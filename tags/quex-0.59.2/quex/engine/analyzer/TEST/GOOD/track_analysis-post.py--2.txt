@@ -1,0 +1,30 @@
+init-state = 39L
+00039() <~ (11, 30)
+      == 'a' ==> 00040
+      <no epsilon>
+00040(S, P1) <~ (11, 31, S, P1)
+      == 'b' ==> 00041
+      <no epsilon>
+00041() <~ (11, 32)
+      == 'c' ==> 00042
+      <no epsilon>
+00042(A, P1) <~ (11, 33, A, P1)
+      == 'c' ==> 00042
+      <no epsilon>
+
+State 40:
+  .entry:    Position[PostContext_1] = pos
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+
+State 41:
+  .entry: 
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+
+State 42:
+  .entry: 
+  .drop_out: pos = Position[PostContext_1]; goto Pattern11;
+
+State 39:
+  .entry: 
+  .drop_out: pos = lexeme_start + 1; goto Failure;
+

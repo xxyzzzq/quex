@@ -1,0 +1,39 @@
+(*) test string: 
+'x  hello xxxbonjour hello xx  world xx world hello xxx x x'
+(*) result:
+                 X+  'x'
+         WHITESPACE  '  '
+             OTHER+  'hello'
+         WHITESPACE  ' '
+ HELLO WSPC. / X+ /  'xxx'
+             OTHER+  'bonjour'
+         WHITESPACE  ' '
+             OTHER+  'hello'
+         WHITESPACE  ' '
+ HELLO / X+ / WORLD  'xx'
+         WHITESPACE  '  '
+             OTHER+  'world'
+         WHITESPACE  ' '
+         X+ / WORLD  'xx'
+         WHITESPACE  ' '
+             OTHER+  'world'
+         WHITESPACE  ' '
+             OTHER+  'hello'
+         WHITESPACE  ' '
+ HELLO WSPC. / X+ /  'xxx'
+         WHITESPACE  ' '
+                 X+  'x'
+         WHITESPACE  ' '
+                 X+  'x'
+  ''
+(*) Lexical Analyser Patterns:
+             [a-wz]+ --> OTHER+
+"hello"[ \t]+/"x"+/[ \t]+"world" --> HELLO / X+ / WORLD
+  "x"+/[ \t]+"world" --> X+ / WORLD
+ "hello"[ \t]+/"x"+/ --> HELLO WSPC. / X+ /
+                "x"+ --> X+
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

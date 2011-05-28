@@ -1,0 +1,20 @@
+token { 
+    WORD;
+    FAILURE;
+    NEWLINE;
+}
+
+repeated_token { 
+    DEDENT;
+}
+
+mode X :
+<indentation: >
+<skip: [ \t]>
+{
+    on_indent   { self_send(QUEX_TKN_NEWLINE); self_send(QUEX_TKN_INDENT); }
+    on_n_dedent { self_send(QUEX_TKN_NEWLINE); self_send_n(ClosedN, QUEX_TKN_DEDENT); }
+    on_nodent   { self_send(QUEX_TKN_NEWLINE); }
+
+    [a-z]+ => QUEX_TKN_WORD(Lexeme);
+}
