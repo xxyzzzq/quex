@@ -57,16 +57,16 @@ class HopcroftMinization:
         (2) Frank-Rene Schaefer's Adaptations _________________________________
 
              In many cases, already the difference in target_sets reveals that
-             a state set needs to be split. The term 'harmonic' is defined for
+             a state set needs to be split. The term 'homogenous' is defined for
              the algorithm below:
 
-             Harmonic: A state set is harmonic, if and only if all states in the
+             homogenous: A state set is homogenous, if and only if all states in the
                        state set trigger to target states that belong to the
                        same state set.
 
              The split is then separated into two repeated phases:
 
-                 (1) Split until all non-harmonic state sets disappear.
+                 (1) Split until all non-homogenous state sets disappear.
                  (2) Split all states in the current to do list.
                  Repeat
     """
@@ -87,7 +87,7 @@ class HopcroftMinization:
         # (*) Initial split 
         #     --> initial state_set_list
         self.__todo         = set([])  # state sets to be investigated
-        self.__non_harmonic = set([])  # suspects to trigger to different target state sets
+        self.__non_homogenous = set([])  # suspects to trigger to different target state sets
         self.state_set_list = []
         self.__initial_split()
 
@@ -102,54 +102,54 @@ class HopcroftMinization:
         change_f = True
         while len(self.__todo) != 0 and change_f:
 
-            # (A) Phase: Split all state sets that are non-harmonic, 
+            # (A) Phase: Split all state sets that are non-homogenous, 
             #            i.e. trigger to different target state sets.
-            while len(self.__non_harmonic) != 0:
-                for i in list(self.__non_harmonic):
+            while len(self.__non_homogenous) != 0:
+                for i in list(self.__non_homogenous):
                     self.pre_split(i)
 
-            # (B) Phase: Split all state sets (which are 'harmonic')
+            # (B) Phase: Split all state sets (which are 'homogenous')
             #            if they trigger to target state sets with different trigger sets.
             change_f = False
             for i in list(sorted(self.__todo, key=lambda i: len(self.state_set_list[i]), reverse=True)): 
-                if i in self.__non_harmonic: continue
+                if i in self.__non_homogenous: continue
 
                 if self.split(i): 
                     change_f = True           
-                    # Without a split, there can be no new non-harmonic anyway.
-                    if len(self.__non_harmonic) != 0: break
+                    # Without a split, there can be no new non-homogenous anyway.
+                    if len(self.__non_homogenous) != 0: break
 
-            # Double Check: All non-harmonics must be on todo-list.
-            assert self.__non_harmonic.issubset(self.__todo)
+            # Double Check: All non-homogenouss must be on todo-list.
+            assert self.__non_homogenous.issubset(self.__todo)
             
     def pre_split(self, StateSetIndex):
         """Separate state_set into two state sets:
 
            (1) The set of states that have the same target state sets,
-               as a arbitrarily chosen prototype := 'harmonic'.
+               as a arbitrarily chosen prototype := 'homogenous'.
            (2) Those who differ from the prototype.
 
            The state set that matches the prototype can be considered 
-           'harmonic' since it triggers for sure to the same target
+           'homogenous' since it triggers for sure to the same target
            state sets. The prototype is packed into a separate state
            set. The other states remain in the old state set. 
 
            If there was a prototype that separated the set then the
-           what does not match the prototype is possibly not-harmonic.
+           what does not match the prototype is possibly not-homogenous.
 
            RETURNS: True  Split happened.
-                          The old state set is possible non-harmonic.
+                          The old state set is possible non-homogenous.
                     False No split happened.
                           The old state set and the prototype are
                           identical.
         """
         assert StateSetIndex in self.__todo
-        assert StateSetIndex in self.__non_harmonic
+        assert StateSetIndex in self.__non_homogenous
         state_set = self.state_set_list[StateSetIndex]
         assert len(state_set) > 1
 
         # NOTE: Previous experiments have shown, that the split does **not** become
-        #       faster, if all non-harmonic states are identified at once. The overhead
+        #       faster, if all non-homogenous states are identified at once. The overhead
         #       of the book-keeping is much higher than the benefit. Also, statistics
         #       have shown that a very large majority of cases results in one or two
         #       state sets only.
@@ -166,32 +166,32 @@ class HopcroftMinization:
             if prototype == get_target_state_set_list(state_index): 
                 match_set.append(state_index)
 
-        # NOW: match_set = harmonic
-        #      remainder = possibly not harmonic
+        # NOW: match_set = homogenous
+        #      remainder = possibly not homogenous
 
         # To split, or not to split ...
         if len(match_set) == len(state_set): 
-            self.non_harmonic_remove(StateSetIndex)
+            self.non_homogenous_remove(StateSetIndex)
             return False 
 
         # The match set is now extracted from the original state set
 
         # -- Delete all states that are put into other sets from the original state set
         # -- Add the new set to the state_set_list
-        # -- Sets of size == 1: 1. are harmonic (trigger all to the same target state sets).
+        # -- Sets of size == 1: 1. are homogenous (trigger all to the same target state sets).
         #                       2. cannot be split further => done.
         self.__extract(StateSetIndex, state_set, match_set)
-        # (by default, the new set is not added to non_harmonic, which is true.)
+        # (by default, the new set is not added to non_homogenous, which is true.)
 
         # -- Neither the new, nor the old state set can be labeled as 'done' because
         #    the exact transitions have not been investigated, yet. The only exception
         #    if len(state_set) == 1, because then it cannot be split anyway.
         #    if len(match_set) == 1, it is not added to the todo list by __add_state_set().
         if len(state_set) == 1: 
-            self.non_harmonic_remove(StateSetIndex)
+            self.non_homogenous_remove(StateSetIndex)
             self.todo_remove(StateSetIndex)
 
-        # -- The state set is split, thus state sets triggering to it may be non-harmonic
+        # -- The state set is split, thus state sets triggering to it may be non-homogenous
         #    (this may include recursive states, so this has to come after anything above)
         self.__check_dependencies(match_set)
         self.__check_dependencies(state_set)
@@ -233,7 +233,7 @@ class HopcroftMinization:
             self.todo_remove(StateSetIndex)
             return False
 
-        # Since all state sets are 'harmonized' at the entry of this function
+        # Since all state sets are homogenized at the entry of this function
         # It can be assumed that the prototype contains all target_set indices
         # Loop over all remaining states from state set
         for state_index in islice(state_set, 1, None):
@@ -258,18 +258,18 @@ class HopcroftMinization:
             done_f = False
 
         if len(equivalent_state_set) == len(state_set): 
-            self.non_harmonic_remove(StateSetIndex)
+            self.non_homogenous_remove(StateSetIndex)
             if done_f: self.todo_remove(StateSetIndex)
             return False
 
-        # -- The state set is split, thus state sets triggering to it may be non-harmonic
+        # -- The state set is split, thus state sets triggering to it may be non-homogenous
         #    (this may include recursive states, so this has to come after anything above)
         self.__check_dependencies(state_set)
 
         new_index = self.__extract(StateSetIndex, state_set, equivalent_state_set)
 
-        if len(state_set) == 1: self.non_harmonic_remove(StateSetIndex); self.todo_remove(StateSetIndex)
-        else:                   self.non_harmonic_add(StateSetIndex)
+        if len(state_set) == 1: self.non_homogenous_remove(StateSetIndex); self.todo_remove(StateSetIndex)
+        else:                   self.non_homogenous_add(StateSetIndex)
         if done_f:
             # if the new state state is of size one, it has not been added to 'todo' list
             if len(equivalent_state_set) != 1: self.todo_remove(new_index)
@@ -292,7 +292,7 @@ class HopcroftMinization:
         #       actually allow the first state to be acceptance.
         if len(non_acceptance_state_set) != 0: 
             i = self.__add_state_set(non_acceptance_state_set)
-            if len(non_acceptance_state_set) != 1: self.non_harmonic_add(i)
+            if len(non_acceptance_state_set) != 1: self.non_homogenous_add(i)
 
         # BUT: There should always be at least one acceptance state.
         pass#assert len(self.sm.states) - len(non_acceptance_state_set) != 0
@@ -312,21 +312,21 @@ class HopcroftMinization:
         # (2b) Enter the split acceptance state sets.
         for state_set in db.values():
             i = self.__add_state_set(state_set)
-            if len(state_set) != 1: self.non_harmonic_add(i)
+            if len(state_set) != 1: self.non_homogenous_add(i)
 
     def todo_add(self, StateSetIndex):
         self.__todo.add(StateSetIndex)
 
     def todo_remove(self, StateSetIndex):
-        assert StateSetIndex not in self.__non_harmonic
+        assert StateSetIndex not in self.__non_homogenous
         self.__todo.remove(StateSetIndex)
 
-    def non_harmonic_remove(self, StateSetIndex):
-        if StateSetIndex in self.__non_harmonic: 
-            self.__non_harmonic.remove(StateSetIndex)
+    def non_homogenous_remove(self, StateSetIndex):
+        if StateSetIndex in self.__non_homogenous: 
+            self.__non_homogenous.remove(StateSetIndex)
 
-    def non_harmonic_add(self, StateSetIndex):
-        self.__non_harmonic.add(StateSetIndex)
+    def non_homogenous_add(self, StateSetIndex):
+        self.__non_homogenous.add(StateSetIndex)
 
     def __extract(self, MotherIdx, mother_state_set, NewStateSet):
         # -- Delete states from the mother set
@@ -341,7 +341,7 @@ class HopcroftMinization:
         return self.__add_state_set(NewStateSet)
 
     def __check_dependencies(self, StateSet):
-        """If a state set is split, then every state set that triggered to it may be non-harmonic
+        """If a state set is split, then every state set that triggered to it may be non-homogenous
            origin_state_list = list of states that trigger to states inside mother_state_set.
 
            PROPOSAL:
@@ -352,12 +352,12 @@ class HopcroftMinization:
                 if len(origin_state_list) != 1:
                     considerable_set  = set([self.map[i] for i in origin_state_list])
                     for state_set_index in ifilter(lambda x: len(self.state_set_list[x]) != 1, considerable_set):
-                        self.non_harmonic_add(state_set_index)
+                        self.non_homogenous_add(state_set_index)
                 else:
                     # (*) This is the short version, if there is only one origin
                     state_set_index = self.map[origin_state_list[0]]
                     if len(self.state_set_list[state_set_index]) != 1:
-                        self.non_harmonic_add(state_set_index)
+                        self.non_homogenous_add(state_set_index)
         """
         # (*) This is the full general version of the dependency check
         considerable_set = set()
@@ -365,11 +365,11 @@ class HopcroftMinization:
             origin_state_list = self.from_map[state_index]
             considerable_set.update([self.map[i] for i in origin_state_list])
 
-        # Exception: state set is of size 'one', then it cannot be non-harmonic
+        # Exception: state set is of size 'one', then it cannot be non-homogenous
         for state_set_index in ifilter(lambda x: len(self.state_set_list[x]) != 1, considerable_set):
             # A state_set cannot be 'done' if one of the target state_sets is not done
-            # Such a case, would be caught by the assert inside 'non_harmonic_add'.
-            self.non_harmonic_add(state_set_index)
+            # Such a case, would be caught by the assert inside 'non_homogenous_add'.
+            self.non_homogenous_add(state_set_index)
 
     def __add_state_set(self, NewStateSet):
         """Add a new state set to the pool. Return the 'index' of the

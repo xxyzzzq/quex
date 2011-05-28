@@ -142,11 +142,15 @@ class PropertyInfo:
         self.name  = Name
         self.alias = Alias
         self.type  = Type
-        self.alias_to_alias_combination_db = {}
         self.alias_to_name_map = {}   # map value alias to value
         #                             # NOTE: Not all values may have aliases!
         self.code_point_db     = None # map value (not alias) to number set or number
         self.related_property_info_db = RelatedPropertyInfoDB
+        # Some values may be based on combinations of values. For those, the 
+        # following maps are required.
+        self.alias_to_alias_combination_db = {}
+        self.name_to_alias_map             = {}
+
 
     def __repr__(self):
         assert self.type in ["Binary", "Catalog", "Enumerated", "String", "Miscellaneous", "Numeric"], \
@@ -170,6 +174,15 @@ class PropertyInfo:
         """
         assert self.type != "Binary" or Value is None
 
+        def get_value_combination(CmbAlias):
+            result = []
+            for alias in self.alias_to_alias_combination_db[CmbAlias]:
+                name = self.alias_to_name_map.get(alias)
+                if name == None:
+                    return "Unicode database error: no name related to alias '%s'" % alias
+                result.append(name)
+            return result
+
         if self.type != "Binary" and Value is None:
             return "Property '%s' requires a value setting.\n" % self.name + \
                    "Possible Values: " + \
@@ -183,19 +196,22 @@ class PropertyInfo:
             return deepcopy(self.code_point_db)
 
         adapted_value = Value.replace(" ", "_")
+
         if   self.code_point_db.has_key(adapted_value): 
+            # 'value' is present as name in the code point database
             value = adapted_value
 
-        elif Value in self.alias_to_alias_combination_db.keys():
-            value = []
-            for alias in self.alias_to_alias_combination_db[Value]:
-                name = self.alias_to_name_map.get(alias)
-                if name == None:
-                    return "Unicode database error: no name related to alias '%s'" % alias
-                value.append(name)
-
         elif Value in self.alias_to_name_map.keys():
+            # 'value' is present as alias in code pointer database
             value = self.alias_to_name_map[adapted_value]
+
+        elif Value in self.alias_to_alias_combination_db.keys():
+            # 'value' is present as a combination of aliases
+            value = get_value_combination(adapted_value)
+
+        elif self.name_to_alias_map.has_key(adapted_value):
+            # The value was a combination of values
+            value = get_value_combination(self.name_to_alias_map[adapted_value])
 
         else:
             # -- WILDCARD MATCH: Results in a list of property values  
@@ -466,6 +482,7 @@ class PropertyInfoDB:
             if property_alias == "gc" and row[-1] is not None:
                 combination = map(lambda x: x.strip(), row[-1].split("|"))
                 property_info.alias_to_alias_combination_db[property_value_alias] = combination
+                property_info.name_to_alias_map[property_value]                   = property_value_alias
             else:
                 property_info.alias_to_name_map[property_value_alias] = property_value
 

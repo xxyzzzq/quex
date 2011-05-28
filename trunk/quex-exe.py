@@ -74,9 +74,9 @@ except Exception, x:
     
 try:
     pass
-    #import psyco
-    #psyco.full()
-except ImportError:
+    # import psyco
+    # psyco.full()
+except:
     pass
 
 if __name__ == "__main__":
