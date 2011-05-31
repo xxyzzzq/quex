@@ -9,7 +9,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Post-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -51,6 +51,27 @@ elif "7" in sys.argv:
     pattern_list = [
         'abc',
         'ab/cde',     
+    ]
+elif "8" in sys.argv:
+    # Case where the acceptance decides about positioning
+    pattern_list = [
+        'x/a+',
+        'x/b+',
+        'x(a+|b+)cde',
+    ]
+elif "9" in sys.argv:
+    # Case where the acceptance decides about positioning
+    pattern_list = [
+        'x/ya',
+        'xy/b',
+        'xy(a|b)cde',
+    ]
+elif "10" in sys.argv:
+    # Case where the acceptance decides about positioning
+    pattern_list = [
+        'x/ya+',
+        'xy/b',
+        'xy(a|b)cde',
     ]
 else:
     assert False
