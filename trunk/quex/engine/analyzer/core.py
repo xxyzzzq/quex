@@ -28,7 +28,6 @@ from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
 from collections      import defaultdict
 from operator         import attrgetter
-from exceptions       import AssertionError
 from itertools        import islice, ifilter, takewhile
 import sys
 
@@ -47,7 +46,6 @@ class Analyzer:
 
             common = self.analysis(state, acceptance_trace_list)
             if state_index in [172]: print "##common:", common
-            self.__vertical_analysis(state, common)
 
     def __iter__(self):
         for x in self.__state_db.values():
@@ -90,208 +88,180 @@ class Analyzer:
         # Require 'sorted by id' to judge whether the set of pre-contexts is the same
         prototype_id_set  = prototype.get_sorted_pre_context_id_list()
 
-        homogenous_f = True  # All traces have the same pre-context-ids
-        harmonic_f   = True  # All traces have the same pre-context-ids and their
-        #                    # priorization is the same.
+        homogenous_f, uniform_f = self.hh_analysis(prototype_id_set, prototype_id_seq, 
+                                                    TheAcceptanceTraceList)
+        
+        self.analyse_acceptance(state, prototype, uniform_f, TheAcceptanceTraceList)
+        self.analyse_positioning(state, prototype, uniform_f, homogenous_f, TheAcceptanceTraceList)
+
+    def hh_analysis(self, PrototypeIDSet, PrototypeIDSequence, TheAcceptanceTraceList):
+        """The traces of passed acceptance states and store-input-position states are
+           in one particular state are provided by 'TheAcceptanceTraceList'. This function
+           determines whether the traces are:
+
+           homogeneous: All paths to this state provide the same set of pre-contexts
+                        conditions.
+
+           uniform:     All paths are 'homogeneous' and the precedence of the pre-context
+                        conditions is the same. Note, that precedence is mainly determined
+                        by match-length, then by pattern identifier.
+
+                        NOTE: uniform => homogeneous
+
+           If a condition for an attribute (homogeneous or uniform) is not matched for 
+           one single trace in the trace list, then the attribute is negated as a whole.
+        """
+        uniform_f = True 
+
         # Iterate over remainder (prototype is not considered)
         for trace in islice(TheAcceptanceTraceList, 1, None):
             # Detect 'non-homogeneous' case
-            if prototype_id_set != trace.get_sorted_pre_context_id_list():
-                homogenous_f = False
-                harmonic_f   = False
-                break
-            
-            # Detect 'non-harmonic' case (if it was not found yet)
-            if not harmonic_f: continue
-            if prototype_id_seq != trace.get_priorized_pre_context_id_list():
-                harmonic_f = False
+            if PrototypeIDSet != trace.get_sorted_pre_context_id_list():
+                return False, False
+            # else: (this trace is homogeneous)
 
+            # Detect 'non-uniform' case (if it was not found yet)
+            if not uniform_f: continue
+            if PrototypeIDSequence != trace.get_priorized_pre_context_id_list():
+                uniform_f = False
+            # else: (this trace is uniform)
+
+        return True, uniform_f
+
+    def analyse_acceptance(self, state, Prototype, UniformF, TheAcceptanceTraceList):
         # (1) Acceptance
-        #
-        # The un-common pre-contexts are subject to 'store_acceptance' anyway.
-        # For the common pre-contexts, if they do not appear with the same
-        # precedence (due to length), then the whole state must rely on 'store_acceptance'.
-        if not harmonic_f:
-            # (*) Acceptance depends on path
-            # -- drop_out: if 'restore acceptance always' is set, then precedence
-            #              not an an issue for acceptance.
-            state.drop_out.set_restore_acceptance_always()
+        if not uniform_f:
+            # If the pre-contexts and their precedences is not totally uniform, 
+            # then the acceptance cannot be determined beforehand.
+            self.handle_acceptance_void(state, TheAcceptanceTraceList)
+            return
 
-            # -- other entries: store acceptance in any case
-            self.store_acceptance(TheAcceptanceTraceList)
+        # (*) All pre-context-ids are the same and have the same precedence
+
+        # -- drop_out: There is a common precedence scheme, follow it.
+        state.drop_out.set_precontext_precedence(prototype_id_seq)
+
+        # It holds:   pre-context-id <-1:1-> acceptance (anyways)
+        # except for: -1 (begin of line) or 'None' (no pre context)
+
+        # -- drop_out:      if pattern_id differs, the acceptance must be restored
+        # -- other entries: if pattern_id differs, the acceptance must be stored
+
+        # 'None' -- no pre-context (must be defined for every trace)
+        prototype_acceptance_id = Prototype.get(None).pattern_id
+        # Iterate over remainder (Prototype is not considered)
+        for trace in imap(lambda trace: trace[None].pattern_id != prototype_acceptance_id, 
+                          islice(TheAcceptanceTraceList, 1, None)):
+            # If there is one trace with a differing acceptance, then:
+            self. handle_acceptance_void_specific(TheAcceptanceTraceList, None)
             break
 
+        # '-1' -- begin of line (not necessarily present in every trace)
+        x = Prototype.get(-1)
+        if x is None:
+            for trace in ifilter(lambda x: x.get(-1) is not None, 
+                                 islice(TheAcceptanceTraceList, 1, None)):
+                # If there is one trace with 'begin of line' condition
+                self.handle_acceptance_void_specific(TheAcceptanceTraceList, -1)
+                break
         else:
-            # (*) All pre-context-ids are the same and have the same precedence
-
-            # -- drop_out: There is a common precedence scheme, follow it.
-            state.drop_out.set_precendence(prototype_id_seq)
-
-            # All traces have the same pre-context-ids and they are equal in precedence
-            #
-            # It holds:   pre-context-id <-1:1-> acceptance (anyways)
-            # except for: -1 (begin of line) or 'None' (no prec ontext)
-
-            # -- drop_out: if pattern_id differs, the acceptance must be restored
-            # -- other entries: if pattern_id differs, the acceptance must be stored
-
-            # 'None' -- no pre-context (must be defined for every trace)
-            prototype_acceptance_id = prototype.get(None).pattern_id
-            # Iterate over remainder (prototype is not considered)
-            for trace in islice(TheAcceptanceTraceList, 1, None):
-                x = trace.get(None)
-                if x.pattern_id == prototype_acceptance_id: continue
-                self.store_acceptance_specific(TheAcceptanceTraceList, None)
-                state.drop_out.set_restore_acceptance(None)
+            prototype_acceptance_id = x.pattern_id
+            for trace in ifilter(lambda trace: trace.get(-1) is None or trace[-1].pattern_id != prototype_acceptance_id,
+                                 islice(TheAcceptanceTraceList, 1, None)):
+                # If there is one trace with a different 'begin of line' condition
+                self.handle_acceptance_void_specific(TheAcceptanceTraceList, -1)
                 break
 
-            # '-1' -- begin of line (not necessarily present in every trace)
-            x = prototype.get(-1)
-            if x is None:
-                # It is enough that one trace has the 'begin of line' condition
-                # => this means 'store/restore'
-                # Otherwise, not.
-                for trace in ifilter(lambda x: x.get(-1) is not None, remainder):
-                    self.store_acceptance_specific(TheAcceptanceTraceList, -1)
-                    state.drop_out.set_restore_acceptance(-1)
-            else:
-                prototype_acceptance_id = x.pattern_id
-                for trace in remainder:
-                    x = trace.get(-1)
-                    if x is None:
-                        # This is already different from prototype => store/restore
-                        self.store_acceptance_specific(TheAcceptanceTraceList, -1)
-                        state.drop_out.set_restore_acceptance(-1)
-                    if x.pattern_id != prototype_acceptance_id:
-                        self.store_acceptance_specific(TheAcceptanceTraceList, -1)
-                        state.drop_out.set_restore_acceptance(-1)
-                        break
-
-        # (2) Positioning
-        #
-        # If traces are not harmonic, but homogenous and all have the transition_n_since_positioning
+    def analyse_positioning(self, state, Prototype, PrototypeIDSet, UniformF, HomogenousF, TheAcceptanceTraceList):
+        # If traces are not uniform, but homogenous and all have the transition_n_since_positioning
         # then the transition_n can still be determined.
-        if not harmonic_f:
-            if not homogenous_f:
-                hopeless_case()
-                return
-
-            prototype_transition_n_since_positioning = prototype.get(None).transition_n_since_positioning
-            if prototype_transition_n_since_positioning is None:
-                hopeless_case()
-                return
-
-            for trace in TheAcceptanceTraceList:
-                for x in trace:
-                    if x.transition_n_since_positioning != prototype_transition_n_since_positioning:
-                        hopeless_case()
-                        return
-            # Precedence does not matter
-            state.drop_out.restore_position_always()
+        if UniformF:
+            for pre_context_id in PrototypeIDSet:
+                n = prototype.get(pre_context_id).transition_n_since_positioning
+                # In the uniform case trace[pre_context_id] always works.
+                for trace in ifilter(lambda trace: \
+                                     n != trace[pre_context_id].transition_n_since_positioning, \
+                                     TheAcceptanceTraceList):
+                    self.handle_positioning_void_specific(TheAcceptanceTraceList, pre_context_id)
+                    break
             return
 
-        # -- Harmonic Case
-        for pre_context_id in prototype_id_set:
-            prototype_transition_n_since_positioning = prototype.get(pre_context_id).transition_n_since_positioning
-            for trace in TheAcceptanceTraceList:
-                if trace.get(pre_context_id) != prototype_transition_n_since_positioning:
-                    self.store_position_specific(TheAcceptanceTraceList, pre_context_id)
-                    state.drout_out.restore_position(pre_context_id)
+        if not HomogenousF:
+            self.handle_positioning_void(state, TheAcceptanceTraceList)
+            return
+
+        # Here: not uniform, but homogeneous.
+        #       If for all cases the positioning is the same backwards, then
+        #       it is determined. If one diverges, then it cannot be determined at run-time.
+        # NOTE: trace[pre_context_id] works for all pre-contexts, since we are 'homogeneous'.
+        n = prototype[None].transition_n_since_positioning
+        if n is None:
+            self.handle_positioning_void(TheAcceptanceTraceList)
+            return
+
+        for trace in TheAcceptanceTraceList:
+            for condition in ifilter(lambda condition: n != condition.transition_n_since_positioning, trace):
+                self.handle_positioning_void(state, TheAcceptanceTraceList)
+                return
+
+        # Precedence does not matter
+        state.drop_out.set_positioning(n)
+        return
     
-    def store_acceptance_specific(self, TheAcceptanceTraceList, PreContextID):
-        for entry in imap(lambda x: x.get(PreContextID), TheAcceptanceTraceList):
-            if entry is None: continue
-            self.__state_db[entry.accepting_state_index].entry.set_store_acceptance_f()
-            state.drop_out.set_restore_acceptance_f(entry.pre_context_id)
-
-    def store_acceptance(self, TheAcceptanceTraceList):
-        for trace in TheAcceptanceTraceList:
-            for x in trace:
-                self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f()
-        state.drop_out.set_restore_acceptance_always()
-
-    def store_position_specific(self, TheAcceptanceTraceList, PreContextID):
-        for entry in imap(lambda x: x.get(PreContextID), TheAcceptanceTraceList):
-            if entry is None: continue
-            self.__state_db[entry.positioning_state_index].entry.set_store_position_f()
-            state.drop_out.set_restore_position_f(x.pre_context_id)
-
-    def store_position(self, TheAcceptanceTraceList):
-        for trace in TheAcceptanceTraceList:
-            for x in trace:
-                self.__state_db[x.accepting_state_index].entry.set_store_acceptance_f()
-        state.drop_out.set_restore_position_always()
-
-    def __vertical_analysis(self, state, Common):
-        """Takes a 'common' acceptance trace as a result from the horizontal 
-           analysis and sorts and filters its elements. 
+    def handle_acceptance_void_specific(self, state, TheAcceptanceTraceList, PreContextID):
+        """For the case of no-pre-context or begin-of-line pre-context the acceptance
+           may differ (all other normal pre-contexts are related 1:1 with an acceptance).
         """
-        assert len(Common) != 0
+        assert PreContextID is None or PreContextID == -1
+        for condition in imap(lambda trace: trace.get(PreContextID), TheAcceptanceTraceList):
+            if condition is None: continue
+            entry = self.__state_db[condition.accepting_state_index].entry
+            x = entry.access(PreContextID)
+            x.store_acceptance_id = condition.pattern_id
 
-        def __voidify(trace):
-            for x in ifilter(lambda x: x.accepting_state_index != -1, trace):
-                print "##voidify", x.accepting_state_index, x.positioning_state_index, x.pre_context_id
-                self.store_acceptance(x.accepting_state_index, x.pre_context_id)
-                self.store_position(x.positioning_state_index, x.pre_context_id)
-            # Set a totally undetermined acceptance trace, that is:
-            # restore acceptance and acceptance position
-            state.drop_out.set_sequence([AcceptanceTraceEntry_Void])
-            return
+        state.dropout.set_terminal_id(None, PreContextID)
 
-        trace = Common.values()
-        if len(trace) == 1: 
-            ## assert trace[0].pre_context_id is None
-            state.drop_out.set_sequence(trace)
-            return 
+    def handle_acceptance_void(self, state, TheAcceptanceTraceList):
+        """If the acceptance is void for a state, then all states that trigger
+           acceptance in the past trace must store the acceptance, and the current
+           state must restore it.  
+        """
+        for trace in TheAcceptanceTraceList:
+            for condition in trace:
+                state_index               = condition.accepting_state_index
+                entry                     = self.__state_db[state_index].entry
+                x = entry.access(condition.pre_context_id)
+                x.store_acceptance_id = condition.pattern_id
 
-        # (1) Length of the Match
-        #
-        # -- If length of match cannot be determined for more than one entry
-        #    then no comparison can be made at all. Thus, acceptance can only
-        #    be determined at run-time.
-        # -- If all entries are of undetermined length, but they all accept
-        #    at the same state, then the trace can still be treated before
-        #    run-time.
-        x_min_transition_n      = -1
-        x_accepting_state_index = -1
-        for x in ifilter(lambda x: x.transition_n_to_acceptance < 0, trace):
-            if x_accepting_state_index == -1: 
-                # 'count == 0' there was no element with 'n < 0' before.
-                x_min_transition_n      = - x.transition_n_to_acceptance
-                x_accepting_state_index = x.accepting_state_index
-            elif    x_accepting_state_index != x.accepting_state_index \
-                 or x_min_transition_n      != - x.transition_n_to_acceptance:
-                # 'count > 0' there was an element with 'n < 0' before and the
-                # accepting state was different.
-                return __voidify(trace)
+        state.dropout.set_terminal_id(None)
 
-        if x_min_transition_n != -1:
-            # The 'min_transition_n' must dominate all others, otherwise, 
-            # no sorting can happen.
-            for x in ifilter(lambda x: x.transition_n_to_acceptance >= 0, trace):
-                if x_min_transition_n <= x.transition_n_to_acceptance:
-                    return __voidify(trace)
+    def handle_positioning_void_specific(self, state, TheAcceptanceTraceList, PreContextID):
+        """If the positioning of the input pointer for a particular pre-context 
+           cannot be determined beforehand, then the triggering states need to
+           store the position, and the drop out handler of the current state
+           needs restore the position in case of this pre-context.
+        """
+        for condition in imap(lambda trace: trace.get(PreContextID), TheAcceptanceTraceList):
+            if condition is None: continue
+            entry = self.__state_db[condition.accepting_state_index].entry
+            x = entry.access(PreContextID)
+            x.store_position_register = condition.post_context_id
 
-        # (2) Sort Entries
-        #     Since we know that the min. accepted distance for the undetermined
-        #     case dominates all others, we can put them all on the same scale.
-        #     Longer patterns must sort 'higher', thus me must make sure that 
-        #     all entries are negative.
-        # 
-        #     (Equal race: make sure that 'at least N' enters the race as 'N' 
-        #                  'n < 0' means 'at least n', 'n >= 0' means exactly 'n')
-        for x in ifilter(lambda x: x.transition_n_to_acceptance >= 0, trace):
-            x.transition_n_to_acceptance = - x.transition_n_to_acceptance
+        state.drop_out.set_positioning(Positioning, Register, PreContextID)
 
-        trace.sort(key=attrgetter("transition_n_to_acceptance", "pattern_id"))
+    def handle_positioning_void(self, state, TheAcceptanceTraceList):
+        """If the positioning for a state is totally void then the current state needs
+           to restore the stored position and all triggering states need to store 
+           the input position that is to be restored.
+        """
+        for trace in TheAcceptanceTraceList:
+            for condition in trace:
+                state_index = trace.positioning_state_index
+                entry                           = self.__state_db[state_index].entry
+                x = entry.access(PreContextID)
+                x.store_position_register = condition.post_context_id
 
-        # (3) Filter anything that is dominated by the unconditional acceptance
-        result = []
-        for x in trace:
-            result.append(x)
-            if x.pre_context_id is None: break
-
-        state.drop_out.set_sequence(result)
+        state.drop_out.set_positioning(Positioning, Register)
 
 class AnalyzerState:
     def __init__(self, StateIndex, SM, ForwardF):
@@ -304,7 +274,7 @@ class AnalyzerState:
         self.input          = Input(StateIndex == SM.init_state_index, ForwardF)
         self.entry          = Entry(state.origins(), ForwardF)
         self.transition_map = state.transitions().get_trigger_map()
-        self.drop_out       = DropOut()
+        self.drop_out       = DropOut(state.origins())
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -342,68 +312,61 @@ class Input:
         """
         return self.__immediate_drop_out_if_not_pre_context_list
 
-class ConditionalEntryAction:
-    """Objects of this class describe what has to happen, if a pre-context
-       is fulfilled. The related action may be written in pseudo code:
+class EntryElement:
+    """Objects of this class tell what has to be done at entry of a state
+       for a specific pre-context.
 
-           if( 'self.pre_context_id' fulfilled ) {
-                if( 'self.store_acceptance_f' )          last_acceptance            = 'self.pattern_id';
-                if( 'self.store_acceptance_position_f' ) last_acceptance_position_f = input_p;
-           }
+       .pre_context_id   PreContextID of concern. 
 
-        The 'self.*' variables are computed off-line, so the actual code 
-        will look a little more gentle.
+                         == None --> no pre-context (normal pattern)
+                         == -1   --> pre-context 'begin-of-line'
+                         >= 0    --> id of the pre-context state machine/flag
+
+       .store_acceptance_id  AcceptanceID to be stored
+
+                             == None --> nothing to be done      
+                             == -1   --> store 'failure'         
+                             >= 0    --> store acceptance id     
+
+       .store_position_register  'Register' where the current position is to be stored. 
+                                 == None  --> No position is to be stored.
+                                 == -1    --> store in 'last_acceptance_position'
+                                 >= 0     --> store in 'post-context-id' related position.
     """
-    def __init__(self, PreContextID, PatternID):
-        self.pre_context_id              = PreContextID
-        self.pattern_id                  = PatternID    
-        self.store_acceptance_f          = False
-        self.store_acceptance_position_f = False
+    __slots__ = ("pre_context_id", "store_acceptance_id", "store_position_register")
 
     def __repr__(self):
-        if self.store_acceptance_f == False and self.store_acceptance_position_f == False:
-            return ""
+        txt == []
 
-        txt = []
-        if self.pre_context_id is not None:
-            if self.pre_context_id == -1:    txt.append("BOF, ")
-            else:                            txt.append("PreContext_%i, " % self.pre_context_id)
+        # Pre-Context
+        if   self.pre_context_id is None: txt.append("Always,        ")
+        elif self.pre_context_id == -1:   txt.append("BOF,           ")
+        else:                             txt.append("PreContext %i, " % self.pre_context_id)
 
-        if self.pattern_id is not None and self.store_acceptance_f:        
-            txt.append("StoreAcceptance %i, " % self.pattern_id)
-        if self.store_acceptance_position_f: 
-            txt.append("Position[Acceptance] = pos, ")
+        # Store Acceptance (?)
+        if   self.store_acceptance_id is None: txt.append("(nothing),              ")
+        elif self.store_acceptance_id == -1:   txt.append("last_acceptance = FAIL, ")
+        else:                                  txt.append("last_acceptance = %i,   " % self.store_acceptance_id)
 
-        return "".join(txt)
+        # Store Position (?)
+        if   self.store_position_register is None: txt.append("(nothing);")
+        elif self.store_position_register == -1:   txt.append("last_acceptance_pos = input_p;")
+        else:                                      txt.append("post_context_pos[%i] = input_p;" % self.store_position_register)
 
 class Entry:
+    __slots__ = ("sequence", "pre_context_fulfilled_set")
     def __init__(self, OriginList, ForwardF):
-        self.__sequence    = None
+        # By default, we do not do anything at state entry
+        self.__sequence = []
 
+        # For backward analysis (pre-context detection) some flag may have to be raised
+        # as soon as a pre-context is fulfilled.
         if ForwardF:
-            self.__pre_context_fulfilled_set  = None
-            self.__sequence                   = []
-            for origin in ifilter(lambda x: x.is_acceptance(), OriginList):
-                entry = ConditionalEntryAction(track_analysis.extract_pre_context_id(origin), 
-                                               origin.state_machine_id)
-                self.__sequence.append(entry)
-                # If an unconditioned acceptance occurred, then no further consideration!
-                # (Rest of acceptance candidates is dominated).
-                if origin.pre_context_id is None: break
+            self.pre_context_fulfilled_set = None
         else:
             self.__pre_context_fulfilled_set = set([])
-            self.__sequence                  = None
-            for origin in OriginList:
-                if not origin.store_input_position_f(): continue
-                assert origin.is_acceptance()
+            for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
                 self.__pre_context_fulfilled_set.add(origin.state_machine_id)
-
-        # List of post context begin positions that need to be stored at state entry
-        self.__store_position_begin_of_post_context_id_set = set([])
-
-        # Only for 'assert' see member functions below
-        self.__origin_list = set(filter(lambda x: x != -1, 
-                                        map(lambda x: x.post_context_id(), OriginList)))
 
     def __repr__(self):
         txt = []
@@ -425,36 +388,70 @@ class Entry:
         if len(txt) == 0: txt.append("\n")
         return "".join(txt)
 
-    def get_sequence(self):
-        assert self__sequence is not None
-        return self.__sequence
+class DropOutElement:
+    """Objects of this class tell what has to be done at drop-out of a state
+       for a specific pre-context.
 
-    def set_store_acceptance_f(self, PreContextID):
-        for x in ifilter(lambda x: x.pre_context_id == PreContextID, self.__sequence): 
-            x.store_acceptance_f = True
-            return
-        assert False, "PostContextID not mentioned in state"
+       .pre_context_id   PreContextID of concern. 
 
-    def set_store_position_f(self, PreContextID):
-        for x in self.__sequence: 
-            if x.pre_context_id == PreContextID: 
-                x.store_acceptance_position_f = True
-                return
-        assert False, "PostContextID not mentioned in state"
+                         == None --> no pre-context (normal pattern)
+                         == -1   --> pre-context 'begin-of-line'
+                         >= 0    --> id of the pre-context state machine/flag
 
-    def set_store_begin_of_post_context_position(self, PostContextID):
-        self.__store_position_begin_of_post_context_id_set.add(PostContextID)
+       .terminal_id      Terminal to be targeted (what was accepted).
 
-    def pre_context_fulfilled_list(self):
-        """This is only relevant during backward lexical analyzis while
-           searching for pre-contexts. The list that is returned tells
-           that the given pre-contexts are fulfilled in the current state
-           and must be set, e.g.
+                         == None --> acceptance determined by stored value in 
+                                     'last_acceptance', thus "goto *last_acceptance;"
+                         == -1   --> goto terminal 'failure', nothing matched.
+                         >= 0    --> goto terminal given by '.terminal_id'
 
-                    pre_context_fulfilled[i] = true; 
-        """
-        assert self.__pre_context_fulfilled_set is not None
-        return self.__pre_context_fulfilled_set
+       .positioning      Adaption of the input pointer, before the terminal is entered.
+
+                         <= 0    --> input_p -= .positioning
+                                     (This is possible if the number of transitions since
+                                      acceptance is clear)
+                         == None --> input_p = lexeme_start_p + 1
+                                     (Case of 'failure'. This info is actually redundant.)
+                         == 1    --> Restore the position given in '.position_register'
+                         
+        .restore_position_register  Registered where the position to be restored is located.
+
+                            == None  --> Nothing (no position is to be stored.)
+                                         Case: 'positioning != 1'
+                            == -1    --> position register 'last_acceptance'
+                            >= 0     --> position register related to a 'post-context-id'
+    """
+    __slots__ = ("pre_context_id", 
+                 "terminal_id", 
+                 "positioning", 
+                 "restore_position_register")
+
+    def __repr__(self):
+        txt = []
+
+        # Pre-Context
+        if   self.pre_context_id is None: txt.append("Always,        ")
+        elif self.pre_context_id == -1:   txt.append("BOF,           ")
+        else:                             txt.append("PreContext %i, " % self.pre_context_id)
+
+        # Positioning
+        if self.positioning is None:      txt.append("input_p  = lexeme_start_p + 1,  ")
+        elif self.positioning == 0:       txt.append("input_p (no change),            ")
+        elif self.positioning <  0:       txt.append("input_p -= %i,                  " % self.positioning)
+        else:           
+            assert self.positioning == 1
+            assert self.restore_position_register is not None
+            if self.restore_position_register == -1:
+                txt.append("input_p = post_context_pos[%i], " % self.restore_position_register)
+            else:
+                txt.append("input_p = last_acceptance_pos,  ")
+
+        # Terminal 
+        if   self.terminal_id is None:   txt.append("goto last_acceptance;")
+        elif self.terminal_id == -1:     txt.append("goto Failure;")
+        else:                            txt.append("goto TERMINAL_%i;" % self.terminal_id)
+
+        return "".join(txt)
 
 class DropOut:
     """The drop out has to do (at maximum) two things:
@@ -525,6 +522,8 @@ class DropOut:
             assert isinstance(x, AcceptanceTraceEntry)
         self.__sequence = CommonTrace
 
-    def get_sequence(self):
-        return self.__sequence
+    def set_restore_acceptance(self):
+    def set_restore_acceptance_always(self):
+    def set_restore_position(self):
+    def set_restore_position_always(self):
 

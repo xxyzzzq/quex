@@ -621,7 +621,15 @@ class AcceptanceTrace:
         # position. If we reach this position here, then something is seriously wrong. 
         assert False
 
-class AcceptanceTraceEntry:
+class AcceptanceTraceEntry(object):
+    __slots__ = ("pre_context_id", 
+                 "pattern_id", 
+                 "transition_n_since_positioning", 
+                 "transition_n_to_acceptance", 
+                 "accepting_state_index", 
+                 "positioning_state_index",
+                 "post_context_id")
+
     def __init__(self, PreContextID, PatternID, 
                  TransitionN_ToAcceptance, 
                  AcceptingStateIndex, 
