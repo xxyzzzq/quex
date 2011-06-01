@@ -79,54 +79,109 @@ class Analyzer:
         """
         assert len(TheAcceptanceTraceList) != 0
 
-        prototype = TheAcceptanceTraceList[0]
+        if analyze_uniformity(self, TheAcceptanceTraceList):
+            return self.build_pre_determined_drop_out(TheAcceptanceTraceList)
+        else:
+            return self.build_not_pre_determined_drop_out(TheAcceptanceTraceList)
 
-        what about the precendence of checks in common drop out?
-
-        # Require sequence to judge whether the sequence of pre-contexts is maintained
-        prototype_id_seq  = prototype.get_priorized_pre_context_id_list()
-        # Require 'sorted by id' to judge whether the set of pre-contexts is the same
-        prototype_id_set  = prototype.get_sorted_pre_context_id_list()
-
-        homogenous_f, uniform_f = self.hh_analysis(prototype_id_set, prototype_id_seq, 
-                                                    TheAcceptanceTraceList)
-        
-        self.analyse_acceptance(state, prototype, uniform_f, TheAcceptanceTraceList)
-        self.analyse_positioning(state, prototype, uniform_f, homogenous_f, TheAcceptanceTraceList)
-
-    def hh_analysis(self, PrototypeIDSet, PrototypeIDSequence, TheAcceptanceTraceList):
-        """The traces of passed acceptance states and store-input-position states are
-           in one particular state are provided by 'TheAcceptanceTraceList'. This function
-           determines whether the traces are:
-
-           homogeneous: All paths to this state provide the same set of pre-contexts
-                        conditions.
-
-           uniform:     All paths are 'homogeneous' and the precedence of the pre-context
-                        conditions is the same. Note, that precedence is mainly determined
-                        by match-length, then by pattern identifier.
-
-                        NOTE: uniform => homogeneous
-
-           If a condition for an attribute (homogeneous or uniform) is not matched for 
-           one single trace in the trace list, then the attribute is negated as a whole.
+    def build_pre_determined_drop_out(self, TheAcceptanceTraceList):
+        """Assume that analysis of the traces has shown that the acceptance
+           of the state can be determined from the state machine structure
+           before run-time. Then, this function enters the ball park.
+           --------------------------------------------------------------------
+           Still, the positioning needs to be checked. If for one acceptance
+           there are either two paths or an undefined path length, then the
+           triggering states must store the position and the drop-out relies
+           on the stored acceptance position.
         """
-        uniform_f = True 
+        pass
 
-        # Iterate over remainder (prototype is not considered)
-        for trace in islice(TheAcceptanceTraceList, 1, None):
-            # Detect 'non-homogeneous' case
-            if PrototypeIDSet != trace.get_sorted_pre_context_id_list():
-                return False, False
-            # else: (this trace is homogeneous)
+    def build_not_pre_determined_drop_out(self, TheAcceptanceTraceList):
+        """Assume that analysis of the traces has shown, that they are not
+           uniform. In this case, the acceptance is determined at run-time
+           and stored in the 'last_acceptance' variable. The entry objects
+           of the triggering states need to be notified.
+           --------------------------------------------------------------------
+        """
 
-            # Detect 'non-uniform' case (if it was not found yet)
-            if not uniform_f: continue
-            if PrototypeIDSequence != trace.get_priorized_pre_context_id_list():
-                uniform_f = False
-            # else: (this trace is uniform)
+    def analyze_positioning(self, TheAcceptanceTraceList):
+        """Find the pattern for positioning in the traces. Returns a dictionary
 
-        return True, uniform_f
+           map: acceptance_id --> positioning info
+
+           positioning info == None: positioning is void
+        """
+        result = {}
+        for trace in TheAcceptanceTraceList:
+            for condition in trace:
+                transition_n = result.get(condition.pattern_id)
+                if info is None:
+                    result[condition.pattern_id] = condition.transition_n_since_positioning
+                elif transition_n != condition.transition_n_since_positioning:
+                    result[condition.pattern_id] = None
+        return result
+
+    def analyze_uniformity(self, TheAcceptanceTraceList):
+        """Following cases cancel uniformity:
+
+           (1) There is a pre-context that is not present in another trace.
+           
+           Assumed (1) does not hold than every trace has the same set of
+           pre-contexts. 
+
+           (2) The precedence of the pre-contexts differs.
+
+           Assumed (2) does not hold then all traces check the pre-contexts
+           with the same precedence (Precedence first depends on path-length, 
+           then on pattern-id).
+
+           (3) A pre-context that may accept more than one pattern, accepts
+               different patterns. This is possible for the 'begin-of-line'
+               pattern that may prefix multiple patterns, and the 'no-pre-context'
+               of normal patterns.
+
+           If the checks (1), (2), and (3) are passed negative, then the traces
+           are indeed uniform. This means, that the drop-out does not have to
+           rely on stored acceptances.
+
+           RETURNS: True  -- uniform.
+                    False -- not uniform.
+        """
+        prototype   = TheAcceptanceTraceList[0]
+        id_sequence = prototype.get_priorized_pre_context_id_list()
+
+        # Check (1) and (2)
+        for trace in ifilter(lambda trace: id_sequence != trace.get_priorized_pre_context_id_list(),
+                             islice(TheAcceptanceTraceList, 1, None):
+            return False
+
+        # If the function did not return yet, then (1) and (2) are negative.
+
+        # Check (3)
+        # Pre-Context: 'Begin-of-Line' and 'No-Pre-Context' may trigger
+        #              different pattern_ids.
+
+        # -- No Pre-Context (must be in every trace)
+        acceptance_id = Prototype.get(None).pattern_id
+        # Iterate over remainder (Prototype is not considered)
+        for trace in ifilter(lambda trace: acceptance_id != trace[None].pattern_id, 
+                             islice(TheAcceptanceTraceList, 1, None)):
+            return False
+
+        # -- Begin-of-Line (pre-context-id == -1)
+        x = Prototype.get(-1)
+        if x is not None:
+            # According to (1) no other trace will have a Begin-of-Line pre-context
+            pass
+        else:
+            # According to (1) every trace will contain 'begin-of-line' pre-context
+            acceptance_id = x.pattern_id
+            for trace in ifilter(lambda trace: trace[-1].pattern_id != acceptance_id,
+                                 islice(TheAcceptanceTraceList, 1, None)):
+                return False
+
+        # Checks (1), (2), and (3) did not find anything 'bad' --> uniform.
+        return True
 
     def analyse_acceptance(self, state, Prototype, UniformF, TheAcceptanceTraceList):
         # (1) Acceptance
