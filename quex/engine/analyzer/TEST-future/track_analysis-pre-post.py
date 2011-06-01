@@ -36,6 +36,12 @@ elif "3" in sys.argv:
         'a/bcde',        
         'a',
     ]
+elif "4" in sys.argv:
+    pattern_list = [
+        'x/a/bc',        
+        'y/abc',        
+        'abcdef',
+    ]
 else:
     assert False
 
