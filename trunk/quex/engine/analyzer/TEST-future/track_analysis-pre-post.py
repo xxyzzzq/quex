@@ -42,6 +42,14 @@ elif "4" in sys.argv:
         'y/abc',        
         'abcdef',
     ]
+elif "5" in sys.argv:
+    # Check that positions are stored even for dominated pre-contexts.
+    pattern_list = [
+        "a",
+        "x/a/aa",
+        "b",
+        "(aaa|bb)cd",
+    ]
 else:
     assert False
 
