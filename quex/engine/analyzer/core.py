@@ -41,17 +41,18 @@ class Analyzer:
 
         for state_index, acceptance_trace_list in acceptance_db.iteritems():
             state = self.__state_db[state_index]
-            print "##DEBUG", state_index
-            if state_index in [172]: print "##", state_index, acceptance_trace_list
 
-            common = self.analysis(state, acceptance_trace_list)
-            if state_index in [172]: print "##common:", common
+            ## print "##DEBUG", state_index
+            ## if state_index in [172]: print "##", state_index, acceptance_trace_list
+
+            state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
+            ## if state_index in [172]: print "##common:", common
 
     def __iter__(self):
         for x in self.__state_db.values():
             yield x
 
-    def analysis(self, state, TheAcceptanceTraceList):
+    def get_drop_out_object(self, state, TheAcceptanceTraceList):
         """A state may be reached via multiple paths. For each path there is 
            a separate AcceptanceTrace. Each AcceptanceTrace tells what has to
            happen in the state depending on the pre-contexts being fulfilled 
@@ -79,30 +80,40 @@ class Analyzer:
         """
         assert len(TheAcceptanceTraceList) != 0
 
+        checker = []  # map: pre-context-flag --> acceptance_id
+        router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
+
+        # Acceptance Detector
         if analyze_uniformity(self, TheAcceptanceTraceList):
-            return self.build_pre_determined_drop_out(TheAcceptanceTraceList)
+            # Use one trace as prototype to generate the mapping of 
+            # pre-context flag vs. acceptance.
+            prototype = TheAcceptanceTraceList[0]
+            checker   = map(lambda x: DropOutCheckerElement(x.pre_context_id, x.pattern_id), prototype)
         else:
-            return self.build_not_pre_determined_drop_out(TheAcceptanceTraceList)
+            # 'checker' empty 
+            # => Last acceptance is to be restored from past
+            # All triggering states must store the acceptance
+            for trace in TheAcceptanceTraceList:
+                for element in trace:
+                    entry = self.__state_db[element.state_index].entry
+                    entry[element.pre_context_id].store_acceptance_id = element.pattern_id
 
-    def build_pre_determined_drop_out(self, TheAcceptanceTraceList):
-        """Assume that analysis of the traces has shown that the acceptance
-           of the state can be determined from the state machine structure
-           before run-time. Then, this function enters the ball park.
-           --------------------------------------------------------------------
-           Still, the positioning needs to be checked. If for one acceptance
-           there are either two paths or an undefined path length, then the
-           triggering states must store the position and the drop-out relies
-           on the stored acceptance position.
-        """
-        pass
+        # Terminal Router
+        for pattern_id, info in analyze_positioning(TheAcceptanceTraceList).iteritems():
 
-    def build_not_pre_determined_drop_out(self, TheAcceptanceTraceList):
-        """Assume that analysis of the traces has shown, that they are not
-           uniform. In this case, the acceptance is determined at run-time
-           and stored in the 'last_acceptance' variable. The entry objects
-           of the triggering states need to be notified.
-           --------------------------------------------------------------------
-        """
+            router.append(DropOutRouterElement(info.transition_n_since_positioning, pattern_id))
+
+            if info.transition_n_since_positioning is not None: continue
+
+            # Inform all triggering states that the position needs to be stored
+            for element in info.trace_element_list:
+                entry = self.__state_db[element.positioning_state_index].entry
+                entry[element.pre_context_id].store_position_register = element.post_context_id
+
+        drop_out.checker = checker
+        drop_out.router  = router
+        return drop_out
+
 
     def analyze_positioning(self, TheAcceptanceTraceList):
         """Find the pattern for positioning in the traces. Returns a dictionary
@@ -111,14 +122,25 @@ class Analyzer:
 
            positioning info == None: positioning is void
         """
+        class ResultElement:
+            def __init__(self, X, Y):
+                self.transition_n_since_positioning = X
+                self.trace_element_list             = [Y]
+
         result = {}
+        # If the positioning differs for one element in the trace list, or one
+        # element has undetermined positioning, then the acceptance relates to 
+        # undetermined positioning.
         for trace in TheAcceptanceTraceList:
-            for condition in trace:
-                transition_n = result.get(condition.pattern_id)
+            for element in trace:
+                entry = result.get(element.pattern_id)
                 if info is None:
-                    result[condition.pattern_id] = condition.transition_n_since_positioning
-                elif transition_n != condition.transition_n_since_positioning:
-                    result[condition.pattern_id] = None
+                    result[element.pattern_id] = ResultElement(element.transition_n_since_positioning,
+                                                               element.post_context_id)
+                elif entry.transition_n_since_positioning != element.transition_n_since_positioning:
+                    entry.transition_n_since_positioning = None
+                    entry.trace_element_list.append(element)
+
         return result
 
     def analyze_uniformity(self, TheAcceptanceTraceList):
@@ -183,141 +205,6 @@ class Analyzer:
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform.
         return True
 
-    def analyse_acceptance(self, state, Prototype, UniformF, TheAcceptanceTraceList):
-        # (1) Acceptance
-        if not uniform_f:
-            # If the pre-contexts and their precedences is not totally uniform, 
-            # then the acceptance cannot be determined beforehand.
-            self.handle_acceptance_void(state, TheAcceptanceTraceList)
-            return
-
-        # (*) All pre-context-ids are the same and have the same precedence
-
-        # -- drop_out: There is a common precedence scheme, follow it.
-        state.drop_out.set_precontext_precedence(prototype_id_seq)
-
-        # It holds:   pre-context-id <-1:1-> acceptance (anyways)
-        # except for: -1 (begin of line) or 'None' (no pre context)
-
-        # -- drop_out:      if pattern_id differs, the acceptance must be restored
-        # -- other entries: if pattern_id differs, the acceptance must be stored
-
-        # 'None' -- no pre-context (must be defined for every trace)
-        prototype_acceptance_id = Prototype.get(None).pattern_id
-        # Iterate over remainder (Prototype is not considered)
-        for trace in imap(lambda trace: trace[None].pattern_id != prototype_acceptance_id, 
-                          islice(TheAcceptanceTraceList, 1, None)):
-            # If there is one trace with a differing acceptance, then:
-            self. handle_acceptance_void_specific(TheAcceptanceTraceList, None)
-            break
-
-        # '-1' -- begin of line (not necessarily present in every trace)
-        x = Prototype.get(-1)
-        if x is None:
-            for trace in ifilter(lambda x: x.get(-1) is not None, 
-                                 islice(TheAcceptanceTraceList, 1, None)):
-                # If there is one trace with 'begin of line' condition
-                self.handle_acceptance_void_specific(TheAcceptanceTraceList, -1)
-                break
-        else:
-            prototype_acceptance_id = x.pattern_id
-            for trace in ifilter(lambda trace: trace.get(-1) is None or trace[-1].pattern_id != prototype_acceptance_id,
-                                 islice(TheAcceptanceTraceList, 1, None)):
-                # If there is one trace with a different 'begin of line' condition
-                self.handle_acceptance_void_specific(TheAcceptanceTraceList, -1)
-                break
-
-    def analyse_positioning(self, state, Prototype, PrototypeIDSet, UniformF, HomogenousF, TheAcceptanceTraceList):
-        # If traces are not uniform, but homogenous and all have the transition_n_since_positioning
-        # then the transition_n can still be determined.
-        if UniformF:
-            for pre_context_id in PrototypeIDSet:
-                n = prototype.get(pre_context_id).transition_n_since_positioning
-                # In the uniform case trace[pre_context_id] always works.
-                for trace in ifilter(lambda trace: \
-                                     n != trace[pre_context_id].transition_n_since_positioning, \
-                                     TheAcceptanceTraceList):
-                    self.handle_positioning_void_specific(TheAcceptanceTraceList, pre_context_id)
-                    break
-            return
-
-        if not HomogenousF:
-            self.handle_positioning_void(state, TheAcceptanceTraceList)
-            return
-
-        # Here: not uniform, but homogeneous.
-        #       If for all cases the positioning is the same backwards, then
-        #       it is determined. If one diverges, then it cannot be determined at run-time.
-        # NOTE: trace[pre_context_id] works for all pre-contexts, since we are 'homogeneous'.
-        n = prototype[None].transition_n_since_positioning
-        if n is None:
-            self.handle_positioning_void(TheAcceptanceTraceList)
-            return
-
-        for trace in TheAcceptanceTraceList:
-            for condition in ifilter(lambda condition: n != condition.transition_n_since_positioning, trace):
-                self.handle_positioning_void(state, TheAcceptanceTraceList)
-                return
-
-        # Precedence does not matter
-        state.drop_out.set_positioning(n)
-        return
-    
-    def handle_acceptance_void_specific(self, state, TheAcceptanceTraceList, PreContextID):
-        """For the case of no-pre-context or begin-of-line pre-context the acceptance
-           may differ (all other normal pre-contexts are related 1:1 with an acceptance).
-        """
-        assert PreContextID is None or PreContextID == -1
-        for condition in imap(lambda trace: trace.get(PreContextID), TheAcceptanceTraceList):
-            if condition is None: continue
-            entry = self.__state_db[condition.accepting_state_index].entry
-            x = entry.access(PreContextID)
-            x.store_acceptance_id = condition.pattern_id
-
-        state.dropout.set_terminal_id(None, PreContextID)
-
-    def handle_acceptance_void(self, state, TheAcceptanceTraceList):
-        """If the acceptance is void for a state, then all states that trigger
-           acceptance in the past trace must store the acceptance, and the current
-           state must restore it.  
-        """
-        for trace in TheAcceptanceTraceList:
-            for condition in trace:
-                state_index               = condition.accepting_state_index
-                entry                     = self.__state_db[state_index].entry
-                x = entry.access(condition.pre_context_id)
-                x.store_acceptance_id = condition.pattern_id
-
-        state.dropout.set_terminal_id(None)
-
-    def handle_positioning_void_specific(self, state, TheAcceptanceTraceList, PreContextID):
-        """If the positioning of the input pointer for a particular pre-context 
-           cannot be determined beforehand, then the triggering states need to
-           store the position, and the drop out handler of the current state
-           needs restore the position in case of this pre-context.
-        """
-        for condition in imap(lambda trace: trace.get(PreContextID), TheAcceptanceTraceList):
-            if condition is None: continue
-            entry = self.__state_db[condition.accepting_state_index].entry
-            x = entry.access(PreContextID)
-            x.store_position_register = condition.post_context_id
-
-        state.drop_out.set_positioning(Positioning, Register, PreContextID)
-
-    def handle_positioning_void(self, state, TheAcceptanceTraceList):
-        """If the positioning for a state is totally void then the current state needs
-           to restore the stored position and all triggering states need to store 
-           the input position that is to be restored.
-        """
-        for trace in TheAcceptanceTraceList:
-            for condition in trace:
-                state_index = trace.positioning_state_index
-                entry                           = self.__state_db[state_index].entry
-                x = entry.access(PreContextID)
-                x.store_position_register = condition.post_context_id
-
-        state.drop_out.set_positioning(Positioning, Register)
-
 class AnalyzerState:
     def __init__(self, StateIndex, SM, ForwardF):
         assert type(StateIndex) in [int, long]
@@ -329,7 +216,7 @@ class AnalyzerState:
         self.input          = Input(StateIndex == SM.init_state_index, ForwardF)
         self.entry          = Entry(state.origins(), ForwardF)
         self.transition_map = state.transitions().get_trigger_map()
-        self.drop_out       = DropOut(state.origins())
+        self.drop_out       = None # See: Analyzer.make_drop_out(...)
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -443,9 +330,18 @@ class Entry:
         if len(txt) == 0: txt.append("\n")
         return "".join(txt)
 
-class DropOutElement:
-    """Objects of this class tell what has to be done at drop-out of a state
-       for a specific pre-context.
+class DropOut_CheckerElement(object):
+    """Objects of this class shall describe a check sequence such as
+
+            if     ( pre_condition_5_f ) last_acceptance = 34;
+            else if( pre_condition_7_f ) last_acceptance = 67;
+            else if( pre_condition_9_f ) last_acceptance = 31;
+            else                         last_acceptance = 11;
+
+       by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]
+    
+       The values for .pre_context_id and .acceptance_id are carry the 
+       following meaning:
 
        .pre_context_id   PreContextID of concern. 
 
@@ -453,34 +349,15 @@ class DropOutElement:
                          == -1   --> pre-context 'begin-of-line'
                          >= 0    --> id of the pre-context state machine/flag
 
-       .terminal_id      Terminal to be targeted (what was accepted).
+       .acceptance_id    Terminal to be targeted (what was accepted).
 
                          == None --> acceptance determined by stored value in 
                                      'last_acceptance', thus "goto *last_acceptance;"
                          == -1   --> goto terminal 'failure', nothing matched.
                          >= 0    --> goto terminal given by '.terminal_id'
 
-       .positioning      Adaption of the input pointer, before the terminal is entered.
-
-                         <= 0    --> input_p -= .positioning
-                                     (This is possible if the number of transitions since
-                                      acceptance is clear)
-                         == None --> input_p = lexeme_start_p + 1
-                                     (Case of 'failure'. This info is actually redundant.)
-                         == 1    --> Restore the position given in '.position_register'
-                         
-        .restore_position_register  Registered where the position to be restored is located.
-
-                            == None  --> Nothing (no position is to be stored.)
-                                         Case: 'positioning != 1'
-                            == -1    --> position register 'last_acceptance'
-                            >= 0     --> position register related to a 'post-context-id'
     """
-    __slots__ = ("pre_context_id", 
-                 "terminal_id", 
-                 "positioning", 
-                 "restore_position_register")
-
+    __slots__ = ("pre_context_id", "acceptance_id") 
     def __repr__(self):
         txt = []
 
@@ -508,32 +385,76 @@ class DropOutElement:
 
         return "".join(txt)
 
-class DropOut:
-    """The drop out has to do (at maximum) two things:
+class DropOut_RouterElement(object):
+    """Objects of this class shall be elements to build a router to the terminal
+       based on the setting 'last_acceptance', i.e.
 
-       -- positioning the input pointer of the analyzer.
-       -- goto the related terminal.
+            switch( last_acceptance ) {
+                case  45: input_p -= 3;                   goto TERMINAL_45;
+                case  43:                                 goto TERMINAL_43;
+                case  41: input_p -= 2;                   goto TERMINAL_41;
+                case  33: input_p = lexeme_start_p - 1;   goto TERMINAL_33;
+                case  22: input_p = position_register[2]; goto TERMINAL_22;
+            }
 
-       This may happen depending on fulfilled pre_context's. Thus, there
-       is actually a sequence of checks:
-        
-            if     ( pre_context_0 ) { input_p = ... ; goto ...; }
-            else if( pre_context_1 ) { input_p = ... ; goto ...; }
-            else if( pre_context_2 ) { input_p = ... ; goto ...; }
-            else                     { input_p = ... ; goto ...; }
+       That means, the 'router' actually only tells how the positioning has to happen
+       dependent on the acceptance. Then it goes to the action of the matching pattern.
+       Following elements are provided:
 
-       This is what is returned by 'get_sequence()' the elements are of class
-       'AcceptanceTraceEntry' where now only the members:
+        .acceptance_id    Terminal to be targeted (what was accepted).
 
-                .pre_context_id   # The pre context id for which it is valid
-                .transition_n_since_positioning  # Positioning of the input pointer
-                .pattern_id       # Goto this particular terminal
+                         == None --> acceptance determined by stored value in 
+                                     'last_acceptance', thus "goto *last_acceptance;"
+                         == -1   --> goto terminal 'failure', nothing matched.
+                         >= 0    --> goto terminal given by '.terminal_id'
 
-       are of interest.
+        .positioning      Adaption of the input pointer, before the terminal is entered.
 
-       Special Case: if .transition_n_since_positioning is None and .post_context_id != -1
-                     => restore post_context_position[.post_context_id]
+                         <= 0    --> input_p -= | .positioning | 
+                                     (This is possible if the number of transitions since
+                                      acceptance is determined beforehand)
+                         == None --> input_p = lexeme_start_p + 1
+                                     (Case of 'failure'. This info is actually redundant.)
+                         == 1    --> Restore the position given in '.position_register'
+                         
+        .restore_position_register  Registered where the position to be restored is located.
+
+                            == None  --> Nothing (no position is to be stored.)
+                                         Case: 'positioning != 1'
+                            == -1    --> position register 'last_acceptance'
+                            >= 0     --> position register related to a 'post-context-id'
     """
+    __slots__ = ("acceptance_id", "positioning", "restore_position_register")
+
+class DropOut:
+    """The general drop-out of a state has the following two 'sub-tasks'
+
+                /* (1) Check pre-contexts to determine acceptance */
+                if     ( pre_context_4_f ) acceptance = 26;
+                else if( pre_context_3_f ) acceptance = 45;
+                else if( pre_context_8_f ) acceptance = 2;
+                else                       acceptance = last_acceptance;
+
+                /* (2) Route to terminal / position input pointer. */
+                switch( acceptance ) {
+                case 2:  input_p -= 10; goto TERMINAL_2;
+                case 15: input_p  = post_context_position[4]; goto TERMINAL_15;
+                case 26: input_p  = post_context_position[3]; goto TERMINAL_26;
+                case 45: input_p  = last_acceptance_position; goto TERMINAL_45;
+                }
+
+       The first sub-task is described by the member '.checker' which is a list
+       of objects of class 'DropOut_CheckerElement'. An empty list means that
+       there is no check and the acceptance has to be restored from 'last_acceptance'.
+       
+       The second sub-task is described by member '.router' which is a list of 
+       objects of class 'DropOut_RouterElement'.
+
+       The exact content of both lists is determined by analysis of the acceptance
+       trances.
+    """
+    __slots__ = (".checker", ".router")
+
     def __init__(self):
         self.__sequence = []
 
