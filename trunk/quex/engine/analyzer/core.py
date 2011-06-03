@@ -96,7 +96,7 @@ class Analyzer:
             for trace in TheAcceptanceTraceList:
                 for element in trace:
                     entry = self.__state_db[element.state_index].entry
-                    entry[element.pre_context_id].store_acceptance_id = element.pattern_id
+                    entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in analyze_positioning(TheAcceptanceTraceList).iteritems():
@@ -108,7 +108,7 @@ class Analyzer:
             # Inform all triggering states that the position needs to be stored
             for element in info.trace_element_list:
                 entry = self.__state_db[element.positioning_state_index].entry
-                entry[element.pre_context_id].store_position_register = element.post_context_id
+                entry.positioner[element.pre_context_id] = element.post_context_id
 
         drop_out.checker = checker
         drop_out.router  = router
@@ -295,20 +295,112 @@ class EntryElement:
         elif self.store_position_register == -1:   txt.append("last_acceptance_pos = input_p;")
         else:                                      txt.append("post_context_pos[%i] = input_p;" % self.store_position_register)
 
-class Entry:
-    __slots__ = ("sequence", "pre_context_fulfilled_set")
-    def __init__(self, OriginList, ForwardF):
-        # By default, we do not do anything at state entry
-        self.__sequence = []
+class Entry(object):
+    """An entry has potentially two tasks:
+    
+          (1) storing information about an acceptance. 
+          (2) storing information about positioning.
 
-        # For backward analysis (pre-context detection) some flag may have to be raised
-        # as soon as a pre-context is fulfilled.
+       Both are pre-context dependent. 
+       
+       (*) Accepter:
+
+       For the first task mentioned, some 'accepter' sequence needs to be applied, 
+       such as
+
+                /* 'Accepter' */
+                if     ( pre_context_5_f ) { last_acceptance_id = 15; }
+                else if( pre_context_7_f ) { last_acceptance_id = 18; }
+                else if( pre_context_9_f ) { last_acceptance_id = 21; }
+                else                       { last_acceptance_id = 32; }
+
+       where the last line handles the case that no-pre-context has to be handled. Note,
+       that the list is:
+
+                -- sorted by pattern_id (acceptance_id) since this denotes the
+                   precedence of the patterns.
+
+                -- it is exclusive, because only one pattern can win.
+
+       The data structure that describes this is the dictionary '.accepter' that maps:
+
+               .accepter:    pre-context-id --> acceptance_id 
+
+       Where 'acceptance_id' >= 0     means a 'real' acceptance_id is to be stored
+                             is None  means, that nothing is to be done.
+
+       The sequence is solely determined by the acceptance id, so no further 
+       information must be available. At code-construction time the sorted
+       list may be used, i.e.
+          
+               for x in isorted(entry.accepter.iteritems(), key=itemgetter(1)):
+                   ...
+                   if pre_context_id is None: break
+
+       To facilitate this, the function '.get_accepter' delivers a sorted list
+       of accepting entries.
+
+       (*) Positioner
+
+       For the positioning this is different. Depending on the post-context any
+       pre-context may later on win. Thus, 
+
+                /* 'Positioner' */
+                if( pre_context_5_f ) { last_acceptance_pos   = input_p; }
+                if( pre_context_7_f ) { position_register[23] = input_p; }
+                if( pre_context_9_f ) { last_acceptance_pos   = input_p; }
+                last_acceptance_pos = input_p; 
+       
+       The list is not sorted and it is not exclusive, line 1 and 2 are redundant
+       since the same job is done by line 4 for both in any case. The information
+       about position storage is done by a dictionary '.positioner' which maps:
+
+                .positioner:  post-context-id  --> list of pre-context-ids
+
+       Where "post-context-id == None" stands for no post-context (normal pattern)
+       and a "None" in the pre-context-id list stands for the unconditional case.
+
+       (*) Backward Lexing
+
+       Backward lexing has the task to find out whether a pre-context is fulfilled.
+       But it does not stop, since multiple pre-contexts may still be fulfilled.
+       Thus, the set of fulfilled pre-contexts is stored in 
+
+                    ".pre_context_fulfilled_set"
+
+       This list can be determined beforehand from the origin list. For forward lexical 
+       analyzis, or when there is no pre-context fulfilled this field must be None. 
+       For backward analyzis the fields '.accepter' and '.positioner' must be None. 
+    """
+    __slots__ = (".accepter", ".positioner", "pre_context_fulfilled_set", "debug_origin_list")
+    def __init__(self, OriginList, ForwardF):
         if ForwardF:
+            # By default, we do not do store anything about acceptance at state entry
+            self.accepter   = {}
+            self.positioner = {}
             self.pre_context_fulfilled_set = None
         else:
-            self.__pre_context_fulfilled_set = set([])
+            # By default, we do not do store anything about acceptance at state entry
+            self.accepter   = None
+            self.positioner = None
+            self.pre_context_fulfilled_set = set([])
             for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-                self.__pre_context_fulfilled_set.add(origin.state_machine_id)
+                self.pre_context_fulfilled_set.add(origin.state_machine_id)
+            if len(self.pre_context_fulfilled_set) == 0:
+                self.pre_context_fulfilled_set = None
+
+        # As a reference for some asserts
+        self.debug_origin_list = OriginList
+
+    def get_accepter(self):
+        """Returns information about the acceptance sequence. Lines that are dominated
+           by the unconditional pre-context are filtered out.
+        """
+        result = []
+        for pre_context_id, acceptance_id in isorted(self.accepter.iteritems(), key=itemgetter(1)):
+            result.append((pre_context_id, acceptance_id))   
+            if pre_context_id is None: break
+        return result
 
     def __repr__(self):
         txt = []
@@ -328,6 +420,69 @@ class Entry:
                 txt.append("Position[PostContext_%i] = pos\n" % x)
 
         if len(txt) == 0: txt.append("\n")
+        return "".join(txt)
+
+class DropOut:
+    """The general drop-out of a state has the following two 'sub-tasks'
+
+                /* (1) Check pre-contexts to determine acceptance */
+                if     ( pre_context_4_f ) acceptance = 26;
+                else if( pre_context_3_f ) acceptance = 45;
+                else if( pre_context_8_f ) acceptance = 2;
+                else                       acceptance = last_acceptance;
+
+                /* (2) Route to terminal / position input pointer. */
+                switch( acceptance ) {
+                case 2:  input_p -= 10; goto TERMINAL_2;
+                case 15: input_p  = post_context_position[4]; goto TERMINAL_15;
+                case 26: input_p  = post_context_position[3]; goto TERMINAL_26;
+                case 45: input_p  = last_acceptance_position; goto TERMINAL_45;
+                }
+
+       The first sub-task is described by the member '.checker' which is a list
+       of objects of class 'DropOut_CheckerElement'. An empty list means that
+       there is no check and the acceptance has to be restored from 'last_acceptance'.
+       
+       The second sub-task is described by member '.router' which is a list of 
+       objects of class 'DropOut_RouterElement'.
+
+       The exact content of both lists is determined by analysis of the acceptance
+       trances.
+    """
+    __slots__ = (".checker", ".router")
+
+    def __init__(self):
+        self.checker = []
+        self.router  = []
+
+    def __repr__(self):
+        assert len(self.__sequence) != 0
+
+        def write(txt, X):
+            if   X.transition_n_since_positioning is None: 
+                if X.post_context_id == -1:
+                    txt.append("pos = Position[Acceptance]; ")
+                else:
+                    txt.append("pos = Position[PostContext_%i]; " % X.post_context_id)
+            elif X.transition_n_since_positioning == -1:   txt.append("pos = lexeme_start + 1; ")
+            elif X.transition_n_since_positioning == 0:    pass # This state is an acceptance state
+            else:                           txt.append("pos -= %i; " % X.transition_n_since_positioning) 
+            if   X.pattern_id is None:      txt.append("goto StoredAcceptance;")
+            elif X.pattern_id == -1:        txt.append("goto Failure;")
+            else:                           txt.append("goto Pattern%i;" % X.pattern_id)
+
+        txt = []
+        L = len(self.__sequence)
+        for i, x in enumerate(self.__sequence):
+            if len(txt) != 0: txt.append("             ")
+            if x.pre_context_id is None: 
+                write(txt, x)
+            else: 
+                txt.append("if pre_context_%i: " % x.pre_context_id)
+                write(txt, x)
+            if i != L - 1:
+                txt.append("\n")
+
         return "".join(txt)
 
 class DropOut_CheckerElement(object):
@@ -425,81 +580,4 @@ class DropOut_RouterElement(object):
                             >= 0     --> position register related to a 'post-context-id'
     """
     __slots__ = ("acceptance_id", "positioning", "restore_position_register")
-
-class DropOut:
-    """The general drop-out of a state has the following two 'sub-tasks'
-
-                /* (1) Check pre-contexts to determine acceptance */
-                if     ( pre_context_4_f ) acceptance = 26;
-                else if( pre_context_3_f ) acceptance = 45;
-                else if( pre_context_8_f ) acceptance = 2;
-                else                       acceptance = last_acceptance;
-
-                /* (2) Route to terminal / position input pointer. */
-                switch( acceptance ) {
-                case 2:  input_p -= 10; goto TERMINAL_2;
-                case 15: input_p  = post_context_position[4]; goto TERMINAL_15;
-                case 26: input_p  = post_context_position[3]; goto TERMINAL_26;
-                case 45: input_p  = last_acceptance_position; goto TERMINAL_45;
-                }
-
-       The first sub-task is described by the member '.checker' which is a list
-       of objects of class 'DropOut_CheckerElement'. An empty list means that
-       there is no check and the acceptance has to be restored from 'last_acceptance'.
-       
-       The second sub-task is described by member '.router' which is a list of 
-       objects of class 'DropOut_RouterElement'.
-
-       The exact content of both lists is determined by analysis of the acceptance
-       trances.
-    """
-    __slots__ = (".checker", ".router")
-
-    def __init__(self):
-        self.__sequence = []
-
-    def __repr__(self):
-        assert len(self.__sequence) != 0
-
-        def write(txt, X):
-            if   X.transition_n_since_positioning is None: 
-                if X.post_context_id == -1:
-                    txt.append("pos = Position[Acceptance]; ")
-                else:
-                    txt.append("pos = Position[PostContext_%i]; " % X.post_context_id)
-            elif X.transition_n_since_positioning == -1:   txt.append("pos = lexeme_start + 1; ")
-            elif X.transition_n_since_positioning == 0:    pass # This state is an acceptance state
-            else:                           txt.append("pos -= %i; " % X.transition_n_since_positioning) 
-            if   X.pattern_id is None:      txt.append("goto StoredAcceptance;")
-            elif X.pattern_id == -1:        txt.append("goto Failure;")
-            else:                           txt.append("goto Pattern%i;" % X.pattern_id)
-
-        txt = []
-        L = len(self.__sequence)
-        for i, x in enumerate(self.__sequence):
-            if len(txt) != 0: txt.append("             ")
-            if x.pre_context_id is None: 
-                write(txt, x)
-            else: 
-                txt.append("if pre_context_%i: " % x.pre_context_id)
-                write(txt, x)
-            if i != L - 1:
-                txt.append("\n")
-
-        return "".join(txt)
-
-    def set_sequence(self, CommonTrace):
-        """This function receives a 'common trace', that means that it receives (something)
-           like a list of pairs (pre_context_id, AcceptanceTraceEntry) for every pre-
-           context that ever appeared in any path for a given state.
-        """
-        assert len(CommonTrace) != 0
-        for x in CommonTrace:
-            assert isinstance(x, AcceptanceTraceEntry)
-        self.__sequence = CommonTrace
-
-    def set_restore_acceptance(self):
-    def set_restore_acceptance_always(self):
-    def set_restore_position(self):
-    def set_restore_position_always(self):
 
