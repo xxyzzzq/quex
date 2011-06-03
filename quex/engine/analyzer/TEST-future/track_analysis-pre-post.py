@@ -44,11 +44,24 @@ elif "4" in sys.argv:
     ]
 elif "5" in sys.argv:
     # Check that positions are stored even for dominated pre-contexts.
+    # Pattern "a" dominates "x/a/aa/" when an 'a' arrives. But, at the
+    # position of "c" in "(aaa|bb)cd" the pattern "x/a/aa" must win
+    # and the right positioning must be applied.
     pattern_list = [
-        "a",
+        "aa?",
         "x/a/aa",
         "b",
         "(aaa|bb)cd",
+    ]
+elif "6" in sys.argv:
+    # A pre-context dominates another one, but at some point later the
+    # positioning of the 'dominated' must be applied. This is similar
+    # to the previous case, but it is not concerned with the 'cut' of
+    # the unconditional pattern "aa?" as above.
+    pattern_list = [
+        "x/aa?",    # (1) dominating (mentioned first)
+        "y/a/aaa",  # (2) dominated
+        "aaabc",
     ]
 else:
     assert False
