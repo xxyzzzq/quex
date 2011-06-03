@@ -103,12 +103,14 @@ class Analyzer:
 
             router.append(DropOutRouterElement(info.transition_n_since_positioning, pattern_id))
 
+            # If the positioning is all determined, then no 'triggering' state
+            # needs to be informed.
             if info.transition_n_since_positioning is not None: continue
 
             # Inform all triggering states that the position needs to be stored
             for element in info.trace_element_list:
                 entry = self.__state_db[element.positioning_state_index].entry
-                entry.positioner[element.pre_context_id] = element.post_context_id
+                entry.positioner[element.post_context_id].append(element.pre_context_id)
 
         drop_out.checker = checker
         drop_out.router  = router
@@ -214,7 +216,8 @@ class AnalyzerState:
 
         self.index          = StateIndex
         self.input          = Input(StateIndex == SM.init_state_index, ForwardF)
-        self.entry          = Entry(state.origins(), ForwardF)
+        if ForwardF: self.entry = Entry(state.origins())
+        else:        self.entry = EntryBackward(state.origins())
         self.transition_map = state.transitions().get_trigger_map()
         self.drop_out       = None # See: Analyzer.make_drop_out(...)
 
@@ -253,47 +256,6 @@ class Input:
            could immediately drop out.
         """
         return self.__immediate_drop_out_if_not_pre_context_list
-
-class EntryElement:
-    """Objects of this class tell what has to be done at entry of a state
-       for a specific pre-context.
-
-       .pre_context_id   PreContextID of concern. 
-
-                         == None --> no pre-context (normal pattern)
-                         == -1   --> pre-context 'begin-of-line'
-                         >= 0    --> id of the pre-context state machine/flag
-
-       .store_acceptance_id  AcceptanceID to be stored
-
-                             == None --> nothing to be done      
-                             == -1   --> store 'failure'         
-                             >= 0    --> store acceptance id     
-
-       .store_position_register  'Register' where the current position is to be stored. 
-                                 == None  --> No position is to be stored.
-                                 == -1    --> store in 'last_acceptance_position'
-                                 >= 0     --> store in 'post-context-id' related position.
-    """
-    __slots__ = ("pre_context_id", "store_acceptance_id", "store_position_register")
-
-    def __repr__(self):
-        txt == []
-
-        # Pre-Context
-        if   self.pre_context_id is None: txt.append("Always,        ")
-        elif self.pre_context_id == -1:   txt.append("BOF,           ")
-        else:                             txt.append("PreContext %i, " % self.pre_context_id)
-
-        # Store Acceptance (?)
-        if   self.store_acceptance_id is None: txt.append("(nothing),              ")
-        elif self.store_acceptance_id == -1:   txt.append("last_acceptance = FAIL, ")
-        else:                                  txt.append("last_acceptance = %i,   " % self.store_acceptance_id)
-
-        # Store Position (?)
-        if   self.store_position_register is None: txt.append("(nothing);")
-        elif self.store_position_register == -1:   txt.append("last_acceptance_pos = input_p;")
-        else:                                      txt.append("post_context_pos[%i] = input_p;" % self.store_position_register)
 
 class Entry(object):
     """An entry has potentially two tasks:
@@ -360,34 +322,12 @@ class Entry(object):
        Where "post-context-id == None" stands for no post-context (normal pattern)
        and a "None" in the pre-context-id list stands for the unconditional case.
 
-       (*) Backward Lexing
-
-       Backward lexing has the task to find out whether a pre-context is fulfilled.
-       But it does not stop, since multiple pre-contexts may still be fulfilled.
-       Thus, the set of fulfilled pre-contexts is stored in 
-
-                    ".pre_context_fulfilled_set"
-
-       This list can be determined beforehand from the origin list. For forward lexical 
-       analyzis, or when there is no pre-context fulfilled this field must be None. 
-       For backward analyzis the fields '.accepter' and '.positioner' must be None. 
     """
-    __slots__ = (".accepter", ".positioner", "pre_context_fulfilled_set", "debug_origin_list")
-    def __init__(self, OriginList, ForwardF):
-        if ForwardF:
-            # By default, we do not do store anything about acceptance at state entry
-            self.accepter   = {}
-            self.positioner = {}
-            self.pre_context_fulfilled_set = None
-        else:
-            # By default, we do not do store anything about acceptance at state entry
-            self.accepter   = None
-            self.positioner = None
-            self.pre_context_fulfilled_set = set([])
-            for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-                self.pre_context_fulfilled_set.add(origin.state_machine_id)
-            if len(self.pre_context_fulfilled_set) == 0:
-                self.pre_context_fulfilled_set = None
+    __slots__ = (".accepter", ".positioner", "debug_origin_list")
+    def __init__(self, OriginList):
+        # By default, we do not do store anything about acceptance at state entry
+        self.accepter   = {}
+        self.positioner = defaultdict(list)
 
         # As a reference for some asserts
         self.debug_origin_list = OriginList
@@ -421,6 +361,23 @@ class Entry(object):
 
         if len(txt) == 0: txt.append("\n")
         return "".join(txt)
+
+class EntryBackward(object):
+    """(*) Backward Lexing
+
+       Backward lexing has the task to find out whether a pre-context is fulfilled.
+       But it does not stop, since multiple pre-contexts may still be fulfilled.
+       Thus, the set of fulfilled pre-contexts is stored in 
+
+                    ".pre_context_fulfilled_set"
+
+       This list can be determined beforehand from the origin list. 
+    """
+    __slots__ = ("pre_context_fulfilled_set")
+    def __init__(self, OriginList):
+        self.pre_context_fulfilled_set = set([])
+        for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
+            self.pre_context_fulfilled_set.add(origin.state_machine_id)
 
 class DropOut:
     """The general drop-out of a state has the following two 'sub-tasks'
@@ -493,7 +450,9 @@ class DropOut_CheckerElement(object):
             else if( pre_condition_9_f ) last_acceptance = 31;
             else                         last_acceptance = 11;
 
-       by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]
+       by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]. Note, that
+       the prioritization is not necessarily by pattern_id. This is so, since
+       the whole trace is considered and length precedes pattern_id.
     
        The values for .pre_context_id and .acceptance_id are carry the 
        following meaning:
