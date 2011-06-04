@@ -536,12 +536,12 @@ class DropOut_RouterElement(object):
         elif self.positioning >= 0:    pos_str = "pos -= %i;                " % self.positioning
         else:                          pos_str = "pos = Position[%i];       " % self.restore_position_register
 
-        return "case %i: %s%s;" % (self.acceptance_id, pos_str, self.acceptance_id)
+        return "case %i: %s goto %s;" % (self.acceptance_id, pos_str, repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
-    if   Value is None: return "Always        "
-    elif Value == -1:   return "BeginOfFile   "
-    elif Value >= 0:    return "PreContext %i => " % Value
+    if   Value is None: return "Always       "
+    elif Value == -1:   return "BeginOfFile  "
+    elif Value >= 0:    return "PreContext %i" % Value
     else:               assert False
 
 def repr_acceptance_id(Value):
