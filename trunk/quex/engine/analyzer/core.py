@@ -27,7 +27,7 @@ from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
 from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
 from collections      import defaultdict
-from operator         import attrgetter
+from operator         import attrgetter, itemgetter
 from itertools        import islice, ifilter, takewhile
 import sys
 
@@ -84,37 +84,41 @@ class Analyzer:
         router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
         # Acceptance Detector
-        if analyze_uniformity(self, TheAcceptanceTraceList):
+        if self.analyze_uniformity(TheAcceptanceTraceList):
             # Use one trace as prototype to generate the mapping of 
             # pre-context flag vs. acceptance.
             prototype = TheAcceptanceTraceList[0]
-            checker   = map(lambda x: DropOutCheckerElement(x.pre_context_id, x.pattern_id), prototype)
+            checker   = map(lambda x: DropOut_CheckerElement(x.pre_context_id, x.pattern_id), prototype)
         else:
             # 'checker' empty 
             # => Last acceptance is to be restored from past
             # All triggering states must store the acceptance
             for trace in TheAcceptanceTraceList:
                 for element in trace:
-                    entry = self.__state_db[element.state_index].entry
+                    entry = self.__state_db[element.accepting_state_index].entry
                     entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
-        for pattern_id, info in analyze_positioning(TheAcceptanceTraceList).iteritems():
+        for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
 
-            router.append(DropOutRouterElement(info.transition_n_since_positioning, pattern_id))
+            assert pattern_id is not None
+            router.append(DropOut_RouterElement(info.transition_n_since_positioning, 
+                                                pattern_id, 
+                                                info.post_context_id))
 
             # If the positioning is all determined, then no 'triggering' state
             # needs to be informed.
             if info.transition_n_since_positioning is not None: continue
 
             # Inform all triggering states that the position needs to be stored
-            for element in info.trace_element_list:
-                entry = self.__state_db[element.positioning_state_index].entry
-                entry.positioner[element.post_context_id].append(element.pre_context_id)
+            for state_index in info.positioning_state_index_list:
+                entry = self.__state_db[state_index].entry
+                entry.positioner[info.post_context_id].append(info.pre_context_id)
 
-        drop_out.checker = checker
-        drop_out.router  = router
-        return drop_out
+        result = DropOut()
+        result.checker = checker
+        result.router  = router
+        return result
 
 
     def analyze_positioning(self, TheAcceptanceTraceList):
@@ -124,10 +128,14 @@ class Analyzer:
 
            positioning info == None: positioning is void
         """
-        class ResultElement:
-            def __init__(self, X, Y):
-                self.transition_n_since_positioning = X
-                self.trace_element_list             = [Y]
+        class ResultElement(object):
+            __slots__ = ("transition_n_since_positioning", "post_context_id", "pre_context_id", "positioning_state_index_list")
+            def __new__(self, TraceElement):
+                self.transition_n_since_positioning = TraceElement.transition_n_since_positioning
+                self.post_context_id                = TraceElement.post_context_id
+                self.positioning_state_index_list   = [TraceElement.positioning_state_index]
+                self.pre_context_id                 = TraceElement.pre_context_id
+                return self
 
         result = {}
         # If the positioning differs for one element in the trace list, or one
@@ -135,13 +143,14 @@ class Analyzer:
         # undetermined positioning.
         for trace in TheAcceptanceTraceList:
             for element in trace:
-                entry = result.get(element.pattern_id)
+                info = result.get(element.pattern_id)
                 if info is None:
-                    result[element.pattern_id] = ResultElement(element.transition_n_since_positioning,
-                                                               element.post_context_id)
-                elif entry.transition_n_since_positioning != element.transition_n_since_positioning:
-                    entry.transition_n_since_positioning = None
-                    entry.trace_element_list.append(element)
+                    result[element.pattern_id] = ResultElement(element)
+                elif info.transition_n_since_positioning != element.transition_n_since_positioning:
+                    info.transition_n_since_positioning = None
+                    # AcceptanceIDs and their PostContexts are related 1:1
+                    assert info.post_context_id == element.post_context_id
+                    info.positioning_state_index_list.append(element.positioning_state_index)
 
         return result
 
@@ -176,7 +185,7 @@ class Analyzer:
 
         # Check (1) and (2)
         for trace in ifilter(lambda trace: id_sequence != trace.get_priorized_pre_context_id_list(),
-                             islice(TheAcceptanceTraceList, 1, None):
+                             islice(TheAcceptanceTraceList, 1, None)):
             return False
 
         # If the function did not return yet, then (1) and (2) are negative.
@@ -186,15 +195,15 @@ class Analyzer:
         #              different pattern_ids.
 
         # -- No Pre-Context (must be in every trace)
-        acceptance_id = Prototype.get(None).pattern_id
+        acceptance_id = prototype.get(None).pattern_id
         # Iterate over remainder (Prototype is not considered)
         for trace in ifilter(lambda trace: acceptance_id != trace[None].pattern_id, 
                              islice(TheAcceptanceTraceList, 1, None)):
             return False
 
         # -- Begin-of-Line (pre-context-id == -1)
-        x = Prototype.get(-1)
-        if x is not None:
+        x = prototype.get(-1)
+        if x is None:
             # According to (1) no other trace will have a Begin-of-Line pre-context
             pass
         else:
@@ -295,7 +304,7 @@ class Entry(object):
        information must be available. At code-construction time the sorted
        list may be used, i.e.
           
-               for x in isorted(entry.accepter.iteritems(), key=itemgetter(1)):
+               for x in sorted(entry.accepter.iteritems(), key=itemgetter(1)):
                    ...
                    if pre_context_id is None: break
 
@@ -319,11 +328,12 @@ class Entry(object):
 
                 .positioner:  post-context-id  --> list of pre-context-ids
 
-       Where "post-context-id == None" stands for no post-context (normal pattern)
+       Where "post-context-id == -1" stands for no post-context (normal pattern)
        and a "None" in the pre-context-id list stands for the unconditional case.
 
     """
-    __slots__ = (".accepter", ".positioner", "debug_origin_list")
+    __slots__ = ("accepter", "positioner", "debug_origin_list")
+
     def __init__(self, OriginList):
         # By default, we do not do store anything about acceptance at state entry
         self.accepter   = {}
@@ -334,32 +344,36 @@ class Entry(object):
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
-           by the unconditional pre-context are filtered out.
+           by the unconditional pre-context are filtered out. Returns pairs of
+
+                          (pre_context_id, acceptance_id)
         """
         result = []
-        for pre_context_id, acceptance_id in isorted(self.accepter.iteritems(), key=itemgetter(1)):
+        for pre_context_id, acceptance_id in sorted(self.accepter.iteritems(), key=itemgetter(1)):
             result.append((pre_context_id, acceptance_id))   
             if pre_context_id is None: break
         return result
 
     def __repr__(self):
-        txt = []
-        if self.__pre_context_fulfilled_set is not None:
-            # (only possible in backward lexical analysis)
-            if len(txt): txt.append("          ") 
-            for x in self.__pre_context_fulfilled_set:
-                txt.append("\npre context id %i fulfilled\n" % x)
-        else:
-            for x in self.__sequence:
-                element = repr(x)
-                if element == "": continue
-                if len(txt): txt.append("             ") 
-                txt.append(element + "\n")
-            for x in self.__store_position_begin_of_post_context_id_set:
-                if len(txt): txt.append("             ") 
-                txt.append("Position[PostContext_%i] = pos\n" % x)
+        txt = ["Accepter:\n"]
+        if_str = "if     "
+        for pre_context_id, acceptance_id in self.get_accepter():
+            txt.append("    %s %s %s\n" % (if_str, 
+                                           repr_pre_context_id(pre_context_id), 
+                                           repr_acceptance_id(acceptance_id)))
+            if_str = "else if"
 
-        if len(txt) == 0: txt.append("\n")
+        txt = ["Positioner:\n"]
+        for post_context_id, pre_context_id_list in self.positioner.iteritems():
+            pre_list = map(repr_pre_context_id, pre_context_id_list)
+
+            if post_context_id == -1: post_str = "last_acceptance_pos"
+            else:                     post_str = "position_register[%i]" % post_context_id
+
+            txt.append("   One of pre-context-ids: %s " % repr(pre_list)[1:-1])
+            txt.append("=> %s = input_p;\n" % post_str)
+            
+
         return "".join(txt)
 
 class EntryBackward(object):
@@ -378,6 +392,11 @@ class EntryBackward(object):
         self.pre_context_fulfilled_set = set([])
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
             self.pre_context_fulfilled_set.add(origin.state_machine_id)
+
+    def __repr__(self):
+        txt = ["EntryBackward:\n"]
+        txt.append("   pre-context-fulfilled = %s;\n" % repr(list(self.pre_context_fulfilled_set))[1:-1])
+        return "".join(txt)
 
 class DropOut:
     """The general drop-out of a state has the following two 'sub-tasks'
@@ -413,32 +432,16 @@ class DropOut:
         self.router  = []
 
     def __repr__(self):
-        assert len(self.__sequence) != 0
 
-        def write(txt, X):
-            if   X.transition_n_since_positioning is None: 
-                if X.post_context_id == -1:
-                    txt.append("pos = Position[Acceptance]; ")
-                else:
-                    txt.append("pos = Position[PostContext_%i]; " % X.post_context_id)
-            elif X.transition_n_since_positioning == -1:   txt.append("pos = lexeme_start + 1; ")
-            elif X.transition_n_since_positioning == 0:    pass # This state is an acceptance state
-            else:                           txt.append("pos -= %i; " % X.transition_n_since_positioning) 
-            if   X.pattern_id is None:      txt.append("goto StoredAcceptance;")
-            elif X.pattern_id == -1:        txt.append("goto Failure;")
-            else:                           txt.append("goto Pattern%i;" % X.pattern_id)
+        txt = ["Checker:\n"]
+        if_str = "if     "
+        for element in self.checker:
+            txt.append("    %s %s\n" % (if_str, repr(element)))
+            if_str = "else if"
 
-        txt = []
-        L = len(self.__sequence)
-        for i, x in enumerate(self.__sequence):
-            if len(txt) != 0: txt.append("             ")
-            if x.pre_context_id is None: 
-                write(txt, x)
-            else: 
-                txt.append("if pre_context_%i: " % x.pre_context_id)
-                write(txt, x)
-            if i != L - 1:
-                txt.append("\n")
+        txt.append("Router:\n")
+        for element in self.router:
+            txt.append("    %s\n" % repr(element))
 
         return "".join(txt)
 
@@ -472,31 +475,16 @@ class DropOut_CheckerElement(object):
 
     """
     __slots__ = ("pre_context_id", "acceptance_id") 
+
+    def __new__(self, PreContextID, AcceptanceID):
+        self.pre_context_id = PreContextID
+        self.acceptance_id  = AcceptanceID
+        return self
+
     def __repr__(self):
         txt = []
-
-        # Pre-Context
-        if   self.pre_context_id is None: txt.append("Always,        ")
-        elif self.pre_context_id == -1:   txt.append("BOF,           ")
-        else:                             txt.append("PreContext %i, " % self.pre_context_id)
-
-        # Positioning
-        if self.positioning is None:      txt.append("input_p  = lexeme_start_p + 1,  ")
-        elif self.positioning == 0:       txt.append("input_p (no change),            ")
-        elif self.positioning <  0:       txt.append("input_p -= %i,                  " % self.positioning)
-        else:           
-            assert self.positioning == 1
-            assert self.restore_position_register is not None
-            if self.restore_position_register == -1:
-                txt.append("input_p = post_context_pos[%i], " % self.restore_position_register)
-            else:
-                txt.append("input_p = last_acceptance_pos,  ")
-
-        # Terminal 
-        if   self.terminal_id is None:   txt.append("goto last_acceptance;")
-        elif self.terminal_id == -1:     txt.append("goto Failure;")
-        else:                            txt.append("goto TERMINAL_%i;" % self.terminal_id)
-
+        txt.append("%s => " % repr_pre_context_id(self.pre_context_id))
+        txt.append("%s => " % repr_acceptance_id(self.acceptance_id))
         return "".join(txt)
 
 class DropOut_RouterElement(object):
@@ -517,8 +505,6 @@ class DropOut_RouterElement(object):
 
         .acceptance_id    Terminal to be targeted (what was accepted).
 
-                         == None --> acceptance determined by stored value in 
-                                     'last_acceptance', thus "goto *last_acceptance;"
                          == -1   --> goto terminal 'failure', nothing matched.
                          >= 0    --> goto terminal given by '.terminal_id'
 
@@ -540,3 +526,28 @@ class DropOut_RouterElement(object):
     """
     __slots__ = ("acceptance_id", "positioning", "restore_position_register")
 
+    def __new__(self, AcceptanceID, Positioning, PositionRegister):
+        self.acceptance_id             = AcceptanceID
+        self.positioning               = Positioning
+        self.restore_position_register = PositionRegister
+        return self
+
+    def __repr__(self):
+        if   self.positioning is None: pos_str = "pos = last_acceptance_pos;"
+        elif self.positioning == 1:    pos_str = "pos = lexeme_start_p + 1; "
+        elif self.positioning >= 0:    pos_str = "pos -= %i;                " % self.positioning
+        else:                          pos_str = "pos = Position[%i];       " % self.restore_position_register
+
+        return "case %i: %s%s;" % (self.acceptance_id, pos_str, self.acceptance_id)
+        
+def repr_pre_context_id(Value):
+    if   Value is None: return "Always        "
+    elif Value == -1:   return "BeginOfFile   "
+    elif Value >= 0:    return "PreContext %i => " % Value
+    else:               assert False
+
+def repr_acceptance_id(Value):
+    if   Value is None: return "last_acceptance;"
+    elif Value == -1:   return "Failure;"
+    elif Value >= 0:    return "%i;" % Value
+    else:               assert False
