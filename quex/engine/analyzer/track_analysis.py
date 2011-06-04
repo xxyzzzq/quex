@@ -3,6 +3,7 @@ from quex.input.setup import setup as Setup
 from collections import defaultdict
 from copy        import copy, deepcopy
 from operator    import attrgetter
+from itertools   import ifilter
 import sys
 
 """
@@ -524,8 +525,8 @@ class AcceptanceTrace:
             # (2) The position where the input pointer has to be set if the 
             #     pattern is accepted (how many characters to go backwards).
             if origin.post_context_id() == -1: 
-                post_context_id         = -1
-                transition_n_since_positioning         = 0
+                post_context_id                = -1
+                transition_n_since_positioning = 0
                 positioning_state_index = StateIndex
             else:
                 post_context_id = origin.post_context_id()
@@ -561,7 +562,7 @@ class AcceptanceTrace:
         # No conditional pattern can ever be matched if it is dominated
         # by an unconditional pattern acceptance.
         min_pattern_id = self.__sequence[None].pattern_id
-        for key in ifilter(lambda x: x.pattern_id > pattern_id, self.__sequence.keys()):  # NOT: iterkeys() here!
+        for key, dummy in ifilter(lambda x: x[1].pattern_id > min_pattern_id, self.__sequence.items()):  # NOT: iteritems() here!
             del self.__sequence[key]
 
         # Assume that the last entry is always the 'default' where no pre-context is required.
@@ -573,13 +574,10 @@ class AcceptanceTrace:
     def get(self, PreContextID):
         return self.__sequence.get(PreContextID)
 
-    def get_pre_context_id_list(self):
-        return self.__sequence.keys()
-
-    def get_sorted_sequence(self):
-        result = self.__sequence.values()
-        result.sort(key=attrgetter("transition_n_to_acceptance")
-        return result
+    def get_priorized_pre_context_id_list(self):
+        tmp = self.__sequence.items()
+        tmp.sort(key=lambda x: (x[1].transition_n_to_acceptance, x[1].pattern_id))
+        return map(lambda x: x[0], tmp)
 
     def __repr__(self):
         txt = []
