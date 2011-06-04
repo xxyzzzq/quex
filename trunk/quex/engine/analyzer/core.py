@@ -102,8 +102,8 @@ class Analyzer:
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
 
             assert pattern_id is not None
-            router.append(DropOut_RouterElement(info.transition_n_since_positioning, 
-                                                pattern_id, 
+            router.append(DropOut_RouterElement(pattern_id, 
+                                                info.transition_n_since_positioning, 
                                                 info.post_context_id))
 
             # If the positioning is all determined, then no 'triggering' state
@@ -482,8 +482,8 @@ class DropOut_CheckerElement(object):
 
     def __repr__(self):
         txt = []
-        txt.append("%s => " % repr_pre_context_id(self.pre_context_id))
-        txt.append("%s => " % repr_acceptance_id(self.acceptance_id))
+        txt.append("%s => %s" % (repr_pre_context_id(self.pre_context_id),
+                                 repr_acceptance_id(self.acceptance_id)))
         return "".join(txt)
 
 class DropOut_RouterElement(object):
@@ -509,12 +509,12 @@ class DropOut_RouterElement(object):
 
         .positioning      Adaption of the input pointer, before the terminal is entered.
 
-                         <= 0    --> input_p -= | .positioning | 
+                         >= 0    --> input_p -= .positioning 
                                      (This is possible if the number of transitions since
                                       acceptance is determined beforehand)
-                         == None --> input_p = lexeme_start_p + 1
+                         == None --> restore from position register
                                      (Case of 'failure'. This info is actually redundant.)
-                         == 1    --> Restore the position given in '.position_register'
+                         == -1   --> (Failure) position = lexeme_start_p + 1
                          
         .restore_position_register  Registered where the position to be restored is located.
 
@@ -531,21 +531,32 @@ class DropOut_RouterElement(object):
         self.restore_position_register = PositionRegister
 
     def __repr__(self):
-        if   self.positioning is None: pos_str = "pos = last_acceptance_pos;"
-        elif self.positioning == 1:    pos_str = "pos = lexeme_start_p + 1; "
-        elif self.positioning >= 0:    pos_str = "pos -= %i;                " % self.positioning
-        else:                          pos_str = "pos = Position[%i];       " % self.restore_position_register
+        if self.acceptance_id == -1: assert self.positioning == -1 
+        else:                        assert self.positioning != -1
+
+        if   self.positioning is None: 
+            assert self.restore_position_register is not None
+            if self.restore_position_register == -1: 
+                pos_str = "pos = last_acceptance_pos;"
+            else:                                    
+                pos_str = "pos = Position[%i]; " % self.restore_position_register
+        elif self.positioning >= 0:    
+            pos_str = "pos -= %i; " % self.positioning
+        elif self.positioning == -1:    
+            pos_str = "pos = lexeme_start_p + 1; "
+        else: 
+            assert False
 
         return "case %i: %s goto %s;" % (self.acceptance_id, pos_str, repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
-    if   Value is None: return "Always       "
-    elif Value == -1:   return "BeginOfFile  "
+    if   Value is None: return "Always "
+    elif Value == -1:   return "BeginOfFile "
     elif Value >= 0:    return "PreContext %i" % Value
     else:               assert False
 
 def repr_acceptance_id(Value):
-    if   Value is None: return "last_acceptance;"
-    elif Value == -1:   return "Failure;"
-    elif Value >= 0:    return "%i;" % Value
+    if   Value is None: return "last_acceptance"
+    elif Value == -1:   return "Failure"
+    elif Value >= 0:    return "%i" % Value
     else:               assert False
