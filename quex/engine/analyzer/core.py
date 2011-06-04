@@ -233,9 +233,9 @@ class AnalyzerState:
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
         if InputF:         txt.append("  .input: move position %i\n" % self.input.move_input_position())
-        if EntryF:         txt.extend(["  .entry:    ",         repr(self.entry)])
+        if EntryF:         txt.extend(["  .entry:\n",         repr(self.entry)])
         if TransitionMapF: txt.append("  .transition_map:\n")
-        if DropOutF:       txt.extend(["  .drop_out: ",    repr(self.drop_out)])
+        if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
         txt.append("\n")
         return txt
 
@@ -476,10 +476,9 @@ class DropOut_CheckerElement(object):
     """
     __slots__ = ("pre_context_id", "acceptance_id") 
 
-    def __new__(self, PreContextID, AcceptanceID):
+    def __init__(self, PreContextID, AcceptanceID):
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
-        return self
 
     def __repr__(self):
         txt = []
@@ -526,11 +525,10 @@ class DropOut_RouterElement(object):
     """
     __slots__ = ("acceptance_id", "positioning", "restore_position_register")
 
-    def __new__(self, AcceptanceID, Positioning, PositionRegister):
+    def __init__(self, AcceptanceID, Positioning, PositionRegister):
         self.acceptance_id             = AcceptanceID
         self.positioning               = Positioning
         self.restore_position_register = PositionRegister
-        return self
 
     def __repr__(self):
         if   self.positioning is None: pos_str = "pos = last_acceptance_pos;"
