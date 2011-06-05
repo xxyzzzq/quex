@@ -8,24 +8,21 @@ init-state = 41L
 00043(A, S) <~ (4, 11, A, S)
       <no epsilon>
 
-## [Always  => Failure]
 State 41:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  Failure;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
-## [Always  => Failure]
 State 42:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  Failure;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
-## [Always  => Pattern4]
 State 43:
   .entry:
   .drop_out:
-     Pattern4;
+     goto Pattern4;
 
 
