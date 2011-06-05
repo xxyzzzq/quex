@@ -562,9 +562,12 @@ class AcceptanceTrace:
         # No conditional pattern can ever be matched if it is dominated
         # by an unconditional pattern acceptance.
         min_pattern_id = self.__sequence[None].pattern_id
-        for key, dummy in ifilter(lambda x: x[1].pattern_id > min_pattern_id, self.__sequence.items()):  # NOT: iteritems() here!
-            del self.__sequence[key]
+        # Failure is no reason to filter.
+        if min_pattern_id != -1:
+            for key, dummy in ifilter(lambda x: x[1].pattern_id > min_pattern_id, self.__sequence.items()):  # NOT: iteritems() here!
+                del self.__sequence[key]
 
+        print "##seq:", self.__sequence
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1
     
@@ -669,6 +672,8 @@ class AcceptanceTraceEntry(object):
         self.positioning_state_index = PositioningStateIndex
         #
         self.post_context_id         = PostContextID
+
+        print "##pre", self.pre_context_id
 
     def __repr__(self):
         txt = ["---\n"]
