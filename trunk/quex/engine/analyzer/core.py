@@ -90,8 +90,8 @@ class Analyzer:
             prototype = TheAcceptanceTraceList[0]
             checker   = map(lambda x: DropOut_CheckerElement(x.pre_context_id, x.pattern_id), prototype)
         else:
-            # 'checker' empty 
             # => Last acceptance is to be restored from past
+            checker = [DropOut_CheckerElement(None, None)]
             # All triggering states must store the acceptance
             for trace in TheAcceptanceTraceList:
                 for element in trace:
@@ -113,7 +113,7 @@ class Analyzer:
             # Inform all triggering states that the position needs to be stored
             for state_index in info.positioning_state_index_list:
                 entry = self.__state_db[state_index].entry
-                entry.positioner[info.post_context_id].append(info.pre_context_id)
+                entry.positioner[info.post_context_id].add(info.pre_context_id)
 
         result = DropOut()
         result.checker = checker
@@ -337,7 +337,7 @@ class Entry(object):
     def __init__(self, OriginList):
         # By default, we do not do store anything about acceptance at state entry
         self.accepter   = {}
-        self.positioner = defaultdict(list)
+        self.positioner = defaultdict(set)
 
         # As a reference for some asserts
         self.debug_origin_list = OriginList
@@ -355,23 +355,29 @@ class Entry(object):
         return result
 
     def __repr__(self):
-        txt = ["Accepter:\n"]
-        if_str = "if     "
-        for pre_context_id, acceptance_id in self.get_accepter():
-            txt.append("    %s %s %s\n" % (if_str, 
-                                           repr_pre_context_id(pre_context_id), 
-                                           repr_acceptance_id(acceptance_id)))
-            if_str = "else if"
+        txt = []
+        accepter = self.get_accepter()
+        if len(accepter) != 0:
+            txt.append("    Accepter:\n")
+            if_str = "if     "
+            for pre_context_id, acceptance_id in self.get_accepter():
+                if pre_context_id is not None:
+                    txt.append("        %s %s: " % (if_str, repr_pre_context_id(pre_context_id)))
+                else:
+                    txt.append("        ")
+                txt.append("last_acceptance = %s\n" % repr_acceptance_id(acceptance_id))
+                if_str = "else if"
 
-        txt = ["Positioner:\n"]
-        for post_context_id, pre_context_id_list in self.positioner.iteritems():
-            pre_list = map(repr_pre_context_id, pre_context_id_list)
+        if len(self.positioner) != 0:
+            txt.append("    Positioner:\n")
+            for post_context_id, pre_context_id_list in self.positioner.iteritems():
+                pre_list = map(repr_pre_context_id, pre_context_id_list)
 
-            if post_context_id == -1: post_str = "last_acceptance_pos"
-            else:                     post_str = "position_register[%i]" % post_context_id
+                if post_context_id == -1: post_str = "last_acceptance_pos"
+                else:                     post_str = "position_register[%i]" % post_context_id
 
-            txt.append("   One of pre-context-ids: %s " % repr(pre_list)[1:-1])
-            txt.append("=> %s = input_p;\n" % post_str)
+                txt.append("    One of pre-context-ids: %s\n" % repr(pre_list)[1:-1])
+                txt.append("    => %s = input_p;\n" % post_str)
             
 
         return "".join(txt)
@@ -431,17 +437,38 @@ class DropOut:
         self.checker = []
         self.router  = []
 
-    def __repr__(self):
+    def trivialize(self):
+        """If there is only one acceptance involved and no pre-context,
+           then the drop-out action can be trivialized.
 
-        txt = ["Checker:\n"]
+           RETURNS: None                  -- if the drop out is not trivial
+                    DropOut_RouterElement -- if the drop-out is trivial
+        """
+        if   len(self.checker) != 1:                     return None
+        elif self.checker[0].pre_context_id is not None: return None
+        elif len(self.router) != 1:                      return None
+
+        assert self.router[0].acceptance_id == self.checker[0].acceptance_id
+
+        return self.router[0]
+
+    def __repr__(self):
+        info = self.trivialize()
+        if info is not None:
+            return "    %s goto %s;\n" % (repr_positioning(info.positioning, info.restore_position_register),
+                                          repr_acceptance_id(info.acceptance_id))
+        txt = ["    Checker:\n"]
         if_str = "if     "
         for element in self.checker:
-            txt.append("    %s %s\n" % (if_str, repr(element)))
+            if element.pre_context_id is not None:
+                txt.append("        %s %s\n" % (if_str, repr(element)))
+            else:
+                txt.append("        accept = %s\n" % repr_acceptance_id(element.acceptance_id))
             if_str = "else if"
 
-        txt.append("Router:\n")
+        txt.append("    Router:\n")
         for element in self.router:
-            txt.append("    %s\n" % repr(element))
+            txt.append("        %s\n" % repr(element))
 
         return "".join(txt)
 
@@ -482,8 +509,8 @@ class DropOut_CheckerElement(object):
 
     def __repr__(self):
         txt = []
-        txt.append("%s => %s" % (repr_pre_context_id(self.pre_context_id),
-                                 repr_acceptance_id(self.acceptance_id)))
+        txt.append("%s: accept = %s" % (repr_pre_context_id(self.pre_context_id),
+                                        repr_acceptance_id(self.acceptance_id)))
         return "".join(txt)
 
 class DropOut_RouterElement(object):
@@ -534,20 +561,9 @@ class DropOut_RouterElement(object):
         if self.acceptance_id == -1: assert self.positioning == -1 
         else:                        assert self.positioning != -1
 
-        if   self.positioning is None: 
-            assert self.restore_position_register is not None
-            if self.restore_position_register == -1: 
-                pos_str = "pos = last_acceptance_pos;"
-            else:                                    
-                pos_str = "pos = Position[%i]; " % self.restore_position_register
-        elif self.positioning >= 0:    
-            pos_str = "pos -= %i; " % self.positioning
-        elif self.positioning == -1:    
-            pos_str = "pos = lexeme_start_p + 1; "
-        else: 
-            assert False
-
-        return "case %i: %s goto %s;" % (self.acceptance_id, pos_str, repr_acceptance_id(self.acceptance_id))
+        return "case %i: %s goto %s;" % (self.acceptance_id, 
+                                         repr_positioning(self.positioning, self.restore_position_register), 
+                                         repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
     if   Value is None: return "Always "
@@ -558,5 +574,16 @@ def repr_pre_context_id(Value):
 def repr_acceptance_id(Value):
     if   Value is None: return "last_acceptance"
     elif Value == -1:   return "Failure"
-    elif Value >= 0:    return "%i" % Value
+    elif Value >= 0:    return "Pattern%i" % Value
     else:               assert False
+
+def repr_positioning(Positioning, Register):
+    if   Positioning is None: 
+        assert Register is not None
+        if Register == -1:  return "pos = Position[Acceptance];"
+        else:               return "pos = Position[%i]; " % Register
+    elif Positioning > 0:   return "pos -= %i; "          % Positioning
+    elif Positioning == 0:  return ""
+    elif Positioning == -1: return "pos = lexeme_start_p + 1; "
+    else: 
+        assert False
