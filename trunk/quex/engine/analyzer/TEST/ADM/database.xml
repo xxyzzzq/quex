@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.88" date="Sun Jun  5 08:59:26 2011">
+<test-database execution-time-sec="1.87" date="Sun Jun  5 17:50:12 2011">
     <last-used-diff-display-program name=""/>
     <group name="Track Analyzis">
         <test title="Without Pre- and Post-Contexts" time-sum-sec="0.36"> 
@@ -23,7 +23,7 @@
             <application file-name="track_analysis-pre.py" info-request-time="1307186094L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="0" result="FAIL" time_sec="0.06" crc="993566595"/>
-               <choice name="1" result="FAIL" time_sec="0.06" crc="-1792270224"/>
+               <choice name="1" result="FAIL" time_sec="0.06" crc="-2012948476"/>
                <choice name="2" result="FAIL" time_sec="0.06" crc="-1590543783"/>
                <choice name="3" result="FAIL" time_sec="0.06" crc="688663331"/>
                <choice name="4" result="FAIL" time_sec="0.06" crc="-264133364"/>
@@ -31,7 +31,7 @@
                <choice name="6" result="FAIL" time_sec="0.07" crc="696033465"/>
             </choice-list>
         </test>
-        <test title="With Post-Contexts" time-sum-sec="0.71"> 
+        <test title="With Post-Contexts" time-sum-sec="0.70"> 
             <application file-name="track_analysis-post.py" info-request-time="1307186094L" vanished="False"/>
             <choice-list number="11" same_result="False">
                <choice name="0" result="FAIL" time_sec="0.06" crc="818201344"/>

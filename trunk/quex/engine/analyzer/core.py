@@ -83,6 +83,7 @@ class Analyzer:
         checker = []  # map: pre-context-flag --> acceptance_id
         router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
+        print "##", state.index, TheAcceptanceTraceList
         # Acceptance Detector
         if self.analyze_uniformity(TheAcceptanceTraceList):
             # Use one trace as prototype to generate the mapping of 
@@ -91,7 +92,12 @@ class Analyzer:
             checker   = map(lambda x: DropOut_CheckerElement(x.pre_context_id, x.pattern_id), prototype)
         else:
             # => Last acceptance is to be restored from past
+            #    But, its own information is still useful
             checker = [DropOut_CheckerElement(None, None)]
+            ## checker = []
+            ## for pre_context_id, acceptance_id in sorted(state.entry.accepter.iteritems(), key=itemgetter(1)):
+            ##    checker.append((pre_context_id, acceptance_id))   
+            ##    if pre_context_id is None: break
             # All triggering states must store the acceptance
             for trace in TheAcceptanceTraceList:
                 for element in trace:
@@ -558,7 +564,7 @@ class DropOut_RouterElement(object):
         self.restore_position_register = PositionRegister
 
     def __repr__(self):
-        if self.acceptance_id == -1: assert self.positioning == -1 
+        if self.acceptance_id == -1: print "##", self.positioning; assert self.positioning == -1 
         else:                        assert self.positioning != -1
 
         return "case %i: %s goto %s;" % (self.acceptance_id, 
