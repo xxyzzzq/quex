@@ -1,6 +1,25 @@
-<test-database execution-time-sec="1.87" date="Sun Jun  5 17:50:12 2011">
+<test-database execution-time-sec="1.87" date="Mon Jun  6 06:27:05 2011">
     <last-used-diff-display-program name=""/>
     <group name="Track Analyzis">
+        <test title="With Pre-Contexts" time-sum-sec="0.44"> 
+            <application file-name="track_analysis-pre.py" info-request-time="1307186094L" vanished="False"/>
+            <choice-list number="7" same_result="False">
+               <choice name="0" result="FAIL" time_sec="0.06" crc="993566595"/>
+               <choice name="1" result="FAIL" time_sec="0.06" crc="-526649323"/>
+               <choice name="2" result="FAIL" time_sec="0.06" crc="-1590543783"/>
+               <choice name="3" result="FAIL" time_sec="0.06" crc="688663331"/>
+               <choice name="4" result="FAIL" time_sec="0.06" crc="-264133364"/>
+               <choice name="5" result="FAIL" time_sec="0.07" crc="-1385575656"/>
+               <choice name="6" result="FAIL" time_sec="0.07" crc="696033465"/>
+            </choice-list>
+        </test>
+        <test title="Nasty Examples" time-sum-sec="0.10"> 
+            <application file-name="track_analysis-nasty.py" info-request-time="1305001316L" vanished="True"/>
+            <choice-list number="2" same_result="False">
+               <choice name="0" result="FAIL" time_sec="0.05" crc="-929552251"/>
+               <choice name="1" result="FAIL" time_sec="0.05" crc="-1686550710"/>
+            </choice-list>
+        </test>
         <test title="Without Pre- and Post-Contexts" time-sum-sec="0.36"> 
             <application file-name="track_analysis.py" info-request-time="1307186094L" vanished="False"/>
             <choice-list number="6" same_result="False">
@@ -12,23 +31,13 @@
                <choice name="5" result="OK" time_sec="0.06" crc="1286504053"/>
             </choice-list>
         </test>
-        <test title="Nasty Examples" time-sum-sec="0.10"> 
-            <application file-name="track_analysis-nasty.py" info-request-time="1305001316L" vanished="True"/>
-            <choice-list number="2" same_result="False">
-               <choice name="0" result="FAIL" time_sec="0.05" crc="-929552251"/>
-               <choice name="1" result="FAIL" time_sec="0.05" crc="-1686550710"/>
-            </choice-list>
-        </test>
-        <test title="With Pre-Contexts" time-sum-sec="0.44"> 
-            <application file-name="track_analysis-pre.py" info-request-time="1307186094L" vanished="False"/>
-            <choice-list number="7" same_result="False">
-               <choice name="0" result="FAIL" time_sec="0.06" crc="993566595"/>
-               <choice name="1" result="FAIL" time_sec="0.06" crc="-2012948476"/>
-               <choice name="2" result="FAIL" time_sec="0.06" crc="-1590543783"/>
-               <choice name="3" result="FAIL" time_sec="0.06" crc="688663331"/>
-               <choice name="4" result="FAIL" time_sec="0.06" crc="-264133364"/>
-               <choice name="5" result="FAIL" time_sec="0.07" crc="-1385575656"/>
-               <choice name="6" result="FAIL" time_sec="0.07" crc="696033465"/>
+        <test title="With Pre- and Post-Contexts" time-sum-sec="0.27"> 
+            <application file-name="track_analysis-pre-post.py" info-request-time="1307186094L" vanished="False"/>
+            <choice-list number="4" same_result="False">
+               <choice name="0" result="FAIL" time_sec="0.06" crc="1992140360"/>
+               <choice name="1" result="FAIL" time_sec="0.07" crc="1247274221"/>
+               <choice name="2" result="FAIL" time_sec="0.07" crc="-2110757645"/>
+               <choice name="3" result="FAIL" time_sec="0.07" crc="1663245017"/>
             </choice-list>
         </test>
         <test title="With Post-Contexts" time-sum-sec="0.70"> 
@@ -45,15 +54,6 @@
                <choice name="8" result="NO GOOD FILE" time_sec="0.07" crc="505037819"/>
                <choice name="9" result="NO GOOD FILE" time_sec="0.07" crc="-151540597"/>
                <choice name="10" result="NO GOOD FILE" time_sec="0.07" crc="-652031608"/>
-            </choice-list>
-        </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="0.27"> 
-            <application file-name="track_analysis-pre-post.py" info-request-time="1307186094L" vanished="False"/>
-            <choice-list number="4" same_result="False">
-               <choice name="0" result="FAIL" time_sec="0.06" crc="1992140360"/>
-               <choice name="1" result="FAIL" time_sec="0.07" crc="1247274221"/>
-               <choice name="2" result="FAIL" time_sec="0.07" crc="-2110757645"/>
-               <choice name="3" result="FAIL" time_sec="0.07" crc="1663245017"/>
             </choice-list>
         </test>
     </group>
