@@ -83,21 +83,17 @@ class Analyzer:
         checker = []  # map: pre-context-flag --> acceptance_id
         router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
-        print "##", state.index, TheAcceptanceTraceList
         # Acceptance Detector
         if self.analyze_uniformity(TheAcceptanceTraceList):
             # Use one trace as prototype to generate the mapping of 
             # pre-context flag vs. acceptance.
             prototype = TheAcceptanceTraceList[0]
-            checker   = map(lambda x: DropOut_CheckerElement(x.pre_context_id, x.pattern_id), prototype)
+            checker = map(lambda x: DropOut_CheckerElement(x[0], x[1].pattern_id), 
+                          prototype.get_priorized_list())
         else:
             # => Last acceptance is to be restored from past
             #    But, its own information is still useful
-            checker = [DropOut_CheckerElement(None, None)]
-            ## checker = []
-            ## for pre_context_id, acceptance_id in sorted(state.entry.accepter.iteritems(), key=itemgetter(1)):
-            ##    checker.append((pre_context_id, acceptance_id))   
-            ##    if pre_context_id is None: break
+            checker = [ DropOut_CheckerElement(None, None) ]
             # All triggering states must store the acceptance
             for trace in TheAcceptanceTraceList:
                 for element in trace:
@@ -126,7 +122,6 @@ class Analyzer:
         result.router  = router
         return result
 
-
     def analyze_positioning(self, TheAcceptanceTraceList):
         """Find the pattern for positioning in the traces. Returns a dictionary
 
@@ -136,12 +131,11 @@ class Analyzer:
         """
         class ResultElement(object):
             __slots__ = ("transition_n_since_positioning", "post_context_id", "pre_context_id", "positioning_state_index_list")
-            def __new__(self, TraceElement):
+            def __init__(self, TraceElement):
                 self.transition_n_since_positioning = TraceElement.transition_n_since_positioning
                 self.post_context_id                = TraceElement.post_context_id
                 self.positioning_state_index_list   = [TraceElement.positioning_state_index]
                 self.pre_context_id                 = TraceElement.pre_context_id
-                return self
 
         result = {}
         # If the positioning differs for one element in the trace list, or one
@@ -564,12 +558,16 @@ class DropOut_RouterElement(object):
         self.restore_position_register = PositionRegister
 
     def __repr__(self):
-        if self.acceptance_id == -1: print "##", self.positioning; assert self.positioning == -1 
+        if self.acceptance_id == -1: assert self.positioning == -1 
         else:                        assert self.positioning != -1
 
-        return "case %i: %s goto %s;" % (self.acceptance_id, 
-                                         repr_positioning(self.positioning, self.restore_position_register), 
-                                         repr_acceptance_id(self.acceptance_id))
+        if self.positioning != 0:
+            return "case %i: %s goto %s;" % (self.acceptance_id, 
+                                             repr_positioning(self.positioning, self.restore_position_register), 
+                                             repr_acceptance_id(self.acceptance_id))
+        else:
+            return "case %i: goto %s;" % (self.acceptance_id, 
+                                          repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
     if   Value is None: return "Always "

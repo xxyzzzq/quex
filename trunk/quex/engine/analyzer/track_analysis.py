@@ -478,9 +478,6 @@ class AcceptanceTrace:
     def __len__(self):
         return len(self.__sequence)
 
-    def itervalues(self):
-        return sorted(self.__sequence.itervalues(), key=attrgetter("transition_n_to_acceptance"), reverse=True)
-
     def update(self, track_info, Path):
         # It is essential for a meaningful accumulation of the match information
         # that the entries are accumulated from the begin of a path towards its 
@@ -527,7 +524,7 @@ class AcceptanceTrace:
             if origin.post_context_id() == -1: 
                 post_context_id                = -1
                 transition_n_since_positioning = 0
-                positioning_state_index = StateIndex
+                positioning_state_index        = StateIndex
             else:
                 post_context_id = origin.post_context_id()
                 transition_n_since_positioning,        \
@@ -567,7 +564,6 @@ class AcceptanceTrace:
             for key, dummy in ifilter(lambda x: x[1].pattern_id > min_pattern_id, self.__sequence.items()):  # NOT: iteritems() here!
                 del self.__sequence[key]
 
-        print "##seq:", self.__sequence
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1
     
@@ -577,20 +573,26 @@ class AcceptanceTrace:
     def get(self, PreContextID):
         return self.__sequence.get(PreContextID)
 
+    def get_priorized_list(self):
+        def my_key(X):
+            # Failure always sorts to the bottom ...
+            if X[1].pattern_id == -1: return (sys.maxint, sys.maxint)
+            # Longest pattern sort on top
+            # Lowest pattern ids sort on top
+            return (- X[1].transition_n_to_acceptance, X[1].pattern_id)
+
+        result = self.__sequence.items()
+        result.sort(key=my_key)
+        return result
+
     def get_priorized_pre_context_id_list(self):
-        tmp = self.__sequence.items()
-        tmp.sort(key=lambda x: (x[1].transition_n_to_acceptance, x[1].pattern_id))
-        return map(lambda x: x[0], tmp)
+        return map(lambda x: x[0], self.get_priorized_list())
 
     def __repr__(self):
         txt = []
         for x in self.__sequence.itervalues():
             txt.append(repr(x))
         return "".join(txt)
-
-    def __iter__(self):
-        for x in self.__sequence.itervalues():
-            yield x
 
     def __eq__(self, Other):
         return None
@@ -621,6 +623,10 @@ class AcceptanceTrace:
         # the post context begins. Thus, the path **must** contain a state that stores this
         # position. If we reach this position here, then something is seriously wrong. 
         assert False
+
+    def __iter__(self):
+        for x in self.__sequence.itervalues():
+            yield x
 
 class AcceptanceTraceEntry(object):
     __slots__ = ("pre_context_id", 
@@ -672,8 +678,6 @@ class AcceptanceTraceEntry(object):
         self.positioning_state_index = PositioningStateIndex
         #
         self.post_context_id         = PostContextID
-
-        print "##pre", self.pre_context_id
 
     def __repr__(self):
         txt = ["---\n"]
