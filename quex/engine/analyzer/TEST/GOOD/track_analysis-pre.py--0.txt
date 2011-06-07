@@ -28,6 +28,6 @@ State 42:
 State 43:
   .entry:
   .drop_out:
-     Pattern13;
+     goto Pattern13;
 
 

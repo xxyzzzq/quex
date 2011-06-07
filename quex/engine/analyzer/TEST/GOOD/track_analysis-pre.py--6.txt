@@ -23,40 +23,44 @@ init-state = 102L
 State 102:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  Failure;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 103:
   .entry:
   .drop_out:
-     Pattern3;
+     goto Pattern3;
 
 
 State 104:
   .entry:
   .drop_out:
-     Pattern1;
+     goto Pattern1;
 
 
 State 105:
   .entry:
   .drop_out:
-    pos -= 1;  Pattern1;
+    pos -= 1;  goto Pattern1;
 
 
 State 106:
-  .entry:    
-  .drop_out: if pre_context_16: goto Pattern18;
-             pos -= 2; goto Pattern1;
+  .entry:
+  .drop_out:
+    if PreContext 16:  goto Pattern18;
+    pos -= 2;  goto Pattern1;
+
 
 State 107:
   .entry:
   .drop_out:
-    pos -= 1;  Pattern3;
+    pos -= 1;  goto Pattern3;
 
 
 State 108:
-  .entry: 
-  .drop_out: if pre_context_31: goto Pattern33;
-             pos -= 2; goto Pattern3;
+  .entry:
+  .drop_out:
+    if PreContext 31:  goto Pattern33;
+    pos -= 2;  goto Pattern3;
+
 

@@ -85,20 +85,43 @@ class Analyzer:
 
         # Acceptance Detector
         if self.analyze_uniformity(TheAcceptanceTraceList):
-            # Use one trace as prototype to generate the mapping of 
-            # pre-context flag vs. acceptance.
+            # (1) Uniform Traces
+            #     Use one trace as prototype to generate the mapping of 
+            #     pre-context flag vs. acceptance.
             prototype = TheAcceptanceTraceList[0]
-            checker = map(lambda x: DropOut_CheckerElement(x[0], x[1].pattern_id), 
-                          prototype.get_priorized_list())
+            checker   = map(lambda x: DropOut_CheckerElement(x[0], x[1].pattern_id), 
+                            prototype.get_priorized_list())
+            # Note: (1.1) Unconditional Acceptance Exists, and
+            #       (1.2) No Unconditional Acceptance 
+            #       are already well-handled because the current states acceptance behavior
+            #       is already webbed into the traces--and it is conform with the others.
         else:
-            # => Last acceptance is to be restored from past
-            #    But, its own information is still useful
-            checker = [ DropOut_CheckerElement(None, None) ]
-            # All triggering states must store the acceptance
-            for trace in TheAcceptanceTraceList:
-                for element in trace:
-                    entry = self.__state_db[element.accepting_state_index].entry
-                    entry.accepter[element.pre_context_id] = element.pattern_id
+            # (2) Non-Uniform Traces
+            # (2.1) Unconditional Acceptance Exists
+            #       => all influence from past traces is nulled.
+            #          consider only current state's checks.
+            # (2.2) No Unconditional Acceptance
+            #       => past acceptances can be communicated via 'last_acceptance' instead of Failure.
+            #          but all current pre-contexts must be checked.
+            checker = []
+            unconditional_f = False
+            for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
+                                 key=attrgetter("state_machine_id")):
+                checker.append(DropOut_CheckerElement(extract_pre_context_id(origin.pre_context_id()),
+                                                      origin.state_machine_id))
+                if origin.pre_context_id() == -1: 
+                    unconditional_f = True 
+                    break # no acceptance after unconditional acceptance
+
+            if not unconditional_f:
+                # No pre-context --> restore last acceptance
+                checker.append(DropOut_CheckerElement(None, None))
+
+                # All triggering states must store the acceptance
+                for trace in TheAcceptanceTraceList:
+                    for element in trace:
+                        entry = self.__state_db[element.accepting_state_index].entry
+                        entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
@@ -229,6 +252,8 @@ class AnalyzerState:
         else:        self.entry = EntryBackward(state.origins())
         self.transition_map = state.transitions().get_trigger_map()
         self.drop_out       = None # See: Analyzer.make_drop_out(...)
+
+        self._origin_list    = state.origins()
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -444,19 +469,39 @@ class DropOut:
            RETURNS: None                  -- if the drop out is not trivial
                     DropOut_RouterElement -- if the drop-out is trivial
         """
-        if   len(self.checker) != 1:                     return None
-        elif self.checker[0].pre_context_id is not None: return None
-        elif len(self.router) != 1:                      return None
+        for dummy in ifilter(lambda x: x.acceptance_id is None, self.checker):
+            # There is a stored acceptance involved, thus need checker + router.
+            return None
 
-        assert self.router[0].acceptance_id == self.checker[0].acceptance_id
+        result = []
+        for check in self.checker:
+            for route in self.router:
+                if route.acceptance_id == check.acceptance_id: break
+            else:
+                assert False # Acceptance Id from checker not found in router?!
+            result.append((check, route))
 
-        return self.router[0]
+        return result
 
     def __repr__(self):
         info = self.trivialize()
         if info is not None:
-            return "    %s goto %s;\n" % (repr_positioning(info.positioning, info.restore_position_register),
-                                          repr_acceptance_id(info.acceptance_id))
+            txt = []
+            if_str = "if"
+            for easy in info:
+                if easy[0].pre_context_id is None:
+                    txt.append("    %s goto %s;\n" % \
+                               (repr_positioning(easy[1].positioning, easy[1].restore_position_register),
+                                repr_acceptance_id(easy[1].acceptance_id)))
+                else:
+                    txt.append("    %s %s: %s goto %s;\n" % \
+                               (if_str,
+                                repr_pre_context_id(easy[0].pre_context_id),
+                                repr_positioning(easy[1].positioning, easy[1].restore_position_register),
+                                repr_acceptance_id(easy[1].acceptance_id)))
+                    if_str = "else if"
+            return "".join(txt)
+
         txt = ["    Checker:\n"]
         if_str = "if     "
         for element in self.checker:
