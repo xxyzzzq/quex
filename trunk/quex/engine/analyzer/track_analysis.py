@@ -509,16 +509,14 @@ class AcceptanceTrace:
         state = track_info.sm.states[StateIndex]
         if not state.is_acceptance(): return
 
-        # Assumption:
+        L = len(Path)
         for origin in sorted(state.origins(), key=attrgetter("state_machine_id")):
             if not origin.is_acceptance(): continue
 
-            # (0) The pattern's ID
-            pattern_id = origin.state_machine_id
-
-            # (1) The Pre-Context under which it triggers
+            # (0) The pattern's ID and its pre-context
+            pattern_id     = origin.state_machine_id
             pre_context_id = extract_pre_context_id(origin)
-
+            
             # (2) The position where the input pointer has to be set if the 
             #     pattern is accepted (how many characters to go backwards).
             if origin.post_context_id() == -1: 
@@ -533,12 +531,12 @@ class AcceptanceTrace:
                                                                               track_info)
 
             if track_info.loop_state_set.isdisjoint(Path):
-                transition_n_since_init_state = len(Path)
+                transition_n_since_init_state = L
             else:
                 # If there is a loop somewhere connected to the path, then the distance to
                 # the current state can only be determined as 'at least' == path length.
                 # N < 0 shall mean: 'at least' N characters
-                transition_n_since_init_state = - len(Path)
+                transition_n_since_init_state = - L
             
             # (*) Make the entry in the database
             entry = AcceptanceTraceEntry(pre_context_id, pattern_id, 
@@ -547,22 +545,34 @@ class AcceptanceTrace:
                                          TransitionN_SincePositioning = transition_n_since_positioning,
                                          PositioningStateIndex        = positioning_state_index, 
                                          PostContextID                = post_context_id)
-            # ((*)) IMPORTANT: What is happening here is a simple **overwriting**
-            #                  of existing entries, but this works only if the path
-            #                  is transversed from begin to end. Then this implements 
-            #                  implicitly **longest match**, i.e. latest wins.
+
+            # (*) An unconditional acceptance deletes all previous influence 
+            #     from past traces.
+            if pre_context_id is None: 
+                self.__sequence.clear()
+                # The 'None' case which must always be there is now setup ...
+
+            # (*) IMPORTANT: What is happening here is a simple **overwriting**
+            #                of existing entries, but this works only if the path
+            #                is transversed from begin to end. Then this implements 
+            #                implicitly **longest match**, i.e. latest wins.
             self.__sequence[pre_context_id] = entry
 
             # The rest of the traces is dominated
             if pre_context_id is None: break
 
-        # No conditional pattern can ever be matched if it is dominated
-        # by an unconditional pattern acceptance.
-        min_pattern_id = self.__sequence[None].pattern_id
-        # Failure is no reason to filter.
-        if min_pattern_id != -1:
-            for key, dummy in ifilter(lambda x: x[1].pattern_id > min_pattern_id, self.__sequence.items()):  # NOT: iteritems() here!
-                del self.__sequence[key]
+        #print "##0", StateIndex, L, self.__sequence
+        #min_pattern_id = self.__sequence[None].pattern_id
+        #if min_pattern_id != -1:
+        #    # -- No conditional pattern can ever be matched if it is dominated
+        #   #    by an unconditional pattern acceptance.
+        #    # -- But, the current state's acceptances can never be deleted.
+        #    #    thus check this before adding current state's info.
+        #    for key, dummy in ifilter(lambda x:     (x[1].pattern_id > min_pattern_id)
+        #                                        and abs(x[1].transition_n_to_acceptance) != L, 
+        #                              self.__sequence.items()):  # NOT: iteritems() here!
+        #        del self.__sequence[key]
+        #print "##1", StateIndex, self.__sequence
 
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1

@@ -12,25 +12,31 @@ init-state = 53L
       <no epsilon>
 
 State 56:
-  .entry: 
-  .drop_out: if pre_context_14: goto Pattern16;
-             pos -= 2; goto Pattern1;
+  .entry:
+  .drop_out:
+    Checker:
+        if      PreContext 14: accept = Pattern16
+        accept = Pattern1
+    Router:
+        case 16: goto Pattern16;
+        case 1: pos -= 2;  goto Pattern1;
+
 
 State 53:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  Failure;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 54:
   .entry:
   .drop_out:
-     Pattern1;
+     goto Pattern1;
 
 
 State 55:
   .entry:
   .drop_out:
-    pos -= 1;  Pattern1;
+    pos -= 1;  goto Pattern1;
 
 
