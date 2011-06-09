@@ -17,12 +17,8 @@ State 41:
 State 42:
   .entry:
   .drop_out:
-    Checker:
-        if      PreContext 11: accept = Pattern13
-        accept = Failure
-    Router:
-        case 13: goto Pattern13;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
+    if PreContext_11:  goto Pattern13;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 43:

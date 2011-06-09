@@ -12,18 +12,26 @@ init-state = 28L
       <no epsilon>
 
 State 28:
-  .entry: 
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 29:
-  .entry: 
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 30:
-  .entry: 
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 31:
-  .entry: 
-  .drop_out: pos -= 2; goto Pattern8;
+  .entry:
+  .drop_out:
+    pos -= 2;  goto Pattern8;
+
 

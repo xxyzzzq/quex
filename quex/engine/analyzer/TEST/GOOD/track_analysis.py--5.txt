@@ -28,8 +28,7 @@ State 68:
 State 69:
   .entry:
     Positioner:
-    One of pre-context-ids: 'Always '
-    => last_acceptance_pos = input_p;
+    Position[Acceptance] = input_p;
   .drop_out:
      goto Pattern1;
 
@@ -37,8 +36,7 @@ State 69:
 State 70:
   .entry:
     Positioner:
-    One of pre-context-ids: 'Always '
-    => last_acceptance_pos = input_p;
+    Position[Acceptance] = input_p;
   .drop_out:
      goto Pattern1;
 

@@ -14,12 +14,8 @@ init-state = 53L
 State 56:
   .entry:
   .drop_out:
-    Checker:
-        if      PreContext 14: accept = Pattern16
-        accept = Pattern1
-    Router:
-        case 16: goto Pattern16;
-        case 1: pos -= 2;  goto Pattern1;
+    if PreContext_14:  goto Pattern16;
+    pos -= 2;  goto Pattern1;
 
 
 State 53:

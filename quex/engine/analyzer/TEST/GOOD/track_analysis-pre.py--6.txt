@@ -47,7 +47,7 @@ State 105:
 State 106:
   .entry:
   .drop_out:
-    if PreContext 16:  goto Pattern18;
+    if PreContext_16:  goto Pattern18;
     pos -= 2;  goto Pattern1;
 
 
@@ -60,7 +60,7 @@ State 107:
 State 108:
   .entry:
   .drop_out:
-    if PreContext 31:  goto Pattern33;
+    if PreContext_31:  goto Pattern33;
     pos -= 2;  goto Pattern3;
 
 

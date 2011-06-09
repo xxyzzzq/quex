@@ -18,26 +18,32 @@ init-state = 79L
       <no epsilon>
 
 State 79:
-  .entry:    
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
 
 State 80:
-  .entry:    
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
 
 State 81:
-  .entry:    
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
 
 State 82:
-  .entry:    
-  .drop_out: goto Pattern7;
+  .entry:
+  .drop_out:
+     goto Pattern7;
 
 State 83:
-  .entry:    
-  .drop_out: pos -= 1; goto Pattern7;
+  .entry:
+  .drop_out:
+    pos -= 1;  goto Pattern7;
 
 State 84:
-  .entry:    
-  .drop_out: pos -= 3; goto Pattern22;
+  .entry:
+  .drop_out:
+    pos -= 3;  goto Pattern22;
 
