@@ -71,7 +71,7 @@ elif "10" in sys.argv:
     pattern_list = [
         'x/ya+',
         'xy/b',
-        'xy(a|b)cde',
+        'xy(a+|b)cde',
     ]
 else:
     assert False
@@ -80,6 +80,12 @@ else:
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+
+if True:
+    fh = open("tmp.dot", "wb")
+    fh.write( sm.get_graphviz_string() )
+    fh.close()
+    os.system("graph-easy --input=tmp.dot --as boxart")
 
 print sm.get_string(NormalizeF=False)
 

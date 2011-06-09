@@ -20,23 +20,15 @@ State 51:
 State 52:
   .entry:
   .drop_out:
-    Checker:
-        if      PreContext 6: accept = Pattern8
-        accept = Failure
-    Router:
-        case 8: goto Pattern8;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
+    if PreContext_6:  goto Pattern8;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 53:
   .entry:
   .drop_out:
-    Checker:
-        if      PreContext 6: accept = Pattern8
-        accept = Failure
-    Router:
-        case 8: pos -= 1;  goto Pattern8;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
+    if PreContext_6: pos -= 1;  goto Pattern8;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 54:

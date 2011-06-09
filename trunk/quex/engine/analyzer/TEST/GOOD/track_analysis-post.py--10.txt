@@ -1,0 +1,101 @@
+                                           a
+                                         ┌───┐
+                                         ▼   │
+╔═════╗  x   ╔═════╗  y   ╔═════╗  a   ╔═══════╗  c   ╔═════╗  d   ╔═════╗  e   ╔═════╗
+║ 162 ║ ───▶ ║ 163 ║ ───▶ ║ 164 ║ ───▶ ║  166  ║ ───▶ ║ 167 ║ ───▶ ║ 168 ║ ───▶ ║ 169 ║
+╚═════╝      ╚═════╝      ╚═════╝      ╚═══════╝      ╚═════╝      ╚═════╝      ╚═════╝
+                            │                           ▲
+                            │ b                         │
+                            ▼                           │
+                          ╔═════╗  c                    │
+                          ║ 165 ║ ──────────────────────┘
+                          ╚═════╝
+init-state = 162L
+00162() <~ (20, 51), (11, 30), (47, 126)
+      == 'x' ==> 00163
+      <no epsilon>
+00163(S, P1) <~ (11, 31, S, P1), (20, 52), (47, 127)
+      == 'y' ==> 00164
+      <no epsilon>
+00164(S, P16) <~ (11, 32), (20, 53, S, P16), (47, 128)
+      == 'a' ==> 00166
+      == 'b' ==> 00165
+      <no epsilon>
+00166(A, P1) <~ (11, 33, A, P1), (47, 129)
+      == 'a' ==> 00166
+      == 'c' ==> 00167
+      <no epsilon>
+00167() <~ (47, 131)
+      == 'd' ==> 00168
+      <no epsilon>
+00168() <~ (47, 132)
+      == 'e' ==> 00169
+      <no epsilon>
+00169(A, S) <~ (47, 133, A, S)
+      <no epsilon>
+00165(A, P16) <~ (20, 54, A, P16), (47, 130)
+      == 'c' ==> 00167
+      <no epsilon>
+
+State 162:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 163:
+  .entry:
+    Positioner:
+    Position[PostContext_1]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 164:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 165:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern20
+  .drop_out:
+    pos -= 1;  goto Pattern20;
+
+
+State 166:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern11
+  .drop_out:
+    pos = Position[PostContext_1] ; goto Pattern11;
+
+
+State 167:
+  .entry:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 11: pos = Position[PostContext_1] ; goto Pattern11;
+        case 20: pos -= 2;  goto Pattern20;
+
+
+State 168:
+  .entry:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 11: pos = Position[PostContext_1] ; goto Pattern11;
+        case 20: pos -= 3;  goto Pattern20;
+
+
+State 169:
+  .entry:
+  .drop_out:
+     goto Pattern47;
+
+

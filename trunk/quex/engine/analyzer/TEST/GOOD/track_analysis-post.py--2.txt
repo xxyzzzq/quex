@@ -13,18 +13,28 @@ init-state = 39L
       <no epsilon>
 
 State 40:
-  .entry:    Position[PostContext_1] = pos
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+    Positioner:
+    Position[PostContext_1]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 41:
-  .entry: 
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 42:
-  .entry: 
-  .drop_out: pos = Position[PostContext_1]; goto Pattern11;
+  .entry:
+  .drop_out:
+    pos = Position[PostContext_1] ; goto Pattern11;
+
 
 State 39:
-  .entry: 
-  .drop_out: pos = lexeme_start + 1; goto Failure;
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
