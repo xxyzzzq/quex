@@ -509,6 +509,12 @@ class AcceptanceTrace:
         state = track_info.sm.states[StateIndex]
         if not state.is_acceptance(): return
 
+        # (*) An unconditional acceptance deletes all previous influence 
+        #     from past traces.
+        for dummy in ifilter(lambda origin: origin.is_acceptance() and origin.pre_context_id() == -1, state.origins()):
+            self.__sequence.clear()
+            # The 'None' case which must always be there is now setup ...
+
         L = len(Path)
         for origin in sorted(state.origins(), key=attrgetter("state_machine_id")):
             if not origin.is_acceptance(): continue
@@ -517,6 +523,7 @@ class AcceptanceTrace:
             pattern_id     = origin.state_machine_id
             pre_context_id = extract_pre_context_id(origin)
             
+            ## print "##", StateIndex, pattern_id, pre_context_id
             # (2) The position where the input pointer has to be set if the 
             #     pattern is accepted (how many characters to go backwards).
             if origin.post_context_id() == -1: 
@@ -546,12 +553,6 @@ class AcceptanceTrace:
                                          PositioningStateIndex        = positioning_state_index, 
                                          PostContextID                = post_context_id)
 
-            # (*) An unconditional acceptance deletes all previous influence 
-            #     from past traces.
-            if pre_context_id is None: 
-                self.__sequence.clear()
-                # The 'None' case which must always be there is now setup ...
-
             # (*) IMPORTANT: What is happening here is a simple **overwriting**
             #                of existing entries, but this works only if the path
             #                is transversed from begin to end. Then this implements 
@@ -561,7 +562,7 @@ class AcceptanceTrace:
             # The rest of the traces is dominated
             if pre_context_id is None: break
 
-        #print "##0", StateIndex, L, self.__sequence
+        ## print "##0", StateIndex, L, self.__sequence
         #min_pattern_id = self.__sequence[None].pattern_id
         #if min_pattern_id != -1:
         #    # -- No conditional pattern can ever be matched if it is dominated
@@ -572,7 +573,7 @@ class AcceptanceTrace:
         #                                        and abs(x[1].transition_n_to_acceptance) != L, 
         #                              self.__sequence.items()):  # NOT: iteritems() here!
         #        del self.__sequence[key]
-        #print "##1", StateIndex, self.__sequence
+        ## print "##1", StateIndex, self.__sequence
 
         # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1

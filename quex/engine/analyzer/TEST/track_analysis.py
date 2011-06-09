@@ -50,6 +50,11 @@ elif "5" in sys.argv:
         '[ab]',        
         '((aa?)|b)cd'
     ]
+elif "6" in sys.argv:
+    pattern_list = [
+        '(ab)|c',        
+        '((ab)|c)de',
+    ]
 else:
     assert False
 
@@ -58,7 +63,7 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-if False:
+if True:
     fh = open("tmp.dot", "wb")
     fh.write( sm.get_graphviz_string() )
     fh.close()

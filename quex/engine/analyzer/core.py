@@ -21,7 +21,8 @@
 
 import quex.engine.analyzer.track_analysis as track_analysis
 from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
-                                                  AcceptanceTraceEntry_Void
+                                                  AcceptanceTraceEntry_Void, \
+                                                  extract_pre_context_id
 
 
 from quex.input.setup import setup as Setup
@@ -98,30 +99,30 @@ class Analyzer:
         else:
             # (2) Non-Uniform Traces
             # (2.1) Unconditional Acceptance Exists
-            #       => all influence from past traces is nulled.
-            #          consider only current state's checks.
+            #       => According to AcceptanceTrace.update() all influence from past traces 
+            #          is nulled.
+            #       => Thus, a state with an unconditional will have **only** the traces
+            #          of its own state and is therefore **uniform**.
+            #       => This case is impossible for non-uniform traces.
             # (2.2) No Unconditional Acceptance
             #       => past acceptances can be communicated via 'last_acceptance' instead of Failure.
             #          but all current pre-contexts must be checked.
             checker = []
-            unconditional_f = False
             for origin in sorted(ifilter(lambda x: x.is_acceptance(), state._origin_list),
                                  key=attrgetter("state_machine_id")):
-                checker.append(DropOut_CheckerElement(extract_pre_context_id(origin.pre_context_id()),
+                checker.append(DropOut_CheckerElement(extract_pre_context_id(origin),
                                                       origin.state_machine_id))
-                if origin.pre_context_id() == -1: 
-                    unconditional_f = True 
-                    break # no acceptance after unconditional acceptance
+                # According to (2.1) the following must hold
+                assert origin.pre_context_id() != -1
 
-            if not unconditional_f:
-                # No pre-context --> restore last acceptance
-                checker.append(DropOut_CheckerElement(None, None))
+            # No pre-context --> restore last acceptance
+            checker.append(DropOut_CheckerElement(None, None))
 
-                # All triggering states must store the acceptance
-                for trace in TheAcceptanceTraceList:
-                    for element in trace:
-                        entry = self.__state_db[element.accepting_state_index].entry
-                        entry.accepter[element.pre_context_id] = element.pattern_id
+            # All triggering states must store the acceptance
+            for trace in TheAcceptanceTraceList:
+                for element in trace:
+                    entry = self.__state_db[element.accepting_state_index].entry
+                    entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
@@ -164,12 +165,15 @@ class Analyzer:
         # If the positioning differs for one element in the trace list, or one
         # element has undetermined positioning, then the acceptance relates to 
         # undetermined positioning.
+        print "##", TheAcceptanceTraceList
         for trace in TheAcceptanceTraceList:
             for element in trace:
                 info = result.get(element.pattern_id)
                 if info is None:
                     result[element.pattern_id] = ResultElement(element)
+                    print "##", result[element.pattern_id].transition_n_since_positioning
                 elif info.transition_n_since_positioning != element.transition_n_since_positioning:
+                    print "## found"
                     info.transition_n_since_positioning = None
                     # AcceptanceIDs and their PostContexts are related 1:1
                     assert info.post_context_id == element.post_context_id
@@ -253,7 +257,7 @@ class AnalyzerState:
         self.transition_map = state.transitions().get_trigger_map()
         self.drop_out       = None # See: Analyzer.make_drop_out(...)
 
-        self._origin_list    = state.origins()
+        self._origin_list    = state.origins().get_list()
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -398,11 +402,10 @@ class Entry(object):
             for post_context_id, pre_context_id_list in self.positioner.iteritems():
                 pre_list = map(repr_pre_context_id, pre_context_id_list)
 
-                if post_context_id == -1: post_str = "last_acceptance_pos"
-                else:                     post_str = "position_register[%i]" % post_context_id
-
-                txt.append("    One of pre-context-ids: %s\n" % repr(pre_list)[1:-1])
-                txt.append("    => %s = input_p;\n" % post_str)
+                txt.append("    ")
+                if None not in pre_context_id_list:
+                    txt.append("if %s: " % repr(pre_list)[1:-1])
+                txt.append("%s = input_p;\n" % repr_position_register(post_context_id))
             
 
         return "".join(txt)
@@ -615,9 +618,9 @@ class DropOut_RouterElement(object):
                                           repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
-    if   Value is None: return "Always "
-    elif Value == -1:   return "BeginOfFile "
-    elif Value >= 0:    return "PreContext %i" % Value
+    if   Value is None: return "Always"
+    elif Value == -1:   return "BeginOfFile"
+    elif Value >= 0:    return "PreContext_%i" % Value
     else:               assert False
 
 def repr_acceptance_id(Value):
@@ -626,11 +629,14 @@ def repr_acceptance_id(Value):
     elif Value >= 0:    return "Pattern%i" % Value
     else:               assert False
 
+def repr_position_register(Register):
+    if Register == -1:  return "Position[Acceptance]"
+    else:               return "Position[PostContext_%i] " % Register
+
 def repr_positioning(Positioning, Register):
     if   Positioning is None: 
         assert Register is not None
-        if Register == -1:  return "pos = Position[Acceptance];"
-        else:               return "pos = Position[%i]; " % Register
+        return "pos = %s;" % repr_position_register(Register)
     elif Positioning > 0:   return "pos -= %i; "          % Positioning
     elif Positioning == 0:  return ""
     elif Positioning == -1: return "pos = lexeme_start_p + 1; "
