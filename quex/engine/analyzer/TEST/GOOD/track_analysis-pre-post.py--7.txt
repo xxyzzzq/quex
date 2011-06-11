@@ -1,0 +1,79 @@
+init-state = 383L
+00383() <~ (69, 188), (97, 264), (125, 340), (8, 22), (17, 46), (41, 111)
+      == 'x' ==> 00384
+      <no epsilon>
+00384(S, P10) <~ (8, 23, S, P1), (17, 47, S, P10), (41, 112), (69, 189), (97, 265), (125, 341)
+      == 'a' ==> 00385
+      == 'b' ==> 00386
+      <no epsilon>
+00385(A, P1) <~ (8, 24, A, P1), (41, 114), (69, 191), (97, 266), (125, 343)
+      == 'a' ==> 00385
+      == 'c' ==> 00387
+      <no epsilon>
+00387(A, S, pre=123) <~ (41, 115), (69, 192, A, S, pre=67), (97, 268, A, S, pre=95), (125, 344, A, S, pre=123)
+      == 'd' ==> 00388
+      <no epsilon>
+00388(A, S) <~ (41, 116, A, S)
+      <no epsilon>
+00386(A, P10) <~ (17, 48, A, P10), (41, 113), (69, 190), (97, 267), (125, 342)
+      == 'b' ==> 00386
+      == 'c' ==> 00387
+      <no epsilon>
+
+State 384:
+  .entry:
+    Positioner:
+    Position[PostContext_1]  = input_p;
+    Position[PostContext_10]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 385:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern8
+  .drop_out:
+    pos = Position[PostContext_1] ; goto Pattern8;
+
+
+State 386:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern17
+  .drop_out:
+    pos = Position[PostContext_10] ; goto Pattern17;
+
+
+State 387:
+  .entry:
+    Accepter:
+        if      PreContext_67: last_acceptance = Pattern69
+        else if PreContext_95: last_acceptance = Pattern97
+        else if PreContext_123: last_acceptance = Pattern125
+  .drop_out:
+    Checker:
+        if      PreContext_67: accept = Pattern69
+        else if PreContext_95: accept = Pattern97
+        else if PreContext_123: accept = Pattern125
+        accept = last_acceptance
+    Router:
+        case 8: pos = Position[PostContext_1] ; goto Pattern8;
+        case 97: goto Pattern97;
+        case 17: pos = Position[PostContext_10] ; goto Pattern17;
+        case 125: goto Pattern125;
+        case 69: goto Pattern69;
+
+
+State 388:
+  .entry:
+  .drop_out:
+     goto Pattern41;
+
+
+State 383:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
