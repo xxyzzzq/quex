@@ -9,7 +9,7 @@ from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
-    print "Track Analyzis: Without Pre- and Post-Contexts;"
+    print "Track Analyzis: Backwards - For PRe-Context;"
     print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
     sys.exit()
 
@@ -20,8 +20,8 @@ if "0" in sys.argv:
     ╚════╝      ╚════╝      ╚════╝
     """
     pattern_list = [
-        'a',        
-        'ab',     
+        'x/a/',        
+        'y/a/',     
     ]
 elif "1" in sys.argv:
     pattern_list = [
@@ -59,7 +59,10 @@ else:
     assert False
 
 
-state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
+print map(lambda x: regex.do(x, {}), pattern_list)
+state_machine_list = map(lambda x: 
+                         regex.do(x, {}).core().pre_context_sm(), 
+                         pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
@@ -71,9 +74,8 @@ if False:
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.Analyzer(sm, ForwardF=True)
+analyzer = core.Analyzer(sm, ForwardF=False)
 
 for state in analyzer:
-    if state.index == sm.init_state_index: assert state.input.move_input_position() == 0
-    else:                                  assert state.input.move_input_position() == 1 
+    assert state.input.move_input_position() == -1   # backwards always
     print state.get_string(InputF=False, TransitionMapF=False)

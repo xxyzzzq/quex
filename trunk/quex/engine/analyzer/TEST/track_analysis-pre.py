@@ -10,7 +10,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -52,6 +52,23 @@ elif "6" in sys.argv:
         'x/abc/',
         'x/bbc/',
     ]
+elif "7" in sys.argv:
+    pattern_list = [
+        '^[ab]',        
+        '((ab)|b)cd',
+    ]
+elif "8" in sys.argv:
+    pattern_list = [
+        '^a',        
+        '^b',        
+        '((ab)|b)cd',
+    ]
+elif "9" in sys.argv:
+    pattern_list = [
+        '^a',        
+        'b',        
+        '((ab)|b)cd',
+    ]
 else:
     assert False
 
@@ -60,7 +77,7 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-if False:
+if True:
     fh = open("tmp.dot", "wb")
     fh.write( sm.get_graphviz_string() )
     fh.close()

@@ -1,4 +1,4 @@
-<history date="Thu Jun  9 07:23:20 2011" element-n="110">
+<history date="Sat Jun 11 21:40:44 2011" element-n="113">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -128,5 +128,10 @@
     </day>
     <day year="2011" month="06" day="09">
         <crc-error time="04:42:38" application="track_analysis-post.py" choice="10" database-crc="1182156128" real-crc="-168596370"/>
+    </day>
+    <day year="2011" month="06" day="11">
+        <crc-error time="19:21:28" application="track_analysis-pre-post.py" choice="7" database-crc="637386550" real-crc="-1737658270"/>
+        <crc-error time="19:31:18" application="track_analysis-pre-post.py" choice="4" database-crc="-1709583030" real-crc="-754827776"/>
+        <crc-error time="19:36:37" application="track_analysis.py" choice="6" database-crc="662064794" real-crc="1566303295"/>
     </day>
 </history>

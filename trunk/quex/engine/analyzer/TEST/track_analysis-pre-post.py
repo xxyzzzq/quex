@@ -9,7 +9,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre- and Post-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8;"
     sys.exit()
 
 if   "0" in sys.argv:
@@ -39,7 +39,7 @@ elif "3" in sys.argv:
 elif "4" in sys.argv:
     pattern_list = [
         'x/a/bc',        
-        'y/abc',        
+        'y/abc/',        
         'abcdef',
     ]
 elif "5" in sys.argv:
@@ -73,6 +73,16 @@ elif "7" in sys.argv:
         '1/x(a+|b+)c/',
         '2/x(a+|b+)c/',
     ]
+elif "8" in sys.argv:
+    # Non-uniform traces with multiple pre-contexts
+    pattern_list = [
+        'x/a+',
+        '^b+',
+        '(a+|b+)cd',
+        '^(a+|b+)c/',
+        '^(a+|b+)c/',
+        '^(a+|b+)c/',
+    ]
 else:
     assert False
 
@@ -81,7 +91,7 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-if True:
+if False:
     fh = open("tmp.dot", "wb")
     fh.write( sm.get_graphviz_string() )
     fh.close()
