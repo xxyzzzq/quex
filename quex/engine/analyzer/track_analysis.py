@@ -468,7 +468,7 @@ class AcceptanceTrace:
             None: AcceptanceTraceEntry(PreContextID                 = None, 
                                        PatternID                    = -1, # Failure
                                        TransitionN_ToAcceptance     = 0,
-                                       AcceptingStateIndex          = -1, 
+                                       AcceptingStateIndex          = -1, # Init State
                                        TransitionN_SincePositioning = -1, # input_p = lexeme_start_p + 1
                                        PositioningStateIndex        = -1, 
                                        PostContextID                = -1),
@@ -497,10 +497,9 @@ class AcceptanceTrace:
             # other may be not be determined from the state machine structure.
             for entry in self.__sequence.itervalues():
                 ## print "##entry:", entry
-                # if entry.transition_n_since_positioning > 0: 
-                # == 0 means 'current state' so positioning still happens
-                #  < 0 means 'lexeme_start_p + 1' so we would not 'voidify' it
-                entry.transition_n_since_positioning = None
+                # -1  means 'lexeme_start_p + 1' so we would not 'voidify' it
+                if entry.transition_n_since_positioning != - 1:
+                    entry.transition_n_since_positioning = None
         else:
             # Add '1' to the distance between:
             #       positioning state --> transition_n_since_positioning
