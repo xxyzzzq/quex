@@ -59,24 +59,24 @@ elif "6" in sys.argv:
     # to the previous case, but it is not concerned with the 'cut' of
     # the unconditional pattern "aa?" as above.
     pattern_list = [
-        "x/aa?",    # (1) dominating (mentioned first)
-        "y/a/aaa",  # (2) dominated
-        "aaabc",
+        "x/aa?/",    # (1) dominating (mentioned first)
+        "y/a/aaa",   # (2) dominated (wins by length)
+        "aaaab",
     ]
 elif "7" in sys.argv:
     # Non-uniform traces with multiple pre-contexts
     pattern_list = [
-        'x/a+',
-        'x/b+',
-        'x(a+|b+)cd',
-        '0/x(a+|b+)c/',
-        '1/x(a+|b+)c/',
-        '2/x(a+|b+)c/',
+        'x/a+/',
+        'x/b+/',
+        '(a+|b+)cd',
+        '0/(a+|b+)c/',
+        '1/(a+|b+)c/',
+        '2/(a+|b+)c/',
     ]
 elif "8" in sys.argv:
     # Non-uniform traces with multiple pre-contexts
     pattern_list = [
-        'x/a+',
+        'x/a+/',
         '^b+',
         '(a+|b+)cd',
         '^(a+|b+)c/',
@@ -91,7 +91,7 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-if False:
+if True:
     fh = open("tmp.dot", "wb")
     fh.write( sm.get_graphviz_string() )
     fh.close()

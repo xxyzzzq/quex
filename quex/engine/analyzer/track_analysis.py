@@ -491,14 +491,16 @@ class AcceptanceTrace:
         # be determined by the state machine structure itself.
         StateIndex = Path[-1]
 
+        ## print "##StateIndex", StateIndex
         if StateIndex in track_info.loop_state_set:
             # If there is a loop, then the number of transitions from one state to the
             # other may be not be determined from the state machine structure.
             for entry in self.__sequence.itervalues():
-                if entry.transition_n_since_positioning > 0: 
-                    # == 0 means 'current state' so positioning still happens
-                    #  < 0 means 'lexeme_start_p + 1' so we would not 'voidify' it
-                    entry.transition_n_since_positioning = None
+                ## print "##entry:", entry
+                # if entry.transition_n_since_positioning > 0: 
+                # == 0 means 'current state' so positioning still happens
+                #  < 0 means 'lexeme_start_p + 1' so we would not 'voidify' it
+                entry.transition_n_since_positioning = None
         else:
             # Add '1' to the distance between:
             #       positioning state --> transition_n_since_positioning
@@ -511,7 +513,10 @@ class AcceptanceTrace:
 
         # (*) An unconditional acceptance deletes all previous influence 
         #     from past traces.
-        for dummy in ifilter(lambda origin: origin.is_acceptance() and origin.pre_context_id() == -1, state.origins()):
+        for dummy in ifilter(lambda origin:     origin.is_acceptance() 
+                                            and origin.pre_context_begin_of_line_f() == False
+                                            and origin.pre_context_id() == -1,
+                             state.origins()):
             self.__sequence.clear()
             # The 'None' case which must always be there is now setup ...
 
@@ -562,7 +567,7 @@ class AcceptanceTrace:
             # The rest of the traces is dominated
             if pre_context_id is None: break
 
-        ## print "##0", StateIndex, L, self.__sequence
+        ## print "##1", StateIndex, L, self.__sequence
         #min_pattern_id = self.__sequence[None].pattern_id
         #if min_pattern_id != -1:
         #    # -- No conditional pattern can ever be matched if it is dominated

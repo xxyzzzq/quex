@@ -10,7 +10,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Without Pre- and Post-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -54,6 +54,23 @@ elif "6" in sys.argv:
     pattern_list = [
         '[ab]',        
         '((ab)|b)cd',
+    ]
+elif "7" in sys.argv:
+    pattern_list = [
+        'a+',        
+        'b+c',        
+        '(a+|(b+c))de',
+    ]
+elif "8" in sys.argv:
+    pattern_list = [
+        'a+',        
+        'b',        
+        '(a+|(bc+))de',
+    ]
+elif "9" in sys.argv:
+    pattern_list = [
+        'if',        
+        '[a-z]+',
     ]
 else:
     assert False
