@@ -9,7 +9,7 @@ import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Pre- and Post-Contexts;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;"
     sys.exit()
 
 if   "0" in sys.argv:
@@ -66,22 +66,26 @@ elif "6" in sys.argv:
 elif "7" in sys.argv:
     # Non-uniform traces with multiple pre-contexts
     pattern_list = [
-        'x/a+/',
-        'x/b+/',
-        '(a+|b+)cd',
-        '0/(a+|b+)c/',
-        '1/(a+|b+)c/',
-        '2/(a+|b+)c/',
+        '0/a+/',
+        '1/b/',
+        '2/(a+|bc+)/d+ef',
+        '3/(a+|bc+)d+/ef',
+        '4/(a+|bc+)d+e/f',
     ]
 elif "8" in sys.argv:
     # Non-uniform traces with multiple pre-contexts
     pattern_list = [
-        'x/a+/',
-        '^b+',
-        '(a+|b+)cd',
-        '^(a+|b+)c/',
-        '^(a+|b+)c/',
-        '^(a+|b+)c/',
+        '2/(a+|bc)/d+f',
+        # '2/(a+|bc+)/d+f',
+        # '2/(a+|bc+)/d+ef',
+    ]
+elif "9" in sys.argv:
+    # Non-uniform traces with multiple pre-contexts
+    pattern_list = [
+        'x/a/',
+        'x/b/',
+        '0/(a|bb?c?)de/',
+        '1/(a|bb?c?)d/e',
     ]
 else:
     assert False

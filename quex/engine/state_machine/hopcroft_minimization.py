@@ -299,7 +299,7 @@ class HopcroftMinization:
 
         # (2) Split the acceptance states according to their origin. An acceptance
         #     state maching the, for example, an identifier is not equivalent an 
-        #     acceptance state thate that matches a number.
+        #     acceptance state that that matches a number.
         db = {}   
         for state_index in ifilter(lambda x: x not in non_acceptance_state_set, self.sm.states.iterkeys()): 
             state = self.sm.states[state_index]
