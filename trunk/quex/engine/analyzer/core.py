@@ -29,7 +29,7 @@ from quex.input.setup import setup as Setup
 from copy             import copy, deepcopy
 from collections      import defaultdict
 from operator         import attrgetter, itemgetter
-from itertools        import islice, ifilter, takewhile
+from itertools        import islice, ifilter, takewhile, imap
 import sys
 
 class ENUM_PositionRegister:
@@ -51,7 +51,7 @@ class Analyzer:
                 state = self.__state_db[state_index]
 
                 ## print "##DEBUG", state_index
-                ## if state_index in [115, 116]: print "##", state_index, acceptance_trace_list
+                ## if state_index in [97]: print "##", state_index, acceptance_trace_list
 
                 state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
                 ## if state_index in [172]: print "##common:", common
@@ -145,16 +145,37 @@ class Analyzer:
             # If the positioning is all determined, then no 'triggering' state
             # needs to be informed.
             if info.transition_n_since_positioning is not None: continue
-            if pattern_id == -1: continue
+            # Pattern 'Failure' is always associated with the init state and the
+            # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
+            assert pattern_id != -1
 
             # Inform all triggering states that the position needs to be stored
             for state_index in info.positioning_state_index_list:
                 entry = self.__state_db[state_index].entry
                 entry.positioner[info.post_context_id].add(info.pre_context_id)
 
+        # Clean Up the checker and the router:
+        # (1) there is no check after the unconditional acceptance
         result = DropOut()
-        result.checker = checker
-        result.router  = router
+        ## print "##checker:", state.index, checker
+        for i, dummy in ifilter(lambda x: x[1].pre_context_id is None and x[1].acceptance_id != -1, enumerate(checker)):
+            result.checker = checker[:i+1]
+            break
+        else:
+            result.checker = checker
+            
+        # (2) acceptances that are not referred do not need to be routed.
+        for dummy in ifilter(lambda x: x.acceptance_id is None, checker):
+            # The 'accept = last_acceptance' appears, thus all possible cases
+            # need to be considered.
+            result.router = router
+            break
+        else:
+            # Only the acceptances that appear in the checker are considered
+            checked_pattern_id_list = map(lambda x: x.acceptance_id, checker)
+            result.router = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
+                                   router)
+
         return result
 
     def analyze_positioning(self, TheAcceptanceTraceList):
@@ -191,11 +212,14 @@ class Analyzer:
                 info = result.get(element.pattern_id)
                 if info is None:
                     result[element.pattern_id] = ResultElement(element)
-                elif info.transition_n_since_positioning != element.transition_n_since_positioning:
+                    continue
+
+                # AcceptanceIDs and their PostContexts are related 1:1
+                assert info.post_context_id == element.post_context_id
+                info.positioning_state_index_list.append(element.positioning_state_index)
+
+                if info.transition_n_since_positioning != element.transition_n_since_positioning:
                     info.transition_n_since_positioning = None
-                    # AcceptanceIDs and their PostContexts are related 1:1
-                    assert info.post_context_id == element.post_context_id
-                    info.positioning_state_index_list.append(element.positioning_state_index)
 
         return result
 
@@ -455,7 +479,7 @@ class EntryBackward(object):
         txt.append("   pre-context-fulfilled = %s;\n" % repr(list(self.pre_context_fulfilled_set))[1:-1])
         return "".join(txt)
 
-class DropOut:
+class DropOut(object):
     """The general drop-out of a state has the following two 'sub-tasks'
 
                 /* (1) Check pre-contexts to determine acceptance */
@@ -482,7 +506,7 @@ class DropOut:
        The exact content of both lists is determined by analysis of the acceptance
        trances.
     """
-    __slots__ = (".checker", ".router")
+    __slots__ = ("checker", "router")
 
     def __init__(self):
         self.checker = []
@@ -506,6 +530,9 @@ class DropOut:
             else:
                 assert False # Acceptance Id from checker not found in router?!
             result.append((check, route))
+            # NOTE: "if check.pre_context_id is None: break"
+            #       is not necessary since get_drop_out_object() makes sure that the checker
+            #       stops after the first non-pre-context drop-out.
 
         return result
 
@@ -535,6 +562,9 @@ class DropOut:
                 txt.append("        %s %s\n" % (if_str, repr(element)))
             else:
                 txt.append("        accept = %s\n" % repr_acceptance_id(element.acceptance_id))
+                # No check after the unconditional acceptance
+                break
+
             if_str = "else if"
 
         txt.append("    Router:\n")

@@ -467,7 +467,7 @@ class AcceptanceTrace:
         self.__sequence = { 
             None: AcceptanceTraceEntry(PreContextID                 = None, 
                                        PatternID                    = -1, # Failure
-                                       TransitionN_ToAcceptance     = 0,
+                                       MinTransitionN_ToAcceptance  = 0,
                                        AcceptingStateIndex          = -1, # Init State
                                        TransitionN_SincePositioning = -1, # input_p = lexeme_start_p + 1
                                        PositioningStateIndex        = -1, 
@@ -540,18 +540,10 @@ class AcceptanceTrace:
                 positioning_state_index = self.__find_last_post_context_begin(origin.post_context_id(), 
                                                                               Path, 
                                                                               track_info)
-
-            if track_info.loop_state_set.isdisjoint(Path):
-                transition_n_since_init_state = L
-            else:
-                # If there is a loop somewhere connected to the path, then the distance to
-                # the current state can only be determined as 'at least' == path length.
-                # N < 0 shall mean: 'at least' N characters
-                transition_n_since_init_state = - L
             
             # (*) Make the entry in the database
             entry = AcceptanceTraceEntry(pre_context_id, pattern_id, 
-                                         TransitionN_ToAcceptance     = transition_n_since_init_state,
+                                         MinTransitionN_ToAcceptance  = L,
                                          AcceptingStateIndex          = StateIndex, 
                                          TransitionN_SincePositioning = transition_n_since_positioning,
                                          PositioningStateIndex        = positioning_state_index, 
@@ -574,7 +566,7 @@ class AcceptanceTrace:
         #    # -- But, the current state's acceptances can never be deleted.
         #    #    thus check this before adding current state's info.
         #    for key, dummy in ifilter(lambda x:     (x[1].pattern_id > min_pattern_id)
-        #                                        and abs(x[1].transition_n_to_acceptance) != L, 
+        #                                        and abs(x[1].min_transition_n_to_acceptance) != L, 
         #                              self.__sequence.items()):  # NOT: iteritems() here!
         #        del self.__sequence[key]
         ## print "##1", StateIndex, self.__sequence
@@ -594,7 +586,7 @@ class AcceptanceTrace:
             if X[1].pattern_id == -1: return (sys.maxint, sys.maxint)
             # Longest pattern sort on top
             # Lowest pattern ids sort on top
-            return (- X[1].transition_n_to_acceptance, X[1].pattern_id)
+            return (- X[1].min_transition_n_to_acceptance, X[1].pattern_id)
 
         result = self.__sequence.items()
         result.sort(key=my_key)
@@ -647,13 +639,13 @@ class AcceptanceTraceEntry(object):
     __slots__ = ("pre_context_id", 
                  "pattern_id", 
                  "transition_n_since_positioning", 
-                 "transition_n_to_acceptance", 
+                 "min_transition_n_to_acceptance", 
                  "accepting_state_index", 
                  "positioning_state_index",
                  "post_context_id")
 
     def __init__(self, PreContextID, PatternID, 
-                 TransitionN_ToAcceptance, 
+                 MinTransitionN_ToAcceptance, 
                  AcceptingStateIndex, 
                  TransitionN_SincePositioning, 
                  PositioningStateIndex, 
@@ -686,7 +678,7 @@ class AcceptanceTraceEntry(object):
         #
         #  N >= 0 :   distance(init state, acceptance) == exactly 'N' characters
         #  N <  0 :   distance(init state, acceptance) >= 'N' characters
-        self.transition_n_to_acceptance = TransitionN_ToAcceptance
+        self.min_transition_n_to_acceptance = MinTransitionN_ToAcceptance
 
         # 
         self.accepting_state_index   = AcceptingStateIndex
@@ -699,7 +691,7 @@ class AcceptanceTraceEntry(object):
         txt.append("    .pre_context_id                 = %s\n" % repr(self.pre_context_id))
         txt.append("    .pattern_id                     = %s\n" % repr(self.pattern_id))
         txt.append("    .transition_n_since_positioning = %s\n" % repr(self.transition_n_since_positioning))
-        txt.append("    .transition_n_to_acceptance     = %s\n" % repr(self.transition_n_to_acceptance))
+        txt.append("    .min_transition_n_to_acceptance     = %s\n" % repr(self.min_transition_n_to_acceptance))
         txt.append("    .accepting_state_index          = %s\n" % repr(self.accepting_state_index))
         txt.append("    .positioning_state_index        = %s\n" % repr(self.positioning_state_index))
         txt.append("    .post_context_id                = %s\n" % repr(self.post_context_id))
@@ -707,7 +699,7 @@ class AcceptanceTraceEntry(object):
 
 AcceptanceTraceEntry_Void = AcceptanceTraceEntry(PreContextID                 = None, 
                                                  PatternID                    = None, # Undetermined
-                                                 TransitionN_ToAcceptance     = 0,
+                                                 MinTransitionN_ToAcceptance  = 0,
                                                  AcceptingStateIndex          = -1, 
                                                  TransitionN_SincePositioning = None, # Undetermined
                                                  PositioningStateIndex        = -1, 
