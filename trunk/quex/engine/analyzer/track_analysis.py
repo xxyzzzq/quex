@@ -22,15 +22,15 @@ The implementation of the state has the following basic elements:
 
 *-----------------------------------------------------------------------------*
 
-   Input:           Access the input character.
+   Input:       Access the input character.
 
-   SuccessorInfo:   [OPTIONAL] Store information to be used by successor states.
+   Entry:       [OPTIONAL] Store information to be used by successor states.
 
-   TriggerMap:      All triggers that transit on a character to specific 
-                    successor state.
+   TriggerMap:  All triggers that transit on a character to specific 
+                successor state.
 
-   DropOut:         Handle the case that input character does not trigger in
-                    trigger map.
+   DropOut:     Handle the case that input character does not trigger in
+                trigger map.
 
 *-----------------------------------------------------------------------------*
 

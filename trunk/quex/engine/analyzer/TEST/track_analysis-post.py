@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
+import help_drawing
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: With Post-Contexts;"
@@ -69,11 +70,8 @@ state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 
 sm  = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
 
-if False:
-    fh = open("tmp.dot", "wb")
-    fh.write( sm.get_graphviz_string() )
-    fh.close()
-    os.system("graph-easy --input=tmp.dot --as boxart")
+# For DEBUG purposes: specify 'DRAW' on command line
+help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
