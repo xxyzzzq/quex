@@ -73,7 +73,6 @@ class Analyzer:
             #       isolation and it is not dependent on other states.
             pass
 
-
     def __iter__(self):
         for x in self.__state_db.values():
             yield x
@@ -299,6 +298,48 @@ class Analyzer:
 
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform.
         return True
+
+    def get_position_register_map(self):
+        """A dependent set of position registers is that appear potentially 
+           together. Example: '[ x y z ]' means that x, y, and z appear together
+           in a drop-out router and must therefore be distinguishable:
+
+                  [A, B, C]
+            (1)   [C, E, F, G, H]
+                  [D, H]
+
+           Let the following table be defines:
+
+                  A B C D E F G H
+                 A*
+                 B  * 
+                 C    * 
+                 D      *
+            (2)  E        *
+                 F          *
+                 G            *
+                 H              *
+
+           where a '*' means that the pair cannot appear together. Added
+           the information from (1) the table becomes:
+
+                  A B C D E F G H
+                 A* * *
+                 B  * 
+                 C    *   * * * *      The lower diagonal is symmetrical
+                 D      *       *      and therefore omitted.
+            (3)  E        * * * *
+                 F          * * *
+                 G            * *
+                 H              *
+
+           what follows is a 'breadth-first' search. A possible step is
+           (x, y) which means that set 'x' is combined with set 'y'.
+           Based on this a new configuration appears with a new set
+           union(x, y). The table is then adapted. The whole algorithm
+           must be applied recursively.
+        """
+        pass
 
 class AnalyzerState:
     def __init__(self, StateIndex, SM, ForwardF):

@@ -9,7 +9,7 @@ from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 
 if "--hwut-info" in sys.argv:
-    print "Track Analyzis: Backwards - For PRe-Context;"
+    print "Track Analyzis: Backwards - For Pre-Context;"
     print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
     sys.exit()
 
