@@ -273,7 +273,6 @@ def snap_primary(stream, PatternDict):
 
     # -- optional repetition command? 
     result_repeated = __snap_repetition_range(result, stream) 
-    ## print "##imr:", result.get_string(NormalizeF=False)
     if result_repeated is not None: result = result_repeated
     return __debug_exit(construct.beautify(result), stream)
     # return __debug_exit(result, stream)

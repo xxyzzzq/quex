@@ -173,6 +173,11 @@ elif "9" in sys.argv:
    #                  └────────────────────────────────┘
    #____________________________________________________________________
 
+elif "Nonsense" in sys.argv:
+    pattern_list = [
+        'ade',
+        'abc',        
+    ]
 else:
     assert False
 
