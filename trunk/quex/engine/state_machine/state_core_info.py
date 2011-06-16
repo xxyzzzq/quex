@@ -1,3 +1,4 @@
+from quex.engine.misc.enum import Enum
 
 StateOriginInfo_POST_CONDITION_END          = 1
 StateOriginInfo_NON_ACCEPTANCE              = 2
@@ -5,6 +6,9 @@ StateOriginInfo_ACCEPTANCE                  = 3
 StateOriginInfo_POST_CONDITIONED_ACCEPTANCE = 4
 StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE = 5
 StateOriginInfo_ERROR                       = -1
+
+# Special Signal Values for 'pre_context_id'
+PreContext = Enum("NONE", "BEGIN_OF_LINE")
 
 class StateCoreInfo(object): 
     """-- store input position: if an origin is flagged that way it 

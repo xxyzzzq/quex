@@ -486,24 +486,25 @@ class AcceptanceTrace:
         assert abs(self.__last_transition_n_to_acceptance) < len(Path)
         self.__last_transition_n_to_acceptance = len(Path)
 
-        # If the current state is a loop state, than all positions become void.
-        # This means that number of characters to reach this state can no longer
-        # be determined by the state machine structure itself.
+        # Last element of the path is the index of the current state
         StateIndex = Path[-1]
 
-        ## print "##StateIndex", StateIndex
         if StateIndex in track_info.loop_state_set:
-            # If there is a loop, then the number of transitions from one state to the
-            # other may be not be determined from the state machine structure.
+            # (*) Touching a loop ...
+            #     If the current state is connected to a loop, then the number of transitions
+            #     starting from the current state cannot be determined by the number of 
+            #     state transitions. 
+            #     => Positioning becomes 'void'
             for entry in self.__sequence.itervalues():
-                ## print "##entry:", entry
-                # -1  means 'lexeme_start_p + 1' so we would not 'voidify' it
+                # -1  means 'lexeme_start_p + 1' => do not 'void-ify' it
                 if entry.transition_n_since_positioning != - 1:
                     entry.transition_n_since_positioning = None
         else:
-            # Add '1' to the distance between:
-            #       positioning state --> transition_n_since_positioning
+            # (*) Normal transition ... 
+            #     Increment count of transitions by '1'.
             for entry in self.__sequence.itervalues():
+                # -1    means 'lexeme_start_p + 1'             => do not increment
+                # None  means 'transition number undetermined' => do not increment
                 if entry.transition_n_since_positioning != -1 and entry.transition_n_since_positioning is not None:
                     entry.transition_n_since_positioning += 1
 
@@ -523,25 +524,25 @@ class AcceptanceTrace:
         for origin in sorted(state.origins(), key=attrgetter("state_machine_id")):
             if not origin.is_acceptance(): continue
 
-            # (0) The pattern's ID and its pre-context
+            # -- The pattern's ID and its pre-context
             pattern_id     = origin.state_machine_id
             pre_context_id = extract_pre_context_id(origin)
             
-            ## print "##", StateIndex, pattern_id, pre_context_id
-            # (2) The position where the input pointer has to be set if the 
-            #     pattern is accepted (how many characters to go backwards).
-            if origin.post_context_id() == -1: 
-                post_context_id                = -1
-                transition_n_since_positioning = 0
-                positioning_state_index        = StateIndex
+            # -- The position where the input pointer has to be set if the 
+            #    pattern is accepted (how many characters to go backwards).
+            post_context_id = origin.post_context_id()
+            if post_context_id == -1: 
+                # No post-context ('normal case'):
+                transition_n_since_positioning = 0           # position counting starts here
+                positioning_state_index        = StateIndex  # positioning is done by this state
             else:
-                post_context_id = origin.post_context_id()
+                # Post-context: determined distance to the positioning state
                 transition_n_since_positioning,        \
                 positioning_state_index = self.__find_last_post_context_begin(origin.post_context_id(), 
                                                                               Path, 
                                                                               track_info)
             
-            # (*) Make the entry in the database
+            # -- Make the entry in the database
             entry = AcceptanceTraceEntry(pre_context_id, pattern_id, 
                                          MinTransitionN_ToAcceptance  = L,
                                          AcceptingStateIndex          = StateIndex, 
@@ -549,29 +550,15 @@ class AcceptanceTrace:
                                          PositioningStateIndex        = positioning_state_index, 
                                          PostContextID                = post_context_id)
 
-            # (*) IMPORTANT: What is happening here is a simple **overwriting**
-            #                of existing entries, but this works only if the path
-            #                is transversed from begin to end. Then this implements 
-            #                implicitly **longest match**, i.e. latest wins.
+            # -- IMPORTANT: What is happening here is a simple **overwriting**
+            #               of existing entries, but this works only if the path
+            #               is transversed from begin to end. Then this implements 
+            #               implicitly **longest match**, i.e. latest wins.
             self.__sequence[pre_context_id] = entry
 
             # The rest of the traces is dominated
             if pre_context_id is None: break
 
-        ## print "##1", StateIndex, L, self.__sequence
-        #min_pattern_id = self.__sequence[None].pattern_id
-        #if min_pattern_id != -1:
-        #    # -- No conditional pattern can ever be matched if it is dominated
-        #   #    by an unconditional pattern acceptance.
-        #    # -- But, the current state's acceptances can never be deleted.
-        #    #    thus check this before adding current state's info.
-        #    for key, dummy in ifilter(lambda x:     (x[1].pattern_id > min_pattern_id)
-        #                                        and abs(x[1].min_transition_n_to_acceptance) != L, 
-        #                              self.__sequence.items()):  # NOT: iteritems() here!
-        #        del self.__sequence[key]
-        ## print "##1", StateIndex, self.__sequence
-
-        # Assume that the last entry is always the 'default' where no pre-context is required.
         assert len(self.__sequence) >= 1
     
     def __getitem__(self, PreContextID):

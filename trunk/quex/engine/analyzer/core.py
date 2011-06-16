@@ -32,12 +32,6 @@ from operator         import attrgetter, itemgetter
 from itertools        import islice, ifilter, takewhile, imap
 import sys
 
-class ENUM_PositionRegister:
-    NORMAL_ACCEPTANCE = range(-1, 0)
-
-class ENUM_Positioning:
-    FROM_REGISTER, LEXEME_START_PLUS_1 = range(-2, 0)
-
 class Analyzer:
     def __init__(self, SM, ForwardF):
 
@@ -230,6 +224,7 @@ class Analyzer:
 
                 # AcceptanceIDs and their PostContexts are related 1:1
                 assert info.post_context_id == element.post_context_id
+
                 info.positioning_state_index_list.append(element.positioning_state_index)
 
                 if info.transition_n_since_positioning != element.transition_n_since_positioning:
@@ -300,46 +295,119 @@ class Analyzer:
         return True
 
     def get_position_register_map(self):
-        """A dependent set of position registers is that appear potentially 
-           together. Example: '[ x y z ]' means that x, y, and z appear together
-           in a drop-out router and must therefore be distinguishable:
+        """Under some circumstances (see above) it is necessary to store the
+           acceptance position or the position in the input stream where a post
+           context begins.  
+           
+           This function tries to spare position registers, since not all
+           position registers are relevant for all path. 
+           
+           For example:                   . b .
+                                         /     \ 
+                                         \     /
+                    .-- a -->( 1 )-- b -->( 2 )-- c -->((3))
+                   /            S47                       R47 
+               ( 0 )
+                   \            S11                       R11
+                    '-- b -->( 4 )-- c -->( 5 )-- d -->((6))
+                                 \                     /
+                                  '-------- e --------'
 
-                  [A, B, C]
-            (1)   [C, E, F, G, H]
-                  [D, H]
+           The input position needs to be stored for post context 47 in state 1
+           and for post context 11 in state 4. Since the paths of the post contexts
+           do not cross it is actually not necessary to have to separate
+           position registers. One for post context 47 and 11 is enough.
 
-           Let the following table be defines:
+           This function determines what post contexts (together with the
+           'acceptance position register) can share a single register. It does
+           so by investigating the drop-out routers and how they use position
+           registers: 
+           
+                Position registers that appear together in a drop-out router
+                cannot share a register. Otherwise their positions would not be
+                distinguishable. (Exception: if the two position registers are
+                applied in exactly the same set of states. This case is
+                not yet considered.)
 
-                  A B C D E F G H
-                 A*
-                 B  * 
-                 C    * 
-                 D      *
-            (2)  E        *
-                 F          *
-                 G            *
-                 H              *
+            This leads to the first intermediate result:
 
-           where a '*' means that the pair cannot appear together. Added
-           the information from (1) the table becomes:
+                The 'allowed' database tells for given post-context the list
+                of post context that can potentially share a register.
 
-                  A B C D E F G H
-                 A* * *
-                 B  * 
-                 C    *   * * * *      The lower diagonal is symmetrical
-                 D      *       *      and therefore omitted.
-            (3)  E        * * * *
-                 F          * * *
-                 G            * *
-                 H              *
+            Those allowed registers may exclude each other from combination,
+            thus a successive approach of combination is applied.
 
-           what follows is a 'breadth-first' search. A possible step is
-           (x, y) which means that set 'x' is combined with set 'y'.
-           Based on this a new configuration appears with a new set
-           union(x, y). The table is then adapted. The whole algorithm
-           must be applied recursively.
+            RETURNS: A dictionary that maps:
+
+                          post-context-id --> position register index
+
+                     where post-context-id == -1 means 'acceptance_position'.
+                     The position register index starts from 0 and ends with N,
+                     where N-1 is the number of required position registers. It
+                     can directly be used as index into an array of positions.
         """
-        pass
+        # -- List all registers
+        # -- List all register combinations in drop-out routers
+        all_register_set  = set()
+        constellation_set = set()
+        for drop_out in imap(lambda state: state.drop_out, self.__state_db):
+            if drop_out is None: continue
+            constellation = filter(lambda x: x is not None, 
+                                   imap(lambda x: x.post_context_id, drop_out.router))
+            all_register_set.update(constellation)
+
+            constellation = tuple(sorted(constellation))
+            constellation_set.add(constellation)
+
+        # -- The 'allowed' database: 
+        #    map: register -> registers that can be combined with it (1:1)
+        allowed_db = defaultdict(set)
+        for constellation in constellation_set:
+            for register in constellation:
+                allowed_db[register].update(all_register_set.difference(constellation))
+
+        # -- The 'combination' dictionary:
+        #    map: register -> registers with which it is combined
+        combination_list = [ [register] in self.register_set ]
+        combination_n    = len(combination_list)
+
+        def can_combine(SetA, SetB):
+            for register in SetA:
+                if not allowed_db[registers].issuperset(SetA): return False
+            return True
+
+        change_f = True
+        while change_f:
+            change_f = False
+            i             = 0
+            while i < len(combination_n):
+                combi = combination_list[i]
+                # Find a combination to combine the current with
+                # (try to combine with the biggest one)
+                best_k   = -1
+                max_size = -1
+                for k, combi_y in enumerate(combination_list):
+                    if   k == i:                            continue
+                    elif not can_combine(combi_x, combi_y): continue
+                    elif len(combi_y) > max_size:
+                        max_size = len(combi_y)
+                        best_k   = k
+
+                if best_k != -1:
+                    combination_list[k].update(combi)
+                    combination_n -= 1
+                    del combination_list[i]
+                    change_f = True
+                else:
+                    i += 1
+
+        # -- The 'register_map':
+        #    map:  acceptance position / post context id --> position register where position
+        #                                                    is to be stored.
+        result = {}
+        for i, combination in enumerate(combination_list):
+            result.update([(register, i) for register in combination])
+        return result
 
 class AnalyzerState:
     def __init__(self, StateIndex, SM, ForwardF):
@@ -362,7 +430,7 @@ class AnalyzerState:
         else:
             self.drop_out = DropOut()
             self.drop_out.checker.append(DropOut_CheckerElement(None, None))
-            self.drop_out.router.append(DropOut_RouterElement(-2, None, None))
+            self.drop_out.router.append(DropOut_RouterElement(-1, None, 0))
 
         self._origin_list   = state.origins().get_list()
 
@@ -608,13 +676,13 @@ class DropOut(object):
             for easy in info:
                 if easy[0].pre_context_id is None:
                     txt.append("    %s goto %s;\n" % \
-                               (repr_positioning(easy[1].positioning, easy[1].restore_position_register),
+                               (repr_positioning(easy[1].positioning, easy[1].post_context_id),
                                 repr_acceptance_id(easy[1].acceptance_id)))
                 else:
                     txt.append("    %s %s: %s goto %s;\n" % \
                                (if_str,
                                 repr_pre_context_id(easy[0].pre_context_id),
-                                repr_positioning(easy[1].positioning, easy[1].restore_position_register),
+                                repr_positioning(easy[1].positioning, easy[1].post_context_id),
                                 repr_acceptance_id(easy[1].acceptance_id)))
                     if_str = "else if"
             return "".join(txt)
@@ -708,22 +776,23 @@ class DropOut_RouterElement(object):
                                      (Case of 'failure'. This info is actually redundant.)
                          == -1   --> (Failure) position = lexeme_start_p + 1
                          
-        .restore_position_register  Registered where the position to be restored is located.
+        .post_context_id  Registered where the position to be restored is located.
 
-                            == None  --> Nothing (no position is to be stored.)
-                                         Case: 'positioning != 1'
-                            == -1    --> position register 'last_acceptance'
-                            >= 0     --> position register related to a 'post-context-id'
+                         == None  --> Nothing (no position is to be stored.)
+                                      Case: 'positioning != 1'
+                         == -1    --> acceptance without post-context
+                         >= 0     --> acceptance with post-context given as integer
     """
-    __slots__ = ("acceptance_id", "positioning", "restore_position_register")
+    __slots__ = ("acceptance_id", "positioning", "post_context_id")
 
-    def __init__(self, AcceptanceID, Positioning, PositionRegister):
-        if AcceptanceID == -1: assert Positioning == -1 
-        else:                  assert Positioning != -1
+    def __init__(self, AcceptanceID, Positioning, PostContextID):
+        if AcceptanceID == -1:  assert Positioning == -1 
+        else:                   assert Positioning != -1
+        if Positioning is None: assert PostContextID is not None
 
-        self.acceptance_id             = AcceptanceID
-        self.positioning               = Positioning
-        self.restore_position_register = PositionRegister
+        self.acceptance_id   = AcceptanceID
+        self.positioning     = Positioning
+        self.post_context_id = PostContextID
 
     def __repr__(self):
         if self.acceptance_id == -1: assert self.positioning == -1 
@@ -731,7 +800,7 @@ class DropOut_RouterElement(object):
 
         if self.positioning != 0:
             return "case %i: %s goto %s;" % (self.acceptance_id, 
-                                             repr_positioning(self.positioning, self.restore_position_register), 
+                                             repr_positioning(self.positioning, self.post_context_id), 
                                              repr_acceptance_id(self.acceptance_id))
         else:
             return "case %i: goto %s;" % (self.acceptance_id, 
@@ -753,11 +822,11 @@ def repr_position_register(Register):
     if Register == -1:  return "Position[Acceptance]"
     else:               return "Position[PostContext_%i] " % Register
 
-def repr_positioning(Positioning, Register):
+def repr_positioning(Positioning, PostContextID):
     if   Positioning is None: 
-        assert Register is not None
-        return "pos = %s;" % repr_position_register(Register)
-    elif Positioning > 0:   return "pos -= %i; "          % Positioning
+        assert PostContextID is not None
+        return "pos = %s;" % repr_position_register(PostContextID)
+    elif Positioning > 0:   return "pos -= %i; " % Positioning
     elif Positioning == 0:  return ""
     elif Positioning == -1: return "pos = lexeme_start_p + 1; "
     else: 
