@@ -8,7 +8,11 @@ StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE = 5
 StateOriginInfo_ERROR                       = -1
 
 # Special Signal Values for 'pre_context_id'
-PreContext = Enum("NONE", "BEGIN_OF_LINE")
+# Add a member '_DEBUG_NAME_Xyz' so that the type of an enum value can
+# be determined by value.EnumType[-1]
+PreContextIDs  = Enum("NONE",    "BEGIN_OF_LINE", "_DEBUG_NAME_PreContextIDs")
+AcceptanceIDs  = Enum("FAILURE", "PRE_CONTEXT_FULFILLED", "VOID", "_DEBUG_NAME_AcceptanceIDs")
+PostContextIDs = Enum("NONE", "_DEBUG_NAME_PostContextIDs")
 
 class StateCoreInfo(object): 
     """-- store input position: if an origin is flagged that way it 
@@ -46,15 +50,21 @@ class StateCoreInfo(object):
                  "__pseudo_ambiguous_post_context_id")
 
     def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
-                 PostContextID=-1L, PreContext_StateMachineID=-1L,
+                 PostContextID=PostContextIDs.NONE, PreContext_StateMachineID=-1L,
                  PreContext_BeginOfLineF=False,
                  PseudoAmbiguousPostConditionID=-1L):
         assert type(StateIndex) == long
-        assert type(StateMachineID) == long
+        assert    StateMachineID in AcceptanceIDs \
+               or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
+        assert PostContextID == PostContextIDs.NONE \
+               or PostContextID >= 0
+               
+        # NOT: StateMachineID != AcceptanceIDs.FAILURE => AcceptanceF == False
+        #      State core info objects are also used for non-acceptance states of patterns
 
         self.state_machine_id = StateMachineID
         self.state_index      = StateIndex
-        # is a acceptance state?
+        # is an acceptance state?
         self.__acceptance_f = AcceptanceF 
 
         # Input position of the current input stream is to be stored in 
@@ -117,8 +127,8 @@ class StateCoreInfo(object):
         if Other.__store_input_position_f:       self.__store_input_position_f      = True 
         if Other.__pre_context_begin_of_line_f:  self.__pre_context_begin_of_line_f = True 
 
-        if Other.__pre_context_id != -1L:   self.__pre_context_id  = Other.__pre_context_id 
-        if Other.__post_context_id != -1L:  self.__post_context_id = Other.__post_context_id
+        if Other.__pre_context_id != -1L:                   self.__pre_context_id  = Other.__pre_context_id 
+        if Other.__post_context_id != PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
 
         if Other.__pseudo_ambiguous_post_context_id != -1L: 
             self.__pseudo_ambiguous_post_context_id = Other.__pseudo_ambiguous_post_context_id
@@ -151,7 +161,8 @@ class StateCoreInfo(object):
         self.__pre_context_begin_of_line_f = Value
 
     def set_post_context_id(self, Value):
-        assert type(Value) == long
+        assert   (isinstance(Value, long) and Value >= 0) \
+               or Value in PostContextIDs
         self.__post_context_id = Value
 
     def set_post_context_backward_detector_sm_id(self, Value):
@@ -174,7 +185,7 @@ class StateCoreInfo(object):
         return self.__pseudo_ambiguous_post_context_id
 
     def is_end_of_post_contexted_core_pattern(self):
-        return self.post_context_id() != -1L and self.store_input_position_f()
+        return self.post_context_id() != PostContextIDs.NONE and self.store_input_position_f()
                             
     def type(self):
         Acc   = self.is_acceptance()
@@ -237,7 +248,7 @@ class StateCoreInfo(object):
             else:                   return ""
 
         if StateMachineAndStateInfoF:
-            if self.state_machine_id != -1L:
+            if self.state_machine_id != AcceptanceIDs.FAILURE:
                 appendix += ", " + repr(self.state_machine_id).replace("L", "")
             if self.state_index != -1L:
                 appendix += ", " + repr(self.state_index).replace("L", "")
@@ -245,8 +256,8 @@ class StateCoreInfo(object):
             appendix += ", A"
         if self.__store_input_position_f:        
             appendix += ", S"
-        if self.__post_context_id != -1L:  # post context id determined 'register' where input position
-            #                              # stored
+        if self.__post_context_id != PostContextIDs.NONE:  # post context id determined 'register' where input position
+            #                                              # stored
             appendix += ", P" + repr(self.__post_context_id).replace("L", "")
         if self.__pre_context_id != -1L:            
             appendix += ", pre=" + repr(self.__pre_context_id).replace("L", "")

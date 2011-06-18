@@ -1,6 +1,6 @@
 # Number of states in state machine:
 #   Unicode:       33
-#   UTF8-Splitted: 44
+#   UTF8-Splitted: 49
 Name = Arabic  (OK=0)
 Name = Armenian  (OK=1)
 Name = Balinese  (OK=2)

@@ -1,5 +1,6 @@
 from quex.input.setup import setup as Setup
 from quex.engine.generator.languages.address import get_address, get_label, Address
+from quex.engine.state_machine.state_core_info     import PostContextIDs      
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
@@ -60,7 +61,7 @@ def get_transition_to_terminal(Origin):
     assert Origin.is_acceptance()
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
-    if Origin.post_context_id() == -1:
+    if Origin.post_context_id() == PostContextIDs.NONE:
         return [ "goto %s;" % get_label("$terminal", Origin.state_machine_id, U=True) ]
     else:
         return [ "goto %s;" % get_label("$terminal-direct", Origin.state_machine_id, U=True) ]
@@ -97,7 +98,7 @@ def get_address_of_terminal(Origin):
     LanguageDB = Setup.language_db
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
-    if Origin.post_context_id() == -1:
+    if Origin.post_context_id() == PostContextIDs.NONE:
         return get_address("$terminal", Origin.state_machine_id)
     else:
         return get_address("$terminal-direct", Origin.state_machine_id)

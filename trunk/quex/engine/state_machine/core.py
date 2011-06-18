@@ -3,7 +3,7 @@ from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.interval_handling        import NumberSet, Interval
 import quex.engine.state_machine.index      as     state_machine_index
 from   quex.engine.state_machine.transition_map  import *
-from   quex.engine.state_machine.state_core_info import StateCoreInfo
+from   quex.engine.state_machine.state_core_info import *
 from   quex.engine.state_machine.origin_list     import StateOriginList
 
 import sys
@@ -26,7 +26,7 @@ class State:
 
     ## Little Slower: __slots__ = ('__core', '__origin_list', '__transition_map')
 
-    def __init__(self, AcceptanceF=False, StateMachineID=-1L, StateIndex=-1L, 
+    def __init__(self, AcceptanceF=False, StateMachineID=AcceptanceIDs.FAILURE, StateIndex=-1L, 
                  AltCore=None, AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
@@ -147,7 +147,7 @@ class StateMachineCoreInfo:
         self.__pre_context_sm                      = PreContextSM
         self.__pre_context_begin_of_line_f         = PreContext_BeginOfLineF
         self.__pre_context_single_character_list   = PreContext_SingleCharacterList
-        self.__post_context_id                     = -1L
+        self.__post_context_id                     = PostContextIDs.NONE
         self.__post_context_backward_input_position_detector_sm = None
 
     def id(self):                                  
@@ -175,7 +175,7 @@ class StateMachineCoreInfo:
         return    self.__pre_context_single_character_list \
                or len(self.__pre_context_single_character_list) != 0 \
                or self.__pre_context_sm is not None \
-               or self.__post_context_id != -1L \
+               or self.__post_context_id != PostContextIDs.NONE \
                or self.__post_context_backward_input_position_detector_sm is not None
 
     def set_id(self, Value):                                  
@@ -226,7 +226,6 @@ class StateMachine:
 
     def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None):
 
-        # print "##state_machine_init"
         if InitStateIndex is None: self.init_state_index = state_machine_index.get()
         else:                      self.init_state_index = InitStateIndex
             
@@ -893,8 +892,7 @@ class StateMachine:
         return index_map, inverse_index_map, index_sequence
 
     def get_string(self, NormalizeF=False, Option="utf8"):
-        """Option is "utf8", or "hex"
-        """
+        assert Option in ["utf8", "hex"]
 
         # (*) normalize the state indices
         index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)

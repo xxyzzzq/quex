@@ -1,6 +1,7 @@
-from quex.engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.state_machine.setup_post_context as setup_post_context
-import quex.engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.engine.state_machine.nfa_to_dfa         as nfa_to_dfa
+from   quex.engine.state_machine.state_core_info    import PostContextIDs
 
 def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     """DOS_CarriageReturnNewlineF == True:  
@@ -14,7 +15,7 @@ def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
     #     NOTE: This must come before 'Begin of File', because there's a post condition
     #           added, that enters new acceptance states.
     if EndOfLineF:
-        if sm.core().post_context_id() == -1L:
+        if sm.core().post_context_id() == PostContextIDs.NONE:
             # -- create a state machine that represents the post-condition
             # -- mount it to the core pattern as a post-condition
             post_sm = StateMachine()
@@ -98,7 +99,7 @@ def __add_line_border_at_end(the_sm, DOS_CarriageReturnNewlineF, InverseF):
         # (-) Cancel acceptance of old state
         state.set_acceptance(False)
         state.core().set_store_input_position_f(False)
-        state.core().set_post_context_id(-1L)
+        state.core().set_post_context_id(PostContextIDs.NONE)
         state.core().set_pre_context_begin_of_line_f(False)
         #
     return new_state_idx    

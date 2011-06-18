@@ -1,0 +1,87 @@
+(*) Creating an Enum from tuples of names and values:
+    ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+
+(*) String Representations and hash values
+All: enum [Mo, Tu, We, Th, Fr, Sa, Su]
+Mo:  Mo 0 0
+Tu:  Tu 1 1
+We:  We 2 2
+Th:  Th 3 3
+Fr:  Fr 4 4
+Sa:  Sa 5 5
+Su:  Su 6 6
+
+(*) Length = 7
+
+(*) Compare Matrix (demonstrate iteration and comparison at once)
+   Mo Tu We Th Fr Sa Su
+Mo  =  <  <  <  <  <  <
+Tu  >  =  <  <  <  <  <
+We  >  >  =  <  <  <  <
+Th  >  >  >  =  <  <  <
+Fr  >  >  >  >  =  <  <
+Sa  >  >  >  >  >  =  <
+Su  >  >  >  >  >  >  =
+Try: Days.Mo = 12
+Good, assignment failed!
+
+(*) As element in dictionaries
+  Original:
+     Mo : Monday
+     Tu : Tuesday
+     We : Wednesday
+     Th : Thursday
+     Fr : Friday
+     Sa : Saturday
+     Su : Sunday
+  Applying integers:
+     Mo : Monday
+     Tu : Tuesday
+     We : Wednesday
+     Th : Thursday
+     Fr : Friday
+     Sa : Saturday
+     Su : Sunday
+     0 : Nonsense
+     1 : Nonsense
+     2 : Nonsense
+     3 : Nonsense
+     4 : Nonsense
+     5 : Nonsense
+     6 : Nonsense
+  Applying names:
+  The string representation of enum values are actually the same as
+  the new strings used as keys. But the keys are not identical and
+  therefore they names appear twice.
+     Mo : Monday
+     Tu : Tuesday
+     We : Wednesday
+     Th : Thursday
+     Fr : Friday
+     Sa : Saturday
+     Su : Sunday
+     0 : Nonsense
+     1 : Nonsense
+     2 : Nonsense
+     3 : Nonsense
+     4 : Nonsense
+     5 : Nonsense
+     6 : Nonsense
+     Fr : Nonsense
+     Mo : Nonsense
+     Sa : Nonsense
+     Su : Nonsense
+     Th : Nonsense
+     Tu : Nonsense
+     We : Nonsense
+
+(*) Check 'in'
+Mo in Days: True
+Ramadan in Days: False
+
+(*) Class Names and Identities
+Days: EnumClass
+      enum [Mo, Tu, We, Th, Fr, Sa, Su]
+Months: EnumClass
+      enum [Ramadan, Shawwal, Dhu_alHidja, Muharram]
+Classes of two enums are: not identical (GOOD)

@@ -1,5 +1,6 @@
 from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
 import quex.engine.state_machine.core                as     state_machine 
+from   quex.engine.state_machine.state_core_info     import PostContextIDs      
 #
 from   quex.engine.generator.languages.address import __nice, get_address, get_label
 from   quex.input.setup                             import setup as Setup
@@ -89,7 +90,7 @@ def forward_lexing(State, StateIdx, SMD, ForceSaveLastAcceptanceF=False):
         # NOTE: When a post conditioned pattern ends it does not need to store the input 
         #       position. Rather, the acceptance position of the core pattern is retrieved
         #       in the terminal state.
-        if Origin.post_context_id() == -1:
+        if Origin.post_context_id() == PostContextIDs.NONE:
             info.append("    ")
             info.append(LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n")
 
@@ -147,7 +148,7 @@ def backward_lexing(OriginList):
     inadmissible_origin_list = filter(lambda origin:
                                       origin.pre_context_begin_of_line_f() or
                                       origin.pre_context_id() != -1L or
-                                      origin.post_context_id() != -1L,
+                                      origin.post_context_id() != PostContextIDs.NONE,
                                       OriginList)
     assert len(inadmissible_origin_list) == 0, \
            "Inadmissible origins for inverse state machine."
@@ -179,7 +180,7 @@ def backward_lexing_find_core_pattern(OriginList):
     inadmissible_origin_list = filter(lambda origin:
                                       origin.pre_context_begin_of_line_f() or
                                       origin.pre_context_id() != -1L or
-                                      origin.post_context_id() != -1L,
+                                      origin.post_context_id() != PostContextIDs.NONE,
                                       OriginList)
     assert len(inadmissible_origin_list) == 0, \
            "Inadmissible origins for inverse state machine."
