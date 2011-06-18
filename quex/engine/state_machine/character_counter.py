@@ -1,4 +1,5 @@
 from quex.engine.interval_handling import Interval, NumberSet
+from quex.engine.state_machine.state_core_info import *
 
 # Distance Database: Store the distance from state (given by index)
 #                    to the acceptance state, i.e. map:
@@ -25,7 +26,7 @@ def get_newline_n(state_machine):
 
     # State machine shall not have pre or post conditions
     assert state_machine.core().pre_context_sm_id() == -1
-    assert state_machine.core().post_context_id() == -1
+    assert state_machine.core().post_context_id() == PostContextIDs.NONE
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
@@ -51,7 +52,7 @@ def get_character_n(state_machine):
 
     # State machine shall not have pre or post conditions
     assert state_machine.core().pre_context_sm_id() == -1
-    assert state_machine.core().post_context_id() == -1
+    assert state_machine.core().post_context_id() == PostContextIDs.NONE
 
     __distance_db.clear()
     result = __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
@@ -121,7 +122,6 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     return total_path_length
 
 def ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
-    ##print "##>>", state_index, passed_state_list, character_n
     state = state_machine.states[state_index]
 
     new_passed_state_list = passed_state_list + [ state_index ]

@@ -3,6 +3,7 @@ import sys
 from   quex.engine.misc.file_in import error_msg
 from   quex.engine.state_machine.core import *
 import quex.engine.state_machine.ambiguous_post_context as apc
+from   quex.engine.state_machine.state_core_info import PostContextIDs
 
 
 def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False, fh=-1):
@@ -37,7 +38,7 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     assert post_context_sm.__class__.__name__ == "StateMachine", \
             "expected 2nd argument as objects of class StateMachine\n" + \
             "received: " + post_context_sm.__class__.__name__
-    assert the_state_machine.core().post_context_id() == -1L, \
+    assert the_state_machine.core().post_context_id() == PostContextIDs.NONE, \
             "post context state machine cannot be post-context again."
 
     # -- state machines with no states are senseless here. 

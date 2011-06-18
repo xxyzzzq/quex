@@ -1,13 +1,13 @@
 ----------------------------------------------------------------------
 ARGS:  ['', '--set-by-property', 'Age']
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
 
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
 
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
 
 ----------------------------------------------------------------------
 ARGS:  ['', '--set-by-property', 'Script=Runic']
@@ -57,6 +57,8 @@ Characters:
 ...
 1D7C0:                           𝟎 𝟏 𝟐 𝟑 𝟒 𝟓 𝟔 𝟕 𝟖 𝟗 𝟘 𝟙 𝟚 𝟛 𝟜 𝟝 𝟞 𝟟 
 1D7E0: 𝟠 𝟡 𝟢 𝟣 𝟤 𝟥 𝟦 𝟧 𝟨 𝟩 𝟪 𝟫 𝟬 𝟭 𝟮 𝟯 𝟰 𝟱 𝟲 𝟳 𝟴 𝟵 𝟶 𝟷 𝟸 𝟹 𝟺 𝟻 𝟼 𝟽 𝟾 𝟿 
+...
+1F100: 🄀 🄁 🄂 🄃 🄄 🄅 🄆 🄇 🄈 🄉 🄊 
 
 Characters:
 
@@ -89,10 +91,13 @@ Characters:
 1D7E8: 1D7E8 1D7E9 1D7EA 1D7EB 1D7EC 1D7ED 1D7EE 1D7EF 
 1D7F0: 1D7F0 1D7F1 1D7F2 1D7F3 1D7F4 1D7F5 1D7F6 1D7F7 
 1D7F8: 1D7F8 1D7F9 1D7FA 1D7FB 1D7FC 1D7FD 1D7FE 1D7FF 
+...
+1F100: 1F100 1F101 1F102 1F103 1F104 1F105 1F106 1F107 
+1F108: 1F108 1F109 1F10A 
 
 Characters:
 [0030-0039], [00B2-00B3], [00B9], [06F0-06F9], [2070], [2074-2079], 
-[2080-2089], [2488-249B], [FF10-FF19], [1D7CE-1D7FF], 
+[2080-2089], [2488-249B], [FF10-FF19], [1D7CE-1D7FF], [1F100-1F10A], 
 
 
 ----------------------------------------------------------------------

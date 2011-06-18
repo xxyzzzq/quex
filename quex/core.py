@@ -241,7 +241,7 @@ def get_generator_input(Mode, IndentationSupportF):
 def __get_post_context_n(match_info_list):
     n = 0
     for info in MatchInfoList:
-        if info.pattern_state_machine().core().post_context_id() != -1L:
+        if info.pattern_state_machine().core().post_context_id() != PostContextIDs.NONE:
             n += 1
     return n
 

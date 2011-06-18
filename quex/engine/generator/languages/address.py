@@ -2,6 +2,7 @@ import quex.engine.state_machine.index         as index
 from   copy import copy
 
 def __nice(SM_ID): 
+    assert isinstance(SM_ID, (long, int))
     return repr(SM_ID).replace("L", "").replace("'", "")
     
 db = {}

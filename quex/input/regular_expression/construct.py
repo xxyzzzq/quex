@@ -55,8 +55,8 @@ def do(core_sm,
 
     # Determine newline and character count for matching lexemes
     # of the core pattern.
-    newline_n    = character_counter.get_newline_n(core_sm)
-    character_n  = character_counter.get_character_n(core_sm)
+    newline_n   = character_counter.get_newline_n(core_sm)
+    character_n = character_counter.get_character_n(core_sm)
 
     side_info    = SideInfo(newline_n, character_n)
 

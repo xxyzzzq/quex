@@ -98,7 +98,7 @@ class StateOriginList(object):
 
     def contains_post_context_flag(self):
         for origin in self.__list:
-            if origin.post_context_id() != -1L: return True
+            if origin.post_context_id() != PostContextIDs.NONE: return True
         return False                                
 
     def contains_store_input_position(self):

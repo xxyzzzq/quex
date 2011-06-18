@@ -531,7 +531,7 @@ class AcceptanceTrace:
             # -- The position where the input pointer has to be set if the 
             #    pattern is accepted (how many characters to go backwards).
             post_context_id = origin.post_context_id()
-            if post_context_id == -1: 
+            if post_context_id == PostContextIDs.NONE: 
                 # No post-context ('normal case'):
                 transition_n_since_positioning = 0           # position counting starts here
                 positioning_state_index        = StateIndex  # positioning is done by this state
@@ -696,7 +696,7 @@ def extract_pre_context_id(Origin):
     """This function basically describes how pre-context-ids and 
        'begin-of-line' pre-context are expressed by an integer.
     """
-    if   Origin.pre_context_begin_of_line_f(): return -1
-    elif Origin.pre_context_id() == -1:        return None
+    if   Origin.pre_context_begin_of_line_f(): return -1   # PreContextIDs.BEGIN_OF_LINE
+    elif Origin.pre_context_id() == -1:        return None # PreContextIDs.NONE
     else:                                      return Origin.pre_context_id()
 

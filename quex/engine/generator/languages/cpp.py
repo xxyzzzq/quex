@@ -2,6 +2,7 @@ from quex.engine.misc.file_in         import is_identifier_start, is_identifier_
 from quex.engine.misc.string_handling import blue_print
 
 import quex.engine.state_machine.index as index
+from quex.engine.state_machine.state_core_info       import PostContextIDs      
 from quex.engine.generator.languages.address     import *
 from quex.engine.generator.languages.variable_db import variable_db
 from quex.engine.interval_handling               import NumberSet
@@ -519,7 +520,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         bipd_id  = state_machine.core().post_context_backward_input_position_detector_sm_id()
         txt.append("%s:\n" % get_label("$bipd-return", bipd_id))
 
-    elif state_machine.core().post_context_id() != -1L: 
+    elif state_machine.core().post_context_id() != PostContextIDs.NONE: 
         post_condition_index = SMD.get_post_context_index(state_machine_id)
         # Post Contexted Patterns:
         # -- have a dedicated register from where they store the end of the core pattern.
