@@ -54,9 +54,9 @@ State 82:
     Checker:
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 2: pos -= 2;  goto Pattern2;
         case 4: pos -= 1;  goto Pattern4;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 83:

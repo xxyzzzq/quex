@@ -70,9 +70,9 @@ State 300:
     Checker:
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 8: pos -= 1;  goto Pattern8;
         case 17: pos = Position[Acceptance]; goto Pattern17;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 301:
@@ -84,11 +84,11 @@ State 301:
         else if PreContext_99: accept = Pattern101
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 101: goto Pattern101;
         case 8: pos -= 2;  goto Pattern8;
         case 73: goto Pattern73;
         case 45: goto Pattern45;
         case 17: pos = Position[Acceptance]; goto Pattern17;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
 
 

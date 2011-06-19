@@ -1,4 +1,5 @@
 from quex.input.setup import setup as Setup
+from quex.engine.state_machine.state_core_info     import PostContextIDs, AcceptanceIDs
 
 from collections import defaultdict
 from copy        import copy, deepcopy
@@ -466,12 +467,12 @@ class AcceptanceTrace:
     def __init__(self):
         self.__sequence = { 
             None: AcceptanceTraceEntry(PreContextID                 = None, 
-                                       PatternID                    = -1, # Failure
+                                       PatternID                    = AcceptanceIDs.FAILURE, 
                                        MinTransitionN_ToAcceptance  = 0,
                                        AcceptingStateIndex          = -1, # Init State
                                        TransitionN_SincePositioning = -1, # input_p = lexeme_start_p + 1
                                        PositioningStateIndex        = -1, 
-                                       PostContextID                = -1),
+                                       PostContextID                = PostContextIDs.NONE),
         }
         self.__last_transition_n_to_acceptance = 0
 
@@ -570,7 +571,7 @@ class AcceptanceTrace:
     def get_priorized_list(self):
         def my_key(X):
             # Failure always sorts to the bottom ...
-            if X[1].pattern_id == -1: return (sys.maxint, sys.maxint)
+            if X[1].pattern_id == AcceptanceIDs.FAILURE: return (sys.maxint, sys.maxint)
             # Longest pattern sort on top
             # Lowest pattern ids sort on top
             return (- X[1].min_transition_n_to_acceptance, X[1].pattern_id)
@@ -685,12 +686,12 @@ class AcceptanceTraceEntry(object):
         return "".join(txt)
 
 AcceptanceTraceEntry_Void = AcceptanceTraceEntry(PreContextID                 = None, 
-                                                 PatternID                    = None, # Undetermined
+                                                 PatternID                    = AcceptanceIDs.VOID, 
                                                  MinTransitionN_ToAcceptance  = 0,
                                                  AcceptingStateIndex          = -1, 
                                                  TransitionN_SincePositioning = None, # Undetermined
                                                  PositioningStateIndex        = -1, 
-                                                 PostContextID                = -1)
+                                                 PostContextID                = PostContextIDs.NONE)
 
 def extract_pre_context_id(Origin):
     """This function basically describes how pre-context-ids and 
