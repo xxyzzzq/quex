@@ -1,0 +1,161 @@
+<history date="Sun Jun 19 06:24:48 2011" element-n="105">
+    <day year="2010" month="06" day="22">
+        <history-init time="19:28:57"/>
+    </day>
+    <day year="2010" month="06" day="26">
+        <crc-error time="05:56:47" application="000.sh" choice="NDEBUG" database-crc="-721286156" real-crc="-372677157"/>
+        <crc-error time="05:56:50" application="000.sh" choice="DEBUG" database-crc="-84759374" real-crc="-372677157"/>
+        <crc-error time="05:56:52" application="001.sh" choice="NDEBUG" database-crc="1128408389" real-crc="1389342228"/>
+        <crc-error time="05:56:55" application="001.sh" choice="DEBUG" database-crc="1393195627" real-crc="1389342228"/>
+        <crc-error time="05:56:58" application="002.sh" choice="NDEBUG" database-crc="-1286954151" real-crc="-1258256003"/>
+        <crc-error time="05:57:01" application="002.sh" choice="DEBUG" database-crc="1605935595" real-crc="-1258256003"/>
+        <crc-error time="05:57:05" application="003.sh" choice="BPC=2" database-crc="-1084801517" real-crc="-354359547"/>
+        <crc-error time="05:57:08" application="003.sh" choice="BPC=2_NDEBUG" database-crc="-1595228140" real-crc="-354359547"/>
+        <crc-error time="05:57:12" application="003.sh" choice="BPC=4" database-crc="-1084801517" real-crc="-354359547"/>
+        <crc-error time="05:57:16" application="003.sh" choice="BPC=4_NDEBUG" database-crc="770108940" real-crc="-354359547"/>
+        <crc-error time="05:57:19" application="003.sh" choice="BPC=wchar_t" database-crc="-1084801517" real-crc="-354359547"/>
+    </day>
+    <day year="2010" month="06" day="27">
+        <crc-error time="03:17:45" application="006.sh" choice="NDEBUG" database-crc="-862945498" real-crc="-455193977"/>
+        <crc-error time="03:17:50" application="006.sh" choice="DEBUG" database-crc="854113804" real-crc="-455193977"/>
+        <crc-error time="03:37:58" application="makefile-diff.sh" choice="003" database-crc="2026060119" real-crc="598216960"/>
+        <crc-error time="04:58:14" application="008.sh" choice="NDEBUG" database-crc="-409210146" real-crc="-106314939"/>
+        <crc-error time="04:58:16" application="008.sh" choice="DEBUG" database-crc="483160121" real-crc="-106314939"/>
+    </day>
+    <day year="2010" month="06" day="29">
+        <crc-error time="05:20:53" application="007.sh" choice="NDEBUG" database-crc="2101215229" real-crc="375471971"/>
+        <crc-error time="05:20:55" application="007.sh" choice="DEBUG" database-crc="1035623857" real-crc="375471971"/>
+        <crc-error time="05:21:02" application="009.sh" choice="lexer" database-crc="-706222442" real-crc="13704092"/>
+        <crc-error time="05:21:04" application="009.sh" choice="wlexer" database-crc="2058905516" real-crc="13704092"/>
+    </day>
+    <day year="2010" month="07" day="01">
+        <crc-error time="04:50:35" application="011.sh" choice="utf8" database-crc="-1269818789" real-crc="-1827787599"/>
+        <crc-error time="05:23:35" application="011b.sh" choice="BE" database-crc="1531818666" real-crc="2001714839"/>
+        <crc-error time="05:24:07" application="005.sh" choice="1" database-crc="1338743562" real-crc="-65032981"/>
+        <crc-error time="05:24:09" application="005.sh" choice="1_NDEBUG" database-crc="2051772784" real-crc="1486108253"/>
+        <crc-error time="05:24:12" application="005.sh" choice="2" database-crc="222952070" real-crc="-782712698"/>
+        <crc-error time="05:24:14" application="005.sh" choice="2_NDEBUG" database-crc="-1727234934" real-crc="-1753507247"/>
+    </day>
+    <day year="2010" month="07" day="04">
+        <crc-error time="06:22:58" application="010.sh" choice="fill" database-crc="-1870066300" real-crc="1030682096"/>
+        <crc-error time="10:21:13" application="003.sh" choice="BPC=2" database-crc="-354359547" real-crc="1977270883"/>
+        <crc-error time="10:21:14" application="003.sh" choice="BPC=2_NDEBUG" database-crc="-354359547" real-crc="1977270883"/>
+        <crc-error time="10:21:15" application="003.sh" choice="BPC=4" database-crc="-354359547" real-crc="1977270883"/>
+        <crc-error time="10:21:16" application="003.sh" choice="BPC=4_NDEBUG" database-crc="-354359547" real-crc="1977270883"/>
+        <crc-error time="10:21:18" application="003.sh" choice="BPC=wchar_t" database-crc="-354359547" real-crc="1977270883"/>
+        <crc-error time="11:24:50" application="010.sh" choice="copy" database-crc="-1870066300" real-crc="1030682096"/>
+        <crc-error time="11:27:20" application="003-icu.sh" choice="BPC=2" database-crc="667876392" real-crc="-1292672989"/>
+        <crc-error time="11:27:25" application="003-icu.sh" choice="BPC=2_NDEBUG" database-crc="667876392" real-crc="-1292672989"/>
+        <crc-error time="11:27:27" application="003-icu.sh" choice="BPC=4" database-crc="667876392" real-crc="-1292672989"/>
+        <crc-error time="11:27:28" application="003-icu.sh" choice="BPC=4_NDEBUG" database-crc="667876392" real-crc="-1292672989"/>
+        <crc-error time="11:27:29" application="003-icu.sh" choice="BPC=wchar_t" database-crc="667876392" real-crc="-1292672989"/>
+    </day>
+    <day year="2010" month="07" day="05">
+        <crc-error time="06:06:02" application="008.sh" choice="NDEBUG" database-crc="-106314939" real-crc="-789203780"/>
+        <crc-error time="06:06:43" application="008.sh" choice="DEBUG" database-crc="-106314939" real-crc="-789203780"/>
+    </day>
+    <day year="2010" month="07" day="08">
+        <crc-error time="04:39:46" application="000.sh" choice="NDEBUG" database-crc="-372677157" real-crc="-584949883"/>
+        <crc-error time="04:39:48" application="000.sh" choice="DEBUG" database-crc="-372677157" real-crc="-584949883"/>
+        <crc-error time="04:39:50" application="001.sh" choice="NDEBUG" database-crc="1389342228" real-crc="1133630677"/>
+        <crc-error time="04:39:52" application="001.sh" choice="DEBUG" database-crc="1389342228" real-crc="1133630677"/>
+        <crc-error time="04:39:55" application="002.sh" choice="NDEBUG" database-crc="-1258256003" real-crc="1146132194"/>
+        <crc-error time="04:39:57" application="002.sh" choice="DEBUG" database-crc="-1258256003" real-crc="1146132194"/>
+        <crc-error time="04:40:01" application="003.sh" choice="BPC=2" database-crc="1977270883" real-crc="766281751"/>
+        <crc-error time="04:40:04" application="003.sh" choice="BPC=2_NDEBUG" database-crc="1977270883" real-crc="766281751"/>
+        <crc-error time="04:40:06" application="003.sh" choice="BPC=4" database-crc="1977270883" real-crc="766281751"/>
+        <crc-error time="04:40:08" application="003.sh" choice="BPC=4_NDEBUG" database-crc="1977270883" real-crc="766281751"/>
+        <crc-error time="04:40:10" application="003.sh" choice="BPC=wchar_t" database-crc="1977270883" real-crc="766281751"/>
+        <crc-error time="04:40:27" application="005.sh" choice="1" database-crc="-65032981" real-crc="256352848"/>
+        <crc-error time="04:40:29" application="005.sh" choice="1_NDEBUG" database-crc="1486108253" real-crc="256352848"/>
+        <crc-error time="04:40:31" application="005.sh" choice="2" database-crc="-782712698" real-crc="-364815969"/>
+        <crc-error time="04:40:33" application="005.sh" choice="2_NDEBUG" database-crc="-1753507247" real-crc="-364815969"/>
+        <crc-error time="04:40:36" application="006.sh" choice="NDEBUG" database-crc="-455193977" real-crc="991715077"/>
+        <crc-error time="04:40:38" application="006.sh" choice="DEBUG" database-crc="-455193977" real-crc="991715077"/>
+        <crc-error time="04:45:20" application="007.sh" choice="NDEBUG" database-crc="375471971" real-crc="-375962478"/>
+        <crc-error time="04:45:24" application="007.sh" choice="DEBUG" database-crc="375471971" real-crc="-375962478"/>
+        <crc-error time="05:05:39" application="004.sh" choice="NDEBUG" database-crc="1440579735" real-crc="-1383033063"/>
+        <crc-error time="05:05:41" application="004.sh" choice="DEBUG" database-crc="48963029" real-crc="-1383033063"/>
+        <crc-error time="18:31:04" application="009.sh" choice="lexer" database-crc="13704092" real-crc="334441210"/>
+        <crc-error time="18:31:06" application="009.sh" choice="wlexer" database-crc="13704092" real-crc="334441210"/>
+    </day>
+    <day year="2010" month="07" day="09">
+        <crc-error time="05:24:21" application="010.sh" choice="copy" database-crc="1030682096" real-crc="595815643"/>
+        <crc-error time="05:24:30" application="010.sh" choice="fill" database-crc="1030682096" real-crc="595815643"/>
+        <crc-error time="15:17:02" application="009.sh" choice="lexer" database-crc="334441210" real-crc="-1473894578"/>
+        <crc-error time="15:17:13" application="009.sh" choice="wlexer" database-crc="334441210" real-crc="-1473894578"/>
+    </day>
+    <day year="2010" month="07" day="12">
+        <crc-error time="05:22:58" application="012.sh" choice="NDEBUG" database-crc="-1115462140" real-crc="-1785218323"/>
+        <crc-error time="05:23:01" application="012.sh" choice="DEBUG" database-crc="-136976699" real-crc="-1785218323"/>
+    </day>
+    <day year="2010" month="09" day="18">
+        <crc-error time="11:10:08" application="002.sh" choice="DEBUG" database-crc="1146132194" real-crc="-265343992"/>
+        <crc-error time="11:16:01" application="makefile-diff.sh" choice="002" database-crc="-290478786" real-crc="-1008402612"/>
+        <crc-error time="11:19:41" application="makefile-diff.sh" choice="002" database-crc="-1008402612" real-crc="1926288768"/>
+    </day>
+    <day year="2010" month="09" day="24">
+        <crc-error time="10:14:07" application="002.sh" choice="NDEBUG" database-crc="-265343992" real-crc="-1869577271"/>
+    </day>
+    <day year="2010" month="10" day="04">
+        <crc-error time="07:19:12" application="002.sh" choice="DEBUG" database-crc="-1869577271" real-crc="29925504"/>
+        <crc-error time="07:19:23" application="002.sh" choice="NDEBUG" database-crc="-1869577271" real-crc="29925504"/>
+    </day>
+    <day year="2010" month="10" day="08">
+        <crc-error time="14:59:04" application="010.sh" choice="point" database-crc="-999766639" real-crc="861795188"/>
+        <crc-error time="14:59:13" application="010.sh" choice="stdinlexer" database-crc="-629023763" real-crc="-1782734641"/>
+        <crc-error time="15:03:05" application="makefile-diff.sh" choice="010" database-crc="-872874063" real-crc="-1661635324"/>
+    </day>
+    <day year="2010" month="10" day="13">
+        <crc-error time="07:03:20" application="makefile-diff.sh" choice="010" database-crc="-1661635324" real-crc="1208931000"/>
+    </day>
+    <day year="2010" month="10" day="23">
+        <crc-error time="23:11:05" application="makefile-diff.sh" choice="009" database-crc="1564633403" real-crc="1597892566"/>
+    </day>
+    <day year="2010" month="10" day="25">
+        <crc-error time="08:26:30" application="makefile-diff.sh" choice="009" database-crc="1597892566" real-crc="518708360"/>
+    </day>
+    <day year="2010" month="10" day="30">
+        <crc-error time="22:35:52" application="makefile-diff.sh" choice="006" database-crc="378529984" real-crc="1184240632"/>
+        <crc-error time="22:35:52" application="makefile-diff.sh" choice="009" database-crc="518708360" real-crc="935015182"/>
+    </day>
+    <day year="2010" month="11" day="01">
+        <crc-error time="22:53:06" application="011.sh" choice="utf16-be" database-crc="1047156143" real-crc="-1827787599"/>
+        <crc-error time="22:53:07" application="011.sh" choice="utf16-le" database-crc="-1765789203" real-crc="-1827787599"/>
+    </day>
+    <day year="2010" month="11" day="20">
+        <crc-error time="08:42:15" application="makefile-diff.sh" choice="011" database-crc="-842424720" real-crc="1170439102"/>
+    </day>
+    <day year="2010" month="12" day="18">
+        <crc-error time="07:21:06" application="makefile-diff.sh" choice="000" database-crc="-1839813089" real-crc="1973359755"/>
+        <crc-error time="21:06:59" application="makefile-diff.sh" choice="000" database-crc="1973359755" real-crc="-266223703"/>
+        <crc-error time="21:07:11" application="makefile-diff.sh" choice="011" database-crc="1170439102" real-crc="-684471139"/>
+        <crc-error time="21:07:16" application="makefile-diff.sh" choice="000" database-crc="-266223703" real-crc="-543135376"/>
+    </day>
+    <day year="2010" month="12" day="23">
+        <crc-error time="21:25:01" application="004.sh" choice="NDEBUG" database-crc="-1383033063" real-crc="-640573285"/>
+        <crc-error time="21:25:22" application="004.sh" choice="DEBUG" database-crc="-1383033063" real-crc="-640573285"/>
+        <crc-error time="21:31:20" application="004.sh" choice="DEBUG" database-crc="-640573285" real-crc="-1383033063"/>
+    </day>
+    <day year="2010" month="12" day="25">
+        <crc-error time="11:43:00" application="004.sh" choice="NDEBUG" database-crc="-640573285" real-crc="-1383033063"/>
+    </day>
+    <day year="2011" month="01" day="19">
+        <crc-error time="21:10:56" application="003-bom.sh" choice="Without" database-crc="-2095454429" real-crc="1853132003"/>
+        <crc-error time="21:10:57" application="003-bom.sh" choice="UTF8-BOM" database-crc="2029696665" real-crc="-478996158"/>
+        <crc-error time="21:10:59" application="003-bom.sh" choice="UTF16BE-BOM" database-crc="1542017505" real-crc="591404884"/>
+        <crc-error time="21:33:00" application="makefile-diff.sh" choice="003" database-crc="598216960" real-crc="1638834239"/>
+    </day>
+    <day year="2011" month="02" day="11">
+        <crc-error time="22:05:05" application="008.sh" choice="NDEBUG" database-crc="-789203780" real-crc="-1665911539"/>
+        <crc-error time="22:05:08" application="008.sh" choice="DEBUG" database-crc="-789203780" real-crc="-1665911539"/>
+    </day>
+    <day year="2011" month="02" day="13">
+        <crc-error time="07:32:17" application="makefile-diff.sh" choice="000" database-crc="-543135376" real-crc="743386054"/>
+        <crc-error time="07:32:17" application="makefile-diff.sh" choice="003" database-crc="1638834239" real-crc="-1882985958"/>
+        <crc-error time="07:33:06" application="makefile-diff.sh" choice="008" database-crc="-722264087" real-crc="-1716089166"/>
+    </day>
+    <day year="2011" month="03" day="16">
+        <crc-error time="21:34:36" application="makefile-diff.sh" choice="008" database-crc="-1716089166" real-crc="-22734683"/>
+    </day>
+</history>

@@ -1,0 +1,22 @@
+(0) quexify -- no output is good output
+(1) check out generated sources
+self_send(scope1::scope2::scope3::TKN_SEMICOLON);
+self_send(scope1::scope2::scope3::TKN_OP_EQUAL);
+self_send(scope1::scope2::scope3::TKN_OP_PLUS);
+self_send(scope1::scope2::scope3::TKN_LPAREN);
+self_send(scope1::scope2::scope3::TKN_RPAREN);
+self_send(scope1::scope2::scope3::TKN_TYPE_INT);
+self_send(scope1::scope2::scope3::TKN_PRINT);
+self_send(scope1::scope2::scope3::TKN_INT);
+self_send(scope1::scope2::scope3::TKN_VAR);
+self_send(scope1::scope2::scope3::TKN_TERMINATION);
+   case scope1::scope2::scope3::TKN_INT:           return token_id_str_INT;
+   case scope1::scope2::scope3::TKN_LPAREN:        return token_id_str_LPAREN;
+   case scope1::scope2::scope3::TKN_OP_EQUAL:      return token_id_str_OP_EQUAL;
+   case scope1::scope2::scope3::TKN_OP_PLUS:       return token_id_str_OP_PLUS;
+   case scope1::scope2::scope3::TKN_PRINT:         return token_id_str_PRINT;
+   case scope1::scope2::scope3::TKN_RPAREN:        return token_id_str_RPAREN;
+   case scope1::scope2::scope3::TKN_SEMICOLON:     return token_id_str_SEMICOLON;
+   case scope1::scope2::scope3::TKN_TYPE_INT:      return token_id_str_TYPE_INT;
+   case scope1::scope2::scope3::TKN_VAR:           return token_id_str_VAR;
+(2) compile -- no output is good output

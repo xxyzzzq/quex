@@ -1,0 +1,60 @@
+init-state = 133L
+00133() <~ (29, 66), (11, 24), (43, 103)
+      == 'a' ==> 00134
+      <no epsilon>
+00134(A, S, P15, pre=9) <~ (11, 25, A, S, pre=9), (29, 67, S, P15), (43, 104)
+      == 'a' ==> 00135
+      <no epsilon>
+00135(A, S, pre=9) <~ (11, 26, A, S, pre=9), (29, 68), (43, 105)
+      == 'a' ==> 00136
+      <no epsilon>
+00136() <~ (29, 69), (43, 106)
+      == 'a' ==> 00137
+      <no epsilon>
+00137(A, P15, pre=27) <~ (29, 70, A, P15, pre=27), (43, 107)
+      == 'b' ==> 00138
+      <no epsilon>
+00138(A, S) <~ (43, 108, A, S)
+      <no epsilon>
+
+State 133:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 134:
+  .entry:
+  .drop_out:
+    if PreContext_9:  goto Pattern11;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 135:
+  .entry:
+  .drop_out:
+    if PreContext_9:  goto Pattern11;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 136:
+  .entry:
+  .drop_out:
+    if PreContext_9: pos -= 1;  goto Pattern11;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 137:
+  .entry:
+  .drop_out:
+    if PreContext_27: pos -= 3;  goto Pattern29;
+    else if PreContext_9: pos -= 2;  goto Pattern11;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 138:
+  .entry:
+  .drop_out:
+     goto Pattern43;
+
+

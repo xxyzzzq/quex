@@ -1,0 +1,63 @@
+(1)
+::
+abc* => newline;
+[ce] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(2)
+::
+abc* => newline;
+[be] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(3)
+::
+ac*b? => newline;
+[ce] => space;>
+::
+
+test_string:2:error: Character set specification 'space' intersects
+test_string:1:error: the ending of the pattern for 'newline' at this place.
+test_string:2:error: Note, that 'newline' and cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(4)
+::
+ac*b => newline;
+[ce] => space;>
+::
+
+Spaces:
+      1 by 'c', 'e'
+Grids:
+Bad:
+    
+Newline:
+    init-state = 99L
+    00099() <~ 
+          == 'a' ==> 00100
+          <no epsilon>
+    00100() <~ 
+          == 'b' ==> 00102
+          == 'c' ==> 00100
+          <no epsilon>
+    00102(A, S) <~ 
+          <no epsilon>
+    
+Suppressor:
+    <none>
+
+
