@@ -64,8 +64,8 @@ State 125:
 State 126:
   .entry:
     Positioner:
-    Position[PostContext_10]  = input_p;
     Position[Acceptance] = input_p;
+    Position[PostContext_10]  = input_p;
   .drop_out:
     if PreContext_6:  goto Pattern8;
      goto Pattern37;

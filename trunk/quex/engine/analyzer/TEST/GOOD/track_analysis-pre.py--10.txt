@@ -62,9 +62,9 @@ State 455:
     Checker:
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 11: pos -= 1;  goto Pattern11;
         case 20: pos = Position[Acceptance]; goto Pattern20;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 456:

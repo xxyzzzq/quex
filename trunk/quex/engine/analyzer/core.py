@@ -23,6 +23,7 @@ import quex.engine.analyzer.track_analysis as track_analysis
 from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
                                                   AcceptanceTraceEntry_Void, \
                                                   extract_pre_context_id
+from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs
 
 
 from quex.input.setup import setup as Setup
@@ -134,18 +135,18 @@ class Analyzer:
                 assert origin.pre_context_id() != -1
 
             # No pre-context --> restore last acceptance
-            checker.append(DropOut_CheckerElement(None, None))
+            checker.append(DropOut_CheckerElement(None, AcceptanceIDs.VOID))
 
             # All triggering states must store the acceptance
             for trace in TheAcceptanceTraceList:
-                for element in ifilter(lambda element: element.pattern_id != -1, trace):
+                for element in ifilter(lambda element: element.pattern_id != AcceptanceIDs.FAILURE, trace):
                     entry = self.__state_db[element.accepting_state_index].entry
                     entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
 
-            assert pattern_id is not None
+            assert pattern_id != AcceptanceIDs.VOID
             router.append(DropOut_RouterElement(pattern_id, 
                                                 info.transition_n_since_positioning, 
                                                 info.post_context_id))
@@ -155,25 +156,27 @@ class Analyzer:
             if info.transition_n_since_positioning is not None: continue
             # Pattern 'Failure' is always associated with the init state and the
             # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
-            assert pattern_id != -1
+            assert pattern_id != AcceptanceIDs.FAILURE
 
             # Inform all triggering states that the position needs to be stored
             for state_index in info.positioning_state_index_list:
                 entry = self.__state_db[state_index].entry
                 entry.positioner[info.post_context_id].add(info.pre_context_id)
 
+
         # Clean Up the checker and the router:
         # (1) there is no check after the unconditional acceptance
         result = DropOut()
-        ## print "##checker:", state.index, checker
-        for i, dummy in ifilter(lambda x: x[1].pre_context_id is None and x[1].acceptance_id != -1, enumerate(checker)):
+        for i, dummy in ifilter(lambda x:     x[1].pre_context_id is None 
+                                          and x[1].acceptance_id != AcceptanceIDs.FAILURE, 
+                                enumerate(checker)):
             result.checker = checker[:i+1]
             break
         else:
             result.checker = checker
-            
+
         # (2) acceptances that are not referred do not need to be routed.
-        for dummy in ifilter(lambda x: x.acceptance_id is None, checker):
+        for dummy in ifilter(lambda x: x.acceptance_id == AcceptanceIDs.VOID, checker):
             # The 'accept = last_acceptance' appears, thus all possible cases
             # need to be considered.
             result.router = router
@@ -184,6 +187,8 @@ class Analyzer:
             result.router = filter(lambda x: x.acceptance_id in checked_pattern_id_list, 
                                    router)
 
+        ##DEBUG:
+        result.trivialize()
         return result
 
     def analyze_positioning(self, TheAcceptanceTraceList):
@@ -196,7 +201,7 @@ class Analyzer:
         class ResultElement(object):
             __slots__ = ("transition_n_since_positioning", "post_context_id", "pre_context_id", "positioning_state_index_list")
             def __init__(self, TraceElement):
-                if TraceElement.pattern_id == -1: 
+                if TraceElement.pattern_id == AcceptanceIDs.FAILURE: 
                     self.transition_n_since_positioning = -1
                 else:
                     self.transition_n_since_positioning = TraceElement.transition_n_since_positioning
@@ -416,8 +421,8 @@ class AnalyzerState:
 
         state = SM.states[StateIndex]
 
-        self.index          = StateIndex
-        self.input          = Input(StateIndex == SM.init_state_index, ForwardF)
+        self.index     = StateIndex
+        self.input     = Input(StateIndex == SM.init_state_index, ForwardF)
         if ForwardF: 
             self.entry = Entry(state.origins())
         else:
@@ -429,8 +434,8 @@ class AnalyzerState:
             self.drop_out = None # See: Analyzer. get_drop_out_object(...)
         else:
             self.drop_out = DropOut()
-            self.drop_out.checker.append(DropOut_CheckerElement(None, None))
-            self.drop_out.router.append(DropOut_RouterElement(-1, None, 0))
+            self.drop_out.checker.append(DropOut_CheckerElement(None, AcceptanceIDs.VOID))
+            self.drop_out.router.append(DropOut_RouterElement(AcceptanceIDs.FAILURE, None, PostContextIDs.NONE))
 
         self._origin_list   = state.origins().get_list()
 
@@ -651,7 +656,7 @@ class DropOut(object):
            RETURNS: None                  -- if the drop out is not trivial
                     DropOut_RouterElement -- if the drop-out is trivial
         """
-        for dummy in ifilter(lambda x: x.acceptance_id is None, self.checker):
+        for dummy in ifilter(lambda x: x.acceptance_id == AcceptanceIDs.VOID, self.checker):
             # There is a stored acceptance involved, thus need checker + router.
             return None
 
@@ -660,7 +665,9 @@ class DropOut(object):
             for route in self.router:
                 if route.acceptance_id == check.acceptance_id: break
             else:
-                assert False # Acceptance Id from checker not found in router?!
+                assert False, \
+                       "Acceptance ID '%s' not found in router.\nFound: %s" % \
+                       (check.acceptance_id, map(lambda x: x.acceptance_id, self.router))
             result.append((check, route))
             # NOTE: "if check.pre_context_id is None: break"
             #       is not necessary since get_drop_out_object() makes sure that the checker
@@ -737,6 +744,8 @@ class DropOut_CheckerElement(object):
     __slots__ = ("pre_context_id", "acceptance_id") 
 
     def __init__(self, PreContextID, AcceptanceID):
+        assert    isinstance(AcceptanceID, (int, long)) \
+               or AcceptanceID in AcceptanceIDs
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
 
@@ -786,24 +795,25 @@ class DropOut_RouterElement(object):
     __slots__ = ("acceptance_id", "positioning", "post_context_id")
 
     def __init__(self, AcceptanceID, Positioning, PostContextID):
-        if AcceptanceID == -1:  assert Positioning == -1 
-        else:                   assert Positioning != -1
-        if Positioning is None: assert PostContextID is not None
+        if AcceptanceID == AcceptanceIDs.FAILURE:  assert Positioning == -1 
+        else:                                      assert Positioning != -1
+        if Positioning is None:                    assert PostContextID is not None
 
         self.acceptance_id   = AcceptanceID
         self.positioning     = Positioning
         self.post_context_id = PostContextID
 
     def __repr__(self):
-        if self.acceptance_id == -1: assert self.positioning == -1 
-        else:                        assert self.positioning != -1
+        if self.acceptance_id == AcceptanceIDs.FAILURE: assert self.positioning == -1 
+        else:                                           assert self.positioning != -1
 
+        acceptance_str = "Failure" if self.acceptance_id == AcceptanceIDs.FAILURE else "%i" % self.acceptance_id
         if self.positioning != 0:
-            return "case %i: %s goto %s;" % (self.acceptance_id, 
+            return "case %s: %s goto %s;" % (acceptance_str,
                                              repr_positioning(self.positioning, self.post_context_id), 
                                              repr_acceptance_id(self.acceptance_id))
         else:
-            return "case %i: goto %s;" % (self.acceptance_id, 
+            return "case %s: goto %s;" % (acceptance_str,
                                           repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
@@ -813,14 +823,14 @@ def repr_pre_context_id(Value):
     else:               assert False
 
 def repr_acceptance_id(Value):
-    if   Value is None: return "last_acceptance"
-    elif Value == -1:   return "Failure"
-    elif Value >= 0:    return "Pattern%i" % Value
-    else:               assert False
+    if   Value == AcceptanceIDs.VOID:    return "last_acceptance"
+    elif Value == AcceptanceIDs.FAILURE: return "Failure"
+    elif Value >= 0:                     return "Pattern%i" % Value
+    else:                                assert False
 
 def repr_position_register(Register):
-    if Register == -1:  return "Position[Acceptance]"
-    else:               return "Position[PostContext_%i] " % Register
+    if Register == PostContextIDs.NONE: return "Position[Acceptance]"
+    else:                               return "Position[PostContext_%i] " % Register
 
 def repr_positioning(Positioning, PostContextID):
     if   Positioning is None: 

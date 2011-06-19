@@ -35,8 +35,8 @@ State 400:
     Accepter:
         if      PreContext_9: last_acceptance = Pattern11
     Positioner:
-    if 'PreContext_55': Position[PostContext_40]  = input_p;
     if 'PreContext_9': Position[Acceptance] = input_p;
+    if 'PreContext_55': Position[PostContext_40]  = input_p;
   .drop_out:
     if PreContext_9:  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -68,9 +68,9 @@ State 403:
     Checker:
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 11: pos = Position[Acceptance]; goto Pattern11;
         case 20: pos = Position[Acceptance]; goto Pattern20;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 404:
@@ -79,9 +79,9 @@ State 404:
     Checker:
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 11: pos = Position[Acceptance]; goto Pattern11;
         case 20: pos = Position[Acceptance]; goto Pattern20;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 405:
@@ -93,10 +93,10 @@ State 405:
         else if PreContext_129: accept = Pattern131
         accept = last_acceptance
     Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 131: pos -= 1;  goto Pattern131;
         case 11: pos = Position[Acceptance]; goto Pattern11;
         case 20: pos = Position[Acceptance]; goto Pattern20;
-        case -1: pos = lexeme_start_p + 1;  goto Failure;
         case 57: pos = Position[PostContext_40] ; goto Pattern57;
         case 94: pos -= 2;  goto Pattern94;
 
