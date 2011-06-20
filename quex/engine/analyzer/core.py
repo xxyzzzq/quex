@@ -435,7 +435,8 @@ class AnalyzerState:
         else:
             self.drop_out = DropOut()
             self.drop_out.checker.append(DropOut_CheckerElement(None, AcceptanceIDs.VOID))
-            self.drop_out.router.append(DropOut_RouterElement(AcceptanceIDs.FAILURE, None, PostContextIDs.NONE))
+            self.drop_out.router.append(DropOut_RouterElement(AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
+                                                              None, PostContextIDs.NONE))
 
         self._origin_list   = state.origins().get_list()
 
@@ -612,9 +613,16 @@ class EntryBackward(object):
             self.pre_context_fulfilled_set.add(origin.state_machine_id)
 
     def __repr__(self):
-        txt = ["EntryBackward:\n"]
-        txt.append("   pre-context-fulfilled = %s;\n" % repr(list(self.pre_context_fulfilled_set))[1:-1])
+        if len(self.pre_context_fulfilled_set) == 0: return ""
+        txt = ["    EntryBackward:\n"]
+        txt.append("    pre-context-fulfilled = %s;\n" % repr(list(self.pre_context_fulfilled_set))[1:-1])
         return "".join(txt)
+
+class EntryBackwardInputPositionDetection:
+    """For Pseudo-Ambiguous Post Contexts, it is necessary to do a 
+       backward input position detection. For this, the analyzer goes
+       backwards and stops at the first acceptance state.
+    """
 
 class DropOut(object):
     """The general drop-out of a state has the following two 'sub-tasks'
@@ -656,6 +664,13 @@ class DropOut(object):
            RETURNS: None                  -- if the drop out is not trivial
                     DropOut_RouterElement -- if the drop-out is trivial
         """
+        if AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.router):
+            assert len(self.checker) == 1
+            assert self.checker[0].pre_context_id is None
+            assert self.checker[0].acceptance_id is AcceptanceIDs.VOID
+            assert len(self.router) == 1
+            return [None, self.router[0]]
+
         for dummy in ifilter(lambda x: x.acceptance_id == AcceptanceIDs.VOID, self.checker):
             # There is a stored acceptance involved, thus need checker + router.
             return None
@@ -678,21 +693,24 @@ class DropOut(object):
     def __repr__(self):
         info = self.trivialize()
         if info is not None:
-            txt = []
-            if_str = "if"
-            for easy in info:
-                if easy[0].pre_context_id is None:
-                    txt.append("    %s goto %s;\n" % \
-                               (repr_positioning(easy[1].positioning, easy[1].post_context_id),
-                                repr_acceptance_id(easy[1].acceptance_id)))
-                else:
-                    txt.append("    %s %s: %s goto %s;\n" % \
-                               (if_str,
-                                repr_pre_context_id(easy[0].pre_context_id),
-                                repr_positioning(easy[1].positioning, easy[1].post_context_id),
-                                repr_acceptance_id(easy[1].acceptance_id)))
-                    if_str = "else if"
-            return "".join(txt)
+            if len(info) == 2 and info[0] is None:
+                return "    goto PreContextCheckTerminated;"
+            else:
+                txt = []
+                if_str = "if"
+                for easy in info:
+                    if easy[0].pre_context_id is None:
+                        txt.append("    %s goto %s;\n" % \
+                                   (repr_positioning(easy[1].positioning, easy[1].post_context_id),
+                                    repr_acceptance_id(easy[1].acceptance_id)))
+                    else:
+                        txt.append("    %s %s: %s goto %s;\n" % \
+                                   (if_str,
+                                    repr_pre_context_id(easy[0].pre_context_id),
+                                    repr_positioning(easy[1].positioning, easy[1].post_context_id),
+                                    repr_acceptance_id(easy[1].acceptance_id)))
+                        if_str = "else if"
+                return "".join(txt)
 
         txt = ["    Checker:\n"]
         if_str = "if     "
@@ -795,9 +813,11 @@ class DropOut_RouterElement(object):
     __slots__ = ("acceptance_id", "positioning", "post_context_id")
 
     def __init__(self, AcceptanceID, Positioning, PostContextID):
-        if AcceptanceID == AcceptanceIDs.FAILURE:  assert Positioning == -1 
-        else:                                      assert Positioning != -1
-        if Positioning is None:                    assert PostContextID is not None
+        if   AcceptanceID == AcceptanceIDs.FAILURE:                assert Positioning == -1 
+        elif AcceptanceID is AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK: assert Positioning is None
+        else:                                                      assert Positioning != -1
+
+        if Positioning is None:                                    assert PostContextID is not None
 
         self.acceptance_id   = AcceptanceID
         self.positioning     = Positioning
@@ -807,13 +827,12 @@ class DropOut_RouterElement(object):
         if self.acceptance_id == AcceptanceIDs.FAILURE: assert self.positioning == -1 
         else:                                           assert self.positioning != -1
 
-        acceptance_str = "Failure" if self.acceptance_id == AcceptanceIDs.FAILURE else "%i" % self.acceptance_id
         if self.positioning != 0:
-            return "case %s: %s goto %s;" % (acceptance_str,
+            return "case %s: %s goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
                                              repr_positioning(self.positioning, self.post_context_id), 
                                              repr_acceptance_id(self.acceptance_id))
         else:
-            return "case %s: goto %s;" % (acceptance_str,
+            return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
                                           repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
@@ -822,11 +841,14 @@ def repr_pre_context_id(Value):
     elif Value >= 0:    return "PreContext_%i" % Value
     else:               assert False
 
-def repr_acceptance_id(Value):
-    if   Value == AcceptanceIDs.VOID:    return "last_acceptance"
-    elif Value == AcceptanceIDs.FAILURE: return "Failure"
-    elif Value >= 0:                     return "Pattern%i" % Value
-    else:                                assert False
+def repr_acceptance_id(Value, PatternStrF=True):
+    if   Value == AcceptanceIDs.VOID:                       return "last_acceptance"
+    elif Value == AcceptanceIDs.FAILURE:                    return "Failure"
+    elif Value == AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK: return "PreContextCheckTerminated"
+    elif Value >= 0:                                    
+        if PatternStrF: return "Pattern%i" % Value
+        else:           return "%i" % Value
+    else:                                               assert False
 
 def repr_position_register(Register):
     if Register == PostContextIDs.NONE: return "Position[Acceptance]"
