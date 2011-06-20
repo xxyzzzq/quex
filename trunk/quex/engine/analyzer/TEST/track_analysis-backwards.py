@@ -26,8 +26,8 @@ if "0" in sys.argv:
     ]
 elif "1" in sys.argv:
     pattern_list = [
-        'a',        
-        'abc',     
+        '0yx+/a/',        
+        '1yx+/a/',     
     ]
 elif "2" in sys.argv:
     pattern_list = [
