@@ -7,11 +7,13 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
+from   quex.engine.analyzer.core                 import InputActions
+from   quex.engine.state_machine.state_core_info import EngineTypes
 import help_drawing
 
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Backwards - For Pre-Context;"
-    print "CHOICES: 0, 1, 2, 3, 4, 5, 6;"
+    print "CHOICES: 0, 1;"
     sys.exit()
 
 if "0" in sys.argv:
@@ -29,38 +31,9 @@ elif "1" in sys.argv:
         '0yx+/a/',        
         '1yx+/a/',     
     ]
-elif "2" in sys.argv:
-    pattern_list = [
-        'a',        
-        'b',     
-        '[ab]c'
-    ]
-elif "3" in sys.argv:
-    pattern_list = [
-        'a',        
-        'b',     
-        '[ab]cd'
-    ]
-elif "4" in sys.argv:
-    pattern_list = [
-        'aa?',        
-        'aa?cd'
-    ]
-elif "5" in sys.argv:
-    pattern_list = [
-        '[ab]',        
-        '((aa?)|b)cd'
-    ]
-elif "6" in sys.argv:
-    pattern_list = [
-        '[ab]',        
-        '((ab)|b)cd',
-    ]
 else:
     assert False
 
-
-print map(lambda x: regex.do(x, {}), pattern_list)
 state_machine_list = map(lambda x: 
                          regex.do(x, {}).core().pre_context_sm(), 
                          pattern_list)
@@ -72,8 +45,8 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.Analyzer(sm, ForwardF=False)
+analyzer = core.Analyzer(sm, EngineTypes.BACKWARD_PRE_CONTEXT)
 
 for state in analyzer:
-    assert state.input.move_input_position() == -1   # backwards always
+    assert state.input == InputActions.DECREMENT_THEN_DEREF
     print state.get_string(InputF=False, TransitionMapF=False)
