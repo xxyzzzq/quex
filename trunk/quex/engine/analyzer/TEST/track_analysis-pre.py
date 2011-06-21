@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
+from   quex.engine.analyzer.core             import InputActions
 import quex.engine.analyzer.core             as core
 import help_drawing
 
@@ -102,9 +103,11 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.Analyzer(sm, ForwardF=True)
+analyzer = core.Analyzer(sm)
 
 for state in analyzer:
-    if state.index == sm.init_state_index: assert state.input.move_input_position() == 0
-    else:                                  assert state.input.move_input_position() == 1 
+    if state.index == sm.init_state_index: 
+        assert state.input == InputActions.DEREF
+    else:
+        assert state.input == InputActions.INCREMENT_THEN_DEREF
     print state.get_string(InputF=False, TransitionMapF=False)
