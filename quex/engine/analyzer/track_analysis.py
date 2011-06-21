@@ -321,17 +321,15 @@ A new rule concerning the reload behavior can be defined:
     (17) All non-acceptance states that immediately follow a 'skipper
          state' must cause 'skip-failure' on drop-out.
 """
-def do(SM, ForwardF):
+def do(SM):
     """Determines a database of AcceptanceTrace lists for each state.
     """
-    return TrackInfo(SM, ForwardF).acceptance_trace_db
+    return TrackInfo(SM).acceptance_trace_db
 
 class TrackInfo:
-    def __init__(self, SM, ForwardF):
+    def __init__(self, SM):
         """SM -- state machine to be investigated."""
-        assert type(ForwardF) == bool
-        self.sm          = SM
-        self.__forward_f = ForwardF
+        self.sm = SM
 
         # (1) Analyze recursively in the state machine:
         #

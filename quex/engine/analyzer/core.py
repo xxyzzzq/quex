@@ -23,7 +23,8 @@ import quex.engine.analyzer.track_analysis as track_analysis
 from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
                                                   AcceptanceTraceEntry_Void, \
                                                   extract_pre_context_id
-from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs
+from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs, EngineTypes
+from   quex.engine.misc.enum import Enum
 
 
 from quex.input.setup import setup as Setup
@@ -34,14 +35,15 @@ from itertools        import islice, ifilter, takewhile, imap
 import sys
 
 class Analyzer:
-    def __init__(self, SM, ForwardF):
+    def __init__(self, SM, EngineType=EngineTypes.FORWARD):
+        assert EngineType in EngineTypes
 
-        acceptance_db = track_analysis.do(SM, ForwardF)
+        acceptance_db = track_analysis.do(SM)
 
-        self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, ForwardF)) 
+        self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType)) 
                                  for state_index in acceptance_db.iterkeys()])
 
-        if ForwardF:
+        if EngineType == EngineTypes.FORWARD:
             for state_index, acceptance_trace_list in acceptance_db.iteritems():
                 state = self.__state_db[state_index]
 
@@ -414,31 +416,54 @@ class Analyzer:
             result.update([(register, i) for register in combination])
         return result
 
+InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
+
 class AnalyzerState:
-    def __init__(self, StateIndex, SM, ForwardF):
+    def __init__(self, StateIndex, SM, EngineType):
         assert type(StateIndex) in [int, long]
-        assert type(ForwardF)   == bool
+        assert EngineType in EngineTypes
 
         state = SM.states[StateIndex]
 
-        self.index     = StateIndex
-        self.input     = Input(StateIndex == SM.init_state_index, ForwardF)
-        if ForwardF: 
-            self.entry = Entry(state.origins())
-        else:
-            self.entry = EntryBackward(state.origins())
+        self.index = StateIndex
 
+        # (*) Input
+        if EngineType == EngineTypes.FORWARD:
+            if StateIndex == SM.init_state_index: self.input = InputActions.DEREF
+            else:                                 self.input = InputActions.INCREMENT_THEN_DEREF
+        else:                                     self.input = InputActions.DECREMENT_THEN_DEREF
+
+        # (*) Entry Action
+        self.entry = { 
+            EngineTypes.FORWARD:                 Entry,
+            EngineTypes.BACKWARD_PRE_CONTEXT:    EntryBackward,
+            EngineTypes.BACKWARD_INPUT_POSITION: EntryBackwardInputPositionDetection, 
+        }[EngineType](state.origins())
+
+        # (*) Transition
+        if EngineType == EngineTypes.BACKWARD_INPUT_POSITION:
+            # During backward input detection, an acceptance state triggers a
+            # return from the searcher, thus no further transitions are necessary.
+            # (orphaned states, also, need to be deleted).
+            if state.is_acceptance(): assert state.transitions().is_empty()
         self.transition_map = state.transitions().get_trigger_map()
 
-        if ForwardF:
-            self.drop_out = None # See: Analyzer. get_drop_out_object(...)
-        else:
+        # (*) Drop Out
+        if   EngineType == EngineTypes.FORWARD: 
+            # DropOut and Entry interact and require sophisticated analysis
+            # => See "Analyzer.get_drop_out_object(...)"
+            self.drop_out = None 
+        elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT:
             self.drop_out = DropOut()
             self.drop_out.checker.append(DropOut_CheckerElement(None, AcceptanceIDs.VOID))
             self.drop_out.router.append(DropOut_RouterElement(AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
                                                               None, PostContextIDs.NONE))
+        elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION:
+            # The drop-out should never be reached, since we walk a path backwards
+            # that has been walked forward before.
+            self.drop_out = DropOut()
 
-        self._origin_list   = state.origins().get_list()
+        self._origin_list = state.origins().get_list()
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -454,27 +479,6 @@ class AnalyzerState:
 
     def __repr__(self):
         return self.get_string()
-
-class Input:
-    def __init__(self, InitStateF, ForwardF):
-        if ForwardF: # Rules (1), (2), and (3)
-            self.__move_input_position = + 1 if not InitStateF else 0
-        else:        # Backward lexing --> rule (3)
-            self.__move_input_position = - 1
-
-    def move_input_position(self):
-        """+1 --> increment by one before dereferencing
-           -1 --> decrement by one before dereferencing
-            0 --> neither increment nor decrement.
-        """
-        return self.__move_input_position
-
-    def immediate_drop_out_if_not_pre_context_list(self):
-        """If all successor states require the list of given pre-contexts, then 
-           the state can check whether at least one of them is hit. Otherwise, it 
-           could immediately drop out.
-        """
-        return self.__immediate_drop_out_if_not_pre_context_list
 
 class Entry(object):
     """An entry has potentially two tasks:
@@ -595,6 +599,25 @@ class Entry(object):
 
         return "".join(txt)
 
+class EntryBackwardInputPositionDetection(object):
+    """There is not much more to say then: 
+
+       Acceptance State 
+       => then we found the input position => return immediately.
+
+       Non-Acceptance State
+       => proceed with the state transitions (do nothing here)
+    """
+    __slots__ = ("terminated_f")
+
+    def __init__(self, OriginList):
+        self.terminated_f = False
+        for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
+            self.terminated_f = True
+            return
+    def __repr__(self):
+        return "    Terminated\n" if self.terminated_f else ""
+
 class EntryBackward(object):
     """(*) Backward Lexing
 
@@ -617,12 +640,6 @@ class EntryBackward(object):
         txt = ["    EntryBackward:\n"]
         txt.append("    pre-context-fulfilled = %s;\n" % repr(list(self.pre_context_fulfilled_set))[1:-1])
         return "".join(txt)
-
-class EntryBackwardInputPositionDetection:
-    """For Pseudo-Ambiguous Post Contexts, it is necessary to do a 
-       backward input position detection. For this, the analyzer goes
-       backwards and stops at the first acceptance state.
-    """
 
 class DropOut(object):
     """The general drop-out of a state has the following two 'sub-tasks'
@@ -667,7 +684,7 @@ class DropOut(object):
         if AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.router):
             assert len(self.checker) == 1
             assert self.checker[0].pre_context_id is None
-            assert self.checker[0].acceptance_id is AcceptanceIDs.VOID
+            assert self.checker[0].acceptance_id == AcceptanceIDs.VOID
             assert len(self.router) == 1
             return [None, self.router[0]]
 
@@ -691,6 +708,8 @@ class DropOut(object):
         return result
 
     def __repr__(self):
+        if len(self.checker) == 0 and len(self.router) == 0:
+            return "    <unreachable code>"
         info = self.trivialize()
         if info is not None:
             if len(info) == 2 and info[0] is None:
@@ -813,11 +832,11 @@ class DropOut_RouterElement(object):
     __slots__ = ("acceptance_id", "positioning", "post_context_id")
 
     def __init__(self, AcceptanceID, Positioning, PostContextID):
-        if   AcceptanceID == AcceptanceIDs.FAILURE:                assert Positioning == -1 
-        elif AcceptanceID is AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK: assert Positioning is None
-        else:                                                      assert Positioning != -1
-
-        if Positioning is None:                                    assert PostContextID is not None
+        if   AcceptanceID == AcceptanceIDs.FAILURE:                             assert Positioning == -1 
+        elif    AcceptanceID == AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK \
+             or AcceptanceID == AcceptanceIDs.TERMINAL_BACKWARD_INPUT_POSITION: assert Positioning is None
+        else:                                                                   assert Positioning != -1
+        if Positioning is None:                                                 assert PostContextID is not None
 
         self.acceptance_id   = AcceptanceID
         self.positioning     = Positioning
