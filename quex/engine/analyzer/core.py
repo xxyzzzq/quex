@@ -446,7 +446,9 @@ class AnalyzerState:
             # return from the searcher, thus no further transitions are necessary.
             # (orphaned states, also, need to be deleted).
             if state.is_acceptance(): assert state.transitions().is_empty()
-        self.transition_map = state.transitions().get_trigger_map()
+            self.transition_map = []
+        else:
+            self.transition_map = state.transitions().get_trigger_map()
 
         # (*) Drop Out
         if   EngineType == EngineTypes.FORWARD: 
