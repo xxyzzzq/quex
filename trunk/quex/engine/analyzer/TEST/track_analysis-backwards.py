@@ -17,19 +17,14 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 if "0" in sys.argv:
-    """
-    ╔════╗  a   ╔════╗  b   ╔════╗
-    ║ 26 ║ ───▶ ║ 27 ║ ───▶ ║ 28 ║
-    ╚════╝      ╚════╝      ╚════╝
-    """
     pattern_list = [
         'x/a/',        
         'y/a/',     
     ]
 elif "1" in sys.argv:
     pattern_list = [
-        '0yx+/a/',        
-        '1yx+/a/',     
+        'x+/a/',        
+        'yx+/a/',     
     ]
 else:
     assert False

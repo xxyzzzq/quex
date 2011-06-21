@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.57" date="Tue Jun 21 07:18:32 2011">
+<test-database execution-time-sec="5.08" date="Tue Jun 21 08:04:40 2011">
     <last-used-diff-display-program name=""/>
     <test title="Single Pattern Checks" time-sum-sec="1.03"> 
         <application file-name="single-pattern.py" info-request-time="1308633292L" vanished="False"/>
@@ -16,16 +16,11 @@
         </choice-list>
     </test>
     <group name="Track Analyzis">
-        <test title="Backwards - For Pre-Context" time-sum-sec="0.59"> 
-            <application file-name="track_analysis-backwards.py" info-request-time="1308633463L" vanished="False"/>
-            <choice-list number="7" same_result="False">
+        <test title="Backwards - For Pre-Context" time-sum-sec="0.10"> 
+            <application file-name="track_analysis-backwards.py" info-request-time="1308636240L" vanished="False"/>
+            <choice-list number="2" same_result="False">
                <choice name="0" result="OK" time_sec="0.10" crc="-156582175"/>
-               <choice name="1" result="NO GOOD FILE" time_sec="0.08" crc="1887547794"/>
-               <choice name="2" result="NO GOOD FILE" time_sec="0.07" crc="-1791796552"/>
-               <choice name="3" result="NO GOOD FILE" time_sec="0.10" crc="122259441"/>
-               <choice name="4" result="NO GOOD FILE" time_sec="0.09" crc="-226565371"/>
-               <choice name="5" result="NO GOOD FILE" time_sec="0.09" crc="-688609730"/>
-               <choice name="6" result="NO GOOD FILE" time_sec="0.06" crc="622523056"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-456787132"/>
             </choice-list>
         </test>
         <test title="With Pre- and Post-Contexts" time-sum-sec="1.03"> 
@@ -71,6 +66,12 @@
                <choice name="9" result="OK" time_sec="0.09" crc="841780906"/>
                <choice name="10" result="OK" time_sec="0.15" crc="2120293666"/>
                <choice name="11" result="OK" time_sec="0.14" crc="-633576306"/>
+            </choice-list>
+        </test>
+        <test title="Backward Input Position Detection" time-sum-sec="0.00"> 
+            <application file-name="track_analysis-backward-input-position-detection.py" info-request-time="1308635758L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="-402608585"/>
             </choice-list>
         </test>
         <test title="With Post-Contexts" time-sum-sec="0.76"> 

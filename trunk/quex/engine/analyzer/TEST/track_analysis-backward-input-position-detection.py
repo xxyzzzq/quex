@@ -17,7 +17,7 @@ if "--hwut-info" in sys.argv:
 
 # There are no 'special cases'
 pattern_list = [
-    'ax+',        
+    'ax',        
 ]
 
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
