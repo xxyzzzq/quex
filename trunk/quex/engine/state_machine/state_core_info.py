@@ -20,6 +20,11 @@ AcceptanceIDs  = Enum("FAILURE",
                       "_DEBUG_NAME_AcceptanceIDs")
 PostContextIDs = Enum("NONE", 
                       "_DEBUG_NAME_PostContextIDs")
+EngineTypes = Enum("FORWARD", 
+                   "BACKWARD_PRE_CONTEXT", 
+                   "BACKWARD_INPUT_POSITION",
+                   "_DEBUG_EngineTypes")
+
 
 class StateCoreInfo(object): 
     """-- store input position: if an origin is flagged that way it 

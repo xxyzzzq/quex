@@ -16,9 +16,9 @@ that referes to the Lexeme macros.
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:313:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:317:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:318:                              "          \"%s(Lexeme)\"\n" % TokenName + 
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:365:    /* Lexeme setup: 
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:368:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:691:    ObjectName = "Lexeme"
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:711:        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:712:        #       shall not trigger a treatment of 'Lexeme'.
-/home/fschaef/prj/quex/trunk/quex/engine/analyzer/track_analysis.py:295:Lexeme Start Pointer |__________________________________________________________
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:366:    /* Lexeme setup: 
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:369:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:692:    ObjectName = "Lexeme"
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:712:        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:713:        #       shall not trigger a treatment of 'Lexeme'.
+/home/fschaef/prj/quex/trunk/quex/engine/analyzer/track_analysis.py:297:Lexeme Start Pointer |__________________________________________________________
