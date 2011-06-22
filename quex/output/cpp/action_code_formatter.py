@@ -2,7 +2,7 @@ from   quex.engine.interval_handling     import NumberSet
 from   quex.engine.generator.action_info import *
 from   quex.input.setup                       import setup as Setup
 
-def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
+def do(Mode, CodeFragment_or_CodeFragments, PatternStateMachine, 
        Default_ActionF=False, EOF_ActionF=False, SelfCountingActionF=False):
     """-- If there are multiple handlers for a single event they are combined
     
@@ -12,7 +12,6 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
           code for line and column number counting.
     """
     assert Mode.__class__.__name__  == "Mode"
-    assert type(SafePatternStr)     == str
     assert PatternStateMachine      is None or PatternStateMachine.__class__.__name__ == "StateMachine" 
     assert type(Default_ActionF)    == bool
     assert type(EOF_ActionF)        == bool
