@@ -137,7 +137,7 @@ def __prepare_end_of_stream_action(Mode, IndentationSupportF):
 
     # RETURNS: end_of_stream_action, db 
     return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
-                                    "on_end_of_stream", None, EOF_ActionF=True)
+                                    None, EOF_ActionF=True)
 
 def __prepare_on_failure_action(Mode):
     if not Mode.has_code_fragment_list("on_failure"):
@@ -148,7 +148,7 @@ def __prepare_on_failure_action(Mode):
 
     # RETURNS: on_failure_action, db 
     return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_failure"), 
-                                    "on_failure", None, Default_ActionF=True) 
+                                    None, Default_ActionF=True) 
 
 def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
     required_local_variables_db = {}
@@ -166,7 +166,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSuppor
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    pattern_action_pair_list, db = extract_pattern_action_pair_list_and_required_variable_db(Mode, IndentationSupportF)
+    pattern_action_pair_list, db = prepare_pattern_actions(Mode, IndentationSupportF)
     required_local_variables_db.update(db)
 
     generator = cpp_generator.Generator(PatternActionPair_List = pattern_action_pair_list, 
@@ -196,7 +196,7 @@ def __get_indentation_counter_terminal_index(PatterActionPairList):
         return info.pattern_state_machine().get_id()
     return None
 
-def extract_pattern_action_pair_list_and_required_variable_db(Mode, IndentationSupportF):
+def prepare_pattern_actions(Mode, IndentationSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
        adapts the mode information to this format. Additional code is added 
@@ -216,21 +216,19 @@ def extract_pattern_action_pair_list_and_required_variable_db(Mode, IndentationS
     # machine ids reflect the sequence of pattern precedence.
 
     for pattern_info in pattern_action_pair_list:
-        safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
-        pattern_state_machine = pattern_info.pattern_state_machine()
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
-        action                      = pattern_info.action()
-        self_line_column_counting_f = False
+        action                = pattern_info.action()
+        pattern_state_machine = pattern_info.pattern_state_machine()
 
         # Generated code fragments may rely on some information about the generator
         if hasattr(action, "data") and type(action.data) == dict:   
             action.data["indentation_counter_terminal_id"] = indentation_counter_terminal_id
 
-        prepared_action, db = action_code_formatter.do(Mode, action, safe_pattern_str,
+        prepared_action, db = action_code_formatter.do(Mode, action, 
                                                        pattern_state_machine, 
-                                                       SelfCountingActionF=self_line_column_counting_f)
+                                                       SelfCountingActionF=False)
         variable_db.update(db)
 
         pattern_info.set_action(prepared_action)
@@ -244,13 +242,10 @@ def do_plot():
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
-        if len(mode.get_pattern_action_pair_list()) == 0: continue
+        pattern_action_pair_list = mode.get_pattern_action_pair_list()
+        if len(pattern_action_pair_list) == 0: continue
 
-        # -- adapt pattern-action pair information so that it can be treated
-        #    by the code generator.
-        pattern_action_pair_list, variable_db = extract_pattern_action_pair_list_and_required_variable_db(mode, IndentationSupportF)
-
-        plotter = grapviz_generator.Generator(pattern_action_pair_list, 
+        plotter = grapviz_generator.Generator(pattern_action_pair_list,
                                               StateMachineName = mode.name,
                                               GraphicFormat    = Setup.plot_graphic_format)
         plotter.do(Option=Setup.plot_character_display)
