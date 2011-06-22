@@ -3,14 +3,13 @@ import sys
 import subprocess
 import tempfile
 
-from quex.engine.misc.file_in             import error_msg
+from quex.engine.misc.file_in   import error_msg
 from quex.engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):
     def __init__(self, PatternActionPairList, StateMachineName, GraphicFormat):
         assert map(lambda elm: elm.__class__.__name__, PatternActionPairList) \
                == [ "PatternActionInfo" ] * len(PatternActionPairList)
-
         assert_graphviz_installed()
 
         GeneratorBase.__init__(self, PatternActionPairList, StateMachineName, SupportBeginOfLineF=False)

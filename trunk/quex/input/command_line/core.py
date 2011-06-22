@@ -73,7 +73,7 @@ def do(argv):
         return False
 
     if command_line.search("--plot-format-list"):
-        print quex.output.graphviz.interface.get_supported_graphic_format_description()
+        print quex.output.graphviz.core.get_supported_graphic_format_description()
         return False
 
     for variable_name, info in SETUP_INFO.items():

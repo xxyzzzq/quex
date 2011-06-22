@@ -1,5 +1,5 @@
 from   quex.engine.misc.file_in                        import error_msg
-from   quex.engine.generator.action_info     import PatternActionInfo
+from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.parallelize           as parallelize
 from   quex.engine.state_machine.state_core_info       import PostContextIDs      
@@ -42,7 +42,7 @@ class GeneratorBase:
         # -- extract:
         #    -- state machines that are post-conditioned
         self.post_contexted_sm_id_list = []
-        #    -- state machines that nore non-trivially pre-conditioned, 
+        #    -- state machines that are non-trivially pre-conditioned, 
         #       i.e. they need a reverse state machine to be verified.
         self.pre_context_sm_id_list  = []
         self.pre_context_sm_list     = []

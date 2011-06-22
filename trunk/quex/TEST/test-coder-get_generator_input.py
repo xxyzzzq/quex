@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.setup
 import quex.core                            as coder
 import quex.input.regular_expression.engine as regex
-import quex.engine.generator.core           as generator
+import quex.output.cpp.core                 as generator
 from   quex.input.files.mode                import ModeDescription, Mode
 from   quex.engine.generator.action_info    import CodeFragment
 
