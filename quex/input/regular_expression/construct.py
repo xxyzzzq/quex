@@ -46,7 +46,7 @@ def do(core_sm,
 
     # Detect the 'Nothing is Necessary' error in a pattern.
     # (*) 'Nothing is necessary' cannot be accepted. See the discussion in the 
-    #     module "quex.engine.generator.core.py"
+    #     module "quex.output.cpp.core"          
     if not AllowNothingIsNecessaryF:
         post_context_f = (post_context is not None)
         __detect_path_of_nothing_is_necessary(pre_context,  "pre context",  post_context_f, fh)

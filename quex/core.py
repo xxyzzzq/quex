@@ -8,19 +8,22 @@ from   quex.input.setup                         import setup as Setup
 import quex.output.cpp.source_package           as source_package
 import quex.blackboard                          as blackboard
 
-import quex.engine.generator.core          as     generator
 import quex.engine.generator.state_coder.indentation_counter as indentation_counter
 from   quex.engine.generator.action_info   import PatternActionInfo, \
                                                   UserCodeFragment_straighten_open_line_pragmas, \
                                                   CodeFragment
+#
 import quex.input.files.core                    as quex_file_parser
+#
+import quex.output.cpp.core                     as cpp_generator
 import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.output.cpp.token_class_maker        as token_class_maker
-import quex.output.cpp.core                     as quex_class_out
+import quex.output.cpp.analyzer_class           as analyzer_class
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 import quex.output.cpp.mode_classes             as mode_classes
-import quex.output.graphviz.interface           as plot_generator
+
+import quex.output.graphviz.core                as grapviz_generator
 
 def do():
     """Generates state machines for all modes. Each mode results into 
@@ -38,7 +41,7 @@ def do():
     # -- do the coding of the class framework
     header_engine_txt,           \
     constructor_and_memento_txt, \
-    header_configuration_txt     = quex_class_out.do(mode_db, IndentationSupportF, 
+    header_configuration_txt     = analyzer_class.do(mode_db, IndentationSupportF, 
                                                      BeginOfLineSupportF)
 
     mode_implementation_txt  = mode_classes.do(mode_db)
@@ -65,8 +68,6 @@ def do():
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
     for mode in mode_list:        
-
-        # accumulate inheritance information for comment
         code = get_code_for_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF) 
         analyzer_code += "".join(code)
 
@@ -81,7 +82,7 @@ def do():
         analyzer_code += "\n" # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
     # generate frame for analyser code
-    analyzer_code = generator.frame_this(analyzer_code)
+    analyzer_code = cpp_generator.frame_this(analyzer_code)
 
     # Implementation (Potential Inline Functions)
     implemtation_txt =   constructor_and_memento_txt + "\n" \
@@ -165,21 +166,19 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSuppor
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    pattern_action_pair_list, db = get_generator_input(Mode, IndentationSupportF)
+    pattern_action_pair_list, db = extract_pattern_action_pair_list_and_required_variable_db(Mode, IndentationSupportF)
     required_local_variables_db.update(db)
 
-    analyzer_code = generator.do(pattern_action_pair_list, 
-                                 OnFailureAction                = PatternActionInfo(None, on_failure_action), 
-                                 EndOfStreamAction              = PatternActionInfo(None, end_of_stream_action),
-                                 StateMachineName               = Mode.name,
-                                 AnalyserStateClassName         = Setup.analyzer_class_name,
-                                 StandAloneAnalyserF            = False, 
-                                 QuexEngineHeaderDefinitionFile = Setup.output_header_file,
-                                 ModeNameList                   = ModeNameList,
-                                 RequiredLocalVariablesDB       = required_local_variables_db, 
-                                 SupportBeginOfLineF            = BeginOfLineSupportF)
+    generator = cpp_generator.Generator(PatternActionPair_List = pattern_action_pair_list, 
+                                        StateMachineName       = Mode.name,
+                                        AnalyserStateClassName = Setup.analyzer_class_name,
+                                        OnFailureAction        = PatternActionInfo(None, on_failure_action), 
+                                        EndOfStreamAction      = PatternActionInfo(None, end_of_stream_action),
+                                        ModeNameList           = ModeNameList,
+                                        StandAloneAnalyserF    = False, 
+                                        SupportBeginOfLineF    = BeginOfLineSupportF)
 
-    return analyzer_code
+    return generator.do(required_local_variables_db)
 
 def __get_indentation_counter_terminal_index(PatterActionPairList):
     """Under some circumstances a terminal code need to jump to the indentation
@@ -197,8 +196,8 @@ def __get_indentation_counter_terminal_index(PatterActionPairList):
         return info.pattern_state_machine().get_id()
     return None
 
-def get_generator_input(Mode, IndentationSupportF):
-    """The module 'quex.engine.generator.core' produces the code for the 
+def extract_pattern_action_pair_list_and_required_variable_db(Mode, IndentationSupportF):
+    """The module 'quex.output.cpp.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
        adapts the mode information to this format. Additional code is added 
 
@@ -238,13 +237,6 @@ def get_generator_input(Mode, IndentationSupportF):
     
     return pattern_action_pair_list, variable_db
 
-def __get_post_context_n(match_info_list):
-    n = 0
-    for info in MatchInfoList:
-        if info.pattern_state_machine().core().post_context_id() != PostContextIDs.NONE:
-            n += 1
-    return n
-
 def do_plot():
 
     mode_db             = __get_mode_db(Setup)
@@ -256,11 +248,11 @@ def do_plot():
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
-        pattern_action_pair_list, variable_db = get_generator_input(mode, IndentationSupportF)
+        pattern_action_pair_list, variable_db = extract_pattern_action_pair_list_and_required_variable_db(mode, IndentationSupportF)
 
-        plotter = plot_generator.Generator(pattern_action_pair_list, 
-                                           StateMachineName = mode.name,
-                                           GraphicFormat    = Setup.plot_graphic_format)
+        plotter = grapviz_generator.Generator(pattern_action_pair_list, 
+                                              StateMachineName = mode.name,
+                                              GraphicFormat    = Setup.plot_graphic_format)
         plotter.do(Option=Setup.plot_character_display)
 
 def __get_mode_db(Setup):

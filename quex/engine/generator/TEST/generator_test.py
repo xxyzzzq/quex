@@ -10,11 +10,12 @@ from quex.engine.misc.string_handling import blue_print
 from quex.exception              import RegularExpressionException
 from quex.blackboard             import PatternShorthand
 #
-from   quex.engine.generator.languages.core import db
+from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.languages.address as address
-from   quex.engine.generator.languages.cpp  import  __local_variable_definitions
-from   quex.engine.generator.action_info    import PatternActionInfo, CodeFragment
-import quex.engine.generator.core                  as generator
+from   quex.engine.generator.languages.cpp     import  __local_variable_definitions
+from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
+import quex.output.cpp.core                    as cpp_generator
+
 # import quex.engine.generator.skipper.core          as skipper
 import quex.engine.generator.skipper.character_set as character_set_skipper
 import quex.engine.generator.skipper.range         as range_skipper
@@ -341,13 +342,16 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     if not SecondModeF:  sm_name = "Mr"
     else:                sm_name = "Mrs"
 
-    code = generator.do(PatternActionPairList, 
-                        StateMachineName       = sm_name + "_UnitTest",
-                        OnFailureAction        = PatternActionInfo(None, on_failure_action), 
-                        EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
-                        AnalyserStateClassName = sm_name,
-                        StandAloneAnalyserF    = True, 
-                        SupportBeginOfLineF    = support_begin_of_line_f)
+    generator = cpp_generator.Generator(PatternActionPair_List = PatternActionPairList, 
+                                        StateMachineName       = sm_name + "_UnitTest",
+                                        AnalyserStateClassName = sm_name,
+                                        OnFailureAction        = PatternActionInfo(None, on_failure_action), 
+                                        EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
+                                        ModeNameList           = [],
+                                        StandAloneAnalyserF    = True, 
+                                        SupportBeginOfLineF    = support_begin_of_line_f)
+
+    code = generator.do({})
 
     for i, elm in enumerate(code):
         if type(elm) != str: 

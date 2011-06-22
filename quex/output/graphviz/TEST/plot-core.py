@@ -4,10 +4,10 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-import quex.input.command_line.query as query
-import quex.output.graphviz.interface as plotter
+import quex.input.command_line.query        as query
+import quex.output.graphviz.core            as plotter
 import quex.input.regular_expression.engine as regex
-from   quex.engine.generator.action_info   import PatternActionInfo
+from   quex.engine.generator.action_info    import PatternActionInfo
 
 
 
