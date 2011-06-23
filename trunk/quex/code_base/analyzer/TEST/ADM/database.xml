@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.18" date="Wed Jun 22 06:05:43 2011">
+<test-database execution-time-sec="0.18" date="Thu Jun 23 05:13:42 2011">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="accumulator.exe" info-request-time="1306388629L" vanished="False"/>
@@ -38,7 +38,7 @@
                <choice name="3" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="4" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="5" result="OK" time_sec="0.00" crc="-978220029"/>
-               <choice name="6" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="6" result="OK" time_sec="0.01" crc="-978220029"/>
             </choice-list>
         </test>
         <test title="Remove Total" make-dependent="True" time-sum-sec="0.03"> 
@@ -47,7 +47,7 @@
             <choice-list number="7" same_result="True">
                <choice name="1" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="2" result="OK" time_sec="0.00" crc="312237205"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="312237205"/>
                <choice name="4" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="5" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="6" result="OK" time_sec="0.00" crc="312237205"/>
@@ -62,7 +62,7 @@
                <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ae" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ag" result="OK" time_sec="0.00" crc="1918139693"/>
-               <choice name="Ai" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ai" result="OK" time_sec="0.01" crc="1918139693"/>
                <choice name="Ba" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Bc" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Be" result="OK" time_sec="0.00" crc="1918139693"/>
@@ -77,7 +77,7 @@
                <choice name="3" result="OK" time_sec="0.00" crc="72151989"/>
                <choice name="4" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="0" result="OK" time_sec="0.00" crc="-530099081"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="-1772219006"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-1772219006"/>
                <choice name="6" result="OK" time_sec="0.00" crc="-376401680"/>
             </choice-list>
         </test>

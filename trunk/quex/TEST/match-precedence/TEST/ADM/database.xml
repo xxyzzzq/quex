@@ -1,12 +1,12 @@
-<test-database execution-time-sec="6.05" date="Wed Jun 22 06:05:21 2011">
+<test-database execution-time-sec="6.02" date="Thu Jun 23 05:13:20 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Local variables." time-sum-sec="1.53"> 
+    <test title="Local variables." time-sum-sec="1.50"> 
         <application file-name="local-variables.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.53" crc="1827488403"/>
+           <choice name="" result="OK" time_sec="1.50" crc="1827488403"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.79"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="0.78"> 
         <application file-name="unvalid-marks.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.22" crc="-84057889"/>
@@ -22,10 +22,10 @@
                <choice name="" result="OK" time_sec="2.17" crc="-828763524"/>
             </choice-list>
         </test>
-        <test title="Derived before Base" time-sum-sec="1.57"> 
+        <test title="Derived before Base" time-sum-sec="1.56"> 
             <application file-name="derived-before-base.sh" info-request-time="1305001315L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.57" crc="1727262709"/>
+               <choice name="" result="OK" time_sec="1.56" crc="1727262709"/>
             </choice-list>
         </test>
     </group>

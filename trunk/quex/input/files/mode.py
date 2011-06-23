@@ -234,6 +234,23 @@ class Mode:
     def get_pattern_action_pair_list(self):
         return self.__pattern_action_pair_list
 
+    def get_indentation_counter_terminal_index(self):
+        """Under some circumstances a terminal code need to jump to the indentation
+           counter directly. Thus, it must be known in what terminal it is actually 
+           located.
+
+            RETURNS: None, if no indentation counter is involved.
+                     > 0,  terminal id of the terminal that contains the indentation
+                           counter.
+        """
+        for info in self.__pattern_action_pair_list:
+            action = info.action()
+            if   action.__class__.__name__ != "GeneratedCode": continue
+            elif action.function != indentation_counter.do:    continue
+            return info.pattern_state_machine().get_id()
+        return None
+
+
     def get_documentation(self):
         L = max(map(lambda mode: len(mode.name), self.__base_mode_sequence))
         txt  = "\nMODE: %s\n" % self.name

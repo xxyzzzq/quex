@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.73" date="Wed Jun 22 06:09:24 2011">
+<test-database execution-time-sec="2.73" date="Thu Jun 23 05:19:53 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.17"> 
         <application file-name="test-case_fold.py" info-request-time="1301139208L" vanished="False"/>
@@ -120,10 +120,10 @@
                <choice name="" result="OK" time_sec="0.69" crc="-2049050227"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="0.75"> 
+        <test title="Set Operations" time-sum-sec="0.74"> 
             <application file-name="test-properties-2.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.75" crc="-725342255"/>
+               <choice name="" result="OK" time_sec="0.74" crc="-725342255"/>
             </choice-list>
         </test>
     </group>

@@ -8,9 +8,7 @@ from   quex.input.setup                         import setup as Setup
 import quex.output.cpp.source_package           as source_package
 import quex.blackboard                          as blackboard
 
-import quex.engine.generator.state_coder.indentation_counter as indentation_counter
-from   quex.engine.generator.action_info   import PatternActionInfo, \
-                                                  UserCodeFragment_straighten_open_line_pragmas, \
+from   quex.engine.generator.action_info   import UserCodeFragment_straighten_open_line_pragmas, \
                                                   CodeFragment
 #
 import quex.input.files.core                    as quex_file_parser
@@ -19,9 +17,9 @@ import quex.output.cpp.core                     as cpp_generator
 import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.output.cpp.token_class_maker        as token_class_maker
 import quex.output.cpp.analyzer_class           as analyzer_class
-import quex.output.cpp.action_code_formatter    as action_code_formatter
-import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 import quex.output.cpp.mode_classes             as mode_classes
+import quex.output.cpp.action_preparation       as action_preparation
+import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 
 import quex.output.graphviz.core                as grapviz_generator
 
@@ -32,7 +30,7 @@ def do():
     """
     token_id_maker.prepare_default_standard_token_ids()
 
-    mode_db = __get_mode_db(Setup)
+    mode_db = quex_file_parser.do(Setup.input_mode_files)
 
     IndentationSupportF = blackboard.requires_indentation_count(mode_db)
     BeginOfLineSupportF = blackboard.requires_begin_of_line_condition_support(mode_db)
@@ -68,8 +66,27 @@ def do():
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
     for mode in mode_list:        
-        code = get_code_for_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF) 
-        analyzer_code += "".join(code)
+        # -- some modes only define event handlers that are inherited
+        if len(mode.get_pattern_action_pair_list()) == 0: return []
+
+        # -- prepare the source code fragments for the generator
+        required_local_variables_db, \
+        pattern_action_pair_list,    \
+        end_of_stream_action,        \
+        on_failure_action            = action_preparation.do(mode, IndentationSupportF)
+
+        # -- prepare code generation
+        generator = cpp_generator.Generator(PatternActionPair_List = pattern_action_pair_list, 
+                                            StateMachineName       = mode.name,
+                                            AnalyserStateClassName = Setup.analyzer_class_name,
+                                            OnFailureAction        = on_failure_action, 
+                                            EndOfStreamAction      = end_of_stream_action,
+                                            ModeNameList           = mode_name_list,
+                                            StandAloneAnalyserF    = False, 
+                                            SupportBeginOfLineF    = BeginOfLineSupportF)
+
+        # -- generate!
+        analyzer_code += "".join(generator.do(required_local_variables_db))
 
         if Setup.comment_mode_patterns_f:
             inheritance_info_str += mode.get_documentation()
@@ -117,127 +134,8 @@ def do():
     if Setup.source_package_directory != "":
         source_package.do()
 
-def __prepare_end_of_stream_action(Mode, IndentationSupportF):
-    if not Mode.has_code_fragment_list("on_end_of_stream"):
-        # We cannot make any assumptions about the token class, i.e. whether
-        # it can take a lexeme or not. Thus, no passing of lexeme here.
-        txt  = "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-        txt += "RETURN;\n"
-
-        Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
-
-    if IndentationSupportF:
-        if Mode.default_indentation_handler_sufficient():
-            code = "QUEX_NAME(on_indentation)(me, /*Indentation*/0, LexemeNull);\n"
-        else:
-            code = "QUEX_NAME(%s_on_indentation)(me, /*Indentation*/0, LexemeNull);\n" % Mode.name
-
-        code_fragment = CodeFragment(code)
-        Mode.insert_code_fragment_at_front("on_end_of_stream", code_fragment)
-
-    # RETURNS: end_of_stream_action, db 
-    return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_end_of_stream"), 
-                                    None, EOF_ActionF=True)
-
-def __prepare_on_failure_action(Mode):
-    if not Mode.has_code_fragment_list("on_failure"):
-        txt  = "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % Mode.name 
-        txt += "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
-        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
-        Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
-
-    # RETURNS: on_failure_action, db 
-    return action_code_formatter.do(Mode, Mode.get_code_fragment_list("on_failure"), 
-                                    None, Default_ActionF=True) 
-
-def get_code_for_mode(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
-    required_local_variables_db = {}
-   
-    # -- some modes only define event handlers that are inherited
-    if len(Mode.get_pattern_action_pair_list()) == 0: return []
-
-    # -- 'end of stream' action
-    end_of_stream_action, db = __prepare_end_of_stream_action(Mode, IndentationSupportF)
-    required_local_variables_db.update(db)
-
-    # -- 'on failure' action (on the event that nothing matched)
-    on_failure_action, db = __prepare_on_failure_action(Mode)
-    required_local_variables_db.update(db)
-
-    # -- adapt pattern-action pair information so that it can be treated
-    #    by the code generator.
-    pattern_action_pair_list, db = prepare_pattern_actions(Mode, IndentationSupportF)
-    required_local_variables_db.update(db)
-
-    generator = cpp_generator.Generator(PatternActionPair_List = pattern_action_pair_list, 
-                                        StateMachineName       = Mode.name,
-                                        AnalyserStateClassName = Setup.analyzer_class_name,
-                                        OnFailureAction        = PatternActionInfo(None, on_failure_action), 
-                                        EndOfStreamAction      = PatternActionInfo(None, end_of_stream_action),
-                                        ModeNameList           = ModeNameList,
-                                        StandAloneAnalyserF    = False, 
-                                        SupportBeginOfLineF    = BeginOfLineSupportF)
-
-    return generator.do(required_local_variables_db)
-
-def __get_indentation_counter_terminal_index(PatterActionPairList):
-    """Under some circumstances a terminal code need to jump to the indentation
-       counter directly. Thus, it must be known in what terminal it is actually 
-       located.
-
-        RETURNS: None, if no indentation counter is involved.
-                 > 0,  terminal id of the terminal that contains the indentation
-                       counter.
-    """
-    for info in PatterActionPairList:
-        action = info.action()
-        if   action.__class__.__name__ != "GeneratedCode": continue
-        elif action.function != indentation_counter.do:    continue
-        return info.pattern_state_machine().get_id()
-    return None
-
-def prepare_pattern_actions(Mode, IndentationSupportF):
-    """The module 'quex.output.cpp.core' produces the code for the 
-       state machine. However, it requires a certain data format. This function
-       adapts the mode information to this format. Additional code is added 
-
-       -- for counting newlines and column numbers. This happens inside
-          the function ACTION_ENTRY().
-       -- (optional) for a virtual function call 'on_action_entry()'.
-       -- (optional) for debug output that tells the line number and column number.
-    """
-    assert Mode.__class__.__name__ == "Mode"
-    variable_db              = {}
-    pattern_action_pair_list = Mode.get_pattern_action_pair_list()
-
-    indentation_counter_terminal_id = __get_indentation_counter_terminal_index(pattern_action_pair_list)
-
-    # Assume pattern-action pairs (matches) are sorted and their pattern state
-    # machine ids reflect the sequence of pattern precedence.
-
-    for pattern_info in pattern_action_pair_list:
-
-        # Prepare the action code for the analyzer engine. For this purpose several things
-        # are be added to the user's code.
-        action                = pattern_info.action()
-        pattern_state_machine = pattern_info.pattern_state_machine()
-
-        # Generated code fragments may rely on some information about the generator
-        if hasattr(action, "data") and type(action.data) == dict:   
-            action.data["indentation_counter_terminal_id"] = indentation_counter_terminal_id
-
-        prepared_action, db = action_code_formatter.do(Mode, action, 
-                                                       pattern_state_machine, 
-                                                       SelfCountingActionF=False)
-        variable_db.update(db)
-
-        pattern_info.set_action(prepared_action)
-    
-    return pattern_action_pair_list, variable_db
-
 def do_plot():
-
-    mode_db             = __get_mode_db(Setup)
+    mode_db             = quex_file_parser.do(Setup.input_mode_files)
     IndentationSupportF = blackboard.requires_indentation_count(mode_db)
 
     for mode in mode_db.values():        
@@ -250,20 +148,9 @@ def do_plot():
                                               GraphicFormat    = Setup.plot_graphic_format)
         plotter.do(Option=Setup.plot_character_display)
 
-def __get_mode_db(Setup):
-    # (0) check basic assumptions
-    if len(Setup.input_mode_files) == 0: error_msg("No input files.")
-    
-    # (1) input: do the pattern analysis, in case exact counting of newlines is required
-    #            (this might speed up the lexer, but nobody might care ...)
-    #            pattern_db = analyse_patterns.do(pattern_file)    
-    quex_file_parser.do(Setup.input_mode_files)
-
-    return blackboard.mode_db
-
-#########################################################################################
-# Allow to check wether the exception handlers are all in place
 def _exception_checker():
+    """Allow to check wether the exception handlers are all in place.
+    """
     if       len(sys.argv) != 3: return
     elif     sys.argv[1] != "<<TEST:Exceptions/function>>" \
          and sys.argv[1] != "<<TEST:Exceptions/on-import>>":   return

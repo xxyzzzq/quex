@@ -1,4 +1,4 @@
-<history date="Wed Jun 22 06:05:00 2011" element-n="372">
+<history date="Thu Jun 23 05:12:59 2011" element-n="373">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
@@ -1044,5 +1044,8 @@
     </day>
     <day year="2011" month="06" day="21">
         <crc-error time="20:59:10" application="no-use-of-lexeme-macro.sh" choice="" database-crc="594993466" real-crc="2072927346"/>
+    </day>
+    <day year="2011" month="06" day="23">
+        <crc-error time="02:46:33" application="test-coder-get_generator_input.py" choice="" database-crc="-1244409796" real-crc="-995765496"/>
     </day>
 </history>

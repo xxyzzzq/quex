@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.42" date="Wed Jun 22 06:06:25 2011">
+<test-database execution-time-sec="1.41" date="Thu Jun 23 05:14:24 2011">
     <last-used-diff-display-program name=""/>
     <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="from-utf8" info-request-time="1306388674L" vanished="False"/>
@@ -25,12 +25,12 @@
            <choice name="" result="OK" time_sec="1.37" crc="705934895"/>
         </choice-list>
     </test>
-    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="from-utf32" info-request-time="1306388676L" vanished="False"/>
         <make-procedure success="True" time_sec="0.851774"/>
         <choice-list number="3" same_result="False">
            <choice name="Source_Empty" result="OK" time_sec="0.01" crc="490986972"/>
-           <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="-992793919"/>
+           <choice name="Source_TestFile" result="OK" time_sec="0.00" crc="-992793919"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.00" crc="1140718619"/>
         </choice-list>
     </test>

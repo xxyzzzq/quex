@@ -1,14 +1,14 @@
-<test-database execution-time-sec="3.77" date="Wed Jun 22 06:07:15 2011">
+<test-database execution-time-sec="3.77" date="Thu Jun 23 05:15:14 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Single Pattern Checks" time-sum-sec="0.66"> 
+    <test title="Single Pattern Checks" time-sum-sec="0.64"> 
         <application file-name="single-pattern.py" info-request-time="1308633292L" vanished="False"/>
         <choice-list number="10" same_result="False">
-           <choice name="0" result="OK" time_sec="0.08" crc="2021942689"/>
+           <choice name="0" result="OK" time_sec="0.06" crc="2021942689"/>
            <choice name="1" result="OK" time_sec="0.06" crc="113343062"/>
            <choice name="2" result="OK" time_sec="0.06" crc="-1823258394"/>
            <choice name="3" result="OK" time_sec="0.07" crc="-788737452"/>
            <choice name="4" result="OK" time_sec="0.06" crc="-1964273015"/>
-           <choice name="5" result="OK" time_sec="0.07" crc="1127563801"/>
+           <choice name="5" result="OK" time_sec="0.08" crc="1127563801"/>
            <choice name="6" result="OK" time_sec="0.06" crc="-669842486"/>
            <choice name="7" result="OK" time_sec="0.06" crc="-109713359"/>
            <choice name="8" result="OK" time_sec="0.06" crc="289782626"/>
@@ -29,7 +29,7 @@
                <choice name="1" result="OK" time_sec="0.08" crc="577320429"/>
                <choice name="2" result="OK" time_sec="0.08" crc="-452513288"/>
                <choice name="3" result="OK" time_sec="0.08" crc="1630400212"/>
-               <choice name="4" result="OK" time_sec="0.08" crc="-754827776"/>
+               <choice name="4" result="OK" time_sec="0.09" crc="-754827776"/>
                <choice name="5" result="OK" time_sec="0.08" crc="-199939236"/>
                <choice name="6" result="OK" time_sec="0.08" crc="-390348575"/>
                <choice name="7" result="OK" time_sec="0.13" crc="551386876"/>
@@ -40,7 +40,7 @@
             <application file-name="track_analysis.py" info-request-time="1308633246L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="0" result="OK" time_sec="0.06" crc="-727578457"/>
-               <choice name="1" result="OK" time_sec="0.07" crc="685421142"/>
+               <choice name="1" result="OK" time_sec="0.06" crc="685421142"/>
                <choice name="2" result="OK" time_sec="0.06" crc="269718442"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-504090759"/>
                <choice name="4" result="OK" time_sec="0.07" crc="859845573"/>
@@ -48,7 +48,7 @@
                <choice name="6" result="OK" time_sec="0.07" crc="1566303295"/>
                <choice name="7" result="OK" time_sec="0.08" crc="-543945714"/>
                <choice name="8" result="OK" time_sec="0.08" crc="-1120564353"/>
-               <choice name="9" result="OK" time_sec="0.06" crc="1667877385"/>
+               <choice name="9" result="OK" time_sec="0.07" crc="1667877385"/>
             </choice-list>
         </test>
         <test title="With Pre-Contexts" time-sum-sec="0.95"> 
@@ -64,7 +64,7 @@
                <choice name="7" result="OK" time_sec="0.07" crc="-1214527046"/>
                <choice name="8" result="OK" time_sec="0.07" crc="-193246295"/>
                <choice name="9" result="OK" time_sec="0.07" crc="841780906"/>
-               <choice name="10" result="OK" time_sec="0.13" crc="2120293666"/>
+               <choice name="10" result="OK" time_sec="0.14" crc="2120293666"/>
                <choice name="11" result="OK" time_sec="0.12" crc="-633576306"/>
             </choice-list>
         </test>
