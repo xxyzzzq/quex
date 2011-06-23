@@ -20,10 +20,10 @@ from   copy import copy
 class Generator(GeneratorBase):
 
     def __init__(self, PatternActionPair_List, 
-                 StateMachineName, AnalyserStateClassName, 
+                 StateMachineName, 
                  OnFailureAction, EndOfStreamAction, 
                  ModeNameList, 
-                 StandAloneAnalyserF, SupportBeginOfLineF):
+                 SupportBeginOfLineF):
 
         # Ensure that the language database as been setup propperly
         assert type(Setup.language_db) == dict
@@ -31,12 +31,10 @@ class Generator(GeneratorBase):
         assert Setup.language_db.has_key("$label")
 
         self.state_machine_name         = StateMachineName
-        self.analyzer_state_class_name  = AnalyserStateClassName
         self.language_db                = Setup.language_db
         self.end_of_stream_action       = EndOfStreamAction
         self.on_failure_action          = OnFailureAction
         self.mode_name_list             = ModeNameList
-        self.stand_alone_analyzer_f     = StandAloneAnalyserF
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, SupportBeginOfLineF)
 
@@ -91,8 +89,8 @@ class Generator(GeneratorBase):
 
         # (*) Pack Pre-Context and Core State Machine into a single function
         analyzer_function = self.language_db["$analyzer-func"](self.state_machine_name, 
-                                                               self.analyzer_state_class_name, 
-                                                               self.stand_alone_analyzer_f,
+                                                               Setup.analyzer_class_name,
+                                                               Setup.single_mode_analyzer_f,
                                                                variable_definitions, 
                                                                function_body, 
                                                                self.mode_name_list, 

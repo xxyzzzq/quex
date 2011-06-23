@@ -76,13 +76,11 @@ def do():
         on_failure_action            = action_preparation.do(mode, IndentationSupportF)
 
         # -- prepare code generation
-        generator = cpp_generator.Generator(PatternActionPair_List = pattern_action_pair_list, 
-                                            StateMachineName       = mode.name,
-                                            AnalyserStateClassName = Setup.analyzer_class_name,
+        generator = cpp_generator.Generator(StateMachineName       = mode.name,
+                                            PatternActionPair_List = pattern_action_pair_list, 
                                             OnFailureAction        = on_failure_action, 
                                             EndOfStreamAction      = end_of_stream_action,
                                             ModeNameList           = mode_name_list,
-                                            StandAloneAnalyserF    = False, 
                                             SupportBeginOfLineF    = BeginOfLineSupportF)
 
         # -- generate!

@@ -11,11 +11,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-#   if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-#      undef   QUEX_TOKEN_POLICY_NO_TOKEN
-#      define  QUEX_TOKEN_POLICY_NO_TOKEN()       (false)
-#   endif
-
 #   define self (*me)
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
@@ -56,7 +51,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         do {
             me->current_analyzer_function(me);
             QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(&me->_token_queue);
-        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+#       if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
+        } while( QUEX_NAME(TokenQueue_is_empty)(&self._token_queue) );
+#       else
+        } while( false );
+#       endif
         
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
@@ -102,7 +101,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
         __quex_assert(me->token != 0x0);
-        self_token_set_id(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
+        me->token->_id = __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
         do {
             __self_result_token_id = me->current_analyzer_function(me);
             /* Currently it is necessary to check whether the return value
@@ -111,7 +110,11 @@ QUEX_NAMESPACE_MAIN_OPEN
             if( __self_result_token_id != me->token->_id ) {
                 __self_result_token_id = me->token->_id;
             }
-        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+#       if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
+        } while( __self_result_token_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED );
+#       else
+        } while( false ); 
+#       endif
 
 #       if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
         if( __QUEX_SETTING_TOKEN_ID_REPETITION_TEST ) {

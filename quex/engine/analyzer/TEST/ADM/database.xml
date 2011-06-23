@@ -1,13 +1,13 @@
-<test-database execution-time-sec="3.77" date="Thu Jun 23 05:15:14 2011">
+<test-database execution-time-sec="3.84" date="Thu Jun 23 16:51:32 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Single Pattern Checks" time-sum-sec="0.64"> 
+    <test title="Single Pattern Checks" time-sum-sec="0.66"> 
         <application file-name="single-pattern.py" info-request-time="1308633292L" vanished="False"/>
         <choice-list number="10" same_result="False">
-           <choice name="0" result="OK" time_sec="0.06" crc="2021942689"/>
+           <choice name="0" result="OK" time_sec="0.07" crc="2021942689"/>
            <choice name="1" result="OK" time_sec="0.06" crc="113343062"/>
            <choice name="2" result="OK" time_sec="0.06" crc="-1823258394"/>
            <choice name="3" result="OK" time_sec="0.07" crc="-788737452"/>
-           <choice name="4" result="OK" time_sec="0.06" crc="-1964273015"/>
+           <choice name="4" result="OK" time_sec="0.07" crc="-1964273015"/>
            <choice name="5" result="OK" time_sec="0.08" crc="1127563801"/>
            <choice name="6" result="OK" time_sec="0.06" crc="-669842486"/>
            <choice name="7" result="OK" time_sec="0.06" crc="-109713359"/>
@@ -29,17 +29,17 @@
                <choice name="1" result="OK" time_sec="0.08" crc="577320429"/>
                <choice name="2" result="OK" time_sec="0.08" crc="-452513288"/>
                <choice name="3" result="OK" time_sec="0.08" crc="1630400212"/>
-               <choice name="4" result="OK" time_sec="0.09" crc="-754827776"/>
+               <choice name="4" result="OK" time_sec="0.08" crc="-754827776"/>
                <choice name="5" result="OK" time_sec="0.08" crc="-199939236"/>
                <choice name="6" result="OK" time_sec="0.08" crc="-390348575"/>
                <choice name="7" result="OK" time_sec="0.13" crc="551386876"/>
                <choice name="9" result="OK" time_sec="0.10" crc="-1800778825"/>
             </choice-list>
         </test>
-        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.69"> 
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.71"> 
             <application file-name="track_analysis.py" info-request-time="1308633246L" vanished="False"/>
             <choice-list number="10" same_result="False">
-               <choice name="0" result="OK" time_sec="0.06" crc="-727578457"/>
+               <choice name="0" result="OK" time_sec="0.08" crc="-727578457"/>
                <choice name="1" result="OK" time_sec="0.06" crc="685421142"/>
                <choice name="2" result="OK" time_sec="0.06" crc="269718442"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-504090759"/>
@@ -51,11 +51,11 @@
                <choice name="9" result="OK" time_sec="0.07" crc="1667877385"/>
             </choice-list>
         </test>
-        <test title="With Pre-Contexts" time-sum-sec="0.95"> 
+        <test title="With Pre-Contexts" time-sum-sec="0.96"> 
             <application file-name="track_analysis-pre.py" info-request-time="1308633233L" vanished="False"/>
             <choice-list number="12" same_result="False">
-               <choice name="0" result="OK" time_sec="0.06" crc="-1238788409"/>
-               <choice name="1" result="OK" time_sec="0.06" crc="-945225569"/>
+               <choice name="0" result="OK" time_sec="0.07" crc="-1238788409"/>
+               <choice name="1" result="OK" time_sec="0.07" crc="-945225569"/>
                <choice name="2" result="OK" time_sec="0.07" crc="-362273302"/>
                <choice name="3" result="OK" time_sec="0.07" crc="-816277084"/>
                <choice name="4" result="OK" time_sec="0.07" crc="-1503896415"/>
