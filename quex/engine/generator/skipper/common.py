@@ -1,6 +1,6 @@
 from   quex.input.setup import setup         as Setup
 import quex.engine.utf8                 as utf8
-import quex.output.cpp.action_code_formatter as action_code_formatter
+import quex.output.cpp.action_preparation as action_preparation
 
 line_counter_in_loop = """
 #   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
@@ -60,7 +60,7 @@ def get_on_skip_range_open(Mode, CloserSequence):
         for letter in CloserSequence:
             closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
 
-        code, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_skip_range_open"))
+        code, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_skip_range_open"))
         txt += "#define Closer \"%s\"\n" % closer_string
         txt += code
         txt += "#undef  Closer\n"

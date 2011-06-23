@@ -27,7 +27,7 @@ from   quex.input.setup                    import setup as Setup
 from   quex.engine.generator.action_info   import UserCodeFragment
 
 def do(file_list):
-    global mode_db
+    if len(file_list) == 0: error_msg("No input files.")
 
     for file in file_list:
         fh = open_file_or_die(file, Codec="utf-8")
@@ -44,7 +44,8 @@ def do(file_list):
     # After all modes have been defined, they can be translated 
     # into 'real' modes => call 'finalize()'!
     mode.finalize()
-    return
+
+    return blackboard.mode_db
 
 default_token_type_definition_triggered_by_mode_definition_f = False
 

@@ -1,6 +1,6 @@
-from   quex.engine.misc.string_handling import blue_print
-from   quex.input.setup            import setup as Setup
-import quex.output.cpp.action_code_formatter    as action_code_formatter
+from   quex.engine.misc.string_handling   import blue_print
+from   quex.input.setup                   import setup as Setup
+import quex.output.cpp.action_preparation as action_preparation
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
@@ -284,23 +284,23 @@ def get_on_indentation_handler(Mode):
         return "    return;"
 
     if Mode.has_code_fragment_list("on_indent"):
-        on_indent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indent"))
+        on_indent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_indent"))
     else:
         on_indent_str = "self_send(__QUEX_SETTING_TOKEN_ID_INDENT);"
 
     if Mode.has_code_fragment_list("on_nodent"):
-        on_nodent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_nodent"))
+        on_nodent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_nodent"))
     else:
         on_nodent_str = "self_send(__QUEX_SETTING_TOKEN_ID_NODENT);"
 
     if Mode.has_code_fragment_list("on_dedent"):
         assert not Mode.has_code_fragment_list("on_n_dedent")
-        on_dedent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_dedent"))
+        on_dedent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_dedent"))
         on_n_dedent_str      = ""
 
     elif Mode.has_code_fragment_list("on_n_dedent"):
         assert not Mode.has_code_fragment_list("on_dedent")
-        on_n_dedent_str, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_n_dedent"))
+        on_n_dedent_str, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_n_dedent"))
         on_dedent_str          = ""
 
     else:
@@ -318,7 +318,7 @@ def get_on_indentation_handler(Mode):
                                % Mode.name + \
                                '                "No \'on_indentation_error\' handler has been specified.\\n");'
     else:
-        on_indentation_error, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_error"))
+        on_indentation_error, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_indentation_error"))
 
     # Note: 'on_indentation_bad' is applied in code generation for 
     #       indentation counter in 'indentation_counter.py'.

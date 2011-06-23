@@ -5,10 +5,10 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.setup
-import quex.core                            as coder
 import quex.input.regular_expression.engine as regex
-import quex.output.cpp.core                 as generator
 from   quex.input.files.mode                import ModeDescription, Mode
+import quex.output.cpp.core                 as generator
+import quex.output.cpp.action_preparation   as action_preparation
 from   quex.engine.generator.action_info    import CodeFragment
 
 
@@ -39,7 +39,7 @@ quex.input.setup.setup.dos_carriage_return_newline_f = False
 
 
 mode = Mode(mode_descr)
-generator_input  = coder.get_generator_input(mode, False)
+variable_db, pattern_action_list, eof_action, failure_action  = action_preparation.do(mode, False)
 inheritance_info = mode.get_documentation()
 
 print "/*\n" + inheritance_info + "*/\n"
@@ -47,7 +47,7 @@ print "/*\n" + inheritance_info + "*/\n"
 for match_obj in mode.get_pattern_action_pair_list():
     print match_obj
 
-for action_info in generator_input:
+for action_info in pattern_action_list:
     print action_info
 
 

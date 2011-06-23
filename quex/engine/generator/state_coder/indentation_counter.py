@@ -1,12 +1,12 @@
 from   quex.input.setup                         import       setup as Setup
 import quex.engine.state_machine.index          as           sm_index
 import quex.engine.generator.state_coder.transition_block as transition_block
-from   quex.engine.generator.languages.variable_db        import Variable
-from   quex.engine.generator.languages.address  import       get_label, Address
-from   quex.engine.interval_handling            import       Interval
-from   quex.engine.misc.string_handling         import       blue_print
-import quex.output.cpp.action_code_formatter    as           action_code_formatter
-import quex.blackboard                          as           blackboard
+from   quex.engine.generator.languages.variable_db  import Variable
+from   quex.engine.generator.languages.address      import get_label, Address
+from   quex.engine.interval_handling                import Interval
+from   quex.engine.misc.string_handling             import blue_print
+import quex.output.cpp.action_preparation           as     action_preparation
+import quex.blackboard                              as     blackboard
 
 from   math import log
 import sys
@@ -283,7 +283,7 @@ def get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
                                 % Mode.name + \
                '                "No \'on_indentation_bad\' handler has been specified.\\n");'
     else:
-        code, eol_f = action_code_formatter.get_code(Mode.get_code_fragment_list("on_indentation_bad"))
+        code, eol_f = action_preparation.get_code(Mode.get_code_fragment_list("on_indentation_bad"))
         txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"
         txt += code
         txt += "#undef  BadCharacter\n"
