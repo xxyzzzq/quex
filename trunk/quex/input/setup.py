@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name
+from   quex.engine.misc.enum                import Enum
 from   quex.DEFINITIONS                     import QUEX_PATH
 
 import os.path as path
@@ -10,10 +11,10 @@ class QuexSetup:
     def __init__(self, SetupInfo):
         for key, entry in SetupInfo.items():
             if type(entry) != list:        default_value = entry
-            elif entry[1] == LIST:         default_value = []
-            elif entry[1] == FLAG:         default_value = False
-            elif entry[1] == NEGATED_FLAG: default_value = True
-            else:                          default_value = entry[1]
+            elif entry[1] == SetupParTypes.LIST:         default_value = []
+            elif entry[1] == SetupParTypes.FLAG:         default_value = False
+            elif entry[1] == SetupParTypes.NEGATED_FLAG: default_value = True
+            else:                                        default_value = entry[1]
             self.__dict__[key] = default_value
 
         # Default values, maybe overiden later on.
@@ -97,13 +98,13 @@ class QuexSetup:
 
         return clean(FileName)
 
-LIST         = -1111
-FLAG         = -2222
-NEGATED_FLAG = -3333
+SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
+FileTypes     = Enum("HEADER", "HEADER_IMPLEMTATION", "SOURCE")
+
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
-    "_debug_exception_f":             [["--debug-exception"],                  FLAG], 
+    "_debug_exception_f":             [["--debug-exception"],                  SetupParTypes.FLAG], 
     "analyzer_class_name":            [["-o", "--engine", "--analyzer-class"], "quex::lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
@@ -111,30 +112,30 @@ SETUP_INFO = {
     "buffer_codec_file":              [["--codec-file"],                       ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
-    "buffer_element_size_irrelevant": [["--buffer-element-size-irrelevant"],   FLAG],  
+    "buffer_element_size_irrelevant": [["--buffer-element-size-irrelevant"],   SetupParTypes.FLAG],  
     "buffer_element_type":            [["--buffer-element-type", "--bet"],       ""],
-    "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             FLAG],
+    "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             SetupParTypes.FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
-    "comment_state_machine_transitions_f": [["--comment-state-machine"],       FLAG],
-    "comment_mode_patterns_f":             [["--comment-mode-patterns"],       FLAG],
-    "compression_template_f":         [["--template-compression"],             FLAG],
+    "comment_state_machine_transitions_f": [["--comment-state-machine"],       SetupParTypes.FLAG],
+    "comment_mode_patterns_f":             [["--comment-mode-patterns"],       SetupParTypes.FLAG],
+    "compression_template_f":         [["--template-compression"],             SetupParTypes.FLAG],
     "compression_template_coef":      [["--template-compression-coefficient"], 1.0],
-    "compression_path_f":             [["--path-compression"],                 FLAG],
-    "compression_path_uniform_f":     [["--path-compression-uniform"],         FLAG],
-    "count_column_number_f":          [["--no-count-lines"],                   NEGATED_FLAG],
-    "count_line_number_f":            [["--no-count-columns"],                 NEGATED_FLAG],
+    "compression_path_f":             [["--path-compression"],                 SetupParTypes.FLAG],
+    "compression_path_uniform_f":     [["--path-compression-uniform"],         SetupParTypes.FLAG],
+    "count_column_number_f":          [["--no-count-lines"],                   SetupParTypes.NEGATED_FLAG],
+    "count_line_number_f":            [["--no-count-columns"],                 SetupParTypes.NEGATED_FLAG],
     "path_limit_code":                [["--path-termination"],                 0x1],
-    "dos_carriage_return_newline_f":  [["--no-DOS"],                           NEGATED_FLAG],
-    "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], NEGATED_FLAG],
-    "converter_iconv_f":              [["--iconv"],                            FLAG],
-    "converter_icu_f":                [["--icu"],                              FLAG],
+    "dos_carriage_return_newline_f":  [["--no-DOS"],                           SetupParTypes.NEGATED_FLAG],
+    "string_accumulator_f":           [["--no-string-accumulator", "--nsacc"], SetupParTypes.NEGATED_FLAG],
+    "converter_iconv_f":              [["--iconv"],                            SetupParTypes.FLAG],
+    "converter_icu_f":                [["--icu"],                              SetupParTypes.FLAG],
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
     "converter_ucs_coding_name":      [["--converter-ucs-coding-name", "--cucn"], ""],
-    "include_stack_support_f":        [["--no-include-stack", "--nois"],       NEGATED_FLAG],
-    "input_mode_files":               [["-i", "--mode-files"],                 LIST],
+    "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
+    "input_mode_files":               [["-i", "--mode-files"],                 SetupParTypes.LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class_name":               [["--token-class", "--tc"],              ""],
-    "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], NEGATED_FLAG], 
+    "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         ""],  
     "token_id_counter_offset":        [["--token-id-offset"],                  "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
@@ -142,21 +143,22 @@ SETUP_INFO = {
     "token_queue_size":               [["--token-queue-size"],               "64"],
     "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
-    "token_memory_management_by_user_f": [["--token-memory-management-by-user", "--tmmbu"], FLAG],
-    "mode_transition_check_f":        [["--no-mode-transition-check"],       NEGATED_FLAG],
+    "token_memory_management_by_user_f": [["--token-memory-management-by-user", "--tmmbu"], SetupParTypes.FLAG],
+    "mode_transition_check_f":        [["--no-mode-transition-check"],       SetupParTypes.NEGATED_FLAG],
     "language":                       [["--language", "-l"],                 "C++"],
     "output_file_naming_scheme":      [["--file-extension-scheme", "--fes"],  ""],
-    "post_categorizer_f":             [["--post-categorizer"],               FLAG],
+    "post_categorizer_f":             [["--post-categorizer"],               SetupParTypes.FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
     "source_package_directory":       [["--source-package", "--sp"],         ""],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
-    "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
+    "plot_graphic_format_list_f":     [["--plot-format-list"],               SetupParTypes.FLAG],
+    "single_mode_analyzer_f":         [["--single-mode-analyzer", "--sma"],  SetupParTypes.FLAG],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
-    "version_information":               [["--version", "-v"],                FLAG],
-    "help":                              [["--help", "-h"],                   FLAG],
-    "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], FLAG],
+    "version_information":               [["--version", "-v"],                SetupParTypes.FLAG],
+    "help":                              [["--help", "-h"],                   SetupParTypes.FLAG],
+    "warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_name_space":                       None,
@@ -178,29 +180,32 @@ SETUP_INFO = {
     "extension_db":                              None,
     "converter_helper_required_f":               True,
     #______________________________________________________________________________________________________
-    "XX_begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
-    "XX_buffer_element_size":            [["--bytes-per-ucs-code-point"], "1"],                  # DEPRECATED
-    "XX_buffer_element_size2":           [["--bytes-per-trigger"],         -1],                  # DEPRECATED
-    "XX_end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
-    "XX_flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
-    "XX_input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
-    "XX_input_token_id_db":              [["-t", "--token-id-db"],     LIST],                    # DEPRECATED
-    "XX_leave_temporary_files_f":        [["--leave-tmp-files"],       FLAG],                    # DEPRECATED
-    "XX_plain_memory_f":                 [["--plain-memory"],          FLAG],                    # DEPRECATED
-    "XX_std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECATED
-    "XX_yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECATED
-    "XX_input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
-    "XX_string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
-    "XX_disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
-    "XX_disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
-    "XX_input_lexer_class_friends":      [["--friend-class"],                   LIST],           # DEPRECATED
-    "XX_token_class_name":               [["--token-class-name"],               ""],             # DEPRECATED
-    "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",  "--ttnsc"], NEGATED_FLAG], # DEPRECATED
-    "XX_token_id_counter_offset":        [["--token-offset"],                   "10000"],        # DEPRECATED
-    "XX_token_id_termination":           [["--token-id-termination"],           "0"],            # DEPRECATED
-    "XX_token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],            # DEPRECATED
-    "XX_token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],            # DEPRECATED
-    "XX_output_debug_f":                 [["--debug"],                          FLAG],           # DEPRECATED
+    #
+    # DEPRECATED
+    #______________________________________________________________________________________________________
+    "XX_begin_of_stream_code":           [["--begin-of-stream"],                "0x19"],                  
+    "XX_buffer_element_size":            [["--bytes-per-ucs-code-point"],       "1"],                  
+    "XX_buffer_element_size2":           [["--bytes-per-trigger"],              -1],                  
+    "XX_end_of_stream_code":             [["--end-of-stream"],                  "0x1A"],                  
+    "XX_flex_engine_f":                  [["--flex-engine"],                    SetupParTypes.FLAG],      
+    "XX_input_pattern_file":             [["-p", "--pattern-file"],             ""],                      
+    "XX_input_token_id_db":              [["-t", "--token-id-db"],              SetupParTypes.LIST],
+    "XX_leave_temporary_files_f":        [["--leave-tmp-files"],                SetupParTypes.FLAG],      
+    "XX_plain_memory_f":                 [["--plain-memory"],                   SetupParTypes.FLAG],           
+    "XX_std_istream_support_f":          [["--istream-support"],                SetupParTypes.FLAG],           
+    "XX_yywrap_is_ok_f":                 [["--yywrap-is-ok"],                   SetupParTypes.FLAG],           
+    "XX_input_token_sending_via_queue_f":[["--token-queue"],                    SetupParTypes.FLAG],           
+    "XX_string_accumulator_f":           [["--string-accumulator", "--sacc"],   SetupParTypes.FLAG],  
+    "XX_disable_token_queue_f":          [["--no-token-queue", "--ntq"],        SetupParTypes.FLAG],       
+    "XX_disable_return_token_id_f":      [["--no-return-token-id"],             SetupParTypes.FLAG],  
+    "XX_input_lexer_class_friends":      [["--friend-class"],                   SetupParTypes.LIST], 
+    "XX_token_class_name":               [["--token-class-name"],               ""],             
+    "XX_token_class_stringless_check_f": [["--token-type-no-stringless-check",  "--ttnsc"], SetupParTypes.NEGATED_FLAG], 
+    "XX_token_id_counter_offset":        [["--token-offset"],                   "10000"],        
+    "XX_token_id_termination":           [["--token-id-termination"],           "0"],            
+    "XX_token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],            
+    "XX_token_id_indentation_error":     [["--token-id-indentation-error"],     "2"],            
+    "XX_output_debug_f":                 [["--debug"],                          SetupParTypes.FLAG],
 }
 
 DEPRECATED = { 
@@ -298,10 +303,6 @@ DEPRECATED = {
        "0.58.3")
 }
  
-HEADER              = 0
-HEADER_IMPLEMTATION = 1
-SOURCE              = 2
-
 global_character_type_db = {
         # Name:         Type:         LittleEndian     Big Endian       Bytes per 
         #                             Converter Name:  Converter Name:  engine character:
@@ -320,36 +321,36 @@ global_character_type_db = {
 global_extension_db = {
     "C++": {
         "": { 
-              SOURCE:              ".cpp",
-              HEADER:              "",
-              HEADER_IMPLEMTATION: ".i",
+              FileTypes.SOURCE:              ".cpp",
+              FileTypes.HEADER:              "",
+              FileTypes.HEADER_IMPLEMTATION: ".i",
         },
         "++": { 
-              SOURCE:              ".c++",
-              HEADER:              ".h++",
-              HEADER_IMPLEMTATION: ".h++",
+              FileTypes.SOURCE:              ".c++",
+              FileTypes.HEADER:              ".h++",
+              FileTypes.HEADER_IMPLEMTATION: ".h++",
         },
         "pp": { 
-              SOURCE:              ".cpp",
-              HEADER:              ".hpp",
-              HEADER_IMPLEMTATION: ".hpp",
+              FileTypes.SOURCE:              ".cpp",
+              FileTypes.HEADER:              ".hpp",
+              FileTypes.HEADER_IMPLEMTATION: ".hpp",
         },
         "cc": { 
-              SOURCE:              ".cc",
-              HEADER:              ".hh",
-              HEADER_IMPLEMTATION: ".hh",
+              FileTypes.SOURCE:              ".cc",
+              FileTypes.HEADER:              ".hh",
+              FileTypes.HEADER_IMPLEMTATION: ".hh",
         },
         "xx": { 
-              SOURCE:              ".cxx",
-              HEADER:              ".hxx",
-              HEADER_IMPLEMTATION: ".hxx",
+              FileTypes.SOURCE:              ".cxx",
+              FileTypes.HEADER:              ".hxx",
+              FileTypes.HEADER_IMPLEMTATION: ".hxx",
         },
    },
     "C": {
         "": {
-              SOURCE:              ".c",
-              HEADER:              ".h",
-              HEADER_IMPLEMTATION: ".c",
+              FileTypes.SOURCE:              ".c",
+              FileTypes.HEADER:              ".h",
+              FileTypes.HEADER_IMPLEMTATION: ".c",
         }
    }
 }

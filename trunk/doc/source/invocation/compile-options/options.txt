@@ -11,6 +11,19 @@ the suffix enables something, the option with the suffix disables the 'something
    More of use is the sibling ``QUEX_OPTION_ASSERTS_DISABLED``. Disabling
    asserts is key for getting reasonable performance.
 
+.. cmacro:: QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE
+
+   If defined (as by default) mode changes may happen without a token being
+   returned. Then, the analysis process continues until the first valid token is
+   returned. However, if::
+   
+        QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED
+
+   is defined, then the ``.receive()`` function returns always without 
+   checking that a token has actually been sent. This option is only
+   effective for the token policy 'single'. With the 'queue' token 
+   policy, the analyzer never returns with an empty token queue.
+
 .. cmacro:: QUEX_OPTION_BUFFER_BASED_ANALYZIS
 
    Turn on buffer based analyzis. In particular automatic buffer reload is

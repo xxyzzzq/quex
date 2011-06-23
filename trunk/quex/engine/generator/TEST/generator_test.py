@@ -342,13 +342,13 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     if not SecondModeF:  sm_name = "Mr"
     else:                sm_name = "Mrs"
 
-    generator = cpp_generator.Generator(PatternActionPair_List = PatternActionPairList, 
-                                        StateMachineName       = sm_name + "_UnitTest",
-                                        AnalyserStateClassName = sm_name,
+    Setup.analyzer_class_name = sm_name
+
+    generator = cpp_generator.Generator(StateMachineName       = sm_name + "_UnitTest",
+                                        PatternActionPair_List = PatternActionPairList, 
                                         OnFailureAction        = PatternActionInfo(None, on_failure_action), 
                                         EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
                                         ModeNameList           = [],
-                                        StandAloneAnalyserF    = True, 
                                         SupportBeginOfLineF    = support_begin_of_line_f)
 
     code = generator.do({})

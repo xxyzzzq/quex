@@ -118,6 +118,13 @@ as described in :ref:`sec-number-format`.
         
         By default, the mode transition check is enabled.
 
+.. cmdoption:: `--single-mode-analyzer`, `--sma`
+
+        In case that there is only one mode, this flag can be used to inform quex
+        that it is not intended to refer to the mode at all. In that case no
+        instance of the mode is going to be implemented. This reduces memory 
+        consumption a little and may possibly increase performance slightly.
+
 .. cmdoption:: `--no-string-accumulator`, `--nsacc`
 
         Turns the string accumulator option off. This disables the use of the string 

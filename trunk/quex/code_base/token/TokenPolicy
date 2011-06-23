@@ -16,7 +16,6 @@
  * safely redefined.                                                     */
 #ifdef __QUEX_INCLUDE_INDICATOR__TOKEN_POLICY__
 #    undef QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION
-#    undef QUEX_TOKEN_POLICY_NO_TOKEN
 #    undef QUEX_TOKEN_POLICY_PREPARE_NEXT
 #    undef __QUEX_TOKEN_POLICY_SET_ID
 #    undef __QUEX_ASSERT_SEND_ENTRY
@@ -37,9 +36,6 @@
 #   define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
            ++(self._token_queue.write_iterator); 
 
-#   define QUEX_TOKEN_POLICY_NO_TOKEN() \
-           (QUEX_NAME(TokenQueue_is_empty)(&self._token_queue))
-
 #   if        defined(__QUEX_OPTION_PLAIN_C)
 #      define self_token_get_id()   __QUEX_CURRENT_TOKEN_P->_id
 #   else
@@ -53,9 +49,6 @@
 
 #   define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
            /* empty */
-
-#   define QUEX_TOKEN_POLICY_NO_TOKEN() \
-           (__self_result_token_id == __QUEX_SETTING_TOKEN_ID_UNINITIALIZED)
 
 /*  Important: Currently the token class needs to contain a token identifier.
  *             When this changes, the 'get_id' function can rely solely on 
@@ -114,24 +107,18 @@
            do { __QUEX_CURRENT_TOKEN_ACCESS._id = (ID);  } while(0)
 #endif
 
-/* Ensure that no token is sent after the token 'TERMINATION'. If files are included
- * the token queue is reset.                                                          */
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-#   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(TOKEN_ID_TERMINATION) \
-           __quex_assert(    self._token_queue.write_iterator == self._token_queue.begin \
-                         || (self._token_queue.write_iterator-1)->_id != TOKEN_ID_TERMINATION)
-#else
-#   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(CLASS_NAME) 
-           /* empty */
-#endif
-
 #ifdef     QUEX_OPTION_TOKEN_POLICY_QUEUE
+    /* -- Assert consistency of the token queue
+     * -- Assert no token is sent after token 'TERMINATION'. 
+     *    If files are included the token queue is reset.   */
 #   define __QUEX_ASSERT_SEND_ENTRY() \
            QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue); \
-           QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+           __quex_assert(    self._token_queue.write_iterator == self._token_queue.begin \
+                         || (self._token_queue.write_iterator-1)->_id != __QUEX_SETTING_TOKEN_ID_TERMINATION)
 #else
-#   define __QUEX_ASSERT_SEND_ENTRY() \
-           QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
+    /* No assert about token object                         */
+    /* No assert on not __QUEX_SETTING_TOKEN_ID_TERMINATION */
+#   define __QUEX_ASSERT_SEND_ENTRY()              /* EMPTY */
 #endif
 
 #ifdef  QUEX_OPTION_TOKEN_REPETITION_SUPPORT

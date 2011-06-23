@@ -254,12 +254,12 @@ def __local_variable_definition(PostContextID_List, PreContextID_List, LanguageD
 
     return LanguageDB["$local-variable-defs"](variable_db.get())
 
-def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
+def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
                         variable_definitions, function_body, ModeNameList=[], LanguageDB=None):
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
-       StandAloneEngineF = False if a mode for a quex engine is to be created. True
+       SingleModeAnalyzerF = False if a mode for a quex engine is to be created. True
                            if a stand-alone lexical engine is required (without the
                            complete mode-handling framework of quex).
     """              
@@ -270,7 +270,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     txt.extend(variable_definitions)
 
-    if not StandAloneEngineF: 
+    if len(ModeNameList) != 0 and not SingleModeAnalyzerF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             txt.append("#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name))
@@ -308,7 +308,7 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
-    if not StandAloneEngineF: 
+    if len(ModeNameList) != 0 and not SingleModeAnalyzerF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             txt.append("#   undef %s\n" % name)
