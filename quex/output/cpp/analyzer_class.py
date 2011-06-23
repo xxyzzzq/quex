@@ -3,14 +3,13 @@ import os
 from   copy import copy
 import time
 
+from   quex.input.setup                 import setup as Setup
 from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.misc.file_in         import get_file_content_or_die, \
-                                          get_include_guard_extension, \
-                                          make_safe_identifier
-
-from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
-import quex.blackboard  as     blackboard
-from   quex.input.setup import setup as Setup
+                                               get_include_guard_extension, \
+                                               make_safe_identifier
+from   quex.DEFINITIONS                 import QUEX_PATH, QUEX_VERSION
+import quex.blackboard                  as     blackboard
 
 def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
     assert blackboard.token_type_definition is not None

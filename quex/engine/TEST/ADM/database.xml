@@ -1,4 +1,4 @@
-<test-database execution-time-sec="46.45" date="Thu Jun 23 16:51:28 2011">
+<test-database execution-time-sec="46.32" date="Thu Jun 23 17:33:48 2011">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.07"> 
@@ -8,17 +8,17 @@
                <choice name="Examples" result="OK" time_sec="0.04" crc="1282192120"/>
             </choice-list>
         </test>
-        <test title="Cut Interval" time-sum-sec="0.06"> 
+        <test title="Cut Interval" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-cut_interval.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1051370365"/>
+               <choice name="" result="OK" time_sec="0.05" crc="1051370365"/>
             </choice-list>
         </test>
         <test title="Inverse" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1301139216L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="1" result="OK" time_sec="0.04" crc="1433382430"/>
-               <choice name="2" result="OK" time_sec="0.04" crc="-1840078184"/>
+               <choice name="1" result="OK" time_sec="0.03" crc="1433382430"/>
+               <choice name="2" result="OK" time_sec="0.03" crc="-1840078184"/>
             </choice-list>
         </test>
         <test title="Difference" time-sum-sec="0.04"> 
@@ -27,13 +27,13 @@
                <choice name="" result="OK" time_sec="0.04" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Massive Mutual Consistency Check" time-sum-sec="35.09"> 
+        <test title="Massive Mutual Consistency Check" time-sum-sec="34.95"> 
             <application file-name="test-NumberSet-mmcc.py" info-request-time="1305001373L" vanished="False"/>
             <choice-list number="5" same_result="True">
-               <choice name="union" result="OK" time_sec="8.16" crc="1624740239"/>
-               <choice name="intersection" result="OK" time_sec="8.02" crc="1624740239"/>
-               <choice name="symmetric_difference" result="OK" time_sec="7.86" crc="1624740239"/>
-               <choice name="difference" result="OK" time_sec="10.67" crc="1624740239"/>
+               <choice name="union" result="OK" time_sec="8.17" crc="1624740239"/>
+               <choice name="intersection" result="OK" time_sec="7.98" crc="1624740239"/>
+               <choice name="symmetric_difference" result="OK" time_sec="7.82" crc="1624740239"/>
+               <choice name="difference" result="OK" time_sec="10.61" crc="1624740239"/>
                <choice name="is_superset" result="OK" time_sec="0.37" crc="1624740239"/>
             </choice-list>
         </test>
@@ -45,10 +45,10 @@
                <choice name="3" result="OK" time_sec="0.04" crc="1050676042"/>
             </choice-list>
         </test>
-        <test title="Intersection" time-sum-sec="0.05"> 
+        <test title="Intersection" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="892506273"/>
+               <choice name="" result="OK" time_sec="0.04" crc="892506273"/>
             </choice-list>
         </test>
         <test title="Union" time-sum-sec="0.04"> 
@@ -57,45 +57,45 @@
                <choice name="" result="OK" time_sec="0.04" crc="973910203"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.73"> 
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.76"> 
             <application file-name="test-NumberSet-transform-x.py" info-request-time="1301139216L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="10" result="OK" time_sec="0.04" crc="1378888075"/>
-               <choice name="1000" result="OK" time_sec="0.54" crc="-646722016"/>
+               <choice name="1000" result="OK" time_sec="0.53" crc="-646722016"/>
                <choice name="2000" result="OK" time_sec="1.86" crc="1205044615"/>
-               <choice name="3000" result="OK" time_sec="3.94" crc="843858714"/>
-               <choice name="100" result="OK" time_sec="0.07" crc="-2005431878"/>
-               <choice name="250" result="OK" time_sec="0.10" crc="1443580919"/>
+               <choice name="3000" result="OK" time_sec="4.01" crc="843858714"/>
+               <choice name="100" result="OK" time_sec="0.05" crc="-2005431878"/>
+               <choice name="250" result="OK" time_sec="0.08" crc="1443580919"/>
                <choice name="500" result="OK" time_sec="0.18" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Cut Interval" time-sum-sec="0.07"> 
             <application file-name="test-Interval-cmp.py" info-request-time="1305001373L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="normal" result="OK" time_sec="0.04" crc="1145705751"/>
-               <choice name="special" result="OK" time_sec="0.04" crc="517788893"/>
+               <choice name="normal" result="OK" time_sec="0.03" crc="1145705751"/>
+               <choice name="special" result="OK" time_sec="0.03" crc="517788893"/>
             </choice-list>
         </test>
     </group>
     <group name="UTF16">
-        <test title="Conversion from and to byte sequences" time-sum-sec="0.37"> 
+        <test title="Conversion from and to byte sequences" time-sum-sec="0.39"> 
             <application file-name="test-utf16-byte-sequences.py" info-request-time="1305001373L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.37" crc="-1432178973"/>
+               <choice name="" result="OK" time_sec="0.39" crc="-1432178973"/>
             </choice-list>
         </test>
     </group>
     <group name="UTF8">
-        <test title="Map UTF8 String To Unicode Values" time-sum-sec="0.06"> 
+        <test title="Map UTF8 String To Unicode Values" time-sum-sec="0.04"> 
             <application file-name="test-utf8-UCS-to-UTF8.py" info-request-time="1301139216L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-99051650"/>
+               <choice name="" result="OK" time_sec="0.04" crc="-99051650"/>
             </choice-list>
         </test>
-        <test title="Conversion from and to byte sequences" time-sum-sec="3.68"> 
+        <test title="Conversion from and to byte sequences" time-sum-sec="3.71"> 
             <application file-name="test-utf8-byte-sequences.py" info-request-time="1305001373L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.68" crc="-1432178973"/>
+               <choice name="" result="OK" time_sec="3.71" crc="-1432178973"/>
             </choice-list>
         </test>
     </group>
