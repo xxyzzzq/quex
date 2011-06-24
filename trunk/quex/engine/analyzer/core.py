@@ -23,7 +23,7 @@ import quex.engine.analyzer.track_analysis as track_analysis
 from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
                                                   AcceptanceTraceEntry_Void, \
                                                   extract_pre_context_id
-from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs, EngineTypes
+from   quex.blackboard                     import PostContextIDs, AcceptanceIDs, EngineTypes
 from   quex.engine.misc.enum import Enum
 
 
@@ -69,6 +69,9 @@ class Analyzer:
             #       For backward analysis, the behavior of a state can be determined in 
             #       isolation and it is not dependent on other states.
             pass
+
+    @property
+    def state_db(self): return self.__state_db
 
     def __iter__(self):
         for x in self.__state_db.values():
@@ -418,14 +421,18 @@ class Analyzer:
 
 InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
 
-class AnalyzerState:
+class AnalyzerState(object):
+    __slots__("index", "__init_state_f", "engine_type", "input", "entry", "transition_map", "drop_out", "_origin_list")
+
     def __init__(self, StateIndex, SM, EngineType):
         assert type(StateIndex) in [int, long]
         assert EngineType in EngineTypes
 
         state = SM.states[StateIndex]
 
-        self.index = StateIndex
+        self.__index        = StateIndex
+        self.__init_state_f = SM.init_state_index == StateIndex
+        self.__engine_type  = EngineType
 
         # (*) Input
         if EngineType == EngineTypes.FORWARD:
@@ -466,6 +473,13 @@ class AnalyzerState:
             self.drop_out = DropOut()
 
         self._origin_list = state.origins().get_list()
+
+    @property
+    def index(self):        return self.__index
+    @property
+    def init_state_f(self): return self.__init_state_f
+    @property
+    def engine_type(self):  return self.__engine_type
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -610,13 +624,17 @@ class EntryBackwardInputPositionDetection(object):
        Non-Acceptance State
        => proceed with the state transitions (do nothing here)
     """
-    __slots__ = ("terminated_f")
+    __slots__ = ("__terminated_f")
 
     def __init__(self, OriginList):
-        self.terminated_f = False
+        self.__terminated_f = False
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-            self.terminated_f = True
+            self.__terminated_f = True
             return
+
+    @property
+    def terminated_f(self): return self.__terminated_f
+
     def __repr__(self):
         return "    Terminated\n" if self.terminated_f else ""
 

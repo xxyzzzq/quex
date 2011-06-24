@@ -1,4 +1,4 @@
-from quex.engine.state_machine.state_core_info     import PostContextIDs      
+from quex.blackboard                               import PostContextIDs      
 
 class Checker:
     def __init__(self, SM0, SM1):

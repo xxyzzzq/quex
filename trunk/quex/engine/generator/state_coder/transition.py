@@ -1,6 +1,6 @@
 from quex.input.setup import setup as Setup
 from quex.engine.generator.languages.address import get_address, get_label, Address
-from quex.engine.state_machine.state_core_info     import PostContextIDs      
+from quex.blackboard                               import PostContextIDs      
 
 def do(TargetInfo, CurrentStateIdx, SMD):
     LanguageDB = Setup.language_db
