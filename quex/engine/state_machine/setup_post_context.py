@@ -2,7 +2,7 @@
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import *
 import quex.engine.state_machine.ambiguous_post_context as apc
-from   quex.blackboard                                  import PostContextIDs
+from   quex.engine.state_machine.state_core_info        import PostContextIDs
 import sys
 
 

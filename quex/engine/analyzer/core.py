@@ -23,7 +23,7 @@ import quex.engine.analyzer.track_analysis as track_analysis
 from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
                                                   AcceptanceTraceEntry_Void, \
                                                   extract_pre_context_id
-from   quex.blackboard                     import PostContextIDs, AcceptanceIDs, EngineTypes
+from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs, EngineTypes
 from   quex.engine.misc.enum import Enum
 
 
