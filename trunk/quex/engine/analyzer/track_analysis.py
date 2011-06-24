@@ -1,5 +1,5 @@
 from quex.input.setup import setup as Setup
-from quex.blackboard                               import PostContextIDs, AcceptanceIDs
+from quex.engine.state_machine.state_core_info     import PostContextIDs, AcceptanceIDs
 
 from collections import defaultdict
 from copy        import copy, deepcopy

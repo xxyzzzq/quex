@@ -1,5 +1,5 @@
 from quex.engine.misc.enum import Enum
-from quex.blackboard       import PostContextIDs, AcceptanceIDs
+from quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs
 
 StateOriginInfo_POST_CONDITION_END          = 1
 StateOriginInfo_NON_ACCEPTANCE              = 2
@@ -8,6 +8,24 @@ StateOriginInfo_POST_CONDITIONED_ACCEPTANCE = 4
 StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE = 5
 StateOriginInfo_ERROR                       = -1
 
+# Special Signal Values for 'pre_context_id'
+# Add a member '_DEBUG_NAME_Xyz' so that the type of an enum value can
+# be determined by value.EnumType[-1]
+PreContextIDs  = Enum("NONE",    
+                      "BEGIN_OF_LINE", 
+                      "_DEBUG_NAME_PreContextIDs")
+AcceptanceIDs  = Enum("FAILURE", 
+                      "PRE_CONTEXT_FULFILLED", 
+                      "TERMINAL_PRE_CONTEXT_CHECK", 
+                      "TERMINAL_BACKWARD_INPUT_POSITION", 
+                      "VOID", 
+                      "_DEBUG_NAME_AcceptanceIDs")
+PostContextIDs = Enum("NONE", 
+                      "_DEBUG_NAME_PostContextIDs")
+EngineTypes    = Enum("FORWARD", 
+                      "BACKWARD_PRE_CONTEXT", 
+                      "BACKWARD_INPUT_POSITION",
+                      "_DEBUG_EngineTypes")
 
 class StateCoreInfo(object): 
     """-- store input position: if an origin is flagged that way it 
