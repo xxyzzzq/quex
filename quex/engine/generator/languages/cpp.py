@@ -2,7 +2,7 @@ from quex.engine.misc.file_in         import is_identifier_start, is_identifier_
 from quex.engine.misc.string_handling import blue_print
 
 import quex.engine.state_machine.index             as     index
-from   quex.engine.state_machine.state_core_info   import PostContextIDs      
+from   quex.blackboard                             import PostContextIDs      
 from   quex.engine.generator.languages.address     import *
 from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.interval_handling               import NumberSet

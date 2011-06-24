@@ -2,7 +2,7 @@ from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.generator.action_info               import PatternActionInfo
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.parallelize           as parallelize
-from   quex.engine.state_machine.state_core_info       import PostContextIDs      
+from   quex.blackboard                                 import PostContextIDs      
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 from   itertools import ifilter

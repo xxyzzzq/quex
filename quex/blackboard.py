@@ -17,11 +17,11 @@
 # (C) 2006, 2007 Frank-Rene Schaefer
 #
 ################################################################################
-from   copy                              import deepcopy
-from   quex.engine.misc.file_in          import error_msg, get_current_line_info_number
-from   quex.engine.generator.action_info import *
-from   quex.input.setup                  import QuexSetup 
-
+from quex.engine.generator.action_info import *
+from quex.engine.misc.enum             import Enum
+# from quex.input.setup         import QuexSetup 
+# from quex.engine.misc.file_in import error_msg, get_current_line_info_number
+from copy import deepcopy
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
