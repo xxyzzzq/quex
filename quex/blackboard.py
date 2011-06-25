@@ -17,11 +17,12 @@
 # (C) 2006, 2007 Frank-Rene Schaefer
 #
 ################################################################################
-from quex.engine.generator.action_info import *
-from quex.engine.misc.enum             import Enum
-# from quex.input.setup         import QuexSetup 
-# from quex.engine.misc.file_in import error_msg, get_current_line_info_number
-from copy import deepcopy
+
+# IMPORTANT: It was a designated design goal to make sure that the imports     #
+#            in this file do **not** depend on larger import trees.            #
+from quex.engine.generator.code_fragment_base import CodeFragment
+from quex.engine.misc.enum                    import Enum
+from copy                                     import deepcopy
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:

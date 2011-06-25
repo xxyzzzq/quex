@@ -156,7 +156,22 @@ class LDB:
     def __getitem__(self, Item): return self.__db[Item]
 
     RETURN      = "return;"
+
     UNREACHABLE = "__quex_assert_no_passage();"
+
+    def GOTO(self, StateIndex):
+        if StateIndex == StateIndices.INIT_STATE_TRANSITION_BLOCK:
+            return "goto INIT_STATE_TRANSITION_BLOCK;"
+        else:
+            return "goto _%i;" % StateIndex
+
+    def GOTO_TERMINAL(self, AcceptanceID):
+        if AcceptanceID == AcceptanceIDs.VOID: 
+            return "QUEX_GOTO_TERMINAL(last_acceptance);"
+        return "goto TERMINAL_%i;" % AcceptanceID
+
+    def LABEL(self, StateIndex):
+        return "_%i:" % StateIndex
 
     def IF_PRE_CONTEXT(self, PreContextList, FirstF, Consequence):
         if PreContextList is None:               return Consequence
@@ -172,7 +187,7 @@ class LDB:
             else:                    txt += "pre_context_%i_fulfilled_f"
             if i != last_i: txt += " || "
 
-        txt += ") {\n        %s\n    }\n" % Consequence
+        txt += " ) {\n        %s\n    }\n" % Consequence
 
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
@@ -218,8 +233,17 @@ class LDB:
         return txt
 
     def POSITIONING(self, Positioning, Register):
-        if Positioning
+        # if Positioning
         return "me->buffer->_input_p = position[%i];\n" % Register
+
+    def SELECTION(self, Selector, CaseList):
+        txt = [ 1, "switch( %s ) {\n" % Selector ]
+        for item, consequence in CaseList:
+            txt.append(2)
+            txt.append("case %3i: %s; break;\n" % (item, consequence))
+        txt.append(1)
+        txt.append("}\n")
+        return txt
 
 db["C++"] = CppBase 
 
