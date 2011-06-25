@@ -1,5 +1,4 @@
 from quex.engine.misc.enum import Enum
-from quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs
 
 StateOriginInfo_POST_CONDITION_END          = 1
 StateOriginInfo_NON_ACCEPTANCE              = 2

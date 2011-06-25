@@ -1,15 +1,15 @@
-<test-database execution-time-sec="22.66" date="Thu Jun 23 17:31:36 2011">
+<test-database execution-time-sec="1.22" date="Sat Jun 25 05:49:26 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.49"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.46"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.49" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.46" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.04"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.04" crc="2072927346"/>
+           <choice name="" result="FAIL" time_sec="0.03" crc="2072927346"/>
         </choice-list>
     </test>
     <test title="Check if the default configuration has been updated." time-sum-sec="0.03"> 
@@ -30,10 +30,10 @@
            <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="21.96"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.55"> 
         <application file-name="include_guard.py" info-request-time="1305087040L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="21.69" crc="1196150108"/>
+           <choice name="convention" result="OK" time_sec="0.28" crc="1196150108"/>
            <choice name="undefinition" result="OK" time_sec="0.27" crc="1693599369"/>
         </choice-list>
     </test>
