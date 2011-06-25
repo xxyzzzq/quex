@@ -155,6 +155,9 @@ class LDB:
     def __init__(self, DB):      self.__db = DB
     def __getitem__(self, Item): return self.__db[Item]
 
+    RETURN      = "return;"
+    UNREACHABLE = "__quex_assert_no_passage();"
+
     def IF_PRE_CONTEXT(self, PreContextList, FirstF, Consequence):
         if PreContextList is None:               return Consequence
         if not isinstance(PreContextList, list): PreContextList = [ PreContextList ]
@@ -197,11 +200,13 @@ class LDB:
 
     def STATE_ENTRY(self, TheState):
         if not (TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD):
-            txt = ["    __quex_assert_no_passage();\n"
-                   "%i:\n" % StateIndex
-                  ]
+            txt   = ["    %s\n" % self.UNREACHABLE ]
+            index = TheState.index
         else:
-            txt = ["INIT_STATE_TRANSITION_BLOCK:"]
+            txt   = []
+            index = StateIndices.INIT_STATE_TRANSITION_BLOCK
+
+        txt.append(self.LABEL(index))
 
         if TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD: 
             txt.append("    __quex_debug_init_state();\n")
@@ -211,8 +216,6 @@ class LDB:
             txt.append("    __quex_debug_state_backward(%i);\n" % StateIdx)
 
         return txt
-
-    RETURN = "return;"
 
     def POSITIONING(self, Positioning, Register):
         if Positioning
