@@ -52,9 +52,9 @@ class Analyzer:
 
                 state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
 
-            # After the previous dependency implementation:
-            # If a state has no successor state, or only transitions to itself,
-            # => No entry check is necessary and no position storage.
+            # -- After the preceding dependency implementation:
+            #    If a state has no successor state, or only transitions to itself,
+            #    => No entry check is necessary and no position storage.
             for state_index, sm_state in SM.states.iteritems():
                 transition_map = sm_state.transitions().get_map()
                 if     len(transition_map) == 0 \
@@ -69,6 +69,11 @@ class Analyzer:
             #       For backward analysis, the behavior of a state can be determined in 
             #       isolation and it is not dependent on other states.
             pass
+
+        # -- Mark each state to which there is a transition
+        for sm_state in SM.states.itervalues():
+            for target in sm_state.transitions().get_map().iterkeys():
+                self.__state_db[target].set_state_is_entered_f()
 
     @property
     def state_db(self): return self.__state_db
@@ -422,7 +427,7 @@ class Analyzer:
 InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
 
 class AnalyzerState(object):
-    __slots__("index", "__init_state_f", "engine_type", "input", "entry", "transition_map", "drop_out", "_origin_list")
+    __slots__ = ("__index", "__init_state_f", "__state_is_entered_f", "__engine_type", "input", "entry", "transition_map", "drop_out", "_origin_list")
 
     def __init__(self, StateIndex, SM, EngineType):
         assert type(StateIndex) in [int, long]
@@ -430,9 +435,10 @@ class AnalyzerState(object):
 
         state = SM.states[StateIndex]
 
-        self.__index        = StateIndex
-        self.__init_state_f = SM.init_state_index == StateIndex
-        self.__engine_type  = EngineType
+        self.__index              = StateIndex
+        self.__init_state_f       = SM.init_state_index == StateIndex
+        self.__engine_type        = EngineType
+        self.__state_is_entered_f = False
 
         # (*) Input
         if EngineType == EngineTypes.FORWARD:
@@ -475,11 +481,16 @@ class AnalyzerState(object):
         self._origin_list = state.origins().get_list()
 
     @property
-    def index(self):        return self.__index
+    def index(self):              return self.__index
     @property
-    def init_state_f(self): return self.__init_state_f
+    def init_state_f(self):       return self.__init_state_f
     @property
-    def engine_type(self):  return self.__engine_type
+    def engine_type(self):        return self.__engine_type
+    @property
+    def state_is_entered_f(self): return self.__state_is_entered_f
+
+    def set_state_is_entered_f(self): 
+        self.__state_is_entered_f = True
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
@@ -649,11 +660,15 @@ class EntryBackward(object):
 
        This list can be determined beforehand from the origin list. 
     """
-    __slots__ = ("pre_context_fulfilled_set")
+    __slots__ = ("__pre_context_fulfilled_set")
     def __init__(self, OriginList):
-        self.pre_context_fulfilled_set = set([])
+        self.__pre_context_fulfilled_set = set([])
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
-            self.pre_context_fulfilled_set.add(origin.state_machine_id)
+            self.__pre_context_fulfilled_set.add(origin.state_machine_id)
+
+    @property
+    def pre_context_fulfilled_set(self):
+        return self.__pre_context_fulfilled_set
 
     def __repr__(self):
         if len(self.pre_context_fulfilled_set) == 0: return ""

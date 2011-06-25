@@ -15,6 +15,8 @@
 import quex.engine.generator.languages.cpp     as cpp
 import quex.engine.generator.languages.python  as python
 from   quex.engine.generator.languages.address import *
+# from   quex.engine.state_machine.state_core_info import PreContextIDs
+# from   quex.engine.analyzer.core                 import InputActions
 from   quex.engine.misc.string_handling import blue_print
 from   copy import deepcopy, copy
 
@@ -39,7 +41,7 @@ def __string_if_true(Value, Condition):
     if Condition: return Value
     else:         return ""
 
-db["C++"] = {
+CppBase = {
     "$language":      "C++",
     "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
     "$namespace-open":     __open_namespace,
@@ -148,6 +150,75 @@ db["C++"] = {
     "$analyzer_template_file":  "/analyzer/TXT-Cpp",
     "$file_extension":          ".cpp",
     }
+
+class LDB:
+    def __init__(self, DB):      self.__db = DB
+    def __getitem__(self, Item): return self.__db[Item]
+
+    def IF_PRE_CONTEXT(self, PreContextList, FirstF, Consequence):
+        if PreContextList is None:               return Consequence
+        if not isinstance(PreContextList, list): PreContextList = [ PreContextList ]
+        if None in PreContextList:               return Consequence
+
+        if FirstF: txt = "    if( "
+        else:      txt = "    else if( "
+
+        last_i = len(PreContextList) - 1
+        for i, pre_context_id in enumerate(PreContextList):
+            if pre_context_id != -1: txt += "me->buffer._character_before_lexeme_start == '\\n'"
+            else:                    txt += "pre_context_%i_fulfilled_f"
+            if i != last_i: txt += " || "
+
+        txt += ") {\n        %s\n    }\n" % Consequence
+
+    def ASSIGN(self, X, Y):
+        return "%s = %s;" % (X, Y)
+
+    def END_IF(self, FirstF):
+        return { True: "", False: "}" }[FirstF]
+
+    def ACCESS_INPUT(self, InputAction):
+        return {
+            InputActions.DEREF:       
+            [
+                "    input = *(me->buffer->_input_p)\n",
+            ],
+            InputActions.INCREMENT_THEN_DEREF:
+            [
+                "    ++(me->buffer->_input_p);\n"
+                "    input = *(me->buffer->_input_p)\n",
+            ],
+            InputActions.DECREMENT_THEN_DEREF:
+            [
+                "    --(me->buffer->_input_p);\n"
+                "    input = *(me->buffer->_input_p)\n",
+            ],
+        }[InputAction]
+
+    def STATE_ENTRY(self, TheState):
+        if not (TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD):
+            txt = ["    __quex_assert_no_passage();\n"
+                   "%i:\n" % StateIndex
+                  ]
+        else:
+            txt = ["INIT_STATE_TRANSITION_BLOCK:"]
+
+        if TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD: 
+            txt.append("    __quex_debug_init_state();\n")
+        elif TheState.engine_type == FORWARD:
+            txt.append("    __quex_debug_state(%i);\n" % StateIdx)
+        else:
+            txt.append("    __quex_debug_state_backward(%i);\n" % StateIdx)
+
+        return txt
+
+    RETURN = "return;"
+
+    def POSITIONING(self, Positioning, Register):
+        if Positioning
+        return "me->buffer->_input_p = position[%i];\n" % Register
+
+db["C++"] = CppBase 
 
 #________________________________________________________________________________
 # C
