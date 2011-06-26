@@ -1,4 +1,4 @@
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
 from quex.engine.state_machine.state_core_info     import PostContextIDs, AcceptanceIDs
 
 from collections import defaultdict

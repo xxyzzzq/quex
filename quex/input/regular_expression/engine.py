@@ -41,7 +41,7 @@ from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           __debug_print, \
                                                           snap_replacement
 
-from   quex.input.setup                                       import setup as Setup
+from   quex.blackboard                                       import setup as Setup
 from   quex.engine.state_machine.utf16_state_split       import ForbiddenRange
 import quex.engine.utf8                                  as utf8
 import quex.input.regular_expression.character_set_expression   as character_set_expression

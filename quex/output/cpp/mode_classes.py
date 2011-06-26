@@ -1,5 +1,5 @@
 from   quex.engine.misc.string_handling   import blue_print
-from   quex.input.setup                   import setup as Setup
+from   quex.blackboard                   import setup as Setup
 import quex.output.cpp.action_preparation as action_preparation
 
 def do(Modes):

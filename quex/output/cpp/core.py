@@ -13,7 +13,7 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.misc.string_handling                import blue_print
 from   quex.engine.generator.base                      import GeneratorBase
 
-from   quex.input.setup                                import setup as Setup
+from   quex.blackboard                                import setup as Setup
 #
 from   copy import copy
 

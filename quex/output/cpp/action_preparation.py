@@ -26,7 +26,7 @@
 """
 from   quex.engine.interval_handling     import NumberSet
 from   quex.engine.generator.action_info import *
-from   quex.input.setup                  import setup as Setup
+from   quex.blackboard                  import setup as Setup
 
 def do(Mode, IndentationSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 

@@ -1,12 +1,12 @@
 import os.path
-from   quex.DEFINITIONS    import QUEX_PATH
-from   quex.input.setup    import SETUP_INFO, DEPRECATED, global_character_type_db
-import quex.engine.codec_db.core           as codec_db
+from   quex.DEFINITIONS              import QUEX_PATH
 import quex.input.command_line.query as query
-from   quex.engine.misc.file_in import is_identifier, \
-                                  error_msg, \
-                                  verify_word_in_list, \
-                                  error_msg_file_not_found
+from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db
+import quex.engine.codec_db.core     as codec_db
+from   quex.engine.misc.file_in      import is_identifier, \
+                                            error_msg, \
+                                            verify_word_in_list, \
+                                            error_msg_file_not_found
 
 def do(setup, command_line, argv):
     """Does a consistency check for setup and the command line.

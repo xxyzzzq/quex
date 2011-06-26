@@ -90,7 +90,7 @@ import quex.engine.state_machine.core                     as state_machine
 import quex.engine.state_machine.compression.paths        as paths 
 from   quex.engine.interval_handling                      import Interval
 
-from   quex.input.setup import setup as Setup
+from   quex.blackboard import setup as Setup
 
 from   copy import deepcopy
 import sys

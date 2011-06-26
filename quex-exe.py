@@ -54,7 +54,7 @@ try:
 
     # This script needs to be located one directory above 'quex.'
     # so that it ca get the imports straight.
-    from   quex.input.setup              import setup as Setup
+    from   quex.blackboard               import setup as Setup
     import quex.input.command_line.core  as command_line
     import quex.input.command_line.query as query_parser
     import quex.core                     as core

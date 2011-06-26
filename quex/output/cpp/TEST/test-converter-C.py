@@ -5,7 +5,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.cpp.codec_converter_helper as codec_converter_helper
 import quex.engine.generator.languages.core as languages
 import quex.engine.codec_db.core       as codec_db
-import quex.input.setup
+import quex.blackboard
 
 if "--hwut-info" in sys.argv:
     print "Converter: Determine UTF-8 Range Map for Codec"
@@ -31,7 +31,7 @@ def test(CodecName):
     #os.remove("./converter-tester.h")
     os.remove("./converter-tester")
 
-quex.input.setup.setup.language_db = languages.db["C"]
+quex.blackboard.setup.language_db = languages.db["C"]
 
 test(sys.argv[1])
 

@@ -15,7 +15,7 @@ import sys
 import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.input.setup import setup                as Setup
+from   quex.blackboard import setup                as Setup
 import quex.engine.generator.languages.core    as languages
 from   quex.engine.generator.languages.address import __label_db
 Setup.language_db = languages.db["Python"]

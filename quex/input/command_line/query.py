@@ -13,7 +13,7 @@ from   quex.input.command_line.GetPot     import GetPot
 import quex.input.regular_expression.core as regular_expression
 import quex.engine.codec_db.core          as codec_db
 
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
 
 OPTION_DB = {
         "--codec-info":         ["Information about supported characters of a codec."],

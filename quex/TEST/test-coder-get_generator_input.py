@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.setup
+import quex.blackboard
 import quex.input.regular_expression.engine as regex
 from   quex.input.files.mode                import ModeDescription, Mode
 import quex.output.cpp.core                 as generator
@@ -32,10 +32,10 @@ for pattern, action in pattern_action_pair_list:
                    regex.do(pattern, {}))
 
 # This is brutal!
-quex.input.setup.setup.output_debug_f                = False
-quex.input.setup.setup.begin_of_stream_code          = 0x19
-quex.input.setup.setup.end_of_stream_code            = 0x1A
-quex.input.setup.setup.dos_carriage_return_newline_f = False
+quex.blackboard.setup.output_debug_f                = False
+quex.blackboard.setup.begin_of_stream_code          = 0x19
+quex.blackboard.setup.end_of_stream_code            = 0x1A
+quex.blackboard.setup.dos_carriage_return_newline_f = False
 
 
 mode = Mode(mode_descr)

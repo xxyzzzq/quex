@@ -18,11 +18,27 @@
 #
 ################################################################################
 
-# IMPORTANT: It was a designated design goal to make sure that the imports     #
-#            in this file do **not** depend on larger import trees.            #
+################################################################################
+# IMPORTANT: This file shall be import-able by any 'normal' module of Quex.    #
+#            For this, it was a designated design goal to make sure that the   #
+#            imports are 'flat' and only cause environment or outer modules.   #
+################################################################################
 from quex.engine.generator.code_fragment_base import CodeFragment
 from quex.engine.misc.enum                    import Enum
+from quex.input.setup                         import QuexSetup, SETUP_INFO
 from copy                                     import deepcopy
+
+#-----------------------------------------------------------------------------------------
+# setup: All information of the user's desired setup.
+#-----------------------------------------------------------------------------------------
+setup = QuexSetup(SETUP_INFO)
+
+#-----------------------------------------------------------------------------------------
+# StateIndices: Values to be used as target states for transitions
+#-----------------------------------------------------------------------------------------
+TargetStateIndices = Enum("DROP_OUT", 
+                          "RELOAD_PROCEDURE",
+                          "END_OF_PRE_CONTEXT_CHECK") 
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:

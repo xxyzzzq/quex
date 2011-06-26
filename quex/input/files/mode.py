@@ -6,7 +6,7 @@ import quex.input.files.code_fragment                      as code_fragment
 import quex.input.files.indentation_setup                  as indentation_setup
 import quex.input.files.consistency_check                  as consistency_check
 import quex.input.regular_expression.snap_character_string as snap_character_string
-from   quex.input.setup                                    import setup as Setup
+from   quex.blackboard                                     import setup as Setup
 
 from   quex.engine.generator.action_info                     import *
 from   quex.engine.generator.languages.address               import get_label

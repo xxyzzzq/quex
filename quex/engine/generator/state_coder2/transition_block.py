@@ -1,6 +1,7 @@
-import quex.engine.generator.state_coder.transition as transition
-from   quex.blackboard                                  import setup as Setup
-from   quex.engine.interval_handling                import Interval
+import quex.engine.generator.state_coder2.transition_code as transition_code
+from   quex.blackboard                                    import setup as Setup
+from   quex.blackboard                                    import StateIndices
+from   quex.engine.interval_handling                      import Interval
 
 import sys
 from   math import log
@@ -8,122 +9,41 @@ from   copy import copy
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
-class TriggerAction:
-    def __init__(self, Code, DropOutF=False):
-        assert type(DropOutF) == bool
-
-        if type(Code) == list: self._code = Code
-        else:                  self._code = [ Code ]
-        self.__drop_out_f = DropOutF
-
-    def get_code(self):
-        return self._code
-
-    def is_drop_out(self):
-        return False
-
-class TriggerActionTransition(TriggerAction):
-    def __init__(self, TargetStateIndex):
-        self.__target_state_index = TargetStateIndex
-
-    def get_code(self):
-        return [ transition.get_transition_to_state(self.__target_state_index) ]
-
-class TriggerActionDropOut(TriggerAction):
-    def __init__(self, CurrentStateIdx):
-        self.__state_index = CurrentStateIdx
-
-    def get_code(self):
-        # The call to 'get_transition_to_drop_out()' is delayed until the code
-        # is implemented. This is so, since 'get_transition_to_drop_out' causes
-        # the drop-out label being entered into the 'used' list. However, it may
-        # happen, that the Drop-Out Labels are optimized away. Then, it would be
-        # marked as 'used' while nothing in the code refers to it.
-        return [ transition.get_transition_to_drop_out(self.__state_index) ]
-
-    def is_drop_out(self):
-        return True
-
-class TriggerActionReload(TriggerAction):
-    def __init__(self, GotoReload_Str, CurrentStateIdx, DSM, ReturnToState_Str):
-        self.__goto_reload_str     = GotoReload_Str
-        self.__state_index         = CurrentStateIdx
-        self.__dsm                 = DSM
-        self.__return_to_state_str = ReturnToState_Str
-
-    def get_code(self):
-
-        if self.__goto_reload_str is not None: 
-            return [ self.__goto_reload_str ]
-        else:
-            return [ transition.get_transition_to_reload(self.__state_index, 
-                                                         self.__dsm, 
-                                                         self.__return_to_state_str) ]
-
-def __interpret(TriggerMap, CurrentStateIdx, DSM, ReturnToState_Str, GotoReload_Str):
-    """ReturnToState_Str is only required if the reload has a particular
-                         procedure to return to the current state. This
-                         is true for path walker and template states.
-
-                         = None --> no special action required.
-    """
-    result = [None] * len(TriggerMap)
-    for i, entry in enumerate(TriggerMap):
-        interval = entry[0]
-        target   = entry[1]
-
-        if   target == -1:
-            target = TriggerActionReload(GotoReload_Str, CurrentStateIdx, DSM, ReturnToState_Str)
-
-        elif target is None:
-            target = TriggerActionDropOut(CurrentStateIdx)
-
-        elif type(target) in [int, long]:
-            target = TriggerActionTransition(target)
-
-        else:
-            assert isinstance(target, TriggerAction) # No change necessary
-
-        result[i] = (interval, target)
-    return result
-
-def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
+def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
     """Target is None           ---> Drop Out
        Target == -1             ---> Buffer Limit Code; Require Reload
                                      (this one is added by '__separate_buffer_limit_code_transition()'
        Target == Integer >= 0   ---> Transition to state with index 'Target'
        Target == string         ---> past code fragment 'Target' for given Interval
     """
-    assert type(TriggerMap) == list
-    assert DSM is None or DSM.__class__.__name__ == "StateMachineDecorator"
+    assert isinstance(TheState, AnalyzerState)
+    assert isinstance(TheState.transition_map, list)
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
     #       Empty states do not exist any longer, the backward input position is
     #       essential though for pseudo ambiguous post contexts.
-    assert len(TriggerMap) != 0 # states with empty trigger maps are 'dead end states'. those
-    #                           # are not to be coded at this place.
-    if DSM is None: InitStateF = False
-    else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
+    if len(TheState.transition_map) == 0: return
 
-    TriggerMap = __prune_trigger_map_to_character_type_domain(TriggerMap)
+    transition_map = __prune_trigger_map_to_character_type_domain(TheState.transition_map)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(TriggerMap)
+    __separate_buffer_limit_code_transition(transition_map)
 
     # Interpret the trigger map.
     # The actions related to intervals become code fragments (of type 'str')
-    TriggerMap = __interpret(TriggerMap, StateIdx, DSM, ReturnToState_Str, GotoReload_Str)
+    transition_map = [ transition_code.factory(entry[0], StateIdx, DSM, ReturnToState_Str, GotoReload_Str) 
+                   for entry in transition_map ]
     # __implement_switch_transitions(TriggerMap)
 
-    if len(TriggerMap) > 1:
+    if len(transition_map) > 1:
         # Check whether some things might be pre-checked before the big trigger map
         # starts working. This includes likelyhood and 'assembler-switch' implementations.
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
-        code = __get_code(TriggerMap)
+        code = __get_code(transition_map)
     else:
         # We can actually be sure, that the Buffer Limit Code is filtered
         # out, since this is the task of the regular expression parser.
@@ -132,7 +52,7 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
         # covers all characters (see the discussion there).
         # assert TriggerMap[0][0].begin == -sys.maxint
         # assert TriggerMap[0][0].end   == sys.maxint
-        code = ["    "] + TriggerMap[0][1].get_code() + ["\n"]
+        code = ["    "] + transition_map[0][1].get_code() + ["\n"]
 
     return format_this(code)
 
@@ -182,7 +102,7 @@ def __get_code(TriggerMap):
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
         #     If the input falls into this interval the target trigger is identified!
-        __create_transition_code(txt, TriggerMap[0])
+        __create_transition_code(txt, TriggerMap[0][1])
         
     else:    
         # two or more intervals => cut in the middle
@@ -286,7 +206,7 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
             txt.append(LanguageDB["$then"])
 
         if not target.is_drop_out():
-            __create_transition_code(txt, entry)
+            __create_transition_code(txt, entry[1])
 
     txt.append(LanguageDB["$endif"])
     return True
@@ -342,19 +262,10 @@ def __get_bisection_code(txt, middle, lower, higher):
     txt.append(LanguageDB["$endif"])
 
 def __create_transition_code(txt, TriggerMapEntry):
-    """Creates the transition code to a given target based on the information in
-       the trigger map entry.
-    """
-    # LanguageDB = Setup.language_db
-    # interval   = TriggerMapEntry[0]
-    target_state_index = TriggerMapEntry[1]       
-
     txt.append(1)                              # indent one scope
     txt.extend(target_state_index.get_code())
-
     # if Setup.buffer_codec == "": txt.append("    " + LanguageDB["$comment"](interval) + "\n")
     # else:                        txt.append("\n")
-
     return 
 
 def __get_switch(txt, TriggerMap):
@@ -531,9 +442,10 @@ def __separate_buffer_limit_code_transition(TriggerMap):
     for i, entry in enumerate(TriggerMap):
         interval, target_index = entry
 
-        if   target_index == -1:   
+        if   target_index == TargetStateIndices.RELOAD_PROCEDURE:   
             assert interval.contains_only(Setup.buffer_limit_code) 
-            # Transition 'buffer limit code --> -1' has been setup already
+            # Transition 'buffer limit code --> TargetStateIndices.RELOAD_PROCEDURE' 
+            # has been setup already.
             return
 
         elif target_index is not None: 
@@ -557,7 +469,7 @@ def __separate_buffer_limit_code_transition(TriggerMap):
         if after_end > after_begin:
             TriggerMap.insert(i, (Interval(after_begin, after_end), None))
 
-        # "Target == - 1" ==> Buffer Limit Code
+        # "Target == TargetStateIndices.RELOAD_PROCEDURE" ==> Buffer Limit Code
         TriggerMap.insert(i, (Interval(Setup.buffer_limit_code, Setup.buffer_limit_code + 1), -1))
 
         if before_end > before_begin and before_end > 0:

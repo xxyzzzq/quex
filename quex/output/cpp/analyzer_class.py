@@ -3,7 +3,7 @@ import os
 from   copy import copy
 import time
 
-from   quex.input.setup                 import setup as Setup
+from   quex.blackboard                 import setup as Setup
 from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                get_include_guard_extension, \

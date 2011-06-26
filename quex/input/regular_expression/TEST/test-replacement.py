@@ -7,7 +7,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine as core
 from quex.exception import *
 from quex.blackboard import PatternShorthand
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
+
 Setup.buffer_limit_code = -1
 Setup.path_limit_code   = -1
 

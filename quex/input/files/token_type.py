@@ -1,7 +1,7 @@
-from   quex.engine.misc.file_in                    import *
+from   quex.engine.misc.file_in          import *
 from   quex.engine.generator.action_info import UserCodeFragment, CodeFragment
-import quex.input.files.code_fragment         as code_fragment
-from   quex.input.setup                       import setup as Setup
+import quex.input.files.code_fragment    as code_fragment
+from   quex.blackboard                   import setup as Setup
 
 token_type_code_fragment_db = { 
         "constructor": True, "destructor": True, 

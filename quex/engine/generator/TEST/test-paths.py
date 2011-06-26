@@ -11,7 +11,7 @@ from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import get_plain_strings
 from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
 from   quex.engine.interval_handling                   import *
-from   quex.input.setup import setup as Setup
+from   quex.blackboard import setup as Setup
 from   generator_test   import __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:

@@ -92,7 +92,7 @@ import quex.engine.state_machine.compression.templates as templates
 
 
 from copy import deepcopy
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
 
 
 LanguageDB = None # Set during call to 'do()', not earlier

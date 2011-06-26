@@ -1,4 +1,4 @@
-from quex.input.setup    import setup as Setup
+from quex.blackboard    import setup as Setup
 from quex.engine.misc.file_in import open_file_or_die, \
                                 error_msg, \
                                 write_safely_and_close 
