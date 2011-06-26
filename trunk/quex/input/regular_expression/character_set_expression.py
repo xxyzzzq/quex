@@ -43,7 +43,7 @@ from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
                                                           snap_replacement
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
 
 special_character_set_db = {
     # The closing ']' is to trigger the end of the traditional character set

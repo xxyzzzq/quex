@@ -27,7 +27,7 @@ from   quex.engine.state_machine.state_core_info import PostContextIDs, Acceptan
 from   quex.engine.misc.enum import Enum
 
 
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
 from copy             import copy, deepcopy
 from collections      import defaultdict
 from operator         import attrgetter, itemgetter

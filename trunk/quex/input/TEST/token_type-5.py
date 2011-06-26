@@ -3,12 +3,12 @@ import sys
 import os
 
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.input.setup         
-quex.input.setup.setup.token_class_take_text_check_f = False
-quex.input.setup.setup.output_token_class_file = ""
-quex.input.setup.setup.token_class_name_space = ""
-quex.input.setup.setup.token_class_name_safe = ""
-quex.input.setup.setup.token_class_name = "Token"
+import quex.blackboard         
+quex.blackboard.setup.token_class_take_text_check_f = False
+quex.blackboard.setup.output_token_class_file = ""
+quex.blackboard.setup.token_class_name_space = ""
+quex.blackboard.setup.token_class_name_safe = ""
+quex.blackboard.setup.token_class_name = "Token"
 
 from quex.input.files.token_type import *
 from StringIO import StringIO

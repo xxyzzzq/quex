@@ -1,7 +1,7 @@
 import quex.engine.generator.state_coder2.core   as     state_coder
 from   quex.engine.analyzer.core                 import Analyzer
 from   quex.engine.state_machine.state_core_info import EngineTypes
-from   quex.input.setup                          import setup as Setup
+from   quex.blackboard                           import setup as Setup
 # import quex.engine.generator.template_coder  as template_coder
 # import quex.engine.generator.paths_coder     as paths_coder
 

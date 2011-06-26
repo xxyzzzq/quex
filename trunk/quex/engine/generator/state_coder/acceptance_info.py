@@ -3,7 +3,7 @@ import quex.engine.state_machine.core                as     state_machine
 from   quex.engine.state_machine.state_core_info     import PostContextIDs      
 #
 from   quex.engine.generator.languages.address import __nice, get_address, get_label
-from   quex.input.setup                             import setup as Setup
+from   quex.blackboard                             import setup as Setup
 
 from   operator import attrgetter
 

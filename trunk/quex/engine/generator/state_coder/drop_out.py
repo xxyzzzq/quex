@@ -2,7 +2,7 @@ import quex.engine.state_machine.core                    as state_machine
 import quex.engine.generator.state_coder.acceptance_info as acceptance_info
 from   quex.engine.generator.languages.core              import get_address, get_label, Address
 
-from   quex.input.setup            import setup as Setup
+from   quex.blackboard            import setup as Setup
 from   quex.engine.misc.string_handling import blue_print
 
 LanguageDB = None

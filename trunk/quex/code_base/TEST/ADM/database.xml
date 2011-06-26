@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.06" date="Sat Jun 25 05:50:08 2011">
+<test-database execution-time-sec="0.05" date="Sun Jun 26 11:44:51 2011">
     <last-used-diff-display-program name=""/>
-    <test title="data/bocu1.txt" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="data/bocu1.txt" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="bom.exe" info-request-time="1308837960L" vanished="False"/>
         <make-procedure success="True" time_sec="0.168048"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.02" crc="-838016451"/>
+           <choice name="" result="OK" time_sec="0.00" crc="-838016451"/>
         </choice-list>
     </test>
     <group name="StrangeStream">

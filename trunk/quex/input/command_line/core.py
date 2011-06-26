@@ -2,27 +2,29 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from   quex.blackboard                    import  setup                    
+import quex.blackboard                    as blackboard
 from   quex.input.command_line.GetPot     import GetPot
 import quex.input.command_line.validation as validation
-from   quex.input.setup import setup,                    \
-                               SETUP_INFO,               \
-                               SetupParTypes,            \
-                               FileTypes,                \
-                               DEPRECATED,               \
-                               global_extension_db,      \
-                               global_character_type_db
+from   quex.input.setup                   import SETUP_INFO,               \
+                                                 SetupParTypes,            \
+                                                 FileTypes,                \
+                                                 DEPRECATED,               \
+                                                 global_extension_db,      \
+                                                 global_character_type_db
 
 from   quex.output.cpp.token_id_maker     import parse_token_id_file
+
 from   quex.engine.misc.file_in           import error_msg,                \
                                                  verify_word_in_list,      \
                                                  read_namespaced_name,     \
                                                  read_integer
-import quex.engine.codec_db.core          as codec_db
+import quex.engine.codec_db.core            as codec_db
 from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
-from   quex.engine.generator.action_info import CodeFragment
-import quex.blackboard                    as blackboard
+from   quex.engine.generator.action_info    import CodeFragment
 
 from   quex.DEFINITIONS import *
+
 from   copy     import copy, deepcopy
 from   StringIO import StringIO
 
@@ -162,7 +164,7 @@ def do(argv):
     verify_word_in_list(setup.language,
                         quex_core_engine_generator_languages_db.keys(),
                         "Programming language '%s' is not supported." % setup.language)
-    setup.language_db = quex_core_engine_generator_languages_db[setup.language]
+    setup.language_db  = quex_core_engine_generator_languages_db[setup.language]
     setup.extension_db = global_extension_db[setup.language]
 
     # Is the output file naming scheme provided by the extension database

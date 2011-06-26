@@ -22,7 +22,7 @@ import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
 import quex.input.regular_expression.engine         as regex
 #
-from   quex.input.setup import setup as Setup
+from   quex.blackboard import setup as Setup
 
 # Switch: Removal of source and executable file
 #         'False' --> No removal.

@@ -1,4 +1,4 @@
-from   quex.input.setup                         import       setup as Setup
+from   quex.blackboard                         import       setup as Setup
 import quex.engine.state_machine.index          as           sm_index
 import quex.engine.generator.state_coder.transition_block as transition_block
 from   quex.engine.generator.languages.variable_db  import Variable

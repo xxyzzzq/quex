@@ -8,7 +8,7 @@ from   quex.engine.misc.file_in                    import error_msg, \
 from   quex.engine.misc.string_handling            import blue_print
 import quex.blackboard                        as blackboard
 import quex.engine.generator.action_info as action_info
-from   quex.input.setup                       import setup as Setup
+from   quex.blackboard                       import setup as Setup
 from   quex.input.command_line.core           import __prepare_file_name
 
 

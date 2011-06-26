@@ -8,7 +8,7 @@ from quex.exception                                          import RegularExpre
 from quex.engine.state_machine.core                     import *
 import quex.input.regular_expression.engine              as regex
 import quex.engine.state_machine.ambiguous_post_context as apc
-from   quex.input.setup import setup
+from   quex.blackboard import setup
 setup.buffer_limit_code = -1
 setup.path_limit_code   = -1
 

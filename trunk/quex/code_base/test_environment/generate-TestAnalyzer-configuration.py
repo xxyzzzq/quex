@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.output.cpp.analyzer_class    import write_configuration_header
-from   quex.input.setup                  import setup as Setup
+from   quex.blackboard                  import setup as Setup
 import quex.input.command_line.core      as command_line
 from   quex.engine.misc.file_in          import open_file_or_die
 import quex.input.file.core              as quex_file_parser

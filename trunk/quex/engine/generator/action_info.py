@@ -5,7 +5,7 @@ from   quex.engine.misc.file_in import is_identifier_start, \
                                        write_safely_and_close, \
                                        get_current_line_info_number
 from   quex.engine.generator.code_fragment_base import *
-from   quex.input.setup import setup as Setup
+from   quex.blackboard import setup as Setup
 
 UserCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________

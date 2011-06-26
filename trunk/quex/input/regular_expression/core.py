@@ -1,5 +1,5 @@
 from StringIO import StringIO
-from   quex.input.setup import setup as Setup
+from   quex.blackboard import setup as Setup
 
 from   quex.engine.misc.file_in                 import EndOfStreamException, error_msg
 from   quex.exception                      import RegularExpressionException

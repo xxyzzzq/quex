@@ -1,9 +1,9 @@
-<test-database execution-time-sec="1.22" date="Sat Jun 25 05:49:26 2011">
+<test-database execution-time-sec="1.20" date="Sun Jun 26 11:44:09 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.46"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.47"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.46" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.47" crc="-1647352136"/>
         </choice-list>
     </test>
     <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.03"> 
@@ -12,14 +12,14 @@
            <choice name="" result="FAIL" time_sec="0.03" crc="2072927346"/>
         </choice-list>
     </test>
-    <test title="Check if the default configuration has been updated." time-sum-sec="0.03"> 
+    <test title="Check if the default configuration has been updated." time-sum-sec="0.01"> 
         <application file-name="check-default-configuration.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-115781983"/>
+           <choice name="" result="OK" time_sec="0.01" crc="-115781983"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.07"> 
-        <application file-name="test-coder-get_generator_input.py" info-request-time="1308797152L" vanished="False"/>
+        <application file-name="test-coder-get_generator_input.py" info-request-time="1309078999L" vanished="False"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.07" crc="-995765496"/>
         </choice-list>
@@ -30,10 +30,10 @@
            <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.55"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.56"> 
         <application file-name="include_guard.py" info-request-time="1305087040L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.28" crc="1196150108"/>
+           <choice name="convention" result="OK" time_sec="0.29" crc="1196150108"/>
            <choice name="undefinition" result="OK" time_sec="0.27" crc="1693599369"/>
         </choice-list>
     </test>

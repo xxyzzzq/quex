@@ -1,4 +1,4 @@
-from   quex.input.setup                             import setup as Setup
+from   quex.blackboard                             import setup as Setup
 from   quex.engine.generator.languages.address      import Address, get_label, get_address, get_label_of_address
 import quex.engine.generator.state_coder.transition as transition
 from   operator                                     import itemgetter

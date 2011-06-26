@@ -10,7 +10,7 @@ from   quex.engine.generator.languages.address         import get_plain_strings
 import quex.engine.generator.state_router              as state_router  
 import quex.engine.generator.languages.cpp             as cpp
 from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
-from   quex.input.setup import setup as Setup
+from   quex.blackboard import setup as Setup
 from   generator_test   import __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:

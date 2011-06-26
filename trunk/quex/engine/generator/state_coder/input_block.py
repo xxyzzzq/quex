@@ -1,4 +1,4 @@
-from quex.input.setup import setup as Setup
+from quex.blackboard import setup as Setup
 from   quex.engine.generator.languages.address import get_label
 
 def do(StateIdx, InitStateF, SMD):

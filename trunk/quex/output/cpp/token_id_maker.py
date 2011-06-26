@@ -14,7 +14,7 @@ from quex.engine.misc.file_in  import open_file_or_die, \
 import quex.blackboard                  as blackboard
 from   quex.blackboard                  import token_id_db
 from   quex.engine.misc.string_handling import blue_print
-from   quex.input.setup                 import setup as Setup
+from   quex.blackboard                 import setup as Setup
 
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):

@@ -3,7 +3,7 @@ from   quex.engine.generator.state_machine_decorator import StateMachineDecorato
 import quex.engine.generator.state_coder.core as state_coder
 import quex.engine.generator.template_coder   as template_coder
 import quex.engine.generator.paths_coder      as paths_coder
-from   quex.input.setup                       import setup as Setup
+from   quex.blackboard                       import setup as Setup
 
 def do(SMD, TemplateHasBeenCodedBeforeF=False):
     """Returns the program code implementing the StateMachine's behavior.

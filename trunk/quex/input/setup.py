@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-from   quex.engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name
 from   quex.engine.misc.enum                import Enum
 from   quex.DEFINITIONS                     import QUEX_PATH
@@ -10,7 +9,7 @@ import sys
 class QuexSetup:
     def __init__(self, SetupInfo):
         for key, entry in SetupInfo.items():
-            if type(entry) != list:        default_value = entry
+            if type(entry) != list:                      default_value = entry
             elif entry[1] == SetupParTypes.LIST:         default_value = []
             elif entry[1] == SetupParTypes.FLAG:         default_value = False
             elif entry[1] == SetupParTypes.NEGATED_FLAG: default_value = True
@@ -18,8 +17,8 @@ class QuexSetup:
             self.__dict__[key] = default_value
 
         # Default values, maybe overiden later on.
-        self.language_db = quex_core_engine_generator_languages_db["C++"]
-        self.language_db = global_extension_db["C++"]
+        self.language_db  = None
+        self.extension_db = None
         self.buffer_codec_transformation_info = None
 
     def get_character_value_limit(self):
@@ -100,7 +99,6 @@ class QuexSetup:
 
 SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
 FileTypes     = Enum("HEADER", "HEADER_IMPLEMTATION", "SOURCE")
-
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
@@ -355,5 +353,4 @@ global_extension_db = {
    }
 }
 
-setup = QuexSetup(SETUP_INFO)
 

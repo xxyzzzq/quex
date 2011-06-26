@@ -4,7 +4,7 @@ import sys
 
 from   quex.engine.misc.file_in import error_msg, write_safely_and_close, open_file_or_die
 
-from   quex.input.setup                         import setup as Setup
+from   quex.blackboard                               import setup as Setup
 import quex.output.cpp.source_package           as source_package
 import quex.blackboard                          as blackboard
 

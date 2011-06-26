@@ -1,6 +1,6 @@
 from   quex.engine.generator.skipper.common    import *
 import quex.engine.state_machine.index         as     sm_index
-from   quex.input.setup                             import setup as Setup
+from   quex.blackboard                             import setup as Setup
 from   quex.engine.misc.string_handling                  import blue_print
 from   quex.engine.generator.languages.address import __nice, get_label
 from   quex.engine.generator.languages.variable_db import Variable

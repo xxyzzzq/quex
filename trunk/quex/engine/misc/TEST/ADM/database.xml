@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.36" date="Sat Jun 25 05:55:55 2011">
+<test-database execution-time-sec="0.34" date="Sun Jun 26 11:50:33 2011">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.03"> 
         <application file-name="enum.py" info-request-time="1308381368L" vanished="False"/>
@@ -32,7 +32,7 @@
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.03" crc="952788026"/>
                <choice name="octal" result="OK" time_sec="0.03" crc="1921488222"/>
-               <choice name="decimal" result="OK" time_sec="0.04" crc="-1709956949"/>
+               <choice name="decimal" result="OK" time_sec="0.03" crc="-1709956949"/>
                <choice name="binary" result="OK" time_sec="0.03" crc="245398371"/>
                <choice name="roman" result="OK" time_sec="0.03" crc="832665557"/>
                <choice name="misc" result="OK" time_sec="0.03" crc="731748549"/>
