@@ -10,32 +10,28 @@ from   copy import copy
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
-    """Target is None           ---> Drop Out
-       Target == -1             ---> Buffer Limit Code; Require Reload
-                                     (this one is added by '__separate_buffer_limit_code_transition()'
-       Target == Integer >= 0   ---> Transition to state with index 'Target'
-       Target == string         ---> past code fragment 'Target' for given Interval
-    """
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheState.transition_map, list)
+    assert ReturnToState_Str is None or instance(ReturnToState_Str, (str, unicode))
+    assert GotoReload_Str    is None or instance(GotoReload_Str, (str, unicode))
+
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    #       Empty states do not exist any longer, the backward input position is
-    #       essential though for pseudo ambiguous post contexts.
     if len(TheState.transition_map) == 0: return
 
     transition_map = __prune_trigger_map_to_character_type_domain(TheState.transition_map)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(transition_map)
+    __separate_buffer_limit_code_transition(TheState.transition_map)
 
     # Interpret the trigger map.
     # The actions related to intervals become code fragments (of type 'str')
-    transition_map = [ transition_code.factory(entry[0], StateIdx, DSM, ReturnToState_Str, GotoReload_Str) 
-                   for entry in transition_map ]
+    for entry in transition_map:
+        # Ensure, every target is an object of type TransitionCode
+        entry[1] = transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)
     # __implement_switch_transitions(TriggerMap)
 
     if len(transition_map) > 1:
@@ -52,7 +48,7 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
         # covers all characters (see the discussion there).
         # assert TriggerMap[0][0].begin == -sys.maxint
         # assert TriggerMap[0][0].end   == sys.maxint
-        code = ["    "] + transition_map[0][1].get_code() + ["\n"]
+        code = ["    %s\n" % transition_map[0][1].code ]
 
     return format_this(code)
 
