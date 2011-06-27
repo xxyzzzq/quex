@@ -21,25 +21,25 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
     #       AND states during backward input position detection!
     if len(TheState.transition_map) == 0: return
 
-    transition_map = __prune_trigger_map_to_character_type_domain(TheState.transition_map)
+    __prune_trigger_map_to_character_type_domain(TheState)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(TheState.transition_map)
+    __separate_buffer_limit_code_transition(TheState)
 
     # Interpret the trigger map.
     # The actions related to intervals become code fragments (of type 'str')
-    for entry in transition_map:
+    for entry in TheState.transition_map:
         # Ensure, every target is an object of type TransitionCode
         entry[1] = transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)
     # __implement_switch_transitions(TriggerMap)
 
-    if len(transition_map) > 1:
+    if len(TheState.transition_map) > 1:
         # Check whether some things might be pre-checked before the big trigger map
         # starts working. This includes likelyhood and 'assembler-switch' implementations.
         # The TriggerMap has now been adapted to reflect that some transitions are
         # already implemented in the priorized_code
-        code = __get_code(transition_map)
+        code = __get_code(TheState.transition_map)
     else:
         # We can actually be sure, that the Buffer Limit Code is filtered
         # out, since this is the task of the regular expression parser.
@@ -48,7 +48,7 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
         # covers all characters (see the discussion there).
         # assert TriggerMap[0][0].begin == -sys.maxint
         # assert TriggerMap[0][0].end   == sys.maxint
-        code = ["    %s\n" % transition_map[0][1].code ]
+        code = ["    %s\n" % TheState.transition_map[0][1].code ]
 
     return format_this(code)
 
@@ -430,16 +430,17 @@ def __switch_case_heuristic(TriggerMap,
 
     return p > 0.03
 
-def __separate_buffer_limit_code_transition(TriggerMap):
+def __separate_buffer_limit_code_transition(TheState):
     """This function ensures, that the buffer limit code is separated 
        into a single value interval. Thus the transition map can 
        transit immediate to the reload procedure.
     """
-    for i, entry in enumerate(TriggerMap):
+    for i, entry in enumerate(TheState.transition_map):
         interval, target_index = entry
 
         if   target_index == TargetStateIndices.RELOAD_PROCEDURE:   
             assert interval.contains_only(Setup.buffer_limit_code) 
+            assert TheState.engine_type != EngineTypes.BACKWARD_INPUT_POSITION
             # Transition 'buffer limit code --> TargetStateIndices.RELOAD_PROCEDURE' 
             # has been setup already.
             return
@@ -460,16 +461,16 @@ def __separate_buffer_limit_code_transition(TriggerMap):
         after_end    = interval.end
 
         # Replace Entry with (max.) three intervals: before, buffer limit code, after
-        del TriggerMap[i]
+        del TheState.transition_map[i]
 
         if after_end > after_begin:
-            TriggerMap.insert(i, (Interval(after_begin, after_end), None))
+            TheState.transition_map.insert(i, (Interval(after_begin, after_end), None))
 
         # "Target == TargetStateIndices.RELOAD_PROCEDURE" ==> Buffer Limit Code
-        TriggerMap.insert(i, (Interval(Setup.buffer_limit_code, Setup.buffer_limit_code + 1), -1))
+        TheState.transition_map.insert(i, (Interval(Setup.buffer_limit_code, Setup.buffer_limit_code + 1), -1))
 
         if before_end > before_begin and before_end > 0:
-            TriggerMap.insert(i, (Interval(before_begin, before_end), None))
+            TheState.transition_map.insert(i, (Interval(before_begin, before_end), None))
 
         return
 
@@ -647,27 +648,29 @@ def __separate_buffer_limit_code_transition(TriggerMap):
 #
 #    return first_f, result
 
-def __prune_trigger_map_to_character_type_domain(trigger_map):
+def __prune_trigger_map_to_character_type_domain(TheState):
+    assert len(TheState.transition_map) != 0
 
-    UpperLimit = Setup.get_character_value_limit()
     LowerLimit = 0
+    UpperLimit = Setup.get_character_value_limit()
 
     if UpperLimit == -1: return trigger_map
 
-    new_trigger_map = []
-    for entry in trigger_map:
+    # (*) Delete any entry that lies completely below the lower limit
+    for i, entry in enumerate(TheState.transition_map):
         interval, target = entry
+        if interval.end >= LowerLimit: break
+    if i != 0: del TheState.transition_map[:i]
 
-        if interval.end <= LowerLimit: 
-            # No character can have a value below zero
-            continue
-        elif interval.begin > UpperLimit:
-            break
-        elif interval.end < UpperLimit:
-            new_trigger_map.append(entry)
-        else:
-            # Interval overlaps the end. Thus it is the last and
-            # does not need to be checked.
-            new_trigger_map.append([Interval(interval.begin, UpperLimit), target])
-    return new_trigger_map
+    if TheState.transition_map[0].begin < LowerLimit:
+        TheState.transition_map[0].begin = LowerLimit
+
+    # (*) Delete any entry that lies completely above the upper limit
+    for i, entry in reversed(enumerate(TheState.transition_map)):
+        interval, target = entry
+        if interval.begin <= UpperLimit: break
+    if i != len(TheState.transition_map) - 1: del TheState.transition_map[i:]
+
+    if TheState.transition_map[0].end < UpperLimit + 1:
+        TheState.transition_map[0].end = UpperLimit + 1
 
