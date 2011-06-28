@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.core import AnalyzerState, \
                                         InputActions
-from   quex.engine.state_machine.state_core_info import EngineTypes
+from   quex.engine.state_machine.state_core_info           import EngineTypes
 import quex.engine.generator.state_coder2.transition_block as transition_block
 
 def do(txt, TheState):
@@ -38,7 +38,7 @@ def do_entry(txt, TheState):
             for pre_context_id, acceptance_id in TheState.get_accepter():
                 assert isinstance(acceptance_id, (int, long))
                 txt.append(
-                    LanguageDB.IF_PRE_CONTEXT(pre_context_id_list, first_f,
+                    LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
                                               LanguageDB.ASSIGN("last_acceptance", "%i" % acceptance_id))
                 )
                 first_f = False
@@ -48,7 +48,7 @@ def do_entry(txt, TheState):
             first_f = True
             for position_register, pre_context_id_list in TheState.get_positioner():
                 txt.append(
-                    LanguageDB.IF_PRE_CONTEXT(pre_context_id_list, first_f,
+                    LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
                                               LanguageDB.ASSIGN("position[%i]" % position_register, "input_p")), 
                 )
                 first_f = False
@@ -75,7 +75,7 @@ def do_drop_out(txt, TheState):
         first_f = True
         for easy in info:
             txt.append(
-                LanguageDB.IF_PRE_CONTEXT(easy[0].pre_context_id, first_f, 
+                LanguageDB.IF_PRE_CONTEXT(first_f, easy[0].pre_context_id, 
                                           "    %s\n    %s\n" % \
                                           (LanguageDB.POSITIONING(easy[1].positioning, easy[1].post_context_id)
                                            LanguageDB.GOTO_TERMINAL(easy[1].acceptance_id)))
@@ -88,7 +88,7 @@ def do_drop_out(txt, TheState):
     for element in self.checker:
         txt.append("        ")
         txt.append(
-            LanguageDB.IF_PRE_CONTEXT(element.pre_context_id, first_f, 
+            LanguageDB.IF_PRE_CONTEXT(first_f, element.pre_context_id, 
                                       LanguageDB.ASSIGN("last_acceptance", "%i" element.acceptance_id))
         )
         txt.append("\n")

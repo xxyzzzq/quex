@@ -1,11 +1,11 @@
-import quex.engine.generator.state_coder2.transition_code as transition_code
-from   quex.blackboard                                    import setup as Setup
-from   quex.blackboard                                    import StateIndices
+import quex.engine.generator.state_coder2.transition_code as     transition_code
 from   quex.engine.interval_handling                      import Interval
-
+from   quex.blackboard                                    import StateIndices, \
+                                                                 setup as Setup
 import sys
-from   math import log
-from   copy import copy
+from   math      import log
+from   copy      import copy
+from   itertools import islice
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
@@ -21,34 +21,30 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
     #       AND states during backward input position detection!
     if len(TheState.transition_map) == 0: return
 
-    __prune_trigger_map_to_character_type_domain(TheState)
+    if __DEBUG_CHECK_ACTIVE_F and len(TheState.transition_map) > 1:
+        # Check that the trigger map consist of sorted adjacent intervals 
+        # This assumption is critical because it is assumed that for any isolated
+        # interval the bordering intervals have bracketed the remaining cases!
+        previous = TriggerMap[0][0] 
+        for interval, target_state_index in islice(TriggerMap, 1, None):
+            assert interval.begin == previous.end # Intervals are adjacent!
+            assert interval.end > interval.begin  # Interval size > 0! 
+            previous = interval
+
+    # The range of possible characters may be restricted. It must be ensured,
+    # that the occurring characters only belong to the admissible range.
+    __prune_character_range(TheState)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
     __separate_buffer_limit_code_transition(TheState)
 
-    # Interpret the trigger map.
-    # The actions related to intervals become code fragments (of type 'str')
+    # All transition information related to intervals become proper objects of 
+    # class TransitionCode.
     for entry in TheState.transition_map:
-        # Ensure, every target is an object of type TransitionCode
         entry[1] = transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)
-    # __implement_switch_transitions(TriggerMap)
 
-    if len(TheState.transition_map) > 1:
-        # Check whether some things might be pre-checked before the big trigger map
-        # starts working. This includes likelyhood and 'assembler-switch' implementations.
-        # The TriggerMap has now been adapted to reflect that some transitions are
-        # already implemented in the priorized_code
-        code = __get_code(TheState.transition_map)
-    else:
-        # We can actually be sure, that the Buffer Limit Code is filtered
-        # out, since this is the task of the regular expression parser.
-        # In case of backward lexing in pseudo-ambiguous post conditions,
-        # it makes absolutely sense that there is only one interval that
-        # covers all characters (see the discussion there).
-        # assert TriggerMap[0][0].begin == -sys.maxint
-        # assert TriggerMap[0][0].end   == sys.maxint
-        code = ["    %s\n" % TheState.transition_map[0][1].code ]
+    code = __get_code(TheState.transition_map)
 
     return format_this(code)
 
@@ -77,20 +73,6 @@ def __get_code(TriggerMap):
     """
     TriggerSetN = len(TriggerMap)
 
-    if TriggerSetN > 1 and __DEBUG_CHECK_ACTIVE_F:
-        # -- check that the trigger map consist of sorted adjacent intervals 
-        #    This assumption is critical because it is assumed that for any isolated
-        #    interval the bordering intervals have bracketed the remaining cases!
-        previous_interval = TriggerMap[0][0] 
-        for interval, target_state_index in TriggerMap[1:]:
-            assert interval.begin == previous_interval.end, \
-                   "Non-adjacent intervals in TriggerMap\n" + \
-                   "TriggerMap = " + repr(TriggerMap)
-            assert interval.end > interval.begin, \
-                   "Interval of size zero in TriggerMap\n" + \
-                   "TriggerMap = " + repr(TriggerMap)
-            previous_interval = interval
-
     #________________________________________________________________________________
 
     txt = []
@@ -118,8 +100,6 @@ def __get_code(TriggerMap):
     return txt
 
 def __get_bisection(txt, TriggerMap):
-    LanguageDB = Setup.language_db
-
     L = len(TriggerMap)
     preferred_section_index = int(L / 2)
     section_index           = preferred_section_index
@@ -163,8 +143,9 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
 
     trigger_map = TriggerMap
 
-    _cmp_eq     = LanguageDB["$=="]
-    _cmp_border = LanguageDB["$<"]
+    # Depending on whether the list is checked forward or backward,
+    # the comparison operator and considered border may change.
+    _border_cmp = "<"
     _border     = lambda interval: interval.end
 
     # The buffer limit code is something extreme seldom, so make sure that it is 
@@ -177,34 +158,29 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
         if i < L / 2:
             trigger_map = copy(TriggerMap)
             trigger_map.reverse()
-            _cmp_border = LanguageDB["$>="]
+            _border_cmp = ">="
             _border     = lambda interval: interval.begin
 
+    LastI = L - 1
     for i, entry in enumerate(trigger_map):
         interval, target = entry
 
         txt.append("\n")
         txt.append(0)
-        if i == L - 1:
+        if i == LastI:
             # Drop-out 'else' can be omitted
             if not target.is_drop_out(): 
-                txt.append(LanguageDB["$endif-else"])
+                txt.append(LanguageDB.END_IF(LastF=True))
         else:
-            if i == 0: txt.append(LanguageDB["$if"])
-            else:      txt.append(LanguageDB["$elseif"])
-
             if interval.size() == 1:
-                comparison = _cmp_eq("input", "0x%X" % interval.begin)
+                txt.append(LanguageDB.IF_INPUT("==", interval.begin), i==0)
             else:
-                comparison = _cmp_border("input", "0x%X" % _border(interval))
-
-            txt.append(comparison)
-            txt.append(LanguageDB["$then"])
+                txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval)), i==0)
 
         if not target.is_drop_out():
             __create_transition_code(txt, entry[1])
 
-    txt.append(LanguageDB["$endif"])
+    txt.append(LanguageDB.END_IF(LastF=True))
     return True
 
 def __get_bisection_code(txt, middle, lower, higher):
@@ -217,45 +193,45 @@ def __get_bisection_code(txt, middle, lower, higher):
         
         # If the size of one interval is 1, then replace the '<' by an '=='.
         if   len(lower)  == 1 and lower[0][0].size() == 1:
-            comparison = LanguageDB["$if =="]("0x%X" % lower[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("==", lower[0][0].begin)
         elif higher[0][0].size() == 1:
-            comparison = LanguageDB["$if !="]("0x%X" % higher[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("!=", higher[0][0].begin)
         else:
-            comparison = LanguageDB["$if <"]("0x%X" % higher[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("<",  higher[0][0].begin)
 
         # No 'else' case for what comes BEHIND middle
-        txt.append(comparison)
+        txt.append(if_statement)
         txt.extend(__get_code(lower))
 
     elif len(lower) == 1 and lower[0][1].is_drop_out():
         if   lower[0][0].size() == 1:
-            comparison = LanguageDB["$if !="]("0x%X" % lower[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("!=", lower[0][0].begin)
         elif len(higher) == 1 and higher[0][0].size() == 1:
-            comparison = LanguageDB["$if =="]("0x%X" % higher[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("==", higher[0][0].begin)
         else:
-            comparison = LanguageDB["$if >="]("0x%X" % lower[0][0].end)
+            if_statement = LanguageDB.IF_INPUT(">=", lower[0][0].end)
 
         # No 'else' case for what comes BEFORE middle
-        txt.append(comparison)
+        txt.append(if_statement)
         txt.extend(__get_code(higher))
 
     else:
         # If the size of one interval is 1, then replace the '<' by an '=='.
         if   len(lower)  == 1 and lower[0][0].size() == 1:
-            comparison = LanguageDB["$if =="]("0x%X" % lower[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("==", lower[0][0].begin)
         elif len(higher) == 1 and higher[0][0].size() == 1:
-            comparison = LanguageDB["$if !="]("0x%X" % higher[0][0].begin)
+            if_statement = LanguageDB.IF_INPUT("!=", higher[0][0].begin)
         else:
-            comparison = LanguageDB["$if <"]("0x%X" % middle[0].begin)
+            if_statement = LanguageDB.IF_INPUT("<",  middle[0].begin)
 
-        txt.append(comparison)
+        txt.append(if_statement)
         txt.extend(__get_code(lower))
         txt.append(0)
-        txt.append(LanguageDB["$endif-else"])
+        txt.append(LanguageDB.ELSE)
         txt.extend(__get_code(higher))
 
     txt.append(0)
-    txt.append(LanguageDB["$endif"])
+    txt.append(LanguageDB.END_IF())
 
 def __create_transition_code(txt, TriggerMapEntry):
     txt.append(1)                              # indent one scope
@@ -265,28 +241,6 @@ def __create_transition_code(txt, TriggerMapEntry):
     return 
 
 def __get_switch(txt, TriggerMap):
-    LanguageDB = Setup.language_db
-
-    drop_out_range_n = 0
-    character_n      = 0
-    for interval, target in TriggerMap:
-        if target.is_drop_out(): drop_out_range_n += 1
-        else:                    character_n      += interval.size()
-
-    if __switch_case_heuristic(TriggerMap) == False:
-        return False
-
-    case_code_list = []
-    for interval, target in TriggerMap:
-        if target.is_drop_out(): continue
-        target_code = target.get_code()
-        for i in range(interval.begin, interval.end):
-            case_code_list.append((i, target_code))
-
-    txt.extend(LanguageDB["$switch-block"]("input", case_code_list))
-    return True
-
-def __implement_switch_transitions(trigger_map):
     """Transitions of characters that lie close to each other can be very efficiently
        be identified by a switch statement. For example:
 
@@ -310,51 +264,25 @@ def __implement_switch_transitions(trigger_map):
        transition for themselves based on the character range that they cover.
     """
     LanguageDB = Setup.language_db
-    Tiny      = 20
-    MinExtend = 4
-    i = 0
-    L = len(trigger_map)
-    while i != L:
-        interval, target = trigger_map[i]
 
-        if interval.size() > Tiny: 
-            i += 1
-            continue
+    drop_out_range_n = 0
+    character_n      = 0
+    for interval, target in TriggerMap:
+        if target.is_drop_out(): drop_out_range_n += 1
+        else:                    character_n      += interval.size()
 
-        # Collect 'tiny neighbours'
-        k                     = i
-        switch_case_code_list = []
-        candidate_extend      = 0
-        while 1 + 1 == 2:
-            if not target.is_drop_out(): 
-                target_code = target.get_code()
-                for p in xrange(interval.begin, interval.end):
-                    switch_case_code_list.append((p, target_code))
-            candidate_extend += interval.size()
+    if __switch_case_heuristic(TriggerMap) == False:
+        return False
 
-            k += 1
-            if k == L: break 
+    case_code_list = []
+    for interval, target in TriggerMap:
+        if target.is_drop_out(): continue
+        target_code = target.get_code()
+        for i in range(interval.begin, interval.end):
+            case_code_list.append((i, target_code))
 
-            interval, target = trigger_map[k]
-            if interval.size() > Tiny: break
-
-        if candidate_extend < MinExtend: 
-            i = k 
-            continue
-
-        # trigger_map[i][0].begin to trigger_map[k-1][0].end all becomes
-        # switch case transition.
-        switch_case_transition_code = LanguageDB["$switch-block"]("input", switch_case_code_list)
-
-        trigger_map[i] = (Interval(trigger_map[i][0].begin, trigger_map[k-1][0].end),
-                          TriggerAction(switch_case_transition_code))
-        if k - i != 1:
-            del trigger_map[i+1:k]
-            L -= (k - i - 1)
-            # assert L == len(trigger_map)
-        i += 1
-
-    return
+    txt.extend(LanguageDB.SELECTION("input", case_code_list))
+    return True
 
 def __get_switch_cases_info(TriggerMap):
     L = len(TriggerMap)
@@ -435,6 +363,7 @@ def __separate_buffer_limit_code_transition(TheState):
        into a single value interval. Thus the transition map can 
        transit immediate to the reload procedure.
     """
+    BLC = Setup.buffer_limit_code
     for i, entry in enumerate(TheState.transition_map):
         interval, target_index = entry
 
@@ -456,8 +385,8 @@ def __separate_buffer_limit_code_transition(TheState):
         if interval.size() == 1: return
 
         before_begin = interval.begin
-        before_end   = Setup.buffer_limit_code 
-        after_begin  = Setup.buffer_limit_code + 1
+        before_end   = BLC
+        after_begin  = BLC + 1 
         after_end    = interval.end
 
         # Replace Entry with (max.) three intervals: before, buffer limit code, after
@@ -466,189 +395,19 @@ def __separate_buffer_limit_code_transition(TheState):
         if after_end > after_begin:
             TheState.transition_map.insert(i, (Interval(after_begin, after_end), None))
 
-        # "Target == TargetStateIndices.RELOAD_PROCEDURE" ==> Buffer Limit Code
-        TheState.transition_map.insert(i, (Interval(Setup.buffer_limit_code, Setup.buffer_limit_code + 1), -1))
+        # "Target == TargetStateIndices.RELOAD_PROCEDURE" => Buffer Limit Code
+        TheState.transition_map.insert(i, (Interval(BLC, BLC + 1), TargetStateIndices.RELOAD_PROCEDURE))
 
         if before_end > before_begin and before_end > 0:
             TheState.transition_map.insert(i, (Interval(before_begin, before_end), None))
-
         return
 
-    # It is conceivable, that the transition does not contain a 'None' transition
-    # on buffer limit code. This happens for example, during backward detection
-    # where it is safe to assume that the buffer limit code may not occur.
+    # Any transition map, except for backward input position detection, 
+    # must have a trigger on reload.
+    assert TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION
     return
 
-#__likely_char_list = [ ord(' ') ]
-#def __get_priorized_code(trigger_map, info):
-#    """-- Write code to trigger on likely characters.
-#       -- Use that fact that assemblers can do 'switch-case indexing'
-#          which is much faster than N comparisons.
-#    """
-#    LanguageDB = Setup.language_db
-#
-#    if len(trigger_map) <= 1: return ""
-#
-#    # -- Very likely characters
-#    result  = []
-#    first_f = True
-#    for character_code in __likely_char_list:
-#        first_f, txt = __extract_likely_character(trigger_map, character_code, first_f, info)
-#        result.extend(txt)
-#    if len(result) != 0: 
-#        result.append(LanguageDB["$endif"])
-#
-#    # -- Adjacent tiny domains --> Assembler might use fast indexing.
-#    #    Setup 'TinyNeighborTransitions' objects as targets so that transition
-#    #    code generator can generate 'switch' statements.
-#    tiny_neighbour_list = __filter_tiny_neighours(trigger_map)
-#
-#    if len(tiny_neighbour_list):
-#        result.append("    ")
-#        result.append(LanguageDB["$switch"]("input"))
-#        for entry in tiny_neighbour_list:
-#            result.extend(__tiny_neighbour_transitions(entry, info.state_index, info.dsm))
-#        result.append("    ")
-#        result.append(LanguageDB["$switchend"])
-#        result.append("\n")
-#
-#    return "".join(result)
-#
-#def __tiny_neighbour_transitions(Info, CurrentStateIdx, DSM):
-#    LanguageDB = Setup.language_db
-#    assert Info.__class__.__name__ == "TinyNeighborTransitions"
-#
-#    result = []
-#    for number, target in Info.get_mapping():
-#        assert target.__class__.__name__ != "TinyNeighborTransitions"
-#        result.append("       ")
-#        result.append(LanguageDB["$case"]("0x%X" % number))
-#        result.append(target.get_code())
-#        result.append("\n")
-#
-#    return result
-#    
-#class TinyNeighborTransitions:
-#    def __init__(self):
-#        self.__list = []
-#
-#    def append(self, Interval, Target):
-#        self.__list.append((Interval, Target))
-#
-#    def get_mapping(self):
-#        mapping = []
-#        for interval, target in self.__list:
-#            for i in range(interval.begin, interval.end):
-#                mapping.append((i, target))
-#        return mapping
-#
-#def __filter_tiny_neighours(trigger_map):
-#    result    = []
-#
-#    Tiny      = 20
-#    MinExtend = 4
-#    i = 0
-#    L = len(trigger_map)
-#    while i != L:
-#        interval, target = trigger_map[i]
-#
-#        if interval.size() > Tiny: 
-#            i += 1
-#            continue
-#
-#        # Collect tiny neighbours
-#        k                = i
-#        candidate        = TinyNeighborTransitions()
-#        candidate_extend = 0
-#        while 1 + 1 == 2:
-#            assert target.__class__ != TinyNeighborTransitions
-#
-#            candidate.append(interval, target)
-#            candidate_extend += interval.size()
-#
-#            k += 1
-#            if k == L: break 
-#
-#            interval, target = trigger_map[k]
-#            if interval.size() > Tiny: break
-#
-#        if candidate_extend < MinExtend: 
-#            i = k 
-#            continue
-#
-#        else:
-#            # User trigger_map[i], adapt it to reflect that from
-#            # trigger_map[i][0].begin to trigger_map[k-1][0].end all becomes
-#            # a 'tiny neighbour region'.
-#            Begin = trigger_map[i][0].begin
-#            End   = trigger_map[k-1][0].end
-#            result.append(candidate)
-#            del trigger_map[i:k] # Delete (k - i) elements
-#            if i != 0: trigger_map[i][0].begin = trigger_map[i-1][0].end
-#            else:      trigger_map[i][0].begin = - sys.maxint
-#            L -= (k - i)
-#            if i == L: break
-#
-#    return result
-#
-#def code_this(result, Letter, Target, first_f, info):
-#    LanguageDB = Setup.language_db
-#
-#    if first_f: result += LanguageDB["$if =="]("0x%X" % Letter)    
-#    else:       result += LanguageDB["$elseif =="]("0x%X" % Letter)
-#    result.append("    ")
-#    result.append(transition.do(Target, info.state_index, Interval(Letter), info.dsm))
-#    result.append("\n")
-#
-#def __extract_likely_character(trigger_map, CharacterCode, first_f, info):
-#    LanguageDB = Setup.language_db
-#
-#    i      = 0
-#    L      = len(trigger_map)
-#    result = []
-#    while i != L:
-#        interval, target = trigger_map[i]
-#
-#        if not interval.contains(CharacterCode): 
-#            i += 1
-#            continue
-#
-#        elif interval.size() != 1: 
-#            # (0.a) size(Interval) != 1
-#            #       => no need to adapt the trigger map.
-#            # 
-#            #     x[     ]   --> trigger map catches on 'x' even
-#            #                    though, it has been catched on the
-#            #                    priorized map --> no harm.
-#            #     [  x   ]   --> same
-#            #     [     ]x   --> same
-#            code_this(result, CharacterCode, target, first_f, info)
-#            first_f = False
-#            i += 1
-#            continue
-#
-#        elif L == 1:
-#            # (0.b) If there's only one transition remaining (which
-#            #       is of size 1, see above). Then no preference needs
-#            #       to be given to the likely character.
-#            break   # We are actually done!
-#
-#        else:
-#            # (1) size(Interval) == 1
-#            #     => replace trigger with adjacent transition
-#            code_this(result, CharacterCode, target, first_f, info)
-#            first_f = False
-#        
-#            del trigger_map[i]
-#            # Intervals **must** be adjacent
-#            assert trigger_map[i][0].begin == CharacterCode + 1
-#            trigger_map[i][0].begin = CharacterCode
-#            # Once the letter has been found, we are done
-#            break
-#
-#    return first_f, result
-
-def __prune_trigger_map_to_character_type_domain(TheState):
+def __prune_character_range(TheState):
     assert len(TheState.transition_map) != 0
 
     LowerLimit = 0
