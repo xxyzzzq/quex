@@ -39,29 +39,6 @@ class TransitionCode:
 def __transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
     LanguageDB = Setup.language_db
 
-    if SMD is not None and SMD.backward_lexing_f(): direction = "BACKWARD"
-    else:                                       direction = "FORWARD"
-
-    if SMD is not None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
-        return "goto __RELOAD_INIT_STATE;" 
-
-    elif SMD is None or not SMD.backward_input_position_detection_f():
-        if ReturnStateIndexStr is not None: 
-            state_reference = ReturnStateIndexStr
-        else:                           
-            state_reference = "QUEX_LABEL(%i)" % get_address("$entry", StateIdx, R=True)
-
-        # Ensure that '__STATE_ROUTER' is marked as referenced
-        get_label("$state-router", U=True)
-
-        return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
-               % (get_label("$reload-%s" % direction, U=True),
-                  state_reference,
-                  get_address("$drop-out", StateIdx, U=True, R=True)) 
-
-    else:
-        return "" 
-
 def get_transition_to_terminal(Origin):
     LanguageDB = Setup.language_db
 

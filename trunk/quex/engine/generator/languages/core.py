@@ -155,9 +155,9 @@ class LDB:
     def __init__(self, DB):      self.__db = DB
     def __getitem__(self, Item): return self.__db[Item]
 
-    RETURN      = "return;"
-
-    UNREACHABLE = "__quex_assert_no_passage();"
+    RETURN            = "return;"
+    UNREACHABLE       = "__quex_assert_no_passage();"
+    ELSE              = "} else {\n"
 
     def GOTO(self, StateIndex):
         if StateIndex == StateIndices.INIT_STATE_TRANSITION_BLOCK:
@@ -197,13 +197,17 @@ class LDB:
     def LABEL(self, StateIndex):
         return "_%i:" % StateIndex
 
-    def IF_PRE_CONTEXT(self, PreContextList, FirstF, Consequence):
+    def IF_INPUT(self, Condition, Value, FirstF=True):
+        if FirstF: return "if( input %s 0x%X ) {\n"        % (Condition, Value)
+        else:      return "} else if( input %s 0x%X ) {\n" % (Condition, Value)
+
+    def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
         if PreContextList is None:               return Consequence
         if not isinstance(PreContextList, list): PreContextList = [ PreContextList ]
         if None in PreContextList:               return Consequence
 
         if FirstF: txt = "    if( "
-        else:      txt = "    else if( "
+        else:      txt = "    } else if( "
 
         last_i = len(PreContextList) - 1
         for i, pre_context_id in enumerate(PreContextList):
@@ -216,8 +220,8 @@ class LDB:
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
 
-    def END_IF(self, FirstF):
-        return { True: "", False: "}" }[FirstF]
+    def END_IF(self, LastF=True):
+        return { True: "}", False: "" }[LastF]
 
     def ACCESS_INPUT(self, InputAction):
         return {
