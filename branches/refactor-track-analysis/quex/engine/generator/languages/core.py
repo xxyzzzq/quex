@@ -15,8 +15,9 @@
 import quex.engine.generator.languages.cpp     as cpp
 import quex.engine.generator.languages.python  as python
 from   quex.engine.generator.languages.address import *
-# from   quex.engine.state_machine.state_core_info import PreContextIDs
-# from   quex.engine.analyzer.core                 import InputActions
+from   quex.engine.state_machine.state_core_info import PreContextIDs, EngineTypes, AcceptanceIDs
+from   quex.blackboard                           import TargetStateIndices
+from   quex.engine.analyzer.core                 import InputActions
 from   quex.engine.misc.string_handling import blue_print
 from   copy import deepcopy, copy
 
@@ -151,28 +152,32 @@ CppBase = {
     "$file_extension":          ".cpp",
     }
 
-class LDB:
-    def __init__(self, DB):      self.__db = DB
-    def __getitem__(self, Item): return self.__db[Item]
+class LDB(dict):
+    def __init__(self, DB):      self.update(DB)
+    def __getattr__(self, Attr): return self[Attr]
 
     RETURN            = "return;"
     UNREACHABLE       = "__quex_assert_no_passage();"
     ELSE              = "} else {\n"
+    INPUT_P_INCREMENT = "++(me->buffer._input_p);"
 
     def GOTO(self, StateIndex):
-        if StateIndex == StateIndices.INIT_STATE_TRANSITION_BLOCK:
+        if StateIndex == TargetStateIndices.INIT_STATE_TRANSITION_BLOCK:
             return "goto INIT_STATE_TRANSITION_BLOCK;"
         else:
             return "goto _%i;" % StateIndex
 
-    def GOTO_RELOAD(self, TheState):
-        if TheState.engine == EngineTypes.FORWARD: direction = "FORWARD"
-        else:                                      direction = "BACKWARD"
+    def GOTO_DROP_OUT(self, StateIndex):
+        return get_address("$drop-out", StateIndex, U=True)
 
-        if SMD is not None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
+    def GOTO_RELOAD(self, TheState, ReturnStateIndexStr):
+        if TheState.engine_type == EngineTypes.FORWARD: direction = "FORWARD"
+        else:                                           direction = "BACKWARD"
+
+        if TheState.init_state_forward_f:
             return "goto __RELOAD_INIT_STATE;" 
 
-        elif SMD is None or not SMD.backward_input_position_detection_f():
+        elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
             if ReturnStateIndexStr is not None: 
                 state_reference = ReturnStateIndexStr
             else:                           
@@ -192,10 +197,21 @@ class LDB:
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
-        return "goto TERMINAL_%i;" % AcceptanceID
+        elif AcceptanceID == AcceptanceIDs.FAILURE:
+            return "goto _%i; /* TERMINAL_FAILURE */" % get_address("$terminal-FAILURE")
+        else:
+            assert isinstance(AcceptanceID, (int, long))
+            return "goto TERMINAL_%i;" % AcceptanceID
 
     def LABEL(self, StateIndex):
-        return "_%i:" % StateIndex
+        if StateIndex in TargetStateIndices:
+            return {
+                TargetStateIndices.DROP_OUT:                    None,
+                TargetStateIndices.RELOAD_PROCEDURE:            None,
+                TargetStateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK:\n",
+                TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK:\n",
+            }[StateIndex]
+        return "_%i:\n" % StateIndex
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
         if FirstF: return "if( input %s 0x%X ) {\n"        % (Condition, Value)
@@ -225,55 +241,62 @@ class LDB:
 
     def ACCESS_INPUT(self, InputAction):
         return {
-            InputActions.DEREF:       
-            [
-                "    input = *(me->buffer->_input_p)\n",
-            ],
-            InputActions.INCREMENT_THEN_DEREF:
-            [
-                "    ++(me->buffer->_input_p);\n"
-                "    input = *(me->buffer->_input_p)\n",
-            ],
-            InputActions.DECREMENT_THEN_DEREF:
-            [
-                "    --(me->buffer->_input_p);\n"
-                "    input = *(me->buffer->_input_p)\n",
-            ],
+            InputActions.DEREF:                "    input = *(me->buffer._input_p);\n",
+            InputActions.INCREMENT_THEN_DEREF: "    ++(me->buffer._input_p);\n"
+                                               "    input = *(me->buffer._input_p);\n",
+            InputActions.DECREMENT_THEN_DEREF: "    --(me->buffer._input_p);\n"
+                                               "    input = *(me->buffer._input_p);\n",
         }[InputAction]
 
     def STATE_ENTRY(self, TheState):
-        if not (TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD):
-            txt   = ["    %s\n" % self.UNREACHABLE ]
+        if not TheState.init_state_forward_f:
+            txt   = ["\n    %s\n" % self.UNREACHABLE ]
             index = TheState.index
         else:
-            txt   = []
-            index = StateIndices.INIT_STATE_TRANSITION_BLOCK
+            txt   = ["\n"]
+            index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
 
         txt.append(self.LABEL(index))
 
-        if TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD: 
+        if TheState.init_state_forward_f: 
             txt.append("    __quex_debug_init_state();\n")
-        elif TheState.engine_type == FORWARD:
-            txt.append("    __quex_debug_state(%i);\n" % StateIdx)
+        elif TheState.engine_type == EngineTypes.FORWARD:
+            txt.append("    __quex_debug_state(%i);\n" % TheState.index)
         else:
-            txt.append("    __quex_debug_state_backward(%i);\n" % StateIdx)
+            txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
 
-        return txt
+        return "".join(txt)
 
     def POSITIONING(self, Positioning, Register):
-        # if Positioning
-        return "me->buffer->_input_p = position[%i];\n" % Register
+        if   Positioning is None: 
+            assert PostContextID is not None
+            if Register == PostContextIDs.NONE: return "me->buffer._input_p = last_acceptance_position;\n"
+            else:                               return "me->buffer._input_p = position[%i];\n" % Register
+        elif Positioning > 0:   return "me->buffer._input_p -= %i; " % Positioning
+        elif Positioning == 0:  return ""
+        elif Positioning == -1: return "/* \"_input_p = lexeme_start_p + 1\" is done by TERMINAL_FAILURE. */"
+        else:                   assert False 
 
-    def SELECTION(self, Selector, CaseList):
-        txt = [ 1, "switch( %s ) {\n" % Selector ]
+    def SELECTION(self, Selector, CaseList, BreakF=False):
+        txt = [ 0, "switch( %s ) {\n" % Selector ]
         for item, consequence in CaseList:
-            txt.append(2)
-            txt.append("case %3i: %s; break;\n" % (item, consequence))
-        txt.append(1)
+            txt.append(1)
+            txt.append("case %3i: %s" % (item, consequence))
+            if BreakF: txt.append(" break;\n")
+            else:      txt.append("\n")
+        txt.append(0)
         txt.append("}\n")
         return txt
 
-db["C++"] = CppBase 
+    def REPLACE_INDENT(self, txt_list):
+        for i, x in enumerate(txt_list):
+            if isinstance(x, (int, long)): txt_list[i] = "    " * x
+
+    def INDENT(self, txt_list):
+        for i, x in enumerate(txt_list):
+            if isinstance(x, (int, long)): txt_list[i] += 1
+
+db["C++"] = LDB(CppBase)
 
 #________________________________________________________________________________
 # C

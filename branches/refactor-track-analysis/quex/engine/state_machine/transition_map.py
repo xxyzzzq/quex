@@ -2,6 +2,7 @@
 
 from   quex.engine.interval_handling import NumberSet, Interval
 from   quex.engine.misc.file_in      import error_msg
+from   quex.blackboard               import TargetStateIndices
 
 import sys
 import bisect
@@ -288,7 +289,7 @@ class TransitionMap:
             
         # (*) fill all gaps in the trigger map with 'None' target = Drop Out !
         if trigger_map[0][0].begin != -sys.maxint:
-            trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), None) ] \
+            trigger_map =   [ (Interval(-sys.maxint, trigger_map[0][0].begin), TargetStateIndices.DROP_OUT) ] \
                           + trigger_map
 
         # The first two intervals are already adjacent
@@ -299,13 +300,15 @@ class TransitionMap:
                 error_msg(".get_trigger_map(...) Serious internal error. Please, report Bug!\n" \
                           " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
             if trigger_map[i][0].begin != trigger_map[i - 1][0].end:
-                trigger_map.insert(i, (Interval(trigger_map[i - 1][0].end, trigger_map[i][0].begin), None))
+                trigger_map.insert(i, (Interval(trigger_map[i - 1][0].end, trigger_map[i][0].begin), 
+                                                TargetStateIndices.DROP_OUT))
                 i    += 1
                 size += 1
             i += 1
 
         if trigger_map[-1][0].end != sys.maxint:
-            trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), None) )
+            trigger_map.append( (Interval(trigger_map[-1][0].end, sys.maxint), 
+                                 TargetStateIndices.DROP_OUT) )
 
         # double check:
         # prev_interval = trigger_map[0][0]
