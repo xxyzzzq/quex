@@ -1,0 +1,23 @@
+## 0.59.1
+
+        digraph state_machine_1 {
+	       rankdir=LR;
+	       size="8,5"
+	       node [shape = doublecircle]; 15; 16; 17; 18; 19;
+           node [shape = circle];
+           14 -> 15 [label ="'a'"];
+14 -> 16 [label ="'b'"];
+14 -> 17 [label ="'c'"];
+17 -> 15 [label ="'a'"];
+17 -> 18 [label ="'b'"];
+17 -> 19 [label ="'c'"];
+7777 -> 14 [label ="'0'"];
+
+        }
+        
+
+# start    = 14;
+# path     = (14)--'c'-->(17)--'b'-->[18];
+# skeleton = (15) by 'a'; (16) by 'b'; (19) by 'c'; 
+# wildcard = False;
+# 

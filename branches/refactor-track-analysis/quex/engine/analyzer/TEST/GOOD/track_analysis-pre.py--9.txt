@@ -1,0 +1,67 @@
+init-state = 78L
+00078() <~ (2, 5), (4, 9), (23, 54)
+      == 'a' ==> 00080
+      == 'b' ==> 00079
+      <no epsilon>
+00080(A, S, bol) <~ (2, 6, A, S, bol), (23, 55)
+      == 'b' ==> 00081
+      <no epsilon>
+00081() <~ (23, 56)
+      == 'c' ==> 00082
+      <no epsilon>
+00082() <~ (23, 57)
+      == 'd' ==> 00083
+      <no epsilon>
+00083(A, S) <~ (23, 58, A, S)
+      <no epsilon>
+00079(A, S) <~ (4, 10, A, S), (23, 56)
+      == 'c' ==> 00082
+      <no epsilon>
+
+State 78:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 79:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern4
+  .drop_out:
+     goto Pattern4;
+
+
+State 80:
+  .entry:
+    Accepter:
+        if      BeginOfLine: last_acceptance = Pattern2
+  .drop_out:
+    if BeginOfLine:  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 81:
+  .entry:
+  .drop_out:
+    if BeginOfLine: pos -= 1;  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 82:
+  .entry:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 2: pos -= 2;  goto Pattern2;
+        case 4: pos -= 1;  goto Pattern4;
+
+
+State 83:
+  .entry:
+  .drop_out:
+     goto Pattern23;
+
+

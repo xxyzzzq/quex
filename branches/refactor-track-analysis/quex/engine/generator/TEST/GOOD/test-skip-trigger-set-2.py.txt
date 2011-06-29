@@ -1,0 +1,39 @@
+## (*) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb ##
+## (*) running the test
+(*) test string: 
+'abcdefg_HIJKLMNOP-qrstuvw'XYZ12ok3'
+(*) result:
+next letter: <_>
+next letter: <->
+next letter: <'>
+next letter: <1>
+next letter: <3>
+end
+  ''
+
+## (4) cleaning up
+## (*) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb ##
+## (*) running the test
+(*) test string: 
+'-hijklmnop_qrstuvw#xyz9'
+(*) result:
+next letter: <_>
+next letter: <#>
+next letter: <9>
+end
+  ''
+
+## (4) cleaning up
+## (*) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb ##
+## (*) running the test
+(*) test string: 
+'aBcD8'
+(*) result:
+next letter: <8>
+end
+  ''
+
+## (4) cleaning up

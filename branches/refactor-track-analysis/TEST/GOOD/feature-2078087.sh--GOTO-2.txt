@@ -1,0 +1,62 @@
+quex -i GOTO-2.qx -o Simple --token-policy single
+g++ -I/home/fschaef/prj/quex/trunk -I. \
+		-DQUEX_OPTION_DEBUG_SHOW_MODES -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED  \
+		../lexer-simply.cpp Simple*.cpp \
+		-ggdb -o lexer
+| Mode change to ONE
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+## An Assert-Abortion might be an intended element of the experiment.
+LETTER '1' 
+LETTER 't' 
+LETTER 'o' 
+LETTER '1' 
+LETTER '1' 
+| Mode change from ONE
+|             to   TWO
+TWO 'to2' 
+LETTER '2' 
+LETTER 't' 
+LETTER 'o' 
+LETTER '2' 
+| Mode change from TWO
+|             to   THREE
+THREE '3' 
+LETTER 't' 
+LETTER 'o' 
+LETTER '3' 
+LETTER '3' 
+| Mode change from THREE
+|             to   FOUR
+FOUR 'to4' 
+LETTER '4' 
+LETTER 't' 
+LETTER 'o' 
+LETTER '4' 
+| Mode change from FOUR
+|             to   TWO
+ONE 'to1' 
+LETTER 't' 
+LETTER 'o' 
+LETTER '2' 
+| Mode change from TWO
+|             to   THREE
+THREE 'to3' 
+| Mode change from THREE
+|             to   FOUR
+FOUR 'to4' 
+| Mode change from FOUR
+|             to   TWO
+ONE 'to1' 
+<TERMINATION>
