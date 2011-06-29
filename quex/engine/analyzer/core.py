@@ -40,6 +40,8 @@ class Analyzer:
 
         acceptance_db = track_analysis.do(SM)
 
+        self.__init_state_index = SM.init_state_index
+
         self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType)) 
                                  for state_index in acceptance_db.iterkeys()])
 
@@ -77,6 +79,8 @@ class Analyzer:
 
     @property
     def state_db(self): return self.__state_db
+    @property
+    def init_state_index(self): return self.__init_state_index
 
     def __iter__(self):
         for x in self.__state_db.values():
@@ -481,13 +485,13 @@ class AnalyzerState(object):
         self._origin_list = state.origins().get_list()
 
     @property
-    def index(self):              return self.__index
+    def index(self):                return self.__index
     @property
-    def init_state_f(self):       return self.__init_state_f
+    def init_state_forward_f(self): return self.__init_state_f and self.__engine_type == EngineTypes.FORWARD
     @property
-    def engine_type(self):        return self.__engine_type
+    def engine_type(self):          return self.__engine_type
     @property
-    def state_is_entered_f(self): return self.__state_is_entered_f
+    def state_is_entered_f(self):   return self.__state_is_entered_f
 
     def set_state_is_entered_f(self): 
         self.__state_is_entered_f = True

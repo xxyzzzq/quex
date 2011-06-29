@@ -1,4 +1,6 @@
-from quex.blackboard import setup as Setup
+from quex.blackboard import TargetStateIndices, \
+                            setup as Setup
+from quex.engine.analyzer.core import AnalyzerState
 
 def do(Target, TheState, ReturnToState_Str, GotoReload_Str):
     """Generate a 'real' target action object based on a given Target that may be
@@ -15,13 +17,16 @@ def do(Target, TheState, ReturnToState_Str, GotoReload_Str):
 
 class TransitionCode:
     def __init__(self, Target, TheState, ReturnToState_Str, GotoReload_Str):
+        assert isinstance(TheState, AnalyzerState)
+        assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
+        assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
         LanguageDB = Setup.language_db
-        assert type(DropOutF) == bool
 
         if   Target == TargetStateIndices.RELOAD_PROCEDURE:
-            self.__code       = LanguageDB.TRANSITION_TO_RELOAD(GotoReload_Str, TheState.index, DSM, ReturnToState_Str)
+            if GotoReload_Str is not None: self.__code = GotoReload_Str
+            else:                          self.__code = LanguageDB.GOTO_RELOAD(TheState, ReturnToState_Str)
             self.__drop_out_f = False
-        elif Target == TargetStateIndices.DROP_OUT
+        elif Target == TargetStateIndices.DROP_OUT:
             self.__code       = LanguageDB.GOTO_DROP_OUT(TheState.index)
             self.__drop_out_f = True
         elif isinstance(Target, (int, long)):
@@ -32,7 +37,7 @@ class TransitionCode:
             return Target
 
     @property
-    def code(self):       return self._code
+    def code(self):       return self.__code
     @property
     def drop_out_f(self): return self.__drop_out_f
 
