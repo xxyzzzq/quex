@@ -48,7 +48,6 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
 
     return __get_code(transition_map)
 
-
 def __get_code(TriggerMap):
     """Creates code for state transitions from this state. This function is very
        similar to the function creating code for a 'NumberSet' condition 
@@ -160,9 +159,9 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
                 txt.append(LanguageDB.END_IF(LastF=True))
         else:
             if interval.size() == 1:
-                txt.append(LanguageDB.IF_INPUT("==", interval.begin), i==0)
+                txt.append(LanguageDB.IF_INPUT("==", interval.begin, i==0))
             else:
-                txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval)), i==0)
+                txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
 
         if not target.drop_out_f:
             __create_transition_code(txt, entry[1])
@@ -222,7 +221,7 @@ def __get_bisection_code(txt, middle, lower, higher):
 
 def __create_transition_code(txt, TriggerMapEntry):
     txt.append(1)                              # indent one scope
-    txt.extend(target_state_index.code)
+    txt.extend(TriggerMapEntry.code)
     # if Setup.buffer_codec == "": txt.append("    " + LanguageDB["$comment"](interval) + "\n")
     # else:                        txt.append("\n")
     return 

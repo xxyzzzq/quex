@@ -387,13 +387,13 @@ __terminal_state_prolog  = """
 __terminal_state_epilog = """
 $$TERMINAL_END_OF_STREAM-DEF$$: /* TERMINAL: END_OF_STREAM */
 $$END_OF_STREAM_ACTION$$
-     /* End of Stream causes a return from the lexical analyzer, so that no
-      * tokens can be filled after the termination token.                    */
-     RETURN;          
+    /* End of Stream causes a return from the lexical analyzer, so that no
+     * tokens can be filled after the termination token.                    */
+    RETURN;          
 
 $$TERMINAL_FAILURE-DEF$$: /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
-     goto $$GOTO_START_PREPARATION$$;
+    goto $$GOTO_START_PREPARATION$$;
 
 #undef Lexeme
 #undef LexemeBegin
@@ -477,7 +477,7 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
     #     router and, thus, **must** restore the acceptance input position. This is so, 
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
-    safe_pattern = pattern_action_info.pattern.replace('"', 'double-quote')
+    safe_pattern = pattern_action_info.pattern.replace('"', '\\"')
     safe_pattern = safe_pattern.replace("\\n", "\\\\n")
     safe_pattern = safe_pattern.replace("\\t", "\\\\t")
     safe_pattern = safe_pattern.replace("\\r", "\\\\r")
@@ -485,7 +485,7 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
     safe_pattern = safe_pattern.replace("\\v", "\\\\v")
 
     txt = [
-            "TERMINAL_%i:\n" % AcceptanceID,
+            "\nTERMINAL_%i:\n" % AcceptanceID,
             "    __quex_debug(\"* terminal %i:   %s\");\n" % (AcceptanceID, safe_pattern),
             action_code, "\n",
             "    goto %s;\n" % get_label("$re-start", U=True)
@@ -493,16 +493,15 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
 
     return txt
 
-def __terminal_on_failure_prolog(LanguageDB):
+def __terminal_on_failure_prolog():
     return [
-        "me->buffer._input_p = me->buffer._lexeme_start_p;\n",
-        LanguageDB["$if"], LanguageDB["$EOF"], LanguageDB["$then"], "\n",
-        "    ", LanguageDB["$comment"]("Next increment will stop on EOF character."), "\n",
-        LanguageDB["$endif"], "\n",
-        LanguageDB["$else"], "\n",
-        "    ", LanguageDB["$comment"]("Step over nomatching character"), "\n",
-        "    ", LanguageDB["$input/increment"], "\n",
-        LanguageDB["$endif"], "\n",
+        "    me->buffer._input_p = me->buffer._lexeme_start_p;\n"
+        "    if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n"
+        "        /* Next increment will stop on EOF character. */\n"
+        "    } else {\n"
+        "        /* Step over nomatching character */\n"
+        "        ++(me->buffer._input_p);\n"
+        "    }\n"
     ]
 
 def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
@@ -514,8 +513,9 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     # (*) specific terminal states of patterns (entered from acceptance states)
     specific_terminal_states = []
     for state_machine_id, pattern_action_info in action_db.items():
+        # Pre-condition state machines are not supposed to have a real terminal
+        if state_machine_id in PreConditionIDList: continue
         code = get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
-
         specific_terminal_states.extend(code)
 
     # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
@@ -540,7 +540,7 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
-    on_failure = __terminal_on_failure_prolog(LanguageDB)
+    on_failure = __terminal_on_failure_prolog()
     msg        = __adorn_action_code(OnFailureAction, SupportBeginOfLineF)
 
     on_failure.append(msg)
