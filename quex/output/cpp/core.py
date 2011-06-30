@@ -14,7 +14,8 @@ import quex.engine.generator.state_router              as     state_router_gener
 from   quex.engine.misc.string_handling                import blue_print
 from   quex.engine.generator.base                      import GeneratorBase
 
-from   quex.blackboard                                import setup as Setup
+from   quex.blackboard                                 import TargetStateIndices, \
+                                                              setup as Setup
 #
 from   copy import copy
 
@@ -119,10 +120,10 @@ class Generator(GeneratorBase):
         msg = state_machine_coder.do(self.pre_context_sm, EngineTypes.BACKWARD_PRE_CONTEXT)
         txt.extend(msg)
 
-        txt.append(get_label("$terminal-general-bw") + ":\n")
+        txt.append("\n%s" % LanguageDB.LABEL(TargetStateIndices.END_OF_PRE_CONTEXT_CHECK))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
-        txt.append("    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n")
+        txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START)
 
         return txt
 

@@ -12,6 +12,8 @@ from   quex.blackboard import TargetStateIndices, \
 def do(txt, TheState):
     assert isinstance(TheState, AnalyzerState)
 
+    txt.append("\n")
+
     do_input(txt, TheState)
     do_entry(txt, TheState)
 
@@ -24,6 +26,7 @@ def do(txt, TheState):
 
     for x in txt:
         assert not isinstance(x, list), repr(txt)
+        assert not x is None
 
 def do_input(txt, TheState):
     """Generate the code fragment that accesses the 'input' character for
@@ -70,7 +73,7 @@ def do_entry(txt, TheState):
             
     elif isinstance(TheState.entry, EntryBackward):
         for pre_context_id in TheState.entry.pre_context_fulfilled_set:
-            txt.append(LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
+            txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
 
     elif isinstance(TheState.entry, EntryBackwardInputPositionDetection):
         if TheState.entry.terminated_f: 
@@ -79,51 +82,45 @@ def do_entry(txt, TheState):
 def do_drop_out(txt, TheState):
     LanguageDB = Setup.language_db
 
+    txt.append(Address("$drop-out", TheState.index))
+
     if TheState.engine_type == EngineTypes.BACKWARD_PRE_CONTEXT:
-        txt.append("    %s\n" % LanguageDB.GOTO(StateIndices.END_OF_PRE_CONTEXT_CHECK))
+        txt.append("    %s\n" % LanguageDB.GOTO(TargetStateIndices.END_OF_PRE_CONTEXT_CHECK))
+        return
 
     elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
         txt.append("    %s\n" % LanguageDB.UNREACHABLE)
-
-    info = TheState.drop_out.trivialize()
-    if info is not None:
-        first_f = True
-        for easy in info:
-            txt.append(
-                LanguageDB.IF_PRE_CONTEXT(first_f, easy[0].pre_context_id, 
-                                          "    %s\n    %s\n" % \
-                                          (LanguageDB.POSITIONING(easy[1].positioning, easy[1].post_context_id), 
-                                           LanguageDB.GOTO_TERMINAL(easy[1].acceptance_id)))
-            )
-
-            first_f = False
         return
 
-    first_f = True
-    for element in TheState.drop_out.checker:
-        txt.append("        ")
-        txt.append(
-            LanguageDB.IF_PRE_CONTEXT(first_f, element.pre_context_id, 
-                                      LanguageDB.ASSIGN("last_acceptance", "%i" % element.acceptance_id))
-        )
-        txt.append("\n")
-        if element.pre_context_id is None: break # No check after the unconditional acceptance
-        first_f = False
+    info = TheState.drop_out.trivialize()
+    # (1) Trivial Solution
+    if info is not None:
+        for i, easy in enumerate(info):
+            positioning_str = ""
+            if easy[1].positioning != 0:
+                positioning_str = "%s\n" % LanguageDB.POSITIONING(easy[1].positioning, easy[1].post_context_id)
+            goto_terminal_str = "%s" % LanguageDB.GOTO_TERMINAL(easy[1].acceptance_id)
+            txt.append(LanguageDB.IF_PRE_CONTEXT(i == 0, easy[0].pre_context_id, 
+                                                 "%s%s" % (positioning_str, goto_terminal_str)))
+                                           
+        return
 
+    # (2) Separate: Pre-Context Check and Routing to Terminal
+    # (2.1) Pre-Context Check
+    for i, element in enumerate(TheState.drop_out.checker):
+        print "##", element.acceptance_id
+        txt.append(
+            LanguageDB.IF_PRE_CONTEXT(i == 0, element.pre_context_id, 
+                                      LanguageDB.ASSIGN("last_acceptance", "%i" % element.acceptance_id)))
+        if element.pre_context_id is None: break # No check after the unconditional acceptance
+
+    # (2.2) Routing to Terminal
     case_list = []
     for element in TheState.drop_out.router:
-        if element.acceptance_id == AcceptanceIDs.FAILURE: assert TheState.drop_out.positioning == -1 
-        else:                                              assert TheState.drop_out.positioning != -1
-
-        if element.positioning != 0:
-            case_list.append((element.acceptance_id, 
-                              "%s %s" % \
-                              (LanguageDB.POSITION(element.positioning, element.post_context_id), 
-                               LanguageDB.GOTO_TERMINAL(element.acceptance_id)))
-            )
-        else:
-            case_list.append((element.acceptance_id, 
-                              LanguageDB.GOTO_TERMINAL(element.acceptance_id)))
+        case_list.append((element.acceptance_id, 
+                          "%s%s" % \
+                          (LanguageDB.POSITIONING(element.positioning, element.post_context_id), 
+                           LanguageDB.GOTO_TERMINAL(element.acceptance_id))))
 
     txt.extend(LanguageDB.SELECTION(case_list))
 

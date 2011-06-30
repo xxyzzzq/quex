@@ -487,6 +487,8 @@ class AnalyzerState(object):
     @property
     def index(self):                return self.__index
     @property
+    def init_state_f(self):         return self.__init_state_f
+    @property
     def init_state_forward_f(self): return self.__init_state_f and self.__engine_type == EngineTypes.FORWARD
     @property
     def engine_type(self):          return self.__engine_type

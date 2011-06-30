@@ -30,13 +30,15 @@ def do(RawSM, EngineType):
 
     # (*) [Optional] Path-Compressed States
     path_compressed_states = []
-    # if Setup.compression_path_f or Setup.compression_path_uniform_f:
+    if Setup.compression_path_f or Setup.compression_path_uniform_f:
+        assert False # We cannot deal with that yet
     #    path_compressed_states, state_index_set = paths_coder.do(analyzer, Setup.compression_path_uniform_f)
     #    remainder.difference_update(state_index_set)
     
     # (*) [Optional] Template-Compressed States
     template_compressed_states = []
-    # if Setup.compression_template_f:
+    if Setup.compression_template_f:
+        assert False # We cannot deal with that yet
     #    template_compressed_states, state_index_set = template_coder.do(analyzer, Setup.compression_template_coef)
     #    remainder.difference_update(state_index_set)
     

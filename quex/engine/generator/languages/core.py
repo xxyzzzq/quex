@@ -156,14 +156,17 @@ class LDB(dict):
     def __init__(self, DB):      self.update(DB)
     def __getattr__(self, Attr): return self[Attr]
 
-    RETURN            = "return;"
-    UNREACHABLE       = "__quex_assert_no_passage();"
-    ELSE              = "} else {\n"
-    INPUT_P_INCREMENT = "++(me->buffer._input_p);"
+    RETURN                  = "return;"
+    UNREACHABLE             = "__quex_assert_no_passage();"
+    ELSE                    = "} else {\n"
+    INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
+    INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
 
     def GOTO(self, StateIndex):
         if StateIndex == TargetStateIndices.INIT_STATE_TRANSITION_BLOCK:
             return "goto INIT_STATE_TRANSITION_BLOCK;"
+        elif StateIndex == TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:
+            return "goto END_OF_PRE_CONTEXT_CHECK;"
         else:
             return "goto _%i;" % StateIndex
 
@@ -178,21 +181,22 @@ class LDB(dict):
             return "goto __RELOAD_INIT_STATE;" 
 
         elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
-            if ReturnStateIndexStr is not None: 
-                state_reference = ReturnStateIndexStr
-            else:                           
-                state_reference = "QUEX_LABEL(%i)" % get_address("$entry", StateIdx, R=True)
+            # There is never a reload on backward input position detection.
+            # The lexeme to parse must lie inside the borders!
+            return ""
 
-            # Ensure that '__STATE_ROUTER' is marked as referenced
-            get_label("$state-router", U=True)
+        if ReturnStateIndexStr is not None: 
+            state_reference = ReturnStateIndexStr
+        else:                           
+            state_reference = "QUEX_LABEL(%i)" % get_address("$entry", TheState.index, R=True)
 
-            return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
-                   % (get_label("$reload-%s" % direction, U=True),
-                      state_reference,
-                      get_address("$drop-out", StateIdx, U=True, R=True)) 
+        # Ensure that '__STATE_ROUTER' is marked as referenced
+        get_label("$state-router", U=True)
 
-        else:
-            return "" 
+        return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
+               % (get_label("$reload-%s" % direction, U=True),
+                  state_reference,
+                  get_address("$drop-out", TheState.index, U=True, R=True)) 
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == AcceptanceIDs.VOID: 
@@ -218,20 +222,21 @@ class LDB(dict):
         else:      return "} else if( input %s 0x%X ) {\n" % (Condition, Value)
 
     def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
-        if PreContextList is None:               return Consequence
+        if PreContextList is None:               return "    " + Consequence.replace("\n", "\n    ")
         if not isinstance(PreContextList, list): PreContextList = [ PreContextList ]
-        if None in PreContextList:               return Consequence
+        if None in PreContextList:               return "    " + Consequence.replace("\n", "\n    ")
 
         if FirstF: txt = "    if( "
-        else:      txt = "    } else if( "
+        else:      txt = "    else if( "
 
         last_i = len(PreContextList) - 1
         for i, pre_context_id in enumerate(PreContextList):
-            if pre_context_id != -1: txt += "me->buffer._character_before_lexeme_start == '\\n'"
-            else:                    txt += "pre_context_%i_fulfilled_f"
+            if pre_context_id == -1: txt += "me->buffer._character_before_lexeme_start == '\\n'"
+            else:                    txt += "pre_context_%i_fulfilled_f" % pre_context_id
             if i != last_i: txt += " || "
 
-        txt += " ) {\n        %s\n    }\n" % Consequence
+        txt += " ) {\n        %s\n    }\n" % Consequence.replace("\n", "\n        ")
+        return txt
 
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
@@ -249,12 +254,15 @@ class LDB(dict):
         }[InputAction]
 
     def STATE_ENTRY(self, TheState):
-        if not TheState.init_state_forward_f:
-            txt   = ["\n    %s\n" % self.UNREACHABLE ]
-            index = TheState.index
-        else:
+        if TheState.init_state_forward_f:
             txt   = ["\n"]
             index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
+        elif TheState.init_state_f:
+            txt   = ["\n"]
+            index = TheState.index
+        else:
+            txt   = ["\n    %s\n" % self.UNREACHABLE ]
+            index = TheState.index
 
         txt.append(self.LABEL(index))
 
@@ -274,7 +282,7 @@ class LDB(dict):
             else:                               return "me->buffer._input_p = position[%i];\n" % Register
         elif Positioning > 0:   return "me->buffer._input_p -= %i; " % Positioning
         elif Positioning == 0:  return ""
-        elif Positioning == -1: return "/* \"_input_p = lexeme_start_p + 1\" is done by TERMINAL_FAILURE. */"
+        elif Positioning == -1: return "" # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         else:                   assert False 
 
     def SELECTION(self, Selector, CaseList, BreakF=False):

@@ -86,6 +86,7 @@ __label_db = {
 __referenced_label_set = set([])
 def __referenced_label_set_add(Label):
     global __referenced_label_set
+    assert Label != "_102"
     __referenced_label_set.add(Label)
     # If a terminal router is used, then a state router is also required.
     if Label == "__TERMINAL_ROUTER": 
