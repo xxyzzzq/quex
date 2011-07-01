@@ -605,6 +605,10 @@ class Entry(object):
             if pre_context_id is None: break
         return result
 
+    def get_positioner(self):
+        print "##", self.positioner
+        return self.positioner.items()
+
     def __repr__(self):
         txt = []
         accepter = self.get_accepter()

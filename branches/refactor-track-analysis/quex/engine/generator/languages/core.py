@@ -15,7 +15,7 @@
 import quex.engine.generator.languages.cpp     as cpp
 import quex.engine.generator.languages.python  as python
 from   quex.engine.generator.languages.address import *
-from   quex.engine.state_machine.state_core_info import PreContextIDs, EngineTypes, AcceptanceIDs
+from   quex.engine.state_machine.state_core_info import PreContextIDs, EngineTypes, AcceptanceIDs, PostContextIDs
 from   quex.blackboard                           import TargetStateIndices
 from   quex.engine.analyzer.core                 import InputActions
 from   quex.engine.misc.string_handling import blue_print
@@ -198,6 +198,11 @@ class LDB(dict):
                   state_reference,
                   get_address("$drop-out", TheState.index, U=True, R=True)) 
 
+    def ACCEPTANCE(self, AcceptanceID):
+        if AcceptanceID == AcceptanceIDs.FAILURE:
+            return "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
+        else:
+            return "%i" % AcceptanceID
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
@@ -221,18 +226,25 @@ class LDB(dict):
         if FirstF: return "if( input %s 0x%X ) {\n"        % (Condition, Value)
         else:      return "} else if( input %s 0x%X ) {\n" % (Condition, Value)
 
+    def PRE_CONTEXT_CONDITION(self, PreContextID):
+        if PreContextID == -1: 
+            return "me->buffer._character_before_lexeme_start == '\\n'"
+        elif isinstance(PreContextID, (int, long)):
+            return "pre_context_%i_fulfilled_f" % PreContextID
+        else:
+            assert False
+
     def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
-        if PreContextList is None:               return "    " + Consequence.replace("\n", "\n    ")
-        if not isinstance(PreContextList, list): PreContextList = [ PreContextList ]
-        if None in PreContextList:               return "    " + Consequence.replace("\n", "\n    ")
+        if PreContextList is None:                      return "    " + Consequence.replace("\n", "\n    ")
+        if not isinstance(PreContextList, (list, set)): PreContextList = [ PreContextList ]
+        if None in PreContextList:                      return "    " + Consequence.replace("\n", "\n    ")
 
         if FirstF: txt = "    if( "
         else:      txt = "    else if( "
 
         last_i = len(PreContextList) - 1
         for i, pre_context_id in enumerate(PreContextList):
-            if pre_context_id == -1: txt += "me->buffer._character_before_lexeme_start == '\\n'"
-            else:                    txt += "pre_context_%i_fulfilled_f" % pre_context_id
+            txt += self.PRE_CONTEXT_CONDITION(pre_context_id)
             if i != last_i: txt += " || "
 
         txt += " ) {\n        %s\n    }\n" % Consequence.replace("\n", "\n        ")
@@ -277,23 +289,29 @@ class LDB(dict):
 
     def POSITIONING(self, Positioning, Register):
         if   Positioning is None: 
-            assert PostContextID is not None
-            if Register == PostContextIDs.NONE: return "me->buffer._input_p = last_acceptance_position;\n"
-            else:                               return "me->buffer._input_p = position[%i];\n" % Register
+            if Register == PostContextIDs.NONE: return "me->buffer._input_p = last_acceptance_position;"
+            else:                               return "me->buffer._input_p = position[%i];" % Register
         elif Positioning > 0:   return "me->buffer._input_p -= %i; " % Positioning
         elif Positioning == 0:  return ""
         elif Positioning == -1: return "" # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         else:                   assert False 
 
     def SELECTION(self, Selector, CaseList, BreakF=False):
-        txt = [ 0, "switch( %s ) {\n" % Selector ]
+        txt     = [ None ] * (len(CaseList) * 2 + 4) 
+        txt[:2] = [ 0, "switch( %s ) {\n" % Selector ]
+
+        line_end = " break;\n" if BreakF else "\n"
+
+        i = 2
         for item, consequence in CaseList:
-            txt.append(1)
-            txt.append("case %3i: %s" % (item, consequence))
-            if BreakF: txt.append(" break;\n")
-            else:      txt.append("\n")
-        txt.append(0)
-        txt.append("}\n")
+            txt[i] = 1   # 1 indentation
+            i += 1
+            if isinstance(item, (int, long)): txt[i] = "case %3i: %s%s" % (item, consequence, line_end)
+            else:                             txt[i] = "case %s: %s%s"  % (item, consequence, line_end)
+            i += 1
+
+        txt[i]   = 0  # 0 indentation
+        txt[i+1] = "}\n"
         return txt
 
     def REPLACE_INDENT(self, txt_list):
