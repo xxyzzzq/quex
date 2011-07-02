@@ -314,12 +314,30 @@ class Analyzer:
         return True
 
     def get_position_register_map(self):
-        """Under some circumstances (see above) it is necessary to store the
-           acceptance position or the position in the input stream where a post
-           context begins.  
-           
-           This function tries to spare position registers, since not all
-           position registers are relevant for all path. 
+        """RETURNS: 
+        
+           A dictionary that maps:
+
+                   post-context-id --> position register index
+
+           where post-context-id == PostContextIDs.NONE means
+           'last_acceptance_position'.  The position register index starts from
+           0 and ends with N, where N-1 is the number of required position
+           registers. It can directly be used as index into an array of
+           positions.
+
+           -----------------------------------------------------------------------
+        
+           Under some circumstances it is necessary to store the acceptance
+           position or the position in the input stream where a post context
+           begins. For this an array of positions is necessary, e.g.
+
+               QUEX_POSITION_LABEL     positions[4];
+
+           where the last acceptance input position or the input position of
+           post contexts may be stored. The paths of a state machine, though,
+           may allow to store multiple positions in one array location, because
+           they never interact. 
            
            For example:                   . b .
                                          /     \ 
@@ -335,97 +353,80 @@ class Analyzer:
            The input position needs to be stored for post context 47 in state 1
            and for post context 11 in state 4. Since the paths of the post contexts
            do not cross it is actually not necessary to have to separate
-           position registers. One for post context 47 and 11 is enough.
+           array registers. One for post context 47 and 11 is enough.
 
            This function determines what post contexts (together with the
-           'acceptance position register) can share a single register. It does
-           so by investigating the drop-out routers and how they use position
-           registers: 
+           'acceptance position register) can share a single register/array 
+           location. It does so by investigating the drop-out routers and how 
+           they use position registers: 
            
                 Position registers that appear together in a drop-out router
-                cannot share a register. Otherwise their positions would not be
+                CANNOT share a register. Otherwise their positions would not be
                 distinguishable. (Exception: if the two position registers are
                 applied in exactly the same set of states. This case is
                 not yet considered.)
-
-            This leads to the first intermediate result:
-
-                The 'allowed' database tells for given post-context the list
-                of post context that can potentially share a register.
-
-            Those allowed registers may exclude each other from combination,
-            thus a successive approach of combination is applied.
-
-            RETURNS: A dictionary that maps:
-
-                          post-context-id --> position register index
-
-                     where post-context-id == -1 means 'acceptance_position'.
-                     The position register index starts from 0 and ends with N,
-                     where N-1 is the number of required position registers. It
-                     can directly be used as index into an array of positions.
         """
-        # -- List all registers
-        # -- List all register combinations in drop-out routers
-        all_register_set  = set()
-        constellation_set = set()
+        # IMPORTANT: When we talk about 'post_context' this includes the 
+        #            last acceptance position. Indeed, the last acceptance
+        #            position is coded as 'PostContextIDs.NONE'.
+
+        # (1) Determine: -- Set of all existing post context ids.
+        all_post_context_set = set()
+        #                -- Set of constellations of post contexts as they 
+        #                   appear in the drop-out routers.
+        constellation_set    = set()
+
+        #     Loop over all routers of the drop out handlers.
         for drop_out in imap(lambda state: state.drop_out, self.__state_db):
             if drop_out is None: continue
             constellation = filter(lambda x: x is not None, 
                                    imap(lambda x: x.post_context_id, drop_out.router))
-            all_register_set.update(constellation)
-
             constellation = tuple(sorted(constellation))
             constellation_set.add(constellation)
+            all_post_context_set.update(constellation)
 
-        # -- The 'allowed' database: 
-        #    map: register -> registers that can be combined with it (1:1)
-        allowed_db = defaultdict(set)
-        for constellation in constellation_set:
-            for register in constellation:
-                allowed_db[register].update(all_register_set.difference(constellation))
+        # (2) Determine: For each post context the set of post context with which it 
+        #                can share the position register.
 
-        # -- The 'combination' dictionary:
-        #    map: register -> registers with which it is combined
-        combination_list = [ [register] in self.register_set ]
-        combination_n    = len(combination_list)
+        # -- First, assume for each post context that it can share with ALL others
+        allowed_db = dict([(register, all_post_context_set) for register in all_post_context_set])
 
-        def can_combine(SetA, SetB):
-            for register in SetA:
-                if not allowed_db[registers].issuperset(SetA): return False
-            return True
+        # -- Second, delete for each post context the post contexts with which it 
+        #    appears together.
+        for post_context_id in all_post_context_set:
+            for constellation in ifilter(lambda x: register in x, constellation_set):
+                # Never remove a register itself from the combinable set
+                for other in ifilter(lambda x: x != post_context_id, constellation):
+                    allowed_db[post_context_id].discard(other)
 
-        change_f = True
-        while change_f:
-            change_f = False
-            i             = 0
-            while i < len(combination_n):
-                combi = combination_list[i]
-                # Find a combination to combine the current with
-                # (try to combine with the biggest one)
-                best_k   = -1
-                max_size = -1
-                for k, combi_y in enumerate(combination_list):
-                    if   k == i:                            continue
-                    elif not can_combine(combi_x, combi_y): continue
-                    elif len(combi_y) > max_size:
-                        max_size = len(combi_y)
-                        best_k   = k
+        # (3) Determine: For each post context the index in an array of stored 
+        #                input positions that it would use.
 
-                if best_k != -1:
-                    combination_list[k].update(combi)
-                    combination_n -= 1
-                    del combination_list[i]
-                    change_f = True
-                else:
-                    i += 1
+        # -- allowe_db.values() lists all combinable sets of post context.
+        combinable_list = allowed_db.values()
+        # -- sort then, so that the largest sets become combined first.
+        def get_largest():
 
-        # -- The 'register_map':
-        #    map:  acceptance position / post context id --> position register where position
-        #                                                    is to be stored.
         result = {}
-        for i, combination in enumerate(combination_list):
-            result.update([(register, i) for register in combination])
+        i      = 0
+        while len(combinable_list) != 0:
+            # Allways, try to combine the largest combinable set first.
+            k           = max(enumerate(combinable_list), key=itemgetter(1))[0]
+            combination = combinable_list.pop(k)
+
+            for post_context_id in combination:
+                result[post_context_id] = i
+                # Delete the post_context_id from all combinable sets, because it is done.
+                for combination in combinable_list:
+                    combination.discard(post_context_id)
+
+            # Delete combinations that have become empty
+            size = len(combination_list)
+            i    = 0
+            while i < size:
+                if len(combination_list[i]) == 0: del combination_list[i]; size -= 1
+                else:                             i += 1
+
         return result
 
 InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
