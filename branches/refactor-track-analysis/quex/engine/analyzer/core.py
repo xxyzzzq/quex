@@ -377,10 +377,11 @@ class Analyzer:
         constellation_set    = set()
 
         #     Loop over all routers of the drop out handlers.
-        for drop_out in imap(lambda state: state.drop_out, self.__state_db):
+        for drop_out in imap(lambda state: state.drop_out, self.__state_db.itervalues()):
             if drop_out is None: continue
-            constellation = filter(lambda x: x is not None, 
-                                   imap(lambda x: x.post_context_id, drop_out.router))
+            constellation = map(lambda x: x.post_context_id, 
+                                ifilter(lambda x: x.positioning is None, 
+                                        drop_out.router))
             constellation = tuple(sorted(constellation))
             constellation_set.add(constellation)
             all_post_context_set.update(constellation)
@@ -389,7 +390,7 @@ class Analyzer:
         #                can share the position register.
 
         # -- First, assume for each post context that it can share with ALL others
-        allowed_db = dict([(register, all_post_context_set) for register in all_post_context_set])
+        allowed_db = dict([(register, copy(all_post_context_set)) for register in all_post_context_set])
 
         # -- Second, delete for each post context the post contexts with which it 
         #    appears together.
@@ -401,31 +402,35 @@ class Analyzer:
 
         # (3) Determine: For each post context the index in an array of stored 
         #                input positions that it would use.
-
-        # -- allowe_db.values() lists all combinable sets of post context.
+        # -- allowed_db.values() lists all combinable sets of post context.
         combinable_list = allowed_db.values()
-        # -- sort then, so that the largest sets become combined first.
-        def get_largest():
 
-        result = {}
-        i      = 0
+        result      = {}
+        array_index = 0
         while len(combinable_list) != 0:
             # Allways, try to combine the largest combinable set first.
             k           = max(enumerate(combinable_list), key=itemgetter(1))[0]
             combination = combinable_list.pop(k)
 
             for post_context_id in combination:
-                result[post_context_id] = i
+                result[post_context_id] = array_index
                 # Delete the post_context_id from all combinable sets, because it is done.
                 for combination in combinable_list:
                     combination.discard(post_context_id)
 
+            # Since: -- The combinations only contain post_context_id's that have not been
+            #           mentioned before, and
+            #        -- all empty combinations are deleted from the combinable_list,
+            # Thus:  It is safe to assume that new entries were made for the current
+            #        array index. Thus, a new array index is required for the next turn.
+            array_index += 1
+
             # Delete combinations that have become empty
-            size = len(combination_list)
-            i    = 0
-            while i < size:
-                if len(combination_list[i]) == 0: del combination_list[i]; size -= 1
-                else:                             i += 1
+            size = len(combinable_list)
+            p    = 0
+            while p < size:
+                if len(combinable_list[p]) == 0: del combinable_list[p]; size -= 1
+                else:                            p += 1
 
         return result
 
