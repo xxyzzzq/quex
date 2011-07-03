@@ -4,11 +4,12 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine  as regex
-from   quex.engine.generator.base            import get_combined_state_machine
-import quex.engine.analyzer.core             as core
-from   quex.engine.analyzer.core                 import InputActions
-from   quex.engine.state_machine.state_core_info import EngineTypes
+import quex.input.regular_expression.engine       as regex
+import quex.engine.analyzer.core                  as core
+import quex.engine.analyzer.position_register_map as position_register_map
+from   quex.engine.generator.base                 import get_combined_state_machine
+from   quex.engine.analyzer.core                  import InputActions
+from   quex.engine.state_machine.state_core_info  import EngineTypes
 import help_drawing
 
 if "--hwut-info" in sys.argv:
@@ -38,6 +39,37 @@ elif "2" in sys.argv:
         'd/y+z',
         'e/y+z',
     ]
+elif "3" in sys.argv:
+    print "Two Registers"
+    pattern_list = [
+        'a+',        
+        '[ab]+cd',        
+        'a/c/y+z',
+        'b/c/y+z',
+    ]
+elif "4" in sys.argv:
+    print "All store at the same state => use same register."
+    pattern_list = [
+        'a/c/a+z',
+        'b/c/a+z',
+        'c/c/a+z',
+        'd/c/a+z',
+    ]
+elif "5" in sys.argv:
+    print "12 Cases store at 4 places => 4 registers."
+    pattern_list = [
+        'a/c/a+z',
+        'b/c/a+z',
+
+        'a/c|cb/a+z',
+        'b/c|cb/a+z',
+
+        'a/c|cba/a+z',
+        'b/c|cba/a+z',
+
+        'a/c|cbaz/a+z',
+        'b/c|cbaz/a+z',
+    ]
 else:
     assert False
 
@@ -52,5 +84,5 @@ analyzer = core.Analyzer(sm, EngineTypes.FORWARD)
 for state in analyzer:
     print state.get_string(InputF=False, TransitionMapF=False)
 
-for post_context_id, array_index in analyzer.get_position_register_map().iteritems():
+for post_context_id, array_index in position_register_map.do(analyzer).iteritems():
     print "   %s: %i" % (repr(post_context_id), array_index)
