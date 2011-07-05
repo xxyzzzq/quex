@@ -14,7 +14,7 @@ import help_drawing
 
 if "--hwut-info" in sys.argv:
     print "Position Register vs. Post-Context and Last Acceptance"
-    print "CHOICES: 0, 1, 2, 3;"
+    print "CHOICES: 0, 1, 2, 3, 4, 5;"
     sys.exit()
 
 
@@ -58,17 +58,17 @@ elif "4" in sys.argv:
 elif "5" in sys.argv:
     print "12 Cases store at 4 places => 4 registers."
     pattern_list = [
-        'a/c/a+z',
-        'b/c/a+z',
+        '0/c/a+z',
+        '1/c/a+z',
 
-        'a/c|cb/a+z',
-        'b/c|cb/a+z',
+        '2/c|cb/a+z',
+        '3/c|cb/a+z',
 
-        'a/c|cba/a+z',
-        'b/c|cba/a+z',
+#        'a/c|cba/a+z',
+#        'b/c|cba/a+z',
 
-        'a/c|cbaz/a+z',
-        'b/c|cbaz/a+z',
+#        'a/c|cbaz/a+z',
+#        'b/c|cbaz/a+z',
     ]
 else:
     assert False
@@ -81,8 +81,8 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 analyzer = core.Analyzer(sm, EngineTypes.FORWARD)
 
-for state in analyzer:
-    print state.get_string(InputF=False, TransitionMapF=False)
+# for state in analyzer:
+#    print state.get_string(InputF=False, TransitionMapF=False)
 
 for post_context_id, array_index in position_register_map.do(analyzer).iteritems():
     print "   %s: %i" % (repr(post_context_id), array_index)

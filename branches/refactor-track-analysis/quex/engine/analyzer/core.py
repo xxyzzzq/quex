@@ -313,34 +313,56 @@ class Analyzer:
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform.
         return True
 
-    def _get_storing_state_set(self, PostContextID):
+    def _get_equivalent_post_context_id_sets(self):
+        """Determine sets of equivalent post context ids, because they
+           store the input positions at the exactly same set of states.
+        """
+
+        # (1) map: post-context-id --> set of states where the positions are stored
+        store_constellation_db    = defaultdict(set)
+        restore_contellation_list = []
+        for state in self.state_db.itervalues():
+            for post_context_id in state.entry.positioner.iterkeys():
+                store_constellation_db[post_context_id].add(state.index)
+
+        # (2) inverse map: set of states where the positions are stored --> post context ids that do so
+        inverse_db = defaultdict(set)
+        for post_context_id, storing_state_set in store_constellation_db.iteritems():
+            inverse_db[tuple(sorted(storing_state_set))].add(post_context_id)
+
+        # The grouped post context ids are the set of equivalent post context ids
+        # NOTE: An equivalent set of size < 2 does not make any statement.
+        #       At least, there must be two elements, so that this means 'A is 
+        #       equivalent to B'. Thus, filter anything of size < 2.
+        return store_constellation_db.keys(), filter(lambda x: len(x) >= 2, inverse_db.values())
+
+    def _find_state_sets_from_store_to_restore(self):
+        def dive(PostContextID, State, path, collection):
+            """Termination Condition: state.target_index_list == empty
+                                  or: state_index in path
+            """
+            for target_index in ifilter(lambda x: x not in path, State.target_index_list):
+                collection.add(target_index)
+                target_state = self.state_db[target_index]
+                for dummy in ifilter(lambda x: x.positioning is None and x.post_context_id == PostContextID,
+                                     target_state.drop_out.router):
+                    collection.update(path)
+                    break
+                path.append(target_index)
+                dive(PostContextID, target_state, path, collection)
+                path.pop()
+
         result = defaultdict(set)
         for state in self.state_db.itervalues():
-            if state.entry.positioner.has_key(PostContextID):
-                result[PostContextID].add(state.index)
+            for post_context_id in state.entry.positioner.iterkeys():
+                dive(post_context_id, state, [], result[post_context_id])
+
         return result
-
-    def _get_position_storage_constellations(self):
-        # -- Set of all existing post context ids.
-        all_post_context_set = set()
-        # -- Set of constellations of post contexts as they 
-        #    appear in the drop-out routers.
-        constellation_list   = []
-
-        for drop_out in imap(lambda state: state.drop_out, self.__state_db.itervalues()):
-            if drop_out is None: continue
-            related_post_context_id_set = set(map(lambda x: x.post_context_id, 
-                                                  ifilter(lambda x: x.positioning is None, 
-                                                  drop_out.router)))
-            all_post_context_set.update(related_post_context_id_set)
-            constellation_list.append(related_post_context_id_set)
-
-        return all_post_context_set, constellation_list
 
 InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
 
 class AnalyzerState(object):
-    __slots__ = ("__index", "__init_state_f", "__state_is_entered_f", "__engine_type", "input", "entry", "transition_map", "drop_out", "_origin_list")
+    __slots__ = ("__index", "__init_state_f", "__state_is_entered_f", "__target_index_list", "__engine_type", "input", "entry", "transition_map", "drop_out", "_origin_list")
 
     def __init__(self, StateIndex, SM, EngineType):
         assert type(StateIndex) in [int, long]
@@ -373,8 +395,10 @@ class AnalyzerState(object):
             # (orphaned states, also, need to be deleted).
             if state.is_acceptance(): assert state.transitions().is_empty()
             self.transition_map = []
+            self.__target_index_list = []
         else:
             self.transition_map = state.transitions().get_trigger_map()
+            self.__target_index_list = state.transitions().get_map().keys()
 
         # (*) Drop Out
         if   EngineType == EngineTypes.FORWARD: 
@@ -403,6 +427,8 @@ class AnalyzerState(object):
     def engine_type(self):          return self.__engine_type
     @property
     def state_is_entered_f(self):   return self.__state_is_entered_f
+    @property
+    def target_index_list(self):    return self.__target_index_list
 
     def set_state_is_entered_f(self): 
         self.__state_is_entered_f = True
