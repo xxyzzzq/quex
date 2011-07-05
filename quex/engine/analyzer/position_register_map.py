@@ -1,4 +1,4 @@
-from itertools   import imap, ifilter
+from itertools   import imap, ifilter, islice
 from collections import defaultdict
 from operator    import itemgetter
 from copy import copy
@@ -27,7 +27,10 @@ def do(analyzer):
        where the last acceptance input position or the input position of
        post contexts may be stored. The paths of a state machine, though,
        may allow to store multiple positions in one array location, because
-       they never interact. 
+
+           (1) the path from store to restore does not intersect, or
+
+           (2) they store their positions in exactly the same states.
        
        For example:                   . b .
                                      /     \ 
@@ -45,52 +48,39 @@ def do(analyzer):
        do not cross it is actually not necessary to have to separate
        array registers. One for post context 47 and 11 is enough.
 
-       This function determines what post contexts (together with the
-       'acceptance position register) can share a single register/array 
-       location. It does so by investigating the drop-out routers and how 
-       they use position registers: 
-       
-            Position registers that appear together in a drop-out router
-            CANNOT share a register. Otherwise their positions would not be
-            distinguishable. (Exception: if the two position registers are
-            applied in exactly the same set of states. This case is
-            not yet considered.)
+       This present function determines what post contexts (together with the
+       'acceptance position register) can share a single register/array
+       location. As a result it delivers a mapping from post context id to
+       an array index in a position storage array. 
     """
     # IMPORTANT: When we talk about 'post_context' this includes the 
     #            last acceptance position. Indeed, the last acceptance
     #            position is coded as 'PostContextIDs.NONE'.
-    # (1) Determine: -- Set of all existing post context ids.
-    #                -- Set of constellations of post contexts as they 
-    #                   appear in the drop-out routers.
-    all_post_context_set, constellation_list = analyzer._get_position_storage_constellations()
 
-    #     Loop over all routers of the drop out handlers.
-    constellation_set = set()
-    for sub_constellation_list in [ analyze_this(analyzer, x) for x in constellation_list ]:
-        for sub_constellation in sub_constellation_list:
-            print "##", sub_constellation
-            constellation_set.add(sub_constellation)
+    # (1) Determine: -- Set of all present post-context-ids that are related to store/restore.
+    #                -- Sets of post_context_ids that store their positions in exactly the
+    #                   same states.
+    all_post_context_id_set, \
+    equivalent_sets          = analyzer._get_equivalent_post_context_id_sets()
+    print "##eq:", equivalent_sets
 
-    # (2) Determine: For each post context the set of post context with which it 
-    #                can share the position register.
+    # (2) Determine: Sets of post context ids, where the paths from storage
+    #                of input position and restore of input position does 
+    #                not interact.
+    combinable_list = find_non_intersecting_post_context_id_groups(all_post_context_id_set, analyzer)
+    print "##ni", combinable_list
 
-    # -- First, assume for each post context that it can share with ALL others
-    allowed_db = dict([(register, copy(all_post_context_set)) for register in all_post_context_set])
-    print "##al", allowed_db
-    print "##cs", constellation_set
+    # (*) To each non-intersecting state set on can add the equivalent 
+    #     post-context-ids.
+    for candidate in combinable_list:
+        for equivalent in ifilter(lambda x : not x.isdisjoint(candidate), equivalent_sets):
+            candidate.update(equivalent)
 
-    # -- Second, delete for each post context the post contexts with which it 
-    #    appears together.
-    for post_context_id in all_post_context_set:
-        for constellation in ifilter(lambda x: register in x, constellation_set):
-            # Never remove a register itself from the combinable set
-            for other in ifilter(lambda x: x != post_context_id, constellation):
-                allowed_db[post_context_id].discard(other)
-
-    # (3) Determine: For each post context the index in an array of stored 
-    #                input positions that it would use.
-    # -- allowed_db.values() lists all combinable sets of post context.
-    combinable_list = allowed_db.values()
+    # -- Make sure, that each post-context-id is at least considered, even though,
+    #    it may not appear in the combinable set.
+    combinable_list.extend(set([x]) for x in all_post_context_id_set)
+    # -- Make sure, that all equivalent sets appear
+    combinable_list.extend(equivalent_sets)
 
     result      = {}
     array_index = 0
@@ -121,47 +111,25 @@ def do(analyzer):
 
     return result
 
-def analyze_this(analyzer, PostContextIDSet):
-    """If different input positions store their content at the same
-       input states, then they can still share the same register.
+def find_non_intersecting_post_context_id_groups(AllPostContextID_List, analyzer):
+    """Determine groups of post-context-ids where the path from store input 
+       position to restore input position does not intersect.
     """
-    if len(PostContextIDSet) == 0: return [()]
+    StateSetDB = analyzer._find_state_sets_from_store_to_restore()
 
-    # Find all states where post context id is stored
-    storing_state_db = dict([(post_context_id, analyzer._get_storing_state_set(post_context_id))
-                             for post_context_id in PostContextIDSet])
-                                
-    inverse_db = defaultdict(set)
-    for post_context_id, storing_state_set in storing_state_db.iteritems():
-        inverse_db[tuple(sorted(storing_state_set))].add(post_context_id)
+    result = {}
+    for i, post_context_id in enumerate(AllPostContextID_List):
+        result[post_context_id] = []
+        state_set = StateSetDB[post_context_id]
+        for other_post_context_id in islice(AllPostContextID_List, i + 1, None):
+            other_state_set = StateSetDB[other_post_context_id]
+            if state_set.isdisjoint(other_state_set):
+                result[post_context_id].append(other_post_context_id)
 
-    # Post context positions that are stored all in the same states, can 
-    # be combined.
-    # (1) Compute set of states that never appear in a combinable
-    can_be_combined_set_list = [ tuple(x) for x in inverse_db.values() ]
-    root_not_combinable      = copy(PostContextIDSet)
-    for can_be_combined_set in can_be_combined_set_list:
-        root_not_combinable.difference_update(can_be_combined_set)
+    # NOTE: A non-intersecting set of size < 2 does not make any statement.
+    #       At least, there must be two elements, so that this means 'A is 
+    #       equivalent to B'. Thus, filter anything of size < 2.
+    return map(set, ifilter(lambda x: len(x) > 1, result.values()))
+            
 
-    LenCBCSL     = len(can_be_combined_set_list)
-    limit_vector = [ len(x) for x in can_be_combined_set_list ]
-    cursor       = [ 0 ] * LenCBCSL
-    combination  = [ 0 ] * LenCBCSL
-    # Number of possible combinations of remaining sets:
-    N            = reduce(lambda x, y: x * y, limit_vector)
-    result       = [ None ] * N
-    print "##start", limit_vector, can_be_combined_set_list
-    for n in xrange(N):
-        print "##cursor", cursor
-        for i in xrange(LenCBCSL):
-            combination[i] = can_be_combined_set_list[i][cursor[i]]
-        result[n] = tuple(sorted(root_not_combinable.union(combination)))
-        # Increment cursor:
-        for i in xrange(LenCBCSL):
-            cursor[i] += 1
-            if cursor[i] == limit_vector[i]: cursor[i] = 0; 
-            else:                            break
-
-    print "##", result
-    return result
 
