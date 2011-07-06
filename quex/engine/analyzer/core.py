@@ -42,7 +42,13 @@ class Analyzer:
 
         self.__init_state_index = SM.init_state_index
 
-        self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType)) 
+        from_db = {}
+        for state_index, state in SM.states.iteritems():
+            self.transition_map = state.transitions().get_trigger_map()
+            for target_index in state.transitions().get_map().keys():
+                from_db[target_index].add(state_index)
+
+        self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
                                  for state_index in acceptance_db.iterkeys()])
 
         if EngineType == EngineTypes.FORWARD:
@@ -61,7 +67,8 @@ class Analyzer:
                 transition_map = sm_state.transitions().get_map()
                 if     len(transition_map) == 0 \
                    or (len(transition_map) == 1 and transition_map.keys()[0] == 1):
-                    self.__state_db[state_index].entry.clear()
+                   for entry in self.__state_db[state_index].entry.itervalues():
+                       entry.clear()
         else:
             # NOTE: For backward analysis, drop_out and entry do not require any construction 
             #       beyond what is triggered inside the constructor of 'AnalyzerState'.
@@ -151,11 +158,14 @@ class Analyzer:
             # No pre-context --> restore last acceptance
             checker.append(DropOut_CheckerElement(None, AcceptanceIDs.VOID))
 
-            # All triggering states must store the acceptance
+            # Triggering follower states, that lie on the path to this state, must store the acceptance.
             for trace in TheAcceptanceTraceList:
                 for element in ifilter(lambda element: element.pattern_id != AcceptanceIDs.FAILURE, trace):
-                    entry = self.__state_db[element.accepting_state_index].entry
-                    entry.accepter[element.pre_context_id] = element.pattern_id
+                    accepting_state = self._state_db[element.accepting_state_index]
+                    for target_index in ifilter(lambda x: self.is_the_path(x, element.accepting_state_index, state.index),
+                                                target_index_list):
+                        entry = self.__state_db[target_index].entry[element.accepting_state_index]
+                        entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
@@ -172,11 +182,12 @@ class Analyzer:
             # positioning is uniformly 'lexeme_start_p + 1' (and never undefined, i.e. None).
             assert pattern_id != AcceptanceIDs.FAILURE
 
-            # Inform all triggering states that the position needs to be stored
+            # Follower states of triggering states need to store the position
             for state_index in info.positioning_state_index_list:
-                entry = self.__state_db[state_index].entry
-                entry.positioner[info.post_context_id].add(info.pre_context_id)
-
+                for target_index in ifilter(lambda x: self.is_the_path(x, element.accepting_state_index, state.index),
+                                            target_index_list):
+                    entry = self.__state_db[target_index].entry[element.accepting_state_index]
+                    entry.positioner[info.post_context_id].add(info.pre_context_id)
 
         # Clean Up the checker and the router:
         # (1) there is no check after the unconditional acceptance
@@ -322,8 +333,10 @@ class Analyzer:
         store_constellation_db    = defaultdict(set)
         restore_contellation_list = []
         for state in self.state_db.itervalues():
-            for post_context_id in state.entry.positioner.iterkeys():
-                store_constellation_db[post_context_id].add(state.index)
+            # Iterate over all post context ids subject to position storage
+            for entry in state.entry.itervalues():
+                for post_context_id in entry.positioner.iterkeys():
+                    store_constellation_db[post_context_id].add(state.index)
 
         # (2) inverse map: set of states where the positions are stored --> post context ids that do so
         inverse_db = defaultdict(set)
@@ -354,17 +367,28 @@ class Analyzer:
 
         result = defaultdict(set)
         for state in self.state_db.itervalues():
-            for post_context_id in state.entry.positioner.iterkeys():
-                dive(post_context_id, state, [], result[post_context_id])
+            # Iterate over all post context ids subject to position storage
+            for entry in state.entry.itervalues():
+                for post_context_id in entry.positioner.iterkeys():
+                    dive(post_context_id, state, [], result[post_context_id])
 
         return result
 
 InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
 
 class AnalyzerState(object):
-    __slots__ = ("__index", "__init_state_f", "__state_is_entered_f", "__target_index_list", "__engine_type", "input", "entry", "transition_map", "drop_out", "_origin_list")
+    __slots__ = ("__index", 
+                 "__init_state_f", 
+                 "__state_is_entered_f", 
+                 "__target_index_list", 
+                 "__engine_type", 
+                 "input", 
+                 "entry_list", 
+                 "transition_map", 
+                 "drop_out", 
+                 "_origin_list")
 
-    def __init__(self, StateIndex, SM, EngineType):
+    def __init__(self, StateIndex, SM, EngineType, FromStateIndexList):
         assert type(StateIndex) in [int, long]
         assert EngineType in EngineTypes
 
@@ -382,11 +406,14 @@ class AnalyzerState(object):
         else:                                     self.input = InputActions.DECREMENT_THEN_DEREF
 
         # (*) Entry Action
-        self.entry = { 
-            EngineTypes.FORWARD:                 Entry,
-            EngineTypes.BACKWARD_PRE_CONTEXT:    EntryBackward,
-            EngineTypes.BACKWARD_INPUT_POSITION: EntryBackwardInputPositionDetection, 
-        }[EngineType](state.origins())
+        if   EngineType == EngineTypes.FORWARD: 
+            self.entry  =  dict([(state_index, Entry()) for state_index in FromStateIndexList])
+        elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT: 
+            self.entry  =  EntryBackward(state.origins())
+        elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION: 
+            self.entry  =  EntryBackwardInputPositionDetection(state.origins())
+        else:
+            assert False
 
         # (*) Transition
         if EngineType == EngineTypes.BACKWARD_INPUT_POSITION:
@@ -394,7 +421,7 @@ class AnalyzerState(object):
             # return from the searcher, thus no further transitions are necessary.
             # (orphaned states, also, need to be deleted).
             if state.is_acceptance(): assert state.transitions().is_empty()
-            self.transition_map = []
+            self.transition_map      = []
             self.__target_index_list = []
         else:
             self.transition_map = state.transitions().get_trigger_map()
@@ -514,15 +541,13 @@ class Entry(object):
        and a "None" in the pre-context-id list stands for the unconditional case.
 
     """
-    __slots__ = ("accepter", "positioner", "debug_origin_list")
+    __slots__ = ("from_state_index", "accepter", "positioner")
 
-    def __init__(self, OriginList):
+    def __init__(self):
         # By default, we do not do store anything about acceptance at state entry
-        self.accepter   = {}
-        self.positioner = defaultdict(set)
-
-        # As a reference for some asserts
-        self.debug_origin_list = OriginList
+        self.accepter         = {}
+        self.positioner       = defaultdict(set)
+        self.from_state_index = None
 
     def clear(self):
         self.accepter.clear()
