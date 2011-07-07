@@ -19,14 +19,19 @@ init-state = 69L
 
 State 72:
   .entry:
-    Positioner:
-    Position[PostContext_14]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 73:
   .entry:
+    .by 72:
+    Positioner:
+    Position[PostContext_14]  = input_p;
+    .by 73:
+    .by 70:
+    Positioner:
+    Position[PostContext_14]  = input_p;
   .drop_out:
     pos = Position[PostContext_14] ; goto Pattern21;
 
@@ -39,8 +44,6 @@ State 69:
 
 State 70:
   .entry:
-    Positioner:
-    Position[PostContext_14]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 

@@ -17,20 +17,24 @@ init-state = 79L
 
 State 80:
   .entry:
-    Positioner:
-    Position[Acceptance] = input_p;
   .drop_out:
      goto Pattern25;
 
 
 State 81:
   .entry:
+    .by 80:
+    Positioner:
+    Position[Acceptance] = input_p;
+    .by 82:
   .drop_out:
     pos = Position[Acceptance]; goto Pattern25;
 
 
 State 82:
   .entry:
+    Positioner:
+    Position[Acceptance] = input_p;
   .drop_out:
     pos -= 1;  goto Pattern25;
 

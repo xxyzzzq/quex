@@ -28,6 +28,13 @@ pre-condition inverted = init-state = 0L
 
 State 96:
   .entry:
+    .by 96:
+    .by 93:
+    Positioner:
+    if 'PreContext_28': Position[PostContext_16]  = input_p;
+    .by 95:
+    Positioner:
+    if 'PreContext_28': Position[PostContext_16]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -47,8 +54,6 @@ State 92:
 
 State 93:
   .entry:
-    Positioner:
-    if 'PreContext_28': Position[PostContext_16]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -61,8 +66,6 @@ State 94:
 
 State 95:
   .entry:
-    Positioner:
-    if 'PreContext_28': Position[PostContext_16]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 

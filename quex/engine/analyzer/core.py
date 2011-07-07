@@ -42,7 +42,7 @@ class Analyzer:
 
         self.__init_state_index = SM.init_state_index
 
-        from_db = {}
+        from_db = defaultdict(set)
         for state_index, state in SM.states.iteritems():
             self.transition_map = state.transitions().get_trigger_map()
             for target_index in state.transitions().get_map().keys():
@@ -50,6 +50,9 @@ class Analyzer:
 
         self.__state_db = dict([(state_index, AnalyzerState(state_index, SM, EngineType, from_db[state_index])) 
                                  for state_index in acceptance_db.iterkeys()])
+
+        self.__successor_db = defaultdict(set)
+        self.__get_successor_db(self.__init_state_index, [], self.__successor_db)
 
         if EngineType == EngineTypes.FORWARD:
             for state_index, acceptance_trace_list in acceptance_db.iteritems():
@@ -62,13 +65,29 @@ class Analyzer:
 
             # -- After the preceding dependency implementation:
             #    If a state has no successor state, or only transitions to itself,
-            #    => No entry check is necessary and no position storage.
+            #    => No accepter check is necessary, done in drop-out
             for state_index, sm_state in SM.states.iteritems():
                 transition_map = sm_state.transitions().get_map()
                 if     len(transition_map) == 0 \
                    or (len(transition_map) == 1 and transition_map.keys()[0] == 1):
-                   for entry in self.__state_db[state_index].entry.itervalues():
-                       entry.clear()
+                   for entry in self.__state_db[state_index].entry_db.itervalues():
+                       entry.accepter.clear()
+
+            # -- Try to unify state entry actions: If a state behaves the same 
+            #    at entry independent from where it is entered, then transform
+            #    the entry dictionary into:
+            #
+            #         map:  None --> Uniform Entry
+            for state in self.__state_db.itervalues():
+                if len(state.entry_db) == 0: continue
+                iteritems = state.entry_db.iteritems()
+                from_state_index, prototype = iteritems.next()
+                uniform_f = True
+                for from_state_index, entry in iteritems:
+                    if not entry.is_equal(prototype): uniform_f = False; break
+                if uniform_f:
+                    state.entry_db = { None: prototype }
+
         else:
             # NOTE: For backward analysis, drop_out and entry do not require any construction 
             #       beyond what is triggered inside the constructor of 'AnalyzerState'.
@@ -158,13 +177,11 @@ class Analyzer:
             # No pre-context --> restore last acceptance
             checker.append(DropOut_CheckerElement(None, AcceptanceIDs.VOID))
 
-            # Triggering follower states, that lie on the path to this state, must store the acceptance.
+            # Triggering states need to store acceptance as soon as they are entered
             for trace in TheAcceptanceTraceList:
                 for element in ifilter(lambda element: element.pattern_id != AcceptanceIDs.FAILURE, trace):
-                    accepting_state = self._state_db[element.accepting_state_index]
-                    for target_index in ifilter(lambda x: self.is_the_path(x, element.accepting_state_index, state.index),
-                                                target_index_list):
-                        entry = self.__state_db[target_index].entry[element.accepting_state_index]
+                    accepting_state = self.__state_db[element.accepting_state_index]
+                    for entry in accepting_state.entry_db.itervalues():
                         entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
@@ -183,10 +200,22 @@ class Analyzer:
             assert pattern_id != AcceptanceIDs.FAILURE
 
             # Follower states of triggering states need to store the position
-            for state_index in info.positioning_state_index_list:
-                for target_index in ifilter(lambda x: self.is_the_path(x, element.accepting_state_index, state.index),
-                                            target_index_list):
-                    entry = self.__state_db[target_index].entry[element.accepting_state_index]
+            for pos_state_index in info.positioning_state_index_list:
+                positioning_state = self.__state_db[pos_state_index]
+                print "##W:", state.index
+                print "##W  .pos ", pos_state_index
+                print "##W       ", positioning_state.target_index_list
+                print "##W       ", map(lambda x: (x, self.__successor_db[x]), positioning_state.target_index_list)
+
+                # Let index be the index of the currently considered state. Then,
+                # Let x be one of the target states of the positioning state. 
+                # If (index == x) or (index in self.__successor_db[x])
+                # => The path from positioning state over x guides to current state
+                for target_index in ifilter(lambda x: state.index == x or state.index in self.__successor_db[x],
+                                            positioning_state.target_index_list):
+                    if target_index == pos_state_index: continue
+                    entry = self.__state_db[target_index].entry_db[pos_state_index]
+                    ## print "##ep", target_index, pos_state_index, info.post_context_id, info.pre_context_id
                     entry.positioner[info.post_context_id].add(info.pre_context_id)
 
         # Clean Up the checker and the router:
@@ -324,17 +353,30 @@ class Analyzer:
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform.
         return True
 
+    def __get_successor_db(self, StateIndex, path, result):
+        """Determine for each state the set of successor states.
+        """
+        state             = self.__state_db[StateIndex]
+        target_index_list = state.target_index_list
+
+        path.append(StateIndex)
+        for state_index in path:
+            result[state_index].update(target_index_list)
+
+        for target_index in ifilter(lambda x: x not in path, target_index_list):
+            self.__get_successor_db(target_index, path, result)
+        path.pop()
+
     def _get_equivalent_post_context_id_sets(self):
         """Determine sets of equivalent post context ids, because they
            store the input positions at the exactly same set of states.
         """
-
         # (1) map: post-context-id --> set of states where the positions are stored
         store_constellation_db    = defaultdict(set)
         restore_contellation_list = []
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for entry in state.entry.itervalues():
+            for entry in state.entry_db.itervalues():
                 for post_context_id in entry.positioner.iterkeys():
                     store_constellation_db[post_context_id].add(state.index)
 
@@ -368,7 +410,7 @@ class Analyzer:
         result = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for entry in state.entry.itervalues():
+            for entry in state.entry_db.itervalues():
                 for post_context_id in entry.positioner.iterkeys():
                     dive(post_context_id, state, [], result[post_context_id])
 
@@ -383,7 +425,8 @@ class AnalyzerState(object):
                  "__target_index_list", 
                  "__engine_type", 
                  "input", 
-                 "entry_list", 
+                 "entry_db", 
+                 "entry",
                  "transition_map", 
                  "drop_out", 
                  "_origin_list")
@@ -407,11 +450,14 @@ class AnalyzerState(object):
 
         # (*) Entry Action
         if   EngineType == EngineTypes.FORWARD: 
-            self.entry  =  dict([(state_index, Entry()) for state_index in FromStateIndexList])
+            self.entry_db = dict([(state_index, Entry()) for state_index in FromStateIndexList])
+            self.entry    = None
         elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT: 
-            self.entry  =  EntryBackward(state.origins())
+            self.entry_db = None
+            self.entry    = EntryBackward(state.origins())
         elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry  =  EntryBackwardInputPositionDetection(state.origins())
+            self.entry_db = None
+            self.entry    = EntryBackwardInputPositionDetection(state.origins())
         else:
             assert False
 
@@ -463,7 +509,19 @@ class AnalyzerState(object):
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
         if InputF:         txt.append("  .input: move position %i\n" % self.input.move_input_position())
-        if EntryF:         txt.extend(["  .entry:\n",         repr(self.entry)])
+        if EntryF:         
+            if self.engine_type != EngineTypes.FORWARD:
+                txt.extend(["  .entry:\n", repr(self.entry)])
+            elif len(self.entry_db) == 0:
+                txt.append("  .entry:\n")
+            elif len(self.entry_db) == 1:
+                txt.extend(["  .entry:\n", repr(self.entry_db.itervalues().next())])
+            else:
+                txt.append("  .entry:\n")
+                for from_state_index, entry in self.entry_db.iteritems():
+                    txt.extend(["    .by %i:\n" % from_state_index, repr(entry)])
+
+
         if TransitionMapF: txt.append("  .transition_map:\n")
         if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
         txt.append("\n")
@@ -547,11 +605,15 @@ class Entry(object):
         # By default, we do not do store anything about acceptance at state entry
         self.accepter         = {}
         self.positioner       = defaultdict(set)
-        self.from_state_index = None
 
     def clear(self):
         self.accepter.clear()
         self.positioner.clear()
+
+    def is_equal(self, Other):
+        return     self.accepter   == Other.accepter \
+               and self.positioner == Other.positioner
+
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
@@ -566,7 +628,6 @@ class Entry(object):
         return result
 
     def get_positioner(self):
-        print "##", self.positioner
         return self.positioner.items()
 
     def __repr__(self):
