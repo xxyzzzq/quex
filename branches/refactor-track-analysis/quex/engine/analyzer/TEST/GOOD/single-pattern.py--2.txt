@@ -14,14 +14,14 @@ init-state = 39L
 
 State 40:
   .entry:
-    Positioner:
-    Position[PostContext_1]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 41:
   .entry:
+    Positioner:
+    Position[PostContext_1]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
