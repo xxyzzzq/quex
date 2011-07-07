@@ -27,22 +27,25 @@ State 68:
 
 State 69:
   .entry:
-    Positioner:
-    Position[Acceptance] = input_p;
   .drop_out:
      goto Pattern1;
 
 
 State 70:
   .entry:
-    Positioner:
-    Position[Acceptance] = input_p;
   .drop_out:
      goto Pattern1;
 
 
 State 71:
   .entry:
+    .by 73:
+    .by 69:
+    Positioner:
+    Position[Acceptance] = input_p;
+    .by 70:
+    Positioner:
+    Position[Acceptance] = input_p;
   .drop_out:
     pos = Position[Acceptance]; goto Pattern1;
 
@@ -55,6 +58,8 @@ State 72:
 
 State 73:
   .entry:
+    Positioner:
+    Position[Acceptance] = input_p;
   .drop_out:
     pos -= 1;  goto Pattern1;
 

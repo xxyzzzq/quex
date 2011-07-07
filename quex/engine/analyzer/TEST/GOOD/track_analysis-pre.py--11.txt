@@ -43,8 +43,6 @@ State 297:
   .entry:
     Accepter:
         if      PreContext_15: last_acceptance = Pattern17
-    Positioner:
-    if 'PreContext_15': Position[Acceptance] = input_p;
   .drop_out:
     if PreContext_15:  goto Pattern17;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -52,6 +50,8 @@ State 297:
 
 State 298:
   .entry:
+    Positioner:
+    if 'PreContext_15': Position[Acceptance] = input_p;
   .drop_out:
     if PreContext_15: pos -= 1;  goto Pattern17;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -59,6 +59,10 @@ State 298:
 
 State 299:
   .entry:
+    .by 297:
+    Positioner:
+    if 'PreContext_15': Position[Acceptance] = input_p;
+    .by 298:
   .drop_out:
     if PreContext_15: pos = Position[Acceptance]; goto Pattern17;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -66,6 +70,12 @@ State 299:
 
 State 300:
   .entry:
+    .by 296:
+    .by 297:
+    Positioner:
+    if 'PreContext_15': Position[Acceptance] = input_p;
+    .by 298:
+    .by 299:
   .drop_out:
     Checker:
         accept = last_acceptance

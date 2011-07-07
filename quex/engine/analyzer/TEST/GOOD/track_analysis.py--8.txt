@@ -38,14 +38,16 @@ State 114:
   .entry:
     Accepter:
         last_acceptance = Pattern6
-    Positioner:
-    Position[Acceptance] = input_p;
   .drop_out:
      goto Pattern6;
 
 
 State 115:
   .entry:
+    .by 114:
+    Positioner:
+    Position[Acceptance] = input_p;
+    .by 115:
   .drop_out:
     pos = Position[Acceptance]; goto Pattern6;
 
