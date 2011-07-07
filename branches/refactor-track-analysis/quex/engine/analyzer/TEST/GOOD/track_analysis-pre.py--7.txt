@@ -26,8 +26,6 @@ State 71:
 
 State 72:
   .entry:
-    Positioner:
-    if 'BeginOfLine': Position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -35,8 +33,6 @@ State 72:
 
 State 73:
   .entry:
-    Positioner:
-    if 'BeginOfLine': Position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -44,6 +40,10 @@ State 73:
 
 State 74:
   .entry:
+    .by 73:
+    Positioner:
+    if 'BeginOfLine': Position[Acceptance] = input_p;
+    .by 76:
   .drop_out:
     if BeginOfLine: pos = Position[Acceptance]; goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -57,6 +57,8 @@ State 75:
 
 State 76:
   .entry:
+    Positioner:
+    if 'BeginOfLine': Position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;

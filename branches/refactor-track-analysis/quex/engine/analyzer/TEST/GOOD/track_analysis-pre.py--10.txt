@@ -42,8 +42,6 @@ State 453:
   .entry:
     Accepter:
         if      PreContext_18: last_acceptance = Pattern20
-    Positioner:
-    if 'PreContext_18': Position[Acceptance] = input_p;
   .drop_out:
     if PreContext_18:  goto Pattern20;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -51,6 +49,10 @@ State 453:
 
 State 454:
   .entry:
+    .by 453:
+    Positioner:
+    if 'PreContext_18': Position[Acceptance] = input_p;
+    .by 454:
   .drop_out:
     if PreContext_18: pos = Position[Acceptance]; goto Pattern20;
     pos = lexeme_start_p + 1;  goto Failure;
