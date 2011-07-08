@@ -1,0 +1,13 @@
+token {
+    GOOD;
+}
+
+start = ONE;
+
+define {
+    NothingOrMoreX   X*
+}
+
+mode ONE {
+    {NothingOrMoreX}X  => QUEX_TKN_GOOD;
+}
