@@ -86,7 +86,7 @@ class HopcroftMinization:
 
         # (*) Initial split 
         #     --> initial state_set_list
-        self.__todo         = set([])  # state sets to be investigated
+        self.__todo           = set([])  # state sets to be investigated
         self.__non_homogenous = set([])  # suspects to trigger to different target state sets
         self.state_set_list = []
         self.__initial_split()
@@ -101,7 +101,6 @@ class HopcroftMinization:
         # be marked undone. Check against this by means of a change flag.
         change_f = True
         while len(self.__todo) != 0 and change_f:
-
             # (A) Phase: Split all state sets that are non-homogenous, 
             #            i.e. trigger to different target state sets.
             while len(self.__non_homogenous) != 0:
@@ -112,7 +111,8 @@ class HopcroftMinization:
             #            if they trigger to target state sets with different trigger sets.
             change_f = False
             for i in list(sorted(self.__todo, key=lambda i: len(self.state_set_list[i]), reverse=True)): 
-                if i in self.__non_homogenous: continue
+                # (See also below after split()) 
+                # if i in self.__non_homogenous: continue
 
                 if self.split(i): 
                     change_f = True           
@@ -244,35 +244,32 @@ class HopcroftMinization:
                 equivalent_state_set.append(state_index)
 
         # The transitions have been investigated. Now, we can judge whether 
-        # a state set is done: All target state sets must be done.
-        if self.__todo.isdisjoint(prototype_map.keys()):  
-            done_f = True
-        elif StateSetIndex in self.__todo:
-            # If the only undone target state set is the set itself (loop),
-            # then it is also considered as 'done'.
-            tmp = set(self.__todo)
-            tmp.remove(StateSetIndex)
-            if tmp.isdisjoint(prototype_map.keys()): done_f = True
-            else:                                    done_f = False
-        else: 
-            done_f = False
+        # a state set is done. If all target state sets are done, then 
+        # no further split can happen and the state set itself is done.
+        all_done_f = self.__todo.isdisjoint(prototype_map.keys())  
 
         if len(equivalent_state_set) == len(state_set): 
             self.non_homogenous_remove(StateSetIndex)
-            if done_f: self.todo_remove(StateSetIndex)
+            if all_done_f: self.todo_remove(StateSetIndex)
             return False
-
-        # -- The state set is split, thus state sets triggering to it may be non-homogenous
-        #    (this may include recursive states, so this has to come after anything above)
-        self.__check_dependencies(state_set)
 
         new_index = self.__extract(StateSetIndex, state_set, equivalent_state_set)
 
-        if len(state_set) == 1: self.non_homogenous_remove(StateSetIndex); self.todo_remove(StateSetIndex)
-        else:                   self.non_homogenous_add(StateSetIndex)
-        if done_f:
-            # if the new state state is of size one, it has not been added to 'todo' list
-            if len(equivalent_state_set) != 1: self.todo_remove(new_index)
+        # -- The state set is split, thus state sets triggering to it may be non-homogenous
+        #    (this may include recursive states, even the equivalent state set, 
+        #     so this has to come after anything above)
+        self.__check_dependencies(state_set)
+        self.__check_dependencies(equivalent_state_set)
+
+        if len(state_set) == 1: 
+            self.non_homogenous_remove(StateSetIndex)
+            self.todo_remove(StateSetIndex)
+        else:
+            self.non_homogenous_add(StateSetIndex)
+
+        if all_done_f and len(equivalent_state_set) != 1: 
+            # If the new state state is of size one, it has not been added to 'todo' list
+            self.todo_remove(new_index)
 
         return True
 
@@ -300,17 +297,16 @@ class HopcroftMinization:
         # (2) Split the acceptance states according to their origin. An acceptance
         #     state maching the, for example, an identifier is not equivalent an 
         #     acceptance state that that matches a number.
-        db = {}   
+        db = defaultdict(list)   
         for state_index in ifilter(lambda x: x not in non_acceptance_state_set, self.sm.states.iterkeys()): 
             state = self.sm.states[state_index]
             origin_state_machine_ids = map(lambda origin: origin.state_machine_id, 
                                            state.origins())
             state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
-            if db.has_key(state_combination_id): db[state_combination_id].append(state_index)
-            else:                                db[state_combination_id] = [ state_index ]                             
+            db[state_combination_id].append(state_index)
 
         # (2b) Enter the split acceptance state sets.
-        for state_set in db.values():
+        for state_set in db.itervalues():
             i = self.__add_state_set(state_set)
             if len(state_set) != 1: self.non_homogenous_add(i)
 
