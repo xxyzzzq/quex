@@ -356,7 +356,7 @@ class TransitionMap:
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
         assert Option in ["hex", "utf8"]
         sorted_transitions = self.get_map().items()
-        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
+        sorted_transitions.sort(key=lambda x: (x[1].minimum()))
 
         msg = ""
         # normal state transitions

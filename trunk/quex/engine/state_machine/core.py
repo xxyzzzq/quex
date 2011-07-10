@@ -7,9 +7,9 @@ from   quex.engine.state_machine.state_core_info import *
 from   quex.engine.state_machine.origin_list     import StateOriginList
 
 import sys
-from   copy import copy, deepcopy
-from   operator import attrgetter
-from   itertools import ifilter
+from   copy      import copy, deepcopy
+from   operator  import attrgetter
+from   itertools import ifilter, imap
 
 
 class State:
@@ -929,9 +929,7 @@ class StateMachine:
 
         transition_str       = ""
         acceptance_state_str = ""
-        for state_i in sorted(index_sequence):
-            printed_state_i = index_map[state_i]
-            state           = self.states[state_i]
+        for printed_state_i, state in sorted(imap(lambda i: (index_map[i], self.states[i]), index_sequence)):
             if state.is_acceptance(): 
                 acceptance_state_str += "%i; " % int(printed_state_i)
             transition_str += state.get_graphviz_string(printed_state_i, index_map, Option)

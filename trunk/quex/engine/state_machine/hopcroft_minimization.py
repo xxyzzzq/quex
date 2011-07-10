@@ -2,7 +2,8 @@
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
 from   quex.engine.state_machine.index import map_state_combination_to_index
-from   itertools   import islice, ifilter, chain
+from   quex.engine.state_machine.state_core_info import PostContextIDs
+from   itertools   import islice, ifilter, chain, imap
 from   collections import defaultdict
 import sys
 
@@ -89,7 +90,7 @@ class HopcroftMinization:
         self.__todo           = set([])  # state sets to be investigated
         self.__non_homogenous = set([])  # suspects to trigger to different target state sets
         self.state_set_list = []
-        self.__initial_split()
+        self.initial_split()
 
         # (*) Run Adapted Hopcroft Minimization
         #     Split until only equivalent state sets are present
@@ -273,40 +274,95 @@ class HopcroftMinization:
 
         return True
 
-    def __initial_split(self):
-        """Returns the set of states that are 'acceptance'. If the optional     
-           argument 'ReturnNonAcceptanceTooF' is specified, then the non-
-           acceptance states are also returned.
+    def initial_split(self):
+        """Generates initial sets of states. After the initial split, state
+           sets are only split and not combined. Thus, the initial split 
+           must separate states that must never, ever, be combined. As they are
 
-        """   
-        non_acceptance_state_set = []
-        for state_index, state in ifilter(lambda x: not x[1].is_acceptance(), self.sm.states.iteritems()):
-            non_acceptance_state_set.append(state_index) 
+           (1) Acceptance states of a different origin constellation. The decision making
+               about the winning pattern must be the same for all states of a state
+               set that is possibly combined into one single state. 
 
-        # NOTE: Under normal conditions, there **must** be at least one non-acceptance state,
-        #       which happens to be the initial state (otherwise nothing would be acceptable).
-        #       But: The minimization might be called for sub-patterns such as 'a*' which
-        #       actually allow the first state to be acceptance.
-        if len(non_acceptance_state_set) != 0: 
-            i = self.__add_state_set(non_acceptance_state_set)
-            if len(non_acceptance_state_set) != 1: self.non_homogenous_add(i)
+               In particular, non-acceptance states can never be combined with
+               acceptance states.
 
-        # BUT: There should always be at least one acceptance state.
-        pass#assert len(self.sm.states) - len(non_acceptance_state_set) != 0
+           (2) Two states of the same pattern where one stores the input position
+               and the other not, cannot be combined. Otherwise, the input
+               position would be stored in unexpected situations.
+        """
+        single_state_machine_f = self.sm.states[self.sm.init_state_index].origins().is_empty()
 
-        # (2) Split the acceptance states according to their origin. An acceptance
-        #     state maching the, for example, an identifier is not equivalent an 
-        #     acceptance state that that matches a number.
-        db = defaultdict(list)   
-        for state_index in ifilter(lambda x: x not in non_acceptance_state_set, self.sm.states.iterkeys()): 
-            state = self.sm.states[state_index]
-            origin_state_machine_ids = map(lambda origin: origin.state_machine_id, 
-                                           state.origins())
-            state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
-            db[state_combination_id].append(state_index)
+        if single_state_machine_f:
+            def key_info(state):
+                """Computes a 'key' that allows the state set split in the
+                   sense of criteria (1) and (2) above. 
+                """
+                return (state.is_acceptance(), 
+                        state.core().store_input_position_f() and state.core().post_context_id() != PostContextIDs.NONE)
 
-        # (2b) Enter the split acceptance state sets.
-        for state_set in db.itervalues():
+            distinguisher_db = defaultdict(list)
+            for state_index, state in self.sm.states.iteritems():
+                distinguisher_db[key_info(state)].append(state_index)
+
+            state_set_iterable = distinguisher_db.itervalues()
+
+        else:
+            # If states already represent combinations of states from different patterns,
+            # then the initial state split happens in two phases to perform compliance
+            # with criteria (1) and (2) from above.
+
+            # (1) Separate by Acceptance
+            def key_info(state):
+                """Computes a 'key' that allows the state set split in the
+                   sense of criteria (1), i.e. acceptance must be the same
+                   for states of the same set (== same key).
+                """
+                return tuple(sorted(
+                       [x.state_machine_id for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
+                ))
+
+            distinguisher_db = defaultdict(list)
+            for state_index, state in self.sm.states.iteritems():
+                distinguisher_db[key_info(state)].append(state_index)
+
+            # (2) Separate by Store-Input-Position Behavior
+            def store_info(state):
+                """Two states from the same state machine cannot be combined if they
+                   differ in their storing of input positions. Determine for each
+                   involved state machine whether the input position is stored or not
+                   in the current state.
+                """
+                result = {}
+                for x in state.origins():
+                    store_f = x.store_input_position_f() and x.post_context_id() != PostContextIDs.NONE, 
+                    result[x.state_machine_id] = store_f
+                return result
+
+            state_set_iterable = distinguisher_db.values()
+            i = -1
+            last_i = len(state_set_iterable) - 1
+            while i < last_i:
+                i += 1
+                state_set = state_set_iterable[i]
+                if len(state_set) < 2: continue
+
+                prototype_db        = store_info(self.sm.states[state_set[0]])
+                prototype_sm_id_set = set(prototype_db.keys())
+                extracted           = set()
+                for other_state_index, other_state in imap(lambda i: (i, self.sm.states[i]), islice(state_set, 1, None)):
+                    other_db = store_info(other_state)
+                    # Only consider the state machines that they have in common
+                    # (Origins from different state machines can be combined arbitrarily)
+                    for sm_id in prototype_sm_id_set.intersection(other_db.keys()):
+                        if prototype_db[sm_id] == other_db[sm_id]: continue
+                        extracted.add(other_state_index)
+                        state_set.remove(other_state_index)
+                        break
+                if len(extracted) != 0:
+                    state_set_iterable.append(extracted)
+                    last_i += 1
+
+        for state_set in state_set_iterable:
             i = self.__add_state_set(state_set)
             if len(state_set) != 1: self.non_homogenous_add(i)
 
@@ -407,7 +463,9 @@ def do(SM, CreateNewStateMachineF=True):
        The original state set is replaced by the two new ones. This algorithm is 
        repeated until the state sets do not change anymore.
     """        
+    ## print "##in:", SM.get_string(NormalizeF=False)
     result = HopcroftMinization(SM)
+    ## print "##out:", create_state_machine(SM, result).get_string(NormalizeF=False)
 
     if CreateNewStateMachineF: return create_state_machine(SM, result)
     else:                      return adapt_state_machine(SM, result)
