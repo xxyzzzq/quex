@@ -400,3 +400,25 @@ sm.states[n4].add_origin(5555L, 1L)
 n4 = sm.add_transition(n1, ord('b'), n4, AcceptanceF=True)
 test(sm, txt)
 
+# post-context
+txt = """
+        00000()  
+              == 'x' ==> 00001
+        00001(S, P1) <~ 
+              == 'y' ==> 00002
+              == 'z' ==> 00003
+        00002()  
+              == 'y' ==> 00002
+              == 'z' ==> 00003
+        00003(A, P1)  
+"""
+sm = StateMachine()
+n0 = sm.init_state_index
+n1 = sm.add_transition(n0, ord('x'))
+n2 = sm.add_transition(n1, ord('y'))
+n3 = sm.add_transition(n1, ord('z'), AcceptanceF=True)
+sm.add_transition(n2, ord('y'), n2)
+sm.add_transition(n2, ord('z'), n3, AcceptanceF=True)
+sm.states[n1].core().set_store_input_position_f()
+sm.states[n1].core().set_post_context_id(66L)
+test(sm, txt)
