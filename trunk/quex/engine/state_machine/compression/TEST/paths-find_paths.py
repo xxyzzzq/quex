@@ -50,11 +50,12 @@ def test(Skeleton, *StringPaths):
     sm.init_state_index = 7777L
 
     # print Skeleton
-    print sm.get_graphviz_string(NormalizeF=False)
+    print sm.get_graphviz_string(NormalizeF=True)
     print
-    result = paths.find_paths(sm)
+    result        = paths.find_paths(sm)
+    norm_db, x, x = sm.get_state_index_normalization()
     for path in result:
-        print "# " + repr(path).replace("\n", "\n# ")
+        print "# " + path.get_string(norm_db).replace("\n", "\n# ")
 
     # print "## String paths were = " + repr(StringPaths)
 
