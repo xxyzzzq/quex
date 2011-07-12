@@ -265,15 +265,14 @@ class IndentationSetup:
         txt += "Newline:\n"
         sm = self.newline_state_machine.get()
         if sm is None: txt += "    <none>\n"
-        else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
+        else:          txt += "    %s\n" % sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ")
 
         txt += "Suppressor:\n"
         sm = self.newline_suppressor_state_machine.get()
         if sm is None: txt += "    <none>\n"
-        else:          txt += "    %s\n" % sm.get_string(Option="utf8").replace("\n", "\n    ")
+        else:          txt += "    %s\n" % sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ")
 
         return txt
-
 
 def do(fh):
     """Parses pattern definitions of the form:

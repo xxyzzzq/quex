@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.26" date="Mon Jul 11 01:04:27 2011">
+<test-database execution-time-sec="0.33" date="Tue Jul 12 02:11:06 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="Accumulator" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="accumulator.exe" info-request-time="1310339064L" vanished="False"/>
         <make-procedure success="True" time_sec="0.508702"/>
         <choice-list number="5" same_result="False">
@@ -41,7 +41,7 @@
                <choice name="6" result="OK" time_sec="0.01" crc="-978220029"/>
             </choice-list>
         </test>
-        <test title="Remove Total" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Remove Total" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="post-categorizer-remove-total.exe" info-request-time="1310339063L" vanished="False"/>
             <make-procedure success="True" time_sec="0.827236"/>
             <choice-list number="7" same_result="True">
@@ -54,7 +54,7 @@
                <choice name="7" result="OK" time_sec="0.01" crc="312237205"/>
             </choice-list>
         </test>
-        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.08"> 
             <application file-name="post-categorizer-remove.exe" info-request-time="1310339066L" vanished="False"/>
             <make-procedure success="True" time_sec="0.794019"/>
             <choice-list number="8" same_result="True">
@@ -68,7 +68,7 @@
                <choice name="Be" result="OK" time_sec="0.01" crc="1918139693"/>
             </choice-list>
         </test>
-        <test title="Enter" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="post-categorizer-enter.exe" info-request-time="1310339066L" vanished="False"/>
             <make-procedure success="True" time_sec="0.782907"/>
             <choice-list number="7" same_result="False">
@@ -81,7 +81,7 @@
                <choice name="6" result="OK" time_sec="0.01" crc="-376401680"/>
             </choice-list>
         </test>
-        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="post-categorizer-remove-2.exe" info-request-time="1310339067L" vanished="False"/>
             <make-procedure success="True" time_sec="0.791992"/>
             <choice-list number="7" same_result="False">

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="145.21" date="Mon Jul 11 00:58:56 2011">
+<test-database execution-time-sec="145.21" date="Tue Jul 12 02:11:06 2011">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.12"> 
         <application file-name="makefile-diff.sh" info-request-time="1305001317L" vanished="False"/>
@@ -18,7 +18,7 @@
         </choice-list>
     </test>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="3.89"> 
+        <test title="Single Mode Example" time-sum-sec="3.88"> 
             <application file-name="000.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="2.40" crc="-584949883"/>
@@ -45,7 +45,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="10.47"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="10.48"> 
             <application file-name="003.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="3.21" crc="766281751"/>
@@ -55,7 +55,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="1.83" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="6.78"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="6.79"> 
             <application file-name="003-bom.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="Without" result="OK" time_sec="3.26" crc="1853132003"/>
@@ -84,7 +84,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="7.34"> 
+        <test title="Including Files" time-sum-sec="7.35"> 
             <application file-name="005.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="1.84" crc="256352848"/>
@@ -122,7 +122,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="3.79"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="3.78"> 
             <application file-name="009.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="1.85" crc="-1473894578"/>
@@ -148,7 +148,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.11"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.12"> 
             <application file-name="011.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="1.79" crc="-1827787599"/>

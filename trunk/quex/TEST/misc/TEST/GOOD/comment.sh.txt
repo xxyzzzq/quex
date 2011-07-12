@@ -1,9 +1,9 @@
 <     /* BEGIN: STATE MACHINE
-<      * init-state = 7L
-<      * 00007() <~ (1, 2)
-<      *       == 'a' ==> 00008
+<      * init-state = 6L
+<      * 00006() <~ (1, 2)
+<      *       == 'a' ==> 00007
 <      *       <no epsilon>
-<      * 00008(A, S) <~ (1, 3, A, S)
+<      * 00007(A, S) <~ (1, 3, A, S)
 <      *       <no epsilon>
 <      * END: STATE MACHINE
 <      */

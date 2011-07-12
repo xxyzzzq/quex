@@ -18,14 +18,15 @@ def test(the_state_machine, string_to_match):
     print
     print "string = ", string_to_match
     letter_code_list = utf8.map_n_utf8_to_unicode(string_to_match)
-    state_index = the_state_machine.init_state_index
+    norm_db, x, x    = sm.get_state_index_normalization()
+    state_index      = the_state_machine.init_state_index
     letter_n = -1
     for letter_code in letter_code_list:   
         letter_n += 1   
         if letter_n % 5 == 0: sys.stdout.write("\n")
         state_index = sm.states[state_index].transitions().get_resulting_target_state_index(letter_code) 
         sys.stdout.write("'%s' --> (%s), " % (utf8.map_unicode_to_utf8(letter_code), 
-                                             repr(state_index).replace("L","")))
+                                             repr(norm_db[state_index]).replace("L","")))
         if state_index == -1: break
 
     print

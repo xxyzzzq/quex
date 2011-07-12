@@ -10,12 +10,12 @@
 2 -> 3 [label ="<epsilon>"];
 4 -> 8 [label ="<epsilon>"];
 4 -> 5 [label ="<epsilon>"];
-8 -> 9 [label ="'b'"];
-9 -> 7 [label ="<epsilon>"];
 5 -> 6 [label ="'c'"];
 6 -> 7 [label ="<epsilon>"];
 7 -> 3 [label ="<epsilon>"];
 7 -> 4 [label ="<epsilon>"];
+8 -> 9 [label ="'b'"];
+9 -> 7 [label ="<epsilon>"];
 
         }
         
