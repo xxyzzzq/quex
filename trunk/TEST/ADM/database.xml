@@ -1,4 +1,4 @@
-<test-database execution-time-sec="218.58" date="Tue Jul 12 02:11:06 2011">
+<test-database execution-time-sec="221.38" date="Tue Jul 12 02:40:05 2011">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.80"> 
@@ -99,10 +99,12 @@
                <choice name="" result="OK" time_sec="0.38" crc="-99272246"/>
             </choice-list>
         </test>
-        <test title="3357694 Matches too long when using certain post condition" time-sum-sec="0.00"> 
-            <application file-name="bug-3357694.sh" info-request-time="1310341036L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="1869054668"/>
+        <test title="3357694 Matches too long when using certain post condition" time-sum-sec="2.80"> 
+            <application file-name="bug-3357694.sh" info-request-time="1310431062L" vanished="False"/>
+            <choice-list number="3" same_result="True">
+               <choice name="Normal" result="OK" time_sec="1.13" crc="1869054668"/>
+               <choice name="TemplateCompression" result="OK" time_sec="1.13" crc="1869054668"/>
+               <choice name="PathCompression" result="FAIL" time_sec="0.54" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -403,12 +405,6 @@
                <choice name="" result="OK" time_sec="0.09" crc="-429266748"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.09"> 
-            <application file-name="bug-1885846.sh" info-request-time="1305001318L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.09" crc="2110266544"/>
-            </choice-list>
-        </test>
         <test title="1908092 0.23.5 uses --token-class without --token-class-file" time-sum-sec="0.34"> 
             <application file-name="bug-1908092.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -540,6 +536,12 @@
                <choice name="" result="OK" time_sec="0.10" crc="-2033217112"/>
             </choice-list>
         </test>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.48"> 
+            <application file-name="bug-1887163.sh" info-request-time="1305001318L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.48" crc="1510346924"/>
+            </choice-list>
+        </test>
         <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.49"> 
             <application file-name="bug-1889702.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -648,10 +650,10 @@
                <choice name="" result="OK" time_sec="0.17" crc="-1800512920"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.48"> 
-            <application file-name="bug-1887163.sh" info-request-time="1305001318L" vanished="False"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.09"> 
+            <application file-name="bug-1885846.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.48" crc="1510346924"/>
+               <choice name="" result="OK" time_sec="0.09" crc="2110266544"/>
             </choice-list>
         </test>
     </group>

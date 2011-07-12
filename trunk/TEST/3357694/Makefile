@@ -15,7 +15,7 @@ Simple \
 Simple.cpp: SOURCES
 
 SOURCES: 
-	quex --icu -b 2 -i test.qx -o Simple --language C
+	quex --icu -b 2 -i test.qx -o Simple --language C $(ADD_OPTION)
 
 clean:
 	rm -f Simple*
