@@ -420,22 +420,32 @@ class CharacterPath:
         
         return 
 
-    def __repr__(self):
+    def get_string(self, NormalizeDB=None):
         skeleton_txt = ""
         for target_idx, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
-            skeleton_txt += "(%i) by " % target_idx
+            if NormalizeDB is not None:
+                skeleton_txt += "(%i) by " % NormalizeDB[target_idx]
+            else:
+                skeleton_txt += "(%i) by " % target_idx
             skeleton_txt += trigger_set.get_utf8_string()
             skeleton_txt += "; "
 
         sequence_txt = ""
         for state_idx, char in self.__sequence[:-1]:
+            if NormalizeDB is not None: state_idx = NormalizeDB[state_idx]
             sequence_txt += "(%i)--'%s'-->" % (state_idx, chr(char))
-        sequence_txt += "[%i]" % self.__sequence[-1][0]
+        if NormalizeDB is not None:
+            sequence_txt += "[%i]" % NormalizeDB[self.__sequence[-1][0]]
+        else:
+            sequence_txt += "[%i]" % self.__sequence[-1][0]
 
         return "".join(["start    = %i;\n" % self.__start_state_index,
                         "path     = %s;\n" % sequence_txt,
                         "skeleton = %s\n"  % skeleton_txt, 
                         "wildcard = %s;\n" % repr(self.__wildcard is not None)])
+
+    def __repr__(self):
+        return self.get_string(NormalizeF=True)
 
     def __len__(self):
         return len(self.__sequence)

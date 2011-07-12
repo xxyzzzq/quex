@@ -923,7 +923,7 @@ class StateMachine:
 	       size="8,5"
 	       node [shape = doublecircle]; $$ACCEPTANCE_STATES$$
            node [shape = circle];
-           $$TRANSITIONS$$
+        $$TRANSITIONS$$
         }
         """ % self.get_id()
 

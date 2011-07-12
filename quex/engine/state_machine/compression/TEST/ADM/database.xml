@@ -1,29 +1,29 @@
-<test-database execution-time-sec="2.30" date="Tue Jul 12 02:11:11 2011">
+<test-database execution-time-sec="2.34" date="Tue Jul 12 08:01:32 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="find_path" time-sum-sec="0.27"> 
             <application file-name="paths-find_paths.py" info-request-time="1306289676L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.05" crc="1752605335"/>
+               <choice name="1" result="FAIL" time_sec="0.04" crc="1752605335"/>
                <choice name="2" result="FAIL" time_sec="0.04" crc="659149719"/>
                <choice name="3" result="FAIL" time_sec="0.04" crc="368726953"/>
                <choice name="4" result="FAIL" time_sec="0.05" crc="1671005403"/>
                <choice name="5" result="FAIL" time_sec="0.04" crc="76377710"/>
-               <choice name="6" result="FAIL" time_sec="0.05" crc="1334011203"/>
+               <choice name="6" result="FAIL" time_sec="0.04" crc="1334011203"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.12"> 
+        <test title="find_path (mean tests)" time-sum-sec="0.13"> 
             <application file-name="paths-find_paths-2.py" info-request-time="1306387925L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1033686350"/>
-               <choice name="2" result="OK" time_sec="0.04" crc="-1531632372"/>
+               <choice name="2" result="OK" time_sec="0.05" crc="-1531632372"/>
                <choice name="3" result="OK" time_sec="0.04" crc="1412041101"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.32"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.38"> 
             <application file-name="paths-filter_redundant_paths.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="8" same_result="False">
-               <choice name="0" result="OK" time_sec="0.04" crc="-1231177672"/>
+               <choice name="0" result="OK" time_sec="0.11" crc="-1231177672"/>
                <choice name="1" result="OK" time_sec="0.04" crc="-2097780869"/>
                <choice name="2" result="OK" time_sec="0.04" crc="-1697922765"/>
                <choice name="3" result="OK" time_sec="0.04" crc="1993708865"/>
@@ -33,7 +33,7 @@
                <choice name="6" result="OK" time_sec="0.04" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.24"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.22"> 
             <application file-name="paths-select_longest_paths.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.04" crc="773714092"/>
