@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.21" date="Mon Jul 11 01:03:06 2011">
+<test-database execution-time-sec="1.22" date="Tue Jul 12 02:11:06 2011">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.48"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1305001315L" vanished="False"/>
@@ -30,7 +30,7 @@
            <choice name="" result="OK" time_sec="0.03" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.54"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.55"> 
         <application file-name="include_guard.py" info-request-time="1305087040L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="convention" result="OK" time_sec="0.28" crc="1196150108"/>

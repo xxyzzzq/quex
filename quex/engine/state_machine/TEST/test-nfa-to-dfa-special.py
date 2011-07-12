@@ -20,11 +20,11 @@ def test(RE):
     result = core.do(RE, {})
     ## print "## State Machine:", result
     ## result = repeat.do(result, 1)
-    print "## RE+ (repetition):", result.get_string(NormalizeF=False)
+    print "## RE+ (repetition):", result.get_string(NormalizeF=True)
     ## print result.get_graphviz_string(NormalizeF=False) 
     result = nfa_to_dfa.do(result)
     print "## NFA-to-DFA:"
-    print result
+    print result.get_string(NormalizeF=True)
     ## print result.get_graphviz_string() 
     ## print "## Hopcroft:" 
     ## print result

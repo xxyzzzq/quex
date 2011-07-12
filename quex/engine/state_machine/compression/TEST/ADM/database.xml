@@ -1,18 +1,18 @@
-<test-database execution-time-sec="2.20" date="Mon Jul 11 01:10:27 2011">
+<test-database execution-time-sec="2.30" date="Tue Jul 12 02:11:11 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_path" time-sum-sec="0.26"> 
+        <test title="find_path" time-sum-sec="0.27"> 
             <application file-name="paths-find_paths.py" info-request-time="1306289676L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.04" crc="1752605335"/>
+               <choice name="1" result="FAIL" time_sec="0.05" crc="1752605335"/>
                <choice name="2" result="FAIL" time_sec="0.04" crc="659149719"/>
                <choice name="3" result="FAIL" time_sec="0.04" crc="368726953"/>
                <choice name="4" result="FAIL" time_sec="0.05" crc="1671005403"/>
                <choice name="5" result="FAIL" time_sec="0.04" crc="76377710"/>
-               <choice name="6" result="FAIL" time_sec="0.04" crc="1334011203"/>
+               <choice name="6" result="FAIL" time_sec="0.05" crc="1334011203"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.13"> 
+        <test title="find_path (mean tests)" time-sum-sec="0.12"> 
             <application file-name="paths-find_paths-2.py" info-request-time="1306387925L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1033686350"/>
@@ -20,7 +20,7 @@
                <choice name="3" result="OK" time_sec="0.04" crc="1412041101"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.29"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.32"> 
             <application file-name="paths-filter_redundant_paths.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.04" crc="-1231177672"/>
@@ -33,7 +33,7 @@
                <choice name="6" result="OK" time_sec="0.04" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.21"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.24"> 
             <application file-name="paths-select_longest_paths.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.04" crc="773714092"/>
@@ -67,7 +67,7 @@
         </test>
     </group>
     <group name="Transition Map Templates">
-        <test title="Single Target Idx Metric" time-sum-sec="0.23"> 
+        <test title="Single Target Idx Metric" time-sum-sec="0.24"> 
             <application file-name="templates-metric.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1287055092"/>
@@ -78,7 +78,7 @@
                <choice name="recursive" result="OK" time_sec="0.04" crc="-1792781344"/>
             </choice-list>
         </test>
-        <test title="Target Idx Combination Metric" time-sum-sec="0.23"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.24"> 
             <application file-name="templates-metric-2.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1110808043"/>
@@ -89,7 +89,7 @@
                <choice name="recursive" result="OK" time_sec="0.04" crc="1460644418"/>
             </choice-list>
         </test>
-        <test title="Combine Combined Trigger Maps" time-sum-sec="0.19"> 
+        <test title="Combine Combined Trigger Maps" time-sum-sec="0.20"> 
             <application file-name="templates-combine-2.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-954549293"/>
@@ -99,7 +99,7 @@
                <choice name="recursive-3" result="OK" time_sec="0.04" crc="987841459"/>
             </choice-list>
         </test>
-        <test title="Combine Trigger Maps" time-sum-sec="0.23"> 
+        <test title="Combine Trigger Maps" time-sum-sec="0.24"> 
             <application file-name="templates-combine.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1589901268"/>
@@ -110,7 +110,7 @@
                <choice name="recursive" result="OK" time_sec="0.04" crc="401375017"/>
             </choice-list>
         </test>
-        <test title="Get Best Matching Pair" time-sum-sec="0.19"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.20"> 
             <application file-name="templates-best_matching_pair.py" info-request-time="1305001316L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1792872906"/>

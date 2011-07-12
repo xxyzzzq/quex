@@ -873,7 +873,7 @@ class StateMachine:
 
         return state_index_sequence
 
-    def __get_state_index_normalization(self, NormalizeF):
+    def get_state_index_normalization(self, NormalizeF=True):
         index_map         = {}
         inverse_index_map = {}
 
@@ -895,7 +895,7 @@ class StateMachine:
         assert Option in ["utf8", "hex"]
 
         # (*) normalize the state indices
-        index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
+        index_map, inverse_index_map, index_sequence = self.get_state_index_normalization(NormalizeF)
 
         # (*) construct text 
         msg = "init-state = " + repr(index_map[self.init_state_index]) + "\n"
@@ -914,7 +914,7 @@ class StateMachine:
         assert Option in ["hex", "utf8"]
 
         # (*) normalize the state indices
-        index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
+        index_map, inverse_index_map, index_sequence = self.get_state_index_normalization(NormalizeF)
 
         # (*) Border of plot block
         frame_txt = """

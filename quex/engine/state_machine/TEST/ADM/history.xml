@@ -1,4 +1,4 @@
-<history date="Mon Jul 11 01:10:25 2011" element-n="475">
+<history date="Tue Jul 12 02:28:31 2011" element-n="478">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1147,5 +1147,10 @@
     <day year="2011" month="07" day="09">
         <crc-error time="09:11:21" application="test-hopcroft-minimization-2.py" choice="NEW" database-crc="-880237011" real-crc="1992273305"/>
         <crc-error time="09:11:22" application="test-hopcroft-minimization-2.py" choice="ADAPT" database-crc="-880237011" real-crc="1992273305"/>
+    </day>
+    <day year="2011" month="07" day="12">
+        <crc-error time="00:27:04" application="test-nfa-to-dfa-special.py" choice="" database-crc="-562487828" real-crc="-716331685"/>
+        <crc-error time="00:27:16" application="test-StateMachine-get_graphviz_string.py" choice="1" database-crc="115098591" real-crc="173145892"/>
+        <crc-error time="00:27:42" application="test-StateMachine-get_graphviz_string.py" choice="2" database-crc="2123121172" real-crc="-163746669"/>
     </day>
 </history>

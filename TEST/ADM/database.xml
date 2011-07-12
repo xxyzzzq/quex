@@ -1,4 +1,4 @@
-<test-database execution-time-sec="219.26" date="Mon Jul 11 01:49:22 2011">
+<test-database execution-time-sec="218.58" date="Tue Jul 12 02:11:06 2011">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.80"> 
@@ -324,10 +324,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="51236912"/>
             </choice-list>
         </test>
-        <test title="2894648 0.46.2 Backslashed . is unknown to quex" time-sum-sec="0.31"> 
+        <test title="2894648 0.46.2 Backslashed . is unknown to quex" time-sum-sec="0.00"> 
             <application file-name="bug-2894648.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.31" crc="561401439"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-350586502"/>
             </choice-list>
         </test>
         <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" time-sum-sec="3.81"> 
@@ -546,10 +546,10 @@
                <choice name="" result="OK" time_sec="0.49" crc="263853875"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.37"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.37" crc="875754831"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-712931311"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.00"> 
