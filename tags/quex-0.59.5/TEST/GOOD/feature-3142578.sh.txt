@@ -1,0 +1,13 @@
+One TokenID _________________________________________
+1.qx:1:warning: Detected implicit token identifier definitions. Proposal:
+1.qx:1:warning:    token {
+1.qx:1:warning:      A;
+1.qx:1:warning:    }
+No TokenID implicitly defined _______________________
+Three TokenIDs ______________________________________
+3.qx:1:warning: Detected implicit token identifier definitions. Proposal:
+3.qx:1:warning:    token {
+3.qx:1:warning:      A;
+3.qx:1:warning:      B;
+3.qx:1:warning:      C;
+3.qx:1:warning:    }

@@ -1,0 +1,2 @@
+src/error-5.qx:11:error: The indentation newline pattern '(\r\n)|(\n)' and the newline
+src/error-5.qx:8:error: suppressor pattern '\n' match same on same lexemes.

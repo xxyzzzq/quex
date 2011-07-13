@@ -1,0 +1,62 @@
+/*
+
+MODE: TEST
+
+    PATTERN-ACTION PAIRS:
+      (  4) TEST: [_a-zA-Z]+
+      (  9) TEST: [ \t\n]+
+
+*/
+
+self.mode_name         = 'TEST'
+self.pattern           = '[_a-zA-Z]+'
+self.pattern_state_machine = 
+init-state = 0L
+      00000() <~ 
+            == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
+            <no epsilon>
+      00001(A, S) <~ 
+            == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
+            <no epsilon>
+      self.action            = '#   ifdef __QUEX_OPTION_COUNTER\n    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);\n    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);\n    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p)));\n    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n    __quex_debug_counter();\n#   endif\n    {\nstd::cout << "IDENTIFIER" << std::endl;\n\n    }'
+self.pattern_index     = 4L
+
+self.mode_name         = 'TEST'
+self.pattern           = '[ \\t\\n]+'
+self.pattern_state_machine = 
+init-state = 0L
+      00000() <~ 
+            == ['\t', '\n'], ' ' ==> 00001
+            <no epsilon>
+      00001(A, S) <~ 
+            == ['\t', '\n'], ' ' ==> 00001
+            <no epsilon>
+      self.action            = '#   ifdef __QUEX_OPTION_COUNTER\n    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);\n    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);\n    QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n    __quex_debug_counter();\n#   endif\n    {\nstd::cout << "WHITESPACE" << std::endl;\n\n    }'
+self.pattern_index     = 9L
+
+self.mode_name         = 'TEST'
+self.pattern           = '[_a-zA-Z]+'
+self.pattern_state_machine = 
+init-state = 0L
+      00000() <~ 
+            == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
+            <no epsilon>
+      00001(A, S) <~ 
+            == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
+            <no epsilon>
+      self.action            = '#   ifdef __QUEX_OPTION_COUNTER\n    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);\n    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);\n    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end +=     ((size_t)(self.buffer._input_p - self.buffer._lexeme_start_p)));\n    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n    __quex_debug_counter();\n#   endif\n    {\nstd::cout << "IDENTIFIER" << std::endl;\n\n    }'
+self.pattern_index     = 4L
+
+self.mode_name         = 'TEST'
+self.pattern           = '[ \\t\\n]+'
+self.pattern_state_machine = 
+init-state = 0L
+      00000() <~ 
+            == ['\t', '\n'], ' ' ==> 00001
+            <no epsilon>
+      00001(A, S) <~ 
+            == ['\t', '\n'], ' ' ==> 00001
+            <no epsilon>
+      self.action            = '#   ifdef __QUEX_OPTION_COUNTER\n    __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);\n    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_begin = self.counter._column_number_at_end);\n    QUEX_NAME(Counter_count)(&self.counter, self.buffer._lexeme_start_p, self.buffer._input_p);\n    __QUEX_ASSERT_COUNTER_CONSISTENCY(&self.counter);\n    __quex_debug_counter();\n#   endif\n    {\nstd::cout << "WHITESPACE" << std::endl;\n\n    }'
+self.pattern_index     = 9L
+

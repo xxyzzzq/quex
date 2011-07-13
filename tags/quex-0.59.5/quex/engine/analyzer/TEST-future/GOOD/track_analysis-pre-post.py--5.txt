@@ -1,0 +1,86 @@
+init-state = 147L
+00147() <~ (19, 42), (45, 111), (4, 9), (21, 48)
+      == 'a' ==> 00148
+      == 'b' ==> 00149
+      <no epsilon>
+00148(A, S, P8) <~ (4, 10, A, S), (19, 43, S, P8), (45, 113)
+      == 'a' ==> 00153
+      <no epsilon>
+00153(A, S) <~ (4, 11, A, S), (19, 44), (45, 114)
+      == 'a' ==> 00154
+      <no epsilon>
+00154(A, P8, pre=17) <~ (19, 45, A, P8, pre=17), (45, 115)
+      == 'c' ==> 00151
+      <no epsilon>
+00151() <~ (45, 116)
+      == 'd' ==> 00152
+      <no epsilon>
+00152(A, S) <~ (45, 117, A, S)
+      <no epsilon>
+00149(A, S) <~ (21, 49, A, S), (45, 112)
+      == 'b' ==> 00150
+      <no epsilon>
+00150() <~ (45, 115)
+      == 'c' ==> 00151
+      <no epsilon>
+
+State 147:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 148:
+  .entry:
+  .drop_out:
+     goto Pattern4;
+
+
+State 149:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern21
+  .drop_out:
+     goto Pattern21;
+
+
+State 150:
+  .entry:
+  .drop_out:
+    pos -= 1;  goto Pattern21;
+
+
+State 151:
+  .entry:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 19: pos -= 3;  goto Pattern19;
+        case 4: pos -= 2;  goto Pattern4;
+        case 21: pos -= 2;  goto Pattern21;
+
+
+State 152:
+  .entry:
+  .drop_out:
+     goto Pattern45;
+
+
+State 153:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern4
+  .drop_out:
+     goto Pattern4;
+
+
+State 154:
+  .entry:
+    Accepter:
+        if      PreContext_17: last_acceptance = Pattern19
+  .drop_out:
+    if PreContext_17: pos -= 2;  goto Pattern19;
+    pos -= 1;  goto Pattern4;
+
+

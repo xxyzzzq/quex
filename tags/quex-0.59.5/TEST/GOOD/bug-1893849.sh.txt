@@ -1,0 +1,2 @@
+command line: Trailing characters '-e' in 'Engin-e'
+command line: for analyzer engine (options -o, --engine, --analyzer-class) name specification.

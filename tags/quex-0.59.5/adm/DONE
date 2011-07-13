@@ -1,0 +1,241 @@
+(*) 08y2m6d:
+
+    In the epsilon transition print the remaining triggers are printed.
+    This is misleading, since an epsilon transition actually 'merges'
+    with the target state.
+
+(*) 08y5m9d:
+
+    Init state: a 'pure get()' would be more appropriate. For this the _current_p
+    needs to point to one position afer the last match. This would also make the
+    check for 'begin of buffer' unnecessary in case of backward lexing at the
+    initial state.
+
+(*) 08y6m6d from 07y7m10d:
+
+   THIS has been implemented in quex version 0.26.1 (see repository).
+   The benchmarks have shown, that the performance becomes much less 
+   (About 15-20%, i.e. from 9 clock cycles per char to 11 ccc (single
+    identifier). However, code size can be decreases significantly
+   when used in combination with computed 'goto'. 
+
+   Saving code space with by having the reload code implemented only once.
+   Implement the reload of the buffer with 'switch jumps', i.e.
+
+   ...
+   goto ENTRY_INTO_MACHINE;
+   jump_position = STATE_MACHINE__XXX__POSITION_VOID;
+
+REENTRY:
+   switch( jump_position ) {
+
+ENTRY_INTO_MACHINE:
+       SEEK(..)
+       if(  ) acceptance ...
+    case STATE_MACHINE_GET_CHARACTER_AT_STATE_123:
+
+       ....
+
+       // nothing matched ... > check reload
+       jump_position = STATE_MACHINE_GET_CHARACTER_AT_STATE_123
+       goto RELOAD;
+
+       ....
+
+    RELOAD:
+       ...
+       goto REENTRY;  // jump_position has been set at the state ...
+
+
+(*) 07y5m15d/08y5m23d:
+
+    The '.' introduced triggers of the inverse of BeginOfFile and EndOfFile.
+    For fine-tuning it may be advantegous to check wether these triggers
+    can actually occur inside a pattern, i.e. in a pre-condition BeginOfFile
+    may occur, in a forward lexing state machine not.
+
+    Hint: defining EndOfFile and BeginOfFile as the same code, may make this
+          discussion pointless. Then no efficiency can be gained. 
+
+    COMMENT: The EndOfFile and BeginOfFile have been deleted from the design.
+             They do not appear anymore.
+
+(*) 08y5m22d/08y5m22d:
+
+    Clarify the two variables: 
+    
+           setup.input_user_token_id_file    --> disable token -id file creation
+           setup.input_foreign_token_id_file --> provides foreign token ids
+
+
+(*) 07y9m23d:
+
+    In the 'history' computation the 'union' member function is used. 
+    See if it cannot be replaced by 'quick_add_interval'. This results
+    in a tremendous speedup. Also: I adapted NumberSet.clean() to be propper
+    and fast, quick_add_interval + clean() could probably provide 
+    tremendous speed-up.
+
+(*) 07y9m9d:
+
+    line up the quex::token::ID_TERMINATION
+
+(*) 07y12m10d:
+
+    The short token sender 'TKN_XYZ()', i.e. with empty argument list does
+    not work. Check this out.
+
+
+(*) 07y9m20d:
+
+    name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
+
+
+(*) 07y11m8d:
+
+    sort out the rules for priviledges and document them well.
+
+
+(*) 07y9m19h:
+
+    Check what happens if [z-a] is specified as a range
+    Implemented equivalence for z-a and a-z. See Documentation
+
+(*) 07y9m28d:
+    tracker.consider_interval(tracker.last_letter, value)
+
+    Bug fixed, appeared only for interval ends that are backslashed.
+
+(*) 07y8m4d:
+
+    automatic token id generation in case that a token id is not specified.
+    at least automatic detection of undeclared token ids in the => sections.
+
+(*) 07y8m9d:
+
+    Unify Exception Handling
+
+(*) 07y5m24d:
+
+    Check for the \u and \U implementations for uni-code on non-control 
+    characters.
+
+(*) 07y8m28d from 07y5m16:
+
+    Either delete the .finalize stuff from the state machine or do something
+    meaningful.
+
+(*) 07y8m28d from 07y5m13:
+    generator.regular_expression.snap_utf8 ...
+
+    straighten out the 'reading' of an utf8 character in non_control_chars, string
+    and 'set'. All of them refer to different functions. The whole setup should 
+    only take one single core when one deals with the backslashed characters.
+    The issue here is the different handling of backslashed characters. Probably
+    the backslashed chars should be passes as an argument.
+
+(*) from ... 07y5m26d:
+
+    common option switch structure of type
+
+    this allows switches to be defined on the compiler line
+    and enable at the same time default values
+
+    #if  ! defined(QUEX_OPTION__BLAH_OFF) && ! defined(QUEX_OPTION__BLAH_ON)
+    #    define QUEX_OPTION__BLAH  ON
+    #endif
+
+   straighten out the QUEX_OPTION definitions for virtual functions.
+
+   maybee use __QUEX_OPTIONS which are not to be changed by the user after
+   the engine has been build.
+
+(*) 07y8m9d from 07y6m7d:
+
+    NOTE: for the inclusion of inconv:
+          python tells about the byte order (little or big endian)
+          in the variable sys.byteorder
+
+(*) 07y8m3d from 07y7m29d:
+
+   Implement unput/more/less for the quex core engine.
+   Called it: move_forward, move_backward!
+
+(*) 07y6m30d:
+
+    the state machine providing information about the pattern
+    containing newlines, fixed character lenghes or even fixed
+    column numbers
+
+    The main framework for this has been created, only implement the 
+    functions 'count_line' and 'count_column' and implement the 
+    algorithms inside the state machines to detect it propperly.
+
+
+(*) 07y7m10d:
+
+    In documentation: warn about indentation if pattern contains more than one newline, such as
+                      "if\nelse\n"  Then indentation is only triggered for the last line.
+
+		      if you cut a tree with a knife, do not cut your fingers! haha.
+
+(*) 07y6m30d from 07y6m18d:
+
+    Test the <<FAIL>> real action with a 'code fragment' i.e. file and line references.
+
+(*) 07y6m2d from 07y5m11:
+
+    straighten out the '#line' pragmas for the compiler
+
+(*) 07y5m10d
+    Carriage Return / Newline Problem
+
+    The '$' end of line might be implemented as a post-condition '\n|\r\n'
+    in order to be compatible with all operating systems. A command line option
+    '--no-carriage-return-post-condition' may disable this feature for people
+    who are extremely performance oriented (gain probably < 1us on 10.0000 lines).
+    This option has more a psychological value: If you are afraid that this
+    safety brakes down your application, don't worry you can disable it.
+
+    NOTE: It may be better to introduce a flag '--use-carriage-return-newline'
+          indicating that $ refers to \r\n. Note that a lexical analyzer may be
+	  configured for a particular operating system, thus two different
+	  source codes need to be produced for two different osses.
+
+    NOTE: Consider also the '.' (anything but newline) for those changes.
+
+(*) 07y5m15d:
+
+    There was a unit test for backward reload of buffers in generator/TEST
+    check that and implement it.
+
+(*) 07y5m17d:
+
+    buffer/buffer constructore rethink the buffer size vs. content size.
+    (causes unit tests to fail). check carefully.
+
+(*) 07y5m16:
+
+    Consider test-simple-4.py in core../generator/TEST
+
+    Concluded that .* and x* pattern definitions do not make the slightest sense,
+    see comment in function __check_nothing_is_just_fine() in generator.core.py
+
+(*) 07y5m15d:
+
+    Disallow a single '.*' because even EOF would fit and the lexical analyser would 
+    keep returning 'success'. But it may be allowed, if EOF is triggered separately. 
+
+    See the function '__check_for_nothing_is_fine()' that raises an exception if the
+    condition is not met, that an explicit EOF is defined in case that a pattern
+    says 'nothing is fine'.
+
+(*) 07y5m14d from 07y5m10d:
+    Unit tests for REENTRY, i.e. CONTINUE / YY_BREAK in pattern action pairs.
+    (note, the 'input' is not read again when CONTINUE is called)
+
+(*) 07y5m14d:
+    Unit test for mode changes
+
+
+

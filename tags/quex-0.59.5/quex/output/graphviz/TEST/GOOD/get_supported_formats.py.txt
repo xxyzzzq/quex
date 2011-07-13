@@ -1,0 +1,71 @@
+Plain Reply:
+canon
+cmap
+cmapx
+cmapx_np
+dot
+eps
+fig
+gd
+gd2
+gif
+gv
+imap
+imap_np
+ismap
+jpe
+jpeg
+jpg
+pdf
+plain
+plain-ext
+png
+ps
+ps2
+svg
+svgz
+tk
+vml
+vmlz
+vrml
+wbmp
+x11
+xdot
+xlib
+Pretty Reply:
+ 
+imap_np
+ 
+svgz
+ cmap
+ cmapx
+ cmapx_np
+ dot
+ eps
+ fig
+ gd
+ gd2
+ gif
+ gv
+ imap
+ ismap
+ jpe
+ jpeg
+ jpg
+ pdf
+ plain
+ plain-ext
+ png
+ ps
+ ps2
+ svg
+ tk
+ vml
+ vmlz
+ vrml
+ wbmp
+ x11
+ xdot
+ xlib.
+SUPPORTED GRAPHIC FORMATS:
+canon
