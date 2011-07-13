@@ -1,29 +1,29 @@
-<test-database execution-time-sec="2.38" date="Wed Jul 13 05:49:02 2011">
+<test-database execution-time-sec="2.29" date="Wed Jul 13 06:28:31 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_path" time-sum-sec="0.27"> 
+        <test title="find_path" time-sum-sec="0.25"> 
             <application file-name="paths-find_paths.py" info-request-time="1310526738L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="OK" time_sec="0.05" crc="513112454"/>
+               <choice name="1" result="OK" time_sec="0.04" crc="513112454"/>
                <choice name="2" result="OK" time_sec="0.04" crc="1368158831"/>
                <choice name="3" result="OK" time_sec="0.04" crc="-1176745787"/>
                <choice name="4" result="OK" time_sec="0.05" crc="-256635724"/>
-               <choice name="5" result="OK" time_sec="0.05" crc="1441501550"/>
+               <choice name="5" result="OK" time_sec="0.04" crc="1441501550"/>
                <choice name="6" result="OK" time_sec="0.04" crc="500536394"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.13"> 
-            <application file-name="paths-find_paths-2.py" info-request-time="1306387925L" vanished="False"/>
+        <test title="find_path (mean tests)" time-sum-sec="0.12"> 
+            <application file-name="paths-find_paths-2.py" info-request-time="1310531200L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-1033686350"/>
-               <choice name="2" result="OK" time_sec="0.05" crc="-1531632372"/>
-               <choice name="3" result="OK" time_sec="0.04" crc="1412041101"/>
+               <choice name="2" result="OK" time_sec="0.04" crc="2095293983"/>
+               <choice name="3" result="OK" time_sec="0.04" crc="-47922617"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.39"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.32"> 
             <application file-name="paths-filter_redundant_paths.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="8" same_result="False">
-               <choice name="0" result="OK" time_sec="0.11" crc="-1231177672"/>
+               <choice name="0" result="OK" time_sec="0.04" crc="-1231177672"/>
                <choice name="1" result="OK" time_sec="0.04" crc="-2097780869"/>
                <choice name="2" result="OK" time_sec="0.04" crc="-1697922765"/>
                <choice name="3" result="OK" time_sec="0.04" crc="1993708865"/>
@@ -89,11 +89,11 @@
                <choice name="recursive" result="OK" time_sec="0.04" crc="1460644418"/>
             </choice-list>
         </test>
-        <test title="Combine Combined Trigger Maps" time-sum-sec="0.20"> 
+        <test title="Combine Combined Trigger Maps" time-sum-sec="0.21"> 
             <application file-name="templates-combine-2.py" info-request-time="1301139219L" vanished="False"/>
             <choice-list number="5" same_result="False">
                <choice name="1" result="OK" time_sec="0.04" crc="-954549293"/>
-               <choice name="2" result="OK" time_sec="0.04" crc="1090014789"/>
+               <choice name="2" result="OK" time_sec="0.05" crc="1090014789"/>
                <choice name="recursive" result="OK" time_sec="0.04" crc="-1772708121"/>
                <choice name="recursive-2" result="OK" time_sec="0.04" crc="-289809458"/>
                <choice name="recursive-3" result="OK" time_sec="0.04" crc="987841459"/>
