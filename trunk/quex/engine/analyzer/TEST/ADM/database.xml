@@ -1,6 +1,6 @@
-<test-database execution-time-sec="3.81" date="Tue Jul 12 02:11:11 2011">
+<test-database execution-time-sec="3.80" date="Wed Jul 13 05:49:02 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Single Pattern Checks" time-sum-sec="0.64"> 
+    <test title="Single Pattern Checks" time-sum-sec="0.63"> 
         <application file-name="single-pattern.py" info-request-time="1308633292L" vanished="False"/>
         <choice-list number="10" same_result="False">
            <choice name="0" result="FAIL" time_sec="0.06" crc="2021942689"/>
@@ -23,7 +23,7 @@
                <choice name="1" result="FAIL" time_sec="0.07" crc="-456787132"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="0.70"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="0.71"> 
             <application file-name="track_analysis-pre-post.py" info-request-time="1308633216L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="1" result="FAIL" time_sec="0.08" crc="577320429"/>
@@ -74,7 +74,7 @@
                <choice name="" result="FAIL" time_sec="0.06" crc="-402608585"/>
             </choice-list>
         </test>
-        <test title="With Post-Contexts" time-sum-sec="0.58"> 
+        <test title="With Post-Contexts" time-sum-sec="0.59"> 
             <application file-name="track_analysis-post.py" info-request-time="1308633202L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="3" result="FAIL" time_sec="0.07" crc="2126615995"/>

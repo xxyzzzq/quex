@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.21" date="Tue Jul 12 02:11:06 2011">
+<test-database execution-time-sec="0.21" date="Wed Jul 13 05:49:02 2011">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
         <test title="Copy Region (BPC=4)" make-dependent="True" time-sum-sec="0.01"> 

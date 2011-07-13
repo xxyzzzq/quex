@@ -365,8 +365,12 @@ def __state_entries(txt, PathWalker, SMD):
     for path in PathWalker.path_list():
         prev_state_index = None
         # Last state of sequence is not in the path, it is the first state after.
+        done = set()
         for i, info in enumerate(path.sequence()[:-1]):
             state_index = info[0]
+            if state_index in done: continue
+            done.add(state_index)
+
             # No need for state router if:
             #   (i) PathWalker is uniform, because then even after reload no dedicated
             #       state entry is required.

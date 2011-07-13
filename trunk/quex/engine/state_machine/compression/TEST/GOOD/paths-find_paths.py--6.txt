@@ -3,27 +3,27 @@
         digraph state_machine_1 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 16; 17; 18; 19; 20;
+	       node [shape = doublecircle]; 2; 3; 4; 5; 6;
            node [shape = circle];
-           15 -> 17 [label ="'c'"];
-15 -> 16 [label ="'d'"];
-17 -> 18 [label ="'c'"];
-17 -> 19 [label ="'d'"];
-19 -> 18 [label ="'c'"];
-19 -> 16 [label ="'d'"];
-19 -> 20 [label ="'e'"];
-7777 -> 15 [label ="'0'"];
+        0 -> 1 [label ="'0'"];
+1 -> 2 [label ="'c'"];
+1 -> 5 [label ="'d'"];
+2 -> 3 [label ="'c'"];
+2 -> 4 [label ="'d'"];
+4 -> 3 [label ="'c'"];
+4 -> 5 [label ="'d'"];
+4 -> 6 [label ="'e'"];
 
         }
         
 
-# start    = 17;
-# path     = (17)--'d'-->(19)--'e'-->[20];
-# skeleton = (16) by 'd'; (18) by 'c'; 
+# start    = 2;
+# path     = (2)--'d'-->(4)--'e'-->[6];
+# skeleton = (5) by 'd'; (3) by 'c'; 
 # wildcard = False;
 # 
-# start    = 15;
-# path     = (15)--'c'-->(17)--'d'-->(19)--'e'-->[20];
-# skeleton = (16) by 'd'; (18) by 'c'; 
+# start    = 1;
+# path     = (1)--'c'-->(2)--'d'-->(4)--'e'-->[6];
+# skeleton = (5) by 'd'; (3) by 'c'; 
 # wildcard = False;
 # 

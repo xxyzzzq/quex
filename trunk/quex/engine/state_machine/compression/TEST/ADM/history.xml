@@ -1,4 +1,4 @@
-<history date="Tue Jul 12 08:01:32 2011" element-n="66">
+<history date="Wed Jul 13 05:49:02 2011" element-n="80">
     <day year="2010" month="04" day="01">
         <history-init time="16:04:08"/>
     </day>
@@ -92,5 +92,21 @@
         <crc-error time="05:20:04" application="paths-find_paths-2.py" choice="1" database-crc="1156845959" real-crc="-1033686350"/>
         <crc-error time="05:25:50" application="paths-find_paths-2.py" choice="2" database-crc="-1137445024" real-crc="-1531632372"/>
         <crc-error time="05:28:51" application="paths-find_paths-2.py" choice="3" database-crc="1803225487" real-crc="1412041101"/>
+    </day>
+    <day year="2011" month="07" day="13">
+        <crc-error time="03:14:51" application="paths-find_paths.py" choice="1" database-crc="1752605335" real-crc="-1205240093"/>
+        <crc-error time="03:16:38" application="paths-find_paths.py" choice="2" database-crc="659149719" real-crc="1089427643"/>
+        <crc-error time="03:17:31" application="paths-find_paths.py" choice="3" database-crc="368726953" real-crc="-838314648"/>
+        <crc-error time="03:17:31" application="paths-find_paths.py" choice="4" database-crc="1671005403" real-crc="424558490"/>
+        <crc-error time="03:19:25" application="paths-find_paths.py" choice="4" database-crc="424558490" real-crc="-364803540"/>
+        <crc-error time="03:30:00" application="paths-find_paths.py" choice="5" database-crc="76377710" real-crc="-17722663"/>
+        <crc-error time="03:31:38" application="paths-find_paths.py" choice="6" database-crc="1334011203" real-crc="-758702902"/>
+        <crc-error time="03:31:55" application="paths-find_paths.py" choice="1" database-crc="-1205240093" real-crc="513112454"/>
+        <crc-error time="03:32:01" application="paths-find_paths.py" choice="2" database-crc="1089427643" real-crc="1368158831"/>
+        <crc-error time="03:32:09" application="paths-find_paths.py" choice="3" database-crc="-838314648" real-crc="-1176745787"/>
+        <crc-error time="03:32:19" application="paths-find_paths.py" choice="4" database-crc="-364803540" real-crc="-256635724"/>
+        <crc-error time="03:32:59" application="paths-find_paths.py" choice="5" database-crc="-17722663" real-crc="1987296232"/>
+        <crc-error time="03:33:07" application="paths-find_paths.py" choice="6" database-crc="-758702902" real-crc="500536394"/>
+        <crc-error time="03:36:22" application="paths-find_paths.py" choice="5" database-crc="1987296232" real-crc="1441501550"/>
     </day>
 </history>
