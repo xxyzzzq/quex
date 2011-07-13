@@ -4,7 +4,7 @@
 	       size="8,5"
 	       node [shape = doublecircle]; 15; 16; 17; 18; 19;
            node [shape = circle];
-           14 -> 16 [label ="'a'"];
+        14 -> 16 [label ="'a'"];
 14 -> 17 [label ="'b'"];
 14 -> 15 [label ="'c'"];
 15 -> 16 [label ="'a'"];

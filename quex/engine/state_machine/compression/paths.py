@@ -442,7 +442,7 @@ class CharacterPath:
                         "wildcard = %s;\n" % repr(self.__wildcard is not None)])
 
     def __repr__(self):
-        return self.get_string(NormalizeF=True)
+        return self.get_string()
 
     def __len__(self):
         return len(self.__sequence)

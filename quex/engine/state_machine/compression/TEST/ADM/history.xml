@@ -1,4 +1,4 @@
-<history date="Wed Jul 13 05:49:02 2011" element-n="80">
+<history date="Wed Jul 13 06:28:31 2011" element-n="82">
     <day year="2010" month="04" day="01">
         <history-init time="16:04:08"/>
     </day>
@@ -108,5 +108,7 @@
         <crc-error time="03:32:59" application="paths-find_paths.py" choice="5" database-crc="-17722663" real-crc="1987296232"/>
         <crc-error time="03:33:07" application="paths-find_paths.py" choice="6" database-crc="-758702902" real-crc="500536394"/>
         <crc-error time="03:36:22" application="paths-find_paths.py" choice="5" database-crc="1987296232" real-crc="1441501550"/>
+        <crc-error time="04:25:25" application="paths-find_paths-2.py" choice="2" database-crc="-1531632372" real-crc="2095293983"/>
+        <crc-error time="04:25:37" application="paths-find_paths-2.py" choice="3" database-crc="1412041101" real-crc="-47922617"/>
     </day>
 </history>
