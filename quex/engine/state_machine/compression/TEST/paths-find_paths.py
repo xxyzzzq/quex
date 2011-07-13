@@ -42,7 +42,7 @@ def test(Skeleton, *StringPaths):
         idx = construct_path(sm, idx0, character_sequence, Skeleton)
 
     sm = nfa_to_dfa.do(sm)
-    sm = hopcroft.do(sm)
+    # sm = hopcroft.do(sm)
 
     # Path analyzis may not consider the init state, so mount 
     # an init state before everything.
