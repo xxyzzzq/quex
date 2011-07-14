@@ -359,7 +359,7 @@ class HopcroftMinization:
                         state_set.remove(other_state_index)
                         break
                 if len(extracted) != 0:
-                    state_set_iterable.append(extracted)
+                    state_set_iterable.append(list(extracted))
                     last_i += 1
 
         for state_set in state_set_iterable:
@@ -463,7 +463,7 @@ def do(SM, CreateNewStateMachineF=True):
        The original state set is replaced by the two new ones. This algorithm is 
        repeated until the state sets do not change anymore.
     """        
-    ## print "##in:", SM.get_string(NormalizeF=False)
+    ## print "##in:", SM.get_string(NormalizeF=True)
     result = HopcroftMinization(SM)
     ## print "##out:", create_state_machine(SM, result).get_string(NormalizeF=False)
 
