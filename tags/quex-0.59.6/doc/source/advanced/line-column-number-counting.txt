@@ -1,0 +1,117 @@
+
+Line and Column Number Counting
+-------------------------------
+
+Any compiler or lexical analyzer imposes rules on the text that it has to
+apply. Most of those texts are written by humans, and humans occasionally make
+errors and disrespect rules. A gentle compiler tells its user about his errors
+and also tells it about the place where the error occured. Using quex's ability
+to count lines and columns facilitates the task of pointing into the user's
+code. Line and column numbers are activated by means of the command line options
+
+.. describe:: --line-count
+
+.. describe:: --column-count
+
+Both options can be set independently.  The analyzer's member functions to
+access the current line and column number are:
+
+.. cfunction:: int  line_number()
+.. cfunction:: int  line_number_at_begin()
+.. cfunction:: int  line_number_at_end()
+.. cfunction:: int  column_number()
+.. cfunction:: int  column_number_at_begin()
+.. cfunction:: int  column_number_at_end()
+
+The return the line and column number at the begin and the end of the currently
+matched lexeme. ``line_number()`` is a synonyme for ``line_number_at_begin``
+and ``column_number()`` is a synonyme for ``column_number_at_begin``.
+
+Queχ tries to analyze patterns so that the column and line number counting
+can be reduced at run time, in many cases, to a plain constant addition.
+There is a general default algorithm to count lines and columns that is always
+applied in case that there is no better alternative. Queχ analyzes the patterns
+and adapts the way of counting lines and columns according to special
+characteristics [#f1]_.  If the pattern contains, for example, a fixed number
+of newlines, then only a fixed number is added and no newlines are counted at
+runtime. The mechanisms for line and column counting are optimized for the most
+reasonable pattern characteristics[#f2]_. For reasonable applications
+as known from popular programming languages the mechanisms of counting should
+be optimal.
+
+For some purposes, it might be necessary to set the line and column number
+actively. Then the following member functions may be used:
+
+.. code-block:: cpp
+
+    void        line_number_set(size_t Y);
+    void        column_number_set(size_t X);
+
+Line and column counting can be turned off individually by pre-processor
+switches. 
+
+.. cmacro:: QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
+
+.. cmacro:: QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
+
+These switches turn the related counting mechanisms off.  It is possible that
+it runs a little faster[#f3]_. For serious applications, though, at least line
+number counting should be in place for error reporting.
+
+.. warning::
+
+   The member functions for reporting line and column numbers always report the
+   *current* state. If the token policy ``queue`` (default) or ``users_queue``
+   (see :ref:`sec-token-policies`) is used, then a these function only report
+   correct values inside pattern actions!
+
+   From ouside, i.e. after a call to ``.receive(...)`` the line and column
+   numbers represent the values for the last token in the queue. If precise
+   numbers are required they are better stored inside the token at the time
+   of the pattern match.
+
+
+.. _sec-token-stamping:
+
+Stamping Tokens
+---------------
+
+Tokens can be stamped at the time that they are sent with the current line
+and/or column number. Indeed, this is what happens by default.  If line or
+column counting is disabled, then also the stamping of the disabled value is
+disabled (see :ref:`sec-line-column-count`). The line and column numbers of a
+token can be accessed via the member functions
+
+.. cfunction:: size_t line_number()
+
+.. cfunction:: size_t column_number()
+
+of each token object. The stamping happens inside the 'send()' functions.  If
+the stamping procedure needs to be enabled or disabled against the
+abovementioned default settings the macro
+
+.. cmacro:: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+
+may be used to adapt to disable stamping mechanism. If line or column numbering
+is disabled, also the stamping of the corresponding value is disabled. Further,
+no member in the tokens is reserved to carry that value.
+
+.. rubric:: Footnotes
+
+.. [#f1] Even the indentation count algorithm is adapted to profit from knowledge 
+         about the patterns internal structure.
+
+.. [#f2] There are exceptions cases, for which a slightly better counting 
+         mechanism might be found. Example: A pattern that contains a newline which is followed
+         by a fixed number of characters. The determination of this in the
+         context of post-conditions is complicated. On the other hand, such
+         patterns are considered strange and occur rarely. Thus, the expected
+         gain with an optimized algorithm was considered negligible by the
+         author. No optimal handling for this case has been developed. 
+
+.. [#f3] The author of this text has experienced several cases where analyzers 
+         *with* the line and column counting active performed *faster* then
+         without it. This might be caused by the different caching strategies
+         of modern CPUs. Before deleting the line and column counting a 
+         benchmark always helps to get an impression if it's really worth it.
+

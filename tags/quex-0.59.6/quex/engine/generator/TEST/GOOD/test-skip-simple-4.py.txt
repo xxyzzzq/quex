@@ -1,0 +1,38 @@
+## (*) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb  ##
+## (*) running the test
+(*) test string: 
+'abcdefgo*o*/hijklmnopo*o*/qrstuvwo*o*/xyzo*o*/ab'##
+(*) result:
+next letter: <h>
+next letter: <q>
+next letter: <x>
+next letter: <a>
+end
+  ''
+
+## (4) cleaning up
+## (*) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb  ##
+## (*) running the test
+(*) test string: 
+'o*o*/hijklmnopo*o*/qrstuvwo*o*/xyzo*o*/'##
+(*) result:
+next letter: <h>
+next letter: <q>
+next letter: <x>
+end
+  ''
+
+## (4) cleaning up
+## (*) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -ggdb  ##
+## (*) running the test
+(*) test string: 
+'ao*o*/h'##
+(*) result:
+next letter: <h>
+end
+  ''
+
+## (4) cleaning up

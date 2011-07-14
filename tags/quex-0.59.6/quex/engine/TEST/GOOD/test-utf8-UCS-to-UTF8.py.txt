@@ -1,0 +1,6 @@
+unequal-sign:   E2.89.A0 -> 2260
+copyright-sign: C2.A9    -> a9
+arabic lam:     D9.84    -> 644
+2260 -> ≠
+a9 -> ©
+644 -> ل

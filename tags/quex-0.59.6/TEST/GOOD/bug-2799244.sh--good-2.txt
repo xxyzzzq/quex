@@ -1,0 +1,8 @@
+(*) Full Error
+
+(*) perform compilation
+# Compilation error on return 'Token' instead 'bool'
+# is intended and correctly expected behavior.
+In file included from Simple.cpp:1:
+good-2.qx: In function ‘bool Token_take_text(Token*, quex::Simple*, const uint8_t*, const uint8_t*)’:
+good-2.qx:8: error: cannot convert ‘Token’ to ‘bool’ in return

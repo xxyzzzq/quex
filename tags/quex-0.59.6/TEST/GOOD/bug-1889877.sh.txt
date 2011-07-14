@@ -1,0 +1,2 @@
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: lonely operator '*' without expression proceeding.
