@@ -24,14 +24,14 @@ from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
                                                   AcceptanceTraceEntry_Void, \
                                                   extract_pre_context_id
 from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs, EngineTypes
-from   quex.engine.misc.enum import Enum
+from   quex.engine.misc.enum                     import Enum
 
 
 from quex.blackboard import setup as Setup
-from copy             import copy, deepcopy
-from collections      import defaultdict
-from operator         import attrgetter, itemgetter
-from itertools        import islice, ifilter, takewhile, imap
+from copy            import copy, deepcopy
+from collections     import defaultdict
+from operator        import attrgetter, itemgetter
+from itertools       import islice, ifilter, takewhile, imap
 import sys
 
 class Analyzer:
@@ -613,16 +613,15 @@ class Entry(object):
                 txt.append("last_acceptance = %s\n" % repr_acceptance_id(acceptance_id))
                 if_str = "else if"
 
-        if len(self.positioner) != 0:
+        for from_state_index, positioner in ifilter(lambda x: len(x[1]) != 0, self.positioner_db.iteritems()):
             txt.append("    Positioner:\n")
-            for post_context_id, pre_context_id_list in self.positioner.iteritems():
+            for post_context_id, pre_context_id_list in positioner.iteritems():
                 pre_list = map(repr_pre_context_id, pre_context_id_list)
 
                 txt.append("    ")
                 if None not in pre_context_id_list:
                     txt.append("if %s: " % repr(pre_list)[1:-1])
                 txt.append("%s = input_p;\n" % repr_position_register(post_context_id))
-            
 
         return "".join(txt)
 
