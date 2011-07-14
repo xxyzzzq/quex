@@ -152,7 +152,7 @@ class StateCoreInfo(object):
         """NOTE: By default, when a state is set to acceptance the input
                  position is to be stored for all related origins, if this is 
                  not desired (as by 'post_context_append.do(..)' the flag
-                 'store_input_position_f' is to be adpated manually using the
+                 'store_input_position_f' is to be adapted manually using the
                  function 'set_store_input_position_f'
         """      
         assert type(Value) == bool
