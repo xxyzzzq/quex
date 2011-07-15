@@ -1,70 +1,70 @@
         digraph state_machine_1 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 22; 23; 24; 25; 26; 27; 28;
+	       node [shape = doublecircle]; 2; 3; 4; 5; 6; 7; 8;
            node [shape = circle];
-           21 -> 22 [label ="'b'"];
-21 -> 23 [label ="'c'"];
-23 -> 22 [label ="'b'"];
-23 -> 24 [label ="'c'"];
-24 -> 22 [label ="'b'"];
-24 -> 25 [label ="'c'"];
-25 -> 22 [label ="'b'"];
-25 -> 26 [label ="'c'"];
-26 -> 28 [label ="'b'"];
-26 -> 27 [label ="'c'"];
-7777 -> 21 [label ="'0'"];
+        0 -> 1 [label ="'0'"];
+1 -> 2 [label ="'b'"];
+1 -> 3 [label ="'c'"];
+3 -> 2 [label ="'b'"];
+3 -> 4 [label ="'c'"];
+4 -> 2 [label ="'b'"];
+4 -> 5 [label ="'c'"];
+5 -> 2 [label ="'b'"];
+5 -> 6 [label ="'c'"];
+6 -> 7 [label ="'b'"];
+6 -> 8 [label ="'c'"];
 
         }
         
 
-# start    = 25;
-# path     = (25)--'c'-->(26)--'b'-->[28];
-# skeleton = (22) by 'b'; (27) by 'c'; 
+# start    = 5;
+# path     = (5)--'c'-->(6)--'b'-->[7];
+# skeleton = (2) by 'b'; (8) by 'c'; 
 # wildcard = False;
 # 
-# start    = 24;
-# path     = (24)--'c'-->(25)--'c'-->(26)--'b'-->[28];
-# skeleton = (22) by 'b'; (27) by 'c'; 
+# start    = 4;
+# path     = (4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
+# skeleton = (2) by 'b'; (8) by 'c'; 
 # wildcard = False;
 # 
-# start    = 24;
-# path     = (24)--'c'-->(25)--'b'-->[22];
-# skeleton = (22) by 'b'; (26) by 'c'; 
+# start    = 4;
+# path     = (4)--'c'-->(5)--'b'-->[2];
+# skeleton = (2) by 'b'; (6) by 'c'; 
 # wildcard = False;
 # 
-# start    = 23;
-# path     = (23)--'c'-->(24)--'c'-->(25)--'c'-->(26)--'b'-->[28];
-# skeleton = (22) by 'b'; (27) by 'c'; 
+# start    = 3;
+# path     = (3)--'c'-->(4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
+# skeleton = (2) by 'b'; (8) by 'c'; 
 # wildcard = False;
 # 
-# start    = 23;
-# path     = (23)--'c'-->(24)--'c'-->(25)--'b'-->[22];
-# skeleton = (22) by 'b'; (26) by 'c'; 
+# start    = 3;
+# path     = (3)--'c'-->(4)--'c'-->(5)--'b'-->[2];
+# skeleton = (2) by 'b'; (6) by 'c'; 
 # wildcard = False;
 # 
-# start    = 23;
-# path     = (23)--'c'-->(24)--'b'-->[22];
-# skeleton = (22) by 'b'; (25) by 'c'; 
+# start    = 3;
+# path     = (3)--'c'-->(4)--'b'-->[2];
+# skeleton = (2) by 'b'; (5) by 'c'; 
 # wildcard = False;
 # 
-# start    = 21;
-# path     = (21)--'c'-->(23)--'c'-->(24)--'c'-->(25)--'c'-->(26)--'b'-->[28];
-# skeleton = (22) by 'b'; (27) by 'c'; 
+# start    = 1;
+# path     = (1)--'c'-->(3)--'c'-->(4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
+# skeleton = (2) by 'b'; (8) by 'c'; 
 # wildcard = False;
 # 
-# start    = 21;
-# path     = (21)--'c'-->(23)--'c'-->(24)--'c'-->(25)--'b'-->[22];
-# skeleton = (22) by 'b'; (26) by 'c'; 
+# start    = 1;
+# path     = (1)--'c'-->(3)--'c'-->(4)--'c'-->(5)--'b'-->[2];
+# skeleton = (2) by 'b'; (6) by 'c'; 
 # wildcard = False;
 # 
-# start    = 21;
-# path     = (21)--'c'-->(23)--'c'-->(24)--'b'-->[22];
-# skeleton = (22) by 'b'; (25) by 'c'; 
+# start    = 1;
+# path     = (1)--'c'-->(3)--'c'-->(4)--'b'-->[2];
+# skeleton = (2) by 'b'; (5) by 'c'; 
 # wildcard = False;
 # 
-# start    = 21;
-# path     = (21)--'c'-->(23)--'b'-->[22];
-# skeleton = (22) by 'b'; (24) by 'c'; 
+# start    = 1;
+# path     = (1)--'c'-->(3)--'b'-->[2];
+# skeleton = (2) by 'b'; (4) by 'c'; 
 # wildcard = False;
 # 
