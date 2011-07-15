@@ -1,0 +1,47 @@
+init-state = 56L
+00056() <~ (4, 9), (15, 35)
+      == 'a' ==> 00057
+      <no epsilon>
+00057(A, S) <~ (4, 10, A, S), (15, 36)
+      == 'a' ==> 00059
+      == 'c' ==> 00058
+      <no epsilon>
+00059(A, S) <~ (4, 11, A, S), (15, 38)
+      == 'c' ==> 00058
+      <no epsilon>
+00058() <~ (15, 37)
+      == 'd' ==> 00060
+      <no epsilon>
+00060(A, S) <~ (15, 39, A, S)
+      <no epsilon>
+
+State 56:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 57:
+  .entry:
+  .drop_out:
+     goto Pattern4;
+
+
+State 58:
+  .entry:
+  .drop_out:
+    pos -= 1;  goto Pattern4;
+
+
+State 59:
+  .entry:
+  .drop_out:
+     goto Pattern4;
+
+
+State 60:
+  .entry:
+  .drop_out:
+     goto Pattern15;
+
+

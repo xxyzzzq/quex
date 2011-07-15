@@ -1,0 +1,26 @@
+init-state = 16L
+00016() <~ (4, 9)
+      == 'a' ==> 00017
+      <no epsilon>
+00017() <~ (4, 10)
+      == 'x' ==> 00018
+      <no epsilon>
+00018(A, S) <~ (4, 11, A, S)
+      <no epsilon>
+
+State 16:
+  .entry:
+  .drop_out:
+    <unreachable code>
+
+State 17:
+  .entry:
+  .drop_out:
+    <unreachable code>
+
+State 18:
+  .entry:
+    Terminated
+  .drop_out:
+    <unreachable code>
+
