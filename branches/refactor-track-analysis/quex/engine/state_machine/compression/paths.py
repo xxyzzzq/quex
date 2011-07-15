@@ -420,22 +420,29 @@ class CharacterPath:
         
         return 
 
-    def __repr__(self):
+    def get_string(self, NormalizeDB=None):
+        def norm(X):
+            return X if NormalizeDB is None else NormalizeDB[X]
+
         skeleton_txt = ""
         for target_idx, trigger_set in sorted(self.__skeleton.iteritems(), key=itemgetter(0)):
-            skeleton_txt += "(%i) by " % target_idx
+            skeleton_txt += "(%i) by " % norm(target_idx)
             skeleton_txt += trigger_set.get_utf8_string()
             skeleton_txt += "; "
 
         sequence_txt = ""
         for state_idx, char in self.__sequence[:-1]:
+            state_idx = norm(state_idx)
             sequence_txt += "(%i)--'%s'-->" % (state_idx, chr(char))
-        sequence_txt += "[%i]" % self.__sequence[-1][0]
+        sequence_txt += "[%i]" % norm(self.__sequence[-1][0])
 
-        return "".join(["start    = %i;\n" % self.__start_state_index,
+        return "".join(["start    = %i;\n" % norm(self.__start_state_index),
                         "path     = %s;\n" % sequence_txt,
                         "skeleton = %s\n"  % skeleton_txt, 
                         "wildcard = %s;\n" % repr(self.__wildcard is not None)])
+
+    def __repr__(self):
+        return self.get_string()
 
     def __len__(self):
         return len(self.__sequence)
@@ -479,9 +486,7 @@ def __find_begin(sm, StateIndex, InitStateIndex):
     transition_map = State.transitions().get_map()
     single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.iteritems():
-        print "##__find_begin: target %i: %s" % (target_idx, trigger_set)
         if __find_begin_touched_state_idx_list.has_key(target_idx): continue
-        print "## go"
         __find_begin_touched_state_idx_list[target_idx] = True
 
         # IN ANY CASE: Check for paths in the subsequent state

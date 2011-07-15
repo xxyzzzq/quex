@@ -3,18 +3,18 @@
         digraph state_machine_1 {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; 11; 12; 13;
+	       node [shape = doublecircle]; 2; 3; 4;
            node [shape = circle];
-           10 -> 11 [label ="'a'"];
-10 -> 12 [label ="'c'"];
-12 -> 13 [label ="'a'"];
-7777 -> 10 [label ="'0'"];
+        0 -> 1 [label ="'0'"];
+1 -> 2 [label ="'a'"];
+1 -> 3 [label ="'c'"];
+3 -> 4 [label ="'a'"];
 
         }
         
 
-# start    = 10;
-# path     = (10)--'c'-->(12)--'a'-->[13];
-# skeleton = (11) by 'a'; 
+# start    = 1;
+# path     = (1)--'c'-->(3)--'a'-->[4];
+# skeleton = (2) by 'a'; 
 # wildcard = True;
 # 

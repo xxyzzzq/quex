@@ -14,6 +14,10 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 3;"
     sys.exit(0)
 
+if len(sys.argv) < 2:
+    print "Call this with: --hwut-info"
+    sys.exit(0)
+
 def test(sm):
 
     sm.add_transition(7777L, ord('0'), sm.init_state_index)
@@ -31,10 +35,6 @@ def test(sm):
 #          > ./paths-find_paths.py 2 > tmp.dot
 #          > dot tmp.dot -Tfig -o tmp.fig       # produce .fig graph file 
 #          > xfig tmp.fig                       # use xfig to view
-if len(sys.argv) < 2:
-    print "Call this with: --hwut-info"
-    sys.exit(0)
-
 
 sm = core.StateMachine()
 if "1" in sys.argv: 
