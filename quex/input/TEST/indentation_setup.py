@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 import sys
 import os
+sys.path.append(os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
 
-
-sys.path.append(os.environ["QUEX_PATH"])
-import quex.input.files.indentation_setup as indentation
-from   quex.engine.utf8              import map_unicode_to_utf8
-from   quex.engine.misc.file_in                import EndOfStreamException, error_msg
+import quex.input.files.indentation_setup as     indentation
+from   quex.engine.utf8                   import map_unicode_to_utf8
+from   quex.engine.misc.file_in           import EndOfStreamException, error_msg
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"
