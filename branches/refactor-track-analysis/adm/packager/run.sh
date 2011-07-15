@@ -12,8 +12,8 @@ cd ~/prj/quex/trunk
 orig_directory=`pwd`
 directory=`basename $orig_directory`
 
-INSTALLBUILDER=/opt/installbuilder-6.3.1/bin/builder
-INSTALLBUILDER_OUT=/opt/installbuilder-6.3.1/output
+INSTALLBUILDER=/opt/installbuilder-7.2.0/bin/builder
+INSTALLBUILDER_OUT=/opt/installbuilder-7.2.0/output
 
 # Temporary file for building a distribution file list
 input=/tmp/file-list-in.txt
