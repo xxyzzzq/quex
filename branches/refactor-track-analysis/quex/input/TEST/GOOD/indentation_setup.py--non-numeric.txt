@@ -6,15 +6,15 @@ Grids:
 Bad:
     
 Newline:
-    init-state = 5L
-    00005() <~ 
-          == '\n' ==> 00006
-          == '\r' ==> 00007
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
           <no epsilon>
-    00006(A, S) <~ 
+    00001(A, S) <~ 
           <no epsilon>
-    00007() <~ 
-          == '\n' ==> 00006
+    00002() <~ 
+          == '\n' ==> 00001
           <no epsilon>
     
 Suppressor:
@@ -34,15 +34,15 @@ Grids:
 Bad:
     
 Newline:
-    init-state = 16L
-    00016() <~ 
-          == '\n' ==> 00017
-          == '\r' ==> 00018
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
           <no epsilon>
-    00017(A, S) <~ 
+    00001(A, S) <~ 
           <no epsilon>
-    00018() <~ 
-          == '\n' ==> 00017
+    00002() <~ 
+          == '\n' ==> 00001
           <no epsilon>
     
 Suppressor:
@@ -63,15 +63,15 @@ Grids:
 Bad:
     
 Newline:
-    init-state = 23L
-    00023() <~ 
-          == '\n' ==> 00024
-          == '\r' ==> 00025
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
           <no epsilon>
-    00024(A, S) <~ 
+    00001(A, S) <~ 
           <no epsilon>
-    00025() <~ 
-          == '\n' ==> 00024
+    00002() <~ 
+          == '\n' ==> 00001
           <no epsilon>
     
 Suppressor:
@@ -87,15 +87,15 @@ Grids:
 Bad:
     
 Newline:
-    init-state = 26L
-    00026() <~ 
-          == '\n' ==> 00027
-          == '\r' ==> 00028
+    init-state = 0L
+    00000() <~ 
+          == '\n' ==> 00001
+          == '\r' ==> 00002
           <no epsilon>
-    00027(A, S) <~ 
+    00001(A, S) <~ 
           <no epsilon>
-    00028() <~ 
-          == '\n' ==> 00027
+    00002() <~ 
+          == '\n' ==> 00001
           <no epsilon>
     
 Suppressor:
