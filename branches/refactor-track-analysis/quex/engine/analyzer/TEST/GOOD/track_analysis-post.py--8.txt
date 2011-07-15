@@ -31,15 +31,19 @@ State 151:
 
 State 152:
   .entry:
-    Positioner:
-    Position[PostContext_1]  = input_p;
-    Position[PostContext_10]  = input_p;
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 153:
   .entry:
+    .by 152:
+    Accepter:
+        last_acceptance = Pattern8
+    Positioner:
+    Position[PostContext_1]  = input_p;
+    Position[PostContext_10]  = input_p;
+    .by 153:
     Accepter:
         last_acceptance = Pattern8
   .drop_out:
@@ -48,6 +52,13 @@ State 153:
 
 State 154:
   .entry:
+    .by 152:
+    Accepter:
+        last_acceptance = Pattern17
+    Positioner:
+    Position[PostContext_1]  = input_p;
+    Position[PostContext_10]  = input_p;
+    .by 154:
     Accepter:
         last_acceptance = Pattern17
   .drop_out:
