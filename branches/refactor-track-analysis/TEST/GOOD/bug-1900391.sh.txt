@@ -1,1 +1,2 @@
-command line: End of character set expression reached while parsing.
+command line: Regular expression parsing:
+command line: Missing set expression list after 'intersection' operation.
