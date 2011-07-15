@@ -1,0 +1,14 @@
+All store at the same state => use same register.
+##ssdb {57L: set([204L]), 3L: set([204L]), 21L: set([204L]), 39L: set([204L])}
+##start [4] [(57L, 3L, 21L, 39L)]
+##cursor [0]
+##cursor [1]
+##cursor [2]
+##cursor [3]
+## [(57L,), (3L,), (21L,), (39L,)]
+##cs set([(39L,), (21L,), (3L,), (57L,)])
+##al {57L: set([57L, 3L, 21L, 39L]), 3L: set([57L, 3L, 21L, 39L]), 21L: set([57L, 3L, 21L, 39L]), 39L: set([57L, 3L, 21L, 39L])}
+   57L: 0
+   3L: 0
+   21L: 0
+   39L: 0

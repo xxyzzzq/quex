@@ -63,30 +63,18 @@ class Analyzer:
 
                 state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
 
-            # -- After the preceding dependency implementation:
-            #    If a state has no successor state, or only transitions to itself,
-            #    => No accepter check is necessary, done in drop-out
-            for state_index, sm_state in SM.states.iteritems():
-                transition_map = sm_state.transitions().get_map()
-                if     len(transition_map) == 0 \
-                   or (len(transition_map) == 1 and transition_map.keys()[0] == 1):
-                   for entry in self.__state_db[state_index].entry_db.itervalues():
-                       entry.accepter.clear()
-
-            # -- Try to unify state entry actions: If a state behaves the same 
-            #    at entry independent from where it is entered, then transform
-            #    the entry dictionary into:
+            # -- During preceding drop-out implementation the entries have been defined.
+            #    But, if a state has no successor state, or only transitions to itself,
+            #    => No accepter check is necessary, it is done in drop-out.
             #
-            #         map:  None --> Uniform Entry
-            for state in self.__state_db.itervalues():
-                if len(state.entry_db) == 0: continue
-                iteritems = state.entry_db.iteritems()
-                from_state_index, prototype = iteritems.next()
-                uniform_f = True
-                for from_state_index, entry in iteritems:
-                    if not entry.is_equal(prototype): uniform_f = False; break
-                if uniform_f:
-                    state.entry_db = { None: prototype }
+            # -- Try to unify state entry actions: If a state behaves the same
+            #    at entry independent from where it is entered, then transform the
+            #    entry dictionary into:
+            #                              map:  None --> Uniform Entry
+            for state in ifilter(lambda x: not x.has_transitions_to_other_states(), 
+                                 self.__state_db.itervalues()):
+                 state.entry.accepter.clear()
+                 state.entry.positioner_db_unify()
 
         else:
             # NOTE: For backward analysis, drop_out and entry do not require any construction 
@@ -181,8 +169,7 @@ class Analyzer:
             for trace in TheAcceptanceTraceList:
                 for element in ifilter(lambda element: element.pattern_id != AcceptanceIDs.FAILURE, trace):
                     accepting_state = self.__state_db[element.accepting_state_index]
-                    for entry in accepting_state.entry_db.itervalues():
-                        entry.accepter[element.pre_context_id] = element.pattern_id
+                    accepting_state.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
@@ -214,9 +201,8 @@ class Analyzer:
                 for target_index in ifilter(lambda x: state.index == x or state.index in self.__successor_db[x],
                                             positioning_state.target_index_list):
                     if target_index == pos_state_index: continue
-                    entry = self.__state_db[target_index].entry_db[pos_state_index]
-                    ## print "##ep", target_index, pos_state_index, info.post_context_id, info.pre_context_id
-                    entry.positioner[info.post_context_id].add(info.pre_context_id)
+                    entry = self.__state_db[target_index].entry
+                    entry.positioner_db[pos_state_index][info.post_context_id].add(info.pre_context_id)
 
         # Clean Up the checker and the router:
         # (1) there is no check after the unconditional acceptance
@@ -376,9 +362,8 @@ class Analyzer:
         restore_contellation_list = []
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for entry in state.entry_db.itervalues():
-                for post_context_id in entry.positioner.iterkeys():
-                    store_constellation_db[post_context_id].add(state.index)
+            for post_context_id in state.entry.positioner_db.iterkeys():
+                store_constellation_db[post_context_id].add(state.index)
 
         # (2) inverse map: set of states where the positions are stored --> post context ids that do so
         inverse_db = defaultdict(set)
@@ -410,9 +395,8 @@ class Analyzer:
         result = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for entry in state.entry_db.itervalues():
-                for post_context_id in entry.positioner.iterkeys():
-                    dive(post_context_id, state, [], result[post_context_id])
+            for entry in state.entry.positioner_db.iterkeys():
+                dive(post_context_id, state, [], result[post_context_id])
 
         return result
 
@@ -425,7 +409,7 @@ class AnalyzerState(object):
                  "__target_index_list", 
                  "__engine_type", 
                  "input", 
-                 "entry_db", 
+                 "entry", 
                  "entry",
                  "transition_map", 
                  "drop_out", 
@@ -450,14 +434,11 @@ class AnalyzerState(object):
 
         # (*) Entry Action
         if   EngineType == EngineTypes.FORWARD: 
-            self.entry_db = dict([(state_index, Entry()) for state_index in FromStateIndexList])
-            self.entry    = None
+            self.entry = Entry()
         elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT: 
-            self.entry_db = None
-            self.entry    = EntryBackward(state.origins())
+            self.entry = EntryBackward(state.origins())
         elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry_db = None
-            self.entry    = EntryBackwardInputPositionDetection(state.origins())
+            self.entry = EntryBackwardInputPositionDetection(state.origins())
         else:
             assert False
 
@@ -510,22 +491,19 @@ class AnalyzerState(object):
         txt = [ "State %i:\n" % self.index ]
         if InputF:         txt.append("  .input: move position %i\n" % self.input.move_input_position())
         if EntryF:         
-            if self.engine_type != EngineTypes.FORWARD:
-                txt.extend(["  .entry:\n", repr(self.entry)])
-            elif len(self.entry_db) == 0:
-                txt.append("  .entry:\n")
-            elif len(self.entry_db) == 1:
-                txt.extend(["  .entry:\n", repr(self.entry_db.itervalues().next())])
-            else:
-                txt.append("  .entry:\n")
-                for from_state_index, entry in self.entry_db.iteritems():
-                    txt.extend(["    .by %i:\n" % from_state_index, repr(entry)])
+            txt.extend(["  .entry:\n", repr(self.entry)])
 
 
         if TransitionMapF: txt.append("  .transition_map:\n")
         if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
         txt.append("\n")
         return txt
+
+    def has_transitions_to_other_states(self):
+        if   len(self.__target_index_list) == 0:         return False
+        elif     len(self.__target_index_list) == 1 \ 
+             and self.index in self.__target_index_list: return False
+        return True
 
     def get_string(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         return "".join(self.get_string_array(InputF, EntryF, TransitionMapF, DropOutF))
@@ -599,21 +577,13 @@ class Entry(object):
        and a "None" in the pre-context-id list stands for the unconditional case.
 
     """
-    __slots__ = ("from_state_index", "accepter", "positioner")
+    __slots__ = ("from_state_index", "accepter", "positioner_db")
 
     def __init__(self):
         # By default, we do not do store anything about acceptance at state entry
-        self.accepter         = {}
-        self.positioner       = defaultdict(set)
-
-    def clear(self):
-        self.accepter.clear()
-        self.positioner.clear()
-
-    def is_equal(self, Other):
-        return     self.accepter   == Other.accepter \
-               and self.positioner == Other.positioner
-
+        self.accepter   = {}
+        # map:  (from_state_index, pre_context_id) --> post_context_id where to store position
+        self.positioner_db = defaultdict(lambda x: defaultdict(set(x)))
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
@@ -630,6 +600,14 @@ class Entry(object):
     def get_positioner(self):
         return self.positioner.items()
 
+    def positioner_db_unify(self):
+        iteritems                   = state.entry.positioner_db.iteritems()
+        from_state_index, prototype = iteritems.next()
+        # Loop is only passed if all entries are same es prototype
+        for from_state_index, entry in iteritems:
+            if prototype != entry: return
+        state.entry.positioner_db = { None: prototype }
+
     def __repr__(self):
         txt = []
         accepter = self.get_accepter()
@@ -644,12 +622,14 @@ class Entry(object):
                 txt.append("last_acceptance = %s\n" % repr_acceptance_id(acceptance_id))
                 if_str = "else if"
 
-        if len(self.positioner) != 0:
+        if len(self.positioner_db) != 0:
             txt.append("    Positioner:\n")
-            for post_context_id, pre_context_id_list in self.positioner.iteritems():
+        for from_state_index, positioner in ifilter(lambda x: len(x[1]) != 0, self.positioner_db.iteritems()):
+            if from_state_index is not None:
+                txt.append("    .by %i:", from_state_index)
+            for post_context_id, pre_context_id_list in positioner.iteritems():
                 pre_list = map(repr_pre_context_id, pre_context_id_list)
 
-                txt.append("    ")
                 if None not in pre_context_id_list:
                     txt.append("if %s: " % repr(pre_list)[1:-1])
                 txt.append("%s = input_p;\n" % repr_position_register(post_context_id))
