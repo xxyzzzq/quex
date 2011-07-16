@@ -1,0 +1,31 @@
+(*) test string: 
+'   0xxxxxa lola'
+(*) result:
+LOAD BACKWARD(entry)
+|CS:       || BLC
+|[   0xxxxx||
+         WHITESPACE  '   '
+         IDENTIFIER  '0x'
+         IDENTIFIER  'xx'
+         IDENTIFIER  'xx'
+LOAD FORWARD(entry)
+|[ :       S| BLC
+|[   0xxxxx||
+LOAD FORWARD(exit)
+|| CS      || 'x'
+||xxa lola]||
+         0xxxxx / a  'a'
+         WHITESPACE  ' '
+         IDENTIFIER  'lo'
+         IDENTIFIER  'la'
+  ''
+## NOTE: The following setup guides the lexer into a buffer reload right after
+##       the pre-conditions. No buffer reload backwards is to appear!
+(*) Lexical Analyser Patterns:
+       "0xxxxx"/"a"/ --> 0xxxxx / a
+           [0a-z]{2} --> IDENTIFIER
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

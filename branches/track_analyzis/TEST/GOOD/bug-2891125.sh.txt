@@ -1,0 +1,15 @@
+## The goal of this test is to find places where quex exits
+## with a 'sys.exit' command. This causes trouble since it
+## may be treated as an exception. No output is good output.
+./engine/analyzer/TEST-future/track_analysis-backwards.py:17:    sys.exit()
+./engine/analyzer/TEST-future/track_analysis-post.py:15:    sys.exit()
+./engine/analyzer/TEST-future/single-pattern.py:16:    sys.exit()
+./engine/analyzer/TEST-future/track_analysis-pre.py:16:    sys.exit()
+./engine/analyzer/TEST-future/track_analysis.py:16:    sys.exit()
+./engine/analyzer/TEST-future/track_analysis-pre-post.py:15:    sys.exit()
+./engine/analyzer/TEST-future/help_drawing.py:17:    sys.exit()
+./engine/analyzer/TEST-future/track_analysis-backward-input-position-detection.py:16:    sys.exit()
+./engine/misc/file_in.py:633:    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
+./DEFINITIONS.py:50:    sys.exit(-1) # sys.exit(-1) is acceptable
+./DEFINITIONS.py:63:        sys.exit(-1) # sys.exit(-1) is acceptable
+./DEFINITIONS.py:71:        sys.exit(-1) # sys.exit(-1) is acceptable

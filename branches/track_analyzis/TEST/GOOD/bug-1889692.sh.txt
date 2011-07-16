@@ -1,0 +1,7 @@
+Use Case (1)
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: End of file reached while parsing quoted string.
+
+Use Case (2)
+error-2.qx:4:error: End of file reached while parsing token shortcut.
+

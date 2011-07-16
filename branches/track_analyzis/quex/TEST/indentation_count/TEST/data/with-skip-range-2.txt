@@ -1,0 +1,10 @@
+one#  my commentNL
+    twoNL
+#   goodNL
+    three # my commentNL
+        four # my commentNL
+    # my commentNL
+    #   NL
+        fiveNL
+    sixNL
+sevenNL

@@ -1,0 +1,5 @@
+0b0110100010101001 -->  26793 True
+0b1010101010101010101 -->  349525 True
+0b2        -->  command line:1:error: Digit '2' cannot be part of an expression of base 2.
+0b0000.0000 -->  0 True
+0b1.       -->  1 True

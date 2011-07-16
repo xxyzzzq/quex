@@ -1,0 +1,50 @@
+
+(*) Intervals over borders (all)
+
+    [3] at 00010001: Codec Interval [1,F0001)
+    [1] at 00000081: Codec Interval [10081,10800)
+    [2] at 00000800: Codec Interval [10800,10801)
+    [2] at 00000801: Codec Interval [20000,2F7FF)
+    [3] at 00010000: Codec Interval [2F7FF,2F800)
+    [0] at 00000000: Codec Interval [110000,110080)
+    [1] at 00000080: Codec Interval [110080,110081)
+
+    if( input < 0x020000) {
+        if( input < 0x010081) {
+            unicode = (uint32_t)input + (uint32_t)0x010000;
+            goto four_bytes;
+        } else {
+        
+            if( input < 0x010800) {
+                unicode = (uint32_t)input - (uint32_t)0x010000;
+                goto two_bytes;
+            } else {
+            
+                unicode = (uint32_t)input - (uint32_t)0x010000;
+                goto three_bytes;
+            }
+        }
+    } else {
+    
+        if( input < 0x110000) {
+            if( input < 0x02F7FF) {
+                unicode = (uint32_t)input - (uint32_t)0x01F7FF;
+                goto three_bytes;
+            } else {
+            
+                unicode = (uint32_t)input - (uint32_t)0x01F7FF;
+                goto four_bytes;
+            }
+        } else {
+        
+            if( input < 0x110080) {
+                unicode = (uint32_t)input - (uint32_t)0x110000;
+                goto one_byte;
+            } else {
+            
+                unicode = (uint32_t)input - (uint32_t)0x110000;
+                goto two_bytes;
+            }
+        }
+    }
+

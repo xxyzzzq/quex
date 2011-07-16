@@ -1,0 +1,31 @@
+## loaded character n = 3
+00.00.00.31
+00.00.00.32
+00.00.00.30
+## loaded character n = 3
+00.00.FB.05
+00.00.00.20
+00.00.00.AB
+## loaded character n = 3
+00.00.01.5E
+00.00.00.F8
+00.00.00.BB
+## loaded character n = 3
+00.00.00.20
+00.00.06.2F
+00.00.06.44
+## loaded character n = 3
+00.00.06.48
+00.00.00.20
+00.00.FB.00
+## loaded character n = 3
+00.00.00.20
+00.00.00.A9
+00.00.00.B2
+## loaded character n = 3
+00.00.20.70
+00.00.20.70
+00.00.20.77
+## loaded character n = 2
+00.00.FB.06
+00.00.00.0A

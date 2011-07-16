@@ -1,0 +1,10 @@
+(1) Run with 'dot' available
+
+(2) Run without 'dot' available
+command line: Graphviz is not installed or does not work propperly.
+command line: Please, visit http://www.graphviz.org to download the software.
+
+(3) Run with missing command line argument
+command line: Option '--plot'
+command line: not followed by anything.
+
