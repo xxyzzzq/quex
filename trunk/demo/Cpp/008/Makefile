@@ -61,8 +61,12 @@ GENERATE_PARSER: Calc_parser.ypp
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch Calc_lexer.qx
-	rm -f $(LEXER_SOURCES)
-	rm -f $(PARSER_SOURCES)
+	rm -f Calc_lexer
+	rm -f Calc_lexer-configuration
+	rm -f Calc_lexer-token
+	rm -f Calc_lexer-token_ids
+	rm -f Calc_parser.tab.cpp
+	rm -f Calc_parser.tab.hpp
 	rm -f $(LEXER_NAME)-token
 	rm -f *.o
 	rm -f $(APPLICATION)

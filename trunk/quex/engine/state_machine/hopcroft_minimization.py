@@ -188,14 +188,16 @@ class HopcroftMinization:
         #    the exact transitions have not been investigated, yet. The only exception
         #    if len(state_set) == 1, because then it cannot be split anyway.
         #    if len(match_set) == 1, it is not added to the todo list by __add_state_set().
+        # -- Again, even if the target state sets of the prototype is 'done' it is
+        #    not guaranteed, that all states in the matching set transit on the same
+        #    transitions to the done target sets.
         if len(state_set) == 1: 
             self.non_homogenous_remove(StateSetIndex)
             self.todo_remove(StateSetIndex)
 
         # -- The state set is split, thus state sets triggering to it may be non-homogenous
         #    (this may include recursive states, so this has to come after anything above)
-        self.__check_dependencies(match_set)
-        self.__check_dependencies(state_set)
+        self.__check_nh_dependencies(chain(match_set, state_set))
 
     def split(self, StateSetIndex):
         """RETURNS:  False   if StateSet does not need to be split up any further.
@@ -259,8 +261,7 @@ class HopcroftMinization:
         # -- The state set is split, thus state sets triggering to it may be non-homogenous
         #    (this may include recursive states, even the equivalent state set, 
         #     so this has to come after anything above)
-        self.__check_dependencies(state_set)
-        self.__check_dependencies(equivalent_state_set)
+        self.__check_nh_dependencies(chain(state_set, equivalent_state_set))
 
         if len(state_set) == 1: 
             self.non_homogenous_remove(StateSetIndex)
@@ -392,7 +393,7 @@ class HopcroftMinization:
         # -- Create a new state set in state_set_list
         return self.__add_state_set(NewStateSet)
 
-    def __check_dependencies(self, StateSet):
+    def __check_nh_dependencies(self, StateSetIterable):
         """If a state set is split, then every state set that triggered to it may be non-homogenous
            origin_state_list = list of states that trigger to states inside mother_state_set.
 
@@ -413,7 +414,7 @@ class HopcroftMinization:
         """
         # (*) This is the full general version of the dependency check
         considerable_set = set()
-        for state_index in StateSet:
+        for state_index in StateSetIterable:
             origin_state_list = self.from_map[state_index]
             considerable_set.update([self.map[i] for i in origin_state_list])
 

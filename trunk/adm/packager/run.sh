@@ -170,6 +170,7 @@ put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/DOWNLOAD
 put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/DOWNLOAD
 cd /home/frs/project/q/qu/quex
 mkdir HISTORY/OLD
+cd /home/frs/project/q/qu/quex/DOWNLOAD
 rename quex-OLD.7z                           ../HISTORY/OLD/quex-OLD.7z
 rename quex-OLD.tar.gz                       ../HISTORY/OLD/quex-OLD.tar.gz
 rename quex-OLD.zip                          ../HISTORY/OLD/quex-OLD.zip   
