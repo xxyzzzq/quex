@@ -1,3 +1,4 @@
+from   quex.engine.state_machine.state_core_info       import EngineTypes
 import quex.engine.generator.languages.core            as     languages
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import get_label, get_address, \
@@ -7,13 +8,14 @@ from   quex.engine.generator.languages.address         import get_label, get_add
                                                               get_address_set_subject_to_routing, \
                                                               is_label_referenced
 
-import quex.engine.generator.state_machine_coder       as     state_machine_coder
+import quex.engine.generator.state_machine_coder2      as     state_machine_coder
 from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.misc.string_handling                import blue_print
 from   quex.engine.generator.base                      import GeneratorBase
 
-from   quex.blackboard                                import setup as Setup
+from   quex.blackboard                                 import TargetStateIndices, \
+                                                              setup as Setup
 #
 from   copy import copy
 
@@ -26,7 +28,7 @@ class Generator(GeneratorBase):
                  SupportBeginOfLineF):
 
         # Ensure that the language database as been setup propperly
-        assert type(Setup.language_db) == dict
+        assert isinstance(Setup.language_db, dict)
         assert len(Setup.language_db) != 0
         assert Setup.language_db.has_key("$label")
 
@@ -56,7 +58,7 @@ class Generator(GeneratorBase):
         pre_context = self.__code_pre_context_state_machine()
             
         # (*) Main State Machine -- try to match core patterns
-        main        = self.__code_main_state_machine(dsm)
+        main        = self.__code_main_state_machine(self.sm)
 
         # (*) Backward input position detection
         #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
@@ -107,12 +109,6 @@ class Generator(GeneratorBase):
 
         assert len(self.pre_context_sm.get_orphaned_state_index_list()) == 0
 
-        dsm = StateMachineDecorator(self.pre_context_sm, 
-                                    self.state_machine_name, 
-                                    PostContextSM_ID_List=[],
-                                    BackwardLexingF=True, 
-                                    BackwardInputPositionDetectionF=False)
-
         txt = []
         if Setup.comment_state_machine_transitions_f:
             comment = LanguageDB["$ml-comment"]("BEGIN: PRE-CONTEXT STATE MACHINE\n"             + \
@@ -121,17 +117,17 @@ class Generator(GeneratorBase):
             txt.append(comment)
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        msg = state_machine_coder.do(dsm)
+        msg = state_machine_coder.do(self.pre_context_sm, EngineTypes.BACKWARD_PRE_CONTEXT)
         txt.extend(msg)
 
-        txt.append(get_label("$terminal-general-bw") + ":\n")
+        txt.append("\n%s" % LanguageDB.LABEL(TargetStateIndices.END_OF_PRE_CONTEXT_CHECK))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
-        txt.append("    QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);\n")
+        txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START)
 
         return txt
 
-    def __code_main_state_machine(self, DSM):
+    def __code_main_state_machine(self, SM):
         assert len(self.sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = self.language_db 
@@ -146,11 +142,11 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         # -- implement the state machine itself
-        state_machine_code = state_machine_coder.do(DSM)
+        state_machine_code = state_machine_coder.do(SM, EngineTypes.FORWARD)
         txt.extend(state_machine_code)
 
         # -- terminal states: execution of pattern actions  
-        terminal_code = LanguageDB["$terminal-code"](DSM,
+        terminal_code = LanguageDB["$terminal-code"](self.state_machine_name,
                                                      self.action_db, 
                                                      self.on_failure_action, 
                                                      self.end_of_stream_action, 
@@ -182,7 +178,7 @@ class Generator(GeneratorBase):
                                     BackwardLexingF                 = True, 
                                     BackwardInputPositionDetectionF = True)
 
-        function_body = state_machine_coder.do(dsm)
+        function_body = state_machine_coder.do(sm, EngineTypes.BACKWARD_INPUT_POSITION)
 
         comment = []
         if Setup.comment_state_machine_transitions_f: 

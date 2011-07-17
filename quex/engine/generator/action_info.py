@@ -38,10 +38,10 @@ UserCodeFragment_OpenLinePragma = {
 
 class UserCodeFragment(CodeFragment):
     def __init__(self, Code, Filename, LineN, LanguageDB=None):
-        assert type(Code)       in [str, unicode]
-        assert type(LanguageDB) == dict or LanguageDB is None
-        assert type(Filename)   in [str, unicode]
-        assert type(LineN)      in [int, long, float]
+        assert isinstance(Code, (str, unicode))
+        assert isinstance(LanguageDB, dict) or LanguageDB is None
+        assert isinstance(Filename, (str, unicode))
+        assert isinstance(LineN, (int, long, float))
 
         self.filename = Filename
         self.line_n   = LineN

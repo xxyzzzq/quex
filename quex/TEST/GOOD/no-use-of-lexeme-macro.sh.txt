@@ -3,6 +3,7 @@ QUEX_OPTION_ASSERTS. These checks are sometimes nonsense in
 generated code. This test checks that no code is generated
 that referes to the Lexeme macros.
 
+/home/fschaef/prj/quex/trunk/quex/core.py:145:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:251:        #  QUEX_TKN_XYZ(Lexeme)     --> call take_text(Lexeme, LexemeEnd)
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:259:            if argument_list[0] == "Lexeme":
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:266:                error_msg("When one unnamed argument is specified it must be 'Lexeme'\n"          + \
@@ -15,7 +16,6 @@ that referes to the Lexeme macros.
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:313:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:317:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:318:                              "          \"%s(Lexeme)\"\n" % TokenName + 
-/home/fschaef/prj/quex/trunk/quex/output/cpp/action_preparation.py:176:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
 /home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:366:    /* Lexeme setup: 
 /home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:369:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
 /home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:692:    ObjectName = "Lexeme"

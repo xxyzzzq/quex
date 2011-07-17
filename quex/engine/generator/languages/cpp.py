@@ -387,13 +387,13 @@ __terminal_state_prolog  = """
 __terminal_state_epilog = """
 $$TERMINAL_END_OF_STREAM-DEF$$: /* TERMINAL: END_OF_STREAM */
 $$END_OF_STREAM_ACTION$$
-     /* End of Stream causes a return from the lexical analyzer, so that no
-      * tokens can be filled after the termination token.                    */
-     RETURN;          
+    /* End of Stream causes a return from the lexical analyzer, so that no
+     * tokens can be filled after the termination token.                    */
+    RETURN;          
 
 $$TERMINAL_FAILURE-DEF$$: /* TERMINAL: FAILURE */
 $$FAILURE_ACTION$$
-     goto $$GOTO_START_PREPARATION$$;
+    goto $$GOTO_START_PREPARATION$$;
 
 #undef Lexeme
 #undef LexemeBegin
@@ -445,7 +445,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     goto $$GOTO_START$$;
 """
 
-def __adorn_action_code(action_info, SMD, SupportBeginOfLineF): 
+def __adorn_action_code(action_info, SupportBeginOfLineF): 
 
     result = action_info.action().get_code()
     assert type(result) != tuple
@@ -467,107 +467,55 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF):
 
     return txt
 
-def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB):
-    state_machine                  = SMD.sm()
-    DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
-
-    state_machine_id_str = __nice(state_machine_id)
-    state_machine        = pattern_action_info.pattern_state_machine()
+def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, LanguageDB):
+    AcceptanceID_str = __nice(AcceptanceID)
+    state_machine    = pattern_action_info.pattern_state_machine()
     #
-    action_code = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
+    action_code      = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
-    safe_pattern = pattern_action_info.pattern.replace('"', 'double-quote')
+    safe_pattern = pattern_action_info.pattern.replace('"', '\\"')
     safe_pattern = safe_pattern.replace("\\n", "\\\\n")
     safe_pattern = safe_pattern.replace("\\t", "\\\\t")
     safe_pattern = safe_pattern.replace("\\r", "\\\\r")
     safe_pattern = safe_pattern.replace("\\a", "\\\\a")
     safe_pattern = safe_pattern.replace("\\v", "\\\\v")
+
     txt = [
-            Address("$terminal", state_machine_id,
-                      "%s:\n" % get_label("$terminal", state_machine_id)                                \
-                    + "    __quex_debug(\"pre-terminal %i: %s\");\n" % (state_machine_id, safe_pattern) \
-                    + "    " + LanguageDB["$input/increment"] + "\n"),
-            Address("$terminal-direct", state_machine_id), 
-            "    __quex_debug(\"* terminal %i:   %s\");\n" % (state_machine_id, safe_pattern),
+            "\nTERMINAL_%i:\n" % AcceptanceID,
+            "    __quex_debug(\"* terminal %i:   %s\");\n" % (AcceptanceID, safe_pattern),
+            action_code, "\n",
+            "    goto %s;\n" % get_label("$re-start", U=True)
     ]
-
-    # (1) Retrieving the input position for the next run
-    #     -- Terminal states can be reached directly, so that the input position
-    #        is already set correctly, or via the terminal router because the
-    #        acceptance was 'trailing'. Example two patterns A:'for' and B:'forest'.
-    #        If the input is 'for' than the pattern A triggers acceptance, but
-    #        the lexer still continue trying for B. If the input is 'fortune', 
-    #        then the input position must be after 'for' because B was not matched.
-    #        The right terminal is reached via the terminal router, and the
-    #        terminal router also resets the input position to 'last_acceptance_position'.
-    if state_machine.core().post_context_backward_input_position_detector_sm() is not None:
-        # Pseudo Ambiguous Post Contexts:
-        # -- require that the end of the core pattern is to be searched! One 
-        #    cannot simply restore some stored input position.
-        # -- The pseudo-ambiguous post condition is translated into a 'normal'
-        #    pattern. However, after a match a backward detection of the end
-        #    of the core pattern is done. Here, we first need to go to the point
-        #    where the 'normal' pattern ended, then we can do a backward detection.
-
-        # The entry into the backward input position detector, is its init state
-        entry_id = state_machine.core().post_context_backward_input_position_detector_sm().init_state_index
-        txt.append("    goto %s;\n" % get_label("$entry", entry_id, U=True))
-        # After having finished the analyzis, enter the terminal code, here.
-        bipd_id  = state_machine.core().post_context_backward_input_position_detector_sm_id()
-        txt.append("%s:\n" % get_label("$bipd-return", bipd_id))
-
-    elif state_machine.core().post_context_id() != PostContextIDs.NONE: 
-        post_condition_index = SMD.get_post_context_index(state_machine_id)
-        # Post Contexted Patterns:
-        # -- have a dedicated register from where they store the end of the core pattern.
-        txt.append("    __quex_debug(\"post context %s: reset position\");\n" % __nice(state_machine_id))
-        variable = "post_context_start_position[%s]" % __nice(post_condition_index) 
-        txt.append("    " + LanguageDB["$input/seek_position"](variable))
-        txt.append("\n")
-
-    else:
-        # Normal Acceptance:
-        pass
-
-    # -- paste the action code that corresponds to the pattern   
-    txt.append(action_code)
-    txt.append("\n")
-    txt.append("    ")
-    txt.append("goto %s;\n" % get_label("$re-start", U=True))
 
     return txt
 
-def __terminal_on_failure_prolog(LanguageDB):
+def __terminal_on_failure_prolog():
     return [
-        "me->buffer._input_p = me->buffer._lexeme_start_p;\n",
-        LanguageDB["$if"], LanguageDB["$EOF"], LanguageDB["$then"], "\n",
-        "    ", LanguageDB["$comment"]("Next increment will stop on EOF character."), "\n",
-        LanguageDB["$endif"], "\n",
-        LanguageDB["$else"], "\n",
-        "    ", LanguageDB["$comment"]("Step over nomatching character"), "\n",
-        "    ", LanguageDB["$input/increment"], "\n",
-        LanguageDB["$endif"], "\n",
+        "    me->buffer._input_p = me->buffer._lexeme_start_p;\n"
+        "    if(QUEX_NAME(Buffer_is_end_of_file)(&me->buffer)) {\n"
+        "        /* Next increment will stop on EOF character. */\n"
+        "    } else {\n"
+        "        /* Step over nomatching character */\n"
+        "        ++(me->buffer._input_p);\n"
+        "    }\n"
     ]
 
-def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction, 
+def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
                       SupportBeginOfLineF, PreConditionIDList, LanguageDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
-    assert SMD.__class__.__name__ == "StateMachineDecorator"
-    sm = SMD.sm()
-    PostConditionedStateMachineID_List = SMD.post_contexted_sm_id_list()
-    DirectlyReachedTerminalID_List     = SMD.directly_reached_terminal_id_list()
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     specific_terminal_states = []
     for state_machine_id, pattern_action_info in action_db.items():
-        code = get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
-
+        # Pre-condition state machines are not supposed to have a real terminal
+        if state_machine_id in PreConditionIDList: continue
+        code = get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
         specific_terminal_states.extend(code)
 
     # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
@@ -582,7 +530,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF)
+    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SupportBeginOfLineF)
 
     # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
@@ -592,8 +540,8 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
-    on_failure = __terminal_on_failure_prolog(LanguageDB)
-    msg        = __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF)
+    on_failure = __terminal_on_failure_prolog()
+    msg        = __adorn_action_code(OnFailureAction, SupportBeginOfLineF)
 
     on_failure.append(msg)
 
@@ -622,7 +570,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
               ["$$END_OF_STREAM_ACTION$$",       end_of_stream_code_action_str],
               ["$$TERMINAL_END_OF_STREAM-DEF$$", get_label("$terminal-EOF")],
               ["$$TERMINAL_FAILURE-DEF$$",       get_label("$terminal-FAILURE")],
-              ["$$STATE_MACHINE_NAME$$",         SMD.name()],
+              ["$$STATE_MACHINE_NAME$$",         StateMachineName],
               ["$$GOTO_START_PREPARATION$$",     get_label("$re-start", U=True)],
              ])
 
