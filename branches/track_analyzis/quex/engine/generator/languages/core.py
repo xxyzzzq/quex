@@ -15,8 +15,9 @@
 import quex.engine.generator.languages.cpp     as cpp
 import quex.engine.generator.languages.python  as python
 from   quex.engine.generator.languages.address import *
-# from   quex.engine.state_machine.state_core_info import PreContextIDs
-# from   quex.engine.analyzer.core                 import InputActions
+from   quex.engine.state_machine.state_core_info import PreContextIDs, EngineTypes, AcceptanceIDs, PostContextIDs
+from   quex.blackboard                           import TargetStateIndices
+from   quex.engine.analyzer.core                 import InputActions
 from   quex.engine.misc.string_handling import blue_print
 from   copy import deepcopy, copy
 
@@ -151,71 +152,103 @@ CppBase = {
     "$file_extension":          ".cpp",
     }
 
-class LDB:
-    def __init__(self, DB):      self.__db = DB
-    def __getitem__(self, Item): return self.__db[Item]
+class LDB(dict):
+    def __init__(self, DB):      self.update(DB)
+    def __getattr__(self, Attr): return self[Attr]
 
-    RETURN            = "return;"
-    UNREACHABLE       = "__quex_assert_no_passage();"
-    ELSE              = "} else {\n"
+    RETURN                  = "return;"
+    UNREACHABLE             = "__quex_assert_no_passage();"
+    ELSE                    = "} else {\n"
+    INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
+    INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
 
     def GOTO(self, StateIndex):
-        if StateIndex == StateIndices.INIT_STATE_TRANSITION_BLOCK:
+        if StateIndex == TargetStateIndices.INIT_STATE_TRANSITION_BLOCK:
             return "goto INIT_STATE_TRANSITION_BLOCK;"
+        elif StateIndex == TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:
+            return "goto END_OF_PRE_CONTEXT_CHECK;"
         else:
             return "goto _%i;" % StateIndex
 
-    def GOTO_RELOAD(self, TheState):
-        if TheState.engine == EngineTypes.FORWARD: direction = "FORWARD"
-        else:                                      direction = "BACKWARD"
+    def GOTO_DROP_OUT(self, StateIndex):
+        return get_address("$drop-out", StateIndex, U=True)
 
-        if SMD is not None and (StateIdx == SMD.sm().init_state_index and SMD.forward_lexing_f()):
+    def GOTO_RELOAD(self, TheState, ReturnStateIndexStr):
+        if TheState.engine_type == EngineTypes.FORWARD: direction = "FORWARD"
+        else:                                           direction = "BACKWARD"
+
+        if TheState.init_state_forward_f:
             return "goto __RELOAD_INIT_STATE;" 
 
-        elif SMD is None or not SMD.backward_input_position_detection_f():
-            if ReturnStateIndexStr is not None: 
-                state_reference = ReturnStateIndexStr
-            else:                           
-                state_reference = "QUEX_LABEL(%i)" % get_address("$entry", StateIdx, R=True)
+        elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
+            # There is never a reload on backward input position detection.
+            # The lexeme to parse must lie inside the borders!
+            return ""
 
-            # Ensure that '__STATE_ROUTER' is marked as referenced
-            get_label("$state-router", U=True)
+        if ReturnStateIndexStr is not None: 
+            state_reference = ReturnStateIndexStr
+        else:                           
+            state_reference = "QUEX_LABEL(%i)" % get_address("$entry", TheState.index, R=True)
 
-            return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
-                   % (get_label("$reload-%s" % direction, U=True),
-                      state_reference,
-                      get_address("$drop-out", StateIdx, U=True, R=True)) 
+        # Ensure that '__STATE_ROUTER' is marked as referenced
+        get_label("$state-router", U=True)
 
+        return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
+               % (get_label("$reload-%s" % direction, U=True),
+                  state_reference,
+                  get_address("$drop-out", TheState.index, U=True, R=True)) 
+
+    def ACCEPTANCE(self, AcceptanceID):
+        if AcceptanceID == AcceptanceIDs.FAILURE:
+            return "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
         else:
-            return "" 
-
+            return "%i" % AcceptanceID
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
-        return "goto TERMINAL_%i;" % AcceptanceID
+        elif AcceptanceID == AcceptanceIDs.FAILURE:
+            return "goto _%i; /* TERMINAL_FAILURE */" % get_address("$terminal-FAILURE")
+        else:
+            assert isinstance(AcceptanceID, (int, long))
+            return "goto TERMINAL_%i;" % AcceptanceID
 
     def LABEL(self, StateIndex):
-        return "_%i:" % StateIndex
+        if StateIndex in TargetStateIndices:
+            return {
+                TargetStateIndices.DROP_OUT:                    None,
+                TargetStateIndices.RELOAD_PROCEDURE:            None,
+                TargetStateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK:\n",
+                TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK:\n",
+            }[StateIndex]
+        return "_%i:\n" % StateIndex
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
         if FirstF: return "if( input %s 0x%X ) {\n"        % (Condition, Value)
         else:      return "} else if( input %s 0x%X ) {\n" % (Condition, Value)
 
+    def PRE_CONTEXT_CONDITION(self, PreContextID):
+        if PreContextID == -1: 
+            return "me->buffer._character_before_lexeme_start == '\\n'"
+        elif isinstance(PreContextID, (int, long)):
+            return "pre_context_%i_fulfilled_f" % PreContextID
+        else:
+            assert False
+
     def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
-        if PreContextList is None:               return Consequence
-        if not isinstance(PreContextList, list): PreContextList = [ PreContextList ]
-        if None in PreContextList:               return Consequence
+        if PreContextList is None:                      return "    " + Consequence.replace("\n", "\n    ")
+        if not isinstance(PreContextList, (list, set)): PreContextList = [ PreContextList ]
+        if None in PreContextList:                      return "    " + Consequence.replace("\n", "\n    ")
 
         if FirstF: txt = "    if( "
-        else:      txt = "    } else if( "
+        else:      txt = "    else if( "
 
         last_i = len(PreContextList) - 1
         for i, pre_context_id in enumerate(PreContextList):
-            if pre_context_id != -1: txt += "me->buffer._character_before_lexeme_start == '\\n'"
-            else:                    txt += "pre_context_%i_fulfilled_f"
+            txt += self.PRE_CONTEXT_CONDITION(pre_context_id)
             if i != last_i: txt += " || "
 
-        txt += " ) {\n        %s\n    }\n" % Consequence
+        txt += " ) {\n        %s\n    }\n" % Consequence.replace("\n", "\n        ")
+        return txt
 
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
@@ -225,55 +258,71 @@ class LDB:
 
     def ACCESS_INPUT(self, InputAction):
         return {
-            InputActions.DEREF:       
-            [
-                "    input = *(me->buffer->_input_p)\n",
-            ],
-            InputActions.INCREMENT_THEN_DEREF:
-            [
-                "    ++(me->buffer->_input_p);\n"
-                "    input = *(me->buffer->_input_p)\n",
-            ],
-            InputActions.DECREMENT_THEN_DEREF:
-            [
-                "    --(me->buffer->_input_p);\n"
-                "    input = *(me->buffer->_input_p)\n",
-            ],
+            InputActions.DEREF:                "    input = *(me->buffer._input_p);\n",
+            InputActions.INCREMENT_THEN_DEREF: "    ++(me->buffer._input_p);\n"
+                                               "    input = *(me->buffer._input_p);\n",
+            InputActions.DECREMENT_THEN_DEREF: "    --(me->buffer._input_p);\n"
+                                               "    input = *(me->buffer._input_p);\n",
         }[InputAction]
 
     def STATE_ENTRY(self, TheState):
-        if not (TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD):
-            txt   = ["    %s\n" % self.UNREACHABLE ]
+        if TheState.init_state_forward_f:
+            txt   = ["\n"]
+            index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
+        elif TheState.init_state_f:
+            txt   = ["\n"]
             index = TheState.index
         else:
-            txt   = []
-            index = StateIndices.INIT_STATE_TRANSITION_BLOCK
+            txt   = ["\n    %s\n" % self.UNREACHABLE ]
+            index = TheState.index
 
         txt.append(self.LABEL(index))
 
-        if TheState.init_state_f and TheState.engine_type == EngineTypes.FORWARD: 
+        if TheState.init_state_forward_f: 
             txt.append("    __quex_debug_init_state();\n")
-        elif TheState.engine_type == FORWARD:
-            txt.append("    __quex_debug_state(%i);\n" % StateIdx)
+        elif TheState.engine_type == EngineTypes.FORWARD:
+            txt.append("    __quex_debug_state(%i);\n" % TheState.index)
         else:
-            txt.append("    __quex_debug_state_backward(%i);\n" % StateIdx)
+            txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
 
-        return txt
+        return "".join(txt)
 
     def POSITIONING(self, Positioning, Register):
-        # if Positioning
-        return "me->buffer->_input_p = position[%i];\n" % Register
+        if   Positioning is None: 
+            if Register == PostContextIDs.NONE: return "me->buffer._input_p = last_acceptance_position;"
+            else:                               return "me->buffer._input_p = position[%i];" % Register
+        elif Positioning > 0:   return "me->buffer._input_p -= %i; " % Positioning
+        elif Positioning == 0:  return ""
+        elif Positioning == -1: return "" # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
+        else:                   assert False 
 
-    def SELECTION(self, Selector, CaseList):
-        txt = [ 1, "switch( %s ) {\n" % Selector ]
+    def SELECTION(self, Selector, CaseList, BreakF=False):
+        txt     = [ None ] * (len(CaseList) * 2 + 4) 
+        txt[:2] = [ 0, "switch( %s ) {\n" % Selector ]
+
+        line_end = " break;\n" if BreakF else "\n"
+
+        i = 2
         for item, consequence in CaseList:
-            txt.append(2)
-            txt.append("case %3i: %s; break;\n" % (item, consequence))
-        txt.append(1)
-        txt.append("}\n")
+            txt[i] = 1   # 1 indentation
+            i += 1
+            if isinstance(item, (int, long)): txt[i] = "case %3i: %s%s" % (item, consequence, line_end)
+            else:                             txt[i] = "case %s: %s%s"  % (item, consequence, line_end)
+            i += 1
+
+        txt[i]   = 0  # 0 indentation
+        txt[i+1] = "}\n"
         return txt
 
-db["C++"] = CppBase 
+    def REPLACE_INDENT(self, txt_list):
+        for i, x in enumerate(txt_list):
+            if isinstance(x, (int, long)): txt_list[i] = "    " * x
+
+    def INDENT(self, txt_list):
+        for i, x in enumerate(txt_list):
+            if isinstance(x, (int, long)): txt_list[i] += 1
+
+db["C++"] = LDB(CppBase)
 
 #________________________________________________________________________________
 # C

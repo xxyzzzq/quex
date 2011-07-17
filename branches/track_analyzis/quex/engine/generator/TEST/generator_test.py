@@ -355,7 +355,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     for i, elm in enumerate(code):
         if type(elm) != str: 
-            print "##", repr(type(elm)), elm.__class__.__name__, elm, repr(elm.code)
+            print "##", repr(type(elm)), elm.__class__.__name__, elm
+            print "##", repr(elm.code)
             assert False
 
     return txt + "".join(code)
