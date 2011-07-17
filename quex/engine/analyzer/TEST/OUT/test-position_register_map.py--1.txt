@@ -1,0 +1,16 @@
+Last Acceptance / Post-Context-ID 'None'
+##W: 61
+##W  .pos  62
+##W        [61L, 62L, 63L]
+##W        [(61L, set([64L, 61L, 63L])), (62L, set([64L, 61L, 62L, 63L])), (63L, set([64L]))]
+##W: 63
+##W  .pos  62
+##W        [61L, 62L, 63L]
+##W        [(61L, set([64L, 61L, 63L])), (62L, set([64L, 61L, 62L, 63L])), (63L, set([64L]))]
+##W: 63
+##W  .pos  62
+##W        [61L, 62L, 63L]
+##W        [(61L, set([64L, 61L, 63L])), (62L, set([64L, 61L, 62L, 63L])), (63L, set([64L]))]
+##eq: []
+##ni []
+   NONE: 0

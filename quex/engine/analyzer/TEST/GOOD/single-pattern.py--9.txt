@@ -1,0 +1,53 @@
+init-state = 79L
+00079() <~ (25, 68)
+      == 'a' ==> 00080
+      <no epsilon>
+00080(A, S) <~ (25, 69, A, S)
+      == 'a' ==> 00081
+      == 'b' ==> 00082
+      <no epsilon>
+00081() <~ (25, 71)
+      == 'e' ==> 00083
+      <no epsilon>
+00083(A, S) <~ (25, 72, A, S)
+      <no epsilon>
+00082() <~ (25, 70)
+      == 'c' ==> 00081
+      <no epsilon>
+
+State 80:
+  .entry:
+  .drop_out:
+     goto Pattern25;
+
+
+State 81:
+  .entry:
+    .by 80:
+    Positioner:
+    Position[Acceptance] = input_p;
+    .by 82:
+  .drop_out:
+    pos = Position[Acceptance]; goto Pattern25;
+
+
+State 82:
+  .entry:
+    Positioner:
+    Position[Acceptance] = input_p;
+  .drop_out:
+    pos -= 1;  goto Pattern25;
+
+
+State 83:
+  .entry:
+  .drop_out:
+     goto Pattern25;
+
+
+State 79:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

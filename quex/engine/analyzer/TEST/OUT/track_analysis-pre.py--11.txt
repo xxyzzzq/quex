@@ -1,0 +1,144 @@
+init-state = 295L
+00295() <~ (8, 17), (17, 35), (45, 106), (73, 181), (101, 256)
+      == 'a' ==> 00296
+      == 'b' ==> 00297
+      <no epsilon>
+00296(A, S, pre=6) <~ (8, 18, A, S, pre=6), (45, 107), (73, 182), (101, 258)
+      == 'd' ==> 00300
+      <no epsilon>
+00300() <~ (45, 110), (73, 184), (101, 259)
+      == 'e' ==> 00301
+      <no epsilon>
+00301(A, S, pre=99) <~ (45, 111, A, S, pre=43), (73, 186, A, S, pre=71), (101, 260, A, S, pre=99)
+      <no epsilon>
+00297(A, S, pre=15) <~ (17, 36, A, S, pre=15), (45, 108), (73, 183), (101, 257)
+      == 'b' ==> 00298
+      == 'c' ==> 00299
+      == 'd' ==> 00300
+      <no epsilon>
+00298() <~ (45, 109), (73, 185), (101, 261)
+      == 'c' ==> 00299
+      == 'd' ==> 00300
+      <no epsilon>
+00299() <~ (45, 107), (73, 182), (101, 258)
+      == 'd' ==> 00300
+      <no epsilon>
+
+##W: 299
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 299
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 300
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 300
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 300
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 300
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 301
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 301
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 301
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+##W: 301
+##W  .pos  297
+##W        [298L, 299L, 300L]
+##W        [(298L, set([299L, 300L, 301L])), (299L, set([300L, 301L])), (300L, set([301L]))]
+State 295:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 296:
+  .entry:
+    Accepter:
+        if      PreContext_6: last_acceptance = Pattern8
+  .drop_out:
+    if PreContext_6:  goto Pattern8;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 297:
+  .entry:
+    Accepter:
+        if      PreContext_15: last_acceptance = Pattern17
+  .drop_out:
+    if PreContext_15:  goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 298:
+  .entry:
+    Positioner:
+    if 'PreContext_15': Position[Acceptance] = input_p;
+  .drop_out:
+    if PreContext_15: pos -= 1;  goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 299:
+  .entry:
+    .by 297:
+    Positioner:
+    if 'PreContext_15': Position[Acceptance] = input_p;
+    .by 298:
+  .drop_out:
+    if PreContext_15: pos = Position[Acceptance]; goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 300:
+  .entry:
+    .by 296:
+    .by 297:
+    Positioner:
+    if 'PreContext_15': Position[Acceptance] = input_p;
+    .by 298:
+    .by 299:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 8: pos -= 1;  goto Pattern8;
+        case 17: pos = Position[Acceptance]; goto Pattern17;
+
+
+State 301:
+  .entry:
+  .drop_out:
+    Checker:
+        if      PreContext_43: accept = Pattern45
+        else if PreContext_71: accept = Pattern73
+        else if PreContext_99: accept = Pattern101
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 101: goto Pattern101;
+        case 8: pos -= 2;  goto Pattern8;
+        case 73: goto Pattern73;
+        case 45: goto Pattern45;
+        case 17: pos = Position[Acceptance]; goto Pattern17;
+
+

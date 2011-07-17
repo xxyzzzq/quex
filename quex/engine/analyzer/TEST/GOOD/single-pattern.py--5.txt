@@ -1,0 +1,72 @@
+init-state = 92L
+00092() <~ (30, 79)
+      == 'a' ==> 00093
+      == 'b' ==> 00094
+      <no epsilon>
+00093(S, P16) <~ (30, 80, S, P16)
+      == 'a' ==> 00093
+      == 'd' ==> 00096
+      <no epsilon>
+00096() <~ (30, 83)
+      == 'd' ==> 00096
+      == 'f' ==> 00097
+      <no epsilon>
+00097(A, P16, pre=28) <~ (30, 84, A, P16, pre=28)
+      <no epsilon>
+00094() <~ (30, 81)
+      == 'c' ==> 00095
+      <no epsilon>
+00095(S, P16) <~ (30, 82, S, P16)
+      == 'd' ==> 00096
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001(A, S) <~ 
+      <no epsilon>
+
+State 96:
+  .entry:
+    .by 96:
+    .by 93:
+    Positioner:
+    if 'PreContext_28': Position[PostContext_16]  = input_p;
+    .by 95:
+    Positioner:
+    if 'PreContext_28': Position[PostContext_16]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 97:
+  .entry:
+  .drop_out:
+    if PreContext_28: pos = Position[PostContext_16] ; goto Pattern30;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 92:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 93:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 94:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 95:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

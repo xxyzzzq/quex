@@ -1,0 +1,60 @@
+init-state = 82L
+00082() <~ (11, 30), (23, 63)
+      == 'a' ==> 00083
+      <no epsilon>
+00083(S, P13) <~ (11, 31, S, P1), (23, 64, S, P13)
+      == 'b' ==> 00084
+      <no epsilon>
+00084() <~ (11, 32), (23, 65)
+      == 'b' ==> 00084
+      == 'd' ==> 00085
+      == 'e' ==> 00086
+      <no epsilon>
+00085(A, P1) <~ (11, 33, A, P1)
+      <no epsilon>
+00086(A, P13) <~ (23, 66, A, P13)
+      <no epsilon>
+
+##W: 85
+##W  .pos  83
+##W        [84L]
+##W        [(84L, set([84L, 85L, 86L]))]
+##W: 86
+##W  .pos  83
+##W        [84L]
+##W        [(84L, set([84L, 85L, 86L]))]
+State 82:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 83:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 84:
+  .entry:
+    .by 83:
+    Positioner:
+    Position[PostContext_1]  = input_p;
+    Position[PostContext_13]  = input_p;
+    .by 84:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 85:
+  .entry:
+  .drop_out:
+    pos = Position[PostContext_1] ; goto Pattern11;
+
+
+State 86:
+  .entry:
+  .drop_out:
+    pos = Position[PostContext_13] ; goto Pattern23;
+
+

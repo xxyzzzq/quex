@@ -1,0 +1,64 @@
+init-state = 85L
+00085() <~ (25, 59), (16, 37), (7, 16)
+      == 'a' ==> 00087
+      == 'b' ==> 00086
+      <no epsilon>
+00087(S, P18) <~ (7, 17), (16, 38), (25, 60, S, P18)
+      == 'b' ==> 00088
+      <no epsilon>
+00088(S, P12) <~ (7, 18), (16, 39, S, P12), (25, 61)
+      == 'c' ==> 00089
+      <no epsilon>
+00089(A, S, P18) <~ (7, 19, A, S), (16, 40, A, P12), (25, 62, A, P18)
+      <no epsilon>
+00086() <~ (7, 17)
+      == 'b' ==> 00090
+      <no epsilon>
+00090() <~ (7, 18)
+      == 'c' ==> 00091
+      <no epsilon>
+00091(A, S) <~ (7, 19, A, S)
+      <no epsilon>
+
+State 85:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 86:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 87:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 88:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 89:
+  .entry:
+  .drop_out:
+     goto Pattern7;
+
+
+State 90:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 91:
+  .entry:
+  .drop_out:
+     goto Pattern7;
+
+

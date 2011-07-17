@@ -1,0 +1,92 @@
+init-state = 125L
+00125() <~ (37, 97), (8, 17), (20, 48), (35, 89)
+      == 'a' ==> 00126
+      <no epsilon>
+00126(A, S, P22, pre=6) <~ (8, 18, A, S, pre=6), (20, 49, S, P10), (35, 90, S, P22), (37, 98, A, S)
+      == 'b' ==> 00127
+      <no epsilon>
+00127() <~ (20, 50), (35, 91)
+      == 'b' ==> 00128
+      == 'c' ==> 00129
+      <no epsilon>
+00128() <~ (20, 50)
+      == 'b' ==> 00128
+      == 'c' ==> 00132
+      <no epsilon>
+00132(A, P10) <~ (20, 51, A, P10)
+      <no epsilon>
+00129(A, P10) <~ (20, 51, A, P10), (35, 92)
+      == 'd' ==> 00130
+      <no epsilon>
+00130() <~ (35, 93)
+      == 'e' ==> 00131
+      <no epsilon>
+00131(A, P22) <~ (35, 94, A, P22)
+      <no epsilon>
+
+##W: 128
+##W  .pos  126
+##W        [127L]
+##W        [(127L, set([128L, 129L, 130L, 131L, 132L]))]
+##W: 128
+##W  .pos  126
+##W        [127L]
+##W        [(127L, set([128L, 129L, 130L, 131L, 132L]))]
+##W: 132
+##W  .pos  126
+##W        [127L]
+##W        [(127L, set([128L, 129L, 130L, 131L, 132L]))]
+State 128:
+  .entry:
+  .drop_out:
+    if PreContext_6: pos = Position[Acceptance]; goto Pattern8;
+    pos = Position[Acceptance]; goto Pattern37;
+
+
+State 129:
+  .entry:
+  .drop_out:
+    pos -= 2;  goto Pattern20;
+
+
+State 130:
+  .entry:
+  .drop_out:
+    pos -= 3;  goto Pattern20;
+
+
+State 131:
+  .entry:
+  .drop_out:
+    pos -= 4;  goto Pattern35;
+
+
+State 132:
+  .entry:
+  .drop_out:
+    pos = Position[PostContext_10] ; goto Pattern20;
+
+
+State 125:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 126:
+  .entry:
+  .drop_out:
+    if PreContext_6:  goto Pattern8;
+     goto Pattern37;
+
+
+State 127:
+  .entry:
+    Positioner:
+    Position[Acceptance] = input_p;
+    Position[PostContext_10]  = input_p;
+  .drop_out:
+    if PreContext_6: pos -= 1;  goto Pattern8;
+    pos -= 1;  goto Pattern37;
+
+
