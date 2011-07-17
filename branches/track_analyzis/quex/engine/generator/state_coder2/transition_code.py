@@ -1,4 +1,6 @@
-from quex.blackboard import setup as Setup
+from quex.blackboard import TargetStateIndices, \
+                            setup as Setup
+from quex.engine.analyzer.core import AnalyzerState
 
 def do(Target, TheState, ReturnToState_Str, GotoReload_Str):
     """Generate a 'real' target action object based on a given Target that may be
@@ -15,24 +17,52 @@ def do(Target, TheState, ReturnToState_Str, GotoReload_Str):
 
 class TransitionCode:
     def __init__(self, Target, TheState, ReturnToState_Str, GotoReload_Str):
+        """The generation of transition code is postponed to the moment when
+           the code fragment is used. This happens in order to avoid the
+           generation of references to 'goto-labels' that are later not used.
+           Note, that in some cases, for example 'goto drop-out' can be avoided
+           by simply dropping out of an if-else clause or a switch statement.
+
+           if self.__code is None: postponed
+           else:                   not postponed
+        """
+        assert isinstance(TheState, AnalyzerState)
+        assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
+        assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
         LanguageDB = Setup.language_db
-        assert type(DropOutF) == bool
+
+        self.__target              = Target
+        self.__the_state           = TheState
+        self.__return_to_state_str = ReturnToState_Str
 
         if   Target == TargetStateIndices.RELOAD_PROCEDURE:
-            self.__code       = LanguageDB.TRANSITION_TO_RELOAD(GotoReload_Str, TheState.index, DSM, ReturnToState_Str)
             self.__drop_out_f = False
-        elif Target == TargetStateIndices.DROP_OUT
-            self.__code       = LanguageDB.GOTO_DROP_OUT(TheState.index)
+            if GotoReload_Str is not None: self.__code = GotoReload_Str
+            else:                          self.__code = None # postponing
+        elif Target == TargetStateIndices.DROP_OUT:
+            self.__code       = None # postponing
             self.__drop_out_f = True
         elif isinstance(Target, (int, long)):
+            # The transition to another target state cannot possibly be cut out!
+            # => no postponed code generation
             self.__code       = LanguageDB.GOTO(Target)
             self.__drop_out_f = False
         else:
             assert isinstance(Target, TransitionCode) # No change necessary
-            return Target
+            assert False # When it hits here, we need to think what to do!
 
     @property
-    def code(self):       return self._code
+    def code(self):       
+        if self.__code is not None: return self.__code
+        LanguageDB = Setup.language_db
+
+        if   self.__target == TargetStateIndices.RELOAD_PROCEDURE:
+            return LanguageDB.GOTO_RELOAD(self.__the_state, self.__return_to_state_str)
+        elif self.__target == TargetStateIndices.DROP_OUT:
+            return LanguageDB.GOTO_DROP_OUT(self.__the_state.index)
+        else:
+            assert False
+
     @property
     def drop_out_f(self): return self.__drop_out_f
 

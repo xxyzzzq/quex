@@ -1,6 +1,8 @@
 import quex.engine.generator.state_coder2.transition_code as     transition_code
 from   quex.engine.interval_handling                      import Interval
-from   quex.blackboard                                    import StateIndices, \
+from   quex.engine.analyzer.core                          import AnalyzerState
+from   quex.engine.state_machine.state_core_info          import EngineTypes
+from   quex.blackboard                                    import TargetStateIndices, \
                                                                  setup as Setup
 import sys
 from   math      import log
@@ -19,7 +21,7 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if len(TheState.transition_map) == 0: return
+    if len(TheState.transition_map) == 0: return []
 
     if __DEBUG_CHECK_ACTIVE_F and len(TheState.transition_map) > 1:
         # Check that the trigger map consist of sorted adjacent intervals 
@@ -41,27 +43,10 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
 
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
-    for entry in TheState.transition_map:
-        entry[1] = transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)
+    transition_map = [ (entry[0], transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)) 
+                       for entry in TheState.transition_map ]
 
-    code = __get_code(TheState.transition_map)
-
-    return format_this(code)
-
-def format_this(txt):
-    """Expects a sequence of constant strings and integers. An 
-       integer is expanded to 'N*"    "' in order to implement 
-       indentation.
-    """
-    # Replace the indentation information with real 'indentation'
-    for i, elm in enumerate(txt):
-        if type(elm) == int: txt[i] = "    " * elm
-    return txt
-
-def indent_this(txt):
-    for i, elm in enumerate(txt):
-        if type(elm) == int: txt[i] += 1
-    return txt
+    return __get_code(transition_map)
 
 def __get_code(TriggerMap):
     """Creates code for state transitions from this state. This function is very
@@ -71,6 +56,7 @@ def __get_code(TriggerMap):
        Writes code that does a mapping according to 'binary search' by
        means of if-else-blocks.
     """
+    LanguageDB = Setup.language_db
     TriggerSetN = len(TriggerMap)
 
     #________________________________________________________________________________
@@ -96,7 +82,7 @@ def __get_code(TriggerMap):
 
     # (*) indent by four spaces (nested blocks are correctly indented)
     #     delete the last newline, to prevent additional indentation
-    indent_this(txt)
+    LanguageDB.INDENT(txt)
     return txt
 
 def __get_bisection(txt, TriggerMap):
@@ -169,15 +155,15 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
         txt.append(0)
         if i == LastI:
             # Drop-out 'else' can be omitted
-            if not target.is_drop_out(): 
+            if not target.drop_out_f: 
                 txt.append(LanguageDB.END_IF(LastF=True))
         else:
             if interval.size() == 1:
-                txt.append(LanguageDB.IF_INPUT("==", interval.begin), i==0)
+                txt.append(LanguageDB.IF_INPUT("==", interval.begin, i==0))
             else:
-                txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval)), i==0)
+                txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
 
-        if not target.is_drop_out():
+        if not target.drop_out_f:
             __create_transition_code(txt, entry[1])
 
     txt.append(LanguageDB.END_IF(LastF=True))
@@ -189,7 +175,7 @@ def __get_bisection_code(txt, middle, lower, higher):
     # Note, that an '<' does involve a subtraction. A '==' only a comparison.
     # The latter is safe to be faster (or at least equally fast) on any machine.
     txt.append(0)
-    if len(higher) == 1 and higher[0][1].is_drop_out():
+    if len(higher) == 1 and higher[0][1].drop_out_f:
         
         # If the size of one interval is 1, then replace the '<' by an '=='.
         if   len(lower)  == 1 and lower[0][0].size() == 1:
@@ -203,7 +189,7 @@ def __get_bisection_code(txt, middle, lower, higher):
         txt.append(if_statement)
         txt.extend(__get_code(lower))
 
-    elif len(lower) == 1 and lower[0][1].is_drop_out():
+    elif len(lower) == 1 and lower[0][1].drop_out_f:
         if   lower[0][0].size() == 1:
             if_statement = LanguageDB.IF_INPUT("!=", lower[0][0].begin)
         elif len(higher) == 1 and higher[0][0].size() == 1:
@@ -235,7 +221,7 @@ def __get_bisection_code(txt, middle, lower, higher):
 
 def __create_transition_code(txt, TriggerMapEntry):
     txt.append(1)                              # indent one scope
-    txt.extend(target_state_index.get_code())
+    txt.extend(TriggerMapEntry.code)
     # if Setup.buffer_codec == "": txt.append("    " + LanguageDB["$comment"](interval) + "\n")
     # else:                        txt.append("\n")
     return 
@@ -268,16 +254,16 @@ def __get_switch(txt, TriggerMap):
     drop_out_range_n = 0
     character_n      = 0
     for interval, target in TriggerMap:
-        if target.is_drop_out(): drop_out_range_n += 1
-        else:                    character_n      += interval.size()
+        if target.drop_out_f: drop_out_range_n += 1
+        else:                 character_n      += interval.size()
 
     if __switch_case_heuristic(TriggerMap) == False:
         return False
 
     case_code_list = []
     for interval, target in TriggerMap:
-        if target.is_drop_out(): continue
-        target_code = target.get_code()
+        if target.drop_out_f: continue
+        target_code = target.code
         for i in range(interval.begin, interval.end):
             case_code_list.append((i, target_code))
 
@@ -293,7 +279,7 @@ def __get_switch_cases_info(TriggerMap):
         i += 1
         sum_interval_size[i]          = sum_interval_size[i-1]
         sum_drop_out_interval_size[i] = sum_drop_out_interval_size[i-1]
-        if target.is_drop_out(): sum_drop_out_interval_size[i] += interval.size()
+        if target.drop_out_f: sum_drop_out_interval_size[i] += interval.size()
         else:                    sum_interval_size[i]          += interval.size()
 
     switch_case_range_list = []
@@ -348,7 +334,7 @@ def __switch_case_heuristic(TriggerMap,
         size_all_intervals          = 0
         size_all_drop_out_intervals = 0
         for interval, target in TriggerMap:
-            if target.is_drop_out(): size_all_drop_out_intervals += interval.size()
+            if target.drop_out_f: size_all_drop_out_intervals += interval.size()
             size_all_intervals += interval.size()
 
     if size_all_intervals - size_all_drop_out_intervals == 0:
@@ -374,7 +360,7 @@ def __separate_buffer_limit_code_transition(TheState):
             # has been setup already.
             return
 
-        elif target_index is not None: 
+        elif target_index is not TargetStateIndices.DROP_OUT: 
             continue
 
         elif not interval.contains(Setup.buffer_limit_code): 
@@ -393,18 +379,20 @@ def __separate_buffer_limit_code_transition(TheState):
         del TheState.transition_map[i]
 
         if after_end > after_begin:
-            TheState.transition_map.insert(i, (Interval(after_begin, after_end), None))
+            TheState.transition_map.insert(i, (Interval(after_begin, after_end), TargetStateIndices.DROP_OUT))
 
         # "Target == TargetStateIndices.RELOAD_PROCEDURE" => Buffer Limit Code
         TheState.transition_map.insert(i, (Interval(BLC, BLC + 1), TargetStateIndices.RELOAD_PROCEDURE))
 
         if before_end > before_begin and before_end > 0:
-            TheState.transition_map.insert(i, (Interval(before_begin, before_end), None))
+            TheState.transition_map.insert(i, (Interval(before_begin, before_end), TargetStateIndices.DROP_OUT))
         return
 
     # Any transition map, except for backward input position detection, 
     # must have a trigger on reload.
-    assert TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION
+    assert TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION, \
+           "Engine types other than 'backward input position detection must contain BLC.\n" \
+           "Found: %s" % repr(TheState.engine_type)
     return
 
 def __prune_character_range(TheState):
@@ -421,15 +409,15 @@ def __prune_character_range(TheState):
         if interval.end >= LowerLimit: break
     if i != 0: del TheState.transition_map[:i]
 
-    if TheState.transition_map[0].begin < LowerLimit:
-        TheState.transition_map[0].begin = LowerLimit
+    if TheState.transition_map[0][0].begin < LowerLimit:
+        TheState.transition_map[0][0].begin = LowerLimit
 
     # (*) Delete any entry that lies completely above the upper limit
-    for i, entry in reversed(enumerate(TheState.transition_map)):
+    for i, entry in enumerate(reversed(TheState.transition_map)):
         interval, target = entry
         if interval.begin <= UpperLimit: break
-    if i != len(TheState.transition_map) - 1: del TheState.transition_map[i:]
+    if i != 0: TheState.transition_map[len(TheState.transition_map) - i:]
 
-    if TheState.transition_map[0].end < UpperLimit + 1:
-        TheState.transition_map[0].end = UpperLimit + 1
+    if TheState.transition_map[-1][0].end < UpperLimit + 1:
+        TheState.transition_map[-1][0].end = UpperLimit + 1
 

@@ -1,0 +1,113 @@
+init-state = 151L
+00151() <~ (17, 46), (44, 120), (8, 22)
+      == 'x' ==> 00152
+      <no epsilon>
+00152(S, P10) <~ (8, 23, S, P1), (17, 47, S, P10), (44, 121)
+      == 'a' ==> 00153
+      == 'b' ==> 00154
+      <no epsilon>
+00153(A, P1) <~ (8, 24, A, P1), (44, 123)
+      == 'a' ==> 00153
+      == 'c' ==> 00155
+      <no epsilon>
+00155() <~ (44, 124)
+      == 'd' ==> 00156
+      <no epsilon>
+00156() <~ (44, 125)
+      == 'e' ==> 00157
+      <no epsilon>
+00157(A, S) <~ (44, 126, A, S)
+      <no epsilon>
+00154(A, P10) <~ (17, 48, A, P10), (44, 122)
+      == 'b' ==> 00154
+      == 'c' ==> 00155
+      <no epsilon>
+
+##W: 153
+##W  .pos  152
+##W        [153L, 154L]
+##W        [(153L, set([153L, 155L, 156L, 157L])), (154L, set([154L, 155L, 156L, 157L]))]
+##W: 154
+##W  .pos  152
+##W        [153L, 154L]
+##W        [(153L, set([153L, 155L, 156L, 157L])), (154L, set([154L, 155L, 156L, 157L]))]
+##W: 155
+##W  .pos  152
+##W        [153L, 154L]
+##W        [(153L, set([153L, 155L, 156L, 157L])), (154L, set([154L, 155L, 156L, 157L]))]
+##W: 155
+##W  .pos  152
+##W        [153L, 154L]
+##W        [(153L, set([153L, 155L, 156L, 157L])), (154L, set([154L, 155L, 156L, 157L]))]
+##W: 156
+##W  .pos  152
+##W        [153L, 154L]
+##W        [(153L, set([153L, 155L, 156L, 157L])), (154L, set([154L, 155L, 156L, 157L]))]
+##W: 156
+##W  .pos  152
+##W        [153L, 154L]
+##W        [(153L, set([153L, 155L, 156L, 157L])), (154L, set([154L, 155L, 156L, 157L]))]
+State 151:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 152:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 153:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern8
+    .by 152:
+    Positioner:
+    Position[PostContext_1]  = input_p;
+    Position[PostContext_10]  = input_p;
+    .by 153:
+  .drop_out:
+    pos = Position[PostContext_1] ; goto Pattern8;
+
+
+State 154:
+  .entry:
+    Accepter:
+        last_acceptance = Pattern17
+    .by 152:
+    Positioner:
+    Position[PostContext_1]  = input_p;
+    Position[PostContext_10]  = input_p;
+    .by 154:
+  .drop_out:
+    pos = Position[PostContext_10] ; goto Pattern17;
+
+
+State 155:
+  .entry:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 8: pos = Position[PostContext_1] ; goto Pattern8;
+        case 17: pos = Position[PostContext_10] ; goto Pattern17;
+
+
+State 156:
+  .entry:
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 8: pos = Position[PostContext_1] ; goto Pattern8;
+        case 17: pos = Position[PostContext_10] ; goto Pattern17;
+
+
+State 157:
+  .entry:
+  .drop_out:
+     goto Pattern44;
+
+

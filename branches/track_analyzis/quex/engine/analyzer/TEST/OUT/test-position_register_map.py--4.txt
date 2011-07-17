@@ -1,0 +1,23 @@
+All store at the same state => use same register.
+##W: 206
+##W  .pos  204
+##W        [205L]
+##W        [(205L, set([205L, 206L]))]
+##W: 206
+##W  .pos  204
+##W        [205L]
+##W        [(205L, set([205L, 206L]))]
+##W: 206
+##W  .pos  204
+##W        [205L]
+##W        [(205L, set([205L, 206L]))]
+##W: 206
+##W  .pos  204
+##W        [205L]
+##W        [(205L, set([205L, 206L]))]
+##eq: [set([57L, 3L, 21L, 39L])]
+##ni []
+   57L: 0
+   3L: 0
+   21L: 0
+   39L: 0
