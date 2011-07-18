@@ -1,78 +1,25 @@
-init-state = 68L
-00068() <~ (1, 2), (20, 48)
-      == 'a' ==> 00069
-      == 'b' ==> 00070
+init-state = 66L
+00066() <~ (1, 2), (20, 47)
+      == 'a' ==> 00067
+      == 'b' ==> 00068
       <no epsilon>
-00069(A, S) <~ (1, 3, A, S), (20, 50)
-      == 'a' ==> 00073
-      == 'c' ==> 00071
+00067(A, S) <~ (1, 3, A, S), (20, 48)
+      == 'a' ==> 00071
+      == 'c' ==> 00069
       <no epsilon>
-00073() <~ (20, 49)
-      == 'c' ==> 00071
+00071() <~ (20, 49)
+      == 'c' ==> 00069
       <no epsilon>
-00071() <~ (20, 51)
-      == 'd' ==> 00072
+00069() <~ (20, 50)
+      == 'd' ==> 00070
       <no epsilon>
-00072(A, S) <~ (20, 52, A, S)
+00070(A, S) <~ (20, 51, A, S)
       <no epsilon>
-00070(A, S) <~ (1, 3, A, S), (20, 49)
-      == 'c' ==> 00071
+00068(A, S) <~ (1, 3, A, S), (20, 49)
+      == 'c' ==> 00069
       <no epsilon>
 
-##W: 71
-##W  .pos  69
-##W        [73L, 71L]
-##W        [(73L, set([72L, 71L])), (71L, set([72L]))]
-##W: 71
-##W  .pos  69
-##W        [73L, 71L]
-##W        [(73L, set([72L, 71L])), (71L, set([72L]))]
-##W: 71
-##W  .pos  70
-##W        [71L]
-##W        [(71L, set([72L]))]
-State 68:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 69:
-  .entry:
-  .drop_out:
-     goto Pattern1;
-
-
-State 70:
-  .entry:
-  .drop_out:
-     goto Pattern1;
-
-
-State 71:
-  .entry:
-    .by 73:
-    .by 69:
-    Positioner:
-    Position[Acceptance] = input_p;
-    .by 70:
-    Positioner:
-    Position[Acceptance] = input_p;
-  .drop_out:
-    pos = Position[Acceptance]; goto Pattern1;
-
-
-State 72:
-  .entry:
-  .drop_out:
-     goto Pattern20;
-
-
-State 73:
-  .entry:
-    Positioner:
-    Position[Acceptance] = input_p;
-  .drop_out:
-    pos -= 1;  goto Pattern1;
-
-
+##W: 69
+##W  .pos  67
+##W        [69L, 71L]
+##W        [(69L, set([70L])), (71L, set([69L, 70L]))]

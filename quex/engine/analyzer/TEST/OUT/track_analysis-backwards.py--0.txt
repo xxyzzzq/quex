@@ -1,29 +1,29 @@
-init-state = 46L
-00046() <~ (6, 15), (15, 33)
-      == 'x' ==> 00048
-      == 'y' ==> 00047
+init-state = 44L
+00044() <~ (6, 14), (15, 32)
+      == 'x' ==> 00046
+      == 'y' ==> 00045
       <no epsilon>
-00048(A, S) <~ (6, 16, A, S)
+00046(A, S) <~ (6, 15, A, S)
       <no epsilon>
-00047(A, S) <~ (15, 34, A, S)
+00045(A, S) <~ (15, 33, A, S)
       <no epsilon>
 
-State 48:
+State 44:
+  .entry:
+  .drop_out:
+    goto PreContextCheckTerminated;
+
+State 45:
   .entry:
     EntryBackward:
-    pre-context-fulfilled = 6L;
+    pre-context-fulfilled = 15L;
   .drop_out:
     goto PreContextCheckTerminated;
 
 State 46:
   .entry:
-  .drop_out:
-    goto PreContextCheckTerminated;
-
-State 47:
-  .entry:
     EntryBackward:
-    pre-context-fulfilled = 15L;
+    pre-context-fulfilled = 6L;
   .drop_out:
     goto PreContextCheckTerminated;
 

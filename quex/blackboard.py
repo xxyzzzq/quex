@@ -39,7 +39,8 @@ setup = QuexSetup(SETUP_INFO)
 TargetStateIndices = Enum("DROP_OUT", 
                           "RELOAD_PROCEDURE",
                           "INIT_STATE_TRANSITION_BLOCK",
-                          "END_OF_PRE_CONTEXT_CHECK") 
+                          "END_OF_PRE_CONTEXT_CHECK",
+                          "ALL") 
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:

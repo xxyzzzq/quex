@@ -1,44 +1,44 @@
-init-state = 144L
-00144() <~ (46, 112), (29, 66), (14, 31)
-      == 'a' ==> 00145
+init-state = 141L
+00141() <~ (29, 65), (46, 111), (14, 30)
+      == 'a' ==> 00142
       <no epsilon>
-00145(S, P3) <~ (14, 32, S, P3), (29, 67), (46, 113)
-      == 'b' ==> 00146
+00142(S, P3) <~ (14, 31, S, P3), (29, 66), (46, 112)
+      == 'b' ==> 00143
       <no epsilon>
-00146() <~ (14, 33), (29, 68), (46, 114)
-      == 'c' ==> 00147
+00143() <~ (14, 32), (29, 67), (46, 113)
+      == 'c' ==> 00144
       <no epsilon>
-00147(A, S, P3, pre=27) <~ (14, 34, A, P3, pre=12), (29, 69, A, S, pre=27), (46, 115)
-      == 'd' ==> 00148
+00144(A, S, P3, pre=27) <~ (14, 33, A, P3, pre=12), (29, 68, A, S, pre=27), (46, 114)
+      == 'd' ==> 00145
       <no epsilon>
-00148() <~ (46, 116)
-      == 'e' ==> 00149
+00145() <~ (46, 115)
+      == 'e' ==> 00146
       <no epsilon>
-00149() <~ (46, 117)
-      == 'f' ==> 00150
+00146() <~ (46, 116)
+      == 'f' ==> 00147
       <no epsilon>
-00150(A, S) <~ (46, 118, A, S)
+00147(A, S) <~ (46, 117, A, S)
       <no epsilon>
+
+State 141:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 142:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 143:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 144:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 145:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 146:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 147:
   .entry:
   .drop_out:
     if PreContext_12: pos -= 2;  goto Pattern14;
@@ -46,7 +46,7 @@ State 147:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 148:
+State 145:
   .entry:
   .drop_out:
     if PreContext_12: pos -= 3;  goto Pattern14;
@@ -54,7 +54,7 @@ State 148:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 149:
+State 146:
   .entry:
   .drop_out:
     if PreContext_12: pos -= 4;  goto Pattern14;
@@ -62,7 +62,7 @@ State 149:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 150:
+State 147:
   .entry:
   .drop_out:
      goto Pattern46;

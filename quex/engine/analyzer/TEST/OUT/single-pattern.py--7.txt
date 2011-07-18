@@ -1,26 +1,26 @@
-init-state = 16L
-00016() <~ (4, 9)
-      == 'a' ==> 00017
+init-state = 14L
+00014() <~ (4, 8)
+      == 'a' ==> 00015
       <no epsilon>
-00017(A, S) <~ (4, 10, A, S)
-      == 'a' ==> 00018
+00015(A, S) <~ (4, 9, A, S)
+      == 'a' ==> 00016
       <no epsilon>
-00018(A, S) <~ (4, 11, A, S)
+00016(A, S) <~ (4, 10, A, S)
       <no epsilon>
 
 State 16:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 17:
-  .entry:
-  .drop_out:
      goto Pattern4;
 
 
-State 18:
+State 14:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 15:
   .entry:
   .drop_out:
      goto Pattern4;

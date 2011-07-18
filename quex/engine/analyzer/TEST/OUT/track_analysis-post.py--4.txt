@@ -1,50 +1,50 @@
-init-state = 89L
-00089() <~ (8, 19), (17, 41), (25, 60)
-      == 'a' ==> 00092
+init-state = 86L
+00086() <~ (25, 59), (17, 40), (8, 18)
+      == 'a' ==> 00087
+      == 'b' ==> 00089
+      == 'c' ==> 00088
+      <no epsilon>
+00087(S, P1) <~ (8, 19, S, P1)
+      == 'b' ==> 00094
+      <no epsilon>
+00094() <~ (8, 20)
+      == 'c' ==> 00095
+      <no epsilon>
+00095(A, P1) <~ (8, 21, A, P1)
+      <no epsilon>
+00089(S, P10) <~ (17, 41, S, P10)
       == 'b' ==> 00090
+      <no epsilon>
+00090() <~ (17, 42)
       == 'c' ==> 00091
       <no epsilon>
-00092(S, P1) <~ (8, 20, S, P1)
-      == 'b' ==> 00093
+00091(A, P10) <~ (17, 43, A, P10)
       <no epsilon>
-00093() <~ (8, 21)
-      == 'c' ==> 00094
+00088() <~ (25, 60)
+      == 'b' ==> 00092
       <no epsilon>
-00094(A, P1) <~ (8, 22, A, P1)
+00092() <~ (25, 61)
+      == 'c' ==> 00093
       <no epsilon>
-00090(S, P10) <~ (17, 42, S, P10)
-      == 'b' ==> 00097
-      <no epsilon>
-00097() <~ (17, 43)
-      == 'c' ==> 00098
-      <no epsilon>
-00098(A, P10) <~ (17, 44, A, P10)
-      <no epsilon>
-00091() <~ (25, 61)
-      == 'b' ==> 00095
-      <no epsilon>
-00095() <~ (25, 62)
-      == 'c' ==> 00096
-      <no epsilon>
-00096(A, S) <~ (25, 63, A, S)
+00093(A, S) <~ (25, 62, A, S)
       <no epsilon>
 
-State 96:
-  .entry:
-  .drop_out:
-     goto Pattern25;
-
-
-State 97:
+State 86:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 98:
+State 87:
   .entry:
   .drop_out:
-    pos -= 2;  goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 88:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 89:
@@ -62,7 +62,7 @@ State 90:
 State 91:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    pos -= 2;  goto Pattern17;
 
 
 State 92:
@@ -74,18 +74,18 @@ State 92:
 State 93:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+     goto Pattern25;
 
 
 State 94:
   .entry:
   .drop_out:
-    pos -= 2;  goto Pattern8;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 95:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    pos -= 2;  goto Pattern8;
 
 

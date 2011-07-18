@@ -1,78 +1,26 @@
-init-state = 112L
-00112() <~ (31, 86), (4, 12), (6, 18)
-      == 'a' ==> 00113
-      == 'b' ==> 00114
+init-state = 108L
+00108() <~ (31, 85), (4, 12), (6, 17)
+      == 'a' ==> 00109
+      == 'b' ==> 00110
       <no epsilon>
-00113(A, S) <~ (4, 13, A, S), (31, 87)
-      == 'a' ==> 00113
-      == 'd' ==> 00116
+00109(A, S) <~ (4, 13, A, S), (31, 87)
+      == 'a' ==> 00109
+      == 'd' ==> 00112
       <no epsilon>
-00116() <~ (31, 90)
-      == 'e' ==> 00117
+00112() <~ (31, 88)
+      == 'e' ==> 00113
       <no epsilon>
-00117(A, S) <~ (31, 91, A, S)
+00113(A, S) <~ (31, 89, A, S)
       <no epsilon>
-00114(A, S) <~ (6, 19, A, S), (31, 88)
-      == 'c' ==> 00115
+00110(A, S) <~ (6, 18, A, S), (31, 86)
+      == 'c' ==> 00111
       <no epsilon>
-00115() <~ (31, 89)
-      == 'c' ==> 00115
-      == 'd' ==> 00116
+00111() <~ (31, 90)
+      == 'c' ==> 00111
+      == 'd' ==> 00112
       <no epsilon>
 
-##W: 115
-##W  .pos  114
-##W        [115L]
-##W        [(115L, set([115L, 116L, 117L]))]
-##W: 116
-##W  .pos  114
-##W        [115L]
-##W        [(115L, set([115L, 116L, 117L]))]
-State 112:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 113:
-  .entry:
-    Accepter:
-        last_acceptance = Pattern4
-  .drop_out:
-     goto Pattern4;
-
-
-State 114:
-  .entry:
-    Accepter:
-        last_acceptance = Pattern6
-  .drop_out:
-     goto Pattern6;
-
-
-State 115:
-  .entry:
-    .by 114:
-    Positioner:
-    Position[Acceptance] = input_p;
-    .by 115:
-  .drop_out:
-    pos = Position[Acceptance]; goto Pattern6;
-
-
-State 116:
-  .entry:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 4: pos -= 1;  goto Pattern4;
-        case 6: pos = Position[Acceptance]; goto Pattern6;
-
-
-State 117:
-  .entry:
-  .drop_out:
-     goto Pattern31;
-
-
+##W: 111
+##W  .pos  110
+##W        [111L]
+##W        [(111L, set([112L, 113L, 111L]))]

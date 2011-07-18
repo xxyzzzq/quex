@@ -1,15 +1,21 @@
-init-state = 121L
-00121() <~ (29, 64), (44, 99), (14, 31)
-      == 'a' ==> 00122
+init-state = 119L
+00119() <~ (44, 98), (29, 63), (14, 30)
+      == 'a' ==> 00120
       <no epsilon>
-00122(S, P3) <~ (14, 32, S, P3), (29, 65), (44, 100)
-      == 'b' ==> 00123
+00120(S, P3) <~ (14, 31, S, P3), (29, 64), (44, 99)
+      == 'b' ==> 00121
       <no epsilon>
-00123(S, P21) <~ (14, 33), (29, 66, S, P21), (44, 101)
-      == 'c' ==> 00124
+00121(S, P21) <~ (14, 32), (29, 65, S, P21), (44, 100)
+      == 'c' ==> 00122
       <no epsilon>
-00124(A, S, P21, pre=42) <~ (14, 34, A, P3, pre=12), (29, 67, A, P21, pre=27), (44, 102, A, S, pre=42)
+00122(A, S, P21, pre=42) <~ (14, 33, A, P3, pre=12), (29, 66, A, P21, pre=27), (44, 101, A, S, pre=42)
       <no epsilon>
+
+State 120:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
 
 State 121:
   .entry:
@@ -20,21 +26,15 @@ State 121:
 State 122:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 123:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 124:
-  .entry:
-  .drop_out:
     if PreContext_12: pos -= 2;  goto Pattern14;
     else if PreContext_27: pos -= 1;  goto Pattern29;
     else if PreContext_42:  goto Pattern44;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 119:
+  .entry:
+  .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 

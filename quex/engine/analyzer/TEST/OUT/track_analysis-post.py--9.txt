@@ -1,86 +1,26 @@
-init-state = 135L
-00135() <~ (17, 40), (41, 101), (8, 19)
-      == 'x' ==> 00136
+init-state = 131L
+00131() <~ (41, 100), (8, 18), (17, 39)
+      == 'x' ==> 00132
       <no epsilon>
-00136(S, P1) <~ (8, 20, S, P1), (17, 41), (41, 102)
-      == 'y' ==> 00137
+00132(S, P1) <~ (8, 19, S, P1), (17, 40), (41, 101)
+      == 'y' ==> 00133
       <no epsilon>
-00137(S, P13) <~ (8, 21), (17, 42, S, P13), (41, 103)
-      == 'a' ==> 00139
-      == 'b' ==> 00138
+00133(S, P13) <~ (8, 20), (17, 41, S, P13), (41, 102)
+      == 'a' ==> 00135
+      == 'b' ==> 00134
       <no epsilon>
-00139(A, P1) <~ (8, 22, A, P1), (41, 104)
-      == 'c' ==> 00140
+00135(A, P1) <~ (8, 21, A, P1), (41, 103)
+      == 'c' ==> 00136
       <no epsilon>
-00140() <~ (41, 105)
-      == 'd' ==> 00141
+00136() <~ (41, 104)
+      == 'd' ==> 00137
       <no epsilon>
-00141() <~ (41, 106)
-      == 'e' ==> 00142
+00137() <~ (41, 105)
+      == 'e' ==> 00138
       <no epsilon>
-00142(A, S) <~ (41, 107, A, S)
+00138(A, S) <~ (41, 106, A, S)
       <no epsilon>
-00138(A, P13) <~ (17, 43, A, P13), (41, 104)
-      == 'c' ==> 00140
+00134(A, P13) <~ (17, 42, A, P13), (41, 103)
+      == 'c' ==> 00136
       <no epsilon>
-
-State 135:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 136:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 137:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 138:
-  .entry:
-    Accepter:
-        last_acceptance = Pattern17
-  .drop_out:
-    pos -= 1;  goto Pattern17;
-
-
-State 139:
-  .entry:
-    Accepter:
-        last_acceptance = Pattern8
-  .drop_out:
-    pos -= 2;  goto Pattern8;
-
-
-State 140:
-  .entry:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 8: pos -= 3;  goto Pattern8;
-        case 17: pos -= 2;  goto Pattern17;
-
-
-State 141:
-  .entry:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 8: pos -= 4;  goto Pattern8;
-        case 17: pos -= 3;  goto Pattern17;
-
-
-State 142:
-  .entry:
-  .drop_out:
-     goto Pattern41;
-
 
