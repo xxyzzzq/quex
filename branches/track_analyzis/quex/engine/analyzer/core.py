@@ -70,23 +70,7 @@ class Analyzer:
                 transition_map = sm_state.transitions().get_map()
                 if     len(transition_map) == 0 \
                    or (len(transition_map) == 1 and transition_map.keys()[0] == 1):
-                   self.__state_db[state_index].entry.clear()
-
-            # -- Try to unify state entry actions: If a state behaves the same 
-            #    at entry independent from where it is entered, then transform
-            #    the entry dictionary into:
-            #
-            #         map:  None --> Uniform Entry
-            for state in self.__state_db.itervalues():
-                if len(state.entry_db) == 0: continue
-                iteritems = state.entry_db.iteritems()
-                from_state_index, prototype = iteritems.next()
-                uniform_f = True
-                for from_state_index, entry in iteritems:
-                    if not entry.is_equal(prototype): uniform_f = False; break
-                if uniform_f:
-                    state.entry_db = { None: prototype }
-
+                   self.__state_db[state_index].entry.positioner_db.clear()
         else:
             # NOTE: For backward analysis, drop_out and entry do not require any construction 
             #       beyond what is triggered inside the constructor of 'AnalyzerState'.
@@ -213,6 +197,7 @@ class Analyzer:
                                             positioning_state.target_index_list):
                     if target_index == pos_state_index: continue
                     entry = self.__state_db[target_index].entry
+                    # from state: pos_state_index (the state before)
                     entry.positioner_db[pos_state_index][info.post_context_id].add(info.pre_context_id)
 
         # Clean Up the checker and the router:
@@ -406,7 +391,8 @@ class Analyzer:
         result = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for entry in state.entry.positioner_db.iterkeys():
+            for from_state_index, post_context_id in ifilter(lambda x: x != TargetStateIndices.ALL, 
+                                                             state.entry.positioner_db.iterkeys()):
                 dive(post_context_id, state, [], result[post_context_id])
 
         return result
@@ -445,7 +431,7 @@ class AnalyzerState(object):
 
         # (*) Entry Action
         if   EngineType == EngineTypes.FORWARD: 
-            self.entry = dict([(state_index, Entry()) for state_index in FromStateIndexList])
+            self.entry = Entry()
         elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT: 
             self.entry = EntryBackward(state.origins())
         elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION: 
@@ -501,10 +487,7 @@ class AnalyzerState(object):
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %i:\n" % self.index ]
         if InputF:         txt.append("  .input: move position %i\n" % self.input.move_input_position())
-        if EntryF:         
-            txt.extend(["  .entry:\n", repr(self.entry)])
-
-
+        if EntryF:         txt.append("  .entry:\n"); txt.append(repr(self.entry))
         if TransitionMapF: txt.append("  .transition_map:\n")
         if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
         txt.append("\n")
@@ -607,13 +590,32 @@ class Entry(object):
         return result
 
     def get_positioner(self):
+        # -- Try to unify state entry actions: If a state behaves the same 
+        #    at entry independent from where it is entered.
+        self.__try_unify()
         return self.positioner.items()
+
+    def __try_unify(self):
+        """At state entry the positioning might differ dependent on the 
+           the state from which it is entered. If the positioning is the
+           same for each source state, then the positioning can be unified.
+
+           A unified entry is coded as 'ALL' --> common positioning.
+        """
+        if len(self.positioner_db) == 0: return
+        iteritems = self.positioner_db.iteritems()
+        from_state_index, prototype = iteritems.next()
+        for from_state_index, entry in iteritems:
+            if not entry.is_equal(prototype): return
+        # Leave the other entries in there, so that the information about
+        # the different entries remains available. 
+        state.entry_db[TargetStateIndices.ALL] = prototype
 
     def __repr__(self):
         txt = []
         accepter = self.get_accepter()
         if len(accepter) != 0:
-            txt.append("    Accepter:\n")
+            txt.append("    .accepter:\n")
             if_str = "if     "
             for pre_context_id, acceptance_id in self.get_accepter():
                 if pre_context_id is not None:
@@ -623,23 +625,19 @@ class Entry(object):
                 txt.append("last_acceptance = %s\n" % repr_acceptance_id(acceptance_id))
                 if_str = "else if"
 
-        txt.append("  .entry:\n")
-        if   len(self.positioner_db) == 0:
-            pass
-        elif len(self.positioner_db) == 1:
-            txt.append(repr(self.positioner_db.itervalues().next()))
-        else:
-            for from_state_index, positioner in self.positioner_db.iteritems():
-                txt.append("    .by %i:" % from_state_index)
-                if len(positioner) == 0: txt.append(" <nothing>\n")
-                else:                    txt.append("\n")
-                for post_context_id, pre_context_id_list in positioner.iteritems():
-                    pre_list = map(repr_pre_context_id, pre_context_id_list)
+        if len(self.positioner_db) != 0:
+            txt.append("     .positioner:\n")
+        for from_state_index, positioner in self.positioner_db.iteritems():
+            txt.append("        .by %i:" % from_state_index)
+            if len(positioner) == 0: txt.append(" <nothing>\n")
+            else:                    txt.append("\n")
+            for post_context_id, pre_context_id_list in positioner.iteritems():
+                pre_list = map(repr_pre_context_id, pre_context_id_list)
 
-                    txt.append("    ")
-                    if None not in pre_context_id_list:
-                        txt.append("if %s: " % repr(pre_list)[1:-1])
-                    txt.append("%s = input_p;\n" % repr_position_register(post_context_id))
+                txt.append("        ")
+                if None not in pre_context_id_list:
+                    txt.append("if %s: " % repr(pre_list)[1:-1])
+                txt.append("%s = input_p;\n" % repr_position_register(post_context_id))
 
         return "".join(txt)
 

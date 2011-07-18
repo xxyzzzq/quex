@@ -1,37 +1,37 @@
-init-state = 37L
-00037() <~ (1, 2), (9, 20)
-      == 'a' ==> 00038
+init-state = 34L
+00034() <~ (9, 19), (1, 2)
+      == 'a' ==> 00035
       <no epsilon>
-00038(A, S) <~ (1, 3, A, S), (9, 21)
-      == 'b' ==> 00039
+00035(A, S) <~ (1, 3, A, S), (9, 20)
+      == 'b' ==> 00036
       <no epsilon>
-00039() <~ (9, 22)
-      == 'c' ==> 00040
+00036() <~ (9, 21)
+      == 'c' ==> 00037
       <no epsilon>
-00040(A, S) <~ (9, 23, A, S)
+00037(A, S) <~ (9, 22, A, S)
       <no epsilon>
 
-State 40:
-  .entry:
-  .drop_out:
-     goto Pattern9;
-
-
-State 37:
+State 34:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 38:
+State 35:
   .entry:
   .drop_out:
      goto Pattern1;
 
 
-State 39:
+State 36:
   .entry:
   .drop_out:
     pos -= 1;  goto Pattern1;
+
+
+State 37:
+  .entry:
+  .drop_out:
+     goto Pattern9;
 
 

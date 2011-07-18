@@ -1,142 +1,26 @@
-init-state = 212L
-00212() <~ (17, 35), (45, 106), (73, 179), (8, 17)
-      == 'a' ==> 00213
-      == 'b' ==> 00214
+init-state = 208L
+00208() <~ (8, 16), (17, 34), (45, 105), (73, 178)
+      == 'a' ==> 00210
+      == 'b' ==> 00209
       <no epsilon>
-00213(A, S, pre=6) <~ (8, 18, A, S, pre=6), (45, 107), (73, 181)
-      == 'd' ==> 00216
+00210(A, S, pre=6) <~ (8, 17, A, S, pre=6), (45, 106), (73, 179)
+      == 'd' ==> 00211
       <no epsilon>
-00216(S, P65) <~ (45, 110), (73, 182, S, P65)
-      == 'e' ==> 00218
+00211(S, P65) <~ (45, 109), (73, 181, S, P65)
+      == 'e' ==> 00212
       <no epsilon>
-00218(A, S, P65, pre=71) <~ (45, 111, A, S, pre=43), (73, 183, A, P65, pre=71)
+00212(A, S, P65, pre=71) <~ (45, 110, A, S, pre=43), (73, 183, A, P65, pre=71)
       <no epsilon>
-00214(A, S, pre=15) <~ (17, 36, A, S, pre=15), (45, 108), (73, 180)
-      == 'b' ==> 00215
-      == 'c' ==> 00217
-      == 'd' ==> 00216
+00209(A, S, pre=15) <~ (17, 35, A, S, pre=15), (45, 107), (73, 180)
+      == 'b' ==> 00213
+      == 'c' ==> 00214
+      == 'd' ==> 00211
       <no epsilon>
-00215() <~ (45, 109), (73, 184)
-      == 'c' ==> 00217
-      == 'd' ==> 00216
+00213() <~ (45, 108), (73, 182)
+      == 'c' ==> 00214
+      == 'd' ==> 00211
       <no epsilon>
-00217() <~ (45, 107), (73, 181)
-      == 'd' ==> 00216
+00214() <~ (45, 106), (73, 179)
+      == 'd' ==> 00211
       <no epsilon>
-
-##W: 216
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 216
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 216
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 216
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 217
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 217
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 218
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 218
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 218
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-##W: 218
-##W  .pos  214
-##W        [216L, 217L, 215L]
-##W        [(216L, set([218L])), (217L, set([216L, 218L])), (215L, set([216L, 217L, 218L]))]
-State 212:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 213:
-  .entry:
-    Accepter:
-        if      PreContext_6: last_acceptance = Pattern8
-  .drop_out:
-    if PreContext_6:  goto Pattern8;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 214:
-  .entry:
-    Accepter:
-        if      PreContext_15: last_acceptance = Pattern17
-  .drop_out:
-    if PreContext_15:  goto Pattern17;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 215:
-  .entry:
-    Positioner:
-    if 'PreContext_15': Position[Acceptance] = input_p;
-  .drop_out:
-    if PreContext_15: pos -= 1;  goto Pattern17;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 216:
-  .entry:
-    .by 217:
-    .by 213:
-    .by 214:
-    Positioner:
-    if 'PreContext_15': Position[Acceptance] = input_p;
-    .by 215:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 8: pos -= 1;  goto Pattern8;
-        case 17: pos = Position[Acceptance]; goto Pattern17;
-
-
-State 217:
-  .entry:
-    .by 214:
-    Positioner:
-    if 'PreContext_15': Position[Acceptance] = input_p;
-    .by 215:
-  .drop_out:
-    if PreContext_15: pos = Position[Acceptance]; goto Pattern17;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 218:
-  .entry:
-  .drop_out:
-    Checker:
-        if      PreContext_43: accept = Pattern45
-        else if PreContext_71: accept = Pattern73
-        accept = last_acceptance
-    Router:
-        case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 8: pos -= 2;  goto Pattern8;
-        case 17: pos = Position[Acceptance]; goto Pattern17;
-        case 45: goto Pattern45;
-        case 73: pos -= 1;  goto Pattern73;
-
 

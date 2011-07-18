@@ -1,27 +1,27 @@
-init-state = 80L
-00080() <~ (9, 26), (24, 64)
-      == 'x' ==> 00081
+init-state = 77L
+00077() <~ (9, 25), (24, 63)
+      == 'x' ==> 00078
       <no epsilon>
-00081(A, S) <~ (9, 27, A, S), (24, 65)
-      == 'x' ==> 00081
-      == 'y' ==> 00082
+00078(A, S) <~ (9, 26, A, S), (24, 64)
+      == 'x' ==> 00078
+      == 'y' ==> 00079
       <no epsilon>
-00082(A, S) <~ (24, 66, A, S)
+00079(A, S) <~ (24, 65, A, S)
       <no epsilon>
 
-State 80:
+State 77:
   .entry:
   .drop_out:
     goto PreContextCheckTerminated;
 
-State 81:
+State 78:
   .entry:
     EntryBackward:
     pre-context-fulfilled = 9L;
   .drop_out:
     goto PreContextCheckTerminated;
 
-State 82:
+State 79:
   .entry:
     EntryBackward:
     pre-context-fulfilled = 24L;

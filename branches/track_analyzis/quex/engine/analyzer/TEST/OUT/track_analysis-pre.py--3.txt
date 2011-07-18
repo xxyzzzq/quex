@@ -1,37 +1,37 @@
-init-state = 51L
-00051() <~ (16, 36), (7, 16)
-      == 'a' ==> 00052
+init-state = 48L
+00048() <~ (16, 35), (7, 15)
+      == 'a' ==> 00049
       <no epsilon>
-00052(A, S, pre=14) <~ (7, 17), (16, 37, A, S, pre=14)
-      == 'b' ==> 00053
+00049(A, S, pre=14) <~ (7, 16), (16, 36, A, S, pre=14)
+      == 'b' ==> 00050
       <no epsilon>
-00053() <~ (7, 18)
-      == 'c' ==> 00054
+00050() <~ (7, 17)
+      == 'c' ==> 00051
       <no epsilon>
-00054(A, S) <~ (7, 19, A, S)
+00051(A, S) <~ (7, 18, A, S)
       <no epsilon>
 
-State 51:
+State 48:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 52:
+State 49:
   .entry:
   .drop_out:
     if PreContext_14:  goto Pattern16;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 53:
+State 50:
   .entry:
   .drop_out:
     if PreContext_14: pos -= 1;  goto Pattern16;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 54:
+State 51:
   .entry:
   .drop_out:
      goto Pattern7;

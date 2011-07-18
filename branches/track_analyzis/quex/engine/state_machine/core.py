@@ -247,7 +247,7 @@ class StateMachine:
     def core(self):
         return self.__core
             
-    def clone(self):
+    def clone(self, ReplacementDB=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
         state machines are to be created that combine the behavior of more
@@ -258,27 +258,30 @@ class StateMachine:
                  None          if cloning not possible due to external state references
 
         """
-        replacement = {}
-
         # (*) create the new state machine
         #     (this has to happen first, to get an init_state_index)
-        result = StateMachine()
 
-        # every target state has to appear as a start state (no external states)
-        # => it is enough to consider the start states and 'rename' them.
-        # if later a target state index appears, that is not in this set we
-        # return 'None' to indicate that this state machine cannot be cloned.
-        sorted_state_indices = self.states.keys()
-        sorted_state_indices.sort()
-        for state_idx in sorted_state_indices:
-            # NOTE: The constructor already delivered an init state index to 'result'.
-            #       Thus self's init index has to be translated to result's init index.
-            if state_idx == self.init_state_index:
-                replacement[state_idx] = result.init_state_index
-            else:
-                replacement[state_idx] = state_machine_index.get()
+        if ReplacementDB is not None: 
+            result      = StateMachine(InitStateIndex=ReplacementDB[self.init_state_index])
+            replacement = ReplacementDB
+        else:                         
+            result = StateMachine()
+            replacement = {}
+            # every target state has to appear as a start state (no external states)
+            # => it is enough to consider the start states and 'rename' them.
+            # if later a target state index appears, that is not in this set we
+            # return 'None' to indicate that this state machine cannot be cloned.
+            sorted_state_indices = self.states.keys()
+            sorted_state_indices.sort()
+            for state_idx in sorted_state_indices:
+                # NOTE: The constructor already delivered an init state index to 'result'.
+                #       Thus self's init index has to be translated to result's init index.
+                if state_idx == self.init_state_index:
+                    replacement[state_idx] = result.init_state_index
+                else:
+                    replacement[state_idx] = state_machine_index.get()
+
         # termination is a global state, it is not replaced by a new index 
-
         for state_idx, state in self.states.items():
             new_state_idx = replacement[state_idx]
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
@@ -291,6 +294,11 @@ class StateMachine:
         ##        assert result.states.has_key(target_idx)
             
         return result
+
+    def normalized_clone(self):
+        index_map, dummy, dummy = self.get_state_index_normalization()
+        return self.clone(index_map)
+
 
     def get_id(self):
         return self.__core.id()

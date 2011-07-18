@@ -1,47 +1,47 @@
-init-state = 56L
-00056() <~ (4, 9), (15, 35)
-      == 'a' ==> 00057
+init-state = 53L
+00053() <~ (15, 34), (4, 8)
+      == 'a' ==> 00054
       <no epsilon>
-00057(A, S) <~ (4, 10, A, S), (15, 36)
-      == 'a' ==> 00059
-      == 'c' ==> 00058
+00054(A, S) <~ (4, 9, A, S), (15, 35)
+      == 'a' ==> 00056
+      == 'c' ==> 00055
       <no epsilon>
-00059(A, S) <~ (4, 11, A, S), (15, 38)
-      == 'c' ==> 00058
+00056(A, S) <~ (4, 10, A, S), (15, 36)
+      == 'c' ==> 00055
       <no epsilon>
-00058() <~ (15, 37)
-      == 'd' ==> 00060
+00055() <~ (15, 37)
+      == 'd' ==> 00057
       <no epsilon>
-00060(A, S) <~ (15, 39, A, S)
+00057(A, S) <~ (15, 38, A, S)
       <no epsilon>
 
 State 56:
   .entry:
   .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+     goto Pattern4;
 
 
 State 57:
   .entry:
   .drop_out:
+     goto Pattern15;
+
+
+State 53:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 54:
+  .entry:
+  .drop_out:
      goto Pattern4;
 
 
-State 58:
+State 55:
   .entry:
   .drop_out:
     pos -= 1;  goto Pattern4;
-
-
-State 59:
-  .entry:
-  .drop_out:
-     goto Pattern4;
-
-
-State 60:
-  .entry:
-  .drop_out:
-     goto Pattern15;
 
 
