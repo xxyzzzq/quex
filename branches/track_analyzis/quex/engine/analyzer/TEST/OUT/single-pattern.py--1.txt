@@ -1,38 +1,43 @@
-init-state = 37L
-00037() <~ (11, 29)
-      == 'a' ==> 00038
+init-state = 0L
+00000() <~ (11, 29)
+      == 'a' ==> 00001
       <no epsilon>
-00038(S, P4) <~ (11, 30, S, P4)
-      == 'a' ==> 00038
-      == 'b' ==> 00039
+00001(S, P4) <~ (11, 30, S, P4)
+      == 'a' ==> 00001
+      == 'b' ==> 00002
       <no epsilon>
-00039() <~ (11, 31)
-      == 'c' ==> 00040
+00002() <~ (11, 31)
+      == 'c' ==> 00003
       <no epsilon>
-00040(A, P4) <~ (11, 32, A, P4)
+00003(A, P4) <~ (11, 32, A, P4)
       <no epsilon>
 
-State 40:
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+        .from 1: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
   .entry:
   .drop_out:
     pos -= 2;  goto Pattern11;
-
-
-State 37:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 38:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 39:
-  .entry:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
 
 

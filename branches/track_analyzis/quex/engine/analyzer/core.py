@@ -164,7 +164,7 @@ class Analyzer:
             for trace in TheAcceptanceTraceList:
                 for element in ifilter(lambda element: element.pattern_id != AcceptanceIDs.FAILURE, trace):
                     accepting_state = self.__state_db[element.accepting_state_index]
-                    accepting_state.accepter[element.pre_context_id] = element.pattern_id
+                    accepting_state.entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
@@ -184,10 +184,6 @@ class Analyzer:
             # Follower states of triggering states need to store the position
             for pos_state_index in info.positioning_state_index_list:
                 positioning_state = self.__state_db[pos_state_index]
-                print "##W:", state.index
-                print "##W  .pos ", pos_state_index
-                print "##W       ", positioning_state.target_index_list
-                print "##W       ", map(lambda x: (x, self.__successor_db[x]), positioning_state.target_index_list)
 
                 # Let index be the index of the currently considered state. Then,
                 # Let x be one of the target states of the positioning state. 
@@ -431,7 +427,7 @@ class AnalyzerState(object):
 
         # (*) Entry Action
         if   EngineType == EngineTypes.FORWARD: 
-            self.entry = Entry()
+            self.entry = Entry(FromStateIndexList)
         elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT: 
             self.entry = EntryBackward(state.origins())
         elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION: 
@@ -567,11 +563,11 @@ class Entry(object):
     """
     __slots__ = ("from_state_index", "accepter", "positioner_db")
 
-    def __init__(self):
+    def __init__(self, FromStateIndexList):
         # By default, we do not do store anything about acceptance at state entry
         self.accepter   = {}
         # map:  (from_state_index, pre_context_id) --> post_context_id where to store position
-        self.positioner_db = defaultdict(lambda x: defaultdict(set(x)))
+        self.positioner_db = dict([ (i, defaultdict(set)) for i in FromStateIndexList ])
 
     def is_equal(self, Other):
         return     self.accepter      == Other.accepter \
@@ -626,18 +622,17 @@ class Entry(object):
                 if_str = "else if"
 
         if len(self.positioner_db) != 0:
-            txt.append("     .positioner:\n")
+            txt.append("    .positioner:\n")
         for from_state_index, positioner in self.positioner_db.iteritems():
-            txt.append("        .by %i:" % from_state_index)
-            if len(positioner) == 0: txt.append(" <nothing>\n")
-            else:                    txt.append("\n")
+            txt.append("        .from %i:" % from_state_index)
+            if   len(positioner) == 0: txt.append(" <nothing>\n")
+            elif len(positioner) != 1: txt.append("\n")
             for post_context_id, pre_context_id_list in positioner.iteritems():
                 pre_list = map(repr_pre_context_id, pre_context_id_list)
-
-                txt.append("        ")
+                if len(positioner) != 1: txt.append("            ")
                 if None not in pre_context_id_list:
                     txt.append("if %s: " % repr(pre_list)[1:-1])
-                txt.append("%s = input_p;\n" % repr_position_register(post_context_id))
+                txt.append(" %s = input_p;\n" % repr_position_register(post_context_id))
 
         return "".join(txt)
 
@@ -920,8 +915,8 @@ def repr_acceptance_id(Value, PatternStrF=True):
     else:                                               assert False
 
 def repr_position_register(Register):
-    if Register == PostContextIDs.NONE: return "Position[Acceptance]"
-    else:                               return "Position[PostContext_%i] " % Register
+    if Register == PostContextIDs.NONE: return "position[Acceptance]"
+    else:                               return "position[PostContext_%i] " % Register
 
 def repr_positioning(Positioning, PostContextID):
     if   Positioning is None: 

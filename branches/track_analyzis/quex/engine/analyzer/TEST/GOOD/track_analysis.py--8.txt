@@ -1,70 +1,77 @@
-init-state = 112L
-00112() <~ (31, 86), (4, 12), (6, 18)
-      == 'a' ==> 00113
-      == 'b' ==> 00114
+init-state = 0L
+00000() <~ (31, 85), (4, 12), (6, 17)
+      == 'a' ==> 00001
+      == 'b' ==> 00004
       <no epsilon>
-00113(A, S) <~ (4, 13, A, S), (31, 87)
-      == 'a' ==> 00113
-      == 'd' ==> 00116
+00001(A, S) <~ (4, 13, A, S), (31, 87)
+      == 'a' ==> 00001
+      == 'd' ==> 00002
       <no epsilon>
-00116() <~ (31, 90)
-      == 'e' ==> 00117
+00002() <~ (31, 88)
+      == 'e' ==> 00003
       <no epsilon>
-00117(A, S) <~ (31, 91, A, S)
+00003(A, S) <~ (31, 89, A, S)
       <no epsilon>
-00114(A, S) <~ (6, 19, A, S), (31, 88)
-      == 'c' ==> 00115
+00004(A, S) <~ (6, 18, A, S), (31, 86)
+      == 'c' ==> 00005
       <no epsilon>
-00115() <~ (31, 89)
-      == 'c' ==> 00115
-      == 'd' ==> 00116
+00005() <~ (31, 90)
+      == 'c' ==> 00005
+      == 'd' ==> 00002
       <no epsilon>
 
-State 112:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 113:
+State 1:
   .entry:
-    Accepter:
+    .accepter:
         last_acceptance = Pattern4
+    .positioner:
+        .from 0: <nothing>
+        .from 1: <nothing>
   .drop_out:
      goto Pattern4;
 
 
-State 114:
+State 2:
   .entry:
-    Accepter:
-        last_acceptance = Pattern6
-  .drop_out:
-     goto Pattern6;
-
-
-State 115:
-  .entry:
-    .by 114:
-    Positioner:
-    Position[Acceptance] = input_p;
-    .by 115:
-  .drop_out:
-    pos = Position[Acceptance]; goto Pattern6;
-
-
-State 116:
-  .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 5: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
     Router:
         case 4: pos -= 1;  goto Pattern4;
-        case 6: pos = Position[Acceptance]; goto Pattern6;
+        case 6: pos = position[Acceptance]; goto Pattern6;
 
 
-State 117:
+State 3:
   .entry:
   .drop_out:
      goto Pattern31;
+
+
+State 4:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern6
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+     goto Pattern6;
+
+
+State 5:
+  .entry:
+    .positioner:
+        .from 4: position[Acceptance] = input_p;
+        .from 5: <nothing>
+  .drop_out:
+    pos = position[Acceptance]; goto Pattern6;
 
 

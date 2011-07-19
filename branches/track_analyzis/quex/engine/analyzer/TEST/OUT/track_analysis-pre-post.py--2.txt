@@ -25,6 +25,8 @@ State 108:
 
 State 109:
   .entry:
+    .positioner:
+        .from 108: <nothing>
   .drop_out:
     if PreContext_6:  goto Pattern8;
      goto Pattern34;
@@ -32,6 +34,8 @@ State 109:
 
 State 110:
   .entry:
+    .positioner:
+        .from 109: <nothing>
   .drop_out:
     if PreContext_6: pos -= 1;  goto Pattern8;
     pos -= 1;  goto Pattern34;
@@ -39,12 +43,16 @@ State 110:
 
 State 111:
   .entry:
+    .positioner:
+        .from 110: <nothing>
   .drop_out:
     pos -= 2;  goto Pattern17;
 
 
 State 112:
   .entry:
+    .positioner:
+        .from 111: <nothing>
   .drop_out:
     pos -= 3;  goto Pattern17;
 

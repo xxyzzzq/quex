@@ -24,7 +24,93 @@ init-state = 395L
       == 'd' ==> 00399
       <no epsilon>
 
-##W: 398
-##W  .pos  397
-##W        [398L]
-##W        [(398L, set([400L, 401L, 398L, 399L]))]
+State 395:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 396:
+  .entry:
+    .accepter:
+        if      PreContext_9: last_acceptance = Pattern11
+    .positioner:
+        .from 395: <nothing>
+        .from 396: <nothing>
+  .drop_out:
+    if PreContext_9:  goto Pattern11;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 397:
+  .entry:
+    .accepter:
+        if      PreContext_18: last_acceptance = Pattern20
+    .positioner:
+        .from 395: <nothing>
+  .drop_out:
+    if PreContext_18:  goto Pattern20;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 398:
+  .entry:
+    .positioner:
+        .from 397:if 'PreContext_18':  position[Acceptance] = input_p;
+        .from 398: <nothing>
+  .drop_out:
+    if PreContext_18: pos = position[Acceptance]; goto Pattern20;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 399:
+  .entry:
+    .positioner:
+        .from 396:
+            if 'PreContext_9':  position[Acceptance] = input_p;
+            if 'PreContext_55':  position[PostContext_40]  = input_p;
+        .from 398:if 'PreContext_55':  position[PostContext_40]  = input_p;
+        .from 399: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 11: pos = position[Acceptance]; goto Pattern11;
+        case 20: pos = position[Acceptance]; goto Pattern20;
+
+
+State 400:
+  .entry:
+    .positioner:
+        .from 399: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 11: pos = position[Acceptance]; goto Pattern11;
+        case 20: pos = position[Acceptance]; goto Pattern20;
+
+
+State 401:
+  .entry:
+    .accepter:
+        if      PreContext_55: last_acceptance = Pattern57
+        else if PreContext_92: last_acceptance = Pattern94
+        else if PreContext_129: last_acceptance = Pattern131
+  .drop_out:
+    Checker:
+        if      PreContext_55: accept = Pattern57
+        else if PreContext_92: accept = Pattern94
+        else if PreContext_129: accept = Pattern131
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 131: pos -= 1;  goto Pattern131;
+        case 11: pos = position[Acceptance]; goto Pattern11;
+        case 20: pos = position[Acceptance]; goto Pattern20;
+        case 57: pos = position[PostContext_40] ; goto Pattern57;
+        case 94: pos -= 2;  goto Pattern94;
+
+

@@ -25,6 +25,8 @@ State 129:
 
 State 130:
   .entry:
+    .positioner:
+        .from 129: <nothing>
   .drop_out:
     if PreContext_9:  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -32,6 +34,8 @@ State 130:
 
 State 131:
   .entry:
+    .positioner:
+        .from 130: <nothing>
   .drop_out:
     if PreContext_9:  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -39,6 +43,8 @@ State 131:
 
 State 132:
   .entry:
+    .positioner:
+        .from 131: <nothing>
   .drop_out:
     if PreContext_9: pos -= 1;  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -46,6 +52,8 @@ State 132:
 
 State 133:
   .entry:
+    .positioner:
+        .from 132: <nothing>
   .drop_out:
     if PreContext_27: pos -= 3;  goto Pattern29;
     else if PreContext_9: pos -= 2;  goto Pattern11;

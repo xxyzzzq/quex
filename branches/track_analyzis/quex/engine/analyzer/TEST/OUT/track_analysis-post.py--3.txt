@@ -15,7 +15,40 @@ init-state = 80L
 00084(A, P13) <~ (23, 65, A, P13)
       <no epsilon>
 
-##W: 83
-##W  .pos  81
-##W        [82L]
-##W        [(82L, set([82L, 83L, 84L]))]
+State 80:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 81:
+  .entry:
+    .positioner:
+        .from 80: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 82:
+  .entry:
+    .positioner:
+        .from 81:
+             position[PostContext_1]  = input_p;
+             position[PostContext_13]  = input_p;
+        .from 82: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 83:
+  .entry:
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern11;
+
+
+State 84:
+  .entry:
+  .drop_out:
+    pos = position[PostContext_13] ; goto Pattern23;
+
+

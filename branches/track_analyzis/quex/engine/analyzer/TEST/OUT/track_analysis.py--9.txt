@@ -1,38 +1,40 @@
-init-state = 36L
-00036() <~ (4, 8), (9, 23)
-      == ['a', 'h'], ['j', 'z'] ==> 00037
-      == 'i' ==> 00038
+init-state = 0L
+00000() <~ (4, 8), (9, 23)
+      == ['a', 'h'], ['j', 'z'] ==> 00001
+      == 'i' ==> 00002
       <no epsilon>
-00037(A, S) <~ (9, 24, A, S)
-      == ['a', 'z'] ==> 00037
+00001(A, S) <~ (9, 24, A, S)
+      == ['a', 'z'] ==> 00001
       <no epsilon>
-00038(A, S) <~ (4, 9), (9, 24, A, S)
-      == ['a', 'e'], ['g', 'z'] ==> 00037
-      == 'f' ==> 00039
+00002(A, S) <~ (4, 9), (9, 24, A, S)
+      == ['a', 'e'], ['g', 'z'] ==> 00001
+      == 'f' ==> 00003
       <no epsilon>
-00039(A, S) <~ (4, 10, A, S), (9, 24, A, S)
-      == ['a', 'z'] ==> 00037
+00003(A, S) <~ (4, 10, A, S), (9, 24, A, S)
+      == ['a', 'z'] ==> 00001
       <no epsilon>
 
-State 36:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 37:
+State 1:
   .entry:
   .drop_out:
      goto Pattern9;
 
 
-State 38:
+State 2:
   .entry:
+    .positioner:
+        .from 0: <nothing>
   .drop_out:
      goto Pattern9;
 
 
-State 39:
+State 3:
   .entry:
   .drop_out:
      goto Pattern4;
