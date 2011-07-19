@@ -24,7 +24,67 @@ init-state = 121L
 00128(A, P22) <~ (35, 93, A, P22)
       <no epsilon>
 
-##W: 125
-##W  .pos  122
-##W        [123L]
-##W        [(123L, set([128L, 124L, 125L, 126L, 127L]))]
+State 128:
+  .entry:
+  .drop_out:
+    pos -= 4;  goto Pattern35;
+
+
+State 121:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 122:
+  .entry:
+    .positioner:
+        .from 121: <nothing>
+  .drop_out:
+    if PreContext_6:  goto Pattern8;
+     goto Pattern37;
+
+
+State 123:
+  .entry:
+    .positioner:
+        .from 122:
+             position[Acceptance] = input_p;
+             position[PostContext_10]  = input_p;
+  .drop_out:
+    if PreContext_6: pos -= 1;  goto Pattern8;
+    pos -= 1;  goto Pattern37;
+
+
+State 124:
+  .entry:
+    .positioner:
+        .from 123: <nothing>
+  .drop_out:
+    pos -= 2;  goto Pattern20;
+
+
+State 125:
+  .entry:
+    .positioner:
+        .from 123: <nothing>
+        .from 125: <nothing>
+  .drop_out:
+    if PreContext_6: pos = position[Acceptance]; goto Pattern8;
+    pos = position[Acceptance]; goto Pattern37;
+
+
+State 126:
+  .entry:
+  .drop_out:
+    pos = position[PostContext_10] ; goto Pattern20;
+
+
+State 127:
+  .entry:
+    .positioner:
+        .from 124: <nothing>
+  .drop_out:
+    pos -= 3;  goto Pattern20;
+
+

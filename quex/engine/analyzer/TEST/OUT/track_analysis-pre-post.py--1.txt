@@ -13,12 +13,16 @@ init-state = 119L
 
 State 120:
   .entry:
+    .positioner:
+        .from 119: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 121:
   .entry:
+    .positioner:
+        .from 120: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 

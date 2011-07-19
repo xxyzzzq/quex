@@ -25,7 +25,77 @@ init-state = 158L
       == 'c' ==> 00163
       <no epsilon>
 
-##W: 161
-##W  .pos  159
-##W        [160L]
-##W        [(160L, set([161L, 162L, 163L, 164L, 165L]))]
+State 160:
+  .entry:
+    .positioner:
+        .from 159: position[PostContext_1]  = input_p;
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 161:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern11
+    .positioner:
+        .from 160: <nothing>
+        .from 161: <nothing>
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern11;
+
+
+State 162:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern20
+    .positioner:
+        .from 160: <nothing>
+  .drop_out:
+    pos -= 1;  goto Pattern20;
+
+
+State 163:
+  .entry:
+    .positioner:
+        .from 161: <nothing>
+        .from 162: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 11: pos = position[PostContext_1] ; goto Pattern11;
+        case 20: pos -= 2;  goto Pattern20;
+
+
+State 164:
+  .entry:
+    .positioner:
+        .from 163: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 11: pos = position[PostContext_1] ; goto Pattern11;
+        case 20: pos -= 3;  goto Pattern20;
+
+
+State 165:
+  .entry:
+  .drop_out:
+     goto Pattern47;
+
+
+State 158:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 159:
+  .entry:
+    .positioner:
+        .from 158: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

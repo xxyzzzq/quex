@@ -1,22 +1,77 @@
-init-state = 127L
-00127() <~ (37, 103), (4, 12), (12, 34)
-      == 'a' ==> 00128
-      == 'b' ==> 00129
+init-state = 0L
+00000() <~ (37, 103), (4, 12), (12, 34)
+      == 'a' ==> 00001
+      == 'b' ==> 00004
       <no epsilon>
-00128(A, S) <~ (4, 13, A, S), (37, 105)
-      == 'a' ==> 00128
-      == 'd' ==> 00131
+00001(A, S) <~ (4, 13, A, S), (37, 105)
+      == 'a' ==> 00001
+      == 'd' ==> 00002
       <no epsilon>
-00131() <~ (37, 106)
-      == 'e' ==> 00132
+00002() <~ (37, 106)
+      == 'e' ==> 00003
       <no epsilon>
-00132(A, S) <~ (37, 107, A, S)
+00003(A, S) <~ (37, 107, A, S)
       <no epsilon>
-00129() <~ (12, 35), (37, 104)
-      == 'b' ==> 00129
-      == 'c' ==> 00130
+00004() <~ (12, 35), (37, 104)
+      == 'b' ==> 00004
+      == 'c' ==> 00005
       <no epsilon>
-00130(A, S) <~ (12, 36, A, S), (37, 108)
-      == 'd' ==> 00131
+00005(A, S) <~ (12, 36, A, S), (37, 108)
+      == 'd' ==> 00002
       <no epsilon>
+
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern4
+    .positioner:
+        .from 0: <nothing>
+        .from 1: <nothing>
+  .drop_out:
+     goto Pattern4;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 5: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 12: pos -= 1;  goto Pattern12;
+        case 4: pos -= 1;  goto Pattern4;
+
+
+State 3:
+  .entry:
+  .drop_out:
+     goto Pattern37;
+
+
+State 4:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+        .from 4: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 5:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern12
+    .positioner:
+        .from 4: <nothing>
+  .drop_out:
+     goto Pattern12;
+
 

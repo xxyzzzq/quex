@@ -23,7 +23,74 @@ init-state = 147L
       == 'c' ==> 00151
       <no epsilon>
 
-##W: 149
-##W  .pos  148
-##W        [149L, 150L]
-##W        [(149L, set([152L, 153L, 149L, 151L])), (150L, set([152L, 153L, 150L, 151L]))]
+State 147:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 148:
+  .entry:
+    .positioner:
+        .from 147: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 149:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern17
+    .positioner:
+        .from 148:
+             position[PostContext_1]  = input_p;
+             position[PostContext_10]  = input_p;
+        .from 149: <nothing>
+  .drop_out:
+    pos = position[PostContext_10] ; goto Pattern17;
+
+
+State 150:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern8
+    .positioner:
+        .from 148:
+             position[PostContext_1]  = input_p;
+             position[PostContext_10]  = input_p;
+        .from 150: <nothing>
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern8;
+
+
+State 151:
+  .entry:
+    .positioner:
+        .from 149: <nothing>
+        .from 150: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 8: pos = position[PostContext_1] ; goto Pattern8;
+        case 17: pos = position[PostContext_10] ; goto Pattern17;
+
+
+State 152:
+  .entry:
+    .positioner:
+        .from 151: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 8: pos = position[PostContext_1] ; goto Pattern8;
+        case 17: pos = position[PostContext_10] ; goto Pattern17;
+
+
+State 153:
+  .entry:
+  .drop_out:
+     goto Pattern44;
+
+

@@ -271,9 +271,7 @@ class StateMachine:
             # => it is enough to consider the start states and 'rename' them.
             # if later a target state index appears, that is not in this set we
             # return 'None' to indicate that this state machine cannot be cloned.
-            sorted_state_indices = self.states.keys()
-            sorted_state_indices.sort()
-            for state_idx in sorted_state_indices:
+            for state_idx in sorted(self.states.iterkeys()):
                 # NOTE: The constructor already delivered an init state index to 'result'.
                 #       Thus self's init index has to be translated to result's init index.
                 if state_idx == self.init_state_index:
@@ -282,7 +280,7 @@ class StateMachine:
                     replacement[state_idx] = state_machine_index.get()
 
         # termination is a global state, it is not replaced by a new index 
-        for state_idx, state in self.states.items():
+        for state_idx, state in self.states.iteritems():
             new_state_idx = replacement[state_idx]
             result.states[new_state_idx] = self.states[state_idx].clone(replacement)
         

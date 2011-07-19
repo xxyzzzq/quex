@@ -24,3 +24,76 @@ init-state = 142L
       == 'c' ==> 00146
       <no epsilon>
 
+State 142:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 143:
+  .entry:
+    .positioner:
+        .from 142: <nothing>
+  .drop_out:
+     goto Pattern4;
+
+
+State 144:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern21
+    .positioner:
+        .from 142: <nothing>
+  .drop_out:
+     goto Pattern21;
+
+
+State 145:
+  .entry:
+    .positioner:
+        .from 144: <nothing>
+  .drop_out:
+    pos -= 1;  goto Pattern21;
+
+
+State 146:
+  .entry:
+    .positioner:
+        .from 145: <nothing>
+        .from 149: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 19: pos -= 3;  goto Pattern19;
+        case 4: pos -= 2;  goto Pattern4;
+        case 21: pos -= 2;  goto Pattern21;
+
+
+State 147:
+  .entry:
+  .drop_out:
+     goto Pattern45;
+
+
+State 148:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern4
+    .positioner:
+        .from 143: <nothing>
+  .drop_out:
+     goto Pattern4;
+
+
+State 149:
+  .entry:
+    .accepter:
+        if      PreContext_17: last_acceptance = Pattern19
+    .positioner:
+        .from 148: <nothing>
+  .drop_out:
+    if PreContext_17: pos -= 2;  goto Pattern19;
+    pos -= 1;  goto Pattern4;
+
+

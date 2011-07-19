@@ -24,3 +24,84 @@ init-state = 208L
       == 'd' ==> 00211
       <no epsilon>
 
+State 208:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 209:
+  .entry:
+    .accepter:
+        if      PreContext_15: last_acceptance = Pattern17
+    .positioner:
+        .from 208: <nothing>
+  .drop_out:
+    if PreContext_15:  goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 210:
+  .entry:
+    .accepter:
+        if      PreContext_6: last_acceptance = Pattern8
+    .positioner:
+        .from 208: <nothing>
+  .drop_out:
+    if PreContext_6:  goto Pattern8;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 211:
+  .entry:
+    .positioner:
+        .from 209:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 210: <nothing>
+        .from 213: <nothing>
+        .from 214: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 17: pos = position[Acceptance]; goto Pattern17;
+        case 8: pos -= 1;  goto Pattern8;
+
+
+State 212:
+  .entry:
+    .accepter:
+        if      PreContext_43: last_acceptance = Pattern45
+        else if PreContext_71: last_acceptance = Pattern73
+  .drop_out:
+    Checker:
+        if      PreContext_43: accept = Pattern45
+        else if PreContext_71: accept = Pattern73
+        accept = last_acceptance
+    Router:
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
+        case 73: pos -= 1;  goto Pattern73;
+        case 45: goto Pattern45;
+        case 8: pos -= 2;  goto Pattern8;
+        case 17: pos = position[Acceptance]; goto Pattern17;
+
+
+State 213:
+  .entry:
+    .positioner:
+        .from 209:if 'PreContext_15':  position[Acceptance] = input_p;
+  .drop_out:
+    if PreContext_15: pos -= 1;  goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 214:
+  .entry:
+    .positioner:
+        .from 209:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 213: <nothing>
+  .drop_out:
+    if PreContext_15: pos = position[Acceptance]; goto Pattern17;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

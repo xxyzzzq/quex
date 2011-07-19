@@ -18,7 +18,52 @@ init-state = 68L
       == 'c' ==> 00072
       <no epsilon>
 
-##W: 72
-##W  .pos  69
-##W        [72L]
-##W        [(72L, set([73L]))]
+State 68:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 69:
+  .entry:
+    .positioner:
+        .from 68: <nothing>
+  .drop_out:
+    if BeginOfLine:  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 70:
+  .entry:
+    .positioner:
+        .from 68: <nothing>
+  .drop_out:
+    if BeginOfLine:  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 71:
+  .entry:
+    .positioner:
+        .from 70:if 'BeginOfLine':  position[Acceptance] = input_p;
+  .drop_out:
+    if BeginOfLine: pos -= 1;  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 72:
+  .entry:
+    .positioner:
+        .from 69:if 'BeginOfLine':  position[Acceptance] = input_p;
+        .from 71: <nothing>
+  .drop_out:
+    if BeginOfLine: pos = position[Acceptance]; goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 73:
+  .entry:
+  .drop_out:
+     goto Pattern21;
+
+

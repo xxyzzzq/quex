@@ -28,18 +28,24 @@ State 82:
 
 State 83:
   .entry:
+    .positioner:
+        .from 82: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 84:
   .entry:
+    .positioner:
+        .from 82: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 85:
   .entry:
+    .positioner:
+        .from 84: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
@@ -52,6 +58,8 @@ State 86:
 
 State 87:
   .entry:
+    .positioner:
+        .from 83: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 

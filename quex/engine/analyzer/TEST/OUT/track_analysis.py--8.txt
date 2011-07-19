@@ -1,26 +1,77 @@
-init-state = 108L
-00108() <~ (31, 85), (4, 12), (6, 17)
-      == 'a' ==> 00109
-      == 'b' ==> 00110
+init-state = 0L
+00000() <~ (31, 85), (4, 12), (6, 17)
+      == 'a' ==> 00001
+      == 'b' ==> 00004
       <no epsilon>
-00109(A, S) <~ (4, 13, A, S), (31, 87)
-      == 'a' ==> 00109
-      == 'd' ==> 00112
+00001(A, S) <~ (4, 13, A, S), (31, 87)
+      == 'a' ==> 00001
+      == 'd' ==> 00002
       <no epsilon>
-00112() <~ (31, 88)
-      == 'e' ==> 00113
+00002() <~ (31, 88)
+      == 'e' ==> 00003
       <no epsilon>
-00113(A, S) <~ (31, 89, A, S)
+00003(A, S) <~ (31, 89, A, S)
       <no epsilon>
-00110(A, S) <~ (6, 18, A, S), (31, 86)
-      == 'c' ==> 00111
+00004(A, S) <~ (6, 18, A, S), (31, 86)
+      == 'c' ==> 00005
       <no epsilon>
-00111() <~ (31, 90)
-      == 'c' ==> 00111
-      == 'd' ==> 00112
+00005() <~ (31, 90)
+      == 'c' ==> 00005
+      == 'd' ==> 00002
       <no epsilon>
 
-##W: 111
-##W  .pos  110
-##W        [111L]
-##W        [(111L, set([112L, 113L, 111L]))]
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern4
+    .positioner:
+        .from 0: <nothing>
+        .from 1: <nothing>
+  .drop_out:
+     goto Pattern4;
+
+
+State 2:
+  .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 5: <nothing>
+  .drop_out:
+    Checker:
+        accept = last_acceptance
+    Router:
+        case 4: pos -= 1;  goto Pattern4;
+        case 6: pos = position[Acceptance]; goto Pattern6;
+
+
+State 3:
+  .entry:
+  .drop_out:
+     goto Pattern31;
+
+
+State 4:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern6
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+     goto Pattern6;
+
+
+State 5:
+  .entry:
+    .positioner:
+        .from 4: position[Acceptance] = input_p;
+        .from 5: <nothing>
+  .drop_out:
+    pos = position[Acceptance]; goto Pattern6;
+
+
