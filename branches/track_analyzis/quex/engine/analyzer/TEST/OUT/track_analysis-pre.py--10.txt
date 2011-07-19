@@ -1,54 +1,51 @@
-init-state = 446L
-00446() <~ (78, 206), (112, 303), (146, 400), (11, 27), (20, 45), (44, 110)
-      == 'a' ==> 00447
-      == 'b' ==> 00448
+init-state = 0L
+00000() <~ (78, 206), (112, 303), (146, 400), (11, 27), (20, 45), (44, 110)
+      == 'a' ==> 00001
+      == 'b' ==> 00005
       <no epsilon>
-00447(A, S, pre=9) <~ (11, 28, A, S, pre=9), (44, 111), (78, 208), (112, 304), (146, 401)
-      == 'a' ==> 00447
-      == 'd' ==> 00450
+00001(A, S, pre=9) <~ (11, 28, A, S, pre=9), (44, 111), (78, 208), (112, 304), (146, 401)
+      == 'a' ==> 00001
+      == 'd' ==> 00002
       <no epsilon>
-00450() <~ (44, 114), (78, 209), (112, 307), (146, 404)
-      == 'e' ==> 00451
+00002() <~ (44, 114), (78, 209), (112, 307), (146, 404)
+      == 'e' ==> 00003
       <no epsilon>
-00451(A, S) <~ (44, 115, A, S), (78, 210), (112, 308), (146, 405)
-      == 'f' ==> 00452
+00003(A, S) <~ (44, 115, A, S), (78, 210), (112, 308), (146, 405)
+      == 'f' ==> 00004
       <no epsilon>
-00452(A, S, pre=144) <~ (78, 211, A, S, pre=76), (112, 309, A, S, pre=110), (146, 406, A, S, pre=144)
+00004(A, S, pre=144) <~ (78, 211, A, S, pre=76), (112, 309, A, S, pre=110), (146, 406, A, S, pre=144)
       <no epsilon>
-00448(A, S, pre=18) <~ (20, 46, A, S, pre=18), (44, 112), (78, 207), (112, 305), (146, 402)
-      == 'c' ==> 00449
+00005(A, S, pre=18) <~ (20, 46, A, S, pre=18), (44, 112), (78, 207), (112, 305), (146, 402)
+      == 'c' ==> 00006
       <no epsilon>
-00449() <~ (44, 113), (78, 212), (112, 306), (146, 403)
-      == 'c' ==> 00449
-      == 'd' ==> 00450
+00006() <~ (44, 113), (78, 212), (112, 306), (146, 403)
+      == 'c' ==> 00006
+      == 'd' ==> 00002
       <no epsilon>
 
-State 448:
+State 0:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
   .entry:
     .accepter:
-        if      PreContext_18: last_acceptance = Pattern20
+        if      PreContext_9: last_acceptance = Pattern11
     .positioner:
-        .from 446: <nothing>
+        .from 0: <nothing>
+        .from 1: <nothing>
   .drop_out:
-    if PreContext_18:  goto Pattern20;
+    if PreContext_9:  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 449:
+State 2:
   .entry:
     .positioner:
-        .from 448:if 'PreContext_18':  position[Acceptance] = input_p;
-        .from 449: <nothing>
-  .drop_out:
-    if PreContext_18: pos = position[Acceptance]; goto Pattern20;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 450:
-  .entry:
-    .positioner:
-        .from 449: <nothing>
-        .from 447: <nothing>
+        .from 1: <nothing>
+        .from 6: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -58,15 +55,15 @@ State 450:
         case 20: pos = position[Acceptance]; goto Pattern20;
 
 
-State 451:
+State 3:
   .entry:
     .positioner:
-        .from 450: <nothing>
+        .from 2: <nothing>
   .drop_out:
      goto Pattern44;
 
 
-State 452:
+State 4:
   .entry:
   .drop_out:
     if PreContext_76:  goto Pattern78;
@@ -75,21 +72,24 @@ State 452:
     pos -= 1;  goto Pattern44;
 
 
-State 446:
+State 5:
   .entry:
+    .accepter:
+        if      PreContext_18: last_acceptance = Pattern20
+    .positioner:
+        .from 0: <nothing>
   .drop_out:
+    if PreContext_18:  goto Pattern20;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 447:
+State 6:
   .entry:
-    .accepter:
-        if      PreContext_9: last_acceptance = Pattern11
     .positioner:
-        .from 446: <nothing>
-        .from 447: <nothing>
+        .from 5:if 'PreContext_18':  position[Acceptance] = input_p;
+        .from 6: <nothing>
   .drop_out:
-    if PreContext_9:  goto Pattern11;
+    if PreContext_18: pos = position[Acceptance]; goto Pattern20;
     pos = lexeme_start_p + 1;  goto Failure;
 
 

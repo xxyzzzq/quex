@@ -1,69 +1,69 @@
-init-state = 68L
-00068() <~ (21, 49), (2, 4)
-      == 'a' ==> 00070
-      == 'b' ==> 00069
+init-state = 0L
+00000() <~ (21, 49), (2, 4)
+      == 'a' ==> 00001
+      == 'b' ==> 00005
       <no epsilon>
-00070(A, S, bol) <~ (2, 5, A, S, bol), (21, 50)
-      == 'b' ==> 00071
+00001(A, S, bol) <~ (2, 5, A, S, bol), (21, 50)
+      == 'b' ==> 00002
       <no epsilon>
-00071() <~ (21, 51)
-      == 'c' ==> 00072
+00002() <~ (21, 51)
+      == 'c' ==> 00003
       <no epsilon>
-00072() <~ (21, 52)
-      == 'd' ==> 00073
+00003() <~ (21, 52)
+      == 'd' ==> 00004
       <no epsilon>
-00073(A, S) <~ (21, 53, A, S)
+00004(A, S) <~ (21, 53, A, S)
       <no epsilon>
-00069(A, S, bol) <~ (2, 5, A, S, bol), (21, 51)
-      == 'c' ==> 00072
+00005(A, S, bol) <~ (2, 5, A, S, bol), (21, 51)
+      == 'c' ==> 00003
       <no epsilon>
 
-State 68:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 69:
+State 1:
   .entry:
     .positioner:
-        .from 68: <nothing>
-  .drop_out:
-    if BeginOfLine:  goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 70:
-  .entry:
-    .positioner:
-        .from 68: <nothing>
+        .from 0: <nothing>
   .drop_out:
     if BeginOfLine:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 71:
+State 2:
   .entry:
     .positioner:
-        .from 70:if 'BeginOfLine':  position[Acceptance] = input_p;
+        .from 1:if 'BeginOfLine':  position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine: pos -= 1;  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 72:
+State 3:
   .entry:
     .positioner:
-        .from 69:if 'BeginOfLine':  position[Acceptance] = input_p;
-        .from 71: <nothing>
+        .from 2: <nothing>
+        .from 5:if 'BeginOfLine':  position[Acceptance] = input_p;
   .drop_out:
     if BeginOfLine: pos = position[Acceptance]; goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 73:
+State 4:
   .entry:
   .drop_out:
      goto Pattern21;
+
+
+State 5:
+  .entry:
+    .positioner:
+        .from 0: <nothing>
+  .drop_out:
+    if BeginOfLine:  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 

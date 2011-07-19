@@ -1,56 +1,54 @@
-init-state = 76L
-00076() <~ (24, 55), (2, 4), (5, 10)
-      == 'a' ==> 00077
-      == 'b' ==> 00078
+init-state = 0L
+00000() <~ (24, 55), (2, 4), (5, 10)
+      == 'a' ==> 00001
+      == 'b' ==> 00005
       <no epsilon>
-00077(A, S, bol) <~ (2, 5, A, S, bol), (24, 56)
-      == 'b' ==> 00081
+00001(A, S, bol) <~ (2, 5, A, S, bol), (24, 56)
+      == 'b' ==> 00002
       <no epsilon>
-00081() <~ (24, 57)
-      == 'c' ==> 00079
+00002() <~ (24, 57)
+      == 'c' ==> 00003
       <no epsilon>
-00079() <~ (24, 58)
-      == 'd' ==> 00080
+00003() <~ (24, 58)
+      == 'd' ==> 00004
       <no epsilon>
-00080(A, S) <~ (24, 59, A, S)
+00004(A, S) <~ (24, 59, A, S)
       <no epsilon>
-00078(A, S, bol) <~ (5, 11, A, S, bol), (24, 57)
-      == 'c' ==> 00079
+00005(A, S, bol) <~ (5, 11, A, S, bol), (24, 57)
+      == 'c' ==> 00003
       <no epsilon>
 
-State 76:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 77:
+State 1:
   .entry:
     .accepter:
         if      BeginOfLine: last_acceptance = Pattern2
     .positioner:
-        .from 76: <nothing>
+        .from 0: <nothing>
   .drop_out:
     if BeginOfLine:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 78:
+State 2:
   .entry:
-    .accepter:
-        if      BeginOfLine: last_acceptance = Pattern5
     .positioner:
-        .from 76: <nothing>
+        .from 1: <nothing>
   .drop_out:
-    if BeginOfLine:  goto Pattern5;
+    if BeginOfLine: pos -= 1;  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 79:
+State 3:
   .entry:
     .positioner:
-        .from 81: <nothing>
-        .from 78: <nothing>
+        .from 2: <nothing>
+        .from 5: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -60,18 +58,20 @@ State 79:
         case 5: pos -= 1;  goto Pattern5;
 
 
-State 80:
+State 4:
   .entry:
   .drop_out:
      goto Pattern24;
 
 
-State 81:
+State 5:
   .entry:
+    .accepter:
+        if      BeginOfLine: last_acceptance = Pattern5
     .positioner:
-        .from 77: <nothing>
+        .from 0: <nothing>
   .drop_out:
-    if BeginOfLine: pos -= 1;  goto Pattern2;
+    if BeginOfLine:  goto Pattern5;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
