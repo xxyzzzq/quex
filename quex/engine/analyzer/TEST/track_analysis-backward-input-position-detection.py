@@ -11,6 +11,8 @@ from   quex.engine.analyzer.core                 import InputActions
 from   quex.engine.state_machine.state_core_info import EngineTypes
 import help_drawing
 
+from   operator import attrgetter
+
 if "--hwut-info" in sys.argv:
     print "Track Analyzis: Backward Input Position Detection;"
     sys.exit()
@@ -22,6 +24,7 @@ pattern_list = [
 
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 sm                 = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+sm                 = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help_drawing.if_DRAW_in_sys_argv(sm)
@@ -30,6 +33,6 @@ print sm.get_string(NormalizeF=False)
 
 analyzer = core.Analyzer(sm, EngineTypes.BACKWARD_INPUT_POSITION)
 
-for state in analyzer:
+for state in sorted(analyzer, key=attrgetter("index")):
     assert state.input == InputActions.DECREMENT_THEN_DEREF
     print state.get_string(InputF=False, TransitionMapF=False)

@@ -19,12 +19,16 @@ State 0:
 
 State 1:
   .entry:
+    .positioner:
+        .from 0: <nothing>
   .drop_out:
      goto Pattern1;
 
 
 State 2:
   .entry:
+    .positioner:
+        .from 1: <nothing>
   .drop_out:
     if PreContext_20:  goto Pattern22;
     pos -= 1;  goto Pattern1;

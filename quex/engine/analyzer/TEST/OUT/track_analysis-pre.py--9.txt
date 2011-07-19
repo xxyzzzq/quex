@@ -1,55 +1,54 @@
-init-state = 74L
-00074() <~ (2, 4), (4, 8), (23, 53)
-      == 'a' ==> 00075
-      == 'b' ==> 00076
+init-state = 0L
+00000() <~ (2, 4), (4, 8), (23, 53)
+      == 'a' ==> 00001
+      == 'b' ==> 00005
       <no epsilon>
-00075(A, S, bol) <~ (2, 5, A, S, bol), (23, 55)
-      == 'b' ==> 00079
+00001(A, S, bol) <~ (2, 5, A, S, bol), (23, 55)
+      == 'b' ==> 00002
       <no epsilon>
-00079() <~ (23, 54)
-      == 'c' ==> 00077
+00002() <~ (23, 54)
+      == 'c' ==> 00003
       <no epsilon>
-00077() <~ (23, 56)
-      == 'd' ==> 00078
+00003() <~ (23, 56)
+      == 'd' ==> 00004
       <no epsilon>
-00078(A, S) <~ (23, 57, A, S)
+00004(A, S) <~ (23, 57, A, S)
       <no epsilon>
-00076(A, S) <~ (4, 9, A, S), (23, 54)
-      == 'c' ==> 00077
+00005(A, S) <~ (4, 9, A, S), (23, 54)
+      == 'c' ==> 00003
       <no epsilon>
 
-State 74:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 75:
+State 1:
   .entry:
     .accepter:
         if      BeginOfLine: last_acceptance = Pattern2
     .positioner:
-        .from 74: <nothing>
+        .from 0: <nothing>
   .drop_out:
     if BeginOfLine:  goto Pattern2;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 76:
+State 2:
   .entry:
-    .accepter:
-        last_acceptance = Pattern4
     .positioner:
-        .from 74: <nothing>
+        .from 1: <nothing>
   .drop_out:
-     goto Pattern4;
+    if BeginOfLine: pos -= 1;  goto Pattern2;
+    pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 77:
+State 3:
   .entry:
     .positioner:
-        .from 76: <nothing>
-        .from 79: <nothing>
+        .from 2: <nothing>
+        .from 5: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -59,18 +58,19 @@ State 77:
         case 4: pos -= 1;  goto Pattern4;
 
 
-State 78:
+State 4:
   .entry:
   .drop_out:
      goto Pattern23;
 
 
-State 79:
+State 5:
   .entry:
+    .accepter:
+        last_acceptance = Pattern4
     .positioner:
-        .from 75: <nothing>
+        .from 0: <nothing>
   .drop_out:
-    if BeginOfLine: pos -= 1;  goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+     goto Pattern4;
 
 
