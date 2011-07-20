@@ -1,73 +1,60 @@
-init-state = 147L
-00147() <~ (17, 45), (44, 119), (8, 21)
-      == 'x' ==> 00148
+init-state = 0L
+00000() <~ (17, 45), (44, 119), (8, 21)
+      == 'x' ==> 00001
       <no epsilon>
-00148(S, P10) <~ (8, 22, S, P1), (17, 46, S, P10), (44, 120)
-      == 'a' ==> 00150
-      == 'b' ==> 00149
+00001(S, P10) <~ (8, 22, S, P1), (17, 46, S, P10), (44, 120)
+      == 'a' ==> 00002
+      == 'b' ==> 00006
       <no epsilon>
-00150(A, P1) <~ (8, 23, A, P1), (44, 122)
-      == 'a' ==> 00150
-      == 'c' ==> 00151
+00002(A, P1) <~ (8, 23, A, P1), (44, 122)
+      == 'a' ==> 00002
+      == 'c' ==> 00003
       <no epsilon>
-00151() <~ (44, 123)
-      == 'd' ==> 00152
+00003() <~ (44, 123)
+      == 'd' ==> 00004
       <no epsilon>
-00152() <~ (44, 124)
-      == 'e' ==> 00153
+00004() <~ (44, 124)
+      == 'e' ==> 00005
       <no epsilon>
-00153(A, S) <~ (44, 125, A, S)
+00005(A, S) <~ (44, 125, A, S)
       <no epsilon>
-00149(A, P10) <~ (17, 47, A, P10), (44, 121)
-      == 'b' ==> 00149
-      == 'c' ==> 00151
+00006(A, P10) <~ (17, 47, A, P10), (44, 121)
+      == 'b' ==> 00006
+      == 'c' ==> 00003
       <no epsilon>
 
-State 147:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 148:
+State 1:
   .entry:
     .positioner:
-        .from 147: <nothing>
+        .from 0: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 149:
-  .entry:
-    .accepter:
-        last_acceptance = Pattern17
-    .positioner:
-        .from 148:
-             position[PostContext_1]  = input_p;
-             position[PostContext_10]  = input_p;
-        .from 149: <nothing>
-  .drop_out:
-    pos = position[PostContext_10] ; goto Pattern17;
-
-
-State 150:
+State 2:
   .entry:
     .accepter:
         last_acceptance = Pattern8
     .positioner:
-        .from 148:
+        .from 1:
              position[PostContext_1]  = input_p;
              position[PostContext_10]  = input_p;
-        .from 150: <nothing>
+        .from 2: <nothing>
   .drop_out:
     pos = position[PostContext_1] ; goto Pattern8;
 
 
-State 151:
+State 3:
   .entry:
     .positioner:
-        .from 149: <nothing>
-        .from 150: <nothing>
+        .from 2: <nothing>
+        .from 6: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -76,10 +63,10 @@ State 151:
         case 17: pos = position[PostContext_10] ; goto Pattern17;
 
 
-State 152:
+State 4:
   .entry:
     .positioner:
-        .from 151: <nothing>
+        .from 3: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -88,9 +75,24 @@ State 152:
         case 17: pos = position[PostContext_10] ; goto Pattern17;
 
 
-State 153:
+State 5:
   .entry:
+    .positioner:
+        .from 4: <nothing>
   .drop_out:
      goto Pattern44;
+
+
+State 6:
+  .entry:
+    .accepter:
+        last_acceptance = Pattern17
+    .positioner:
+        .from 1:
+             position[PostContext_1]  = input_p;
+             position[PostContext_10]  = input_p;
+        .from 6: <nothing>
+  .drop_out:
+    pos = position[PostContext_10] ; goto Pattern17;
 
 

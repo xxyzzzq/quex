@@ -59,6 +59,8 @@ State 2:
 
 State 3:
   .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     Checker:
         if      PreContext_43: accept = Pattern45

@@ -1,69 +1,81 @@
-init-state = 144L
-00144() <~ (46, 112), (29, 66), (14, 31)
-      == 'a' ==> 00145
+init-state = 0L
+00000() <~ (29, 65), (46, 111), (14, 30)
+      == 'a' ==> 00001
       <no epsilon>
-00145(S, P3) <~ (14, 32, S, P3), (29, 67), (46, 113)
-      == 'b' ==> 00146
+00001(S, P3) <~ (14, 31, S, P3), (29, 66), (46, 112)
+      == 'b' ==> 00002
       <no epsilon>
-00146() <~ (14, 33), (29, 68), (46, 114)
-      == 'c' ==> 00147
+00002() <~ (14, 32), (29, 67), (46, 113)
+      == 'c' ==> 00003
       <no epsilon>
-00147(A, S, P3, pre=27) <~ (14, 34, A, P3, pre=12), (29, 69, A, S, pre=27), (46, 115)
-      == 'd' ==> 00148
+00003(A, S, P3, pre=27) <~ (14, 33, A, P3, pre=12), (29, 68, A, S, pre=27), (46, 114)
+      == 'd' ==> 00004
       <no epsilon>
-00148() <~ (46, 116)
-      == 'e' ==> 00149
+00004() <~ (46, 115)
+      == 'e' ==> 00005
       <no epsilon>
-00149() <~ (46, 117)
-      == 'f' ==> 00150
+00005() <~ (46, 116)
+      == 'f' ==> 00006
       <no epsilon>
-00150(A, S) <~ (46, 118, A, S)
+00006(A, S) <~ (46, 117, A, S)
       <no epsilon>
 
-State 144:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 145:
+State 1:
   .entry:
+    .positioner:
+        .from 0: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 146:
+State 2:
   .entry:
+    .positioner:
+        .from 1: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 147:
+State 3:
   .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     if PreContext_12: pos -= 2;  goto Pattern14;
     else if PreContext_27:  goto Pattern29;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 148:
+State 4:
   .entry:
+    .positioner:
+        .from 3: <nothing>
   .drop_out:
     if PreContext_12: pos -= 3;  goto Pattern14;
     else if PreContext_27: pos -= 1;  goto Pattern29;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 149:
+State 5:
   .entry:
+    .positioner:
+        .from 4: <nothing>
   .drop_out:
     if PreContext_12: pos -= 4;  goto Pattern14;
     else if PreContext_27: pos -= 2;  goto Pattern29;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 150:
+State 6:
   .entry:
+    .positioner:
+        .from 5: <nothing>
   .drop_out:
      goto Pattern46;
 

@@ -59,10 +59,8 @@ State 2:
 
 State 3:
   .entry:
-    .accepter:
-        if      PreContext_43: last_acceptance = Pattern45
-        else if PreContext_71: last_acceptance = Pattern73
-        else if PreContext_99: last_acceptance = Pattern101
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     Checker:
         if      PreContext_43: accept = Pattern45

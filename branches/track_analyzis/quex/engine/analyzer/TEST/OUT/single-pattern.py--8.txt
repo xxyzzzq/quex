@@ -17,12 +17,17 @@ State 0:
 
 State 1:
   .entry:
+    .positioner:
+        .from 0: <nothing>
+        .from 2: <nothing>
   .drop_out:
      goto Pattern11;
 
 
 State 2:
   .entry:
+    .positioner:
+        .from 0: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
