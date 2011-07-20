@@ -27,7 +27,7 @@ from   quex.engine.state_machine.state_core_info import PostContextIDs, Acceptan
 from   quex.engine.misc.enum import Enum
 
 
-from quex.blackboard import setup as Setup
+from quex.blackboard  import setup as Setup, TargetStateIndices
 from copy             import copy, deepcopy
 from collections      import defaultdict
 from operator         import attrgetter, itemgetter
@@ -70,7 +70,8 @@ class Analyzer:
                 transition_map = sm_state.transitions().get_map()
                 if     len(transition_map) == 0 \
                    or (len(transition_map) == 1 and transition_map.keys()[0] == 1):
-                   self.__state_db[state_index].entry.positioner_db.clear()
+                   # self.__state_db[state_index].entry.positioner_db.clear()
+                   self.__state_db[state_index].entry.accepter.clear()
         else:
             # NOTE: For backward analysis, drop_out and entry do not require any construction 
             #       beyond what is triggered inside the constructor of 'AnalyzerState'.
@@ -349,7 +350,10 @@ class Analyzer:
         """Determine sets of equivalent post context ids, because they
            store the input positions at the exactly same set of states.
         """
-        # (1) map: post-context-id --> set of states where the positions are stored
+        # (1) map: 
+        #
+        #          post-context-id --> set of states where the positions are stored
+        #
         store_constellation_db    = defaultdict(set)
         restore_contellation_list = []
         for state in self.state_db.itervalues():
@@ -357,7 +361,10 @@ class Analyzer:
             for post_context_id in state.entry.positioner_db.iterkeys():
                 store_constellation_db[post_context_id].add(state.index)
 
-        # (2) inverse map: set of states where the positions are stored --> post context ids that do so
+        # (2) inverse map: 
+        #             
+        #          set of states where the positions are stored --> post context ids that do so
+        #
         inverse_db = defaultdict(set)
         for post_context_id, storing_state_set in store_constellation_db.iteritems():
             inverse_db[tuple(sorted(storing_state_set))].add(post_context_id)
@@ -369,6 +376,11 @@ class Analyzer:
         return store_constellation_db.keys(), filter(lambda x: len(x) >= 2, inverse_db.values())
 
     def _find_state_sets_from_store_to_restore(self):
+        """RETURNS: A mapping:
+
+              post-context id --> set of states that lie on the path from store 
+                                  to restore of the input position.
+        """
         def dive(PostContextID, State, path, collection):
             """Termination Condition: state.target_index_list == empty
                                   or: state_index in path
@@ -387,9 +399,10 @@ class Analyzer:
         result = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for from_state_index, post_context_id in ifilter(lambda x: x != TargetStateIndices.ALL, 
-                                                             state.entry.positioner_db.iterkeys()):
-                dive(post_context_id, state, [], result[post_context_id])
+            for from_state_index, positioner in ifilter(lambda x: x[0] != TargetStateIndices.ALL, 
+                                                        state.entry.positioner_db.iteritems()):
+                for post_context_id in positioner.iterkeys():
+                    dive(post_context_id, state, [], result[post_context_id])
 
         return result
 
@@ -403,7 +416,6 @@ class AnalyzerState(object):
                  "__engine_type", 
                  "input", 
                  "entry", 
-                 "entry",
                  "transition_map", 
                  "drop_out", 
                  "_origin_list")
