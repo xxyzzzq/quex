@@ -1,8 +1,0 @@
-12 Cases store at 4 places => 4 registers.
-##eq: []
-##ni [set([251L, 252L, 253L, 254L]), set([252L, 253L, 254L]), set([253L, 254L])]
-   250L: 1
-   251L: 0
-   252L: 0
-   253L: 0
-   254L: 0
