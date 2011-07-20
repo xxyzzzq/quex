@@ -65,6 +65,8 @@ State 3:
 
 State 4:
   .entry:
+    .positioner:
+        .from 3: <nothing>
   .drop_out:
     if PreContext_76:  goto Pattern78;
     else if PreContext_110:  goto Pattern112;

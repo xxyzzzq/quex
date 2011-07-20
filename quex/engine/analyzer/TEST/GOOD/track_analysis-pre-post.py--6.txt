@@ -1,59 +1,69 @@
-init-state = 133L
-00133() <~ (29, 66), (11, 24), (43, 103)
-      == 'a' ==> 00134
+init-state = 0L
+00000() <~ (43, 102), (11, 23), (29, 65)
+      == 'a' ==> 00001
       <no epsilon>
-00134(A, S, P15, pre=9) <~ (11, 25, A, S, pre=9), (29, 67, S, P15), (43, 104)
-      == 'a' ==> 00135
+00001(A, S, P15, pre=9) <~ (11, 24, A, S, pre=9), (29, 66, S, P15), (43, 103)
+      == 'a' ==> 00002
       <no epsilon>
-00135(A, S, pre=9) <~ (11, 26, A, S, pre=9), (29, 68), (43, 105)
-      == 'a' ==> 00136
+00002(A, S, pre=9) <~ (11, 25, A, S, pre=9), (29, 67), (43, 104)
+      == 'a' ==> 00003
       <no epsilon>
-00136() <~ (29, 69), (43, 106)
-      == 'a' ==> 00137
+00003() <~ (29, 68), (43, 105)
+      == 'a' ==> 00004
       <no epsilon>
-00137(A, P15, pre=27) <~ (29, 70, A, P15, pre=27), (43, 107)
-      == 'b' ==> 00138
+00004(A, P15, pre=27) <~ (29, 69, A, P15, pre=27), (43, 106)
+      == 'b' ==> 00005
       <no epsilon>
-00138(A, S) <~ (43, 108, A, S)
+00005(A, S) <~ (43, 107, A, S)
       <no epsilon>
 
-State 133:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 134:
+State 1:
   .entry:
-  .drop_out:
-    if PreContext_9:  goto Pattern11;
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 135:
-  .entry:
+    .positioner:
+        .from 0: <nothing>
   .drop_out:
     if PreContext_9:  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 136:
+State 2:
   .entry:
+    .positioner:
+        .from 1: <nothing>
+  .drop_out:
+    if PreContext_9:  goto Pattern11;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     if PreContext_9: pos -= 1;  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 137:
+State 4:
   .entry:
+    .positioner:
+        .from 3: <nothing>
   .drop_out:
     if PreContext_27: pos -= 3;  goto Pattern29;
     else if PreContext_9: pos -= 2;  goto Pattern11;
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 138:
+State 5:
   .entry:
+    .positioner:
+        .from 4: <nothing>
   .drop_out:
      goto Pattern43;
 

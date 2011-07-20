@@ -1,53 +1,57 @@
-init-state = 80L
-00080() <~ (11, 29), (23, 62)
-      == 'a' ==> 00081
+init-state = 0L
+00000() <~ (11, 29), (23, 62)
+      == 'a' ==> 00001
       <no epsilon>
-00081(S, P13) <~ (11, 30, S, P1), (23, 63, S, P13)
-      == 'b' ==> 00082
+00001(S, P13) <~ (11, 30, S, P1), (23, 63, S, P13)
+      == 'b' ==> 00002
       <no epsilon>
-00082() <~ (11, 31), (23, 64)
-      == 'b' ==> 00082
-      == 'd' ==> 00083
-      == 'e' ==> 00084
+00002() <~ (11, 31), (23, 64)
+      == 'b' ==> 00002
+      == 'd' ==> 00003
+      == 'e' ==> 00004
       <no epsilon>
-00083(A, P1) <~ (11, 32, A, P1)
+00003(A, P1) <~ (11, 32, A, P1)
       <no epsilon>
-00084(A, P13) <~ (23, 65, A, P13)
+00004(A, P13) <~ (23, 65, A, P13)
       <no epsilon>
 
-State 80:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 81:
+State 1:
   .entry:
     .positioner:
-        .from 80: <nothing>
+        .from 0: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 82:
+State 2:
   .entry:
     .positioner:
-        .from 81:
+        .from 1:
              position[PostContext_1]  = input_p;
              position[PostContext_13]  = input_p;
-        .from 82: <nothing>
+        .from 2: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 83:
+State 3:
   .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     pos = position[PostContext_1] ; goto Pattern11;
 
 
-State 84:
+State 4:
   .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     pos = position[PostContext_13] ; goto Pattern23;
 

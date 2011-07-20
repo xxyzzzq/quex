@@ -1,71 +1,75 @@
-init-state = 82L
-00082() <~ (25, 58), (16, 36), (7, 15)
-      == 'a' ==> 00083
-      == 'b' ==> 00084
+init-state = 0L
+00000() <~ (25, 58), (16, 36), (7, 15)
+      == 'a' ==> 00001
+      == 'b' ==> 00004
       <no epsilon>
-00083(S, P18) <~ (7, 16), (16, 37), (25, 59, S, P18)
-      == 'b' ==> 00087
+00001(S, P18) <~ (7, 16), (16, 37), (25, 59, S, P18)
+      == 'b' ==> 00002
       <no epsilon>
-00087(S, P12) <~ (7, 17), (16, 38, S, P12), (25, 60)
-      == 'c' ==> 00088
+00002(S, P12) <~ (7, 17), (16, 38, S, P12), (25, 60)
+      == 'c' ==> 00003
       <no epsilon>
-00088(A, S, P18) <~ (7, 18, A, S), (16, 39, A, P12), (25, 61, A, P18)
+00003(A, S, P18) <~ (7, 18, A, S), (16, 39, A, P12), (25, 61, A, P18)
       <no epsilon>
-00084() <~ (7, 16)
-      == 'b' ==> 00085
+00004() <~ (7, 16)
+      == 'b' ==> 00005
       <no epsilon>
-00085() <~ (7, 17)
-      == 'c' ==> 00086
+00005() <~ (7, 17)
+      == 'c' ==> 00006
       <no epsilon>
-00086(A, S) <~ (7, 18, A, S)
+00006(A, S) <~ (7, 18, A, S)
       <no epsilon>
 
-State 82:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 83:
+State 1:
   .entry:
     .positioner:
-        .from 82: <nothing>
+        .from 0: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 84:
+State 2:
   .entry:
     .positioner:
-        .from 82: <nothing>
+        .from 1: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 85:
+State 3:
   .entry:
     .positioner:
-        .from 84: <nothing>
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
-
-
-State 86:
-  .entry:
+        .from 2: <nothing>
   .drop_out:
      goto Pattern7;
 
 
-State 87:
+State 4:
   .entry:
     .positioner:
-        .from 83: <nothing>
+        .from 0: <nothing>
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 88:
+State 5:
   .entry:
+    .positioner:
+        .from 4: <nothing>
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 6:
+  .entry:
+    .positioner:
+        .from 5: <nothing>
   .drop_out:
      goto Pattern7;
 

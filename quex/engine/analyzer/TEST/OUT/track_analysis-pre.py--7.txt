@@ -54,6 +54,8 @@ State 3:
 
 State 4:
   .entry:
+    .positioner:
+        .from 3: <nothing>
   .drop_out:
      goto Pattern21;
 

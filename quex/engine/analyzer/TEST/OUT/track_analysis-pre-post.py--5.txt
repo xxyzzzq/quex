@@ -1,66 +1,69 @@
-init-state = 142L
-00142() <~ (19, 41), (21, 47), (45, 110), (4, 8)
-      == 'a' ==> 00143
-      == 'b' ==> 00144
+init-state = 0L
+00000() <~ (19, 41), (21, 47), (45, 110), (4, 8)
+      == 'a' ==> 00001
+      == 'b' ==> 00006
       <no epsilon>
-00143(A, S, P8) <~ (4, 9, A, S), (19, 42, S, P8), (45, 112)
-      == 'a' ==> 00148
+00001(A, S, P8) <~ (4, 9, A, S), (19, 42, S, P8), (45, 112)
+      == 'a' ==> 00002
       <no epsilon>
-00148(A, S) <~ (4, 10, A, S), (19, 43), (45, 113)
-      == 'a' ==> 00149
+00002(A, S) <~ (4, 10, A, S), (19, 43), (45, 113)
+      == 'a' ==> 00003
       <no epsilon>
-00149(A, P8, pre=17) <~ (19, 44, A, P8, pre=17), (45, 114)
-      == 'c' ==> 00146
+00003(A, P8, pre=17) <~ (19, 44, A, P8, pre=17), (45, 114)
+      == 'c' ==> 00004
       <no epsilon>
-00146() <~ (45, 115)
-      == 'd' ==> 00147
+00004() <~ (45, 115)
+      == 'd' ==> 00005
       <no epsilon>
-00147(A, S) <~ (45, 116, A, S)
+00005(A, S) <~ (45, 116, A, S)
       <no epsilon>
-00144(A, S) <~ (21, 48, A, S), (45, 111)
-      == 'b' ==> 00145
+00006(A, S) <~ (21, 48, A, S), (45, 111)
+      == 'b' ==> 00007
       <no epsilon>
-00145() <~ (45, 114)
-      == 'c' ==> 00146
+00007() <~ (45, 114)
+      == 'c' ==> 00004
       <no epsilon>
 
-State 142:
+State 0:
   .entry:
   .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
 
-State 143:
+State 1:
   .entry:
     .positioner:
-        .from 142: <nothing>
+        .from 0: <nothing>
   .drop_out:
      goto Pattern4;
 
 
-State 144:
+State 2:
   .entry:
     .accepter:
-        last_acceptance = Pattern21
+        last_acceptance = Pattern4
     .positioner:
-        .from 142: <nothing>
+        .from 1: <nothing>
   .drop_out:
-     goto Pattern21;
+     goto Pattern4;
 
 
-State 145:
+State 3:
+  .entry:
+    .accepter:
+        if      PreContext_17: last_acceptance = Pattern19
+    .positioner:
+        .from 2: <nothing>
+  .drop_out:
+    if PreContext_17: pos -= 2;  goto Pattern19;
+    pos -= 1;  goto Pattern4;
+
+
+State 4:
   .entry:
     .positioner:
-        .from 144: <nothing>
-  .drop_out:
-    pos -= 1;  goto Pattern21;
-
-
-State 146:
-  .entry:
-    .positioner:
-        .from 145: <nothing>
-        .from 149: <nothing>
+        .from 3: <nothing>
+        .from 7: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -70,30 +73,29 @@ State 146:
         case 21: pos -= 2;  goto Pattern21;
 
 
-State 147:
+State 5:
   .entry:
+    .positioner:
+        .from 4: <nothing>
   .drop_out:
      goto Pattern45;
 
 
-State 148:
+State 6:
   .entry:
     .accepter:
-        last_acceptance = Pattern4
+        last_acceptance = Pattern21
     .positioner:
-        .from 143: <nothing>
+        .from 0: <nothing>
   .drop_out:
-     goto Pattern4;
+     goto Pattern21;
 
 
-State 149:
+State 7:
   .entry:
-    .accepter:
-        if      PreContext_17: last_acceptance = Pattern19
     .positioner:
-        .from 148: <nothing>
+        .from 6: <nothing>
   .drop_out:
-    if PreContext_17: pos -= 2;  goto Pattern19;
-    pos -= 1;  goto Pattern4;
+    pos -= 1;  goto Pattern21;
 
 

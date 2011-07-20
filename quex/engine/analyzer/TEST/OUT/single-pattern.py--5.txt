@@ -53,6 +53,8 @@ State 2:
 
 State 3:
   .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     if PreContext_28: pos = position[PostContext_16] ; goto Pattern30;
     pos = lexeme_start_p + 1;  goto Failure;

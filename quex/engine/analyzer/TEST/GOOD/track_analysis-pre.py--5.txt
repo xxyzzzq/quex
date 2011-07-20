@@ -36,6 +36,8 @@ State 2:
 
 State 3:
   .entry:
+    .positioner:
+        .from 2: <nothing>
   .drop_out:
     if PreContext_35:  goto Pattern37;
     else if PreContext_20: pos -= 1;  goto Pattern22;
