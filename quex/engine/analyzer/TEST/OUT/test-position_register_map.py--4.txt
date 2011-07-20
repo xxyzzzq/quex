@@ -1,6 +1,0 @@
-All store at the same state => use same register.
-##eq: []
-##ni [set([202L, 203L])]
-   201L: 1
-   202L: 0
-   203L: 0

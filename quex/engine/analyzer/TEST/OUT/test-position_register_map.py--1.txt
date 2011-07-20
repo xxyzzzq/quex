@@ -1,7 +1,0 @@
-Last Acceptance / Post-Context-ID 'None'
-##eq: []
-##ni [set([58L, 59L, 60L]), set([59L, 60L])]
-   57L: 1
-   58L: 0
-   59L: 0
-   60L: 0
