@@ -57,10 +57,8 @@ class Analyzer:
         if EngineType == EngineTypes.FORWARD:
             for state_index, acceptance_trace_list in acceptance_db.iteritems():
                 state = self.__state_db[state_index]
-
-                ## print "##DEBUG", state_index
-                ## if state_index in [97]: print "##", state_index, acceptance_trace_list
-
+                # acceptance_trace_list: 
+                # Trace objects for each path that guides through state.
                 state.drop_out = self.get_drop_out_object(state, acceptance_trace_list)
 
             # -- After the preceding dependency implementation:
@@ -70,7 +68,7 @@ class Analyzer:
                 transition_map = sm_state.transitions().get_map()
                 if     len(transition_map) == 0 \
                    or (len(transition_map) == 1 and transition_map.keys()[0] == 1):
-                   # self.__state_db[state_index].entry.positioner_db.clear()
+                   ## self.__state_db[state_index].entry.positioner_db.clear()
                    self.__state_db[state_index].entry.accepter.clear()
         else:
             # NOTE: For backward analysis, drop_out and entry do not require any construction 
@@ -169,7 +167,6 @@ class Analyzer:
 
         # Terminal Router
         for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
-
             assert pattern_id != AcceptanceIDs.VOID
             router.append(DropOut_RouterElement(pattern_id, 
                                                 info.transition_n_since_positioning, 
@@ -227,7 +224,7 @@ class Analyzer:
     def analyze_positioning(self, TheAcceptanceTraceList):
         """Find the pattern for positioning in the traces. Returns a dictionary
 
-           map: acceptance_id --> positioning info
+                     map: acceptance_id --> positioning info
 
            positioning info == None: positioning is void
         """

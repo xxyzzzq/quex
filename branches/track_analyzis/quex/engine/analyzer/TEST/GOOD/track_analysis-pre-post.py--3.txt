@@ -33,8 +33,7 @@ State 0:
 State 1:
   .entry:
     .positioner:
-    position[Acceptance] = input_p;
-    position[PostContext_10]  = input_p;
+        .from 0: <nothing>
   .drop_out:
     if PreContext_6:  goto Pattern8;
      goto Pattern37;
@@ -42,6 +41,10 @@ State 1:
 
 State 2:
   .entry:
+    .positioner:
+        .from 1:
+             position[Acceptance] = input_p;
+             position[PostContext_10]  = input_p;
   .drop_out:
     if PreContext_6: pos -= 1;  goto Pattern8;
     pos -= 1;  goto Pattern37;

@@ -43,6 +43,11 @@ State 1:
 
 State 2:
   .entry:
+    .positioner:
+        .from 1: <nothing>
+        .from 4:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 5: <nothing>
+        .from 6: <nothing>
   .drop_out:
     Checker:
         accept = last_acceptance
@@ -74,7 +79,7 @@ State 4:
     .accepter:
         if      PreContext_15: last_acceptance = Pattern17
     .positioner:
-    if 'PreContext_15': position[Acceptance] = input_p;
+        .from 0: <nothing>
   .drop_out:
     if PreContext_15:  goto Pattern17;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -82,6 +87,8 @@ State 4:
 
 State 5:
   .entry:
+    .positioner:
+        .from 4:if 'PreContext_15':  position[Acceptance] = input_p;
   .drop_out:
     if PreContext_15: pos -= 1;  goto Pattern17;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -89,6 +96,9 @@ State 5:
 
 State 6:
   .entry:
+    .positioner:
+        .from 4:if 'PreContext_15':  position[Acceptance] = input_p;
+        .from 5: <nothing>
   .drop_out:
     if PreContext_15: pos = position[Acceptance]; goto Pattern17;
     pos = lexeme_start_p + 1;  goto Failure;
