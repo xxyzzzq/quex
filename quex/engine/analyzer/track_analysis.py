@@ -407,16 +407,12 @@ class TrackInfo:
         # (1) Add current state to path
         path.append(StateIndex)
 
-        ## print "## ----------------"
         # (2) Update the information about the 'trace of acceptances'
         acceptance_trace.update(self, path) 
 
         # (3) Mark the current state with its acceptance trace
         #     NOTE: When this function is called, acceptance_trace is already
         #           an independent object, i.e. constructed or deepcopy()-ed.
-        ## print "## ", StateIndex
-        ## print "## ", path
-        ## print "## ", acceptance_trace
         self.acceptance_trace_db[StateIndex].append(acceptance_trace)
 
         # (4) Recurse to all (undone) target states. 
@@ -628,6 +624,7 @@ class AcceptanceTraceEntry(object):
                  "min_transition_n_to_acceptance", 
                  "accepting_state_index", 
                  "positioning_state_index",
+                 "positioning_state_successor_index",
                  "post_context_id")
 
     def __init__(self, PreContextID, PatternID, 
@@ -667,8 +664,9 @@ class AcceptanceTraceEntry(object):
         self.min_transition_n_to_acceptance = MinTransitionN_ToAcceptance
 
         # 
-        self.accepting_state_index   = AcceptingStateIndex
-        self.positioning_state_index = PositioningStateIndex
+        self.accepting_state_index             = AcceptingStateIndex
+        self.positioning_state_index           = PositioningStateIndex
+        self.positioning_state_successor_index = None
         #
         self.post_context_id         = PostContextID
 

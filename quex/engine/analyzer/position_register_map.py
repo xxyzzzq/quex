@@ -86,7 +86,7 @@ def do(analyzer):
     array_index = 0
     while len(combinable_list) != 0:
         # Allways, try to combine the largest combinable set first.
-        k           = max(enumerate(combinable_list), key=itemgetter(1))[0]
+        k           = max(enumerate(combinable_list), key=lambda x: len(x[1]))[0]
         combination = combinable_list.pop(k)
 
         for post_context_id in combination:
@@ -117,19 +117,22 @@ def find_non_intersecting_post_context_id_groups(AllPostContextID_List, analyzer
     """
     StateSetDB = analyzer._find_state_sets_from_store_to_restore()
 
-    result = {}
+    result = []
     for i, post_context_id in enumerate(AllPostContextID_List):
-        result[post_context_id] = []
-        state_set = StateSetDB[post_context_id]
+        non_intersecting_group = set([post_context_id])
+        state_set              = StateSetDB[post_context_id]
         for other_post_context_id in islice(AllPostContextID_List, i + 1, None):
             other_state_set = StateSetDB[other_post_context_id]
             if state_set.isdisjoint(other_state_set):
-                result[post_context_id].append(other_post_context_id)
+                non_intersecting_group.add(other_post_context_id)
+        if len(non_intersecting_group) > 1:
+            if non_intersecting_group not in result:
+                result.append(non_intersecting_group)
 
     # NOTE: A non-intersecting set of size < 2 does not make any statement.
     #       At least, there must be two elements, so that this means 'A is 
     #       equivalent to B'. Thus, filter anything of size < 2.
-    return map(set, ifilter(lambda x: len(x) > 1, result.values()))
+    return result
             
 
 
