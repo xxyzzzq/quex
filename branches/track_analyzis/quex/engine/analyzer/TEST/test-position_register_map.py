@@ -44,8 +44,8 @@ elif "3" in sys.argv:
     pattern_list = [
         'a+',        
         '[ab]+cd',        
-        'a/c/y+z',
-        'b/c/y+z',
+        'a/y+z',
+        'b/y+z',
     ]
 elif "4" in sys.argv:
     print "All store at the same state => use same register."
@@ -64,25 +64,26 @@ elif "5" in sys.argv:
         '2/c|cb/a+z',
         '3/c|cb/a+z',
 
-#        'a/c|cba/a+z',
-#        'b/c|cba/a+z',
+        'a/c|cba/a+z',
+        'b/c|cba/a+z',
 
-#        'a/c|cbaz/a+z',
-#        'b/c|cbaz/a+z',
+        'a/c|cbaz/a+z',
+        'b/c|cbaz/a+z',
     ]
 else:
     assert False
 
 state_machine_list = map(lambda x: regex.do(x, {}), pattern_list)
 sm                 = get_combined_state_machine(state_machine_list, False) # May be 'True' later.
+sm                 = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help_drawing.if_DRAW_in_sys_argv(sm)
 
 analyzer = core.Analyzer(sm, EngineTypes.FORWARD)
 
-# for state in analyzer:
+#for state in analyzer:
 #    print state.get_string(InputF=False, TransitionMapF=False)
 
-for post_context_id, array_index in position_register_map.do(analyzer).iteritems():
+for post_context_id, array_index in sorted(position_register_map.do(analyzer).iteritems()):
     print "   %s: %i" % (repr(post_context_id), array_index)
