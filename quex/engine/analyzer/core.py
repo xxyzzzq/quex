@@ -19,12 +19,15 @@
     stored along with the AnalyzerState object.
 """
 
-import quex.engine.analyzer.track_analysis as track_analysis
-from   quex.engine.analyzer.track_analysis import AcceptanceTraceEntry, \
-                                                  AcceptanceTraceEntry_Void, \
-                                                  extract_pre_context_id
-from   quex.engine.state_machine.state_core_info import PostContextIDs, AcceptanceIDs, EngineTypes
-from   quex.engine.misc.enum import Enum
+import quex.engine.analyzer.track_analysis        as track_analysis
+import quex.engine.analyzer.position_register_map as position_register_map
+from   quex.engine.analyzer.track_analysis        import AcceptanceTraceEntry, \
+                                                         AcceptanceTraceEntry_Void, \
+                                                         extract_pre_context_id
+from   quex.engine.state_machine.state_core_info  import PostContextIDs, \
+                                                         AcceptanceIDs, \
+                                                         EngineTypes
+from   quex.engine.misc.enum                      import Enum
 
 
 from quex.blackboard  import setup as Setup, TargetStateIndices
@@ -85,14 +88,14 @@ class Analyzer:
             for target in sm_state.transitions().get_map().iterkeys():
                 self.__state_db[target].set_state_is_entered_f()
 
-    @property
-    def state_db(self): return self.__state_db
-    @property
-    def init_state_index(self): return self.__init_state_index
+        self.__position_register_map = position_register_map.do(self)
 
-    def __iter__(self):
-        for x in self.__state_db.values():
-            yield x
+    @property
+    def state_db(self):              return self.__state_db
+    @property
+    def init_state_index(self):      return self.__init_state_index
+    @property
+    def position_register_map(self): return self.__position_register_map
 
     def get_drop_out_object(self, state, TheAcceptanceTraceList):
         """A state may be reached via multiple paths. For each path there is 
@@ -355,8 +358,9 @@ class Analyzer:
         restore_contellation_list = []
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
-            for post_context_id in state.entry.positioner_db.iterkeys():
-                store_constellation_db[post_context_id].add(state.index)
+            for positioner in state.entry.positioner_db.itervalues():
+                for post_context_id in positioner.iterkeys():
+                    store_constellation_db[post_context_id].add(state.index)
 
         # (2) inverse map: 
         #             
@@ -402,6 +406,10 @@ class Analyzer:
                     dive(post_context_id, state, [], result[post_context_id])
 
         return result
+
+    def __iter__(self):
+        for x in self.__state_db.values():
+            yield x
 
 InputActions = Enum("INCREMENT_THEN_DEREF", "DEREF", "DECREMENT_THEN_DEREF")
 

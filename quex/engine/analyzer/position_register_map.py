@@ -1,7 +1,7 @@
 from itertools   import imap, ifilter, islice
 from collections import defaultdict
 from operator    import itemgetter
-from copy import copy
+from copy        import copy
 
 def do(analyzer):
     """RETURNS: 
@@ -62,13 +62,11 @@ def do(analyzer):
     #                   same states.
     all_post_context_id_set, \
     equivalent_sets          = analyzer._get_equivalent_post_context_id_sets()
-    print "##eq:", equivalent_sets
 
     # (2) Determine: Sets of post context ids, where the paths from storage
     #                of input position and restore of input position does 
     #                not interact.
     combinable_list = find_non_intersecting_post_context_id_groups(all_post_context_id_set, analyzer)
-    print "##ni", combinable_list
 
     # (*) To each non-intersecting state set on can add the equivalent 
     #     post-context-ids.

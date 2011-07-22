@@ -1,4 +1,5 @@
-from   quex.engine.analyzer.core import AnalyzerState, \
+from   quex.engine.analyzer.core import Analyzer, \
+                                        AnalyzerState, \
                                         InputActions, \
                                         Entry, \
                                         EntryBackward, \
@@ -6,17 +7,19 @@ from   quex.engine.analyzer.core import AnalyzerState, \
 from   quex.engine.state_machine.state_core_info           import EngineTypes, AcceptanceIDs, PostContextIDs
 from   quex.engine.generator.languages.address             import Address
 import quex.engine.generator.state_coder2.transition_block as transition_block
+import quex.engine.generator.state_coder2.entry            as entry
 from   quex.blackboard import TargetStateIndices, \
                               setup as Setup
 from   itertools import islice
 
-def do(txt, TheState):
+def do(txt, TheState, TheAnalyzer):
     assert isinstance(TheState, AnalyzerState)
+    assert isinstance(TheAnalyzer, Analyzer)
 
     txt.append("\n")
 
+    entry.do(txt, TheState, TheAnalyzer)
     do_input(txt, TheState)
-    do_entry(txt, TheState)
 
     txt.extend(transition_block.do(TheState))
     
@@ -33,6 +36,9 @@ def do_input(txt, TheState):
     """Generate the code fragment that accesses the 'input' character for
        the subsequent transition map. In general this consists of 
 
+            -- increment/decrement (if not init state forward)
+            -- dereference the input pointer
+
        The initial state in forward lexing is an exception! The input pointer
        is not increased, since it already stands on the right position from
        the last analyzis step. When the init state is entered from any 'normal'
@@ -46,41 +52,6 @@ def do_input(txt, TheState):
 
     return
 
-def do_entry(txt, TheState):
-    LanguageDB = Setup.language_db
-
-    if isinstance(TheState.entry, Entry):
-        accepter = TheState.entry.get_accepter()
-        if len(accepter) != 0:
-            first_f = True
-            for pre_context_id_list, acceptance_id in TheState.entry.get_accepter():
-                assert isinstance(acceptance_id, (int, long))
-                txt.append(
-                    LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
-                                              LanguageDB.ASSIGN("last_acceptance", "%i" % acceptance_id))
-                )
-                first_f = False
-            LanguageDB.END_IF(first_f)
-
-        if len(TheState.entry.positioner) != 0:
-            first_f = True
-            for register, pre_context_id_list in TheState.entry.get_positioner():
-                if register == PostContextIDs.NONE: register_str = "last_acceptance"
-                else:                               register_str = "position[%i]" % register
-                txt.append(
-                    LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
-                                              LanguageDB.ASSIGN(register_str, "input_p")), 
-                )
-                first_f = False
-            LanguageDB.END_IF(first_f)
-            
-    elif isinstance(TheState.entry, EntryBackward):
-        for pre_context_id in TheState.entry.pre_context_fulfilled_set:
-            txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
-
-    elif isinstance(TheState.entry, EntryBackwardInputPositionDetection):
-        if TheState.entry.terminated_f: 
-            txt.append("    %s\n" % LanguageDB.RETURN)
 
 def do_drop_out(txt, TheState):
     LanguageDB = Setup.language_db
