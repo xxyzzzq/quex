@@ -18,25 +18,20 @@ def do(txt, TheState, TheAnalyzer):
 
     LanguageDB = Setup.language_db
 
-    txt.append("\n")
-
     entry.do(txt, TheState, TheAnalyzer.position_register_map)
-
-    LanguageDB.ACCESS_INPUT(txt, TheState.input)
-
+    input_do(txt, TheState)
     transition_block.do(txt, TheState)
-    
-    do_drop_out(txt, TheState)
+    drop_out_do(txt, TheState)
 
-    do_epilog_if_init_state(txt, TheState)
+    epilog_if_init_state_do(txt, TheState)
 
     LanguageDB.REPLACE_INDENT(txt)
 
-    for x in txt:
-        assert not isinstance(x, list), repr(txt)
-        assert not x is None
+    for i, x in enumerate(txt):
+        assert not isinstance(x, list), repr(txt[i-2:i+2])
+        assert not x is None, txt[i-2:i+2]
 
-def do_input(txt, TheState):
+def input_do(txt, TheState):
     """Generate the code fragment that accesses the 'input' character for
        the subsequent transition map. In general this consists of 
 
@@ -47,15 +42,12 @@ def do_input(txt, TheState):
        is not increased, since it already stands on the right position from
        the last analyzis step. When the init state is entered from any 'normal'
        state it enters via the 'epilog' generated in the function 
-       do_epilog_if_init_state().
+       epilog_if_init_state_do().
     """
     LanguageDB = Setup.language_db
+    LanguageDB.ACCESS_INPUT(txt, TheState.input)
 
-
-    return
-
-
-def do_drop_out(txt, TheState):
+def drop_out_do(txt, TheState):
     LanguageDB = Setup.language_db
 
     txt.append(Address("$drop-out", TheState.index))
@@ -115,7 +107,7 @@ def do_drop_out(txt, TheState):
 
     txt.extend(LanguageDB.SELECTION("last_acceptance", case_list))
 
-def do_epilog_if_init_state(txt, TheState):
+def epilog_if_init_state_do(txt, TheState):
     LanguageDB = Setup.language_db
 
     if not TheState.init_state_forward_f: return 
