@@ -254,8 +254,8 @@ class LDB(dict):
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
 
-    def END_IF(self, LastF=True):
-        return { True: "}", False: "" }[LastF]
+    def END_IF(self, First=True):
+        return { True: "}", False: "" }[FirstF]
 
     def ACCESS_INPUT(self, txt, InputAction):
         txt.append({
@@ -266,15 +266,12 @@ class LDB(dict):
                                                "    input = *(me->buffer._input_p);\n",
         }[InputAction])
 
-    def STATE_ENTRY(self, TheState, FromStateIndex=None):
+    def STATE_ENTRY(self, txt, TheState, FromStateIndex=None):
         if TheState.init_state_forward_f:
-            txt   = ["\n"]
             index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
         elif TheState.init_state_f:
-            txt   = ["\n"]
             index = TheState.index
         else:
-            txt   = ["\n    %s\n" % self.UNREACHABLE ]
             index = TheState.index
 
         txt.append(self.LABEL(index, FromStateIndex))
@@ -286,8 +283,7 @@ class LDB(dict):
                 txt.append("    __quex_debug_state(%i);\n" % TheState.index)
             else:
                 txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
-
-        return "".join(txt)
+        return 
 
     def POSITIONING(self, Positioning, Register):
         if   Positioning is None: 

@@ -25,7 +25,7 @@ def do(RawSM, EngineType):
     remainder  = set(analyzer.state_db.keys())
 
     # (*) Init State
-    init_state = state_coder.do(txt, analyzer.state_db[analyzer.init_state_index])
+    init_state = state_coder.do(txt, analyzer.state_db[analyzer.init_state_index], analyzer)
     remainder.discard(analyzer.init_state_index)
 
     # (*) [Optional] Path-Compressed States
@@ -46,7 +46,7 @@ def do(RawSM, EngineType):
     frequency_db = get_frequency_db(analyzer.state_db, remainder)
     for state in sorted(ifilter(lambda x: x.index in remainder, analyzer.state_db.itervalues()), 
                         key=lambda x: frequency_db[x.index], reverse=True):
-        state_coder.do(txt, state) 
+        state_coder.do(txt, state, analyzer) 
 
     return txt
 

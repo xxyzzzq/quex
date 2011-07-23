@@ -91,7 +91,7 @@ class Analyzer:
         if EngineType == EngineTypes.FORWARD:
             self.__position_register_map = position_register_map.do(self)
             for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-                entry.try_unify_positioner_db(self):
+                entry.try_unify_positioner_db()
 
     @property
     def state_db(self):              return self.__state_db
@@ -649,14 +649,13 @@ class Entry(object):
            A unified entry is coded as 'ALL' --> common positioning.
         """
         if len(self.positioner_db) == 0: return
-        iteritems = self.positioner_db.iteritems()
-        from_state_index, prototype = iteritems.next()
+        itervalues = self.positioner_db.itervalues()
 
         self.__uniform_f = True
-        for from_state_index, entry in iteritems:
-            if not entry.is_equal(prototype): 
-                self.__uniform_f = False
-                return
+        prototype        = itervalues.next()
+        for dummy in ifilter(lambda x: x != prototype, itervalues):
+            self.__uniform_f = False
+            return
 
     def __repr__(self):
         txt = []
