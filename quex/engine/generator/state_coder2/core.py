@@ -16,17 +16,21 @@ def do(txt, TheState, TheAnalyzer):
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheAnalyzer, Analyzer)
 
+    LanguageDB = Setup.language_db
+
     txt.append("\n")
 
-    entry.do(txt, TheState, TheAnalyzer)
-    do_input(txt, TheState)
+    entry.do(txt, TheState, TheAnalyzer.position_register_map)
 
-    txt.extend(transition_block.do(TheState))
+    LanguageDB.ACCESS_INPUT(txt, TheState.input)
+
+    transition_block.do(txt, TheState)
     
     do_drop_out(txt, TheState)
+
     do_epilog_if_init_state(txt, TheState)
 
-    Setup.language_db.REPLACE_INDENT(txt)
+    LanguageDB.REPLACE_INDENT(txt)
 
     for x in txt:
         assert not isinstance(x, list), repr(txt)
@@ -47,8 +51,6 @@ def do_input(txt, TheState):
     """
     LanguageDB = Setup.language_db
 
-    txt.append(LanguageDB.STATE_ENTRY(TheState))
-    txt.append(LanguageDB.ACCESS_INPUT(TheState.input))
 
     return
 

@@ -11,7 +11,7 @@ from   itertools import islice
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
-def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
+def do(txt, TheState, ReturnToState_Str=None, GotoReload_Str=None):
     assert isinstance(TheState, AnalyzerState)
     assert isinstance(TheState.transition_map, list)
     assert ReturnToState_Str is None or instance(ReturnToState_Str, (str, unicode))
@@ -21,7 +21,7 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if len(TheState.transition_map) == 0: return []
+    if len(TheState.transition_map) == 0: return 
 
     if __DEBUG_CHECK_ACTIVE_F and len(TheState.transition_map) > 1:
         # Check that the trigger map consist of sorted adjacent intervals 
@@ -46,7 +46,7 @@ def do(TheState, ReturnToState_Str=None, GotoReload_Str=None):
     transition_map = [ (entry[0], transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)) 
                        for entry in TheState.transition_map ]
 
-    return __get_code(transition_map)
+    txt.extend(__get_code(transition_map))
 
 def __get_code(TriggerMap):
     """Creates code for state transitions from this state. This function is very

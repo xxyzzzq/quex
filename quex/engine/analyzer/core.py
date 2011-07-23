@@ -88,7 +88,10 @@ class Analyzer:
             for target in sm_state.transitions().get_map().iterkeys():
                 self.__state_db[target].set_state_is_entered_f()
 
-        self.__position_register_map = position_register_map.do(self)
+        if EngineType == EngineTypes.FORWARD:
+            self.__position_register_map = position_register_map.do(self)
+            for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
+                entry.try_unify_positioner_db(self):
 
     @property
     def state_db(self):              return self.__state_db
@@ -578,17 +581,30 @@ class Entry(object):
        and a "None" in the pre-context-id list stands for the unconditional case.
 
     """
-    __slots__ = ("from_state_index", "accepter", "positioner_db")
+    __slots__ = ("__uniform_f", "accepter", "positioner_db")
 
     def __init__(self, FromStateIndexList):
         # By default, we do not do store anything about acceptance at state entry
-        self.accepter   = {}
+        self.accepter = {}
+
         # map:  (from_state_index, pre_context_id) --> post_context_id where to store position
         self.positioner_db = dict([ (i, defaultdict(set)) for i in FromStateIndexList ])
+
+        # Are all positionings uniform?
+        # This flag is to be determined after the analyzis by function 'try_unify_positioner_db()'
+        self.__uniform_f = None 
 
     def is_equal(self, Other):
         return     self.accepter      == Other.accepter \
                and self.positioner_db == Other.positioner_db
+
+    def is_uniform(self): 
+        return self.__uniform_f
+
+    def uniform_positioner(self):
+        assert self.__uniform_f
+        # All positioners are uniform, so simply return the first.
+        return self.positioner_db.itervalues().next()
 
     def get_accepter(self):
         """Returns information about the acceptance sequence. Lines that are dominated
@@ -602,13 +618,30 @@ class Entry(object):
             if pre_context_id is None: break
         return result
 
-    def get_positioner(self):
-        # -- Try to unify state entry actions: If a state behaves the same 
-        #    at entry independent from where it is entered.
-        self.__try_unify()
-        return self.positioner.items()
+    def get_positioner_db(self):
+        """RETURNS: PositionDB
+        
+           where PositionDB maps:
+        
+                   from_state_index  -->   Positioner
+ 
+           where Positioner is a dictionary that maps:
 
-    def __try_unify(self):
+                   post_context_id --> list of pre-context-ids that trigger it 
+
+           Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
+           pre-context ids related to it.
+
+           If the positioning is uniform for all 'from_state_index' entries, then
+           PositionDB will contain an entry that maps from 
+
+                   TargetStateIndices.ALL --> common Positioner.
+
+           Thus, uniformity can be checked by: 'PositionerDB.has_key(TargetStateIndices.ALL)'
+        """
+        return self.positioner_db
+
+    def try_unify_positioner_db(self):
         """At state entry the positioning might differ dependent on the 
            the state from which it is entered. If the positioning is the
            same for each source state, then the positioning can be unified.
@@ -618,11 +651,12 @@ class Entry(object):
         if len(self.positioner_db) == 0: return
         iteritems = self.positioner_db.iteritems()
         from_state_index, prototype = iteritems.next()
+
+        self.__uniform_f = True
         for from_state_index, entry in iteritems:
-            if not entry.is_equal(prototype): return
-        # Leave the other entries in there, so that the information about
-        # the different entries remains available. 
-        state.entry_db[TargetStateIndices.ALL] = prototype
+            if not entry.is_equal(prototype): 
+                self.__uniform_f = False
+                return
 
     def __repr__(self):
         txt = []
