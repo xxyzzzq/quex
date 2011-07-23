@@ -162,13 +162,23 @@ class LDB(dict):
     INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
     INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
 
-    def GOTO(self, StateIndex):
-        if StateIndex == TargetStateIndices.INIT_STATE_TRANSITION_BLOCK:
-            return "goto INIT_STATE_TRANSITION_BLOCK;"
-        elif StateIndex == TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:
-            return "goto END_OF_PRE_CONTEXT_CHECK;"
-        else:
-            return "goto _%i;" % StateIndex
+    def __label_name(self, StateIndex, FromStateIndex=None):
+        if StateIndex in TargetStateIndices:
+            assert StateIndex != TargetStateIndices.DROP_OUT
+            assert StateIndex != TargetStateIndices.RELOAD_PROCEDURE
+            return {
+                TargetStateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK",
+                TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
+            }[StateIndex]
+
+        elif FromStateIndex is not None: return "_%i_from_%i" % (StateIndex, FromStateIndex)
+        else:                            return "_%i"         % StateIndex
+
+    def LABEL(self, StateIndex, FromStateIndex=None):
+        return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
+
+    def GOTO(self, StateIndex, FromStateIndex=None):
+        return "goto %s;" % self.__label_name(StateIndex, FromStateIndex)
 
     def GOTO_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex, U=True)
@@ -198,11 +208,6 @@ class LDB(dict):
                   state_reference,
                   get_address("$drop-out", TheState.index, U=True, R=True)) 
 
-    def ACCEPTANCE(self, AcceptanceID):
-        if AcceptanceID == AcceptanceIDs.FAILURE:
-            return "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
-        else:
-            return "%i" % AcceptanceID
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
@@ -212,15 +217,11 @@ class LDB(dict):
             assert isinstance(AcceptanceID, (int, long))
             return "goto TERMINAL_%i;" % AcceptanceID
 
-    def LABEL(self, StateIndex):
-        if StateIndex in TargetStateIndices:
-            return {
-                TargetStateIndices.DROP_OUT:                    None,
-                TargetStateIndices.RELOAD_PROCEDURE:            None,
-                TargetStateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK:\n",
-                TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK:\n",
-            }[StateIndex]
-        return "_%i:\n" % StateIndex
+    def ACCEPTANCE(self, AcceptanceID):
+        if AcceptanceID == AcceptanceIDs.FAILURE:
+            return "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
+        else:
+            return "%i" % AcceptanceID
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
         if FirstF: return "if( input %s 0x%X ) {\n"        % (Condition, Value)
@@ -256,16 +257,16 @@ class LDB(dict):
     def END_IF(self, LastF=True):
         return { True: "}", False: "" }[LastF]
 
-    def ACCESS_INPUT(self, InputAction):
-        return {
+    def ACCESS_INPUT(self, txt, InputAction):
+        txt.append({
             InputActions.DEREF:                "    input = *(me->buffer._input_p);\n",
             InputActions.INCREMENT_THEN_DEREF: "    ++(me->buffer._input_p);\n"
                                                "    input = *(me->buffer._input_p);\n",
             InputActions.DECREMENT_THEN_DEREF: "    --(me->buffer._input_p);\n"
                                                "    input = *(me->buffer._input_p);\n",
-        }[InputAction]
+        }[InputAction])
 
-    def STATE_ENTRY(self, TheState):
+    def STATE_ENTRY(self, TheState, FromStateIndex=None):
         if TheState.init_state_forward_f:
             txt   = ["\n"]
             index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
@@ -276,14 +277,15 @@ class LDB(dict):
             txt   = ["\n    %s\n" % self.UNREACHABLE ]
             index = TheState.index
 
-        txt.append(self.LABEL(index))
+        txt.append(self.LABEL(index, FromStateIndex))
 
-        if TheState.init_state_forward_f: 
-            txt.append("    __quex_debug_init_state();\n")
-        elif TheState.engine_type == EngineTypes.FORWARD:
-            txt.append("    __quex_debug_state(%i);\n" % TheState.index)
-        else:
-            txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
+        if FromStateIndex is None:
+            if TheState.init_state_forward_f: 
+                txt.append("    __quex_debug_init_state();\n")
+            elif TheState.engine_type == EngineTypes.FORWARD:
+                txt.append("    __quex_debug_state(%i);\n" % TheState.index)
+            else:
+                txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
 
         return "".join(txt)
 

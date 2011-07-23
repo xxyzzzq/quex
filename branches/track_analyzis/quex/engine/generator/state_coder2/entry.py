@@ -2,14 +2,16 @@ from   quex.engine.analyzer.core import Entry, \
                                         EntryBackward, \
                                         EntryBackwardInputPositionDetection
 
-def do(txt, TheState, TheAnalyzer)):
+def do(txt, TheState, PositionRegisterMap):
     LanguageDB = Setup.language_db
 
     if isinstance(TheState.entry, Entry):
-        __doors(txt, TheState.entry, TheAnalyzer)
-        __accepter(txt, TheAnalyzer.entry.get_accepter())
+        __doors(txt, TheState.entry.get_positioner_db(), PositionRegisterMap)
+        __accepter(txt, TheState.entry.get_accepter())
+        return
 
-    elif isinstance(TheState.entry, EntryBackward):
+    txt.append(LanguageDB.STATE_ENTRY(TheState))
+    if isinstance(TheState.entry, EntryBackward):
         for pre_context_id in TheState.entry.pre_context_fulfilled_set:
             txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
 
@@ -17,12 +19,17 @@ def do(txt, TheState, TheAnalyzer)):
         if TheState.entry.terminated_f: 
             txt.append("    %s\n" % LanguageDB.RETURN)
 
-def __doors(TheEntry, TheAnalyzer):
-    if len(TheState.entry.positioner) != 0:
+def __doors(txt, TheEntry, PositionRegisterMap):
+
+    if len(PositionerDB) == 0:
+        txt.append(LanguageDB.STATE_ENTRY(TheState))
+        return
+
+    def __do(Positioner):
         first_f = True
-        for register, pre_context_id_list in TheState.entry.get_positioner():
-            if register == PostContextIDs.NONE: register_str = "last_acceptance"
-            else:                               register_str = "position[%i]" % register
+        for post_context_id, pre_context_id_list in Positioner:
+            register     = PositionRegisterMap[post_context_id]
+            register_str = "position[%i]" % register
             txt.append(
                 LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
                                           LanguageDB.ASSIGN(register_str, "input_p")), 
@@ -30,7 +37,24 @@ def __doors(TheEntry, TheAnalyzer):
             first_f = False
         LanguageDB.END_IF(first_f)
 
-def __accepter(txt, Accepter, TheAnalyzer):
+    if TheEntry.is_uniform():
+        # (*) Uniform state entries from all entering states.
+        #     Assume that 'GOTO' can identify its uniform target states. Thus, no separate
+        #     entries are required.
+        for from_state_index, positioner in PositionerDB.iteritems():
+            txt.append(LanguageDB.STATE_ENTRY(TheState, from_state_index))
+        txt.append(LanguageDB.STATE_ENTRY(TheState))
+        txt.append(__do(TheEntry.uniform_positioner()))
+        return
+    else:
+        # (*) Non-uniform state entries
+        for from_state_index, positioner in PositionerDB.iteritems():
+            txt.append(LanguageDB.STATE_ENTRY(TheState, from_state_index))
+            txt.append(__do(positioner))
+            txt.append(LanguageDB.GOTO(TheState.index))
+        txt.append(LanguageDB.STATE_ENTRY(TheState))
+
+def __accepter(txt, Accepter):
     if len(Accepter) == 0: return
 
     first_f = True
