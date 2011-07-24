@@ -19,8 +19,8 @@
     stored along with the AnalyzerState object.
 """
 
-import quex.engine.analyzer.track_analysis        as track_analysis
-import quex.engine.analyzer.position_register_map as position_register_map
+import quex.engine.analyzer.track_analysis        as     track_analysis
+import quex.engine.analyzer.position_register_map as     position_register_map
 from   quex.engine.analyzer.track_analysis        import AcceptanceTraceEntry, \
                                                          AcceptanceTraceEntry_Void, \
                                                          extract_pre_context_id

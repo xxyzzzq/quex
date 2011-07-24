@@ -174,8 +174,12 @@ class LDB(dict):
         elif FromStateIndex is not None: return "_%i_from_%i" % (StateIndex, FromStateIndex)
         else:                            return "_%i"         % StateIndex
 
-    def LABEL(self, StateIndex, FromStateIndex=None):
-        return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
+    def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
+        if NewlineF: return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
+        else:        return "%s: "   % self.__label_name(StateIndex, FromStateIndex)
+
+    def GOTO(self, StateIndex, FromStateIndex=None):
+        return "goto %s;" % self.__label_name(StateIndex, FromStateIndex)
 
     def GOTO(self, StateIndex, FromStateIndex=None):
         return "goto %s;" % self.__label_name(StateIndex, FromStateIndex)
@@ -254,8 +258,8 @@ class LDB(dict):
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
 
-    def END_IF(self, First=True):
-        return { True: "}", False: "" }[FirstF]
+    def END_IF(self, LastF=True):
+        return { True: "}", False: "" }[LastF]
 
     def ACCESS_INPUT(self, txt, InputAction):
         txt.append({
@@ -266,23 +270,21 @@ class LDB(dict):
                                                "    input = *(me->buffer._input_p);\n",
         }[InputAction])
 
-    def STATE_ENTRY(self, txt, TheState, FromStateIndex=None):
-        if TheState.init_state_forward_f:
-            index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
-        elif TheState.init_state_f:
-            index = TheState.index
-        else:
-            index = TheState.index
+    def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True):
+        if   TheState.init_state_forward_f: index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
+        elif TheState.init_state_f:         index = TheState.index
+        else:                               index = TheState.index
 
-        txt.append(self.LABEL(index, FromStateIndex))
+        txt.append(self.LABEL(index, FromStateIndex, NewlineF))
 
         if FromStateIndex is None:
             if TheState.init_state_forward_f: 
-                txt.append("    __quex_debug_init_state();\n")
+                txt.append("    __quex_debug_init_state();")
             elif TheState.engine_type == EngineTypes.FORWARD:
-                txt.append("    __quex_debug_state(%i);\n" % TheState.index)
+                txt.append("    __quex_debug_state(%i);" % TheState.index)
             else:
-                txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
+                txt.append("    __quex_debug_state_backward(%i);" % TheState.index)
+
         return 
 
     def POSITIONING(self, Positioning, Register):
