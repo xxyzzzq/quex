@@ -6,8 +6,8 @@ from   quex.blackboard import setup as Setup
 def do(txt, TheState, PositionRegisterMap):
     LanguageDB = Setup.language_db
 
-    if not TheState.init_state_f: txt.append("%s\n" % LanguageDB.UNREACHABLE)
-    else:                         txt.append("\n")
+    if not TheState.init_state_f: txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
+    else:                         txt.append("\n\n")
 
     if isinstance(TheState.entry, Entry):
         __doors(txt, TheState, PositionRegisterMap)
@@ -49,7 +49,8 @@ def __doors(txt, TheState, PositionRegisterMap):
         #     Assume that 'GOTO' can identify its uniform target states. Thus, no separate
         #     entries are required.
         for from_state_index, positioner in TheEntry.positioner_db.iteritems():
-            LanguageDB.STATE_ENTRY(txt, TheState, from_state_index)
+            LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
+            txt.append("%s\n" % LanguageDB.GOTO(TheState.index))
         LanguageDB.STATE_ENTRY(txt, TheState)
         __do(txt, TheEntry.uniform_positioner())
         return
