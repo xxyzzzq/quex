@@ -3,8 +3,9 @@ from   quex.engine.analyzer.core import Entry, \
                                         EntryBackwardInputPositionDetection
 from   quex.blackboard import setup as Setup
 
-def do(txt, TheState, PositionRegisterMap):
-    LanguageDB = Setup.language_db
+def do(txt, TheState, TheAnalyzer):
+    LanguageDB          = Setup.language_db
+    PositionRegisterMap = TheAnalyzer.position_register_map
 
     if not TheState.init_state_f: txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
     else:                         txt.append("\n\n")
@@ -14,14 +15,19 @@ def do(txt, TheState, PositionRegisterMap):
         __accepter(txt, TheState.entry.get_accepter())
         return
 
-    LanguageDB.STATE_ENTRY(txt, TheState)
-    if isinstance(TheState.entry, EntryBackward):
-        for pre_context_id in TheState.entry.pre_context_fulfilled_set:
+    entry = TheState.entry
+    if isinstance(entry, EntryBackward):
+        LanguageDB.STATE_ENTRY(txt, TheState)
+        for pre_context_id in entry.pre_context_fulfilled_set:
             txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
 
-    elif isinstance(TheState.entry, EntryBackwardInputPositionDetection):
-        if TheState.entry.terminated_f: 
-            txt.append("    %s\n" % LanguageDB.RETURN)
+    elif isinstance(entry, EntryBackwardInputPositionDetection):
+        LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=entry.backward_input_positon_detector_sm_id)
+        if entry.terminated_f: 
+            txt.append('    __quex_debug("backward input position %i detected");' % \
+                       entry.backward_input_positon_detector_sm_id)
+            txt.append("    goto %s;\n" \
+                       % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(entry.backward_input_positon_detector_sm_id))
 
 def __doors(txt, TheState, PositionRegisterMap):
     LanguageDB = Setup.language_db

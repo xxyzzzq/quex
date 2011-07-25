@@ -427,12 +427,12 @@ class TransitionMap:
 
         # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
         # code points below 0.
-        assert trigger_map[0][1] is None
+        assert trigger_map[0][1] == TargetStateIndices.DROP_OUT
         assert trigger_map[0][0].begin == - sys.maxint
 
         # The first interval mentioned after that must not point to 'drop out' since
         # the trigger map must collect the same targets into one single interval.
-        assert trigger_map[1][1] is not None
+        assert trigger_map[1][1] != TargetStateIndices.DROP_OUT
 
         non_drop_out_target = trigger_map[1][1]
         self.add_transition(trigger_map[0][0], non_drop_out_target)
@@ -440,9 +440,8 @@ class TransitionMap:
         # NOTE: Here we know that len(trigger_map) >= 2
         for trigger_set, target in trigger_map[2:]:
 
-            if target is None: target = non_drop_out_target
-            else:              non_drop_out_target = target
-
+            if target is TargetStateIndices.DROP_OUT: target              = non_drop_out_target
+            else:                                     non_drop_out_target = target
             self.add_transition(trigger_set, target)
 
     def transform(self, TrafoInfo):
