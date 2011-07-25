@@ -187,13 +187,12 @@ class Generator(GeneratorBase):
                                                        "\nEND: BACKWARD DETECTOR STATE MACHINE")
             comment.append("\n")
 
-
         # -- input position detectors: find first 'match' and return
         terminal = []
         terminal.append("\n")
         terminal.append("    __quex_assert_no_passage();\n")
         terminal.append(get_label("$bipd-terminal", BIPD_ID) + ":\n")
-        terminal.append('    __quex_assert("backward input position %i detected");' % BIPD_ID)
+        terminal.append('    __quex_debug("backward input position %i detected");' % BIPD_ID)
         terminal.append("    " + self.language_db["$input/seek_position"]("end_of_core_pattern_position") + "\n")
         terminal.append("    " + self.language_db["$input/increment"] + "\n")
         terminal.append("    goto %s;\n" % get_label("$bipd-return", BIPD_ID, U=True))

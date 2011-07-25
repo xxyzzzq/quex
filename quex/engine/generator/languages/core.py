@@ -162,6 +162,7 @@ class LDB(dict):
     INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
     INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
 
+
     def __label_name(self, StateIndex, FromStateIndex=None):
         if StateIndex in TargetStateIndices:
             assert StateIndex != TargetStateIndices.DROP_OUT
@@ -176,7 +177,13 @@ class LDB(dict):
 
     def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
         if NewlineF: return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
-        else:        return "%s: "   % self.__label_name(StateIndex, FromStateIndex)
+        else:        return "%s: "  % self.__label_name(StateIndex, FromStateIndex)
+
+    def LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
+        return "BIP_DETECTOR_%i" % StateMachineID
+
+    def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
+        return "BIP_DETECTOR_%i_DONE" % StateMachineID
 
     def GOTO(self, StateIndex, FromStateIndex=None):
         return "goto %s;" % self.__label_name(StateIndex, FromStateIndex)
@@ -270,12 +277,20 @@ class LDB(dict):
                                                "    input = *(me->buffer._input_p);\n",
         }[InputAction])
 
-    def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True):
-        if   TheState.init_state_forward_f: index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
-        elif TheState.init_state_f:         index = TheState.index
-        else:                               index = TheState.index
+    def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True, BIPD_ID=None):
+        label = ""
+        if TheState.init_state_f:
+            if   TheState.engine_type == EngineTypes.FORWARD: 
+                index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
+            elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
+                label = self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID) + ":\n"
+            else:
+                index = TheState.index
+        else:   
+            index = TheState.index
 
-        txt.append(self.LABEL(index, FromStateIndex, NewlineF))
+        if label is not None: txt.append(label)
+        else:                 txt.append(self.LABEL(index, FromStateIndex, NewlineF))
 
         if FromStateIndex is None:
             if TheState.init_state_forward_f: 

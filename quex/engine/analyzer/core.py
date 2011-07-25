@@ -92,6 +92,8 @@ class Analyzer:
             self.__position_register_map = position_register_map.do(self)
             for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
                 entry.try_unify_positioner_db()
+        else:
+            self.__position_register_map = None
 
     @property
     def state_db(self):              return self.__state_db
@@ -451,7 +453,7 @@ class AnalyzerState(object):
         elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT: 
             self.entry = EntryBackward(state.origins())
         elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION: 
-            self.entry = EntryBackwardInputPositionDetection(state.origins())
+            self.entry = EntryBackwardInputPositionDetection(state.origins(), SM.core().id())
         else:
             assert False
 
@@ -695,9 +697,10 @@ class EntryBackwardInputPositionDetection(object):
        Non-Acceptance State
        => proceed with the state transitions (do nothing here)
     """
-    __slots__ = ("__terminated_f")
+    __slots__ = ("__terminated_f", "__detector_sm_id")
 
-    def __init__(self, OriginList):
+    def __init__(self, OriginList, StateMachineID):
+        self.__detector_sm_id = StateMachineID
         self.__terminated_f = False
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
             self.__terminated_f = True
@@ -706,8 +709,12 @@ class EntryBackwardInputPositionDetection(object):
     @property
     def terminated_f(self): return self.__terminated_f
 
+    @property
+    def backward_input_positon_detector_sm_id(self): return self.__detector_sm_id
+
     def __repr__(self):
-        return "    Terminated\n" if self.terminated_f else ""
+        if self.__terminated_f: return "    Terminated (%i)\n" % self.__detector_sm_id
+        else:                   return ""
 
 class EntryBackward(object):
     """(*) Backward Lexing

@@ -484,8 +484,27 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
     safe_pattern = safe_pattern.replace("\\a", "\\\\a")
     safe_pattern = safe_pattern.replace("\\v", "\\\\v")
 
+    backward_input_position_detection_str = ""
+    if state_machine.core().post_context_backward_input_position_detector_sm() is not None:
+        # Pseudo Ambiguous Post Contexts:
+        # (Retrieving the input position for the next run)
+        # -- Requires that the end of the core pattern is to be searched! One 
+        #    cannot simply restore some stored input position.
+        # -- The pseudo-ambiguous post condition is translated into a 'normal'
+        #    pattern. However, after a match a backward detection of the end
+        #    of the core pattern is done. Here, we first need to go to the point
+        #    where the 'normal' pattern ended, then we can do a backward detection.
+
+        bipd_id   = state_machine.core().post_context_backward_input_position_detector_sm_id()
+        bipd_str  = "    goto %s;\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(bipd_id)
+        # After having finished the analyzis, enter the terminal code, here.
+        bipd_str += "%s:\n" % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(bipd_id) 
+        backward_input_position_detection_str = bipd_str
+
+
     txt = [
             "\nTERMINAL_%i:\n" % AcceptanceID,
+            backward_input_position_detection_str,
             "    __quex_debug(\"* terminal %i:   %s\");\n" % (AcceptanceID, safe_pattern),
             action_code, "\n",
             "    goto %s;\n" % get_label("$re-start", U=True)
