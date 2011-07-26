@@ -46,7 +46,7 @@ def __header_definitions(LanguageDB):
     txt = txt.replace("$$GOTO_START_PREPARATION$$", get_label("$re-start", U=True))
     return txt
 
-def __local_variable_definitions(VariableDB):
+def _local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
     def __group_by_condition(VariableDB):
@@ -170,8 +170,7 @@ __RELOAD_FORWARD:
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
         __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, %s, %s);
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
@@ -187,8 +186,7 @@ __RELOAD_INIT_STATE:
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
         __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, %s, %s);
         __quex_debug_reload_after();
         goto $$INIT_STATE$$; /* Init state entry */
     }
@@ -225,34 +223,19 @@ comment_on_post_context_position_init_str = """
      *       to reset the input position.                                              */
 """
 
-def __reload_definitions(InitialStateIndex):
+def __reload_definitions(InitialStateIndex, PositionRegisterF):
     txt = []
-    txt.append(Address("$reload-FORWARD", None, reload_forward_str))
-    txt.append(blue_print(reload_init_state_forward_str,
+    if PositionRegisterF: position_tuple = ("position", "PositionRegisterN")
+    else:                 position_tuple = ("0x0",      "0")
+
+    txt.append(Address("$reload-FORWARD", None, reload_forward_str % position_tuple))
+
+    txt.append(blue_print(reload_init_state_forward_str % position_tuple,
                           [["$$INIT_STATE$$",    get_label("$entry", InitialStateIndex, U=True)],
                            ["$$END_OF_STREAM$$", get_label("$terminal-EOF", U=True)]]))
     # Append empty references to make sure that the addresses are implemented.
     txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
     return txt
-
-def __local_variable_definition(PostContextID_List, PreContextID_List, LanguageDB):
-    PostContextN = len(PostContextID_List)
-
-    variable_db.require("last_acceptance", 
-                        Initial="QUEX_LABEL(%i)" % get_address("$terminal-FAILURE"))
-    variable_db.require("last_acceptance_input_position") 
-    variable_db.require_array("post_context_start_position",    
-                              ElementN = PostContextN, 
-                              Initial  = "{ " + ("0, " * (PostContextN - 1) + "0") + "}")
-    variable_db.require("PostContextStartPositionN", 
-                        Initial = "(size_t)" + repr(PostContextN))
-    variable_db.require("input") 
-              
-    # -- pre-condition fulfillment flags                
-    for sm_id in PreContextID_List:
-        variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
-
-    return LanguageDB["$local-variable-defs"](variable_db.get())
 
 def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
                         variable_definitions, function_body, ModeNameList=[], LanguageDB=None):

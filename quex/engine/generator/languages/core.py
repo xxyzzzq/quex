@@ -103,7 +103,6 @@ CppBase = {
     "$*/":     "\n",
     "$*/\n":   "\n",    # make sure, that we do not introduce an extra '\n' in case that end of comment
     #                   # is followed directly by newline.
-    "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
     "$debug-print":         lambda txt: "__quex_debug(\"%s\");" % txt,
     "$mark-lexeme-start":   "me->buffer._lexeme_start_p = me->buffer._input_p;",
@@ -139,7 +138,6 @@ CppBase = {
     #
     "$reload-definitions":   cpp.__reload_definitions,
     "$header-definitions":   cpp.__header_definitions,
-    "$variable-definitions": cpp.__local_variable_definition,
     "$frame":                cpp.__frame_of_all,
     "$goto-mode":            lambda Mode: "QUEX_NAME(enter_mode)(&self, &" + Mode + ");",
     "$gosub-mode":           lambda Mode: "QUEX_NAME(push_mode)(&self, &" + Mode + ");",
@@ -172,8 +170,11 @@ class LDB(dict):
                 TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
             }[StateIndex]
 
-        elif FromStateIndex is not None: return "_%i_from_%i" % (StateIndex, FromStateIndex)
-        else:                            return "_%i"         % StateIndex
+        elif FromStateIndex is not None: 
+            return "_%i_from_%i" % (StateIndex, FromStateIndex)
+
+        else:                            
+            return "_%i"         % StateIndex
 
     def LABEL(self, StateIndex, FromStateIndex=None, NewlineF=True):
         if NewlineF: return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
@@ -185,11 +186,14 @@ class LDB(dict):
     def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
         return "BIP_DETECTOR_%i_DONE" % StateMachineID
 
-    def GOTO(self, StateIndex, FromStateIndex=None):
-        return "goto %s;" % self.__label_name(StateIndex, FromStateIndex)
-
-    def GOTO(self, StateIndex, FromStateIndex=None):
-        return "goto %s;" % self.__label_name(StateIndex, FromStateIndex)
+    def GOTO(self, StateIndex, FromState=None):
+        # Only for normal 'forward analysis' the from state is of interest.
+        # Because, only during forward analysis some actions depend on the 
+        # state from where we come.
+        if FromState is not None and FromState.engine_type == EngineTypes.FORWARD:
+            return "goto %s;" % self.__label_name(StateIndex, FromState.index)
+        else:
+            return "goto %s;" % self.__label_name(StateIndex)
 
     def GOTO_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex, U=True)
@@ -278,12 +282,12 @@ class LDB(dict):
         }[InputAction])
 
     def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True, BIPD_ID=None):
-        label = ""
+        label = None
         if TheState.init_state_f:
             if   TheState.engine_type == EngineTypes.FORWARD: 
                 index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
             elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
-                label = self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID) + ":\n"
+                label = "%s:\n" % self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID) 
             else:
                 index = TheState.index
         else:   
@@ -294,11 +298,11 @@ class LDB(dict):
 
         if FromStateIndex is None:
             if TheState.init_state_forward_f: 
-                txt.append("    __quex_debug_init_state();")
+                txt.append("    __quex_debug_init_state();\n")
             elif TheState.engine_type == EngineTypes.FORWARD:
-                txt.append("    __quex_debug_state(%i);" % TheState.index)
+                txt.append("    __quex_debug_state(%i);\n" % TheState.index)
             else:
-                txt.append("    __quex_debug_state_backward(%i);" % TheState.index)
+                txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)
 
         return 
 
@@ -318,15 +322,26 @@ class LDB(dict):
         line_end = " break;\n" if BreakF else "\n"
 
         i = 2
-        for item, consequence in CaseList:
+        item, consequence = CaseList[0]
+        for item_ahead, consequence_ahead in CaseList[1:]:
             txt[i] = 1   # 1 indentation
             i += 1
-            if isinstance(item, (int, long)): txt[i] = "case %3i: %s%s" % (item, consequence, line_end)
-            else:                             txt[i] = "case %s: %s%s"  % (item, consequence, line_end)
+            if consequence_ahead == consequence:
+                if isinstance(item, (int, long)): txt[i] = "case 0x%X:\n" % item
+                else:                             txt[i] = "case %s:\n"  % item
+            else:
+                if isinstance(item, (int, long)): txt[i] = "case 0x%X: %s%s" % (item, consequence, line_end)
+                else:                             txt[i] = "case %s: %s%s"  % (item, consequence, line_end)
             i += 1
+            item        = item_ahead
+            consequence = consequence_ahead
 
-        txt[i]   = 0  # 0 indentation
-        txt[i+1] = "}\n"
+        txt[i] = 1   # 1 indentation
+        if isinstance(item, (int, long)): txt[i+1] = "case 0x%X: %s%s" % (item, consequence, line_end)
+        else:                             txt[i+1] = "case %s: %s%s"  % (item, consequence, line_end)
+
+        txt[i+2] = 0  # 0 indentation
+        txt[i+3] = "}\n"
         return txt
 
     def REPLACE_INDENT(self, txt_list):
@@ -336,6 +351,10 @@ class LDB(dict):
     def INDENT(self, txt_list):
         for i, x in enumerate(txt_list):
             if isinstance(x, (int, long)): txt_list[i] += 1
+
+    def VARIABLE_DEFINITIONS(self, VariableDB):
+        return cpp._local_variable_definitions(VariableDB.get()) 
+
 
 db["C++"] = LDB(CppBase)
 

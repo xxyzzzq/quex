@@ -1,19 +1,29 @@
 from   quex.engine.analyzer.core import Entry, \
                                         EntryBackward, \
                                         EntryBackwardInputPositionDetection
+from   quex.engine.state_machine.state_core_info import EngineTypes
 from   quex.blackboard import setup as Setup
 
 def do(txt, TheState, TheAnalyzer):
+    """Writes code for the state entry into 'txt'.
+
+       RETURNS: True -- if further code for the transition block and the 
+                        drop out is required.
+                False -- if no further code is required.
+    """
     LanguageDB          = Setup.language_db
     PositionRegisterMap = TheAnalyzer.position_register_map
 
-    if not TheState.init_state_f: txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
-    else:                         txt.append("\n\n")
+    if  (not TheState.init_state_f) or \
+        (TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION): 
+        txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
+    else:
+        txt.append("\n\n")
 
     if isinstance(TheState.entry, Entry):
         __doors(txt, TheState, PositionRegisterMap)
         __accepter(txt, TheState.entry.get_accepter())
-        return
+        return True
 
     entry = TheState.entry
     if isinstance(entry, EntryBackward):
@@ -24,10 +34,14 @@ def do(txt, TheState, TheAnalyzer):
     elif isinstance(entry, EntryBackwardInputPositionDetection):
         LanguageDB.STATE_ENTRY(txt, TheState, BIPD_ID=entry.backward_input_positon_detector_sm_id)
         if entry.terminated_f: 
-            txt.append('    __quex_debug("backward input position %i detected");' % \
+            txt.append('    __quex_debug("backward input position %i detected");\n' % \
                        entry.backward_input_positon_detector_sm_id)
             txt.append("    goto %s;\n" \
                        % LanguageDB.LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(entry.backward_input_positon_detector_sm_id))
+            # No drop-out, no transition map required
+            return False
+    return True
+
 
 def __doors(txt, TheState, PositionRegisterMap):
     LanguageDB = Setup.language_db
@@ -39,7 +53,7 @@ def __doors(txt, TheState, PositionRegisterMap):
 
     def __do(txt, Positioner):
         first_f = True
-        for post_context_id, pre_context_id_list in Positioner:
+        for post_context_id, pre_context_id_list in Positioner.iteritems():
             register     = PositionRegisterMap[post_context_id]
             register_str = "position[%i]" % register
             txt.append(
@@ -62,8 +76,9 @@ def __doors(txt, TheState, PositionRegisterMap):
         return
     else:
         # (*) Non-uniform state entries
-        for from_state_index, positioner in TheEntry.positioner_db.iteritems():
+        for from_state_index, positioner in TheEntry.get_positioner_db().iteritems():
             LanguageDB.STATE_ENTRY(txt, TheState, from_state_index)
+            print "##posi", positioner
             __do(txt, positioner)
             txt.append(LanguageDB.GOTO(TheState.index))
         LanguageDB.STATE_ENTRY(txt, TheState)

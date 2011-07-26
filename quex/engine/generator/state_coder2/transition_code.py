@@ -45,7 +45,7 @@ class TransitionCode:
         elif isinstance(Target, (int, long)):
             # The transition to another target state cannot possibly be cut out!
             # => no postponed code generation
-            self.__code       = LanguageDB.GOTO(Target, TheState.index)
+            self.__code       = LanguageDB.GOTO(Target, TheState)
             self.__drop_out_f = False
         else:
             assert isinstance(Target, TransitionCode) # No change necessary

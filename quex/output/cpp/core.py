@@ -13,6 +13,7 @@ from   quex.engine.generator.state_machine_decorator   import StateMachineDecora
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.misc.string_handling                import blue_print
 from   quex.engine.generator.base                      import GeneratorBase
+from   quex.engine.analyzer.core                       import Analyzer
 
 from   quex.blackboard                                 import TargetStateIndices, \
                                                               setup as Setup
@@ -51,6 +52,8 @@ class Generator(GeneratorBase):
 
         # (*) Initialize the label and variable trackers
         variable_db.init(RequiredLocalVariablesDB)
+        variable_db.require("input") 
+
         init_address_handling(dsm.get_direct_transition_to_terminal_db())
 
         # (*) Pre Context State Machine
@@ -58,7 +61,7 @@ class Generator(GeneratorBase):
         pre_context = self.__code_pre_context_state_machine()
             
         # (*) Main State Machine -- try to match core patterns
-        main        = self.__code_main_state_machine(self.sm)
+        main        = self.__code_main_state_machine()
 
         # (*) Backward input position detection
         #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
@@ -79,9 +82,7 @@ class Generator(GeneratorBase):
             variable_db.require("target_state_index")
 
         # Following function refers to the global 'variable_db'
-        variable_definitions = self.language_db["$variable-definitions"](self.post_contexted_sm_id_list,
-                                                                         self.pre_context_sm_id_list, 
-                                                                         self.language_db)
+        variable_definitions = self.language_db.VARIABLE_DEFINITIONS(variable_db)
 
         function_body = []
         function_body.extend(pre_context)  # implementation of pre-contexts (if there are some)
@@ -117,7 +118,8 @@ class Generator(GeneratorBase):
             txt.append(comment)
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        msg = state_machine_coder.do(self.pre_context_sm, EngineTypes.BACKWARD_PRE_CONTEXT)
+        analyzer = Analyzer(self.pre_context_sm, EngineTypes.BACKWARD_PRE_CONTEXT)
+        msg      = state_machine_coder.do(analyzer)
         txt.extend(msg)
 
         txt.append("\n%s" % LanguageDB.LABEL(TargetStateIndices.END_OF_PRE_CONTEXT_CHECK))
@@ -125,9 +127,12 @@ class Generator(GeneratorBase):
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START)
 
+        for sm_id in self.pre_context_sm_id_list:
+            variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
+
         return txt
 
-    def __code_main_state_machine(self, SM):
+    def __code_main_state_machine(self):
         assert len(self.sm.get_orphaned_state_index_list()) == 0
 
         LanguageDB = self.language_db 
@@ -142,7 +147,8 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         # -- implement the state machine itself
-        state_machine_code = state_machine_coder.do(SM, EngineTypes.FORWARD)
+        analyzer           = Analyzer(self.sm, EngineTypes.FORWARD)
+        state_machine_code = state_machine_coder.do(analyzer)
         txt.extend(state_machine_code)
 
         # -- terminal states: execution of pattern actions  
@@ -155,8 +161,14 @@ class Generator(GeneratorBase):
                                                      self.language_db) 
         txt.extend(terminal_code)
 
+        N = len(analyzer.position_register_map)
+        if len(analyzer.position_register_map) != 0:
+            variable_db.require_array("position", ElementN = N,
+                                      Initial  = "{ " + ("0, " * (N - 1) + "0") + "}")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
+    
         # -- reload definition (forward, backward, init state reload)
-        code = LanguageDB["$reload-definitions"](self.sm.init_state_index)
+        code = LanguageDB["$reload-definitions"](self.sm.init_state_index, N != 0)
         txt.extend(code)
 
         return txt
@@ -167,44 +179,22 @@ class Generator(GeneratorBase):
             result.extend(self.__code_backward_input_position_detection_core(sm))
         return result
 
-    def __code_backward_input_position_detection_core(self, sm):
-        assert len(sm.get_orphaned_state_index_list()) == 0
+    def __code_backward_input_position_detection_core(self, SM):
+        assert len(SM.get_orphaned_state_index_list()) == 0
         
-        BIPD_ID = sm.get_id()
+        BIPD_ID = SM.get_id()
 
-        dsm = StateMachineDecorator(sm, 
-                                    "BACKWARD_DETECTOR_" + repr(sm.get_id()),
-                                    PostContextSM_ID_List           = [], 
-                                    BackwardLexingF                 = True, 
-                                    BackwardInputPositionDetectionF = True)
-
-        function_body = state_machine_coder.do(sm, EngineTypes.BACKWARD_INPUT_POSITION)
-
-        comment = []
+        txt = []
         if Setup.comment_state_machine_transitions_f: 
             comment = Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
-                                                       sm.get_string(NormalizeF=False)            + \
+                                                       SM.get_string(NormalizeF=False)            + \
                                                        "\nEND: BACKWARD DETECTOR STATE MACHINE")
-            comment.append("\n")
+            txt.append("\n")
 
-        # -- input position detectors: find first 'match' and return
-        terminal = []
-        terminal.append("\n")
-        terminal.append("    __quex_assert_no_passage();\n")
-        terminal.append(get_label("$bipd-terminal", BIPD_ID) + ":\n")
-        terminal.append('    __quex_debug("backward input position %i detected");' % BIPD_ID)
-        terminal.append("    " + self.language_db["$input/seek_position"]("end_of_core_pattern_position") + "\n")
-        terminal.append("    " + self.language_db["$input/increment"] + "\n")
-        terminal.append("    goto %s;\n" % get_label("$bipd-return", BIPD_ID, U=True))
+        analyzer      = Analyzer(SM, EngineTypes.BACKWARD_INPUT_POSITION)
+        function_body = state_machine_coder.do(analyzer)
 
-        # Put all things together
-        txt = []
-        txt.append("    __quex_assert_no_passage();\n")
-        txt.extend(comment)
         txt.extend(function_body)
-        txt.extend(terminal)
-
-        variable_db.require("end_of_core_pattern_position")
 
         return txt
 

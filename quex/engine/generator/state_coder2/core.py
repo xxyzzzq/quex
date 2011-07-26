@@ -18,10 +18,10 @@ def do(txt, TheState, TheAnalyzer):
 
     LanguageDB = Setup.language_db
 
-    entry.do(txt, TheState, TheAnalyzer)
-    input_do(txt, TheState)
-    transition_block.do(txt, TheState)
-    drop_out_do(txt, TheState)
+    if entry.do(txt, TheState, TheAnalyzer):
+        input_do(txt, TheState)
+        transition_block.do(txt, TheState)
+        drop_out_do(txt, TheState)
 
     epilog_if_init_state_do(txt, TheState)
 
