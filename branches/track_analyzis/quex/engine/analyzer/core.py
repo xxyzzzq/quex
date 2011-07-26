@@ -463,11 +463,9 @@ class AnalyzerState(object):
             # return from the searcher, thus no further transitions are necessary.
             # (orphaned states, also, need to be deleted).
             if state.is_acceptance(): assert state.transitions().is_empty()
-            self.transition_map      = []
-            self.__target_index_list = []
-        else:
-            self.transition_map = state.transitions().get_trigger_map()
-            self.__target_index_list = state.transitions().get_map().keys()
+
+        self.transition_map      = state.transitions().get_trigger_map()
+        self.__target_index_list = state.transitions().get_map().keys()
 
         # (*) Drop Out
         if   EngineType == EngineTypes.FORWARD: 
@@ -633,13 +631,6 @@ class Entry(object):
 
            Note, that 'PostContextID==None' (Normal Acceptance) can have multiple
            pre-context ids related to it.
-
-           If the positioning is uniform for all 'from_state_index' entries, then
-           PositionDB will contain an entry that maps from 
-
-                   TargetStateIndices.ALL --> common Positioner.
-
-           Thus, uniformity can be checked by: 'PositionerDB.has_key(TargetStateIndices.ALL)'
         """
         return self.positioner_db
 

@@ -24,9 +24,8 @@ _candidate_db = {
 "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
 "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
 "last_acceptance":                ["QUEX_TYPE_GOTO_LABEL",          None,                               False],
-"last_acceptance_input_position": ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x00)",     False],
-"PostContextStartPositionN":      ["const size_t",                  None,                               False],
-"post_context_start_position":    ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
+"PositionRegisterN":              ["const size_t",                  None,                               False],
+"position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
 "pre_context_%i_fulfilled_f":     ["int",                           "0",                                False], 
 "end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)",      False],
 #                                 

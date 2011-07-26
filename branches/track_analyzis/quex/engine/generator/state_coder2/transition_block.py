@@ -16,6 +16,7 @@ def do(txt, TheState, ReturnToState_Str=None, GotoReload_Str=None):
     assert isinstance(TheState.transition_map, list)
     assert ReturnToState_Str is None or instance(ReturnToState_Str, (str, unicode))
     assert GotoReload_Str    is None or instance(GotoReload_Str, (str, unicode))
+    LanguageDB = Setup.language_db
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #

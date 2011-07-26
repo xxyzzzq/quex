@@ -12,7 +12,7 @@ from quex.blackboard             import PatternShorthand
 #
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.languages.address as address
-from   quex.engine.generator.languages.cpp     import  __local_variable_definitions
+from   quex.engine.generator.languages.cpp     import _local_variable_definitions
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as cpp_generator
 
