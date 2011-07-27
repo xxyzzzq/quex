@@ -45,7 +45,7 @@ def do(StateRouterInfoList):
 
     return Address("$state-router", Code=[prolog] + txt + [epilog])
 
-def get_info(StateIndexList, DSM):
+def get_info(StateIndexList):
     LanguageDB = Setup.language_db
 
     # In some strange cases, a 'dummy' state router is required so that 

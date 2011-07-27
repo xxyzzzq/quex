@@ -157,9 +157,9 @@ class LDB(dict):
     RETURN                  = "return;"
     UNREACHABLE             = "__quex_assert_no_passage();"
     ELSE                    = "} else {\n"
+    INPUT_P                 = "me->buffer._input_p"
     INPUT_P_INCREMENT       = "++(me->buffer._input_p);"
     INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
-
 
     def __label_name(self, StateIndex, FromStateIndex=None):
         if StateIndex in TargetStateIndices:
@@ -202,26 +202,25 @@ class LDB(dict):
         if TheState.engine_type == EngineTypes.FORWARD: direction = "FORWARD"
         else:                                           direction = "BACKWARD"
 
-        if TheState.init_state_forward_f:
-            return "goto __RELOAD_INIT_STATE;" 
-
-        elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
+        if TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
             return ""
 
         if ReturnStateIndexStr is not None: 
             state_reference = ReturnStateIndexStr
+        elif TheState.init_state_forward_f:
+            state_reference = "QUEX_LABEL(%i)" % get_address("$entry", TheState.index, U=True)
+            else_reference  = "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True) 
         else:                           
             state_reference = "QUEX_LABEL(%i)" % get_address("$entry", TheState.index, R=True)
+            else_reference  = "QUEX_LABEL(%i)" % get_address("$drop-out", TheState.index, U=True, R=True) 
 
         # Ensure that '__STATE_ROUTER' is marked as referenced
         get_label("$state-router", U=True)
 
-        return "QUEX_GOTO_RELOAD(%s, %s, QUEX_LABEL(%i));" \
-               % (get_label("$reload-%s" % direction, U=True),
-                  state_reference,
-                  get_address("$drop-out", TheState.index, U=True, R=True)) 
+        return "QUEX_GOTO_RELOAD(%s, %s, %s);" \
+               % (get_label("$reload-%s" % direction, U=True), state_reference, else_reference)
 
     def GOTO_TERMINAL(self, AcceptanceID):
         if AcceptanceID == AcceptanceIDs.VOID: 
@@ -251,9 +250,12 @@ class LDB(dict):
             assert False
 
     def IF_PRE_CONTEXT(self, FirstF, PreContextList, Consequence):
-        if PreContextList is None:                      return "    " + Consequence.replace("\n", "\n    ")
         if not isinstance(PreContextList, (list, set)): PreContextList = [ PreContextList ]
-        if None in PreContextList:                      return "    " + Consequence.replace("\n", "\n    ")
+
+        if None in PreContextList: 
+            if FirstF: opening = "";             indent = "    ";     closing = ""
+            else:      opening = "    else {\n"; indent = "        "; closing = "    }\n"
+            return "%s%s%s%s\n" % (opening, indent, Consequence.replace("\n", "\n    "), closing)
 
         if FirstF: txt = "    if( "
         else:      txt = "    else if( "
@@ -306,14 +308,15 @@ class LDB(dict):
 
         return 
 
+    def POSITION_REGISTER(self, Index):
+        return "position[%i]" % Index
+
     def POSITIONING(self, Positioning, Register):
-        if   Positioning is None: 
-            if Register == PostContextIDs.NONE: return "me->buffer._input_p = last_acceptance_position;"
-            else:                               return "me->buffer._input_p = position[%i];" % Register
-        elif Positioning > 0:   return "me->buffer._input_p -= %i; " % Positioning
-        elif Positioning == 0:  return ""
-        elif Positioning == -1: return "" # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
-        else:                   assert False 
+        if   Positioning is None: return "me->buffer._input_p = position[%i];" % Register
+        elif Positioning > 0:     return "me->buffer._input_p -= %i; "         % Positioning
+        elif Positioning == 0:    return ""
+        elif Positioning == -1:   return "" # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
+        else:                     assert False 
 
     def SELECTION(self, Selector, CaseList, BreakF=False):
         txt     = [ None ] * (len(CaseList) * 2 + 4) 

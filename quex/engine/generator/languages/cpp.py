@@ -178,21 +178,6 @@ __RELOAD_FORWARD:
     QUEX_GOTO_STATE(target_state_else_index);
 """
 
-reload_init_state_forward_str = """
-    __quex_assert_no_passage();
-__RELOAD_INIT_STATE:
-    __quex_debug("__RELOAD_INIT_STATE");
-
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( me->buffer._memory._end_of_file_p == 0x0 ) {
-        __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward)(&me->buffer, %s, %s);
-        __quex_debug_reload_after();
-        goto $$INIT_STATE$$; /* Init state entry */
-    }
-    goto $$END_OF_STREAM$$;  /* End of stream    */
-"""
-
 reload_backward_str = """
     __quex_assert_no_passage();
 __RELOAD_BACKWARD:
@@ -230,9 +215,6 @@ def __reload_definitions(InitialStateIndex, PositionRegisterF):
 
     txt.append(Address("$reload-FORWARD", None, reload_forward_str % position_tuple))
 
-    txt.append(blue_print(reload_init_state_forward_str % position_tuple,
-                          [["$$INIT_STATE$$",    get_label("$entry", InitialStateIndex, U=True)],
-                           ["$$END_OF_STREAM$$", get_label("$terminal-EOF", U=True)]]))
     # Append empty references to make sure that the addresses are implemented.
     txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
     return txt
@@ -320,17 +302,9 @@ __terminal_router_prolog_str = """
 __TERMINAL_ROUTER:
     __quex_debug("terminal router");
     /*  if last_acceptance => goto correspondent acceptance terminal state */
-    /*  else               => execute defaul action                        */
+    /*  else               => execute default action                       */
     if( last_acceptance == $$TERMINAL_FAILURE-REF$$ ) {
         goto $$TERMINAL_FAILURE$$; /* TERMINAL: FAILURE */
-    }
-    /* When a terminal router is used, the terminal is determined dynamically,
-     * thus the last_acceptance_input_position **must** be set. 
-     * Exception: Template States, where acceptance states of post conditions
-     *            do not set the acceptance position (because its retrieved
-     *            anyway from post_context_start_position[i]).               */
-    if(last_acceptance_input_position != 0x0) {
-        $$RESTORE_LAST_ACCEPTANCE_POS$$
     }
 #   ifdef  QUEX_OPTION_COMPUTED_GOTOS
     goto *last_acceptance;
@@ -398,8 +372,7 @@ $$REENTRY_PREPARATION$$:
     if( self_token_get_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) RETURN;
 #   endif
 #   endif
-
-    last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */
+    $$RESET_LAST_ACCEPTANCE$$
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     /*  If a mode change happened, then the function must first return and
@@ -507,7 +480,7 @@ def __terminal_on_failure_prolog():
     ]
 
 def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList, LanguageDB):
+                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, VariableDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -515,20 +488,17 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     # (*) specific terminal states of patterns (entered from acceptance states)
     specific_terminal_states = []
     for state_machine_id, pattern_action_info in action_db.items():
-        # Pre-condition state machines are not supposed to have a real terminal
         if state_machine_id in PreConditionIDList: continue
         code = get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, LanguageDB)
         specific_terminal_states.extend(code)
 
-    # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
-    if len(action_db) != 0: get_label("$re-start", U=True)
-
-    # (*) preparation of the reentry without return:
-    #     delete all pre-condition fullfilled flags
     delete_pre_context_flags = []
     for pre_context_sm_id in PreConditionIDList:
         delete_pre_context_flags.append("    ")
         delete_pre_context_flags.append(LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0))
+
+    # If there is at least a single terminal, the the 're-entry' preparation must be accomplished
+    if len(action_db) != 0: get_label("$re-start", U=True)
 
     #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
@@ -546,9 +516,6 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     msg        = __adorn_action_code(OnFailureAction, SupportBeginOfLineF)
 
     on_failure.append(msg)
-
-    if len(PreConditionIDList) == 0: precondition_involved_f = "0"
-    else:                            precondition_involved_f = "1"
 
     prolog = __terminal_state_prolog  
 
@@ -576,10 +543,16 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
               ["$$GOTO_START_PREPARATION$$",     get_label("$re-start", U=True)],
              ])
 
+
+    reset_last_acceptance_str = ""
+    if VariableDB.has_key("last_acceptance"):
+        reset_last_acceptance_str = "last_acceptance = $$TERMINAL_FAILURE-REF$$; /* TERMINAL: FAILURE */"
+
     reentry_preparation = blue_print(__on_continue_reentry_preparation_str,
                           [["$$REENTRY_PREPARATION$$",                    get_label("$re-start")],
                            ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  "".join(delete_pre_context_flags)],
                            ["$$GOTO_START$$",                             get_label("$start", U=True)],
+                           ["$$RESET_LAST_ACCEPTANCE$$",                  reset_last_acceptance_str],
                            ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
                            ["$$TERMINAL_FAILURE-REF$$",                   "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")],
                           ])

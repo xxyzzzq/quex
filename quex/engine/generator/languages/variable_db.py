@@ -54,6 +54,9 @@ class VariableDB:
     def get(self):
         return self.__db
 
+    def has_key(self, Key):
+        return self.__db.has_key(Key)
+
     def __enter(self, Name, Type, ElementN, InitialValues, Condition, ConditionNegatedF, PriorityF):
         # (*) Determine unique key for Name, Condition, and ConditionNegatedF.
         if Condition is None: 
