@@ -4,6 +4,8 @@ from   quex.engine.analyzer.core import Entry, \
 from   quex.engine.state_machine.state_core_info import EngineTypes
 from   quex.blackboard import setup as Setup
 
+from   itertools import imap
+
 def do(txt, TheState, TheAnalyzer):
     """Writes code for the state entry into 'txt'.
 
@@ -52,17 +54,16 @@ def __doors(txt, TheState, PositionRegisterMap):
         return
 
     def __do(txt, Positioner):
-        first_f = True
-        for post_context_id, pre_context_id_list in Positioner.iteritems():
-            register     = PositionRegisterMap[post_context_id]
-            register_str = "position[%i]" % register
+        # The check 'if pre-context' + the jump take most likely more time
+        # then simply assigning the position to the position register. So
+        # simply omit the check. Collect all registers that store.
+        register_set = set(imap(lambda post_context_id: PositionRegisterMap[post_context_id], 
+                           Positioner.iterkeys()))
+        for register in register_set:
             txt.append(
-                LanguageDB.IF_PRE_CONTEXT(first_f, pre_context_id_list, 
-                                          LanguageDB.ASSIGN(register_str, "input_p")), 
+                " %s" % LanguageDB.ASSIGN(LanguageDB.POSITION_REGISTER(register), LanguageDB.INPUT_P), 
             )
             first_f = False
-        if len(Positioner) != 0:
-            txt.append(LanguageDB.END_IF())
 
     if TheEntry.is_uniform():
         # (*) Uniform state entries from all entering states.
@@ -77,10 +78,9 @@ def __doors(txt, TheState, PositionRegisterMap):
     else:
         # (*) Non-uniform state entries
         for from_state_index, positioner in TheEntry.get_positioner_db().iteritems():
-            LanguageDB.STATE_ENTRY(txt, TheState, from_state_index)
-            print "##posi", positioner
+            LanguageDB.STATE_ENTRY(txt, TheState, from_state_index, NewlineF=False)
             __do(txt, positioner)
-            txt.append(LanguageDB.GOTO(TheState.index))
+            txt.append(" %s\n" % LanguageDB.GOTO(TheState.index))
         LanguageDB.STATE_ENTRY(txt, TheState)
 
 def __accepter(txt, Accepter):
@@ -95,5 +95,4 @@ def __accepter(txt, Accepter):
                                       LanguageDB.ASSIGN("last_acceptance", "%i" % acceptance_id))
         )
         first_f = False
-    txt.append(LanguageDB.END_IF())
             

@@ -240,9 +240,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      QUEX_TYPE_CHARACTER_POSITION* position_register,
                                      const size_t                  PositionRegisterN)
     {
-        QUEX_TYPE_CHARACTER_POSITION*        iterator           = 0x0;
-        const QUEX_TYPE_CHARACTER_POSITION*  End                = position_register + (ptrdiff_t)PositionRegisterN;
-        size_t                               loaded_character_n = (size_t)-1;    
+        QUEX_TYPE_CHARACTER_POSITION*  iterator           = 0x0;
+        QUEX_TYPE_CHARACTER_POSITION*  End                = position_register + (ptrdiff_t)PositionRegisterN;
+        size_t                         loaded_character_n = (size_t)-1;    
 
         loaded_character_n = QUEX_NAME(__buffer_reload_forward_core)(buffer);
 

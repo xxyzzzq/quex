@@ -44,6 +44,7 @@ class Analyzer:
         acceptance_db = track_analysis.do(SM)
 
         self.__init_state_index = SM.init_state_index
+        self.__engine_type      = EngineType
 
         from_db = defaultdict(set)
         for state_index, state in SM.states.iteritems():
@@ -336,6 +337,15 @@ class Analyzer:
 
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform.
         return True
+
+    def last_acceptance_variable_required(self):
+        """If one entry stores the last_acceptance, then the 
+           correspondent variable is required to be defined.
+        """
+        if self.__engine_type != EngineTypes.FORWARD: return False
+        for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
+            if len(entry.accepter) != 0: return True
+        return False
 
     def __get_successor_db(self, StateIndex, path, result):
         """Determine for each state the set of successor states.

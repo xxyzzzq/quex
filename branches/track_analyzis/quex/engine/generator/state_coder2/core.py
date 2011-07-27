@@ -21,7 +21,7 @@ def do(txt, TheState, TheAnalyzer):
     if entry.do(txt, TheState, TheAnalyzer):
         input_do(txt, TheState)
         transition_block.do(txt, TheState)
-        drop_out_do(txt, TheState)
+        drop_out_do(txt, TheState, TheAnalyzer)
 
     epilog_if_init_state_do(txt, TheState)
 
@@ -47,8 +47,9 @@ def input_do(txt, TheState):
     LanguageDB = Setup.language_db
     LanguageDB.ACCESS_INPUT(txt, TheState.input)
 
-def drop_out_do(txt, TheState):
-    LanguageDB = Setup.language_db
+def drop_out_do(txt, TheState, TheAnalyzer):
+    LanguageDB          = Setup.language_db
+    PositionRegisterMap = TheAnalyzer.position_register_map
 
     txt.append(Address("$drop-out", TheState.index))
 
@@ -66,7 +67,10 @@ def drop_out_do(txt, TheState):
         for i, easy in enumerate(info):
             positioning_str = ""
             if easy[1].positioning != 0:
-                positioning_str = "%s\n" % LanguageDB.POSITIONING(easy[1].positioning, easy[1].post_context_id)
+                if easy[1].positioning is None: register = PositionRegisterMap[easy[1].post_context_id]
+                else:                           register = None
+                positioning_str = "%s\n" % LanguageDB.POSITIONING(easy[1].positioning, register)
+
             goto_terminal_str = "%s" % LanguageDB.GOTO_TERMINAL(easy[1].acceptance_id)
             txt.append(LanguageDB.IF_PRE_CONTEXT(i == 0, easy[0].pre_context_id, 
                                                  "%s%s" % (positioning_str, goto_terminal_str)))
@@ -100,9 +104,11 @@ def drop_out_do(txt, TheState):
     #else:
     case_list = []
     for element in TheState.drop_out.router:
+        if element.positioning is None: register = PositionRegisterMap[element.post_context_id]
+        else:                           register = None
         case_list.append((LanguageDB.ACCEPTANCE(element.acceptance_id), 
                           "%s %s" % \
-                          (LanguageDB.POSITIONING(element.positioning, element.post_context_id), 
+                          (LanguageDB.POSITIONING(element.positioning, register),
                            LanguageDB.GOTO_TERMINAL(element.acceptance_id))))
 
     txt.extend(LanguageDB.SELECTION("last_acceptance", case_list))

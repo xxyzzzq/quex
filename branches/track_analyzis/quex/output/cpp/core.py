@@ -69,13 +69,12 @@ class Generator(GeneratorBase):
 
         # (*) Determine required labels and variables
         routed_address_set = get_address_set_subject_to_routing()
+        routed_address_set.add(get_address("$entry", self.sm.init_state_index, U=True))
+        routed_address_set.add(get_address("$terminal-EOF", U=True))
+        routed_state_info_list = state_router_generator.get_info(routed_address_set)
+        state_router = [ state_router_generator.do(routed_state_info_list) ]
 
-        state_router = []
-        if len(routed_address_set) != 0 or is_label_referenced("$state-router"):
-            variable_db.require("target_state_index", Condition_ComputedGoto=False) 
-
-            routed_state_info_list = state_router_generator.get_info(routed_address_set, dsm)
-            state_router.append(state_router_generator.do(routed_state_info_list))
+        variable_db.require("target_state_index", Condition_ComputedGoto=False) 
 
         if is_label_referenced("$reload-FORWARD") or is_label_referenced("$reload-BACKWARD"):
             variable_db.require("target_state_else_index")
@@ -158,15 +157,20 @@ class Generator(GeneratorBase):
                                                      self.end_of_stream_action, 
                                                      self.begin_of_line_condition_f, 
                                                      self.pre_context_sm_id_list,
-                                                     self.language_db) 
+                                                     self.language_db, 
+                                                     variable_db) 
+        
         txt.extend(terminal_code)
 
-        N = len(analyzer.position_register_map)
+        N = len(set(analyzer.position_register_map.values()))
         if len(analyzer.position_register_map) != 0:
             variable_db.require_array("position", ElementN = N,
                                       Initial  = "{ " + ("0, " * (N - 1) + "0") + "}")
             variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
     
+        if analyzer.last_acceptance_variable_required():
+            variable_db.require("last_acceptance")
+
         # -- reload definition (forward, backward, init state reload)
         code = LanguageDB["$reload-definitions"](self.sm.init_state_index, N != 0)
         txt.extend(code)
