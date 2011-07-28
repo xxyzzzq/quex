@@ -213,9 +213,7 @@ def __reload_definitions(InitialStateIndex, PositionRegisterF):
     if PositionRegisterF: position_tuple = ("position", "PositionRegisterN")
     else:                 position_tuple = ("0x0",      "0")
 
-    txt.append(Address("$reload-FORWARD", None, reload_forward_str % position_tuple))
-
-    # Append empty references to make sure that the addresses are implemented.
+    txt.append(Address("$reload-FORWARD", None,  reload_forward_str % position_tuple))
     txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
     return txt
 
@@ -433,12 +431,13 @@ def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, La
     #     router and, thus, **must** restore the acceptance input position. This is so, 
     #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
     #     may lay backwards and needs to be restored.
-    safe_pattern = pattern_action_info.pattern.replace('"', '\\"')
-    safe_pattern = safe_pattern.replace("\\n", "\\\\n")
-    safe_pattern = safe_pattern.replace("\\t", "\\\\t")
-    safe_pattern = safe_pattern.replace("\\r", "\\\\r")
-    safe_pattern = safe_pattern.replace("\\a", "\\\\a")
-    safe_pattern = safe_pattern.replace("\\v", "\\\\v")
+    result      = []
+    for letter in pattern_action_info.pattern:
+        if letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']:
+            result.append("\\")
+        result.append(letter)
+
+    safe_pattern = "".join(result)
 
     backward_input_position_detection_str = ""
     if state_machine.core().post_context_backward_input_position_detector_sm() is not None:

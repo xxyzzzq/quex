@@ -9,11 +9,11 @@ from   math      import log
 from   copy      import copy
 from   itertools import islice
 
-__DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
+__DEBUG_ASSERT_ADJACENCY_F = False # Use this flag to double check that intervals are adjacent
 
-def do(txt, TheState, ReturnToState_Str=None, GotoReload_Str=None):
-    assert isinstance(TheState, AnalyzerState)
-    assert isinstance(TheState.transition_map, list)
+def do(txt, TransitionMap, EngineType, ReturnToState_Str=None, GotoReload_Str=None):
+    assert isinstance(TransitionMap, list)
+    assert EngineType        is in EngineTypes
     assert ReturnToState_Str is None or instance(ReturnToState_Str, (str, unicode))
     assert GotoReload_Str    is None or instance(GotoReload_Str, (str, unicode))
     LanguageDB = Setup.language_db
@@ -22,30 +22,23 @@ def do(txt, TheState, ReturnToState_Str=None, GotoReload_Str=None):
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
-    if len(TheState.transition_map) == 0: return 
+    if len(TransitionMap) == 0: return 
 
-    if __DEBUG_CHECK_ACTIVE_F and len(TheState.transition_map) > 1:
-        # Check that the trigger map consist of sorted adjacent intervals 
-        # This assumption is critical because it is assumed that for any isolated
-        # interval the bordering intervals have bracketed the remaining cases!
-        previous = TriggerMap[0][0] 
-        for interval, target_state_index in islice(TriggerMap, 1, None):
-            assert interval.begin == previous.end # Intervals are adjacent!
-            assert interval.end > interval.begin  # Interval size > 0! 
-            previous = interval
+    __assert_adjacency(TransitionMap)
 
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
-    __prune_character_range(TheState)
+    __prune_character_range(TransitionMap)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(TheState)
+    __separate_buffer_limit_code_transition(TransitionMap)
 
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
-    transition_map = [ (entry[0], transition_code.do(entry[1], TheState, ReturnToState_Str, GotoReload_Str)) 
-                       for entry in TheState.transition_map ]
+    transition_map = [ (entry[0], transition_code.do(entry[1], StateIndex, InitStateF, EngineType, 
+                                                     ReturnToState_Str, GotoReload_Str)) 
+                       for entry in TransitionMap ]
 
     txt.extend(__get_code(transition_map))
 
@@ -345,18 +338,18 @@ def __switch_case_heuristic(TriggerMap,
 
     return p > 0.03
 
-def __separate_buffer_limit_code_transition(TheState):
+def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
     """This function ensures, that the buffer limit code is separated 
        into a single value interval. Thus the transition map can 
        transit immediate to the reload procedure.
     """
     BLC = Setup.buffer_limit_code
-    for i, entry in enumerate(TheState.transition_map):
+    for i, entry in enumerate(TransitionMap):
         interval, target_index = entry
 
         if   target_index == TargetStateIndices.RELOAD_PROCEDURE:   
             assert interval.contains_only(Setup.buffer_limit_code) 
-            assert TheState.engine_type != EngineTypes.BACKWARD_INPUT_POSITION
+            assert EngineType != EngineTypes.BACKWARD_INPUT_POSITION
             # Transition 'buffer limit code --> TargetStateIndices.RELOAD_PROCEDURE' 
             # has been setup already.
             return
@@ -377,27 +370,27 @@ def __separate_buffer_limit_code_transition(TheState):
         after_end    = interval.end
 
         # Replace Entry with (max.) three intervals: before, buffer limit code, after
-        del TheState.transition_map[i]
+        del TransitionMap[i]
 
         if after_end > after_begin:
-            TheState.transition_map.insert(i, (Interval(after_begin, after_end), TargetStateIndices.DROP_OUT))
+            TransitionMap.insert(i, (Interval(after_begin, after_end), TargetStateIndices.DROP_OUT))
 
         # "Target == TargetStateIndices.RELOAD_PROCEDURE" => Buffer Limit Code
-        TheState.transition_map.insert(i, (Interval(BLC, BLC + 1), TargetStateIndices.RELOAD_PROCEDURE))
+        TransitionMap.insert(i, (Interval(BLC, BLC + 1), TargetStateIndices.RELOAD_PROCEDURE))
 
         if before_end > before_begin and before_end > 0:
-            TheState.transition_map.insert(i, (Interval(before_begin, before_end), TargetStateIndices.DROP_OUT))
+            TransitionMap.insert(i, (Interval(before_begin, before_end), TargetStateIndices.DROP_OUT))
         return
 
     # Any transition map, except for backward input position detection, 
     # must have a trigger on reload.
-    assert TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION, \
+    assert EngineType == EngineTypes.BACKWARD_INPUT_POSITION, \
            "Engine types other than 'backward input position detection must contain BLC.\n" \
-           "Found: %s" % repr(TheState.engine_type)
+           "Found: %s" % repr(EngineType)
     return
 
 def __prune_character_range(TheState):
-    assert len(TheState.transition_map) != 0
+    assert len(TransitionMap) != 0
 
     LowerLimit = 0
     UpperLimit = Setup.get_character_value_limit()
@@ -405,20 +398,32 @@ def __prune_character_range(TheState):
     if UpperLimit == -1: return trigger_map
 
     # (*) Delete any entry that lies completely below the lower limit
-    for i, entry in enumerate(TheState.transition_map):
+    for i, entry in enumerate(TransitionMap):
         interval, target = entry
         if interval.end >= LowerLimit: break
-    if i != 0: del TheState.transition_map[:i]
+    if i != 0: del TransitionMap[:i]
 
-    if TheState.transition_map[0][0].begin < LowerLimit:
-        TheState.transition_map[0][0].begin = LowerLimit
+    if TransitionMap[0][0].begin < LowerLimit:
+        TransitionMap[0][0].begin = LowerLimit
 
     # (*) Delete any entry that lies completely above the upper limit
-    for i, entry in enumerate(reversed(TheState.transition_map)):
+    for i, entry in enumerate(reversed(TransitionMap)):
         interval, target = entry
         if interval.begin <= UpperLimit: break
-    if i != 0: TheState.transition_map[len(TheState.transition_map) - i:]
+    if i != 0: TransitionMap[len(TransitionMap) - i:]
 
-    if TheState.transition_map[-1][0].end < UpperLimit + 1:
-        TheState.transition_map[-1][0].end = UpperLimit + 1
+    if TransitionMap[-1][0].end < UpperLimit + 1:
+        TransitionMap[-1][0].end = UpperLimit + 1
+
+def __assert_adjacency(TransitionMap):
+    """Check that the trigger map consist of sorted adjacent intervals 
+       This assumption is critical because it is assumed that for any isolated
+       interval the bordering intervals have bracketed the remaining cases!
+    """
+    if __DEBUG_ASSERT_ADJACENCY_F == False: return
+    previous = TriggerMap[0][0] 
+    for interval, target_state_index in islice(TriggerMap, 1, None):
+        assert interval.begin == previous.end # Intervals are adjacent!
+        assert interval.end > interval.begin  # Interval size > 0! 
+        previous = interval
 

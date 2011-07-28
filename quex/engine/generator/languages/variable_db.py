@@ -44,8 +44,9 @@ _candidate_db = {
 
 class VariableDB:
 
-    def __init__(self):
+    def __init__(self, InitialDB=None):
         self.__db = {}
+        self.init(InitialDB)
 
     def init(self, InitialDB=None):
         if InitialDB is None: self.__db.clear()

@@ -16,7 +16,7 @@ def do(Target, TheState, ReturnToState_Str, GotoReload_Str):
         return TransitionCode(Target, TheState, ReturnToState_Str, GotoReload_Str)
 
 class TransitionCode:
-    def __init__(self, Target, TheState, ReturnToState_Str, GotoReload_Str):
+    def __init__(self, Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload_Str):
         """The generation of transition code is postponed to the moment when
            the code fragment is used. This happens in order to avoid the
            generation of references to 'goto-labels' that are later not used.
@@ -26,13 +26,17 @@ class TransitionCode:
            if self.__code is None: postponed
            else:                   not postponed
         """
-        assert isinstance(TheState, AnalyzerState)
+        assert StateIndex is None or isinstance(StateInex, (int, long))
+        assert EngineType        in EngineTypes
+        assert type(InitStateF)  == bool
         assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
         assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
         LanguageDB = Setup.language_db
 
         self.__target              = Target
-        self.__the_state           = TheState
+        self.__state_index         = StateIndex
+        self.__init_state_f        = InitStateF
+        self.__engine_type         = EngineType
         self.__return_to_state_str = ReturnToState_Str
 
         if   Target == TargetStateIndices.RELOAD_PROCEDURE:
@@ -57,9 +61,9 @@ class TransitionCode:
         LanguageDB = Setup.language_db
 
         if   self.__target == TargetStateIndices.RELOAD_PROCEDURE:
-            return LanguageDB.GOTO_RELOAD(self.__the_state, self.__return_to_state_str)
+            return LanguageDB.GOTO_RELOAD(self.__state_index, self.__init_state_f, self.__engine_type, self.__return_to_state_str)
         elif self.__target == TargetStateIndices.DROP_OUT:
-            return LanguageDB.GOTO_DROP_OUT(self.__the_state.index)
+            return LanguageDB.GOTO_DROP_OUT(self.__state_index)
         else:
             assert False
 
