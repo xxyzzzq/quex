@@ -11,7 +11,8 @@ from quex.exception              import RegularExpressionException
 from quex.blackboard             import PatternShorthand
 #
 from   quex.engine.generator.languages.core    import db
-import quex.engine.generator.languages.address as address
+import quex.engine.generator.languages.address     as address
+from   quex.engine.generator.languages.variable_db import VariableDB
 from   quex.engine.generator.languages.cpp     import _local_variable_definitions
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as cpp_generator
@@ -528,10 +529,12 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     if type(SourceCode) == list:
         SourceCode = "".join(address.get_plain_strings(SourceCode))
 
+    variable_db  = VariableDB(LocalVariableDB)
+    variable_def = "".join(LanguageDB.VARIABLE_DEFINITIONS(variable_db))
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),
                        ("$$SHOW_POSITION$$",          show_position_str),
-                       ("$$LOCAL_VARIABLES$$",        "".join(__local_variable_definitions(LocalVariableDB))),
+                       ("$$LOCAL_VARIABLES$$",        variable_def),
                        ("$$SOURCE_CODE$$",            SourceCode),
                        ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
                        ("$$END_STR$$",                EndStr)])
@@ -540,16 +543,12 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
 customized_unit_test_function_txt = """
 bool
 show_next_character(QUEX_NAME(Buffer)* buffer) {
-    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
-    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
-
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
         QUEX_NAME(Buffer_mark_lexeme_start)(buffer);
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return false;
         }
-        QUEX_NAME(buffer_reload_forward_LA_PC)(buffer, &last_acceptance_input_position,
-                                               post_context_start_position, 0);
+        QUEX_NAME(buffer_reload_forward)(buffer, (void*)0x0, 0);
         QUEX_NAME(Buffer_input_p_increment)(buffer);
     }
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
@@ -566,7 +565,6 @@ show_next_character(QUEX_NAME(Buffer)* buffer) {
 __QUEX_TYPE_ANALYZER_RETURN_VALUE QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 {
 #   define  engine (me)
-    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;
     QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
     const size_t                  PostContextStartPositionN      = 0;
     QUEX_TYPE_CHARACTER           input                          = 0x0;
@@ -582,8 +580,7 @@ $$MARKER_LIST$$
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
                 goto $$TERMINAL_END_OF_STREAM$$;
             }
-            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                                   post_context_start_position, 0);
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position, 1);
         }
         QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     }

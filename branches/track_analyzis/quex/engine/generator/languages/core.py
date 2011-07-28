@@ -198,23 +198,26 @@ class LDB(dict):
     def GOTO_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex, U=True)
 
-    def GOTO_RELOAD(self, TheState, ReturnStateIndexStr):
-        if TheState.engine_type == EngineTypes.FORWARD: direction = "FORWARD"
-        else:                                           direction = "BACKWARD"
-
-        if TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
+    def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType, ReturnStateIndexStr):
+        if   EngineType == EngineTypes.FORWARD: 
+            direction = "FORWARD"
+        elif EngineTypes == EngineTypes.BACKWARD:
+            direction = "BACKWARD"
+        elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION:
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
             return ""
+        else:
+            assert False
 
         if ReturnStateIndexStr is not None: 
             state_reference = ReturnStateIndexStr
-        elif TheState.init_state_forward_f:
-            state_reference = "QUEX_LABEL(%i)" % get_address("$entry", TheState.index, U=True)
+        elif InitStateIndexF and EngineType == EngineTypes.FORWARD:
+            state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, U=True)
             else_reference  = "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True) 
         else:                           
-            state_reference = "QUEX_LABEL(%i)" % get_address("$entry", TheState.index, R=True)
-            else_reference  = "QUEX_LABEL(%i)" % get_address("$drop-out", TheState.index, U=True, R=True) 
+            state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, R=True)
+            else_reference  = "QUEX_LABEL(%i)" % get_address("$drop-out", StateIndex, U=True, R=True) 
 
         # Ensure that '__STATE_ROUTER' is marked as referenced
         get_label("$state-router", U=True)

@@ -1,6 +1,5 @@
 import quex.engine.state_machine.index                    as     sm_index
-import quex.engine.generator.state_coder.transition_block as     transition_block
-import quex.engine.generator.state_coder.transition       as     transition
+import quex.engine.generator.state_coder2.transition_block as     transition_block
 from   quex.engine.generator.languages.address            import get_label
 from   quex.engine.generator.languages.variable_db        import Variable
 from   quex.engine.generator.skipper.common               import *
@@ -61,17 +60,12 @@ $$RELOAD$$:
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
-        if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-            goto $$GOTO_TERMINAL_EOF$$;
-        } else {
-            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                                   post_context_start_position, PostContextStartPositionN);
-
-            QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-            $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
+        goto QUEX_GOTO_RELOAD(FORWARD, $$LABEL_REF_AFTER_RELOAD$$, $$LABEL_TERMINAL_EOF$$);
+$$LABEL_AFTER_RELOAD$$:
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+        $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
 $$LC_COUNT_AFTER_RELOAD$$
-            goto STATE_$$SKIPPER_INDEX$$_LOOP;
-        } 
+        goto STATE_$$SKIPPER_INDEX$$_LOOP;
     }
 """
 
@@ -94,7 +88,6 @@ def get_skipper(TriggerSet):
 
     iteration_code = transition_block.do(transition_map.get_trigger_map(), 
                                          skipper_index, 
-                                         DSM=None, 
                                          GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
@@ -122,6 +115,8 @@ def get_skipper(TriggerSet):
                          ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", skipper_index, U=True)],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
                          ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
+                         ["$$LABEL_REF_AFTER_RELOAD$$",         "QUEX_LABEL(%i)" % get_address("$skipper-reload", skipper_index)],
+                         ["$$LABEL_AFTER_RELOAD$$",             get_label("$skipper-reload", skipper_index)],
                          # When things were skipped, no change to acceptance flags or modes has
                          # happend. One can jump immediately to the start without re-entry preparation.
                          ["$$GOTO_START$$",                     get_label("$start", U=True)], 
