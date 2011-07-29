@@ -1,19 +1,21 @@
 from quex.blackboard import TargetStateIndices, \
                             setup as Setup
 from quex.engine.analyzer.core import AnalyzerState
+from quex.engine.state_machine.state_core_info import EngineTypes
 
-def do(Target, TheState, ReturnToState_Str, GotoReload_Str):
-    """Generate a 'real' target action object based on a given Target that may be
-       an identifier or actually a real object already.
+def do(Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload_Str):
+    """Generate a 'real' target action object based on a given Target that 
+       may be an identifier or actually a real object already.
 
        The approach of having 'code-ready' objects as targets makes code 
        generation much simpler. No information has to be passed down the 
        recursive call tree.
     """
+
     if isinstance(Target, TransitionCode): 
         return Target
     else:
-        return TransitionCode(Target, TheState, ReturnToState_Str, GotoReload_Str)
+        return TransitionCode(Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload_Str)
 
 class TransitionCode:
     def __init__(self, Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload_Str):
@@ -26,9 +28,9 @@ class TransitionCode:
            if self.__code is None: postponed
            else:                   not postponed
         """
-        assert StateIndex is None or isinstance(StateInex, (int, long))
         assert EngineType        in EngineTypes
         assert type(InitStateF)  == bool
+        assert StateIndex        is None or isinstance(StateIndex, (int, long))
         assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
         assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
         LanguageDB = Setup.language_db
@@ -49,7 +51,7 @@ class TransitionCode:
         elif isinstance(Target, (int, long)):
             # The transition to another target state cannot possibly be cut out!
             # => no postponed code generation
-            self.__code       = LanguageDB.GOTO(Target, TheState)
+            self.__code       = LanguageDB.GOTO(Target, StateIndex, EngineType)
             self.__drop_out_f = False
         else:
             assert isinstance(Target, TransitionCode) # No change necessary

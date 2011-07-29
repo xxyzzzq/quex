@@ -172,7 +172,7 @@ class Generator(GeneratorBase):
             variable_db.require("last_acceptance")
 
         # -- reload definition (forward, backward, init state reload)
-        code = LanguageDB["$reload-definitions"](self.sm.init_state_index, N != 0)
+        code = LanguageDB.RELOAD(N != 0)
         txt.extend(code)
 
         return txt

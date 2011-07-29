@@ -162,37 +162,6 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #   define self (*((QUEX_TYPE_ANALYZER*)me))
 """
 
-reload_forward_str = """
-    __quex_assert_no_passage();
-__RELOAD_FORWARD:
-    __quex_debug("__RELOAD_FORWARD");
-
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( me->buffer._memory._end_of_file_p == 0x0 ) {
-        __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward)(&me->buffer, %s, %s);
-        __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);
-    }
-    __quex_debug("reload impossible");
-    QUEX_GOTO_STATE(target_state_else_index);
-"""
-
-reload_backward_str = """
-    __quex_assert_no_passage();
-__RELOAD_BACKWARD:
-    __quex_debug("__RELOAD_BACKWARD");
-    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
-        __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_backward)(&me->buffer);
-        __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);
-    }
-    __quex_debug("reload impossible");
-    QUEX_GOTO_STATE(target_state_else_index);
-"""
-
 comment_on_post_context_position_init_str = """
     /* Post context positions do not have to be reset or initialized. If a state
      * is reached which is associated with 'end of post context' it is clear what
@@ -207,15 +176,6 @@ comment_on_post_context_position_init_str = """
      *       for that particular post context, then the post context position is used
      *       to reset the input position.                                              */
 """
-
-def __reload_definitions(InitialStateIndex, PositionRegisterF):
-    txt = []
-    if PositionRegisterF: position_tuple = ("position", "PositionRegisterN")
-    else:                 position_tuple = ("0x0",      "0")
-
-    txt.append(Address("$reload-FORWARD", None,  reload_forward_str % position_tuple))
-    txt.append(Address("$reload-BACKWARD", None, reload_backward_str))
-    return txt
 
 def __analyzer_function(StateMachineName, EngineClassName, SingleModeAnalyzerF,
                         variable_definitions, function_body, ModeNameList=[], LanguageDB=None):

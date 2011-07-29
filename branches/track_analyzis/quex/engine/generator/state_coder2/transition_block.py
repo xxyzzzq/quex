@@ -7,15 +7,19 @@ from   quex.blackboard                                    import TargetStateIndi
 import sys
 from   math      import log
 from   copy      import copy
-from   itertools import islice
 
-__DEBUG_ASSERT_ADJACENCY_F = False # Use this flag to double check that intervals are adjacent
-
-def do(txt, TransitionMap, EngineType, ReturnToState_Str=None, GotoReload_Str=None):
+def do(txt, TransitionMap, 
+       StateIndex       = None,  EngineType     = EngineTypes.FORWARD, 
+       InitStateF       = False, 
+       ReturnToState_Str= None,  GotoReload_Str = None):
     assert isinstance(TransitionMap, list)
-    assert EngineType        is in EngineTypes
-    assert ReturnToState_Str is None or instance(ReturnToState_Str, (str, unicode))
-    assert GotoReload_Str    is None or instance(GotoReload_Str, (str, unicode))
+    assert EngineType        in EngineTypes
+    assert isinstance(InitStateF, bool)
+    assert StateIndex        is None or isinstance(StateIndex, (int, long))
+    assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
+    assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
+    __assert_adjacency(TransitionMap)
+
     LanguageDB = Setup.language_db
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
@@ -24,7 +28,6 @@ def do(txt, TransitionMap, EngineType, ReturnToState_Str=None, GotoReload_Str=No
     #       AND states during backward input position detection!
     if len(TransitionMap) == 0: return 
 
-    __assert_adjacency(TransitionMap)
 
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
@@ -32,7 +35,7 @@ def do(txt, TransitionMap, EngineType, ReturnToState_Str=None, GotoReload_Str=No
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(TransitionMap)
+    __separate_buffer_limit_code_transition(TransitionMap, EngineType)
 
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.
@@ -389,7 +392,7 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
            "Found: %s" % repr(EngineType)
     return
 
-def __prune_character_range(TheState):
+def __prune_character_range(TransitionMap):
     assert len(TransitionMap) != 0
 
     LowerLimit = 0
@@ -420,9 +423,10 @@ def __assert_adjacency(TransitionMap):
        This assumption is critical because it is assumed that for any isolated
        interval the bordering intervals have bracketed the remaining cases!
     """
-    if __DEBUG_ASSERT_ADJACENCY_F == False: return
-    previous = TriggerMap[0][0] 
-    for interval, target_state_index in islice(TriggerMap, 1, None):
+    if len(TransitionMap) == 0: return
+    iterable = TransitionMap.__iter__()
+    previous = iterable.next()[0] 
+    for interval, target_state_index in iterable:
         assert interval.begin == previous.end # Intervals are adjacent!
         assert interval.end > interval.begin  # Interval size > 0! 
         previous = interval
