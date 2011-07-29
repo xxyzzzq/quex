@@ -20,7 +20,7 @@ def do(txt, TheState, TheAnalyzer):
 
     if entry.do(txt, TheState, TheAnalyzer):
         input_do(txt, TheState)
-        transition_block.do(txt, TheState)
+        transition_block.do(txt, TheState.transition_map, TheState.index, TheState.engine_type, TheState.init_state_f)
         drop_out_do(txt, TheState, TheAnalyzer)
 
     epilog_if_init_state_do(txt, TheState)

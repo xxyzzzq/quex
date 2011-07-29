@@ -375,9 +375,11 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
     return txt
 
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
+    LanguageDB = Setup.language_db
 
-    end_str  = '    printf("end\\n");'
-    end_str += '    return false;\n'
+    end_str  = ['    printf("end\\n");\n'
+                '    return false;\n']
+    end_str = "".join(end_str)
 
     address.init_address_handling({})
     skipper_code, local_variable_db = character_set_skipper.get_skipper(TriggerSet)
@@ -526,9 +528,11 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     else:
         ml_txt += "    break;\n"
 
+    print "<<<<<", SourceCode
     if type(SourceCode) == list:
         SourceCode = "".join(address.get_plain_strings(SourceCode))
-
+    print ">>>>>", SourceCode
+    
     variable_db  = VariableDB(LocalVariableDB)
     variable_def = "".join(LanguageDB.VARIABLE_DEFINITIONS(variable_db))
     return blue_print(customized_unit_test_function_txt,
@@ -565,9 +569,9 @@ show_next_character(QUEX_NAME(Buffer)* buffer) {
 __QUEX_TYPE_ANALYZER_RETURN_VALUE QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 {
 #   define  engine (me)
-    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;
-    const size_t                  PostContextStartPositionN      = 0;
-    QUEX_TYPE_CHARACTER           input                          = 0x0;
+    QUEX_TYPE_CHARACTER_POSITION  position[1]       = { 0 };
+    const size_t                  PositionRegisterN = 1;
+    QUEX_TYPE_CHARACTER           input             = 0x0;
 $$LOCAL_VARIABLES$$
 
 ENTRY:
@@ -580,7 +584,7 @@ $$MARKER_LIST$$
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
                 goto $$TERMINAL_END_OF_STREAM$$;
             }
-            QUEX_NAME(buffer_reload_forward)(&me->buffer, &last_acceptance_input_position, 1);
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
         }
         QUEX_NAME(Buffer_input_p_increment)(&me->buffer);
     }

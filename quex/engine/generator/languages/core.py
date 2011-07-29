@@ -136,7 +136,6 @@ CppBase = {
     "$assignment":           lambda variable, value: "%s = %s;\n" % (variable, value),
     "$goto-last_acceptance": "QUEX_GOTO_TERMINAL(last_acceptance);\n",
     #
-    "$reload-definitions":   cpp.__reload_definitions,
     "$header-definitions":   cpp.__header_definitions,
     "$frame":                cpp.__frame_of_all,
     "$goto-mode":            lambda Mode: "QUEX_NAME(enter_mode)(&self, &" + Mode + ");",
@@ -186,14 +185,14 @@ class LDB(dict):
     def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
         return "BIP_DETECTOR_%i_DONE" % StateMachineID
 
-    def GOTO(self, StateIndex, FromState=None):
+    def GOTO(self, TargetStateIndex, FromStateIndex=None, EngineType=None):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        if FromState is not None and FromState.engine_type == EngineTypes.FORWARD:
-            return "goto %s;" % self.__label_name(StateIndex, FromState.index)
+        if FromStateIndex is not None and EngineType == EngineTypes.FORWARD:
+            return "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         else:
-            return "goto %s;" % self.__label_name(StateIndex)
+            return "goto %s;" % self.__label_name(TargetStateIndex)
 
     def GOTO_DROP_OUT(self, StateIndex):
         return get_address("$drop-out", StateIndex, U=True)
@@ -201,14 +200,14 @@ class LDB(dict):
     def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType, ReturnStateIndexStr):
         if   EngineType == EngineTypes.FORWARD: 
             direction = "FORWARD"
-        elif EngineTypes == EngineTypes.BACKWARD:
+        elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT:
             direction = "BACKWARD"
         elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION:
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
             return ""
         else:
-            assert False
+            assert False, repr(EngineType)
 
         if ReturnStateIndexStr is not None: 
             state_reference = ReturnStateIndexStr
@@ -361,6 +360,45 @@ class LDB(dict):
     def VARIABLE_DEFINITIONS(self, VariableDB):
         return cpp._local_variable_definitions(VariableDB.get()) 
 
+    def RELOAD(self, PositionRegisterF):
+        txt = []
+        # if PositionRegisterF: position_tuple = ("position", "PositionRegisterN")
+        # else:                 position_tuple = ("0x0",      "0")
+
+        txt.append(Address("$reload-FORWARD", None,  cpp_reload_forward_str % position_tuple))
+        txt.append(Address("$reload-BACKWARD", None, cpp_reload_backward_str))
+        return txt
+
+cpp_reload_forward_str = """
+    __quex_assert_no_passage();
+__RELOAD_FORWARD:
+    __quex_debug("__RELOAD_FORWARD");
+
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( me->buffer._memory._end_of_file_p == 0x0 ) {
+        __quex_debug_reload_before();
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, position, PositionRegisterN);
+        __quex_debug_reload_after();
+        QUEX_GOTO_STATE(target_state_index);
+    }
+    __quex_debug("reload impossible");
+    QUEX_GOTO_STATE(target_state_else_index);
+"""
+
+cpp_reload_backward_str = """
+    __quex_assert_no_passage();
+__RELOAD_BACKWARD:
+    __quex_debug("__RELOAD_BACKWARD");
+    __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
+        __quex_debug_reload_before();
+        QUEX_NAME(buffer_reload_backward)(&me->buffer);
+        __quex_debug_reload_after();
+        QUEX_GOTO_STATE(target_state_index);
+    }
+    __quex_debug("reload impossible");
+    QUEX_GOTO_STATE(target_state_else_index);
+"""
 
 db["C++"] = LDB(CppBase)
 

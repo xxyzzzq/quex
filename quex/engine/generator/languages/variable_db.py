@@ -18,7 +18,7 @@ class Variable:
         self.priority_f          = PriorityF
 
 
-_candidate_db = {
+candidate_db = {
 # Name                             Type(0),                         InitialValue(2),                    PriorityF(3)
 "input":                          ["QUEX_TYPE_CHARACTER",           "(QUEX_TYPE_CHARACTER)(0x00)",      False],
 "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "((QUEX_TYPE_CHARACTER)0x0)",       False],
@@ -40,7 +40,19 @@ _candidate_db = {
 "template_state_key":                       ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
 "template_%i_target_%i":                    ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
 "template_%i_map_state_key_to_state_index": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
+#
+# (*) Skipper etc.
+"reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
 }
+
+def enter(local_variable_db, Name, InitialValue=None, ElementN=None, Condition=None, ConditionNegatedF=False):
+    x = candidate_db[Name]
+
+    Type      = x[0]
+    PriorityF = x[2]
+    if InitialValue is None: InitialValue = x[1]
+
+    local_variable_db[Name] = Variable(Name, Type, ElementN, InitialValue, Condition, ConditionNegatedF, PriorityF)
 
 class VariableDB:
 
@@ -77,27 +89,27 @@ class VariableDB:
             return "QUEX_OPTION_COMPUTED_GOTOS", not Condition_ComputedGoto
 
     def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None):
-        global _candidate_db
+        global candidate_db
 
         condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
 
         # Name --> Type(0), InitialValue(1), PriorityF(2)
-        x = _candidate_db[Name]
+        x = candidate_db[Name]
 
         if Index is not None:   Name = Name % Index
 
         if Initial is not None: initial = Initial
-        else:               initial = x[1]
+        else:                   initial = x[1]
 
         self.__enter(Name, x[0], None, initial, condition, condition_negated_f, x[2])
 
     def require_array(self, Name, ElementN, Initial, Index=None, Condition_ComputedGoto=None):
-        global _candidate_db
+        global candidate_db
 
         condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
 
         # Name --> Type(0), InitialValue(1), PriorityF(2)
-        x = _candidate_db[Name]
+        x = candidate_db[Name]
 
         if Index is not None: Name = Name % Index
         self.__enter(Name, x[0], ElementN, Initial, condition, condition_negated_f, x[2])

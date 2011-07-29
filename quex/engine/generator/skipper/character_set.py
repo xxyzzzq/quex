@@ -1,11 +1,12 @@
 import quex.engine.state_machine.index                    as     sm_index
 import quex.engine.generator.state_coder2.transition_block as     transition_block
-from   quex.engine.generator.languages.address            import get_label
-from   quex.engine.generator.languages.variable_db        import Variable
+from   quex.engine.generator.languages.address            import get_label, get_address
+import quex.engine.generator.languages.variable_db        as     variable_db
 from   quex.engine.generator.skipper.common               import *
 from   quex.engine.state_machine.transition_map           import TransitionMap 
-from   quex.blackboard                                        import setup as Setup
-from   quex.engine.misc.string_handling                             import blue_print
+from   quex.engine.state_machine.state_core_info          import EngineTypes 
+from   quex.blackboard                                    import setup as Setup
+from   quex.engine.misc.string_handling                   import blue_print
 
 def do(Data):
     LanguageDB   = Setup.language_db
@@ -60,12 +61,16 @@ $$RELOAD$$:
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
-        goto QUEX_GOTO_RELOAD(FORWARD, $$LABEL_REF_AFTER_RELOAD$$, $$LABEL_TERMINAL_EOF$$);
-$$LABEL_AFTER_RELOAD$$:
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
+        if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
+            goto $$GOTO_TERMINAL_EOF$$;
+        } else {
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, position, PositionRegisterN);
+
+            QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+            $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
 $$LC_COUNT_AFTER_RELOAD$$
-        goto STATE_$$SKIPPER_INDEX$$_LOOP;
+            goto STATE_$$SKIPPER_INDEX$$_LOOP;
+        } 
     }
 """
 
@@ -86,9 +91,12 @@ def get_skipper(TriggerSet):
     transition_map.add_transition(TriggerSet, skipper_index)
     # On buffer limit code, the skipper must transit to a dedicated reloader
 
-    iteration_code = transition_block.do(transition_map.get_trigger_map(), 
-                                         skipper_index, 
-                                         GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
+    iteration_code = []
+    transition_block.do(iteration_code, 
+                        transition_map.get_trigger_map(), 
+                        skipper_index, 
+                        EngineTypes.ELSE,
+                        GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 
@@ -114,8 +122,8 @@ def get_skipper(TriggerSet):
                          ["$$RELOAD$$",                         get_label("$reload", skipper_index)],
                          ["$$DROP_OUT_DIRECT$$",                get_label("$drop-out", skipper_index, U=True)],
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
-                         ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
-                         ["$$LABEL_REF_AFTER_RELOAD$$",         "QUEX_LABEL(%i)" % get_address("$skipper-reload", skipper_index)],
+                         ["$$LABEL_TERMINAL_EOF$$",             "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True)],
+                         ["$$LABEL_REF_AFTER_RELOAD$$",         "QUEX_LABEL(%i)" % get_address("$skipper-reload", skipper_index, U=True)],
                          ["$$LABEL_AFTER_RELOAD$$",             get_label("$skipper-reload", skipper_index)],
                          # When things were skipped, no change to acceptance flags or modes has
                          # happend. One can jump immediately to the start without re-entry preparation.
@@ -128,12 +136,9 @@ def get_skipper(TriggerSet):
     code.append(epilog)
 
     local_variable_db = {}
-    local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \
-                     Variable("reference_p", 
-                              "QUEX_TYPE_CHARACTER_POSITION", 
-                              None,
-                              "(QUEX_TYPE_CHARACTER_POSITION)0x0",
-                              "QUEX_OPTION_COLUMN_NUMBER_COUNTING") 
+    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+    variable_db.enter(local_variable_db, "target_state_index")
+    variable_db.enter(local_variable_db, "target_state_else_index")
 
     return code, local_variable_db
 
