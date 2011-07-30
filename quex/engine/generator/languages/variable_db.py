@@ -27,6 +27,7 @@ candidate_db = {
 "PositionRegisterN":              ["const size_t",                  None,                               False],
 "position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                               False],
 "pre_context_%i_fulfilled_f":     ["int",                           "0",                                False], 
+"counter":                        ["size_t",                        "0",                                False],
 "end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)",      False],
 #                                 
 # (*) Path Compression
@@ -43,10 +44,23 @@ candidate_db = {
 #
 # (*) Skipper etc.
 "reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
+"text_end":                       ["QUEX_TYPE_CHARACTER*",         "(QUEX_TYPE_CHARACTER*)0x0",         False],
+#     Character Set Skipper:
+"Skipper%i":                      ["const QUEX_TYPE_CHARACTER",    None,                                False],
+"Skipper%iL":                     ["const size_t",                 None,                                False],
+#     Range Skipper (from string to string)
+"Skipper%i_Opener":               ["const QUEX_TYPE_CHARACTER",    None,                                True],
+"Skipper%i_OpenerEnd":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Opener_it":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Closer":               ["const QUEX_TYPE_CHARACTER",    None,                                True],
+"Skipper%i_CloserEnd":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Closer_it":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
 }
 
-def enter(local_variable_db, Name, InitialValue=None, ElementN=None, Condition=None, ConditionNegatedF=False):
+def enter(local_variable_db, Name, InitialValue=None, ElementN=None, Condition=None, ConditionNegatedF=False, Index=None):
     x = candidate_db[Name]
+
+    if Index is not None: Name = Name % Index
 
     Type      = x[0]
     PriorityF = x[2]

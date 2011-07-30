@@ -374,7 +374,7 @@ __RELOAD_FORWARD:
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
         __quex_debug_reload_before();
-        QUEX_NAME(buffer_reload_forward)(&me->buffer, position, PositionRegisterN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);
     }
