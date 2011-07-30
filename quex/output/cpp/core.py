@@ -163,7 +163,12 @@ class Generator(GeneratorBase):
         txt.extend(terminal_code)
 
         N = len(set(analyzer.position_register_map.values()))
-        if len(analyzer.position_register_map) != 0:
+        if len(analyzer.position_register_map) == 0:
+            variable_db.require_array("position", None, 
+                                      Initial="(void*)0x0", 
+                                      Type="QUEX_TYPE_CHARACTER_POSITION*")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
+        else:
             variable_db.require_array("position", ElementN = N,
                                       Initial  = "{ " + ("0, " * (N - 1) + "0") + "}")
             variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
@@ -172,7 +177,7 @@ class Generator(GeneratorBase):
             variable_db.require("last_acceptance")
 
         # -- reload definition (forward, backward, init state reload)
-        code = LanguageDB.RELOAD(N != 0)
+        code = LanguageDB.RELOAD()
         txt.extend(code)
 
         return txt

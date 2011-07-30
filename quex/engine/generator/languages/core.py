@@ -360,12 +360,9 @@ class LDB(dict):
     def VARIABLE_DEFINITIONS(self, VariableDB):
         return cpp._local_variable_definitions(VariableDB.get()) 
 
-    def RELOAD(self, PositionRegisterF):
+    def RELOAD(self):
         txt = []
-        # if PositionRegisterF: position_tuple = ("position", "PositionRegisterN")
-        # else:                 position_tuple = ("0x0",      "0")
-
-        txt.append(Address("$reload-FORWARD", None,  cpp_reload_forward_str % position_tuple))
+        txt.append(Address("$reload-FORWARD", None,  cpp_reload_forward_str))
         txt.append(Address("$reload-BACKWARD", None, cpp_reload_backward_str))
         return txt
 
