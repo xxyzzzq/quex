@@ -1,4 +1,4 @@
-<test-database execution-time-sec="162.65" date="Sat Jul 30 08:35:47 2011">
+<test-database execution-time-sec="163.17" date="Sat Jul 30 16:21:41 2011">
     <last-used-diff-display-program name=""/>
     <test title="Basic Path Compression Test" time-sum-sec="0.37"> 
         <application file-name="test-paths.py" info-request-time="1310810822L" vanished="False"/>
@@ -316,20 +316,20 @@
                <choice name="Cpp-Template-CG" result="FAIL" time_sec="0.14" crc="-680455951"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" time-sum-sec="3.85"> 
+        <test title="Tiny Expressions" time-sum-sec="4.37"> 
             <application file-name="test-simple.py" info-request-time="1310810822L" vanished="False"/>
             <choice-list number="11" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.54" crc="-771053764"/>
-               <choice name="ANSI-C" result="OK" time_sec="0.54" crc="-771053764"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.00" crc="-771053764"/>
+               <choice name="ANSI-C" result="OK" time_sec="0.55" crc="-771053764"/>
                <choice name="Cpp" result="OK" time_sec="0.81" crc="-771053764"/>
-               <choice name="Cpp_StrangeStream" result="OK" time_sec="0.82" crc="-771053764"/>
-               <choice name="Cpp-Template" result="FAIL" time_sec="0.10" crc="-771053764"/>
-               <choice name="Cpp-Path" result="FAIL" time_sec="0.10" crc="-771053764"/>
-               <choice name="Cpp-PathUniform" result="FAIL" time_sec="0.10" crc="-771053764"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.10" crc="-771053764"/>
+               <choice name="Cpp_StrangeStream" result="OK" time_sec="0.83" crc="-771053764"/>
+               <choice name="Cpp-Template" result="FAIL" time_sec="0.11" crc="-771053764"/>
+               <choice name="Cpp-Path" result="FAIL" time_sec="0.11" crc="-771053764"/>
+               <choice name="Cpp-PathUniform" result="FAIL" time_sec="0.11" crc="-771053764"/>
+               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.11" crc="-771053764"/>
                <choice name="ANSI-C-CG" result="OK" time_sec="0.54" crc="-771053764"/>
-               <choice name="Cpp-PathUniform-CG" result="FAIL" time_sec="0.10" crc="-771053764"/>
-               <choice name="Cpp-Template-CG" result="FAIL" time_sec="0.10" crc="-771053764"/>
+               <choice name="Cpp-PathUniform-CG" result="FAIL" time_sec="0.11" crc="-771053764"/>
+               <choice name="Cpp-Template-CG" result="FAIL" time_sec="0.11" crc="-771053764"/>
             </choice-list>
         </test>
         <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="3.54"> 

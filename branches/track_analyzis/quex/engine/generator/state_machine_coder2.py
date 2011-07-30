@@ -2,8 +2,8 @@ import quex.engine.generator.state_coder2.core   as     state_coder
 from   quex.engine.state_machine.core            import StateMachine
 from   quex.engine.state_machine.state_core_info import EngineTypes
 from   quex.blackboard                           import setup as Setup
-# import quex.engine.generator.template_coder as template_coder
-# import quex.engine.generator.paths_coder    as paths_coder
+import quex.engine.generator.template_coder as template_coder
+import quex.engine.generator.paths_coder    as paths_coder
 
 from   collections import defaultdict
 from   itertools   import ifilter
@@ -26,15 +26,15 @@ def do(TheAnalyzer):
     path_compressed_states = []
     if Setup.compression_path_f or Setup.compression_path_uniform_f:
         assert False # We cannot deal with that yet
-    #    path_compressed_states, state_index_set = paths_coder.do(TheAnalyzer, Setup.compression_path_uniform_f)
-    #    remainder.difference_update(state_index_set)
+        path_compressed_states, state_index_set = paths_coder.do(TheAnalyzer, Setup.compression_path_uniform_f)
+        remainder.difference_update(state_index_set)
     
     # (*) [Optional] Template-Compressed States
     template_compressed_states = []
     if Setup.compression_template_f:
         assert False # We cannot deal with that yet
-    #    template_compressed_states, state_index_set = template_coder.do(TheAnalyzer, Setup.compression_template_coef)
-    #    remainder.difference_update(state_index_set)
+        template_compressed_states, state_index_set = template_coder.do(TheAnalyzer, Setup.compression_template_coef)
+        remainder.difference_update(state_index_set)
     
     # (*) All other (normal) states (sorted by their frequency of appearance
     frequency_db = get_frequency_db(TheAnalyzer.state_db, remainder)
