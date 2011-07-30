@@ -98,7 +98,7 @@ import sys
 
 LanguageDB = None # Set during call to 'do()', not earlier
 
-def do(SMD, UniformOnlyF):
+def do(TheAnalyzer, UniformOnlyF):
     """UniformOnlyF --> Accept only uniform states in path.
                         (This must be done by the 'analyzer module' too.)
     
@@ -109,15 +109,13 @@ def do(SMD, UniformOnlyF):
        x[1] code for templates and state entries
        x[2] involved_state_index_list
     """
-    assert isinstance(SMD, StateMachineDecorator)
-          
     # (1) Find possible state combinations
-    path_list = paths.do(SMD.sm(), UniformOnlyF)
+    path_list = paths.do(TheAnalyzer.sm, UniformOnlyF)
     for path in path_list:
         involved_state_index_list = map(lambda info: info[0], path.sequence())
 
-    # (2) Implement code for template combinations
-    code, involved_state_index_list = _do(path_list, SMD, UniformOnlyF)
+    # (2) Implement code for path combinations
+    code, involved_state_index_list = _do(path_list, TheAnalyzer, UniformOnlyF)
 
     if len(involved_state_index_list) != 0:
         variable_db.require("path_iterator")
@@ -127,14 +125,13 @@ def do(SMD, UniformOnlyF):
     return code, \
            involved_state_index_list
 
-def _do(PathList, SMD, UniformOnlyF):
+def _do(PathList, TheAnalyzer, UniformOnlyF):
     """-- Returns generated code for all templates.
        -- Sets the template_compression_db in SMD.
     """
     global LanguageDB 
 
     assert type(PathList) == list
-    assert isinstance(SMD, StateMachineDecorator)
 
     LanguageDB = Setup.language_db
     state_db   = SMD.sm().states
