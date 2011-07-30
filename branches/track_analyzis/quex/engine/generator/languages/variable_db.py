@@ -88,7 +88,7 @@ class VariableDB:
             assert type(Condition_ComputedGoto) == bool
             return "QUEX_OPTION_COMPUTED_GOTOS", not Condition_ComputedGoto
 
-    def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None):
+    def require(self, Name, Initial=None, Index=None, Condition_ComputedGoto=None, Type=None):
         global candidate_db
 
         condition, condition_negated_f = self.__condition(Condition_ComputedGoto)
@@ -98,10 +98,10 @@ class VariableDB:
 
         if Index is not None:   Name = Name % Index
 
-        if Initial is not None: initial = Initial
-        else:                   initial = x[1]
+        if Type    is None: Type    = x[0]
+        if Initial is None: Initial = x[1]
 
-        self.__enter(Name, x[0], None, initial, condition, condition_negated_f, x[2])
+        self.__enter(Name, Type, None, Initial, condition, condition_negated_f, x[2])
 
     def require_array(self, Name, ElementN, Initial, Index=None, Condition_ComputedGoto=None):
         global candidate_db
