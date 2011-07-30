@@ -110,9 +110,8 @@ $$RELOAD$$:
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
             goto $$GOTO_TERMINAL_EOF$$;
         } else {
-            QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                                   post_context_start_position, PostContextStartPositionN);
-
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, 
+                                             PositionRegisterN);
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
             goto INDENTATION_COUNTER_$$COUNTER_INDEX$$_ENTRY;

@@ -164,9 +164,7 @@ class Generator(GeneratorBase):
 
         N = len(set(analyzer.position_register_map.values()))
         if len(analyzer.position_register_map) == 0:
-            variable_db.require_array("position", None, 
-                                      Initial="(void*)0x0", 
-                                      Type="QUEX_TYPE_CHARACTER_POSITION*")
+            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
             variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % N)
         else:
             variable_db.require_array("position", ElementN = N,

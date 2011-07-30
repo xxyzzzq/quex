@@ -1,10 +1,10 @@
-from   quex.engine.generator.skipper.common    import *
-import quex.engine.state_machine.index         as     sm_index
-from   quex.blackboard                             import setup as Setup
-from   quex.engine.misc.string_handling                  import blue_print
-from   quex.engine.generator.languages.address import __nice, get_label
-from   quex.engine.generator.languages.variable_db import Variable
-import quex.blackboard                              as     blackboard
+from   quex.engine.generator.skipper.common         import *
+import quex.engine.state_machine.index              as     sm_index
+from   quex.blackboard                              import setup as Setup
+from   quex.engine.misc.string_handling             import blue_print
+from   quex.engine.generator.languages.address      import __nice, get_label
+import quex.engine.generator.languages.variable_db  as variable_db
+import quex.blackboard                              as blackboard
 
 def do(Data):
 
@@ -34,15 +34,9 @@ def do(Data):
     return code_str, db
 
 template_str = """
-{
-    const QUEX_TYPE_CHARACTER   Opener$$SKIPPER_INDEX$$[]  = { $$OPENER$$ }; /* $$OPENER_COMMENT$$ */
-    const QUEX_TYPE_CHARACTER*  Opener$$SKIPPER_INDEX$$End = Opener$$SKIPPER_INDEX$$ + $$OPENER_LENGTH$$;
-    const QUEX_TYPE_CHARACTER*  Opener$$SKIPPER_INDEX$$_it = Opener$$SKIPPER_INDEX$$;
-    const QUEX_TYPE_CHARACTER   Closer$$SKIPPER_INDEX$$[]  = { $$CLOSER$$ }; /* $$CLOSER_COMMENT$$ */
-    const QUEX_TYPE_CHARACTER*  Closer$$SKIPPER_INDEX$$End = Closer$$SKIPPER_INDEX$$ + $$CLOSER_LENGTH$$;
-    const QUEX_TYPE_CHARACTER*  Closer$$SKIPPER_INDEX$$_it = Closer$$SKIPPER_INDEX$$;
-
-    QUEX_TYPE_CHARACTER*        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
+    Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
+    Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
+    text_end                           = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$:
@@ -64,9 +58,9 @@ $$ENTRY$$:
         if( input == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
             goto $$GOTO_RELOAD$$;
         }
-        if( input == *Closer$$SKIPPER_INDEX$$_it ) {
-            ++Closer$$SKIPPER_INDEX$$_it;
-            if( Closer$$SKIPPER_INDEX$$_it == Closer$$SKIPPER_INDEX$$End ) {
+        if( input == *Skipper$$SKIPPER_INDEX$$_Closer_it ) {
+            ++Skipper$$SKIPPER_INDEX$$_Closer_it;
+            if( Skipper$$SKIPPER_INDEX$$_Closer_it == Skipper$$SKIPPER_INDEX$$_CloserEnd ) {
                 if( counter == 0 ) {
                     /* NOTE: The initial state does not increment the input_p. When it detects that
                      * it is located on a buffer border, it automatically triggers a reload. No 
@@ -77,23 +71,23 @@ $$ENTRY$$:
                     $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
                 }
                 --counter;
-                Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
-                Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
+                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
+                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
                 goto CONTINUE_$$SKIPPER_INDEX$$;
             }
         } else {
-            Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
+            Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
         }
-        if( input == *Opener$$SKIPPER_INDEX$$_it ) {
-            ++Opener$$SKIPPER_INDEX$$_it;
-            if( Opener$$SKIPPER_INDEX$$_it == Opener$$SKIPPER_INDEX$$End ) {
+        if( input == *Skipper$$SKIPPER_INDEX$$_Opener_it ) {
+            ++Skipper$$SKIPPER_INDEX$$_Opener_it;
+            if( Skipper$$SKIPPER_INDEX$$_Opener_it == Skipper$$SKIPPER_INDEX$$_OpenerEnd ) {
                 ++counter;
-                Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
-                Closer$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Closer$$SKIPPER_INDEX$$;
+                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
+                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
                 goto CONTINUE_$$SKIPPER_INDEX$$;
             }
         } else {
-            Opener$$SKIPPER_INDEX$$_it = (QUEX_TYPE_CHARACTER*)Opener$$SKIPPER_INDEX$$;
+            Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
         }
 CONTINUE_$$SKIPPER_INDEX$$:
 $$LC_COUNT_IN_LOOP$$
@@ -110,8 +104,8 @@ $$RELOAD$$:
 
 $$LC_COUNT_BEFORE_RELOAD$$
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position,
+                                         PositionRegisterN);
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -125,7 +119,6 @@ $$LC_COUNT_AFTER_RELOAD$$
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     me->buffer._input_p = me->buffer._lexeme_start_p;
     $$ON_SKIP_RANGE_OPEN$$
-}
 """
 
 def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
@@ -141,8 +134,10 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
 
     skipper_index = sm_index.get()
 
-    opener_str, opener_length_str, opener_comment_str = get_character_sequence(OpenerSequence)
-    closer_str, closer_length_str, closer_comment_str = get_character_sequence(CloserSequence)
+    opener_str, opener_comment_str = get_character_sequence(OpenerSequence)
+    opener_length = len(OpenerSequence)
+    closer_str, closer_comment_str = get_character_sequence(CloserSequence)
+    closer_length = len(CloserSequence)
 
     if not end_delimiter_is_subset_of_indentation_counter_newline(Mode, CloserSequence):
         goto_after_end_of_skipping_str = "goto %s;" % get_label("$start", U=True)
@@ -158,15 +153,26 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
 
-    local_variable_db = { 
-        "counter":     Variable("counter", "size_t", None, "0"),
-        "QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p": 
-                       Variable("reference_p", 
-                                "QUEX_TYPE_CHARACTER_POSITION", 
-                                None,
-                                "(QUEX_TYPE_CHARACTER_POSITION)0x0", 
-                                "QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-    }
+    local_variable_db = {}
+    variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+    variable_db.enter(local_variable_db, "text_end")
+    variable_db.enter(local_variable_db, "counter")
+    variable_db.enter(local_variable_db, "Skipper%i_Opener",    "{ %s }" % opener_str, ElementN=opener_length, 
+                                         Index = skipper_index)
+    variable_db.enter(local_variable_db, "Skipper%i_OpenerEnd", 
+                                         "Skipper%i_Opener + (ptrdiff_t)%i" % (skipper_index, opener_length),
+                                         Index = skipper_index) 
+    variable_db.enter(local_variable_db, "Skipper%i_Opener_it", "0x0", 
+                                         Index = skipper_index) 
+    variable_db.enter(local_variable_db, "Skipper%i_Closer",    "{ %s }" % closer_str, ElementN=closer_length, 
+                                         Index = skipper_index) 
+    variable_db.enter(local_variable_db, "Skipper%i_CloserEnd", 
+                                         "Skipper%i_Closer + (ptrdiff_t)%i" % (skipper_index, closer_length),
+                                         Index = skipper_index) 
+    variable_db.enter(local_variable_db, "Skipper%i_Closer_it", "0x0", 
+                                         Index = skipper_index) 
+
+   
     reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
@@ -185,13 +191,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                           [
                            ["$$SKIPPER_INDEX$$",   __nice(skipper_index)],
                            #
-                           ["$$OPENER$$",          opener_str],
-                           ["$$OPENER_LENGTH$$",   opener_length_str],
-                           ["$$OPENER_COMMENT$$",  opener_comment_str],
-                           ["$$CLOSER$$",          closer_str],
-                           ["$$CLOSER_LENGTH$$",   closer_length_str],
-                           ["$$CLOSER_COMMENT$$",  closer_comment_str],
-                           # 
+                           ["$$OPENER_LENGTH$$",                  "%i" % opener_length],
                            ["$$INPUT_P_INCREMENT$$",              LanguageDB["$input/increment"]],
                            ["$$INPUT_P_DECREMENT$$",              LanguageDB["$input/decrement"]],
                            ["$$INPUT_GET$$",                      LanguageDB["$input/get"]],

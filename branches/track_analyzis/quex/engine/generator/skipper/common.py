@@ -28,9 +28,8 @@ def get_character_sequence(Sequence):
     for letter in Sequence:
         comment_txt += "%s, " % utf8.unicode_to_pretty_utf8(letter)
         txt += "0x%X, " % letter
-    length_txt = "%i" % len(Sequence)
 
-    return txt, length_txt, comment_txt
+    return txt, comment_txt
 
 def end_delimiter_is_subset_of_indentation_counter_newline(Mode, EndSequence):
     if Mode is None: return False

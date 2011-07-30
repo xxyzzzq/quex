@@ -1,7 +1,7 @@
 import quex.engine.state_machine.index             as     sm_index
 from   quex.engine.generator.skipper.common        import *
 from   quex.engine.generator.languages.address     import __nice, get_label
-from   quex.engine.generator.languages.variable_db import Variable
+import quex.engine.generator.languages.variable_db as     variable_db
 import quex.engine.utf8                            as     utf8
 from   quex.blackboard                            import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
@@ -33,11 +33,8 @@ def do(Data):
     return code_str, db
 
 template_str = """
-{
     $$DELIMITER_COMMENT$$
-    const QUEX_TYPE_CHARACTER   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
-    const size_t                Skipper$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
-    QUEX_TYPE_CHARACTER*        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
+    text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$:
@@ -129,8 +126,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
      *    recover it after the loading. */
     me->buffer._input_p = text_end;
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
-        QUEX_NAME(buffer_reload_forward_LA_PC)(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, PostContextStartPositionN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -144,7 +140,6 @@ $$LC_COUNT_AFTER_RELOAD$$
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     me->buffer._input_p = me->buffer._lexeme_start_p;
     $$ON_SKIP_RANGE_OPEN$$
-}
 """
 
 def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
@@ -162,10 +157,8 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
     skipper_index = sm_index.get()
 
     # Determine the $$DELIMITER$$
-    delimiter_str,        \
-    delimiter_length_str, \
-    delimiter_comment_str \
-                          = get_character_sequence(EndSequence)
+    delimiter_str, delimiter_comment_str = get_character_sequence(EndSequence)
+    delimiter_length                     = len(EndSequence)
 
     delimiter_comment_str  = LanguageDB["$comment"]("                         Delimiter: " 
                                                     + delimiter_comment_str)
@@ -198,8 +191,7 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
 
     # The main part
     code_str = blue_print(template_str,
-                          [["$$DELIMITER$$",                      delimiter_str],
-                           ["$$DELIMITER_LENGTH$$",               delimiter_length_str],
+                          [
                            ["$$DELIMITER_COMMENT$$",              delimiter_comment_str],
                            ["$$WHILE_1_PLUS_1_EQUAL_2$$",         LanguageDB["$loop-start-endless"]],
                            ["$$END_WHILE$$",                      LanguageDB["$loop-end"]],
@@ -228,13 +220,11 @@ def get_skipper(EndSequence, Mode=None, IndentationCounterTerminalID=None, OnSki
                            ["$$GOTO_RELOAD$$",   get_label("$reload", skipper_index)]])
 
     if reference_p_f:
-        local_variable_db["QUEX_OPTION_COLUMN_NUMBER_COUNTING/reference_p"] = \
-                           Variable("reference_p", 
-                                    "QUEX_TYPE_CHARACTER_POSITION", 
-                                    None,
-                                    "(QUEX_TYPE_CHARACTER_POSITION)0x0",
-                                    "QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+        variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
 
+    variable_db.enter(local_variable_db, "Skipper%i", "{ %s }" % delimiter_str, delimiter_length, Index=skipper_index)
+    variable_db.enter(local_variable_db, "Skipper%iL", "%i" % delimiter_length,                   Index=skipper_index)
+    variable_db.enter(local_variable_db, "text_end")
     return code_str, local_variable_db
 
 def __lc_counting_replacements(code_str, EndSequence):

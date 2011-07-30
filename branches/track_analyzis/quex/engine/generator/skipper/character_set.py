@@ -64,7 +64,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
             goto $$GOTO_TERMINAL_EOF$$;
         } else {
-            QUEX_NAME(buffer_reload_forward)(&me->buffer, position, PositionRegisterN);
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
 
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
@@ -124,6 +124,7 @@ def get_skipper(TriggerSet):
                          ["$$SKIPPER_INDEX$$",                  "%i" % skipper_index],
                          ["$$LABEL_TERMINAL_EOF$$",             "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True)],
                          ["$$LABEL_REF_AFTER_RELOAD$$",         "QUEX_LABEL(%i)" % get_address("$skipper-reload", skipper_index, U=True)],
+                         ["$$GOTO_TERMINAL_EOF$$",              get_label("$terminal-EOF", U=True)],
                          ["$$LABEL_AFTER_RELOAD$$",             get_label("$skipper-reload", skipper_index)],
                          # When things were skipped, no change to acceptance flags or modes has
                          # happend. One can jump immediately to the start without re-entry preparation.
@@ -137,8 +138,6 @@ def get_skipper(TriggerSet):
 
     local_variable_db = {}
     variable_db.enter(local_variable_db, "reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-    variable_db.enter(local_variable_db, "target_state_index")
-    variable_db.enter(local_variable_db, "target_state_else_index")
 
     return code, local_variable_db
 

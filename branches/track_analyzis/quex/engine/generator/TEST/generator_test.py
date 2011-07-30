@@ -528,10 +528,8 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     else:
         ml_txt += "    break;\n"
 
-    print "<<<<<", SourceCode
     if type(SourceCode) == list:
         SourceCode = "".join(address.get_plain_strings(SourceCode))
-    print ">>>>>", SourceCode
     
     variable_db  = VariableDB(LocalVariableDB)
     variable_def = "".join(LanguageDB.VARIABLE_DEFINITIONS(variable_db))
@@ -552,7 +550,7 @@ show_next_character(QUEX_NAME(Buffer)* buffer) {
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return false;
         }
-        QUEX_NAME(buffer_reload_forward)(buffer, (void*)0x0, 0);
+        QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
         QUEX_NAME(Buffer_input_p_increment)(buffer);
     }
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
