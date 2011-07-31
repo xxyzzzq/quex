@@ -330,12 +330,12 @@ def __transition_target_data_structures(TheTemplate, TheAnalyzer):
     """
     template_index = TheTemplate.core().state_index
 
-    def __array_to_code(Array, ComputedGotoF=False):
+    def __array_to_code(Array):
         txt = ["{ "]
         for index in Array:
-            if index is not None: elm = "QUEX_LABEL(%i)" % get_address("$entry", index, U=True, R=True)
-            else:                 elm = "QUEX_LABEL(%i)" % get_address("$drop-out", template_index, U=True, R=True)
-            txt.append(elm + ", ")
+            if index is not None: elm = get_address("$entry", index, U=True, R=True)
+            else:                 elm = get_address("$drop-out", template_index, U=True, R=True)
+            txt.append("QUEX_LABEL(%i), " % elm)
         txt.append("}")
         return "".join(txt)
 
