@@ -44,6 +44,7 @@ class Analyzer:
         acceptance_db = track_analysis.do(SM)
 
         self.__init_state_index = SM.init_state_index
+        self.__state_machine_id = SM.get_id()
         self.__engine_type      = EngineType
 
         from_db = defaultdict(set)
@@ -102,6 +103,8 @@ class Analyzer:
     def init_state_index(self):      return self.__init_state_index
     @property
     def position_register_map(self): return self.__position_register_map
+    @property
+    def state_machine_id(self): return self.__state_machine_id
 
     def get_drop_out_object(self, state, TheAcceptanceTraceList):
         """A state may be reached via multiple paths. For each path there is 

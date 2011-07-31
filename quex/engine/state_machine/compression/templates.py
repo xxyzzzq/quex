@@ -153,14 +153,15 @@
    adaption table that is required for each state involved.
 
 """
-import sys
-from   copy import copy
-from   quex.engine.interval_handling import Interval
+from   quex.engine.interval_handling   import Interval
 import quex.engine.state_machine.index as index
 import quex.engine.state_machine.core  as state_machine
-from   operator import itemgetter
 
-def do(sm, CostCoefficient):
+from   operator import itemgetter
+from   copy     import copy
+import sys
+
+def do(TheAnalyzer, CostCoefficient):
     """
        sm:              StateMachine object containing all states
 
@@ -173,10 +174,9 @@ def do(sm, CostCoefficient):
 
        RETURNS: List of template combinations.
     """
-    assert isinstance(sm, state_machine.StateMachine)
     assert isinstance(CostCoefficient, (int, long, float))
 
-    trigger_map_db = TriggerMapDB(sm, CostCoefficient)
+    trigger_map_db = TriggerMapDB(TheAnalyzer, CostCoefficient)
 
     # Build templated combinations by finding best pairs, until there is no meaningful way to
     # build any clusters. TemplateCombinations of states also take part in the race.
@@ -292,21 +292,14 @@ def compute_combination_gain(SizeA, SizeB, N, CombinedBorderN, TargetCombination
     return (SizeA + SizeB - CombinedBorderN + TargetCombinationN) - CX * TargetCombinationN * N
 
 class TriggerMapDB:
-    def __init__(self, SM, CostCoefficient):
-        assert isinstance(SM, state_machine.StateMachine)
-
+    def __init__(self, TheAnalyzer, CostCoefficient):
         # (1) Get the trigger maps of all states of the state machine
         self.__db = {}
-        for state_index, state in SM.states.items():
-            trigger_map = state.transitions().get_trigger_map()
-            # Dead ends, cannot be part of the code generation
-            if len(trigger_map) == 0: continue
-            self.__db[state_index] = trigger_map
+        for state_index, state in ifilter(lambda i, s: len(s.transition_map) != 0, TheAnalyzer.state_db.iteritems()):
+            self.__db[state_index] = s.transition_map
 
-        self.__cost_coefficient = float(CostCoefficient)
-
-        self.__init_state_index = SM.init_state_index
-
+        self.__cost_coefficient      = float(CostCoefficient)
+        self.__init_state_index      = SM.init_state_index
         self.__combination_gain_list = self.__initial_combination_gain()
 
     def __initial_combination_gain(self):
@@ -557,8 +550,8 @@ def get_metric(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1)
     # if PureStateIndex0 is not None and PureStateIndex1 is not None: __check = __check_pure_targets
     # else: __check = __check_targets
 
-    i = 0 # iterator over interval list 0
-    k = 0 # iterator over interval list 1
+    i  = 0 # iterator over interval list 0
+    k  = 0 # iterator over interval list 1
     Li = len(TriggerMap0)
     Lk = len(TriggerMap1)
     # Intervals in trigger map are always adjacent, so the '.begin'
