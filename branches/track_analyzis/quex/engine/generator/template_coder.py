@@ -118,9 +118,8 @@ def do(TheAnalyzer, CostCoefficient):
 def _do(CombinationList, TheAnalyzer):
     """-- Returns generated code for all templates.
     """
-    global LanguageDB 
-
     assert type(CombinationList) == list
+    global LanguageDB 
 
     LanguageDB = Setup.language_db
 
