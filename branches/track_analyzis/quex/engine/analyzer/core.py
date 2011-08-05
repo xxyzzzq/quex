@@ -425,6 +425,14 @@ class Analyzer:
 
         return result
 
+    def check_state_uniformity(self, StateIndexList):
+        assert len(StateIndexList) != 0
+        iterable  = [self.state_db[i] for i in StateIndexList].__iter__()
+	prototype = iterable.next()
+        for dummy in ifilter(lambda state: not state.is_uniform(prototype), iterable):
+    	    return False
+        return True
+
     def __iter__(self):
         for x in self.__state_db.values():
             yield x

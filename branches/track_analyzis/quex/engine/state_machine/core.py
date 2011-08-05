@@ -667,6 +667,7 @@ class StateMachine:
         """Checks whether all states in the state index list have the same 
            state attributes.
         """
+	assert False, "This function should not be used. I favor of Analyzer.chech_uniformity()"
         assert len(StateIndexList) != 0
         prototype = self.states.get(StateIndexList[0])
         assert prototype is not None
