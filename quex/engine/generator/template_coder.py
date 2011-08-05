@@ -403,7 +403,7 @@ def get_uniform_prototype(TheAnalyzer, InvolvedStateIndexList):
     """Gets the prototype of a state in case that the involved states 
        are all uniform. If not it returns 'None'.
     """
-    if TheAnalyzer.sm().init_state_index in InvolvedStateIndexList:
+    if TheAnalyzer.init_state_index in InvolvedStateIndexList:
         # It is conceivable, that even the init state is part of 
         # a template. In this case, the template **must** be non-uniform.
         # The unit state requires a special entry.
@@ -412,8 +412,8 @@ def get_uniform_prototype(TheAnalyzer, InvolvedStateIndexList):
     if type(InvolvedStateIndexList) == set:
         InvolvedStateIndexList = list(InvolvedStateIndexList)
 
-    if TheAnalyzer.sm().check_uniformity(InvolvedStateIndexList):
-        return TheAnalyzer.sm().states.get(InvolvedStateIndexList[0])
+    if TheAnalyzer.check_uniformity(InvolvedStateIndexList):
+        return TheAnalyzer.state_db.get(InvolvedStateIndexList[0])
     else:
         return None
 
