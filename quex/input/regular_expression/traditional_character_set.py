@@ -1,10 +1,8 @@
-import sys
 import StringIO
 import quex.engine.utf8 as utf8
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 from   quex.engine.interval_handling  import *
 from   quex.exception                      import RegularExpressionException
-from   quex.blackboard import setup as Setup
 
 class Tracker:
     def __init__(self):

@@ -3,7 +3,6 @@
 #          given one. this means, that the success state is linked to the 
 #          start state.
 import sys
-from copy import deepcopy
 sys.path.append("../")
 
 from core import *

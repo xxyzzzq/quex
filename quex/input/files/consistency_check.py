@@ -1,5 +1,3 @@
-import sys
-
 from   quex.engine.misc.file_in import error_msg, verify_word_in_list
 import quex.blackboard                               as     blackboard
 from   quex.engine.generator.action_info             import CodeFragment

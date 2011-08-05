@@ -6,8 +6,7 @@ from   quex.engine.state_machine.transition_map  import *
 from   quex.engine.state_machine.state_core_info import *
 from   quex.engine.state_machine.origin_list     import StateOriginList
 
-import sys
-from   copy      import copy, deepcopy
+from   copy      import deepcopy
 from   operator  import attrgetter
 from   itertools import ifilter, imap
 

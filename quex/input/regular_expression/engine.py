@@ -32,7 +32,7 @@ from StringIO import StringIO
 
 from quex.engine.misc.file_in  import *
 
-from quex.exception                      import RegularExpressionException
+from quex.exception                 import RegularExpressionException
 from quex.engine.interval_handling  import *
 from quex.engine.state_machine.core import StateMachine
 from quex.input.regular_expression.auxiliary import __snap_until, \
@@ -41,8 +41,7 @@ from quex.input.regular_expression.auxiliary import __snap_until, \
                                                           __debug_print, \
                                                           snap_replacement
 
-from   quex.blackboard                                       import setup as Setup
-from   quex.engine.state_machine.utf16_state_split       import ForbiddenRange
+from   quex.blackboard                                   import setup as Setup
 import quex.engine.utf8                                  as utf8
 import quex.input.regular_expression.character_set_expression   as character_set_expression
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
@@ -122,7 +121,6 @@ def snap_conditional_expression(stream, PatternDict):
         RETURNS: pre_context, core_pattern, post_context
     """                     
     __debug_entry("conditional expression", stream)    
-    result = None
 
     # -- expression
     pattern_0 = snap_expression(stream, PatternDict) 

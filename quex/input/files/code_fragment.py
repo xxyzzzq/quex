@@ -22,7 +22,6 @@ def parse(fh, CodeFragmentName,
     assert type(AllowBriefTokenSenderF) == bool
 
     skip_whitespace(fh)
-    position = fh.tell()
 
     word = fh.read(2)
     if len(word) >= 1 and word[0] == "{":
@@ -188,7 +187,6 @@ def __parse_token_id_specification_by_character_code(fh):
     return character_code
 
 def __create_token_sender_by_character_code(fh, CharacterCode):
-    LanguageDB = Setup.language_db
     # The '--' will prevent the token name from being printed
     prefix_less_token_name = "UCS_0x%06X" % CharacterCode
     token_id_str           = "0x%06X" % CharacterCode 

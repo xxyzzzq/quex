@@ -15,7 +15,6 @@
 ################################################################################
 
 
-from   quex.engine.misc.file_in                       import error_msg
 # import quex.engine.generator.languages.core as languages
 import quex.engine.utf8 as utf8
 
@@ -714,9 +713,6 @@ class NumberSet(object):
     def intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
-        if Other.__class__ == Interval: Other_intervals = [ Other ]
-        else:                           Other_intervals = Other.__intervals
-
         # NOTE: If, for any reason this function does not rely on intersect_with(), then
         #       the function intersect_with() is no longer under unit test!
         result = self.clone()
@@ -821,7 +817,6 @@ class NumberSet(object):
         interval_n  = len(self.__intervals)
         todo_i      = -1
         trafo_i     = 0
-        result_list = []
         while todo_i < interval_n - 1:
             ## print "##i", self.__intervals, trafo_i
             todo_i += 1

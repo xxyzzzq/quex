@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name
+from   quex.engine.misc.file_in             import get_propperly_slash_based_file_name, error_msg
 from   quex.engine.misc.enum                import Enum
 from   quex.DEFINITIONS                     import QUEX_PATH
 
@@ -36,7 +36,7 @@ class QuexSetup:
             error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
                       % self.get_character_value_limit_str()                                    + \
                       "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.", fh)
+                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
 
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"

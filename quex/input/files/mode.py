@@ -19,7 +19,6 @@ from   quex.engine.misc.file_in                              import *
 from   quex.engine.state_machine.core                       import StateMachine, SideInfo
 import quex.engine.state_machine.identity_checker           as identity_checker
 import quex.engine.state_machine.transformation             as transformation
-import quex.engine.state_machine.index                      as index
 import quex.engine.state_machine.sequentialize              as sequentialize
 import quex.engine.state_machine.repeat                     as repeat
 import quex.engine.state_machine.nfa_to_dfa                 as nfa_to_dfa
@@ -675,8 +674,6 @@ def __parse_string(fh, Name):
     return msg, sequence
 
 def __parse_option(fh, new_mode):
-    LanguageDB = Setup.language_db
-
     def fit_state_machine(SM):
         if not SM.is_DFA_compliant(): result = nfa_to_dfa.do(SM)
         else:                         result = SM

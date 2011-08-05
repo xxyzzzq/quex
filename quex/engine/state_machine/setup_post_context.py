@@ -3,7 +3,6 @@ from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import *
 import quex.engine.state_machine.ambiguous_post_context as apc
 from   quex.engine.state_machine.state_core_info        import PostContextIDs
-import sys
 
 
 def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False, fh=-1):

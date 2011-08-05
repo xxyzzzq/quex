@@ -5,7 +5,6 @@ from   quex.engine.state_machine.index import map_state_combination_to_index
 from   quex.engine.state_machine.state_core_info import PostContextIDs
 from   itertools   import islice, ifilter, chain, imap
 from   collections import defaultdict
-import sys
 
 class HopcroftMinization:
     """Combine sets of states that are equivalent. 

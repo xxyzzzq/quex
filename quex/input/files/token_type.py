@@ -190,9 +190,6 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
     def type_name_length_max(self):
         return self.__type_name_length_max
 
-    def type_name_length_max(self):
-        return self.__type_name_length_max
-
     def variable_name_length_max(self):
         return self.__variable_name_length_max
 
@@ -361,7 +358,6 @@ def parse_standard_members(fh, descriptor, already_defined_list):
     position = fh.tell()
 
     while 1 + 1 == 2:
-        try_position = fh.tell()
         try: 
             result = parse_variable_definition(fh) 
         except EndOfStreamException:
@@ -406,7 +402,6 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
 
     db = {}
     while 1 + 1 == 2:
-        try_position = fh.tell()
         try: 
             result = parse_variable_definition(fh, GroupF=True, already_defined_list=already_defined_list) 
         except EndOfStreamException:
@@ -477,8 +472,6 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
     
     """
     position = fh.tell()
-    type_name       = ""
-    array_element_n = -1
 
     line_n   = get_current_line_info_number(fh)
     skip_whitespace(fh)
