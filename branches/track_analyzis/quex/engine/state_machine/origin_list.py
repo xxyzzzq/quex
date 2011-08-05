@@ -1,4 +1,4 @@
-from quex.engine.state_machine.state_core_info import StateCoreInfo
+from quex.engine.state_machine.state_core_info import StateCoreInfo, PostContextIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')

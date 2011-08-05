@@ -1,5 +1,4 @@
-from copy           import deepcopy
-from quex.exception import  RegularExpressionException
+from quex.exception import RegularExpressionException
 from StringIO       import StringIO
 
 backslashed_character_db = { 

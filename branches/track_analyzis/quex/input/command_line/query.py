@@ -1,7 +1,5 @@
 import sys
 
-from StringIO import StringIO
-
 from quex.engine.misc.file_in       import error_msg
 from quex.engine.utf8               import map_unicode_to_utf8
 from quex.engine.interval_handling  import NumberSet, Interval
@@ -152,7 +150,7 @@ def __handle_property_match(cl):
 
     fields = map(lambda x: x.strip(), property_follower.split("="))
     if len(fields) != 2:
-        error_msg("Wrong property setting '%s'." % result)
+        error_msg("Wrong property setting '%s'." % property_follower)
 
     # -- determine name and value
     name                 = fields[0]

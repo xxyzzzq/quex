@@ -1,6 +1,5 @@
-from quex.engine.misc.file_in                 import *
-from quex.exception                      import RegularExpressionException
-from quex.engine.state_machine.core import StateMachine
+from quex.engine.misc.file_in       import *
+from quex.exception                 import RegularExpressionException
 
 __debug_recursion_depth  = -1
 __debug_output_enabled_f = False # True / False 

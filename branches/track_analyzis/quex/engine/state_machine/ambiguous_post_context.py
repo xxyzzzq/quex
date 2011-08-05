@@ -12,11 +12,9 @@
 # (C) Frank-Rene Schaefer
 ##############################################################################
 
-from   quex.engine.interval_handling import NumberSet, Interval
 import quex.engine.state_machine.sequentialize         as sequentialize
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
-import sys
 from   copy import deepcopy
 
 

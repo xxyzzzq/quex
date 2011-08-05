@@ -50,8 +50,6 @@ try:
     import quex.DEFINITIONS
     quex.DEFINITIONS.check()
 
-    import tempfile
-
     # This script needs to be located one directory above 'quex.'
     # so that it ca get the imports straight.
     from   quex.blackboard               import setup as Setup

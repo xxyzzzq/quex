@@ -9,7 +9,6 @@ import quex.input.command_line.validation as validation
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
                                                  FileTypes,                \
-                                                 DEPRECATED,               \
                                                  global_extension_db,      \
                                                  global_character_type_db
 
@@ -25,7 +24,7 @@ from   quex.engine.generator.action_info    import CodeFragment
 
 from   quex.DEFINITIONS import *
 
-from   copy     import copy, deepcopy
+from   copy     import deepcopy
 from   StringIO import StringIO
 
 class ManualTokenClassSetup:

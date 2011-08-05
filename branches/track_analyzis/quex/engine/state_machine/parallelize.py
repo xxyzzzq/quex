@@ -2,12 +2,9 @@
 # ABSOLUTELY NO WARRANTY
 ###############################################################################
 import sys
-from copy import deepcopy
-sys.path.append("../")
-sys.path.append("../../")
 
 import quex.engine.state_machine
-from quex.engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.core import StateMachine
 
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.

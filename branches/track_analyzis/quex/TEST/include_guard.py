@@ -70,7 +70,7 @@ def __AUX_helper_to_name_the_include_guards_according_to_quex_convention():
         # Cut the QUEX_PATH from the file name
 
         print "%s%s %s  %s" % \
-              (x.name, " " * (max_length - len(x.name)), better_name(file_name), x.file_name[L:])
+              (x.name, " " * (max_length - len(x.name)), better_name(file_name), x.file_name[max_length:])
 
 def check_include_guard_convention():
     stranger_list = filter(lambda x: x.name != better_name(x.file_name), include_guard_list)

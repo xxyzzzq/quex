@@ -7,7 +7,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.blackboard
 import quex.input.regular_expression.engine as regex
 from   quex.input.files.mode                import ModeDescription, Mode
-import quex.output.cpp.core                 as generator
 import quex.output.cpp.action_preparation   as action_preparation
 from   quex.engine.generator.action_info    import CodeFragment
 

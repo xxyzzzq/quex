@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 import sys
-from copy import deepcopy
 sys.path.append("../")
 
 from core import *

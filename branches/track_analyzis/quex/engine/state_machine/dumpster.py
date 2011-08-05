@@ -5,7 +5,7 @@ class CachedValue:
         self.__valid_f = False
 
     def __call__(self):
-        return __value
+        return self.__value
 
     def set(self, Value):
         self.__value   = Value
@@ -14,7 +14,7 @@ class CachedValue:
     def invalid(self):
         self.__valid_f = False
 
-    def is_valid():
+    def is_valid(self):
         return self.__valid_f
 
 
