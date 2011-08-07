@@ -12,14 +12,12 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-import quex.engine.generator.languages.cpp     as cpp
-import quex.engine.generator.languages.python  as python
-from   quex.engine.generator.languages.address import *
-from   quex.engine.state_machine.state_core_info import PreContextIDs, EngineTypes, AcceptanceIDs, PostContextIDs
+import quex.engine.generator.languages.cpp       as     cpp
+import quex.engine.generator.languages.python    as     python
+from   quex.engine.generator.languages.address   import *
+from   quex.engine.state_machine.state_core_info import EngineTypes, AcceptanceIDs
 from   quex.blackboard                           import TargetStateIndices
 from   quex.engine.analyzer.core                 import InputActions
-from   quex.engine.misc.string_handling import blue_print
-from   copy import deepcopy, copy
 
 #________________________________________________________________________________
 # C++

@@ -21,9 +21,7 @@ line_column_counter_in_loop = """
 """
 
 def get_character_sequence(Sequence):
-    LanguageDB = Setup.language_db
-
-    txt = ""
+    txt         = ""
     comment_txt = ""
     for letter in Sequence:
         comment_txt += "%s, " % utf8.unicode_to_pretty_utf8(letter)

@@ -1,8 +1,6 @@
 # (C) 2009 Frank-Rene Schaefer
 import os
 import sys
-import codecs
-from copy import copy
 import quex.engine.state_machine.utf8_state_split  as utf8_state_split
 import quex.engine.state_machine.utf16_state_split as utf16_state_split
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa

@@ -1,7 +1,6 @@
 # (C) 2005-2011 Frank-Rene Schaefer
 import quex.engine.state_machine.index as     state_machine_index
 from   quex.engine.state_machine.core  import StateMachine
-from   quex.engine.state_machine.index import map_state_combination_to_index
 from   quex.engine.state_machine.state_core_info import PostContextIDs
 from   itertools   import islice, ifilter, chain, imap
 from   collections import defaultdict

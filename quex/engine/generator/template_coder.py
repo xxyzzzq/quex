@@ -1,10 +1,6 @@
 # (C) 2009-2011 Frank-Rene Schaefer
-from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
-
-import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
 import quex.engine.generator.state_coder.transition_block as transition_block
 import quex.engine.generator.state_coder.drop_out         as drop_out
-import quex.engine.generator.state_coder.input_block      as input_block
 from   quex.engine.generator.languages.address            import get_address, get_label, get_label_of_address
 from   quex.engine.generator.languages.variable_db        import variable_db
 import quex.engine.state_machine.index                    as     index
@@ -214,8 +210,6 @@ class TemplateTarget(transition_block.TriggerAction):
            run-time based on a 'state_key' for the template.
            NOTE: This handles also the recursive case.
         """
-        LanguageDB = Setup.language_db
-
         if not self.recursive():
             label = "template_%i_target_%i[template_state_key]" % (self.template_index, self.target_index)
             get_label("$state-router", U=True) # Ensure reference of state router

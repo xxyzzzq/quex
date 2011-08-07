@@ -24,9 +24,7 @@
 
 (C) 2005-2011 Frank-Rene Schaefer
 """
-from   quex.engine.interval_handling     import NumberSet
 from   quex.engine.generator.action_info import *
-from   quex.blackboard                  import setup as Setup
 
 def do(Mode, IndentationSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 

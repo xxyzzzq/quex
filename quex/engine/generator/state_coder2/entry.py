@@ -63,7 +63,6 @@ def __doors(txt, TheState, PositionRegisterMap):
             txt.append(
                 " %s" % LanguageDB.ASSIGN(LanguageDB.POSITION_REGISTER(register), LanguageDB.INPUT_P), 
             )
-            first_f = False
 
     if TheEntry.is_uniform():
         # (*) Uniform state entries from all entering states.

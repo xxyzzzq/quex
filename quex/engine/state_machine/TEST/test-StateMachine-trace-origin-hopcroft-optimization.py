@@ -5,7 +5,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.engine.state_machine.core import *
+from   quex.engine.state_machine.core import *
 import quex.engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:

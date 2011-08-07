@@ -1,8 +1,6 @@
 # (C) 2005-2010 Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 ###############################################################################
-import sys
-
 import quex.engine.state_machine
 from   quex.engine.state_machine.core import StateMachine
 

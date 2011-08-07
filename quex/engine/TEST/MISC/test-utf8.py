@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import sys
 sys.path.append("../")
-from quex.engine.interval_handling import Interval
 
 import utf8
 import StringIO

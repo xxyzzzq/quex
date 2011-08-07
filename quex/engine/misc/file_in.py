@@ -16,10 +16,9 @@
 ################################################################################
 import os
 import sys
-import codecs
-from copy    import copy
-from string  import split
-from StringIO import StringIO
+from   copy    import copy
+from   string  import split
+from   StringIO import StringIO
 
 import quex.engine.misc.similarity  as similarity
 
@@ -403,7 +402,6 @@ def read_until_closing_bracket(fh, Opener, Closer,
             continue
 
         if not backslash_f:
-            result = match_against_cache(Opener)
             if   match_against_cache(Opener):
                 open_brackets_n += 1
             elif match_against_cache(Closer):
@@ -442,9 +440,8 @@ def read_until_closing_bracket(fh, Opener, Closer,
     return txt
 
 def read_until_character(fh, Character):
-    open_brackets_n = 1
-    backslash_n     = 0
-    txt = ""
+    backslash_n = 0
+    txt         = ""
 
     # ignore_start_triggers = map(lamda x: x[0], IgnoreRegions)
     # TODO: incorporate "comment ignoring"
@@ -475,8 +472,6 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
         txt += tmp
 
 def read_until_line_contains(in_fh, LineContent):
-    L = len(LineContent)
-
     line = in_fh.readline()
     if line == "": return ""
 
@@ -496,7 +491,6 @@ def get_file_content_or_die(FileName, Mode="rb"):
 
 def get_current_line_info_number(fh):
     position = fh.tell()
-    line_n = 0
     fh.seek(0)
     # When reading 'position' number of characters from '0', then we are
     # at position 'position' at the end of the read. That means, we are where
@@ -524,8 +518,6 @@ def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
         error_msg("Cannot open file '%s'" % FileName)
 
 def write_safely_and_close(FileName, txt):
-
-    file_name = FileName.replace("//","/")
     fh = open_file_or_die(FileName, Mode="wb")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     # NOTE: According to bug 2813381, maybe due to an error in python,
@@ -542,7 +534,7 @@ def indented_open(Filename, Indentation = 3, Reference="quex"):
     
     IndentString = " " * Indentation
     
-    file_name = FileName.replace("//","/")
+    file_name = Filename.replace("//","/")
     try:
         fh = open(file_name, "rb")
     except:
@@ -638,7 +630,7 @@ def make_safe_identifier(String, NoCodeF=True):
         if len(letter) != 1:
             # It is theoretically possible that a character > 0x10000 arrives on a python
             # narrow build.
-            error_msg("The underlying python build cannot handle character '%s'." % character)
+            error_msg("The underlying python build cannot handle character '%s'." % letter)
 
         if letter.isalpha() or letter.isdigit() or letter == "_": txt += letter.upper()
         elif letter == ":":                                       txt += "_"
@@ -679,7 +671,7 @@ def read_option_value(fh):
             letter = fh.read(1)
         except EndOfStreamException:
             fh.seek(position)
-            error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
+            error_msg("missing closing '>' for mode option.", fh)
 
         if letter == "<": 
             depth += 1

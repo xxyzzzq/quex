@@ -20,11 +20,10 @@ def do(sm, BeginOfLineF, EndOfLineF, DOS_CarriageReturnNewlineF=False):
             # -- mount it to the core pattern as a post-condition
             post_sm = StateMachine()
             if not DOS_CarriageReturnNewlineF:
-                state_idx = post_sm.add_transition(post_sm.init_state_index, ord('\n'), AcceptanceF=True)
+                post_sm.add_transition(post_sm.init_state_index, ord('\n'), AcceptanceF=True)
             else:
                 aux_idx   = post_sm.add_transition(post_sm.init_state_index, ord('\r'), AcceptanceF=False)
-                state_idx = post_sm.add_transition(aux_idx, ord('\n'), AcceptanceF=True)
-            ## post_sm.add_transition(post_sm.init_state_index, EndOfFile_Code, state_idx, AcceptanceF=True)
+                post_sm.add_transition(aux_idx, ord('\n'), AcceptanceF=True)
             
             # post conditions add an epsilon transition that has to be solved 
             # by translating state machine into a DFA

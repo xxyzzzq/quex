@@ -69,8 +69,7 @@ PROCESS:
 """
 import os
 import sys
-import codecs
-from copy import copy
+from   copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
 from   quex.engine.utf8                     import utf8_to_unicode, unicode_to_utf8

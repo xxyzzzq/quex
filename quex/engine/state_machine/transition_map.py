@@ -5,7 +5,6 @@ from   quex.engine.misc.file_in      import error_msg
 from   quex.blackboard               import TargetStateIndices
 
 import sys
-import bisect
 from   operator import attrgetter
 
 # definitions for 'history items':

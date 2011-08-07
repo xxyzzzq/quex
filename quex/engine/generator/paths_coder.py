@@ -75,8 +75,6 @@
             ...
             }
 """
-from   quex.engine.generator.state_machine_decorator import StateMachineDecorator
-
 import quex.engine.generator.state_coder.transition       as transition
 import quex.engine.generator.state_coder.input_block      as input_block
 import quex.engine.generator.state_coder.acceptance_info  as acceptance_info
@@ -134,8 +132,8 @@ def _do(PathList, TheAnalyzer, UniformOnlyF):
     assert type(PathList) == list
 
     LanguageDB = Setup.language_db
-    state_db   = SMD.sm().states
-    SM_ID      = SMD.sm().get_id()
+    state_db   = TheAnalyzer.state_db
+    SM_ID      = TheAnalyzer.state_machine_id
 
     def __equal(SkeletonA, SkeletonB):
         if len(SkeletonA) != len(SkeletonB): return False

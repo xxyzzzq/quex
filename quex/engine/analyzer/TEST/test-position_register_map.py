@@ -8,7 +8,6 @@ import quex.input.regular_expression.engine       as regex
 import quex.engine.analyzer.core                  as core
 import quex.engine.analyzer.position_register_map as position_register_map
 from   quex.engine.generator.base                 import get_combined_state_machine
-from   quex.engine.analyzer.core                  import InputActions
 from   quex.engine.state_machine.state_core_info  import EngineTypes
 import help_drawing
 

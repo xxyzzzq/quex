@@ -1,6 +1,4 @@
-import os
-from   quex.engine.misc.file_in import is_identifier_start, \
-                                       is_identifier_continue, \
+from   quex.engine.misc.file_in import \
                                        open_file_or_die, \
                                        write_safely_and_close, \
                                        get_current_line_info_number

@@ -3,14 +3,9 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from StringIO import StringIO
-import quex.input.regular_expression.engine        as regex
-from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.interval_handling              import NumberSet, Interval
+from   quex.engine.interval_handling              import Interval
 import quex.engine.state_machine.utf16_state_split as trafo
 from   quex.engine.state_machine.utf16_state_split import unicode_to_utf16
-import quex.input.regular_expression.character_set_expression as charset_expression
-from   quex.engine.generator.base                 import get_combined_state_machine
 
 if "--hwut-info" in sys.argv:
     print "UTF16 State Split: Contigous Word Sequence Ranges"

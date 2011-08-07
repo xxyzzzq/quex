@@ -13,7 +13,6 @@ from quex.blackboard             import PatternShorthand
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.languages.address     as address
 from   quex.engine.generator.languages.variable_db import VariableDB
-from   quex.engine.generator.languages.cpp     import _local_variable_definitions
 from   quex.engine.generator.action_info       import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as cpp_generator
 
@@ -375,8 +374,6 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
     return txt
 
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
-    LanguageDB = Setup.language_db
-
     end_str  = ['    printf("end\\n");\n'
                 '    return false;\n']
     end_str = "".join(end_str)

@@ -1,7 +1,8 @@
-from   quex.engine.interval_handling   import Interval
-import quex.engine.state_machine.index as index
-import quex.engine.state_machine.core  as state_machine
-from   quex.blackboard                 import TargetStateIndices
+from   quex.engine.interval_handling          import Interval
+import quex.engine.state_machine.index        as index
+import quex.engine.state_machine.core         as state_machine
+import quex.engine.compression.templates_gain as templates_gain
+from   quex.blackboard                        import TargetStateIndices
 
 from   itertools import ifilter
 from   operator  import itemgetter
@@ -110,7 +111,7 @@ import sys
 
    The measurement of 'gain' is done in two steps:
 
-       (1) get_border_number_of_combined_map(A, B): computes the number of borders of a
+       (1) get_transition_map_metric(A, B): computes the number of borders of a
            transition map that would combine the two trigger
            maps A and B. Also, it combines the number of target
            set combinations, i.e. the number of X0, X1, X3 ...
@@ -200,6 +201,124 @@ def do(TheAnalyzer, CostCoefficient):
 
     return result
 
+class TemplateState(AnalyzerState):
+	def __init__(StateA, StateB):
+		self.entry          = EntryTemplate(StateA.entry, StateB.entry)
+		self.drop_out       = DropOutTemplate(StateA.entry, StateB.entry)
+		self.transition_map = self.__combined_trigger_map()
+
+	def __combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
+		InvolvedStateN0 = len(InvolvedStateList0)
+		InvolvedStateN1 = len(InvolvedStateList1)
+
+		def __asserts(TM):
+			"""-- first border at - sys.maxint
+			   -- all intervals are adjacent (current begin == previous end)
+			   -- last border at  + sys.maxint
+			"""
+			prev_end = -sys.maxint
+			for x in TM:
+				assert x[0].begin == prev_end
+				prev_end = x[0].end
+			assert TM[-1][0].end  == sys.maxint
+
+		__asserts(TriggerMap0)
+		__asserts(TriggerMap1)
+
+		def __get_target(T0, T1):
+			"""In the 'TemplateCombination' trigger map, a transition to the same
+			   target for all involved states is coded as a scalar value.
+			   Other combined transitions are coded as list while 
+
+						list[i] = target index of involved state 'i'
+
+			   As soon as the single transition is over, the scalar value
+			   needs to be expanded, so that the above consensus holds.
+			"""
+			recursion_n = 0
+			# IS RECURSIVE ?
+			# -- In a 'normal trigger map' the target needs to be equal to the
+			#   state that it contains.
+			# -- In a trigger map combination, the recursive target is 
+			#    identifier by the value 'TargetStateIndices.SAME_STATE'.
+			if (len(InvolvedStateList0) == 1 and T0 == InvolvedStateList0[0]) or T0 == TargetStateIndices.SAME_STATE:
+				T0 = InvolvedStateList0
+				if len(T0) == 1: T0 = T0[0]
+				recursion_n += 1
+			if (len(InvolvedStateList1) == 1 and T1 == InvolvedStateList1[0]) or T1 == TargetStateIndices.SAME_STATE:
+				T1 = InvolvedStateList1
+				if len(T1) == 1: T1 = T1[0]
+				recursion_n += 1
+
+			# If both transitions are recursive, then the template will
+			# contain only a 'recursion flag'. 
+			if recursion_n == 2: return TargetStateIndices.SAME_STATE
+
+			# T = list   -> combination is a 'involved state list'.
+			# T = scalar -> same target state for TargetCombinationN in all cases.
+			if type(T0) == list:
+				if type(T1) == list: return T0 + T1
+				else:                return T0 + [T1] * InvolvedStateN1
+			else:
+				if type(T1) == list: return [T0] * InvolvedStateN0 + T1
+				elif T0 != T1:       return [T0] * InvolvedStateN0 + [T1] * InvolvedStateN1
+				else:                return T0                      # Same Target => Scalar Value
+
+		i  = 0 # iterator over interval list 0
+		k  = 0 # iterator over interval list 1
+		Li = len(TriggerMap0)
+		Lk = len(TriggerMap1)
+
+		# Intervals in trigger map are always adjacent, so the '.begin'
+		# member is not required.
+		result   = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
+		prev_end = - sys.maxint
+		while not (i == Li-1 and k == Lk-1):
+			i_trigger = TriggerMap0[i]
+			i_end     = i_trigger[0].end
+			i_target  = i_trigger[1]
+
+			k_trigger = TriggerMap1[k]
+			k_end     = k_trigger[0].end
+			k_target  = k_trigger[1]
+
+			target    = __get_target(i_target, k_target)
+			end       = min(i_end, k_end)
+			result.append(prev_end, min(i_end, k_end), target)
+			prev_end  = end
+
+			if   i_end == k_end:  i += 1; k += 1;
+			elif i_end < k_end:   i += 1;
+			else:                 k += 1;
+
+		# Treat the last trigger interval
+		target = __get_target(TriggerMap0[-1][1], TriggerMap1[-1][1])
+		result.append(prev_end, sys.maxint, target)
+
+		return result
+	
+def get_adapted_scheme(X, Y):
+	scheme = lambda entry: entry.scheme if isinstance(x, EntryTemplate) else [ entry ]
+
+	scheme_a = scheme(EntryA)
+	scheme_b = scheme(EntryB)
+
+	smaller, bigger = sorted([scheme_a, scheme_b], key=lambda x: len(x))
+	
+	# All entries in smaller that are not in bigger need to be added to the scheme
+	self.scheme = copy(bigger)
+	self.scheme.extend(ifilter(lambda x: x not in bigger, smaller))
+
+class EntryTemplate(object):
+	"""State entry for TemplateState objects."""
+	def __init__(self, EntryA, EntryB):
+		self.scheme = get_adapted_scheme(EntryA, EntryB)
+
+class DropOutTemplate(object):
+	"""State drop_out for TemplateState objects."""
+	def __init__(self, DropOutA, DropOutB):
+		self.scheme = get_adapted_scheme(DropOutA, DropOutB)
+
 class TemplateCombination:
     def __init__(self, InvolvedStateList0,  InvolvedStateList1):
         self.__trigger_map         = []
@@ -240,65 +359,12 @@ class TemplateCombination:
     def get_trigger_map(self):
         return self.__trigger_map
 
-def compute_combination_gain(SizeA, SizeB, N, CombinedBorderN, TargetCombinationN, CX=1):
-    """SizeA, SizeB       = number of borders in target map A and B
-       N                  = total number of combined states.
-       CombinedBorderN    = number of borders in the combined map.
-       TargetCombinationN = number of different target state combinations.
-
-       CX = the calculation coefficient as explained below:
-    
-    
-       BEFORE: 
-                Cost0 = (SizeA + SizeB) * CI
-
-                where CI is the average 'identification cost', i.e. the
-                cost for branching through the 'if/else' statements of 
-                the transition map, plus the cost for a goto.
-
-       AFTER:
-                Cost1 =   SameTargetN * CI
-                        + TargetCombinationN * N * CR
-
-                where SameTargetN = CombinedBorderN - TargetCombinationN
-                                    the number of intervals that trigger to
-                                    the same target in both maps.
-                      CR is the cost for routing, i.e. jumping to
-                         the correct target state depending on template.
-                      N the number of involved states must be multiplied because
-                        for each state there must be a 'switch case'.
-
-       THUS:    
-                Delta = Cost0 - Cost1
-
-                      = (SizeA + SizeB - (CombinedBorderN - TargetCombinationN)) * CI
-                         - TargetCombinationN * N * CR
-
-                Delta shall be a 'measure', so there is no loss of 
-                information if we devide by a constant, e.g. CI. Thus
-
-                .-------------------------------------------------------------------.
-                | Delta =   (SizeA + SizeB - CombinedBorderN + TargetCombinationN)  |
-                |         - CX * TargetCombinationN * N                             |
-                '-------------------------------------------------------------------'
-
-                Where CX = CR/CI. A big CX means that target state routing is
-                expensive, a low CX means, that it is cheap. The constants CI
-                and CR where used to express an estimated proportional
-                relationship without having a concrete 'physical'
-                interpretation.  Now, CI and CR can be replaced by a single
-                heuristic value CX.
-
-    """
-    return (SizeA + SizeB - CombinedBorderN + TargetCombinationN) - CX * TargetCombinationN * N
-
 class TriggerMapDB:
     def __init__(self, TheAnalyzer, CostCoefficient):
         # (1) Get the trigger maps of all states of the state machine
-        self.__db = {}
-        for state_index, state in ifilter(lambda x: len(x[1].transition_map) != 0, TheAnalyzer.state_db.iteritems()):
-            self.__db[state_index] = state.transition_map
-
+        self.__db = dict([(state_index, state) for state_index, state in \
+                                                   ifilter(lambda x: len(x[1].transition_map) != 0, 
+                                                           TheAnalyzer.state_db.iteritems())])
         self.__cost_coefficient      = float(CostCoefficient)
         self.__init_state_index      = TheAnalyzer.init_state_index
         self.__combination_gain_list = self.__initial_combination_gain()
@@ -318,17 +384,15 @@ class TriggerMapDB:
         MaxSize = (L * (L - 1)) / 2
         result  = [None] * MaxSize
         n       = 0
-        for i, info in enumerate(item_list):
-            a_state_index, a_trigger_map = info
-            if a_state_index == self.__init_state_index: continue
+        for i, i_state in enumerate(item_list):
+            if i_state.init_state_f: continue
 
-            for b_state_index, b_trigger_map in item_list[i+1:]:
-                if b_state_index == self.__init_state_index: continue
+            for k, k_state in item_list[i+1:]:
+                if k_state.init_state_f: continue
 
-                combination_gain = self.__get_combination_gain(a_state_index, a_trigger_map, [a_state_index],
-                                                               b_state_index, b_trigger_map, [b_state_index])
+                combination_gain = templates_gain(i_state, k_state)
                 if combination_gain > 0:
-                    result[n] = (combination_gain, a_state_index, b_state_index)
+                    result[n] = (combination_gain, i_state.index, k_state.index)
                     n += 1
 
         if n != MaxSize:
@@ -338,11 +402,9 @@ class TriggerMapDB:
         result.sort(key=itemgetter(0))
         return result
 
-    def __adapt_combination_gain(self, NewStateIndex, NewTriggerMap):
+    def __adapt_combination_gain(self, NewState):
         """Adapt the delta cost list **before** adding the trigger map to __db!"""
         assert isinstance(NewTriggerMap, TemplateCombination)
-
-        InvolvedStateListB = involved_state_list(NewTriggerMap, NewStateIndex)
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
         MaxIncrease = (len(self.__db) - 1)
@@ -350,34 +412,19 @@ class TriggerMapDB:
         MaxSize     = len(self.__combination_gain_list) + MaxIncrease
         self.__combination_gain_list.extend([None] * MaxIncrease)
 
-        for state_index, trigger_map in self.__db.items():
-            if state_index == self.__init_state_index: continue
+        for state_index, state in enumerate(item_list):
+            if state.init_state_f: continue
 
-            InvolvedStateListA = involved_state_list(trigger_map, state_index)
-            combination_gain   = self.__get_combination_gain(state_index,   trigger_map,   InvolvedStateListA,
-                                                             NewStateIndex, NewTriggerMap, InvolvedStateListB)
+            combination_gain  = templates_gain.do(NewState, state)
+
             if combination_gain > 0:
-                self.__combination_gain_list[n] = (combination_gain, state_index, NewStateIndex)
+                self.__combination_gain_list[n] = (combination_gain, NewState.index, state_index)
                 n += 1
 
         if n != MaxSize:
             del self.__combination_gain_list[n:]
 
         self.__combination_gain_list.sort(key=itemgetter(0))
-
-    def __get_combination_gain(self, 
-                               StateIndexA, TriggerMapA, InvolvedStateListA, 
-                               StateIndexB, TriggerMapB, InvolvedStateListB):
-
-        # Get border_n    = number of borders of combined map
-        #     eq_target_n = number of equivalent targets, i.e. number of 
-        #                   target combinations that need to be routed.
-        border_n = get_border_number_of_combined_map(TriggerMapA, TriggerMapB)
-        combined_state_n = len(InvolvedStateListA) + len(InvolvedStateListB)
-
-        return compute_combination_gain(len(TriggerMapA), len(TriggerMapB), 
-                                        combined_state_n, border_n, 0, 
-                                        CX=self.__cost_coefficient)
 
     def pop_best_matching_pair(self):
         """Determines the two trigger maps that are closest to each
@@ -395,14 +442,12 @@ class TriggerMapDB:
         #     Element 0 contains the combination gain.
         #     Element 1 and 2 contain the state indices of the states to be combined
         info = self.__combination_gain_list.pop()
-        i    = info[1]          # State Index A
-        i_tm = self.__db[i]     # Trigger map of State A
-        k    = info[2]          # State Index B
-        k_tm = self.__db[k]     # Trigger map of State B
+        i       = info[1]          # State Index A
+        i_state = self.__db[i]     # State A
+        k       = info[2]          # State Index B
+        k_state = self.__db[k]     # State B
 
         # (1) Delete both states from the database: state-index  --> trigger_map
-        del self.__db[i]
-        del self.__db[k]
 
         # (2) Delete all entries from the 'combination gain' list that relate
         #     to the states 'i' and 'k'. They are no longer available.
@@ -426,7 +471,7 @@ class TriggerMapDB:
             else:
                 p += 1
 
-        return i, i_tm, k, k_tm
+        return i_state, k_state
 
     def __len__(self):
         return len(self.__db)
@@ -438,7 +483,7 @@ class TriggerMapDB:
     def __setitem__(self, Key, Value):
         assert type(Key) == long
         assert isinstance(Value, TemplateCombination)
-        self.__adapt_combination_gain(Key, Value)
+        self.__adapt_combination_gain(Value)
         self.__db[Key] = Value
 
     def items(self):
@@ -450,163 +495,3 @@ def involved_state_list(TM, DefaultIfTriggerMapIsNotACombination):
     else:
         return [ DefaultIfTriggerMapIsNotACombination ]
 
-def get_border_number_of_combined_map(TriggerMap0, TriggerMap1):
-    """Assume that interval list 0 and 1 are sorted.
-       
-       RETURNS: -- Number of new borders if both maps are combined.
-                -- Number of transitions that trigger to the same 
-                   target state on the same interval in both maps.
-
-       The result of this function is later used to feed 'combination_gain' that
-       estimates the 'gain' of combining the two maps. 
-
-       If both trigger maps trigger to itself, then this counted as a 
-       'same target' since there is no change needed and the template
-       triggers to itself.
-    """
-    # Count the number of additional intervals if list 0 is combined with list 1
-    # Each intersection requires the setup of new intervals, e.g.
-    #
-    #          |----------------|
-    #               |---------------|
-    #
-    # Requires to setup three intervals in order to cover all cases propperly: 
-    #
-    #          |----|-----------|---|
-    #
-    assert TriggerMap0[0][0].begin == -sys.maxint
-    assert TriggerMap1[0][0].begin == -sys.maxint
-    assert TriggerMap0[-1][0].end  == sys.maxint
-    assert TriggerMap1[-1][0].end  == sys.maxint
-
-    i  = 0 # iterator over interval list 0
-    k  = 0 # iterator over interval list 1
-    Li = len(TriggerMap0)
-    Lk = len(TriggerMap1)
-    # Intervals in trigger map are always adjacent, so the '.begin'
-    # member is not required.
-    result = 0
-    while not (i == Li-1 and k == Lk-1):
-        i_trigger = TriggerMap0[i]
-        i_end     = i_trigger[0].end
-        i_target  = i_trigger[1]
-
-        k_trigger = TriggerMap1[k]
-        k_end     = k_trigger[0].end
-        k_target  = k_trigger[1]
-
-        equivalent_target_list_check_those(i_target, k_target)
-
-        # Step to the next *lowest* border, i.e. increment the 
-        # interval line index with the lowest '.end'. For example:
-        # 
-        #         0   1 2  3 4 5  6   7
-        #     i   |     |      |  |   |
-        #     k   |   |    | |        |
-        #         :   : :  : : :  :   :   (6 intervals, 6 borders)
-        #
-        #                         i_end:     k_end:
-        # Does:  (1) ++i, ++k -->    2            1
-        #        (2) ++k      -->    2            3
-        #        (3) ++i      -->    5            3
-        #        (4) ++k      -->    5            4
-        #        (5) ++k      -->    5            6
-        #        (6) ++i      -->    6            7
-        #        (6) ++i      -->    7            7
-        if   i_end == k_end:  i += 1; k += 1;
-        elif i_end < k_end:   i += 1;
-        else:                 k += 1;
-
-        result += 1
-
-    return result
-
-def get_combined_trigger_map(TriggerMap0, InvolvedStateList0, TriggerMap1, InvolvedStateList1):
-    InvolvedStateN0 = len(InvolvedStateList0)
-    InvolvedStateN1 = len(InvolvedStateList1)
-
-    def __asserts(TM):
-        """-- first border at - sys.maxint
-           -- all intervals are adjacent (current begin == previous end)
-           -- last border at  + sys.maxint
-        """
-        prev_end = -sys.maxint
-        for x in TM:
-            assert x[0].begin == prev_end
-            prev_end = x[0].end
-        assert TM[-1][0].end  == sys.maxint
-
-    __asserts(TriggerMap0)
-    __asserts(TriggerMap1)
-
-    def __get_target(T0, T1):
-        """In the 'TemplateCombination' trigger map, a transition to the same
-           target for all involved states is coded as a scalar value.
-           Other combined transitions are coded as list while 
-
-                    list[i] = target index of involved state 'i'
-
-           As soon as the single transition is over, the scalar value
-           needs to be expanded, so that the above consensus holds.
-        """
-        recursion_n = 0
-        # IS RECURSIVE ?
-        # -- In a 'normal trigger map' the target needs to be equal to the
-        #   state that it contains.
-        # -- In a trigger map combination, the recursive target is 
-        #    identifier by the value 'TargetStateIndices.SAME_STATE'.
-        if (len(InvolvedStateList0) == 1 and T0 == InvolvedStateList0[0]) or T0 == TargetStateIndices.SAME_STATE:
-            T0 = InvolvedStateList0
-            if len(T0) == 1: T0 = T0[0]
-            recursion_n += 1
-        if (len(InvolvedStateList1) == 1 and T1 == InvolvedStateList1[0]) or T1 == TargetStateIndices.SAME_STATE:
-            T1 = InvolvedStateList1
-            if len(T1) == 1: T1 = T1[0]
-            recursion_n += 1
-
-        # If both transitions are recursive, then the template will
-        # contain only a 'recursion flag'. 
-        if recursion_n == 2: return TargetStateIndices.SAME_STATE
-
-        # T = list   -> combination is a 'involved state list'.
-        # T = scalar -> same target state for TargetCombinationN in all cases.
-        if type(T0) == list:
-            if type(T1) == list: return T0 + T1
-            else:                return T0 + [T1] * InvolvedStateN1
-        else:
-            if type(T1) == list: return [T0] * InvolvedStateN0 + T1
-            elif T0 != T1:       return [T0] * InvolvedStateN0 + [T1] * InvolvedStateN1
-            else:                return T0                      # Same Target => Scalar Value
-
-    i  = 0 # iterator over interval list 0
-    k  = 0 # iterator over interval list 1
-    Li = len(TriggerMap0)
-    Lk = len(TriggerMap1)
-
-    # Intervals in trigger map are always adjacent, so the '.begin'
-    # member is not required.
-    result   = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
-    prev_end = - sys.maxint
-    while not (i == Li-1 and k == Lk-1):
-        i_trigger = TriggerMap0[i]
-        i_end     = i_trigger[0].end
-        i_target  = i_trigger[1]
-
-        k_trigger = TriggerMap1[k]
-        k_end     = k_trigger[0].end
-        k_target  = k_trigger[1]
-
-        target    = __get_target(i_target, k_target)
-        end       = min(i_end, k_end)
-        result.append(prev_end, min(i_end, k_end), target)
-        prev_end  = end
-
-        if   i_end == k_end:  i += 1; k += 1;
-        elif i_end < k_end:   i += 1;
-        else:                 k += 1;
-
-    # Treat the last trigger interval
-    target = __get_target(TriggerMap0[-1][1], TriggerMap1[-1][1])
-    result.append(prev_end, sys.maxint, target)
-
-    return result

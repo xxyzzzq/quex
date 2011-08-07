@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import sys
 import generator_test
 
 choice = generator_test.hwut_input("Simple: Special Case '.' (drop out on valid target state)", "SAME;")
