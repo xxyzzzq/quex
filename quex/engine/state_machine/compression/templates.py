@@ -297,7 +297,13 @@ class TemplateState(AnalyzerState):
 
 		return result
 	
-def get_adapted_scheme(X, Y, Type):
+def get_adapted_scheme(X, Y, Type): 
+	"""A 'scheme' in the above sense stands for a set of objects that are unequal. 
+	   They are exclusively used in TemplateState objects for 'entries' and 'drop_outs'.
+	   For each state in the TemplateState, it must also be specified which entry
+       and drop_out of the schemes it follows.
+    """
+
 	scheme = lambda X: X.scheme if isinstance(X, Type) else [ X ]
 
 	scheme_a = scheme(X)
@@ -306,8 +312,9 @@ def get_adapted_scheme(X, Y, Type):
 	smaller, bigger = sorted([scheme_a, scheme_b], key=lambda x: len(x))
 	
 	# All entries in smaller that are not in bigger need to be added to the scheme
-	self.scheme = copy(bigger)
-	self.scheme.extend(ifilter(lambda x: x not in bigger, smaller))
+	scheme = copy(bigger)
+	scheme.extend(ifilter(lambda x: x not in bigger, smaller))
+	return scheme
 
 class EntryTemplate(object):
 	"""State entry for TemplateState objects."""
