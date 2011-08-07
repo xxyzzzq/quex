@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 import os
-from   copy import copy
 import time
 
 from   quex.blackboard                 import setup as Setup
@@ -23,7 +22,6 @@ def do(ModeDB, IndentationSupportF, BeginOfLineSupportF):
 
 def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF):
     LexerClassName = Setup.analyzer_class_name
-    LanguageDB     = Setup.language_db
 
     ConfigurationTemplateFile =(  QUEX_PATH \
                                 + Setup.language_db["$code_base"] \
@@ -39,7 +37,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         if len(mode.get_code_fragment_list("on_exit")) != 0:  exit_handler_active_f = True
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
-    converter_f = False
+    converter_f       = False
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
     if Setup.converter_user_new_func != "": 
         converter_new_str += Setup.converter_user_new_func + "()"
@@ -83,7 +81,7 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
     txt = __switch(txt, "QUEX_OPTION_BUFFER_BASED_ANALYZIS",         Setup.buffer_based_analyzis_f)
 
     # -- token class related definitions
-    token_descr = blackboard.token_type_definition
+    token_descr         = blackboard.token_type_definition
     namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
     # -- name of the character codec
@@ -355,8 +353,6 @@ def get_mode_class_related_code_fragments(Modes):
                  -- friend declarations for the mode classes/functions
 
     """
-    L = max(map(lambda m: len(m.name), Modes))
-
     members_txt = ""    
     for mode in Modes:
         if mode.options["inheritable"] == "only": continue

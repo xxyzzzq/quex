@@ -1,7 +1,4 @@
-from itertools   import imap, ifilter, islice
-from collections import defaultdict
-from operator    import itemgetter
-from copy        import copy
+from itertools   import ifilter, islice
 
 def do(analyzer):
     """RETURNS: 

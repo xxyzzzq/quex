@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import time
 import os
-import sys
 import re
 
 from quex.engine.misc.file_in  import open_file_or_die, \

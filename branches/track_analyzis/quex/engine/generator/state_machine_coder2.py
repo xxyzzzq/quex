@@ -1,6 +1,4 @@
 import quex.engine.generator.state_coder2.core   as     state_coder
-from   quex.engine.state_machine.core            import StateMachine
-from   quex.engine.state_machine.state_core_info import EngineTypes
 from   quex.blackboard                           import setup as Setup
 import quex.engine.generator.template_coder as template_coder
 import quex.engine.generator.paths_coder    as paths_coder
@@ -13,13 +11,11 @@ def do(TheAnalyzer):
     """
     txt = []
 
-    LanguageDB = Setup.language_db
-
     # Track what states are treated with different methods (see below)
     remainder  = set(TheAnalyzer.state_db.keys())
 
     # (*) Init State
-    init_state = state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
+    state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
     remainder.discard(TheAnalyzer.init_state_index)
 
     # (*) [Optional] Path-Compressed States

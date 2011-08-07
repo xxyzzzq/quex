@@ -4,7 +4,6 @@ import quex.output.cpp.action_preparation as action_preparation
 
 def do(Modes):
     LexerClassName              = Setup.analyzer_class_name
-    TokenClassName              = Setup.token_class_name
     DerivedClassName            = Setup.analyzer_derived_class_name
     DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
 
@@ -141,7 +140,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     try:
         entry_list         = __filter_out_inheritable_only(mode.options["entry"])
         has_entry_from_str = get_IsOneOfThoseCode(entry_list,
-                                                  __filter_out_inheritable_only(ConsiderDerivedClassesF=true))
+                                                  __filter_out_inheritable_only(ConsiderDerivedClassesF=True))
         # check whether the mode we come from is an allowed mode
     except:
         has_entry_from_str = "    return true; /* default */"        
@@ -150,7 +149,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     try:
         exit_list       = __filter_out_inheritable_only(mode.options["exit"])
         has_exit_to_str = get_IsOneOfThoseCode(exit_list,
-                                               ConsiderDerivedClassesF=true)
+                                               ConsiderDerivedClassesF=True)
     except:
         has_exit_to_str = "    return true; /* default */"
 

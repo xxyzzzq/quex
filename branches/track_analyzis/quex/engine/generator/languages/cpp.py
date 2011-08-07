@@ -1,12 +1,8 @@
 from quex.engine.misc.file_in         import is_identifier_start, is_identifier_continue
 from quex.engine.misc.string_handling import blue_print
 
-import quex.engine.state_machine.index             as     index
-from   quex.engine.state_machine.state_core_info   import PostContextIDs      
 from   quex.engine.generator.languages.address     import *
-from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.interval_handling               import NumberSet
-from   copy     import copy
 from   operator import itemgetter
 #
 
@@ -382,10 +378,9 @@ def __adorn_action_code(action_info, SupportBeginOfLineF):
     return txt
 
 def get_terminal_code(AcceptanceID, pattern_action_info, SupportBeginOfLineF, LanguageDB):
-    AcceptanceID_str = __nice(AcceptanceID)
-    state_machine    = pattern_action_info.pattern_state_machine()
+    state_machine = pattern_action_info.pattern_state_machine()
     #
-    action_code      = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
+    action_code   = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -527,8 +522,6 @@ def __terminal_states(StateMachineName, action_db, OnFailureAction, EndOfStreamA
     
 def __frame_of_all(Code, Setup):
     LanguageDB = Setup.language_db
-    namespace_open  = LanguageDB["$namespace-open"](Setup.analyzer_name_space)
-    namespace_close = LanguageDB["$namespace-close"](Setup.analyzer_name_space)
     # namespace_ref   = LanguageDB["$namespace-ref"](Setup.analyzer_name_space)
     # if len(namespace_ref) > 2 and namespace_ref[:2] == "::":  namespace_ref = namespace_ref[2:]
     # if len(namespace_ref) > 2 and namespace_ref[-2:] == "::": namespace_ref = namespace_ref[:-2]

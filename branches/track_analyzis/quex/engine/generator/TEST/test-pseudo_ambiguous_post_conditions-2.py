@@ -1,7 +1,5 @@
 #! /usr/bin/env python
-import sys
 import generator_test
-from generator_test import action
 
 choice = generator_test.hwut_input("Pseudo Ambgiguous Post Condition: Part II", "SAME;")
 

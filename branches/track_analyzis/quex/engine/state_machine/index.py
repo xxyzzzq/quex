@@ -1,5 +1,4 @@
 # special states:
-from copy import deepcopy, copy
 
 def clear():
     global __internal_state_index_counter
@@ -46,21 +45,3 @@ def get_state_machine_id():
     __internal_state_machine_id_counter += long(1)
     return __internal_state_machine_id_counter 
 
-DELETED__map_state_machine_id_to_state_machine = {}    
-def DELETED_register_state_machine(StateMachineRef):
-    """Produces a unique id for the state machine. This function is only to be called
-       from inside the constructor of class StateMachine."""
-    assert StateMachineRef not in  __map_state_machine_id_to_state_machine.values(), \
-           "error: tried to register state machine twice"
-        
-    global __internal_state_machine_id_counter
-    __internal_state_machine_id_counter += long(1)
-    # add the state machine under the give key to the database
-    __map_state_machine_id_to_state_machine[__internal_state_machine_id_counter] = StateMachineRef
-    return __internal_state_machine_id_counter 
-    
-def DELETED_get_state_machine_by_id(StateMachineID):
-    assert __map_state_machine_id_to_state_machine.has_key(StateMachineID)
-
-    return __map_state_machine_id_to_state_machine[StateMachineID]    
-    

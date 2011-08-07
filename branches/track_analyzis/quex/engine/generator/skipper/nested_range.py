@@ -26,11 +26,6 @@ def do(Data):
                                Mode=Mode, 
                                IndentationCounterTerminalID=indentation_counter_terminal_id) 
 
-    txt =    "{\n"                                          \
-           + LanguageDB["$comment"]("Range skipper state")  \
-           + code_str                                       \
-           + "\n}\n"
-
     return code_str, db
 
 template_str = """

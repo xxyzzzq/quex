@@ -5,7 +5,7 @@
 import sys
 sys.path.append("../")
 
-from core import *
+from   core import *
 import sequentialize
 
 def do(the_state_machine, min_repetition_n = 0, max_repetition_n = -1):

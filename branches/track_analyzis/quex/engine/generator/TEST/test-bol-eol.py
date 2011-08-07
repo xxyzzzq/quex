@@ -1,7 +1,6 @@
 #! /usr/bin/env python
-import sys
 import generator_test
-from   generator_test import action, hwut_input
+from   generator_test import hwut_input
 
 choice = hwut_input("Simple: Begin of Line (BOL), End of Line (EOL)", "SAME;")
 

@@ -1,7 +1,6 @@
 from quex.blackboard    import setup as Setup
 from quex.engine.misc.file_in import open_file_or_die, \
-                                error_msg, \
-                                write_safely_and_close 
+                                     write_safely_and_close 
 import os.path           as     path
 import os
 from   quex.DEFINITIONS  import QUEX_PATH

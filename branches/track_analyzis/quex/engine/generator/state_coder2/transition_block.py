@@ -1,10 +1,8 @@
 import quex.engine.generator.state_coder2.transition_code as     transition_code
 from   quex.engine.interval_handling                      import Interval
-from   quex.engine.analyzer.core                          import AnalyzerState
 from   quex.engine.state_machine.state_core_info          import EngineTypes
 from   quex.blackboard                                    import TargetStateIndices, \
                                                                  setup as Setup
-import sys
 from   math      import log
 from   copy      import copy
 
@@ -19,8 +17,6 @@ def do(txt, TransitionMap,
     assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
     __assert_adjacency(TransitionMap)
-
-    LanguageDB = Setup.language_db
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
@@ -398,7 +394,7 @@ def __prune_character_range(TransitionMap):
     LowerLimit = 0
     UpperLimit = Setup.get_character_value_limit()
 
-    if UpperLimit == -1: return trigger_map
+    if UpperLimit == -1: return TransitionMap
 
     # (*) Delete any entry that lies completely below the lower limit
     for i, entry in enumerate(TransitionMap):

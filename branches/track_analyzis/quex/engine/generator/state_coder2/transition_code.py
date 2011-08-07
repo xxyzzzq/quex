@@ -1,6 +1,5 @@
 from quex.blackboard import TargetStateIndices, \
                             setup as Setup
-from quex.engine.analyzer.core import AnalyzerState
 from quex.engine.state_machine.state_core_info import EngineTypes
 
 def do(Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload_Str):
@@ -71,9 +70,6 @@ class TransitionCode:
 
     @property
     def drop_out_f(self): return self.__drop_out_f
-
-def __transition_to_reload(StateIdx, SMD, ReturnStateIndexStr=None):
-    LanguageDB = Setup.language_db
 
 def get_transition_to_terminal(Origin):
     LanguageDB = Setup.language_db

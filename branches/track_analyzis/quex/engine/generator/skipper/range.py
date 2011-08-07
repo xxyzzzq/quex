@@ -2,7 +2,6 @@ import quex.engine.state_machine.index             as     sm_index
 from   quex.engine.generator.skipper.common        import *
 from   quex.engine.generator.languages.address     import __nice, get_label
 import quex.engine.generator.languages.variable_db as     variable_db
-import quex.engine.utf8                            as     utf8
 from   quex.blackboard                            import setup as Setup
 from   quex.engine.misc.string_handling            import blue_print
 import quex.blackboard                             as     blackboard
@@ -24,11 +23,6 @@ def do(Data):
         Mode = blackboard.mode_db[ModeName]
 
     code_str, db = get_skipper(ClosingSequence, Mode, indentation_counter_terminal_id) 
-
-    txt =    "{\n"                                          \
-           + LanguageDB["$comment"]("Range skipper state")  \
-           + code_str                                       \
-           + "\n}\n"
 
     return code_str, db
 

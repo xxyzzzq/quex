@@ -1,10 +1,8 @@
-from quex.blackboard import setup as Setup
-from quex.engine.state_machine.state_core_info     import PostContextIDs, AcceptanceIDs
+from   quex.engine.state_machine.state_core_info     import PostContextIDs, AcceptanceIDs
 
-from collections import defaultdict
-from copy        import copy, deepcopy
-from operator    import attrgetter
-from itertools   import ifilter
+from   copy        import deepcopy
+from   operator    import attrgetter
+from   itertools   import ifilter
 import sys
 
 """

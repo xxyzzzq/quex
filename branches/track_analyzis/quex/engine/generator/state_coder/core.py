@@ -1,6 +1,6 @@
 from   quex.engine.state_machine.core         import State 
 import quex.engine.generator.languages.core   as languages
-from   quex.engine.generator.languages.address            import Address, get_address, get_label
+from   quex.engine.generator.languages.address            import Address, get_label
 import quex.engine.generator.state_coder.transition_block as transition_block
 import quex.engine.generator.state_coder.transition       as transition
 import quex.engine.generator.state_coder.acceptance_info  as acceptance_info

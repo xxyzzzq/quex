@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import sys
 import os
-from   itertools import product
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 

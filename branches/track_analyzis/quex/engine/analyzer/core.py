@@ -21,8 +21,7 @@
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.position_register_map as     position_register_map
-from   quex.engine.analyzer.track_analysis        import AcceptanceTraceEntry, \
-                                                         AcceptanceTraceEntry_Void, \
+from   quex.engine.analyzer.track_analysis        import \
                                                          extract_pre_context_id
 from   quex.engine.state_machine.state_core_info  import PostContextIDs, \
                                                          AcceptanceIDs, \
@@ -30,12 +29,10 @@ from   quex.engine.state_machine.state_core_info  import PostContextIDs, \
 from   quex.engine.misc.enum                      import Enum
 
 
-from quex.blackboard  import setup as Setup, TargetStateIndices
-from copy             import copy, deepcopy
+from quex.blackboard  import setup as TargetStateIndices
 from collections      import defaultdict
 from operator         import attrgetter, itemgetter
-from itertools        import islice, ifilter, takewhile, imap
-import sys
+from itertools        import islice, ifilter, imap
 
 class Analyzer:
     def __init__(self, SM, EngineType=EngineTypes.FORWARD):
@@ -372,8 +369,7 @@ class Analyzer:
         #
         #          post-context-id --> set of states where the positions are stored
         #
-        store_constellation_db    = defaultdict(set)
-        restore_contellation_list = []
+        store_constellation_db = defaultdict(set)
         for state in self.state_db.itervalues():
             # Iterate over all post context ids subject to position storage
             for positioner in state.entry.positioner_db.itervalues():

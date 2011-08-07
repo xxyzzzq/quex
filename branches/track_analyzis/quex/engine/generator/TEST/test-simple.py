@@ -1,7 +1,5 @@
 #! /usr/bin/env python
-import sys
 import generator_test
-from generator_test import action, hwut_input
 
 choice = generator_test.hwut_input("Simple: Tiny Expressions", "SAME;")
 

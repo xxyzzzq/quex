@@ -18,7 +18,6 @@ def do(SMD, TemplateHasBeenCodedBeforeF=False):
                 and last success stream position).                  
     """
     assert isinstance(SMD, StateMachineDecorator)
-    LanguageDB = Setup.language_db
 
     state_machine = SMD.sm()
     

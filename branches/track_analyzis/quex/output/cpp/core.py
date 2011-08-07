@@ -1,24 +1,17 @@
 from   quex.engine.state_machine.state_core_info       import EngineTypes
-import quex.engine.generator.languages.core            as     languages
 from   quex.engine.generator.languages.variable_db     import variable_db
-from   quex.engine.generator.languages.address         import get_label, get_address, \
-                                                              get_label_of_address, \
+from   quex.engine.generator.languages.address         import get_address, \
                                                               get_plain_strings, \
                                                               init_address_handling, \
                                                               get_address_set_subject_to_routing, \
                                                               is_label_referenced
-
 import quex.engine.generator.state_machine_coder2      as     state_machine_coder
 from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
 import quex.engine.generator.state_router              as     state_router_generator
-from   quex.engine.misc.string_handling                import blue_print
 from   quex.engine.generator.base                      import GeneratorBase
 from   quex.engine.analyzer.core                       import Analyzer
-
 from   quex.blackboard                                 import TargetStateIndices, \
                                                               setup as Setup
-#
-from   copy import copy
 
 class Generator(GeneratorBase):
 
@@ -193,9 +186,9 @@ class Generator(GeneratorBase):
 
         txt = []
         if Setup.comment_state_machine_transitions_f: 
-            comment = Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
+            txt.append(Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \
                                                        SM.get_string(NormalizeF=False)            + \
-                                                       "\nEND: BACKWARD DETECTOR STATE MACHINE")
+                                                       "\nEND: BACKWARD DETECTOR STATE MACHINE"))
             txt.append("\n")
 
         analyzer      = Analyzer(SM, EngineTypes.BACKWARD_INPUT_POSITION)
