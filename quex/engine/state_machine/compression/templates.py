@@ -297,11 +297,11 @@ class TemplateState(AnalyzerState):
 
 		return result
 	
-def get_adapted_scheme(X, Y):
-	scheme = lambda entry: entry.scheme if isinstance(x, EntryTemplate) else [ entry ]
+def get_adapted_scheme(X, Y, Type):
+	scheme = lambda X: X.scheme if isinstance(X, Type) else [ X ]
 
-	scheme_a = scheme(EntryA)
-	scheme_b = scheme(EntryB)
+	scheme_a = scheme(X)
+	scheme_b = scheme(Y)
 
 	smaller, bigger = sorted([scheme_a, scheme_b], key=lambda x: len(x))
 	
@@ -312,12 +312,12 @@ def get_adapted_scheme(X, Y):
 class EntryTemplate(object):
 	"""State entry for TemplateState objects."""
 	def __init__(self, EntryA, EntryB):
-		self.scheme = get_adapted_scheme(EntryA, EntryB)
+		self.scheme = get_adapted_scheme(EntryA, EntryB, EntryTemplate)
 
 class DropOutTemplate(object):
 	"""State drop_out for TemplateState objects."""
 	def __init__(self, DropOutA, DropOutB):
-		self.scheme = get_adapted_scheme(DropOutA, DropOutB)
+		self.scheme = get_adapted_scheme(DropOutA, DropOutB, DropOutTemplate)
 
 class TemplateCombination:
     def __init__(self, InvolvedStateList0,  InvolvedStateList1):
