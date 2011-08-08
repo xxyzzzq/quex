@@ -106,7 +106,6 @@ def do(StateA, StateB):
 
     return entry_gain + drop_out_gain - border_increase_n * 4 * (1.0 - same_target_ratio)
 
-        
 def get_entry_gain(StateA, StateB):
     """If the two states have the same entries, then the one entry 
        can be spared. Then, the 'entry gain' is the what can be spared the
@@ -137,7 +136,6 @@ def get_entry_gain(StateA, StateB):
     for entry in smaller.scheme:
         if bigger.contains(entry): result -= __cost_of_entry(entry)
     return result
-
 
 def get_drop_out_gain(StateA, StateB):
     """If the two states have the same drop_out handling, then the one entry 
