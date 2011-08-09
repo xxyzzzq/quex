@@ -297,32 +297,38 @@ class TemplateState(AnalyzerState):
 
 		return result
 	
-def get_adapted_scheme(StateIndexA, A, StateIndexB, B, Type): 
-	"""A 'scheme' in the above sense stands for a set of objects that are unequal. 
-	   They are exclusively used in TemplateState objects for 'entries' and 'drop_outs'.
-	   For each state in the TemplateState, it must also be specified which entry
-       and drop_out of the schemes it follows.
-    """
-
-	scheme = lambda StateIndex, X: X.scheme if isinstance(X, Type) else defaultdict([(X, [StateIndex])])
-
-	scheme_a = scheme(X)
-	scheme_b = scheme(Y)
-
-    result = defaultdict(list)
-    for state_index, x in set(chain(scheme_a, scheme_b)):
-        result[x].append(state_index)
-	return result
+class TransitionMapTemplate:
+    def __init__(self, StateIndexA, A, StateIndexB, B, Type): 
+        """A 'scheme' in the above sense stands for a set of objects that are unequal. 
+           They are exclusively used in TemplateState objects for 'entries' and 'drop_outs'.
+           For each state in the TemplateState, it must also be specified which entry
+           and drop_out of the schemes it follows.
+        """
 
 class EntryTemplate(object):
 	"""State entry for TemplateState objects."""
-	def __init__(self, EntryA, EntryB):
-		self.scheme = get_adapted_scheme(EntryA, EntryB, EntryTemplate)
+	def __init__(self, StateIndexA, EntryA, StateIndexB, EntryB):
+		self.scheme = get_combined_scheme(StateIndexA, EntryA, StateIndexB, EntryB, 
+                                          EntryTemplate)
 
 class DropOutTemplate(object):
 	"""State drop_out for TemplateState objects."""
-	def __init__(self, DropOutA, DropOutB):
-		self.scheme = get_adapted_scheme(DropOutA, DropOutB, DropOutTemplate)
+	def __init__(self, StateIndexA, DropOutA, StateIndexB, DropOutB):
+		self.scheme = get_combined_scheme(StateIndexA, DropOutA, StateIndexB, DropOutB, 
+                                          DropOutTemplate)
+
+def get_combined_scheme(StateIndexA, A, StateIndexB, B, Type):
+    def get_scheme(StateIndex, X): 
+        if isinstance(X, Type): return X.scheme
+        else:                   return defaultdict([(X, [StateIndex])])
+
+    scheme_a = get_scheme(StateIndexA, A)
+    scheme_b = get_scheme(StateIndexB, B)
+
+    result = defaultdict(list)
+    for element, state_index_list in chain(scheme_a.iteritems(), scheme_b.iteritems()):
+        result[element].extend(state_index_list)
+    return result
 
 class TemplateCombination:
     def __init__(self, InvolvedStateList0,  InvolvedStateList1):
