@@ -246,9 +246,9 @@ def get_transition_map_metric(StateA, StateB):
         #        (5) ++k      -->    5            6
         #        (6) ++i      -->    6            7
         #        (6) ++i      -->    7            7
-        if   i_end == k_end:  i += 1; k += 1;
-        elif i_end < k_end:   i += 1;
-        else:                 k += 1;
+        if   i_end == k_end: i += 1; k += 1;
+        elif i_end <  k_end: i += 1;
+        else:                k += 1;
 
         border_n += 1
 
