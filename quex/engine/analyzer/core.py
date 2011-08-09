@@ -597,6 +597,8 @@ class Entry(object):
        Where "post-context-id == -1" stands for no post-context (normal pattern)
        and a "None" in the pre-context-id list stands for the unconditional case.
 
+       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
+             Required for the optional 'template compression'.
     """
     __slots__ = ("__uniform_f", "accepter", "positioner_db")
 
@@ -611,7 +613,15 @@ class Entry(object):
         # This flag is to be determined after the analyzis by function 'try_unify_positioner_db()'
         self.__uniform_f = None 
 
+    def __hash__(self):
+        return hash(len(self.accepter) * 10 + len(positioner_db) * 2 + int(self.__uniform_f))
+
+    def __eq__(self, Other):
+        return     self.accepter      == Other.accepter \
+               and self.positioner_db == Other.positioner_db
+
     def is_equal(self, Other):
+        # Maybe, we can delete this ...
         return     self.accepter      == Other.accepter \
                and self.positioner_db == Other.positioner_db
 
@@ -704,6 +714,9 @@ class EntryBackwardInputPositionDetection(object):
 
        Non-Acceptance State
        => proceed with the state transitions (do nothing here)
+
+       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
+             Required for the optional 'template compression'.
     """
     __slots__ = ("__terminated_f", "__detector_sm_id")
 
@@ -713,6 +726,13 @@ class EntryBackwardInputPositionDetection(object):
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
             self.__terminated_f = True
             return
+
+    def __hash__(self):
+        return hash(self.__detector_sm_id * 2 + int(self.__terminated_f))
+
+    def __eq__(self, Other):
+        return     self.__terminated_f   == Other.__terminated_f \
+               and self.__detector_sm_id == Other.__detector_sm_id
 
     @property
     def terminated_f(self): return self.__terminated_f
@@ -734,12 +754,23 @@ class EntryBackward(object):
                     ".pre_context_fulfilled_set"
 
        This list can be determined beforehand from the origin list. 
+
+       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
+             Required for the optional 'template compression'.
     """
     __slots__ = ("__pre_context_fulfilled_set")
     def __init__(self, OriginList):
         self.__pre_context_fulfilled_set = set([])
         for origin in ifilter(lambda origin: origin.is_acceptance(), OriginList):
             self.__pre_context_fulfilled_set.add(origin.state_machine_id)
+
+    def __hash__(self):
+        return hash(len(self.__pre_context_fulfilled_set))
+
+    def __eq__(self, Other):
+        # NOTE: set([0, 1, 2]) == set([2, 1, 0]) 
+        #       ... equal if elements are the same, order not important
+        return self.pre_context_fulfilled_set == Other.pre_context_fulfilled_set
 
     @property
     def pre_context_fulfilled_set(self):
@@ -777,12 +808,27 @@ class DropOut(object):
 
        The exact content of both lists is determined by analysis of the acceptance
        trances.
+
+       NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
+             Required for the optional 'template compression'.
     """
     __slots__ = ("checker", "router")
 
     def __init__(self):
         self.checker = []
         self.router  = []
+
+    def __hash__(self):
+        return hash(len(self.checker) * 10 + len(self.router))
+
+    def __eq__(self, Other):
+        if   len(self.checker) != len(Other.checker): return False
+        elif len(self.router)  != len(Other.router):  return False
+        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.checker, Other.checker)):
+            return False
+        for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.router, Other.router)):
+            return False
+        return True
 
     def trivialize(self):
         """If there is only one acceptance involved and no pre-context,
@@ -896,6 +942,11 @@ class DropOut_CheckerElement(object):
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
 
+    def is_equal(self, Other):
+        """Explictly avoid default usage of '__eq__'"""
+        return     self.pre_context_id == Other.pre_context_id \
+               and self.acceptance_id  == Other.acceptance_id
+
     def __repr__(self):
         txt = []
         txt.append("%s: accept = %s" % (repr_pre_context_id(self.pre_context_id),
@@ -951,6 +1002,12 @@ class DropOut_RouterElement(object):
         self.acceptance_id   = AcceptanceID
         self.positioning     = Positioning
         self.post_context_id = PostContextID
+
+    def is_equal(self, Other):
+        """Explictly avoid default usage of '__eq__'"""
+        return     self.acceptance_id   == Other.acceptance_id   \
+               and self.positioning     == Other.positioning     \
+               and self.post_context_id == Other.post_context_id
 
     def __repr__(self):
         if self.acceptance_id == AcceptanceIDs.FAILURE: assert self.positioning == -1 
