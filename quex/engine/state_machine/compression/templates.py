@@ -203,106 +203,115 @@ def do(TheAnalyzer, CostCoefficient):
 
 class TemplateState(AnalyzerState):
 	def __init__(StateA, StateB):
-		self.entry          = EntryTemplate(StateA.entry, StateB.entry)
-		self.drop_out       = DropOutTemplate(StateA.entry, StateB.entry)
-		self.transition_map = TransitionMapTemplate(StateA.transition_map, StateB.transition_map)
+        def get_state_list(X): 
+            if isinstance(X, AnalyzerState): return [ X.index ]
+            else:                            return X.index_list 
 
-class TransitionMapTemplate:
-    def __init__(self, StateIndexA, A, StateIndexB, B, Type): 
-        """A 'scheme' in the above sense stands for a set of objects that are unequal. 
-           They are exclusively used in TemplateState objects for 'entries' and 'drop_outs'.
-           For each state in the TemplateState, it must also be specified which entry
-           and drop_out of the schemes it follows.
+        StateListA     = get_state_list(StateA)
+        StateListB     = get_state_list(StateB)
+        TransitionMapA = StateA.transition_map
+        TransitionMapB = StateB.transition_map
+
+		self.entry            = EntryTemplate(StateA.entry, StateB.entry)
+		self.drop_out         = DropOutTemplate(StateA.entry, StateB.entry)
+		self.transition_map   = get_transition_map(StateListA, TransitionMapA, 
+                                                   StateListB, TransitionMapB)
+        self.state_index_list = StateListA + StateListB
+
+def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionMapB):
+    """A 'scheme' in the above sense stands for a set of objects that are unequal. 
+       They are exclusively used in TemplateState objects for 'entries' and 'drop_outs'.
+       For each state in the TemplateState, it must also be specified which entry
+       and drop_out of the schemes it follows.
+    """
+    StateListA_Len = len(StateListA)
+    StateListB_Len = len(StateListB)
+
+    def __asserts(TM):
+        """-- first border at - sys.maxint
+           -- all intervals are adjacent (current begin == previous end)
+           -- last border at  + sys.maxint
         """
-	def __combined_trigger_map(StateListA, TriggerMapA, StateListB, TriggerMapB):
-        StateListA_Len = len(StateListA)
-        StateListB_Len = len(StateListB)
+        prev_end = -sys.maxint
+        for x in TM:
+            assert x[0].begin == prev_end
+            prev_end = x[0].end
+        assert TM[-1][0].end  == sys.maxint
 
-		def __asserts(TM):
-			"""-- first border at - sys.maxint
-			   -- all intervals are adjacent (current begin == previous end)
-			   -- last border at  + sys.maxint
-			"""
-			prev_end = -sys.maxint
-			for x in TM:
-				assert x[0].begin == prev_end
-				prev_end = x[0].end
-			assert TM[-1][0].end  == sys.maxint
+    def __get_target(TA, TB):
+        """In the 'TemplateCombination' trigger map, a transition to the same
+           target for all involved states is coded as a scalar value.
+           Other combined transitions are coded as list while 
 
-		def __get_target(TA, TB):
-			"""In the 'TemplateCombination' trigger map, a transition to the same
-			   target for all involved states is coded as a scalar value.
-			   Other combined transitions are coded as list while 
+                    list[i] = target index of involved state 'i'
 
-						list[i] = target index of involved state 'i'
+           As soon as the single transition is over, the scalar value
+           needs to be expanded, so that the above consensus holds.
+        """
+        recursion_n = 0
+        # IS RECURSIVE ?
+        # -- In a 'normal trigger map' the target needs to be equal to the
+        #   state that it contains.
+        # -- In a trigger map combination, the recursive target is 
+        #    identifier by the value 'TargetStateIndices.SAME_STATE'.
+        if TA == StateA.index: TA = TargetStateIndices.RECURSIVE
+        if TB == StateB.index: TB = TargetStateIndices.RECURSIVE
 
-			   As soon as the single transition is over, the scalar value
-			   needs to be expanded, so that the above consensus holds.
-			"""
-			recursion_n = 0
-			# IS RECURSIVE ?
-			# -- In a 'normal trigger map' the target needs to be equal to the
-			#   state that it contains.
-			# -- In a trigger map combination, the recursive target is 
-			#    identifier by the value 'TargetStateIndices.SAME_STATE'.
-            if TA == StateA.index: TA = TargetStateIndices.RECURSIVE
-            if TB == StateB.index: TB = TargetStateIndices.RECURSIVE
+        # If both transitions are recursive, then the template will
+        # contain only a 'recursion flag'. 
+        if TA == TargetStateIndices.RECURSIVE and TB == TargetStateIndices.RECURSIVE:
+            return TargetStateIndices.RECURSIVE
 
-			# If both transitions are recursive, then the template will
-			# contain only a 'recursion flag'. 
-            if TA == TargetStateIndices.RECURSIVE and TB == TargetStateIndices.RECURSIVE:
-                return TargetStateIndices.RECURSIVE
+        # Here: At least one of the targets is not recursive, so we need to expand
+        #       any RECURSIVE target to a list of target state indices.
+        if TA == TargetStateIndices.RECURSIVE: TA = StateListA
+        if TB == TargetStateIndices.RECURSIVE: TB = StateListA
 
-            # Here: At least one of the targets is not recursive, so we need to expand
-            #       any RECURSIVE target to a list of target state indices.
-            if TA == TargetStateIndices.RECURSIVE: TA = StateListA
-            if TB == TargetStateIndices.RECURSIVE: TB = StateListA
+        # T = list   -> combination is a 'involved state list'.
+        # T = scalar -> same target state for TargetCombinationN in all cases.
+        if type(TA) == list:
+            if type(TB) == list: return  TA                   +  TB
+            else:                return  TA                   + [TB] * StateListB_Len
+        else:
+            if type(TB) == list: return [TA] * StateListA_Len +  TB
+            elif TA != TB:       return [TA] * StateListA_Len + [TB] * StateListB_Len
+            else:                return TA                      # Same Target => Scalar Value
 
-			# T = list   -> combination is a 'involved state list'.
-			# T = scalar -> same target state for TargetCombinationN in all cases.
-			if type(TA) == list:
-				if type(TB) == list: return  TA                   +  TB
-				else:                return  TA                   + [TB] * StateListB_Len
-			else:
-				if type(TB) == list: return [TA] * StateListA_Len +  TB
-				elif TA != TB:       return [TA] * StateListA_Len + [TB] * StateListB_Len
-				else:                return TA                      # Same Target => Scalar Value
+    __asserts(TriggerMap0)
+    __asserts(TriggerMap1)
 
-		__asserts(TriggerMap0)
-		__asserts(TriggerMap1)
+    i  = 0 # iterator over interval list 0
+    k  = 0 # iterator over interval list 1
+    Li = len(TriggerMap0)
+    Lk = len(TriggerMap1)
 
-		i  = 0 # iterator over interval list 0
-		k  = 0 # iterator over interval list 1
-		Li = len(TriggerMap0)
-		Lk = len(TriggerMap1)
+    # Intervals in trigger map are always adjacent, so the '.begin'
+    # member is not required.
+    result   = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
+    prev_end = - sys.maxint
+    while not (i == Li-1 and k == Lk-1):
+        i_trigger = TriggerMap0[i]
+        i_end     = i_trigger[0].end
+        i_target  = i_trigger[1]
 
-		# Intervals in trigger map are always adjacent, so the '.begin'
-		# member is not required.
-		result   = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
-		prev_end = - sys.maxint
-		while not (i == Li-1 and k == Lk-1):
-			i_trigger = TriggerMap0[i]
-			i_end     = i_trigger[0].end
-			i_target  = i_trigger[1]
+        k_trigger = TriggerMap1[k]
+        k_end     = k_trigger[0].end
+        k_target  = k_trigger[1]
 
-			k_trigger = TriggerMap1[k]
-			k_end     = k_trigger[0].end
-			k_target  = k_trigger[1]
+        end       = min(i_end, k_end)
+        target    = __get_target(i_target, k_target)
+        result.append(prev_end, end, target)
+        prev_end  = end
 
-			end       = min(i_end, k_end)
-			target    = __get_target(i_target, k_target)
-			result.append(prev_end, end, target)
-			prev_end  = end
+        if   i_end == k_end: i += 1; k += 1;
+        elif i_end <  k_end: i += 1;
+        else:                k += 1;
 
-			if   i_end == k_end: i += 1; k += 1;
-			elif i_end <  k_end: i += 1;
-			else:                k += 1;
+    # Treat the last trigger interval
+    target = __get_target(TriggerMap0[-1][1], TriggerMap1[-1][1])
+    result.append(prev_end, sys.maxint, target)
 
-		# Treat the last trigger interval
-		target = __get_target(TriggerMap0[-1][1], TriggerMap1[-1][1])
-		result.append(prev_end, sys.maxint, target)
-
-		return result
+    return result
 
 class EntryTemplate(object):
 	"""State entry for TemplateState objects."""
