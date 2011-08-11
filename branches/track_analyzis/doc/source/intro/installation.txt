@@ -22,7 +22,7 @@ following:
 
        Do not install a Python version >= 3.0! Python 3.x is a language
        different from Python < 3.0. Quex is programmed towards version
-       2.4.
+       2.6.
 
     In order to verify that Python is installed you may open a 
     console (``cmd.exe``, ``xterm`` or a shel/terminal under Unix).
