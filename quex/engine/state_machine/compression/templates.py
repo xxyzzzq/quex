@@ -204,8 +204,9 @@ def do(TheAnalyzer, CostCoefficient):
 class TemplateState(AnalyzerState):
 	def __init__(StateA, StateB):
         def get_state_list(X): 
-            if isinstance(X, AnalyzerState): return [ X.index ]
-            else:                            return X.index_list 
+            if isinstance(X, AnalyzerState):   return [ X.index ]
+            elif isinstance(X, TemplateState): return X.state_index_list 
+            else:                              assert False
 
         StateListA     = get_state_list(StateA)
         StateListB     = get_state_list(StateB)
@@ -239,14 +240,36 @@ def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionM
         assert TM[-1][0].end  == sys.maxint
 
     def __get_target(TA, TB):
-        """In the 'TemplateCombination' trigger map, a transition to the same
-           target for all involved states is coded as a scalar value.
-           Other combined transitions are coded as list while 
+        """Generate a target entry for a transition map of combined 
+           transition maps for StateA and StateB. 
 
-                    list[i] = target index of involved state 'i'
+           TA, TB = Targets of StateA and StateB for one particular 
+                    character interval.
 
-           As soon as the single transition is over, the scalar value
-           needs to be expanded, so that the above consensus holds.
+           RETURNS: An object that tells for what states trigger
+                    here to what target state. That is:
+
+                    -- TargetStateIndices.RECURSIVE
+
+                       All related states trigger here to itself.
+                       Thus, the template combination triggers to itself.
+
+                    -- A scalar integer 'T'
+
+                       All related states trigger to the same target state
+                       whose state index is given by the integer T.
+
+                    -- A list of integers 'TL'
+
+                       States trigger to different targets. The target state
+                       of an involved state with index 'X' is 
+
+                                              TL[i]
+
+                       provided that 
+                       
+                                (StateListA + StateListB)[i] == X
+                    
         """
         recursion_n = 0
         # IS RECURSIVE ?
@@ -277,24 +300,24 @@ def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionM
             elif TA != TB:       return [TA] * StateListA_Len + [TB] * StateListB_Len
             else:                return TA                      # Same Target => Scalar Value
 
-    __asserts(TriggerMap0)
-    __asserts(TriggerMap1)
+    __asserts(TransitionMapA)
+    __asserts(TransitionMapB)
 
     i  = 0 # iterator over interval list 0
     k  = 0 # iterator over interval list 1
-    Li = len(TriggerMap0)
-    Lk = len(TriggerMap1)
+    Li = len(TransitionMapA)
+    Lk = len(TransitionMapB)
 
     # Intervals in trigger map are always adjacent, so the '.begin'
     # member is not required.
-    result   = TemplateCombination(InvolvedStateList0, InvolvedStateList1)
+    result   = []
     prev_end = - sys.maxint
     while not (i == Li-1 and k == Lk-1):
-        i_trigger = TriggerMap0[i]
+        i_trigger = TransitionMapA[i]
         i_end     = i_trigger[0].end
         i_target  = i_trigger[1]
 
-        k_trigger = TriggerMap1[k]
+        k_trigger = TransitionMapB[k]
         k_end     = k_trigger[0].end
         k_target  = k_trigger[1]
 
@@ -308,7 +331,7 @@ def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionM
         else:                k += 1;
 
     # Treat the last trigger interval
-    target = __get_target(TriggerMap0[-1][1], TriggerMap1[-1][1])
+    target = __get_target(TransitionMapA[-1][1], TransitionMapB[-1][1])
     result.append(prev_end, sys.maxint, target)
 
     return result
