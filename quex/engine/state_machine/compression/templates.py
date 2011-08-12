@@ -185,15 +185,12 @@ def do(TheAnalyzer, CostCoefficient):
     # Build templated combinations by finding best pairs, until there is no meaningful way to
     # build any clusters. TemplateCombinations of states also take part in the race.
     while 1 + 1 == 2:
-        i, i_trigger_map_db, k, k_trigger_map_db = trigger_map_db.pop_best_matching_pair()
+        i, i_state, k, k_state = trigger_map_db.pop_best_matching_pair()
         if i is None: break
 
         # Add new element: The combined pair
         new_index = index.get()
-        trigger_map_db[new_index] = get_combined_trigger_map(i_trigger_map_db, 
-                                                             involved_state_list(i_trigger_map_db, i),
-                                                             k_trigger_map_db, 
-                                                             involved_state_list(k_trigger_map_db, k))
+        trigger_map_db[new_index] = TemplateState(new_index, i_state, k_state)
 
     result = []
     for state_index, combination in trigger_map_db.items():
@@ -202,7 +199,7 @@ def do(TheAnalyzer, CostCoefficient):
     return result
 
 class TemplateState(AnalyzerState):
-	def __init__(StateA, StateB):
+	def __init__(self, Index, StateA, StateB):
         def get_state_list(X): 
             if isinstance(X, AnalyzerState):   return [ X.index ]
             elif isinstance(X, TemplateState): return X.state_index_list 
@@ -213,6 +210,7 @@ class TemplateState(AnalyzerState):
         TransitionMapA = StateA.transition_map
         TransitionMapB = StateB.transition_map
 
+        self.index            = Index
 		self.entry            = EntryTemplate(StateA.entry, StateB.entry)
 		self.drop_out         = DropOutTemplate(StateA.entry, StateB.entry)
         self.state_index_list = StateListA + StateListB
