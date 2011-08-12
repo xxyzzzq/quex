@@ -215,9 +215,17 @@ class TemplateState(AnalyzerState):
 
 		self.entry            = EntryTemplate(StateA.entry, StateB.entry)
 		self.drop_out         = DropOutTemplate(StateA.entry, StateB.entry)
+        self.state_index_list = StateListA + StateListB
+        # If the target of the transition map is a list for a given interval X, i.e.
+        #
+        #                           (X, target[i]) 
+        # 
+        # then this means that 
+        #
+        #      target[i] = target of state 'state_index_list[i]' for interval X.
+        #
 		self.transition_map   = get_transition_map(StateListA, TransitionMapA, 
                                                    StateListB, TransitionMapB)
-        self.state_index_list = StateListA + StateListB
 
 def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionMapB):
     """A 'scheme' in the above sense stands for a set of objects that are unequal. 
