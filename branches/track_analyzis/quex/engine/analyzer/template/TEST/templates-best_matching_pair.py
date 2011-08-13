@@ -4,12 +4,12 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from   quex.engine.interval_handling import *
-import quex.engine.state_machine.compression.templates as templates 
-from   quex.engine.state_machine.core import StateMachine
-from   quex.engine.state_machine.state_core_info import EngineTypes
-from   quex.engine.analyzer.core      import Analyzer
-from   quex.engine.state_machine.compression.TEST.templates_aux import *
+from   quex.engine.analyzer.core                        import Analyzer
+import quex.engine.analyzer.template.core               as     templates 
+from   quex.engine.analyzer.template.TEST.templates_aux import *
+from   quex.engine.state_machine.core                   import StateMachine
+from   quex.engine.state_machine.state_core_info        import EngineTypes
+from   quex.engine.interval_handling                    import *
 
 
 if "--hwut-info" in sys.argv:
@@ -38,7 +38,6 @@ def test(TriggerMapList):
 
     info = db.pop_best_matching_pair()
     print "Best matching pair: ", (info[0].index, info[1].index) 
-
 
 if "0" in sys.argv:
     trigger_map_list = [
