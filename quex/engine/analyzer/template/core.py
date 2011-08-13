@@ -387,7 +387,6 @@ def identify_target_schemes(result):
             element[1] = new_entry
     return result
 
-
 class EntryTemplate(object):
     """State entry for TemplateState objects."""
     def __init__(self, StateIndexA, EntryA, StateIndexB, EntryB):

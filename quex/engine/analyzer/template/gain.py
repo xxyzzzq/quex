@@ -1,4 +1,7 @@
-from quex.engine.analyzer.core import AnalyzerState, Entry, EntryBackward, EntryBackwardInputPositionDetection
+from quex.engine.analyzer.core import AnalyzerState, \
+                                      Entry, \
+                                      EntryBackward, \
+                                      EntryBackwardInputPositionDetection
 """
 If two states with non-uniform frames (entries and drop-outs) are 
 to be combined, then this requires extra effort. Consider the following
