@@ -3,11 +3,11 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+import quex.engine.analyzer.template.gain               as gain
+import quex.engine.analyzer.template.core               as templates
+from   quex.engine.analyzer.template.TEST.templates_aux import *
 
 from   quex.engine.interval_handling import *
-import quex.engine.state_machine.compression.templates as templates 
-from   quex.engine.state_machine.compression.TEST.templates_aux import *
-
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Templates: Single Target Idx Metric"
@@ -21,14 +21,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     print_tm(TMa)
     print_tm(TMb)
     print
-    print_metric(templates.get_metric(TMa, InvolvedStateListA, TMb, InvolvedStateListB))
+    print_metric(gain.do(TMa, InvolvedStateListA, TMb, InvolvedStateListB))
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(templates.get_metric(TMb, InvolvedStateListB, TMa, InvolvedStateListA))
+    print_metric(gain.do(TMb, InvolvedStateListB, TMa, InvolvedStateListA))
     print
 
 tm0 = [ 
