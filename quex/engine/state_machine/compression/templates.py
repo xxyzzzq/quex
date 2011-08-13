@@ -1,7 +1,8 @@
 from   quex.engine.interval_handling          import Interval
 import quex.engine.state_machine.index        as index
 import quex.engine.state_machine.core         as state_machine
-import quex.engine.compression.templates_gain as templates_gain
+import quex.engine.state_machine.compression.templates_gain as templates_gain
+from   quex.engine.analyzer.core              import AnalyzerState
 from   quex.blackboard                        import TargetStateIndices
 
 from   itertools import ifilter
@@ -199,9 +200,9 @@ def do(TheAnalyzer, CostCoefficient):
     return result
 
 class TemplateState(AnalyzerState):
-	def __init__(self, Index, StateA, StateB):
+    def __init__(self, Index, StateA, StateB):
         def get_state_list(X): 
-            if isinstance(X, AnalyzerState):   return [ X.index ]
+            if   isinstance(X, AnalyzerState): return [ X.index ]
             elif isinstance(X, TemplateState): return X.state_index_list 
             else:                              assert False
 
@@ -211,8 +212,8 @@ class TemplateState(AnalyzerState):
         TransitionMapB = StateB.transition_map
 
         self.index            = Index
-		self.entry            = EntryTemplate(StateA.entry, StateB.entry)
-		self.drop_out         = DropOutTemplate(StateA.entry, StateB.entry)
+        self.entry            = EntryTemplate(StateA.entry, StateB.entry)
+        self.drop_out         = DropOutTemplate(StateA.entry, StateB.entry)
         self.state_index_list = StateListA + StateListB
         # If the target of the transition map is a list for a given interval X, i.e.
         #
@@ -222,15 +223,38 @@ class TemplateState(AnalyzerState):
         #
         #      target[i] = target of state 'state_index_list[i]' for interval X.
         #
-		self.transition_map   = get_transition_map(StateListA, TransitionMapA, 
+        self.transition_map   = get_transition_map(StateListA, TransitionMapA, 
                                                    StateListB, TransitionMapB)
 
-def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionMapB):
-    """A 'scheme' in the above sense stands for a set of objects that are unequal. 
-       They are exclusively used in TemplateState objects for 'entries' and 'drop_outs'.
-       For each state in the TemplateState, it must also be specified which entry
-       and drop_out of the schemes it follows.
+class TemplateTargetScheme(object):
+    """A target scheme contains the information about what the target
+       state is inside an interval for a given template key. For example,
+       a given interval X triggers to target scheme T, i.e. there is an
+       element in the transition map:
+
+                ...
+                [ X, T ]
+                ...
+
+       then the tuple 'T.scheme[key]' tells the target state index for
+       the case the template operates with the given 'key'. A key in turn,
+       stands for a particular state.
+
+       There might be multiple intervals following the same target scheme,
+       so the function 'identify_target_schemes()' takes care of making 
+       those schemes unique.
+
+       .index  = unique index of the target scheme
+                 (unique for the current combination)
+       .scheme = target state index scheme as explained above.
     """
+    __slots__ = ('index', 'scheme')
+
+    def __init__(self, SchemeIndex, TargetScheme):
+        self.index  = SchemeIndex
+        self.scheme = TargetScheme
+
+def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionMapB):
     StateListA_Len = len(StateListA)
     StateListB_Len = len(StateListB)
 
@@ -275,6 +299,11 @@ def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionM
                        provided that 
                        
                                 (StateListA + StateListB)[i] == X
+
+                       The 'schemes' may be the same for multiple intervals.
+                       Thus, they are store in TemplateTargetScheme objects.
+                       This is accomplished by function
+                       'identify_target_schemes()'.
                     
         """
         recursion_n = 0
@@ -298,13 +327,13 @@ def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionM
 
         # T = list   -> combination is a 'involved state list'.
         # T = scalar -> same target state for TargetCombinationN in all cases.
-        if type(TA) == list:
-            if type(TB) == list: return  TA                   +  TB
-            else:                return  TA                   + [TB] * StateListB_Len
+        if type(TA) == tuple:
+            if type(TB) == tuple: return  TA                   +  TB
+            else:                 return  TA                   + (TB,) * StateListB_Len
         else:
-            if type(TB) == list: return [TA] * StateListA_Len +  TB
-            elif TA != TB:       return [TA] * StateListA_Len + [TB] * StateListB_Len
-            else:                return TA                      # Same Target => Scalar Value
+            if type(TB) == tuple: return (TA,) * StateListA_Len +  TB
+            elif TA != TB:        return (TA,) * StateListA_Len + (TB,) * StateListB_Len
+            else:                 return TA                      # Same Target => Scalar Value
 
     __asserts(TransitionMapA)
     __asserts(TransitionMapB)
@@ -340,18 +369,35 @@ def get_transition_map(self, StateListA, TransitionMapA, StateListB, TransitionM
     target = __get_target(TransitionMapA[-1][1], TransitionMapB[-1][1])
     result.append(prev_end, sys.maxint, target)
 
+    identify_target_schemes(result)
+
     return result
 
+def identify_target_schemes(result):
+    i = -1
+    for element in ifilter(lambda x: isinstance(x, tuple), result):
+        target = element[1]
+        scheme = db.get(target)
+        if scheme is not None: 
+            element[1] = scheme
+        else: 
+            i += 1
+            new_entry  = TemplateTargetScheme(i, target)
+            db[target] = new_entry
+            element[1] = new_entry
+    return result
+
+
 class EntryTemplate(object):
-	"""State entry for TemplateState objects."""
-	def __init__(self, StateIndexA, EntryA, StateIndexB, EntryB):
-		self.scheme = get_combined_scheme(StateIndexA, EntryA, StateIndexB, EntryB, 
+    """State entry for TemplateState objects."""
+    def __init__(self, StateIndexA, EntryA, StateIndexB, EntryB):
+        self.scheme = get_combined_scheme(StateIndexA, EntryA, StateIndexB, EntryB, 
                                           EntryTemplate)
 
 class DropOutTemplate(object):
-	"""State drop_out for TemplateState objects."""
-	def __init__(self, StateIndexA, DropOutA, StateIndexB, DropOutB):
-		self.scheme = get_combined_scheme(StateIndexA, DropOutA, StateIndexB, DropOutB, 
+    """State drop_out for TemplateState objects."""
+    def __init__(self, StateIndexA, DropOutA, StateIndexB, DropOutB):
+        self.scheme = get_combined_scheme(StateIndexA, DropOutA, StateIndexB, DropOutB, 
                                           DropOutTemplate)
 
 def get_combined_scheme(StateIndexA, A, StateIndexB, B, Type):
@@ -418,8 +464,8 @@ class TriggerMapDB:
         self.__combination_gain_list = self.__initial_combination_gain()
 
     def __initial_combination_gain(self):
-        item_list  = self.__db.items()
-        L          = len(item_list)
+        state_list = self.__db.values()
+        L          = len(state_list)
 
         # Pre-allocate the result array to avoid frequent allocations
         #
@@ -432,13 +478,13 @@ class TriggerMapDB:
         MaxSize = (L * (L - 1)) / 2
         result  = [None] * MaxSize
         n       = 0
-        for i, i_state in enumerate(item_list):
+        for i, i_state in enumerate(state_list):
             if i_state.init_state_f: continue
 
-            for k, k_state in item_list[i+1:]:
+            for k, k_state in enumerate(state_list[i+1:]):
                 if k_state.init_state_f: continue
 
-                combination_gain = templates_gain(i_state, k_state)
+                combination_gain = templates_gain.do(i_state, k_state)
                 if combination_gain > 0:
                     result[n] = (combination_gain, i_state.index, k_state.index)
                     n += 1
@@ -460,13 +506,13 @@ class TriggerMapDB:
         MaxSize     = len(self.__combination_gain_list) + MaxIncrease
         self.__combination_gain_list.extend([None] * MaxIncrease)
 
-        for state_index, state in enumerate(item_list):
+        for state in self.__db.itervalues():
             if state.init_state_f: continue
 
             combination_gain  = templates_gain.do(NewState, state)
 
             if combination_gain > 0:
-                self.__combination_gain_list[n] = (combination_gain, NewState.index, state_index)
+                self.__combination_gain_list[n] = (combination_gain, NewState.index, state.index)
                 n += 1
 
         if n != MaxSize:

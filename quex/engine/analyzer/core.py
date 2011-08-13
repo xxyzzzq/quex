@@ -734,6 +734,9 @@ class EntryBackwardInputPositionDetection(object):
         return     self.__terminated_f   == Other.__terminated_f \
                and self.__detector_sm_id == Other.__detector_sm_id
 
+    def is_equal(self, Other):
+        return self.__eq__(Other)
+
     @property
     def terminated_f(self): return self.__terminated_f
 
@@ -771,6 +774,9 @@ class EntryBackward(object):
         # NOTE: set([0, 1, 2]) == set([2, 1, 0]) 
         #       ... equal if elements are the same, order not important
         return self.pre_context_fulfilled_set == Other.pre_context_fulfilled_set
+
+    def is_equal(self, Other):
+        return self.__eq__(Other)
 
     @property
     def pre_context_fulfilled_set(self):
@@ -829,6 +835,9 @@ class DropOut(object):
         for dummy, dummy in ifilter(lambda x: not x[0].is_equal(x[1]), zip(self.router, Other.router)):
             return False
         return True
+
+    def is_equal(self, Other):
+        return self.__eq__(Other)
 
     def trivialize(self):
         """If there is only one acceptance involved and no pre-context,
