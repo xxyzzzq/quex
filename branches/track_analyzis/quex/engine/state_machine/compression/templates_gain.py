@@ -1,3 +1,4 @@
+from quex.engine.analyzer.core import AnalyzerState, Entry, EntryBackward, EntryBackwardInputPositionDetection
 """
 If two states with non-uniform frames (entries and drop-outs) are 
 to be combined, then this requires extra effort. Consider the following
@@ -79,6 +80,11 @@ class CombinationGain:
         self.__assignment_n += Other.__assignment_n
         self.__case_n       += Other.__case_n
 
+    def neg(self):
+        return CombinationGain(AdditionN   = - self.__addition_n, 
+                               AssignmentN = - self.__assignment_n, 
+                               CaseN       = - self.__case_n)
+
     def total(self):
         """The following is only a heuristic with no claim to be perfect.
            It is able to distinguish between the good and the bad cases.
@@ -114,23 +120,38 @@ def get_entry_gain(StateA, StateB):
        The same is true, if a template state already contains the entry 
        scheme of the other.
     """
+    def __cost_of_entry(TheEntry):
+        if isinstance(TheEntry, Entry):
+            if TheEntry.is_uniform(): 
+                return CombinationGain(1, 0, 0).neg()
+            else:
+                Lp = len(TheEntry.positioner)
+                La = len(TheEntry.accepter)
+                return CombinationGain(AdditionN = Lp, AssignmentN = La, CaseN = Lp + La).neg()
+
+        elif isinstance(TheEntry, EntryBackward):
+            return CombinationGain(AssignmentN = len(TheEntry.pre_context_fulfilled_set))
+
+        elif isinstance(TheEntry, EntryBackwardInputPositionDetection):
+            if TheEntry.terminated_f: return CombinationGain(CaseN=1).neg()
+            else:                     return CombinationGain(0, 0, 0)
 
     if isinstance(StateA, AnalyzerState):
         if isinstance(StateB, AnalyzerState):
-            if StateA.entry.is_equal(StateB.entry):        return - __cost_of_entry(StateA.entry) # gain = - cost
+            if StateA.entry.is_equal(StateB.entry):        return __cost_of_entry(StateA.entry).neg() # gain = - cost
             else:                                          return CombinationGain(0, 0, 0)
         else:
             # StateB is a TemplateState, it may contain the scheme of StateA's entry
-            if StateB.entry.scheme.contains(StateA.entry): return - __cost_of_entry(StateA.entry) # gain = - cost
+            if StateB.entry.scheme.contains(StateA.entry): return __cost_of_entry(StateA.entry).neg() # gain = - cost
             else:                                          return CombinationGain(0, 0, 0)
     else:
         if isinstance(StateB, AnalyzerState):
             # StateA is a TemplateState, it may contain the scheme of StateB's entry
-            if StateA.entry.scheme.contains(StateB.entry): return - __cost_of_entry(StateB.entry) # gain = - cost
+            if StateA.entry.scheme.contains(StateB.entry): return __cost_of_entry(StateB.entry).neg() # gain = - cost
             else:                                          return CombinationGain(0, 0, 0)
 
     # StateA and StateB are template states.
-    bigger, smaller = sorted([StateA.entry, StateB.entry], key=lambda len(X.scheme))
+    bigger, smaller = sorted([StateA.entry, StateB.entry], key=lambda x: len(x.scheme))
 
     result = 0
     for entry in smaller.scheme:
@@ -144,23 +165,26 @@ def get_drop_out_gain(StateA, StateB):
        the template key.
     """
     def __cost_of_switch_case_construct(DropOutSchemeA, DropOutSchemeB):
+        return CombinationGain(CaseN=len(DropOutSchemeA) + len(DropOutSchemeB)).neg()
+    def __cost_of_drop_out(TheDropOut):
+        return CombinationGain(AssignmentN=len(TheDropOut.checker), CaseN=len(TheDropOut.router)).neg()
 
     if isinstance(StateA, AnalyzerState):
         if isinstance(StateB, AnalyzerState):
-            if StateA.drop_out.is_equal(StateB.drop_out):        return - __cost_of_drop_out(StateA.entry) # gain = - cost
+            if StateA.drop_out.is_equal(StateB.drop_out):        return __cost_of_drop_out(StateA.drop_out).neg() # gain = - cost
             else:                                                return __cost_of_switch_case_construct([StateA.drop_out], [StateB.drop_out])
         else:
             # StateB is a TemplateState, it may contain the scheme of StateA's entry
-            if StateB.drop_out.scheme.contains(StateA.drop_out): return - __cost_of_drop_out(StateA.entry) # gain = - cost
-            else:                                                return CombinationGain(__cost_of_switch_case_construct([StateA.drop_out], StateB.drop_out.scheme)
+            if StateB.drop_out.scheme.contains(StateA.drop_out): return __cost_of_drop_out(StateA.drop_out).neg() # gain = - cost
+            else:                                                return __cost_of_switch_case_construct([StateA.drop_out], StateB.drop_out.scheme)
     else:
         if isinstance(StateB, AnalyzerState):
             # StateA is a TemplateState, it may contain the scheme of StateB's entry
-            if StateA.drop_out.scheme.contains(StateB.entry):    return - __cost_of_drop_out(StateB.entry) # gain = - cost
+            if StateA.drop_out.scheme.contains(StateB.entry):    return __cost_of_drop_out(StateB.drop_out).neg() # gain = - cost
             else:                                                return __cost_of_switch_case_construct(StateA.drop_out.scheme, [StateB.drop_out])
 
     # StateA and StateB are template states.
-    bigger, smaller = sorted([StateA.drop_out, StateB.drop_out], key=lambda len(X.scheme))
+    bigger, smaller = sorted([StateA.drop_out, StateB.drop_out], key=lambda x: len(x.scheme))
 
     result = __cost_of_switch_case_construct(DropOutSchemeA, DropOutSchemeB)
     # If a drop_out handling is in both schemes, than we actually gain something by 
@@ -176,15 +200,15 @@ def get_transition_map_metric(StateA, StateB):
        
        RETURNS: 
           (1) Number of new borders if both maps are combined. For example:
-	
-		             |----------------|
-		                  |---------------|
-		    
-		      Requires to setup three intervals in order to cover all cases 
+    
+                     |----------------|
+                          |---------------|
+            
+              Requires to setup three intervals in order to cover all cases 
                     propperly: 
-		    
-		             |----|-----------|---|
-		    
+            
+                     |----|-----------|---|
+            
 
           (2) Number of transitions that trigger to the same target state on 
               the same interval in both maps.

@@ -7,6 +7,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling import *
 import quex.engine.state_machine.compression.templates as templates 
 from   quex.engine.state_machine.core import StateMachine
+from   quex.engine.state_machine.state_core_info import EngineTypes
+from   quex.engine.analyzer.core      import Analyzer
 from   quex.engine.state_machine.compression.TEST.templates_aux import *
 
 
@@ -29,10 +31,13 @@ def test(TriggerMapList):
                 sm.add_transition(state_index, Interval(info[0]), info[1])
         state_index += 1
 
-    db = templates.TriggerMapDB(sm, 1.0)
+    # Backward analyzers do not consider so much entry and drop-out ...
+    analyzer = Analyzer(sm, EngineTypes.BACKWARD_PRE_CONTEXT)
+    print "##", analyzer
+    db       = templates.TriggerMapDB(analyzer, 1.0)
 
     info = db.pop_best_matching_pair()
-    print "Best matching pair: ", (info[0], info[2]) 
+    print "Best matching pair: ", (info[0].index, info[1].index) 
 
 
 if "0" in sys.argv:
