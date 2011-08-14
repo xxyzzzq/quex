@@ -1,0 +1,49 @@
+init-state = 79L
+00079() <~ (22, 54), (7, 16)
+      == 'a' ==> 00080
+      <no epsilon>
+00080() <~ (7, 17), (22, 55)
+      == 'b' ==> 00081
+      <no epsilon>
+00081(S, P12) <~ (7, 18), (22, 56, S, P12)
+      == 'c' ==> 00082
+      <no epsilon>
+00082(A, S) <~ (7, 19, A, S), (22, 57)
+      == 'd' ==> 00083
+      <no epsilon>
+00083() <~ (22, 58)
+      == 'e' ==> 00084
+      <no epsilon>
+00084(A, P12) <~ (22, 59, A, P12)
+      <no epsilon>
+
+State 79:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+State 80:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+State 81:
+  .entry:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+State 82:
+  .entry:
+  .drop_out:
+     goto Pattern7;
+
+State 83:
+  .entry:
+  .drop_out:
+    pos -= 1;  goto Pattern7;
+
+State 84:
+  .entry:
+  .drop_out:
+    pos -= 3;  goto Pattern22;
+
