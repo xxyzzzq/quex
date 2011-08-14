@@ -14,21 +14,28 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
+class TestState:
+    def __init__(self, TM, Index):
+        self.transition_map = TM
+        self.index          = Index
+
 def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     print
     print "(Straight)---------------------------------------"
     print
     print_tm(TMa)
     print_tm(TMb)
+    StateA = TestState(TMa, 0)
+    StateB = TestState(TMb, 0)
     print
-    print_metric(gain.do(TMa, InvolvedStateListA, TMb, InvolvedStateListB))
+    print_metric(gain.get_transition_map_metric(StateA, StateB))
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(gain.do(TMb, InvolvedStateListB, TMa, InvolvedStateListA))
+    print_metric(gain.get_transition_map_metric(StateB, StateA))
     print
 
 tm0 = [ 
