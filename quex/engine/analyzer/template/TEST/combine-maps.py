@@ -68,8 +68,10 @@ elif "3" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, 5),  2L),
             (Interval(5, 15),           3L),
+            (Interval(15, 20),          0L),
             (Interval(20, 25),          4L),
             (Interval(25, 30),          5L),
+            (Interval(30, 35),          0L),
             (Interval(35, sys.maxint),  1L),
           ]
     test(tm0, tm1)
