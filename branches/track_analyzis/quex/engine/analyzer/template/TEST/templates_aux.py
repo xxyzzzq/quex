@@ -1,4 +1,4 @@
-import quex.engine.state_machine.compression.templates as templates 
+import quex.engine.analyzer.template.core as templates 
 
 def get_combination(TriggerMap, StateList):
     """Creates A Template Combination Object for the given Trigger Map
@@ -52,5 +52,6 @@ def print_tm(TM):
 
 def print_metric(M):
     print "BorderN     = %i" % M[0]
-    print "TargetCombN = %s" % repr(M[1])[1:-1].replace("[", "(").replace("]", ")")
+    ## print "TargetCombN = %s" % repr(M[1])[1:-1].replace("[", "(").replace("]", ")")
+    print "TargetCombN = %s" % M[1]
 
