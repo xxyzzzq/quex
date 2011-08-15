@@ -1,9 +1,9 @@
 from   quex.engine.interval_handling              import Interval
-import quex.engine.state_machine.index            as index
-import quex.engine.state_machine.core             as state_machine
-from   quex.engine.analyzer.core                  import AnalyzerState
-import quex.engine.analyzer.templates.gain        as templates_gain
-import quex.engine.analyzer.template.combine_maps as combine_maps
+import quex.engine.state_machine.index            as     index
+import quex.engine.state_machine.core             as     state_machine
+import quex.engine.analyzer.template.gain         as     templates_gain
+from   quex.engine.analyzer.template.common       import get_state_list, TemplateState
+import quex.engine.analyzer.template.combine_maps as     combine_maps
 from   quex.blackboard                            import TargetStateIndices
 
 from   itertools import ifilter
@@ -155,7 +155,7 @@ import sys
         a scalar, if Ik maps to the same target state for all involved 
                   states.
 
-                  If TLk == TargetStateIndices.SAME_STATE, then all involved states
+                  If TLk == TargetStateIndices.RECURSIVE, then all involved states
                   trigger recursively.
 
         a list, if Ik maps to different target states for each involved
@@ -194,50 +194,8 @@ def do(TheAnalyzer, CostCoefficient):
         new_index = index.get()
         trigger_map_db[new_index] = TemplateState(new_index, i_state, k_state)
 
-    result = []
-    for state_index, combination in trigger_map_db.items():
-        if isinstance(combination, TemplateCombination): result.append(combination)
-
-    return result
-
-class TemplateState(AnalyzerState):
-    def __init__(self, Index, StateA, StateB):
-        def get_state_list(X): 
-            if   isinstance(X, AnalyzerState): return [ X.index ]
-            elif isinstance(X, TemplateState): return X.state_index_list 
-            else:                              assert False
-
-        StateListA     = get_state_list(StateA)
-        StateListB     = get_state_list(StateB)
-        TransitionMapA = StateA.transition_map
-        TransitionMapB = StateB.transition_map
-
-        self.index            = Index
-        self.entry            = EntryTemplate(StateA.entry, StateB.entry)
-        self.drop_out         = DropOutTemplate(StateA.entry, StateB.entry)
-        self.state_index_list = StateListA + StateListB
-        # If the target of the transition map is a list for a given interval X, i.e.
-        #
-        #                           (X, target[i]) 
-        # 
-        # then this means that 
-        #
-        #      target[i] = target of state 'state_index_list[i]' for interval X.
-        #
-        self.transition_map   = combine_maps.do(StateListA, TransitionMapA, 
-                                                StateListB, TransitionMapB)
-
-class EntryTemplate(object):
-    """State entry for TemplateState objects."""
-    def __init__(self, StateIndexA, EntryA, StateIndexB, EntryB):
-        self.scheme = get_combined_scheme(StateIndexA, EntryA, StateIndexB, EntryB, 
-                                          EntryTemplate)
-
-class DropOutTemplate(object):
-    """State drop_out for TemplateState objects."""
-    def __init__(self, StateIndexA, DropOutA, StateIndexB, DropOutB):
-        self.scheme = get_combined_scheme(StateIndexA, DropOutA, StateIndexB, DropOutB, 
-                                          DropOutTemplate)
+    return ifilter(lambda x: isinstance(x, TemplateState), 
+                   trigger_map_db.itervalues())
 
 def get_combined_scheme(StateIndexA, A, StateIndexB, B, Type):
     def get_scheme(StateIndex, X): 
@@ -251,46 +209,6 @@ def get_combined_scheme(StateIndexA, A, StateIndexB, B, Type):
     for element, state_index_list in chain(scheme_a.iteritems(), scheme_b.iteritems()):
         result[element].extend(state_index_list)
     return result
-
-class TemplateCombination:
-    def __init__(self, InvolvedStateList0,  InvolvedStateList1):
-        self.__trigger_map         = []
-        self.__involved_state_list = InvolvedStateList0 + InvolvedStateList1
-
-    def involved_state_list(self):
-        return self.__involved_state_list
-
-    def append(self, Begin, End, TargetStateIdxList):
-        """TargetStateIdxList can be
-        
-            A list of (long) integers: List of targets where
-
-                list[i] == target index of involved state number 'i'
-
-            A scalar value:
-
-                i)  > 0, then all involved states trigger to this same
-                         target index.
-                ii) == TargetStateIndices.SAME_STATE, then all involved states are 
-                                         recursive.
-        """
-        self.__trigger_map.append([Interval(Begin, End), TargetStateIdxList])
-
-    def __getitem__(self, Index):
-        return self.__trigger_map[Index]
-
-    def __len__(self):
-        return len(self.__trigger_map)
-
-    def __repr__(self):
-        txt = []
-        for trigger in self.__trigger_map:
-            txt.append("[%i, %i) --> %s\n" % \
-                       (trigger[0].begin, trigger[0].end, trigger[1]))
-        return "".join(txt)
-
-    def get_trigger_map(self):
-        return self.__trigger_map
 
 class TriggerMapDB:
     def __init__(self, TheAnalyzer, CostCoefficient):
@@ -337,7 +255,7 @@ class TriggerMapDB:
 
     def __adapt_combination_gain(self, NewState):
         """Adapt the delta cost list **before** adding the trigger map to __db!"""
-        assert isinstance(NewTriggerMap, TemplateCombination)
+        assert isinstance(NewState, TemplateState)
 
         # Avoid extensive 'appends' by single allocation (see initial computation)
         MaxIncrease = (len(self.__db) - 1)
@@ -422,9 +340,4 @@ class TriggerMapDB:
     def items(self):
         return self.__db.items()
 
-def involved_state_list(TM, DefaultIfTriggerMapIsNotACombination):
-    if isinstance(TM, TemplateCombination):
-        return TM.involved_state_list()
-    else:
-        return [ DefaultIfTriggerMapIsNotACombination ]
 

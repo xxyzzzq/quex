@@ -2,6 +2,8 @@ from quex.engine.analyzer.core import AnalyzerState, \
                                       Entry, \
                                       EntryBackward, \
                                       EntryBackwardInputPositionDetection
+import quex.engine.analyzer.template.combine_maps as combine_maps
+from   quex.engine.analyzer.template.common       import get_state_list 
 """
 If two states with non-uniform frames (entries and drop-outs) are 
 to be combined, then this requires extra effort. Consider the following
@@ -199,85 +201,7 @@ def get_drop_out_gain(StateA, StateB):
     return result
 
 def get_transition_map_metric(StateA, StateB):
-    """Assume that interval list 0 and 1 are sorted.
-       
-       RETURNS: 
-          (1) Number of new borders if both maps are combined. For example:
-    
-                     |----------------|
-                          |---------------|
-            
-              Requires to setup three intervals in order to cover all cases 
-                    propperly: 
-            
-                     |----|-----------|---|
-            
+    result, scheme_list = combine_maps.do(StateA, StateB)
+    return len(result), len(scheme_list)
 
-          (2) Number of transitions that trigger to the same target state on 
-              the same interval in both maps.
-
-       If for an interval the target state is the state itself (recursion), then 
-       this counted as a 'same target' since there is no change needed and the 
-       template triggers to itself. The combined template will trigger to itself.
-
-    """
-    TransitionMapA = StateA.transition_map
-    TransitionMapB = StateB.transition_map
-    
-    def same_target(TA, TB):
-        """TA, TB = Target States. Let T be one of TA and TB. Then:
-           T == integer if the trigger map belongs to a 'normal' state or
-                        to a template combination where all related states
-                        trigger to the same target.
-
-             == list    if the trigger map belongs to a template combination.
-                        T[i] = target of state with state_index <-> i.
-        """
-        if isinstance(TA, list) or isinstance(TB, list): return False
-        if TA == StateA.index: TA = TargetStateIndices.RECURSIVE
-        if TB == StateB.index: TB = TargetStateIndices.RECURSIVE
-        return TA == TB
-        
-    i  = 0 # iterator over interval list 0
-    k  = 0 # iterator over interval list 1
-    Li = len(TransitionMapA)
-    Lk = len(TransitionMapB)
-    # Intervals in trigger map are always adjacent, so the '.begin'
-    # member is not required.
-    border_n      = 0
-    same_target_n = 0
-    while not (i == Li-1 and k == Lk-1):
-        i_trigger = TransitionMapA[i]
-        i_end     = i_trigger[0].end
-        i_target  = i_trigger[1]
-
-        k_trigger = TransitionMapB[k]
-        k_end     = k_trigger[0].end
-        k_target  = k_trigger[1]
-
-        if same_target(i_target, k_target): same_target_n += 1
-
-        # Step to the next *lowest* border, i.e. increment the 
-        # interval line index with the lowest '.end'. For example:
-        # 
-        #         0   1 2  3 4 5  6   7
-        #     i   |     |      |  |   |
-        #     k   |   |    | |        |
-        #         :   : :  : : :  :   :   (6 intervals, 6 borders)
-        #
-        #                         i_end:     k_end:
-        # Does:  (1) ++i, ++k -->    2            1
-        #        (2) ++k      -->    2            3
-        #        (3) ++i      -->    5            3
-        #        (4) ++k      -->    5            4
-        #        (5) ++k      -->    5            6
-        #        (6) ++i      -->    6            7
-        #        (6) ++i      -->    7            7
-        if   i_end == k_end: i += 1; k += 1;
-        elif i_end <  k_end: i += 1;
-        else:                k += 1;
-
-        border_n += 1
-
-    return border_n, same_target_n
 
