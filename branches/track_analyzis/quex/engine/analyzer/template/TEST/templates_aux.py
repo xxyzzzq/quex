@@ -51,7 +51,6 @@ def print_tm(TM):
     print "   " + txt
 
 def print_metric(M):
-    print "BorderN     = %i" % M[0]
-    ## print "TargetCombN = %s" % repr(M[1])[1:-1].replace("[", "(").replace("]", ")")
-    print "TargetCombN = %s" % M[1]
+    print "BorderN    = %i" % len(M[0])
+    print "TargetComb = %s" % str(sorted(M[1]))[1:-1].replace("[", "(").replace("]", ")")
 

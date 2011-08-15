@@ -3,8 +3,11 @@ from   quex.engine.interval_handling                      import Interval
 from   quex.engine.state_machine.state_core_info          import EngineTypes
 from   quex.blackboard                                    import TargetStateIndices, \
                                                                  setup as Setup
+import sys
 from   math      import log
 from   copy      import copy
+from   operator  import itemgetter
+from   itertools import imap
 
 def do(txt, TransitionMap, 
        StateIndex       = None,  EngineType     = EngineTypes.FORWARD, 
@@ -16,7 +19,7 @@ def do(txt, TransitionMap,
     assert StateIndex        is None or isinstance(StateIndex, (int, long))
     assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
     assert GotoReload_Str    is None or isinstance(GotoReload_Str, (str, unicode))
-    __assert_adjacency(TransitionMap)
+    assert_adjacency(TransitionMap)
 
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
@@ -414,16 +417,18 @@ def __prune_character_range(TransitionMap):
     if TransitionMap[-1][0].end < UpperLimit + 1:
         TransitionMap[-1][0].end = UpperLimit + 1
 
-def __assert_adjacency(TransitionMap):
+def assert_adjacency(TransitionMap, TotalRangeF=False):
     """Check that the trigger map consist of sorted adjacent intervals 
        This assumption is critical because it is assumed that for any isolated
        interval the bordering intervals have bracketed the remaining cases!
     """
     if len(TransitionMap) == 0: return
     iterable = TransitionMap.__iter__()
-    previous = iterable.next()[0] 
-    for interval, target_state_index in iterable:
-        assert interval.begin == previous.end # Intervals are adjacent!
+    if TotalRangeF: previous_end = - sys.maxint
+    else:           previous_end = iterable.next()[0].end 
+    for interval in imap(itemgetter(0), iterable):
+        assert interval.begin == previous_end # Intervals are adjacent!
         assert interval.end > interval.begin  # Interval size > 0! 
-        previous = interval
+        previous_end = interval.end
 
+    assert (not TotalRangeF) or TransitionMap[-1][0].end == sys.maxint

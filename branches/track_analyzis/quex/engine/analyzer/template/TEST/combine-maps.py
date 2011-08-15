@@ -3,14 +3,14 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.engine.analyzer.template.gain               as gain
+import quex.engine.analyzer.template.combine_maps       as combine_maps
 import quex.engine.analyzer.template.core               as templates
 from   quex.engine.analyzer.template.TEST.templates_aux import *
 
 from   quex.engine.interval_handling import *
 
 if "--hwut-info" in sys.argv:
-    print "Transition Map Templates: Single Target Idx Metric"
+    print "Combination of Two Transition Maps"
     print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
     sys.exit(0)
 
@@ -28,14 +28,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     StateA = TestState(TMa, 0)
     StateB = TestState(TMb, 0)
     print
-    print_metric(gain.get_transition_map_metric(StateA, StateB))
+    print_metric(combine_maps.do(StateA, StateB))
     print
     print "(Vice Versa)-------------------------------------"
     print
     print_tm(TMb)
     print_tm(TMa)
     print
-    print_metric(gain.get_transition_map_metric(StateB, StateA))
+    print_metric(combine_maps.do(StateB, StateA))
     print
 
 tm0 = [ 

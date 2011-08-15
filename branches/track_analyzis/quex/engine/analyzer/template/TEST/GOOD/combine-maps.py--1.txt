@@ -2,16 +2,16 @@
 (Straight)---------------------------------------
 
 |         |                            |    1, 2;
-|         |                            |    1, 2;
+|                             |        |    1, 2;
 
-BorderN     = 1
-TargetCombN = 
+BorderN     = 2
+TargetComb = (2L, 1L)
 
 (Vice Versa)-------------------------------------
 
-|         |                            |    1, 2;
+|                             |        |    1, 2;
 |         |                            |    1, 2;
 
-BorderN     = 1
-TargetCombN = 
+BorderN     = 2
+TargetComb = (1L, 2L)
 
