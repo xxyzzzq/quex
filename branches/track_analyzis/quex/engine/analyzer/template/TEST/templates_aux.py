@@ -1,4 +1,5 @@
 import quex.engine.analyzer.template.core as templates 
+from   operator import attrgetter
 
 def get_combination(TriggerMap, StateList):
     """Creates A Template Combination Object for the given Trigger Map
@@ -52,5 +53,5 @@ def print_tm(TM):
 
 def print_metric(M):
     print "BorderN    = %i" % (len(M[0]) - 1)
-    print "TargetComb = %s" % str(sorted(M[1]))[1:-1].replace("[", "(").replace("]", ")")
+    print "TargetComb = %s" % str(sorted(M[1], key=attrgetter("scheme")))[1:-1].replace("[", "(").replace("]", ")")
 

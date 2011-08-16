@@ -8,16 +8,16 @@ Involved states in Second = 2L
 |         |                            |    1, 2;
 |                                      |    2;
 
-BorderN     = 1
-TargetCombN = 
+BorderN    = 1
+TargetComb = 
 
 (Vice Versa)-------------------------------------
 
 |                                      |    2;
 |         |                            |    1, 2;
 
-BorderN     = 1
-TargetCombN = 
+BorderN    = 1
+TargetComb = 
 
 A target combination (1L, 2L) and vice versa has not to appear,
 because this would mean recursion and is thus an equivalence.
