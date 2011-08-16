@@ -154,8 +154,8 @@ class TemplateTargetSchemeDB(dict):
            to the existing target scheme is returned. If not a new scheme is created
            and entered into the database.
         """
-        scheme = dict.get(self, Combination)
-        if scheme is None: 
+        result = dict.get(self, Combination)
+        if result is None: 
             result            = TemplateTargetScheme(len(self), Combination)
             self[Combination] = result
         return result
@@ -216,8 +216,8 @@ def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Le
 
     # Here: At least one of the targets is not recursive, so we need to expand
     #       any RECURSIVE target to a list of target state indices.
-    if TA == TargetStateIndices.RECURSIVE: TA = StateListA
-    if TB == TargetStateIndices.RECURSIVE: TB = StateListA
+    if TA == TargetStateIndices.RECURSIVE: TA = StateAIndex
+    if TB == TargetStateIndices.RECURSIVE: TB = StateBIndex
 
     # T = list   -> combination is a 'involved state list'.
     # T = scalar -> same target state for TargetCombinationN in all cases.
