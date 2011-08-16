@@ -25,8 +25,8 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L]):
     print
     print_tm(TMa)
     print_tm(TMb)
-    StateA = TestState(TMa, 0)
-    StateB = TestState(TMb, 0)
+    StateA = TestState(TMa, InvolvedStateListA[0])
+    StateB = TestState(TMb, InvolvedStateListB[0])
     print
     print_metric(combine_maps.do(StateA, StateB))
     print
@@ -67,11 +67,9 @@ elif "2b" in sys.argv:
 elif "3" in sys.argv:
     tm1 = [ 
             (Interval(-sys.maxint, 5),  2L),
-            (Interval(5, 15),           3L),
-            (Interval(15, 20),          0L),
+            (Interval(5, 20),           3L),
             (Interval(20, 25),          4L),
-            (Interval(25, 30),          5L),
-            (Interval(30, 35),          0L),
+            (Interval(25, 35),          5L),
             (Interval(35, sys.maxint),  1L),
           ]
     test(tm0, tm1)
