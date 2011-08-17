@@ -18,7 +18,6 @@ from   quex.engine.misc.file_in                              import *
 
 from   quex.engine.state_machine.core                       import StateMachine, SideInfo
 import quex.engine.state_machine.identity_checker           as identity_checker
-import quex.engine.state_machine.transformation             as transformation
 import quex.engine.state_machine.index                      as index
 import quex.engine.state_machine.sequentialize              as sequentialize
 import quex.engine.state_machine.repeat                     as repeat
@@ -104,14 +103,6 @@ class ModeDescription:
                       "Please, submit a bug at quex.sourceforge.net.", 
                       DontExitF=True, WarningF=True)
 
-        PatternStateMachine = transformation.do(PatternStateMachine)
-
-        if len(PatternStateMachine.get_orphaned_state_index_list()) != 0:
-            error_msg("Pattern '%s' resulted in state machine with orphan states.\n" % Pattern + \
-                      "(After Transformation to internal encoding).\n" + \
-                      "Please, submit a bug at quex.sourceforge.net.", 
-                      DontExitF=False, WarningF=True)
-
         self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, 
                                                     ModeName=self.name, Comment=Comment)
 
@@ -120,7 +111,6 @@ class ModeDescription:
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only this priority mark is considered.", FileName, LineN)
 
-        PatternStateMachine = transformation.do(PatternStateMachine)
         self.__repriorization_db[Pattern] = [PatternStateMachine, FileName, LineN, PatternIdx]
 
     def add_match_deletion(self, Pattern, PatternStateMachine, FileName, LineN):
@@ -128,7 +118,6 @@ class ModeDescription:
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", FileName, LineN)
 
-        PatternStateMachine = transformation.do(PatternStateMachine)
         self.__deletion_db[Pattern] = [PatternStateMachine, FileName, LineN]
 
     def add_option(self, Option, Value):
@@ -249,7 +238,6 @@ class Mode:
             elif action.function != indentation_counter.do:    continue
             return info.pattern_state_machine().get_id()
         return None
-
 
     def get_documentation(self):
         L = max(map(lambda mode: len(mode.name), self.__base_mode_sequence))
