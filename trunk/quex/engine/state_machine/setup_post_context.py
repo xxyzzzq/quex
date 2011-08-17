@@ -6,7 +6,7 @@ from   quex.engine.state_machine.state_core_info        import PostContextIDs
 import sys
 
 
-def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False, fh=-1):
+def do(the_state_machine, post_context_sm, fh=-1):
     """ Appends a post context to the given state machine. This process is very
         similar to sequentialization. There is a major difference, though:
        
@@ -67,18 +67,17 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     #        core pattern after the end of the post context
     #        has been reached.
     #
-    if not DEMONSTRATION_TurnOffSpecialSolutionF:
-        if apc.detect_forward(the_state_machine, post_context_sm):
-            if apc.detect_backward(the_state_machine, post_context_sm):
-                # -- for post contexts that are forward and backward ambiguous
-                #    a philosophical cut is necessary.
-                error_msg("Post context requires philosophical cut--handle with care!\n"
-                          "Proposal: Isolate pattern and ensure results are as expected!", fh, 
-                          DontExitF=True)
-                post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
+    if apc.detect_forward(the_state_machine, post_context_sm):
+        if apc.detect_backward(the_state_machine, post_context_sm):
+            # -- for post contexts that are forward and backward ambiguous
+            #    a philosophical cut is necessary.
+            error_msg("Post context requires philosophical cut--handle with care!\n"
+                      "Proposal: Isolate pattern and ensure results are as expected!", fh, 
+                      DontExitF=True)
+            post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
 
-            apc.mount(the_state_machine, post_context_sm)
-            return the_state_machine
+        apc.mount(the_state_machine, post_context_sm)
+        return the_state_machine
 
     #     -- The 'normal' way: storing the input position at the end of the core
     #        pattern.

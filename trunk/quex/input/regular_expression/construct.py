@@ -4,11 +4,12 @@ import quex.engine.state_machine.character_counter       as character_counter
 import quex.engine.state_machine.setup_post_context      as setup_post_context
 import quex.engine.state_machine.setup_pre_context       as setup_pre_context
 import quex.engine.state_machine.setup_border_conditions as setup_border_conditions
+import quex.engine.state_machine.transformation          as transformation
 #
 import quex.engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.engine.state_machine.hopcroft_minimization   as hopcroft
 #
-from   quex.blackboard                                  import setup as Setup
+from   quex.blackboard           import setup as Setup
 from   quex.engine.misc.file_in  import *
 
 DEBUG_hopcroft_f = False
@@ -59,6 +60,23 @@ def do(core_sm,
     character_n = character_counter.get_character_n(core_sm)
 
     side_info    = SideInfo(newline_n, character_n)
+
+    # [Optional] Transformation according to Codec Information
+    #
+    # AFTER:  character and newline counting!
+    #         Characters may be split into multiple bytes/words. The 
+    #         transition number corresponds then to byte/word numbers.
+    # BEFORE: Pre- and post-context setup!
+    #         Because pre-context state machines and pseudo-ambiguous 
+    #         state machines are inverted. They need to be inverted 
+    #         according the split codec!
+    if Setup.buffer_codec_transformation_info is not None:
+        sm = transformation.try_this(pre_context, fh)
+        if sm is not None: pre_context = sm
+        sm = transformation.try_this(core_sm, fh)
+        if sm is not None: core_sm = sm
+        sm = transformation.try_this(post_context, fh)
+        if sm is not None: post_context = sm
 
     if   pre_context is None and post_context is None:
         result = core_sm

@@ -821,10 +821,7 @@ class StateMachine:
         for state in self.states.values():
             if state.transform(TrafoInfo) == False: return False
 
-        if self.__core.pre_context_sm() is not None:
-            for state in self.__core.pre_context_sm().values():
-                if state.transform(TrafoInfo) == False: return False
-
+        # Do not transform any related state machine (pre-, papc-detector)
         return True
 
     def __repr__(self):

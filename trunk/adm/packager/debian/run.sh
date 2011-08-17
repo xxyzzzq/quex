@@ -20,7 +20,7 @@ BIN_DIRECTORY='/usr/local/bin'
 QUEX_PATH=/home/fschaef/prj/quex/trunk/
 
 if [[ $# < 1 ]]; then
-    echo "Please, watch this script to see how it is executed."
+    echo "Please, review the text content of this script for usage information."
     exit 1
 fi
 if [[ $# == 1 ]]; then
@@ -69,6 +69,6 @@ sudo chown root:root -R $package_dir/opt
 sudo dpkg-deb -b $package_dir
 
 #Copy the resulting package
-cp /tmp/*.deb /tmp/quex-packages/
+sudo mv /tmp/*.deb /tmp/quex-packages/
 
 exit 0
