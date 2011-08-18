@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.60" date="Wed Aug 17 08:43:55 2011">
+<test-database execution-time-sec="1.60" date="Thu Aug 18 08:03:30 2011">
     <last-used-diff-display-program name=""/>
     <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.04"> 
         <application file-name="from-utf8" info-request-time="1310530663L" vanished="False"/>

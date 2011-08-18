@@ -1,4 +1,4 @@
-<test-database execution-time-sec="231.98" date="Wed Aug 17 08:43:04 2011">
+<test-database execution-time-sec="234.68" date="Thu Aug 18 08:03:29 2011">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="5.45"> 
@@ -320,10 +320,10 @@
         </test>
     </group>
     <group name="nobody">
-        <test title="2891125 0.45.1 bug in -- version" time-sum-sec="0.04"> 
+        <test title="2891125 0.45.1 bug in -- version" time-sum-sec="2.40"> 
             <application file-name="bug-2891125.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.04" crc="1367707053"/>
+               <choice name="" result="OK" time_sec="2.40" crc="-338654790"/>
             </choice-list>
         </test>
         <test title="2894648 0.46.2 Backslashed . is unknown to quex" time-sum-sec="0.28"> 
@@ -548,10 +548,10 @@
                <choice name="" result="OK" time_sec="0.47" crc="263853875"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.36"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.36" crc="-712931311"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-443043108"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.05"> 
@@ -630,12 +630,12 @@
                <choice name="" result="OK" time_sec="0.17" crc="-2024068298"/>
             </choice-list>
         </test>
-        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.39"> 
+        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="2.08"> 
             <application file-name="bug-2799244.sh" info-request-time="1305001318L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="error" result="OK" time_sec="0.24" crc="1053420069"/>
                <choice name="good-1" result="OK" time_sec="0.63" crc="1658979746"/>
-               <choice name="good-2" result="FAIL" time_sec="0.52" crc="863943101"/>
+               <choice name="good-2" result="OK" time_sec="1.21" crc="-994260522"/>
             </choice-list>
         </test>
         <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" time-sum-sec="0.20"> 

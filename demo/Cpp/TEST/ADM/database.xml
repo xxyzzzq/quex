@@ -1,18 +1,5 @@
-<test-database execution-time-sec="232.67" date="Wed Aug 17 08:43:14 2011">
+<test-database execution-time-sec="227.46" date="Thu Aug 18 08:03:29 2011">
     <last-used-diff-display-program name=""/>
-    <group name="Other Compilers than g++">
-        <test title="Intel's icpc" time-sum-sec="5.25"> 
-            <application file-name="other-compilers-intel.sh" info-request-time="1305001317L" vanished="False"/>
-            <choice-list number="6" same_result="False">
-               <choice name="000" result="FAIL" time_sec="0.83" crc="-1285689249"/>
-               <choice name="001" result="FAIL" time_sec="0.67" crc="-1111306024"/>
-               <choice name="002" result="FAIL" time_sec="0.75" crc="-593582233"/>
-               <choice name="003" result="FAIL" time_sec="1.63" crc="-1464201274"/>
-               <choice name="005" result="FAIL" time_sec="0.66" crc="-740077430"/>
-               <choice name="006" result="FAIL" time_sec="0.71" crc="-1666912036"/>
-            </choice-list>
-        </test>
-    </group>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.09"> 
             <application file-name="000.sh" info-request-time="1305001317L" vanished="False"/>
@@ -144,11 +131,11 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.68"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.72"> 
             <application file-name="011.sh" info-request-time="1305001317L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="3.20" crc="-1827787599"/>
-               <choice name="utf8" result="FAIL" time_sec="3.15" crc="-1827787599"/>
+               <choice name="utf8" result="OK" time_sec="3.19" crc="-1827787599"/>
                <choice name="utf16-be" result="OK" time_sec="3.17" crc="-1827787599"/>
                <choice name="utf16-le" result="OK" time_sec="3.16" crc="-1827787599"/>
             </choice-list>

@@ -1,8 +1,8 @@
 from StringIO import StringIO
 from   quex.blackboard import setup as Setup
 
-from   quex.engine.misc.file_in                 import EndOfStreamException, error_msg
-from   quex.exception                      import RegularExpressionException
+from   quex.engine.misc.file_in       import EndOfStreamException, error_msg
+from   quex.exception                 import RegularExpressionException
 from   quex.engine.interval_handling  import NumberSet, Interval
 from   quex.engine.state_machine.core import StateMachine 
 import quex.blackboard                                              as blackboard
@@ -10,14 +10,15 @@ import quex.input.regular_expression.engine                   as regex
 import quex.input.regular_expression.character_set_expression as charset_expression
 import quex.input.regular_expression.snap_character_string    as snap_character_string
 
-def parse(fh, AllowNothingIsFineF=False):
+def parse(fh, AllowNothingIsFineF=False, AllowStateMachineTrafoF=True):
 
     start_position = fh.tell()
     try:
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, blackboard.shorthand_db, 
                                          DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f,
-                                         AllowNothingIsNecessaryF   = AllowNothingIsFineF)
+                                         AllowNothingIsNecessaryF   = AllowNothingIsFineF,
+                                         AllowStateMachineTrafoF    = AllowStateMachineTrafoF)
 
 
     except RegularExpressionException, x:

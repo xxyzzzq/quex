@@ -903,7 +903,11 @@ class StateMachine:
             
         if self.__core.pre_context_sm() is not None:
             msg += "pre-condition inverted = "
-            msg += repr(self.core().pre_context_sm())           
+            msg += self.core().pre_context_sm().get_string(NormalizeF, Option)           
+
+        if self.__core.post_context_backward_input_position_detector_sm() is not None:
+            msg += "post context backward input position detector inverted = "
+            msg += self.core().post_context_backward_input_position_detector_sm().get_string(NormalizeF, Option)           
 
         return msg
 

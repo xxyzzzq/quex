@@ -38,12 +38,13 @@ utf8-lexer: utf8-lexer.cpp
 		 --token-prefix TKN_ \
 		 -o UTF8Lex 
 	g++ -ggdb \
-		-Wall                   \
-		-I$(QUEX_PATH) -I.      \
-		$<                      \
-		$(CCFLAG_ASSERTS)       \
-		UTF8Lex.cpp             \
+		-Wall                    \
+		-I$(QUEX_PATH) -I.       \
+		$<                       \
+		$(CCFLAG_ASSERTS)        \
+		UTF8Lex.cpp              \
 		-o $@
+		# -DQUEX_OPTION_DEBUG_SHOW \
 	
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
