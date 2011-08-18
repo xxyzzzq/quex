@@ -1,4 +1,4 @@
-<test-database execution-time-sec="9.84" date="Wed Aug 17 08:43:29 2011">
+<test-database execution-time-sec="9.86" date="Thu Aug 18 08:03:48 2011">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="2.53"> 
         <application file-name="with-skip-range.sh" info-request-time="1305001315L" vanished="False"/>
@@ -25,7 +25,7 @@
            <choice name="on_indentation_error" result="OK" time_sec="0.81" crc="1111494244"/>
         </choice-list>
     </test>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.05"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.07"> 
         <application file-name="commonalities.sh" info-request-time="1305001315L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="1" result="OK" time_sec="0.18" crc="-1391501822"/>

@@ -1,0 +1,38 @@
+-------------------------------------------------------------------
+expression    = "µ/µ+/µ"
+state machine
+init-state = 105L
+00105() <~ 
+      == [00C2]  ==> 00106
+      <no epsilon>
+00106() <~ 
+      == [00B5]  ==> 00107
+      <no epsilon>
+00107() <~ 
+      == [00C2]  ==> 00108
+      <no epsilon>
+00108() <~ 
+      == [00B5]  ==> 00109
+      <no epsilon>
+00109(A, S, pre=30, papc=26) <~ 
+      == [00C2]  ==> 00108
+      <no epsilon>
+pre-condition inverted = init-state = 102L
+00102() <~ 
+      == [00B5]  ==> 00103
+      <no epsilon>
+00103() <~ 
+      == [00C2]  ==> 00104
+      <no epsilon>
+00104(A, S) <~ 
+      <no epsilon>
+post context backward input position detector inverted = init-state = 91L
+00091() <~ 
+      == [-7FFFFFFF, 7FFFFFFE]  ==> 00092
+      <no epsilon>
+00092() <~ 
+      == [-7FFFFFFF, 7FFFFFFE]  ==> 00093
+      <no epsilon>
+00093(A, S) <~ 
+      <no epsilon>
+

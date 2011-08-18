@@ -12,4 +12,4 @@
 ./engine/misc/file_in.py:633:    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
 ./DEFINITIONS.py:50:    sys.exit(-1) # sys.exit(-1) is acceptable
 ./DEFINITIONS.py:63:        sys.exit(-1) # sys.exit(-1) is acceptable
-./DEFINITIONS.py:71:        sys.exit(-1) # sys.exit(-1) is acceptable
+./DEFINITIONS.py:72:        sys.exit(-1) # sys.exit(-1) is acceptable

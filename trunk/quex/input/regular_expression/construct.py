@@ -24,7 +24,8 @@ def do(core_sm,
        end_of_line_f=False,   post_context=None, 
        fh=-1, 
        DOS_CarriageReturnNewlineF=True, 
-       AllowNothingIsNecessaryF=False):
+       AllowNothingIsNecessaryF=False,
+       AllowStateMachineTrafoF=True):
 
     assert type(begin_of_line_f) == bool
     assert type(end_of_line_f) == bool
@@ -70,7 +71,10 @@ def do(core_sm,
     #         Because pre-context state machines and pseudo-ambiguous 
     #         state machines are inverted. They need to be inverted 
     #         according the split codec!
-    if Setup.buffer_codec_transformation_info is not None:
+    # (To avoid double-transformation, the transformation should actually
+    #  only be allowed during the definition inside a mode.)
+    if     AllowStateMachineTrafoF \
+       and Setup.buffer_codec_transformation_info is not None:
         sm = transformation.try_this(pre_context, fh)
         if sm is not None: pre_context = sm
         sm = transformation.try_this(core_sm, fh)
@@ -105,6 +109,7 @@ def do(core_sm,
         result = beautify(result)
 
     result.side_info = side_info
+    print "##result", result.get_string(Option="hex")
 
     return __validate(result, fh)
 

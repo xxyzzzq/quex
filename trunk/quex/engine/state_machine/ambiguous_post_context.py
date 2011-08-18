@@ -163,14 +163,14 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
     # -- delete 'drop-out' transitions in non-acceptance states
     #    NOTE: When going backwards one already knows that the acceptance
     #          state (the init state of the post condition) is reached, see above.
-    for state in result.states.values():
-        # -- acceptance states can have 'drop-out' (actually, they need to have)
-        if state.is_acceptance(): continue
-
-        state.transitions().replace_drop_out_target_states_with_adjacent_targets()
-
-    result = nfa_to_dfa.do(result)
-    result = hopcroft.do(result)
+    # for state in result.states.values():
+    #    # -- acceptance states can have 'drop-out' (actually, they need to have)
+    #    if state.is_acceptance(): continue
+    #
+    #    state.transitions().replace_drop_out_target_states_with_adjacent_targets()
+    #
+    # result = nfa_to_dfa.do(result)
+    # result = hopcroft.do(result)
 
     # Acceptance States need to be marked: Store input position.
     # NOTE: When tracing backwards the match is guaranteed, but there might

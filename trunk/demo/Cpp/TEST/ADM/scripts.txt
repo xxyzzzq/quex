@@ -5,4 +5,5 @@
 --not *side-kick.sh
 --not *watcom*.sh
 --not *sun*.sh
+--not *intel*.sh
 --not show-valgrind.py
