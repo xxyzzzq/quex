@@ -109,7 +109,6 @@ def do(core_sm,
         result = beautify(result)
 
     result.side_info = side_info
-    print "##result", result.get_string(Option="hex")
 
     return __validate(result, fh)
 

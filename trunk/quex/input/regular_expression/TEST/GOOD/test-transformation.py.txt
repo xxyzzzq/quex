@@ -1,38 +1,71 @@
 -------------------------------------------------------------------
 expression    = "µ/µ+/µ"
 state machine
-init-state = 105L
-00105() <~ 
-      == [00C2]  ==> 00106
+init-state = 0L
+00000() <~ 
+      == [00C2]  ==> 00001
       <no epsilon>
-00106() <~ 
-      == [00B5]  ==> 00107
+00001() <~ 
+      == [00B5]  ==> 00002
       <no epsilon>
-00107() <~ 
-      == [00C2]  ==> 00108
+00002() <~ 
+      == [00C2]  ==> 00003
       <no epsilon>
-00108() <~ 
-      == [00B5]  ==> 00109
+00003() <~ 
+      == [00B5]  ==> 00004
       <no epsilon>
-00109(A, S, pre=30, papc=26) <~ 
-      == [00C2]  ==> 00108
+00004(A, S, pre=28, papc=24) <~ 
+      == [00C2]  ==> 00003
       <no epsilon>
-pre-condition inverted = init-state = 102L
-00102() <~ 
-      == [00B5]  ==> 00103
+pre-condition inverted = init-state = 0L
+00000() <~ 
+      == [00B5]  ==> 00001
       <no epsilon>
-00103() <~ 
-      == [00C2]  ==> 00104
+00001() <~ 
+      == [00C2]  ==> 00002
       <no epsilon>
-00104(A, S) <~ 
+00002(A, S) <~ 
       <no epsilon>
-post context backward input position detector inverted = init-state = 91L
-00091() <~ 
-      == [-7FFFFFFF, 7FFFFFFE]  ==> 00092
+post context backward input position detector inverted = init-state = 0L
+00000() <~ 
+      == [00B5]  ==> 00001
       <no epsilon>
-00092() <~ 
-      == [-7FFFFFFF, 7FFFFFFE]  ==> 00093
+00001() <~ 
+      == [00C2]  ==> 00002
       <no epsilon>
-00093(A, S) <~ 
+00002(A, S) <~ 
+      <no epsilon>
+
+-------------------------------------------------------------------
+expression    = "[aµ]+/[aµ]"
+state machine
+init-state = 0L
+00000() <~ 
+      == [0061]  ==> 00001
+      == [00C2]  ==> 00004
+      <no epsilon>
+00001() <~ 
+      == [0061]  ==> 00002
+      == [00C2]  ==> 00003
+      <no epsilon>
+00002(A, S, papc=52) <~ 
+      == [0061]  ==> 00002
+      == [00C2]  ==> 00003
+      <no epsilon>
+00003() <~ 
+      == [00B5]  ==> 00002
+      <no epsilon>
+00004() <~ 
+      == [00B5]  ==> 00001
+      <no epsilon>
+post context backward input position detector inverted = init-state = 0L
+00000() <~ 
+      == [0061]  ==> 00001
+      == [00B5]  ==> 00002
+      <no epsilon>
+00001(A, S) <~ 
+      <no epsilon>
+00002() <~ 
+      == [00C2]  ==> 00001
       <no epsilon>
 

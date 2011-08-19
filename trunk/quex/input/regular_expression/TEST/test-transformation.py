@@ -19,7 +19,9 @@ def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
     sm = core.do(TestString, {})
-    print "state machine\n", sm.get_string(Option="hex") 
+    print "state machine\n", sm.get_string(NormalizeF=True, Option="hex") 
 
 test('µ/µ+/µ')
+test('[aµ]+/[aµ]')
+test('[^a]+/[^a]a')
 
