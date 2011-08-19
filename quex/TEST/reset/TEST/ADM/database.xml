@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.53" date="Thu Aug 18 08:03:48 2011">
+<test-database execution-time-sec="0.53" date="Fri Aug 19 08:07:59 2011">
     <last-used-diff-display-program name=""/>
     <test title="Normal Reset" make-dependent="True" time-sum-sec="0.08"> 
         <application file-name="lexer-x" info-request-time="1310530578L" vanished="False"/>
@@ -37,7 +37,7 @@
         </test>
         <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.11"> 
             <application file-name="icu-lexer" info-request-time="1313563619L" vanished="False"/>
-            <make-procedure success="True" time_sec="0.006572"/>
+            <make-procedure success="False" time_sec="0.006572"/>
             <choice-list number="11" same_result="True">
                <choice name="0" result="OK" time_sec="0.01" crc="319410180"/>
                <choice name="1" result="OK" time_sec="0.01" crc="319410180"/>
