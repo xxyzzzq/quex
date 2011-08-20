@@ -18,7 +18,7 @@ that referes to the Lexeme macros.
 /home/fschaef/prj/quex/trunk/quex/input/files/code_fragment.py:318:                              "          \"%s(Lexeme)\"\n" % TokenName + 
 /home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:366:    /* Lexeme setup: 
 /home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:369:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:692:    ObjectName = "Lexeme"
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:712:        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
-/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:713:        #       shall not trigger a treatment of 'Lexeme'.
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:693:    ObjectName = "Lexeme"
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:713:        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
+/home/fschaef/prj/quex/trunk/quex/engine/generator/languages/cpp.py:714:        #       shall not trigger a treatment of 'Lexeme'.
 /home/fschaef/prj/quex/trunk/quex/engine/analyzer/track_analysis.py:297:Lexeme Start Pointer |__________________________________________________________

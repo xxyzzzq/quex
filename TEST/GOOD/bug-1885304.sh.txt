@@ -2572,7 +2572,7 @@ _230:
     }
     goto __REENTRY_PREPARATION;
 _252:
-    __quex_debug("* terminal 6:   double-quotestructdouble-quote");
+    __quex_debug("* terminal 6:   \"struct\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2592,7 +2592,7 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _261:
-    __quex_debug("* terminal 8:   double-quoteintdouble-quote");
+    __quex_debug("* terminal 8:   \"int\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2612,7 +2612,7 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _258:
-    __quex_debug("* terminal 10:   double-quotedoubledouble-quote");
+    __quex_debug("* terminal 10:   \"double\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2632,7 +2632,7 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _247:
-    __quex_debug("* terminal 12:   double-quotesenddouble-quote");
+    __quex_debug("* terminal 12:   \"send\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2652,7 +2652,7 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _242:
-    __quex_debug("* terminal 14:   double-quoteexpectdouble-quote");
+    __quex_debug("* terminal 14:   \"expect\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2672,9 +2672,9 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _223:
-    __quex_debug("pre-terminal 16: double-quote;double-quote");
+    __quex_debug("pre-terminal 16: \";\"");
     ++(me->buffer._input_p);
-    __quex_debug("* terminal 16:   double-quote;double-quote");
+    __quex_debug("* terminal 16:   \";\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2694,9 +2694,9 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _224:
-    __quex_debug("pre-terminal 18: double-quote{double-quote");
+    __quex_debug("pre-terminal 18: \"{\"");
     ++(me->buffer._input_p);
-    __quex_debug("* terminal 18:   double-quote{double-quote");
+    __quex_debug("* terminal 18:   \"{\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);
@@ -2716,9 +2716,9 @@ QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN();
     }
     goto __REENTRY_PREPARATION;
 _222:
-    __quex_debug("pre-terminal 20: double-quote}double-quote");
+    __quex_debug("pre-terminal 20: \"}\"");
     ++(me->buffer._input_p);
-    __quex_debug("* terminal 20:   double-quote}double-quote");
+    __quex_debug("* terminal 20:   \"}\"");
 
 #   ifdef __QUEX_OPTION_COUNTER
     __QUEX_IF_COUNT_LINES(self.counter._line_number_at_begin     = self.counter._line_number_at_end);

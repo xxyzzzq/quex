@@ -1,5 +1,5 @@
 import quex.engine.generator.state_coder.transition as transition
-from   quex.blackboard                                  import setup as Setup
+from   quex.blackboard                              import setup as Setup
 from   quex.engine.interval_handling                import Interval
 
 import sys
@@ -107,11 +107,19 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
     if DSM is None: InitStateF = False
     else:           InitStateF = (StateIdx == DSM.sm().init_state_index)
 
+    # debug_txt = "/*\n"
+    #for interval, target in TriggerMap:
+    #    debug_txt += " * [0x%X, 0x%X) --> %s\n" % (interval.begin, interval.end, repr(target))
+    # debug_txt += "*/\n"
+
+
     TriggerMap = __prune_trigger_map_to_character_type_domain(TriggerMap)
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(TriggerMap)
+    if (DSM is None) or not DSM.backward_input_position_detection_f():
+        # On backward input position detection we cannot exceed buffer limits
+        __separate_buffer_limit_code_transition(TriggerMap)
 
     # Interpret the trigger map.
     # The actions related to intervals become code fragments (of type 'str')
@@ -135,6 +143,7 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
         code = ["    "] + TriggerMap[0][1].get_code() + ["\n"]
 
     return format_this(code)
+    # return [debug_txt] + format_this(code)
 
 def format_this(txt):
     """Expects a sequence of constant strings and integers. An 

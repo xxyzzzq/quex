@@ -666,7 +666,7 @@ class StateMachine:
         """Checks whether all states in the state index list have the same 
            state attributes.
         """
-	assert False, "This function should not be used. I favor of Analyzer.chech_uniformity()"
+        assert False, "This function should not be used. I favor of Analyzer.check_uniformity()"
         assert len(StateIndexList) != 0
         prototype = self.states.get(StateIndexList[0])
         assert prototype is not None
@@ -838,14 +838,7 @@ class StateMachine:
         for state in self.states.itervalues():
             if state.transform(TrafoInfo) == False: return False
 
-        if self.__core.pre_context_sm() is not None:
-            for state in self.__core.pre_context_sm().states.itervalues():
-                if state.transform(TrafoInfo) == False: return False
-
-        if self.__core.post_context_backward_input_position_detector_sm() is not None:
-            for state in self.__core.post_context_backward_input_position_detector_sm().states.itervalues():
-                if state.transform(TrafoInfo) == False: return False
-
+        # Do not transform any related state machine (pre-, papc-detector)
         return True
 
     def __repr__(self):
@@ -927,7 +920,11 @@ class StateMachine:
             
         if self.__core.pre_context_sm() is not None:
             msg += "pre-condition inverted = "
-            msg += repr(self.core().pre_context_sm())           
+            msg += self.core().pre_context_sm().get_string(NormalizeF, Option)           
+
+        if self.__core.post_context_backward_input_position_detector_sm() is not None:
+            msg += "post context backward input position detector inverted = "
+            msg += self.core().post_context_backward_input_position_detector_sm().get_string(NormalizeF, Option)           
 
         return msg
 
