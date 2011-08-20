@@ -5,6 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from quex.engine.state_machine.core import *
+from quex.blackboard                import TargetStateIndices
 
 if "--hwut-info" in sys.argv:
     print "DFA: Get Trigger Map (intervals --> target states)"
@@ -15,7 +16,7 @@ def test(state):
     tm = state.transitions().get_trigger_map()
     # (*) print the trigger map entries
     for trigger_interval, target_index in tm:
-        if target_index is None:
+        if target_index is None or target_index == TargetStateIndices.DROP_OUT:
             print trigger_interval.gnuplot_string(-1) + "\n"
         else:   
             print trigger_interval.gnuplot_string(target_index) + "\n"

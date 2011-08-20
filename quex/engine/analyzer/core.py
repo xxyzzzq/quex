@@ -29,7 +29,7 @@ from   quex.engine.state_machine.state_core_info  import PostContextIDs, \
 from   quex.engine.misc.enum                      import Enum
 
 
-from quex.blackboard  import setup as TargetStateIndices
+from quex.blackboard  import TargetStateIndices
 from collections      import defaultdict
 from operator         import attrgetter, itemgetter
 from itertools        import islice, ifilter, imap

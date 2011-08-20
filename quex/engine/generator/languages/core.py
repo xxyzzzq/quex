@@ -18,6 +18,7 @@ from   quex.engine.generator.languages.address   import *
 from   quex.engine.state_machine.state_core_info import EngineTypes, AcceptanceIDs
 from   quex.blackboard                           import TargetStateIndices
 from   quex.engine.analyzer.core                 import InputActions
+from   copy                                      import copy
 
 #________________________________________________________________________________
 # C++
