@@ -117,7 +117,7 @@ def do(TriggerMap, StateIdx, DSM, ReturnToState_Str=None, GotoReload_Str=None):
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    if (DSM is not None) and not DSM.backward_input_position_detection_f():
+    if (DSM is None) or not DSM.backward_input_position_detection_f():
         # On backward input position detection we cannot exceed buffer limits
         __separate_buffer_limit_code_transition(TriggerMap)
 
