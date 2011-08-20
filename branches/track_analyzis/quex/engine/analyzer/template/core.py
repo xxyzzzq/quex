@@ -1,4 +1,3 @@
-from   quex.engine.interval_handling              import Interval
 import quex.engine.state_machine.index            as     index
 import quex.engine.state_machine.core             as     state_machine
 import quex.engine.analyzer.template.gain         as     templates_gain

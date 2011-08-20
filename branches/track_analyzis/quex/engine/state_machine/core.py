@@ -808,27 +808,42 @@ class StateMachine:
             state.origins().delete_dominated()
 
     def replace_pre_context_state_machine(self, NewPreContextSM):
-        OldPreContextID = self.core().pre_context_sm().get_id()
-        NewPreContextID = NewPreContextSM.get_id()
+        OldID = self.core().pre_context_sm().get_id()
+        NewID = NewSM.get_id()
 
         # Set the new pre-context state machine
-        self.core().set_pre_context_sm(NewPreContextSM)
+        self.core().set_pre_context_sm(NewSM)
 
         # Adapt all origins that depend on the old pre-context to the new context
-        for state in self.states.values():
-            for origin in state.origins():
-                if origin.pre_context_id() != OldPreContextID: continue
-                origin.set_pre_context_id(NewPreContextID)
+        for state in self.states.itervalues():
+            for origin in ifilter(lambda x: x.pre_context_id() == OldID, state.origins()):
+                origin.set_pre_context_id(NewID)
+
+    def replace_post_context_backward_input_position_detector_state_machine(self, NewSM):
+        OldID = self.core().post_context_backward_input_position_detector_sm().get_id()
+        NewID = NewSM.get_id()
+
+        # Set the new pre-context state machine
+        self.core().set_post_context_backward_input_position_detector_sm(NewSM)
+
+        # Adapt all origins that depend on the old pcbi to the new context
+        for state in self.states.itervalues():
+            for origin in ifilter(lambda x: x.post_context_backward_input_position_detector_sm_id() == OldID, state.origins()):
+                origin.set_post_context_backward_detector_sm_id(NewID)
 
     def transform(self, TrafoInfo):
         """RETURNS: True  transformation successful
                     False transformation failed, number set possibly in inconsistent state!
         """
-        for state in self.states.values():
+        for state in self.states.itervalues():
             if state.transform(TrafoInfo) == False: return False
 
         if self.__core.pre_context_sm() is not None:
-            for state in self.__core.pre_context_sm().values():
+            for state in self.__core.pre_context_sm().states.itervalues():
+                if state.transform(TrafoInfo) == False: return False
+
+        if self.__core.post_context_backward_input_position_detector_sm() is not None:
+            for state in self.__core.post_context_backward_input_position_detector_sm().states.itervalues():
                 if state.transform(TrafoInfo) == False: return False
 
         return True
