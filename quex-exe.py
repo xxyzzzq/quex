@@ -66,9 +66,9 @@ except KeyboardInterrupt:
     print
     error_msg("#\n# Keyboard interrupt -- exiting while loading modules unfinished.\n#")
 
-except Exception, x:
-   on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
-                " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+#except Exception, x:
+#   on_exception(x, "Module Exception occured -- please, report a bug under\n" + \
+#                " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
 try:
     pass
@@ -93,9 +93,9 @@ if __name__ == "__main__":
             if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
             else:                               core.do_plot()  # plot transition graphs
 
-    except AssertionError, x:
-        on_exception(x, "Assertion error -- please report a bug under\n" + \
-                        " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    #except AssertionError, x:
+    #    on_exception(x, "Assertion error -- please report a bug under\n" + \
+    #                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     except KeyboardInterrupt: 
         print

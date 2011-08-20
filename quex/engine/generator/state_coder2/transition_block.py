@@ -34,7 +34,10 @@ def do(txt, TransitionMap,
 
     # The 'buffer-limit-code' always needs to be identified separately.
     # This helps to generate the reload procedure a little more elegantly.
-    __separate_buffer_limit_code_transition(TransitionMap, EngineType)
+    # (Backward input position detection does not reload. It only moves 
+    #  inside the current lexeme, which must be inside the buffer.)
+    if EngineType != EngineTypes.BACKWARD_INPUT_POSITION:
+        __separate_buffer_limit_code_transition(TransitionMap, EngineType)
 
     # All transition information related to intervals become proper objects of 
     # class TransitionCode.

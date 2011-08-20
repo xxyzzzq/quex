@@ -151,7 +151,7 @@
            __QUEX_STD_fprintf(stderr, "state %i (backward) ___\n", (int)StateIdx);  \
            __QUEX_PRINT_SOURCE_POSITION();                                          \
            __QUEX_STD_fprintf(stderr, "input:           ");                         \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                               \
+           __QUEX_PRINT_CHAR(*(me->buffer._input_p - 1));                           \
            __QUEX_PRINT_SOURCE_POSITION();                                          \
            __QUEX_STD_fprintf(stderr, "input position:  %i\n",                      \
                               (int)(me->buffer._input_p - me->buffer._memory._front)); 
