@@ -197,8 +197,12 @@ def parse_pattern_name_definitions(fh):
                       pattern_name, fh)
 
         # A regular expression state machine
+        # (No possible transformation into a particular codec whatever.
+        #  the state machines are transformed once, after they are expanded
+        #  as patterns in a mode.)
         regular_expression_str, state_machine = \
-                regular_expression.parse(fh, AllowNothingIsFineF=True) 
+                regular_expression.parse(fh, AllowNothingIsFineF = True, 
+                                         AllowStateMachineTrafoF = False) 
 
         if state_machine.core().has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \

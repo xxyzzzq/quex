@@ -27,9 +27,10 @@
 < 	g++ -ggdb \
 ---
 > 	gcc -ggdb \
-< 		UTF8Lex.cpp             \
+< 		UTF8Lex.cpp              \
 ---
 > 		UTF8Lex.c               \
+< 		# -DQUEX_OPTION_DEBUG_SHOW \
 < utf16-lexer: utf16-lexer.cpp 
 ---
 > utf16-lexer: utf16-lexer.c 

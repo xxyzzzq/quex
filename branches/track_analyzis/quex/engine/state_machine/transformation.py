@@ -66,21 +66,20 @@ def DELETED__do(X, TrafoInfo, FH, LineN):
     if sm is not None: 
         X.replace_post_context_backward_input_position_detector_state_machine(sm)
 
-def try_this(X, TrafoInfo=None):
+def try_this(X, FH=None):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
     
-       RETURNS: True  transformation successful
-                False transformation failed, number set possibly in inconsistent state!
-
-       X = state machine or number set
+       RETURNS: Transformed state machine. It may be the same as it was 
+                before if there was no transformation actually.
     """
-    assert isinstance(X, StateMachine), X.__class__.__name__
+    if X is None: return X
+
+    assert isinstance(X, StateMachine)
     assert X.is_DFA_compliant()
 
-    if TrafoInfo is None:
-        TrafoInfo = Setup.buffer_codec_transformation_info
-        if TrafoInfo is None: return X
+    TrafoInfo = Setup.buffer_codec_transformation_info
+    if TrafoInfo is None: return X
 
     if isinstance(TrafoInfo, (str, unicode)):
         if   TrafoInfo == "utf8-state-split":  return __DFA(utf8_state_split.do(X))
