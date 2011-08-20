@@ -7,7 +7,7 @@ import quex.engine.state_machine.index                    as     index
 from   quex.engine.analyzer.core                          import AnalyzerState
 import quex.engine.state_machine.core                     as     state_machine
 
-import quex.engine.state_machine.compression.templates as templates 
+import quex.engine.analyzer.template.core                 as templates 
 
 from   copy            import deepcopy
 from   quex.blackboard import setup as Setup

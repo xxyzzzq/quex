@@ -146,24 +146,30 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
             _border_cmp = ">="
             _border     = lambda interval: interval.begin
 
+    txt.append("/*\n")
+    for interval, target in trigger_map:
+        txt.append(" * [%04X, %04X) --> %s\n" % (interval.begin, interval.end, repr(target)))
+    txt.append("*/\n")
+
     LastI = L - 1
     for i, entry in enumerate(trigger_map):
         interval, target = entry
 
         txt.append("\n")
         txt.append(0)
-        if i == LastI:
-            # Drop-out 'else' can be omitted
-            if not target.drop_out_f: 
-                txt.append(LanguageDB.END_IF(LastF=True))
+        if   i == LastI:
+            pass
+        elif interval.size() == 1:
+            txt.append(LanguageDB.IF_INPUT("==", interval.begin, i==0))
         else:
-            if interval.size() == 1:
-                txt.append(LanguageDB.IF_INPUT("==", interval.begin, i==0))
-            else:
-                txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
+            txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
 
         if not target.drop_out_f:
             __create_transition_code(txt, entry[1])
+
+        # Drop-out 'else' can be omitted
+        if not (i == LastI and target.drop_out_f): 
+            txt.append(LanguageDB.END_IF(LastF=True))
 
     txt.append(LanguageDB.END_IF(LastF=True))
     return True

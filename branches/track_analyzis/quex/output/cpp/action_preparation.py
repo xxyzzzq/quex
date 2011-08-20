@@ -24,7 +24,8 @@
 
 (C) 2005-2011 Frank-Rene Schaefer
 """
-from   quex.engine.generator.action_info import *
+from   quex.engine.generator.action_info       import *
+from   quex.engine.generator.languages.address import get_plain_strings
 
 def do(Mode, IndentationSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 
@@ -79,7 +80,7 @@ def get_code(CodeFragmentList, variable_db={}):
             result, add_variable_db = result
             variable_db.update(add_variable_db)
 
-        if type(result) == list: code_str += "".join(result)
+        if type(result) == list: code_str += "".join(get_plain_strings(result))
         else:                    code_str += result        
 
         if code_info.require_terminating_zero_f():
