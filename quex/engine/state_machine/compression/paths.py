@@ -1,5 +1,5 @@
 # (C) 2010 Frank-Rene Schaefer
-from quex.engine.interval_handling import NumberSet, Interval
+from quex.engine.interval_handling import Interval
 
 from copy        import deepcopy, copy
 from collections import defaultdict
@@ -484,7 +484,6 @@ def __find_begin(sm, StateIndex, InitStateIndex):
     result_list = []
 
     transition_map = State.transitions().get_map()
-    single_char_transition_found_f = False
     for target_idx, trigger_set in transition_map.iteritems():
         if __find_begin_touched_state_idx_list.has_key(target_idx): continue
         __find_begin_touched_state_idx_list[target_idx] = True

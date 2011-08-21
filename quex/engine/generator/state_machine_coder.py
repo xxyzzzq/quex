@@ -1,7 +1,7 @@
 import quex.engine.generator.state_coder.core as     state_coder
 from   quex.blackboard                        import setup as Setup
-import quex.engine.generator.template_coder   as template_coder
-import quex.engine.generator.paths_coder      as paths_coder
+# import quex.engine.generator.template_coder   as template_coder
+# import quex.engine.generator.paths_coder      as paths_coder
 
 from   collections import defaultdict
 from   itertools   import ifilter

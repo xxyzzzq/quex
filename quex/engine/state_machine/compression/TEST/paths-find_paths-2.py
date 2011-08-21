@@ -6,7 +6,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling import *
 import quex.engine.state_machine.core                  as core
 import quex.engine.state_machine.nfa_to_dfa            as nfa_to_dfa
-import quex.engine.state_machine.hopcroft_minimization as hopcroft
 import quex.engine.state_machine.compression.paths     as paths 
 
 if "--hwut-info" in sys.argv:
