@@ -5,7 +5,7 @@ from   quex.engine.generator.languages.address         import get_address, \
                                                               init_address_handling, \
                                                               get_address_set_subject_to_routing, \
                                                               is_label_referenced
-import quex.engine.generator.state_machine_coder2      as     state_machine_coder
+import quex.engine.generator.state_machine_coder       as     state_machine_coder
 from   quex.engine.generator.state_machine_decorator   import StateMachineDecorator
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.base                      import GeneratorBase
