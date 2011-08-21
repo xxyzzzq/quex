@@ -1,7 +1,7 @@
-from quex.engine.generator.state_coder2.transition_block import assert_adjacency
-from quex.engine.analyzer.template.common                import get_state_list
-from quex.engine.interval_handling                       import Interval
-from quex.blackboard                                     import TargetStateIndices
+from quex.engine.generator.state_coder.transition_block import assert_adjacency
+from quex.engine.analyzer.template.common               import get_state_list
+from quex.engine.interval_handling                      import Interval
+from quex.blackboard                                    import TargetStateIndices
 
 import sys
 

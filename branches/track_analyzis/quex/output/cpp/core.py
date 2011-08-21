@@ -182,8 +182,6 @@ class Generator(GeneratorBase):
     def __code_backward_input_position_detection_core(self, SM):
         assert len(SM.get_orphaned_state_index_list()) == 0
         
-        BIPD_ID = SM.get_id()
-
         txt = []
         if Setup.comment_state_machine_transitions_f: 
             txt.append(Setup.language_db["$ml-comment"]("BEGIN: BACKWARD DETECTOR STATE MACHINE\n" + \

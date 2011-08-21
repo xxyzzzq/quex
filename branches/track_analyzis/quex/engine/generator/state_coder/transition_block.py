@@ -1,7 +1,7 @@
-import quex.engine.generator.state_coder2.transition_code as     transition_code
-from   quex.engine.interval_handling                      import Interval
-from   quex.engine.state_machine.state_core_info          import EngineTypes
-from   quex.blackboard                                    import TargetStateIndices, \
+import quex.engine.generator.state_coder.transition_code as     transition_code
+from   quex.engine.interval_handling                     import Interval
+from   quex.engine.state_machine.state_core_info         import EngineTypes
+from   quex.blackboard                                   import TargetStateIndices, \
                                                                  setup as Setup
 import sys
 from   math      import log

@@ -601,23 +601,23 @@ class NumberSet(object):
         return clone            
 
     def has_intersection(self, Other):
-        assert Other.__class__ == Interval or Other.__class__ == NumberSet
+        assert isinstance(Other, (Interval, NumberSet))
         if   len(self.__intervals) == 0:                                   return False
         elif Other.__class__ == NumberSet and len(Other.__intervals) == 0: return False
 
         self_begin = self.__intervals[0].begin
         self_end   = self.__intervals[-1].end
-        if Other.__class__ == Interval: 
+        if isinstance(Other, Interval): 
             if Other.end   < self_begin: return False
             if Other.begin > self_end:   return False
 
             for y in self.__intervals:
                 # PASTE: Implement Interval::overlap() for performance reasons.
-                if   x.begin >= y.end:   continue
-                elif x.end   <= y.begin: break
+                if   Other.begin >= y.end:   continue
+                elif Other.end   <= y.begin: break
                 # x.end > y.begin  (lacks condition: x.begin < y.end)
                 # y.end > x.begin  (lacks condition: y.begin < x.end)
-                if x.begin < y.end or y.begin < x.end: return True
+                if Other.begin < y.end or y.begin < Other.end: return True
 
             return False
 

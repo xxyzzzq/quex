@@ -5,9 +5,10 @@ from   quex.engine.analyzer.template.common       import get_state_list, Templat
 import quex.engine.analyzer.template.combine_maps as     combine_maps
 from   quex.blackboard                            import TargetStateIndices
 
-from   itertools import ifilter
-from   operator  import itemgetter
-from   copy      import copy
+from   collections import defaultdict
+from   itertools   import ifilter, chain
+from   operator    import itemgetter
+from   copy        import copy
 import sys
 
 # (C) 2010 Frank-Rene Schaefer
