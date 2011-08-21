@@ -2,8 +2,8 @@ from   quex.engine.analyzer.core import Analyzer, \
                                         AnalyzerState
 from   quex.engine.state_machine.state_core_info           import EngineTypes, AcceptanceIDs
 from   quex.engine.generator.languages.address             import Address
-import quex.engine.generator.state_coder2.transition_block as transition_block
-import quex.engine.generator.state_coder2.entry            as entry
+import quex.engine.generator.state_coder.transition_block as transition_block
+import quex.engine.generator.state_coder.entry            as entry
 from   quex.blackboard import TargetStateIndices, \
                               setup as Setup
 

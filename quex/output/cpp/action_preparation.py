@@ -116,7 +116,6 @@ def __prepare(Mode, CodeFragment_or_CodeFragments, PatternStateMachine,
 
     on_every_match_code = ""
     lc_count_code       = ""
-    debug_code          = ""
     user_code           = ""
     variable_db         = {}
 

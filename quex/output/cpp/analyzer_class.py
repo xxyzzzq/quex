@@ -37,14 +37,11 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
         if len(mode.get_code_fragment_list("on_exit")) != 0:  exit_handler_active_f = True
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
-    converter_f       = False
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
     if Setup.converter_user_new_func != "": 
         converter_new_str += Setup.converter_user_new_func + "()"
-        user_defined_converter_f = True
     else: 
         converter_new_str = "/* " + converter_new_str + " */"
-        user_defined_converter_f = False
 
     # Token repetition support
     token_repeat_test_txt = ""
@@ -82,7 +79,6 @@ def write_configuration_header(ModeDB, IndentationSupportF, BeginOfLineSupportF)
 
     # -- token class related definitions
     token_descr         = blackboard.token_type_definition
-    namespace_token_str = make_safe_identifier(Setup.language_db["$namespace-ref"](token_descr.name_space))
 
     # -- name of the character codec
     codec_name = "unicode"
@@ -161,7 +157,6 @@ def write_engine_header(ModeDB):
     QuexClassHeaderFileTemplate = os.path.normpath(  QUEX_PATH
                                                    + Setup.language_db["$code_base"] 
                                                    + Setup.language_db["$analyzer_template_file"]).replace("//","/")
-    LexerFileStem  = Setup.output_header_file
     LexerClassName = Setup.analyzer_class_name
 
     quex_converter_coding_name_str = Setup.converter_ucs_coding_name
