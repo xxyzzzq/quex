@@ -10,6 +10,8 @@ def do(Target, StateIndex, InitStateF, EngineType, ReturnToState_Str, GotoReload
        generation much simpler. No information has to be passed down the 
        recursive call tree.
     """
+    assert Target is not None
+    assert Target != -1
 
     if isinstance(Target, TransitionCode): 
         return Target
@@ -53,7 +55,6 @@ class TransitionCode:
             self.__code       = LanguageDB.GOTO(Target, StateIndex, EngineType)
             self.__drop_out_f = False
         else:
-            assert isinstance(Target, TransitionCode) # No change necessary
             assert False # When it hits here, we need to think what to do!
 
     @property

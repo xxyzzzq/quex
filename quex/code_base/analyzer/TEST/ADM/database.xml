@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.26" date="Sat Aug 20 16:23:13 2011">
+<test-database execution-time-sec="0.29" date="Mon Aug 22 07:55:24 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="Accumulator" make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="accumulator.exe" info-request-time="1313850189L" vanished="False"/>
         <make-procedure success="True" time_sec="0.473335"/>
         <choice-list number="5" same_result="False">
@@ -28,7 +28,7 @@
         </test>
     </group>
     <group name="Post Categorizer">
-        <test title="Enter" make-dependent="True" time-sum-sec="0.03"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="post-categorizer-find.exe" info-request-time="1313850188L" vanished="False"/>
             <make-procedure success="True" time_sec="0.759143"/>
             <choice-list number="7" same_result="True">
@@ -54,7 +54,7 @@
                <choice name="7" result="OK" time_sec="0.01" crc="312237205"/>
             </choice-list>
         </test>
-        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.06"> 
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.08"> 
             <application file-name="post-categorizer-remove.exe" info-request-time="1313850191L" vanished="False"/>
             <make-procedure success="True" time_sec="0.758302"/>
             <choice-list number="8" same_result="True">
@@ -68,7 +68,7 @@
                <choice name="Be" result="OK" time_sec="0.01" crc="1918139693"/>
             </choice-list>
         </test>
-        <test title="Enter" make-dependent="True" time-sum-sec="0.04"> 
+        <test title="Enter" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="post-categorizer-enter.exe" info-request-time="1313850192L" vanished="False"/>
             <make-procedure success="True" time_sec="0.744447"/>
             <choice-list number="7" same_result="False">

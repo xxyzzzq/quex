@@ -1,4 +1,4 @@
-<test-database execution-time-sec="13.67" date="Sun Aug 21 01:26:21 2011">
+<test-database execution-time-sec="13.66" date="Mon Aug 22 07:55:48 2011">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Subset Determination" time-sum-sec="1.46"> 
         <application file-name="test-subset_checker.py" info-request-time="1310810818L" vanished="False"/>
@@ -41,7 +41,7 @@
                <choice name="ADAPT" result="OK" time_sec="0.12" crc="1992273305"/>
             </choice-list>
         </test>
-        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.37"> 
+        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.36"> 
             <application file-name="test-get_trigger_map.py" info-request-time="1310810818L" vanished="False"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.06" crc="-537668508"/>
@@ -214,12 +214,6 @@
                <choice name="" result="OK" time_sec="0.06" crc="372081665"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1310810818L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-1604145748"/>
-            </choice-list>
-        </test>
         <test title="Cloning" time-sum-sec="0.06"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1310810818L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -230,6 +224,12 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1312730428L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.06" crc="658399412"/>
+            </choice-list>
+        </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1310810818L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.07"> 

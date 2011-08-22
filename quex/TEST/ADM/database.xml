@@ -1,15 +1,15 @@
-<test-database execution-time-sec="3.96" date="Sat Aug 20 16:21:48 2011">
+<test-database execution-time-sec="4.32" date="Mon Aug 22 07:55:15 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.59"> 
+    <test title="Double Check that Exception Handlers are in place" time-sum-sec="0.57"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1310810803L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.59" crc="-1647352136"/>
+           <choice name="" result="FAIL" time_sec="0.57" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.05"> 
+    <test title="Check that 'Lexeme' macro is not used." time-sum-sec="0.06"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1310810803L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.05" crc="437393331"/>
+           <choice name="" result="FAIL" time_sec="0.06" crc="437393331"/>
         </choice-list>
     </test>
     <test title="Check if the default configuration has been updated." time-sum-sec="0.02"> 
@@ -30,11 +30,11 @@
            <choice name="" result="OK" time_sec="0.04" crc="-1467740473"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="3.12"> 
+    <test title="Include Guards for C/C++" time-sum-sec="3.49"> 
         <application file-name="include_guard.py" info-request-time="1312730424L" vanished="False"/>
         <choice-list number="2" same_result="False">
            <choice name="convention" result="OK" time_sec="2.85" crc="1196150108"/>
-           <choice name="undefinition" result="FAIL" time_sec="0.27" crc="1693599369"/>
+           <choice name="undefinition" result="FAIL" time_sec="0.64" crc="1693599369"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
