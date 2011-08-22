@@ -1,6 +1,8 @@
-from   quex.blackboard                         import       setup as Setup
+from   quex.blackboard                         import       setup as Setup, TargetStateIndices
 import quex.engine.state_machine.index          as           sm_index
+from   quex.engine.state_machine.state_core_info          import EngineTypes
 import quex.engine.generator.state_coder.transition_block as transition_block
+from   quex.engine.generator.state_coder.transition_code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import Variable
 from   quex.engine.generator.languages.address      import get_label, Address
 from   quex.engine.interval_handling                import Interval
@@ -11,7 +13,7 @@ import quex.blackboard                              as     blackboard
 from   math import log
 import sys
 
-class IndentationCounter(transition_block.TriggerAction):
+class IndentationCounter(TransitionCode):
     def __init__(self, Type, Number, StateIndex):
         self.type        = Type
         self.number      = Number
@@ -24,7 +26,8 @@ class IndentationCounter(transition_block.TriggerAction):
     def __ne__(self, Other):
         return not self.__eq__(Other)
 
-    def get_code(self):
+    @property
+    def code(self):
         """Indentation counters may count as a consequence of a 'triggering'."""
         LanguageDB = Setup.language_db
 
@@ -62,8 +65,12 @@ class IndentationCounter(transition_block.TriggerAction):
         else:
             assert False, "Unreachable code has been reached."
     
-    def is_drop_out(self):
+    @property
+    def drop_out_f(self):
         return False
+
+    def __str__(self):
+        return self.code
 
 class IndentationBadCharacter:
     def __init__(self, StateIndex):
@@ -192,10 +199,11 @@ def do(Data):
     init_reference_p  = "    reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer);\n" + \
                         "    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;\n"
 
-    iteration_code = transition_block.do(trigger_map, 
-                                         counter_index, 
-                                         DSM=None, 
-                                         GotoReload_Str="goto %s;" % get_label("$reload", counter_index))
+    iteration_code = []
+    transition_block.do(iteration_code, trigger_map, 
+                        StateIndex     = counter_index, 
+                        EngineType     = EngineTypes.INDENTATION_COUNTER,
+                        GotoReload_Str = "goto %s;" % get_label("$reload", counter_index))
 
     comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
 
@@ -255,9 +263,9 @@ def arrange_trigger_map(trigger_map):
      
      #  -- insert lower and upper 'drop-out-transitions'
      if trigger_map[0][0].begin != -sys.maxint: 
-         trigger_map.insert(0, [Interval(-sys.maxint, trigger_map[0][0].begin), None])
+         trigger_map.insert(0, [Interval(-sys.maxint, trigger_map[0][0].begin), TargetStateIndices.DROP_OUT])
      if trigger_map[-1][0].end != sys.maxint: 
-         trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), None])
+         trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), TargetStateIndices.DROP_OUT])
 
      #  -- fill gaps
      previous_end = -sys.maxint
@@ -266,7 +274,7 @@ def arrange_trigger_map(trigger_map):
      while i < size:
          interval = trigger_map[i][0]
          if interval.begin != previous_end: 
-             trigger_map.insert(i, [Interval(previous_end, interval.begin), None])
+             trigger_map.insert(i, [Interval(previous_end, interval.begin), TargetStateIndices.DROP_OUT])
              i    += 1
              size += 1
          i += 1

@@ -24,6 +24,7 @@ PostContextIDs = Enum("NONE",
 EngineTypes    = Enum("FORWARD", 
                       "BACKWARD_PRE_CONTEXT", 
                       "BACKWARD_INPUT_POSITION",
+                      "INDENTATION_COUNTER",
                       "ELSE",                       # skipper, or whatever ...
                       "_DEBUG_EngineTypes")
 

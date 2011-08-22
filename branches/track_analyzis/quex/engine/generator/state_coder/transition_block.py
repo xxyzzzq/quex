@@ -146,10 +146,12 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
             _border_cmp = ">="
             _border     = lambda interval: interval.begin
 
-    txt.append("/*\n")
-    for interval, target in trigger_map:
-        txt.append(" * [%04X, %04X) --> %s\n" % (interval.begin, interval.end, repr(target)))
-    txt.append("*/\n")
+    assert len(trigger_map) != 0
+
+    #txt.append("/*\n")
+    #for interval, target in trigger_map:
+    #    txt.append(" * [%04X, %04X) --> %s\n" % (interval.begin, interval.end, repr(target)))
+    #txt.append("*/\n")
 
     LastI = L - 1
     for i, entry in enumerate(trigger_map):
@@ -158,7 +160,7 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
         txt.append("\n")
         txt.append(0)
         if   i == LastI:
-            pass
+            txt.append(LanguageDB.ELSE)
         elif interval.size() == 1:
             txt.append(LanguageDB.IF_INPUT("==", interval.begin, i==0))
         else:
@@ -167,10 +169,7 @@ def __get_linear_comparison_chain(txt, TriggerMap, L):
         if not target.drop_out_f:
             __create_transition_code(txt, entry[1])
 
-        # Drop-out 'else' can be omitted
-        if not (i == LastI and target.drop_out_f): 
-            txt.append(LanguageDB.END_IF(LastF=True))
-
+    txt.append("\n")
     txt.append(LanguageDB.END_IF(LastF=True))
     return True
 
@@ -395,8 +394,8 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
 
     # Any transition map, except for backward input position detection, 
     # must have a trigger on reload.
-    assert EngineType == EngineTypes.BACKWARD_INPUT_POSITION, \
-           "Engine types other than 'backward input position detection must contain BLC.\n" \
+    assert EngineType in [EngineTypes.BACKWARD_INPUT_POSITION, EngineTypes.INDENTATION_COUNTER], \
+           "Engine types other than 'backward input position detection' or 'indentation counter' must contain BLC.\n" \
            "Found: %s" % repr(EngineType)
     return
 

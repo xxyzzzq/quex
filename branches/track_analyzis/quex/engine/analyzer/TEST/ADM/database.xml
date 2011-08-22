@@ -1,13 +1,13 @@
-<test-database execution-time-sec="5.36" date="Sun Aug 21 11:40:55 2011">
+<test-database execution-time-sec="5.39" date="Mon Aug 22 07:55:25 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Single Pattern Checks" time-sum-sec="0.78"> 
+    <test title="Single Pattern Checks" time-sum-sec="0.81"> 
         <application file-name="single-pattern.py" info-request-time="1311052185L" vanished="False"/>
         <choice-list number="10" same_result="False">
            <choice name="0" result="OK" time_sec="0.07" crc="1663398961"/>
            <choice name="1" result="OK" time_sec="0.08" crc="-1995858890"/>
            <choice name="2" result="OK" time_sec="0.08" crc="632091631"/>
            <choice name="3" result="OK" time_sec="0.09" crc="172029546"/>
-           <choice name="4" result="FAIL" time_sec="0.08" crc="493749523"/>
+           <choice name="4" result="FAIL" time_sec="0.10" crc="493749523"/>
            <choice name="5" result="FAIL" time_sec="0.09" crc="988989487"/>
            <choice name="6" result="OK" time_sec="0.07" crc="-1215736777"/>
            <choice name="7" result="OK" time_sec="0.07" crc="-1379918163"/>
@@ -34,7 +34,7 @@
                <choice name="1" result="OK" time_sec="0.08" crc="1167848905"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="0.85"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="0.84"> 
             <application file-name="track_analysis-pre-post.py" info-request-time="1311224552L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="1" result="OK" time_sec="0.10" crc="-223671648"/>
@@ -47,7 +47,7 @@
                <choice name="9" result="OK" time_sec="0.14" crc="1983642577"/>
             </choice-list>
         </test>
-        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.83"> 
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="0.84"> 
             <application file-name="track_analysis.py" info-request-time="1310969857L" vanished="False"/>
             <choice-list number="10" same_result="False">
                <choice name="0" result="OK" time_sec="0.08" crc="-1697566280"/>
@@ -85,7 +85,7 @@
                <choice name="" result="FAIL" time_sec="0.07" crc="813964485"/>
             </choice-list>
         </test>
-        <test title="With Post-Contexts" time-sum-sec="0.72"> 
+        <test title="With Post-Contexts" time-sum-sec="0.71"> 
             <application file-name="track_analysis-post.py" info-request-time="1311133596L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="3" result="OK" time_sec="0.08" crc="428283399"/>
