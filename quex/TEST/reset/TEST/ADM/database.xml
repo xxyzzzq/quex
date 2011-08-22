@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.56" date="Mon Aug 22 07:55:24 2011">
+<test-database execution-time-sec="0.54" date="Mon Aug 22 12:50:52 2011">
     <last-used-diff-display-program name=""/>
     <test title="Normal Reset" make-dependent="True" time-sum-sec="0.09"> 
         <application file-name="lexer-x" info-request-time="1313850152L" vanished="False"/>
@@ -18,20 +18,20 @@
         </choice-list>
     </test>
     <group name="Reset w/ QuexBufferFiller">
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.17"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.15"> 
             <application file-name="codec-lexer" info-request-time="1313972438L" vanished="False"/>
             <make-procedure success="True" time_sec="2.191057"/>
             <choice-list number="11" same_result="True">
-               <choice name="0" result="FAIL" time_sec="0.06" crc="17735322"/>
+               <choice name="0" result="FAIL" time_sec="0.04" crc="17735322"/>
                <choice name="1" result="FAIL" time_sec="0.01" crc="17735322"/>
                <choice name="2" result="FAIL" time_sec="0.01" crc="17735322"/>
                <choice name="3" result="FAIL" time_sec="0.01" crc="17735322"/>
                <choice name="1000" result="FAIL" time_sec="0.01" crc="17735322"/>
                <choice name="20" result="FAIL" time_sec="0.01" crc="17735322"/>
                <choice name="30" result="FAIL" time_sec="0.01" crc="17735322"/>
-               <choice name="50" result="FAIL" time_sec="0.01" crc="17735322"/>
+               <choice name="50" result="FAIL" time_sec="0.03" crc="17735322"/>
                <choice name="134" result="FAIL" time_sec="0.01" crc="17735322"/>
-               <choice name="135" result="FAIL" time_sec="0.03" crc="17735322"/>
+               <choice name="135" result="FAIL" time_sec="0.01" crc="17735322"/>
                <choice name="136" result="FAIL" time_sec="0.01" crc="17735322"/>
             </choice-list>
         </test>

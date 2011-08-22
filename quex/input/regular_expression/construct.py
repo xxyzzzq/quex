@@ -55,16 +55,6 @@ def do(core_sm,
         __detect_path_of_nothing_is_necessary(core_sm,      "core pattern", post_context_f, fh)
         __detect_path_of_nothing_is_necessary(post_context, "post context", post_context_f, fh)
 
-    # If there is a transformation to be done, it has to be done NOW,
-    # because pre-context state machines and pseudo-ambiguous state machines
-    # are inverted. They need to be inverted according the split codec!
-    sm = transformation.try_this(pre_context, fh)
-    if sm is not None: pre_context = sm
-    sm = transformation.try_this(core_sm, fh)
-    if sm is not None: core_sm = sm
-    sm = transformation.try_this(post_context, fh)
-    if sm is not None: post_context = sm
-
     # Determine newline and character count for matching lexemes
     # of the core pattern.
     newline_n   = character_counter.get_newline_n(core_sm)

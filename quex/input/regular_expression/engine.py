@@ -98,7 +98,7 @@ def do(UTF8_String_or_Stream, PatternDict,
     if check(stream, '$'): end_of_line_f = True
 
     __ensure_whitespace_follows(initial_position, stream)
-
+    
     sm = construct.do(core_sm         = core, 
                       begin_of_line_f = begin_of_line_f, 
                       pre_context     = pre,
