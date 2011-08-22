@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.29" date="Mon Aug 22 07:55:24 2011">
+<test-database execution-time-sec="0.29" date="Mon Aug 22 12:50:52 2011">
     <last-used-diff-display-program name=""/>
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="accumulator.exe" info-request-time="1313850189L" vanished="False"/>

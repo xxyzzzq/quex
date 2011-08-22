@@ -1,13 +1,13 @@
-<test-database execution-time-sec="5.39" date="Mon Aug 22 07:55:25 2011">
+<test-database execution-time-sec="5.37" date="Mon Aug 22 12:50:53 2011">
     <last-used-diff-display-program name=""/>
-    <test title="Single Pattern Checks" time-sum-sec="0.81"> 
+    <test title="Single Pattern Checks" time-sum-sec="0.79"> 
         <application file-name="single-pattern.py" info-request-time="1311052185L" vanished="False"/>
         <choice-list number="10" same_result="False">
            <choice name="0" result="OK" time_sec="0.07" crc="1663398961"/>
            <choice name="1" result="OK" time_sec="0.08" crc="-1995858890"/>
            <choice name="2" result="OK" time_sec="0.08" crc="632091631"/>
            <choice name="3" result="OK" time_sec="0.09" crc="172029546"/>
-           <choice name="4" result="FAIL" time_sec="0.10" crc="493749523"/>
+           <choice name="4" result="FAIL" time_sec="0.08" crc="493749523"/>
            <choice name="5" result="FAIL" time_sec="0.09" crc="988989487"/>
            <choice name="6" result="OK" time_sec="0.07" crc="-1215736777"/>
            <choice name="7" result="OK" time_sec="0.07" crc="-1379918163"/>

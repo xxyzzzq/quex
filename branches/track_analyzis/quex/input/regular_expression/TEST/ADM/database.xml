@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.03" date="Mon Aug 22 07:55:48 2011">
+<test-database execution-time-sec="3.00" date="Mon Aug 22 12:51:11 2011">
     <last-used-diff-display-program name=""/>
     <test title="Case Folding" time-sum-sec="0.19"> 
         <application file-name="test-case_fold.py" info-request-time="1310810807L" vanished="False"/>
@@ -13,10 +13,10 @@
            <choice name="" result="OK" time_sec="0.08" crc="-1122071086"/>
         </choice-list>
     </test>
-    <test title="Transformations" time-sum-sec="0.16"> 
-        <application file-name="test-transformation.py" info-request-time="1313972110L" vanished="False"/>
+    <test title="Transformations" time-sum-sec="0.13"> 
+        <application file-name="test-transformation.py" info-request-time="1314010135L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.16" crc="-1880310539"/>
+           <choice name="" result="OK" time_sec="0.13" crc="-1880310539"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">
