@@ -19,7 +19,8 @@ if [[ $1 == "Else" ]]; then
     export QUEX_PATH=$1
     make all
 elif [[ $1 == "Developper" ]]; then
-    make all
+    make all 2>&1 > tmp2.txt
+    ../quex_pathify.sh tmp2.txt
 else
     echo
     echo This test checks wether all files in QUEX_CORE exist
@@ -28,9 +29,9 @@ else
     make all > files.txt
     for file in `cat files.txt`; do 
         if ! test -a $file; then
-            echo "[FAIL] $file does not exist"
+            ../quex_pathify.sh --string "[FAIL] $file does not exist"
         else
-            echo "  [OK] $file exists"
+            ../quex_pathify.sh --string "  [OK] $file exists"
         fi 
     done
     rm -rf files.txt

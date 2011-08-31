@@ -1,31 +1,31 @@
-<test-database execution-time-sec="3.05" date="Mon Aug 22 12:51:11 2011">
+<test-database execution-time-sec="3.11" date="Wed Aug 24 12:17:16 2011">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="find_path" time-sum-sec="0.37"> 
-            <application file-name="paths-find_paths.py" info-request-time="1310810820L" vanished="False"/>
+        <test title="find_path" time-sum-sec="0.38"> 
+            <application file-name="paths-find_paths.py" info-request-time="1313919430L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="1" result="OK" time_sec="0.06" crc="513112454"/>
-               <choice name="2" result="OK" time_sec="0.06" crc="1368158831"/>
+               <choice name="1" result="FAIL" time_sec="0.06" crc="513112454"/>
+               <choice name="2" result="FAIL" time_sec="0.06" crc="1368158831"/>
                <choice name="3" result="OK" time_sec="0.06" crc="-1176745787"/>
-               <choice name="4" result="OK" time_sec="0.07" crc="-256635724"/>
-               <choice name="5" result="OK" time_sec="0.06" crc="1441501550"/>
-               <choice name="6" result="OK" time_sec="0.06" crc="500536394"/>
+               <choice name="4" result="FAIL" time_sec="0.07" crc="-256635724"/>
+               <choice name="5" result="FAIL" time_sec="0.06" crc="1441501550"/>
+               <choice name="6" result="FAIL" time_sec="0.06" crc="500536394"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.18"> 
-            <application file-name="paths-find_paths-2.py" info-request-time="1310810820L" vanished="False"/>
+        <test title="find_path (mean tests)" time-sum-sec="0.19"> 
+            <application file-name="paths-find_paths-2.py" info-request-time="1313919433L" vanished="False"/>
             <choice-list number="3" same_result="False">
-               <choice name="1" result="OK" time_sec="0.06" crc="-1033686350"/>
-               <choice name="2" result="OK" time_sec="0.06" crc="2095293983"/>
-               <choice name="3" result="OK" time_sec="0.06" crc="-47922617"/>
+               <choice name="1" result="FAIL" time_sec="0.06" crc="-1033686350"/>
+               <choice name="2" result="FAIL" time_sec="0.06" crc="2095293983"/>
+               <choice name="3" result="FAIL" time_sec="0.06" crc="-47922617"/>
             </choice-list>
         </test>
-        <test title="filter_redundant_paths" time-sum-sec="0.40"> 
+        <test title="filter_redundant_paths" time-sum-sec="0.43"> 
             <application file-name="paths-filter_redundant_paths.py" info-request-time="1310810820L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="0" result="OK" time_sec="0.05" crc="-1231177672"/>
                <choice name="1" result="OK" time_sec="0.05" crc="-2097780869"/>
-               <choice name="2" result="OK" time_sec="0.05" crc="-1697922765"/>
+               <choice name="2" result="OK" time_sec="0.06" crc="-1697922765"/>
                <choice name="3" result="OK" time_sec="0.05" crc="1993708865"/>
                <choice name="4" result="OK" time_sec="0.05" crc="-1334313525"/>
                <choice name="5a" result="OK" time_sec="0.05" crc="377544216"/>
@@ -33,12 +33,12 @@
                <choice name="6" result="OK" time_sec="0.05" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="select_longest_intersecting_path" time-sum-sec="0.31"> 
+        <test title="select_longest_intersecting_path" time-sum-sec="0.32"> 
             <application file-name="paths-select_longest_paths.py" info-request-time="1310810820L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.05" crc="773714092"/>
                <choice name="1" result="OK" time_sec="0.05" crc="464756229"/>
-               <choice name="2" result="OK" time_sec="0.06" crc="-2074010539"/>
+               <choice name="2" result="OK" time_sec="0.05" crc="-2074010539"/>
                <choice name="3" result="OK" time_sec="0.05" crc="-238344182"/>
                <choice name="4" result="OK" time_sec="0.05" crc="-1024587979"/>
                <choice name="5" result="OK" time_sec="0.05" crc="470140688"/>
@@ -51,10 +51,10 @@
                <choice name="single" result="FAIL" time_sec="0.03" crc="1687192096"/>
             </choice-list>
         </test>
-        <test title="is_difference_single_character" time-sum-sec="0.10"> 
+        <test title="is_difference_single_character" time-sum-sec="0.11"> 
             <application file-name="paths-can_plug_to_equal.py" info-request-time="1310810820L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="1_interval" result="OK" time_sec="0.05" crc="2146992883"/>
+               <choice name="1_interval" result="OK" time_sec="0.06" crc="2146992883"/>
                <choice name="2_intervals" result="OK" time_sec="0.05" crc="212610594"/>
             </choice-list>
         </test>

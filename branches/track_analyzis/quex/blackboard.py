@@ -36,12 +36,14 @@ setup = QuexSetup(SETUP_INFO)
 #-----------------------------------------------------------------------------------------
 # StateIndices: Values to be used as target states for transitions
 #-----------------------------------------------------------------------------------------
-TargetStateIndices = Enum("DROP_OUT", 
-                          "RELOAD_PROCEDURE",
-                          "INIT_STATE_TRANSITION_BLOCK",
-                          "END_OF_PRE_CONTEXT_CHECK",
-                          "RECURSIVE",
-                          "ALL") 
+E_StateIndices = Enum("DROP_OUT", 
+                      "RELOAD_PROCEDURE",
+                      "INIT_STATE_TRANSITION_BLOCK",
+                      "END_OF_PRE_CONTEXT_CHECK",
+                      "RECURSIVE",
+                      "ALL", 
+                      "NONE", 
+                      "VOID") 
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:

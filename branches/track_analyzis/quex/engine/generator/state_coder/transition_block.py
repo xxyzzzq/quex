@@ -1,7 +1,7 @@
 import quex.engine.generator.state_coder.transition_code as     transition_code
 from   quex.engine.interval_handling                     import Interval
-from   quex.engine.state_machine.state_core_info         import EngineTypes
-from   quex.blackboard                                   import TargetStateIndices, \
+from   quex.engine.state_machine.state_core_info         import E_EngineTypes
+from   quex.blackboard                                   import E_StateIndices, \
                                                                  setup as Setup
 import sys
 from   math      import log
@@ -10,11 +10,11 @@ from   operator  import itemgetter
 from   itertools import imap
 
 def do(txt, TransitionMap, 
-       StateIndex       = None,  EngineType     = EngineTypes.FORWARD, 
+       StateIndex       = None,  EngineType     = E_EngineTypes.FORWARD, 
        InitStateF       = False, 
        ReturnToState_Str= None,  GotoReload_Str = None):
     assert isinstance(TransitionMap, list)
-    assert EngineType        in EngineTypes
+    assert EngineType        in E_EngineTypes
     assert isinstance(InitStateF, bool)
     assert StateIndex        is None or isinstance(StateIndex, (int, long))
     assert ReturnToState_Str is None or isinstance(ReturnToState_Str, (str, unicode))
@@ -36,7 +36,7 @@ def do(txt, TransitionMap,
     # This helps to generate the reload procedure a little more elegantly.
     # (Backward input position detection does not reload. It only moves 
     #  inside the current lexeme, which must be inside the buffer.)
-    if EngineType != EngineTypes.BACKWARD_INPUT_POSITION:
+    if EngineType != E_EngineTypes.BACKWARD_INPUT_POSITION:
         __separate_buffer_limit_code_transition(TransitionMap, EngineType)
 
     # All transition information related to intervals become proper objects of 
@@ -357,14 +357,14 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
     for i, entry in enumerate(TransitionMap):
         interval, target_index = entry
 
-        if   target_index == TargetStateIndices.RELOAD_PROCEDURE:   
+        if   target_index == E_StateIndices.RELOAD_PROCEDURE:   
             assert interval.contains_only(Setup.buffer_limit_code) 
-            assert EngineType != EngineTypes.BACKWARD_INPUT_POSITION
-            # Transition 'buffer limit code --> TargetStateIndices.RELOAD_PROCEDURE' 
+            assert EngineType != E_EngineTypes.BACKWARD_INPUT_POSITION
+            # Transition 'buffer limit code --> E_StateIndices.RELOAD_PROCEDURE' 
             # has been setup already.
             return
 
-        elif target_index is not TargetStateIndices.DROP_OUT: 
+        elif target_index is not E_StateIndices.DROP_OUT: 
             continue
 
         elif not interval.contains(Setup.buffer_limit_code): 
@@ -383,18 +383,18 @@ def __separate_buffer_limit_code_transition(TransitionMap, EngineType):
         del TransitionMap[i]
 
         if after_end > after_begin:
-            TransitionMap.insert(i, (Interval(after_begin, after_end), TargetStateIndices.DROP_OUT))
+            TransitionMap.insert(i, (Interval(after_begin, after_end), E_StateIndices.DROP_OUT))
 
-        # "Target == TargetStateIndices.RELOAD_PROCEDURE" => Buffer Limit Code
-        TransitionMap.insert(i, (Interval(BLC, BLC + 1), TargetStateIndices.RELOAD_PROCEDURE))
+        # "Target == E_StateIndices.RELOAD_PROCEDURE" => Buffer Limit Code
+        TransitionMap.insert(i, (Interval(BLC, BLC + 1), E_StateIndices.RELOAD_PROCEDURE))
 
         if before_end > before_begin and before_end > 0:
-            TransitionMap.insert(i, (Interval(before_begin, before_end), TargetStateIndices.DROP_OUT))
+            TransitionMap.insert(i, (Interval(before_begin, before_end), E_StateIndices.DROP_OUT))
         return
 
     # Any transition map, except for backward input position detection, 
     # must have a trigger on reload.
-    assert EngineType in [EngineTypes.BACKWARD_INPUT_POSITION, EngineTypes.INDENTATION_COUNTER], \
+    assert EngineType in [E_EngineTypes.BACKWARD_INPUT_POSITION, E_EngineTypes.INDENTATION_COUNTER], \
            "Engine types other than 'backward input position detection' or 'indentation counter' must contain BLC.\n" \
            "Found: %s" % repr(EngineType)
     return

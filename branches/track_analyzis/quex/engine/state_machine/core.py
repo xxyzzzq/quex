@@ -25,7 +25,7 @@ class State:
 
     ## Little Slower: __slots__ = ('__core', '__origin_list', '__transition_map')
 
-    def __init__(self, AcceptanceF=False, StateMachineID=AcceptanceIDs.FAILURE, StateIndex=-1L, 
+    def __init__(self, AcceptanceF=False, StateMachineID=E_AcceptanceIDs.FAILURE, StateIndex=-1L, 
                  AltCore=None, AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
@@ -146,7 +146,7 @@ class StateMachineCoreInfo:
         self.__pre_context_sm                      = PreContextSM
         self.__pre_context_begin_of_line_f         = PreContext_BeginOfLineF
         self.__pre_context_single_character_list   = PreContext_SingleCharacterList
-        self.__post_context_id                     = PostContextIDs.NONE
+        self.__post_context_id                     = E_PostContextIDs.NONE
         self.__post_context_backward_input_position_detector_sm = None
 
     def id(self):                                  
@@ -174,7 +174,7 @@ class StateMachineCoreInfo:
         return    self.__pre_context_single_character_list \
                or len(self.__pre_context_single_character_list) != 0 \
                or self.__pre_context_sm is not None \
-               or self.__post_context_id != PostContextIDs.NONE \
+               or self.__post_context_id != E_PostContextIDs.NONE \
                or self.__post_context_backward_input_position_detector_sm is not None
 
     def set_id(self, Value):                                  

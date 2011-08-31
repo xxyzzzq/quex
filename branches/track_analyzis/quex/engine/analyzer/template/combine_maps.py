@@ -1,7 +1,7 @@
 from quex.engine.generator.state_coder.transition_block import assert_adjacency
 from quex.engine.analyzer.template.common               import get_state_list
 from quex.engine.interval_handling                      import Interval
-from quex.blackboard                                    import TargetStateIndices
+from quex.blackboard                                    import E_StateIndices
 
 import sys
 
@@ -173,7 +173,7 @@ def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Le
        RETURNS: An object that tells for what states trigger
                 here to what target state. That is:
 
-                -- TargetStateIndices.RECURSIVE
+                -- E_StateIndices.RECURSIVE
 
                    All related states trigger here to itself.
                    Thus, the template combination triggers to itself.
@@ -205,19 +205,19 @@ def __get_target(TA, StateAIndex, StateListA_Len, TB, StateBIndex, StateListB_Le
     # -- In a 'normal trigger map' the target needs to be equal to the
     #   state that it contains.
     # -- In a trigger map combination, the recursive target is 
-    #    identifier by the value 'TargetStateIndices.SAME_STATE'.
-    if TA == StateAIndex: TA = TargetStateIndices.RECURSIVE
-    if TB == StateBIndex: TB = TargetStateIndices.RECURSIVE
+    #    identifier by the value 'E_StateIndices.SAME_STATE'.
+    if TA == StateAIndex: TA = E_StateIndices.RECURSIVE
+    if TB == StateBIndex: TB = E_StateIndices.RECURSIVE
 
     # If both transitions are recursive, then the template will
     # contain only a 'recursion flag'. 
-    if TA == TargetStateIndices.RECURSIVE and TB == TargetStateIndices.RECURSIVE:
-        return TargetStateIndices.RECURSIVE
+    if TA == E_StateIndices.RECURSIVE and TB == E_StateIndices.RECURSIVE:
+        return E_StateIndices.RECURSIVE
 
     # Here: At least one of the targets is not recursive, so we need to expand
     #       any RECURSIVE target to a list of target state indices.
-    if TA == TargetStateIndices.RECURSIVE: TA = StateAIndex
-    if TB == TargetStateIndices.RECURSIVE: TB = StateBIndex
+    if TA == E_StateIndices.RECURSIVE: TA = StateAIndex
+    if TB == E_StateIndices.RECURSIVE: TB = StateBIndex
 
     # T = list   -> combination is a 'involved state list'.
     # T = scalar -> same target state for TargetCombinationN in all cases.

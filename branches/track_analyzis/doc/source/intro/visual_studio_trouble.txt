@@ -115,3 +115,13 @@ As a final hint, it might be a good idea to introduce a break point at
 the last line of the example lexical analyzer. This way to command line
 window which displays the results remains active. In the command line
 window, the results of the lexical analysis may be examined. 
+
+Plotting
+========
+
+For plotting graphs, the graphviz utility must be installed. It can
+be downloaded from http://www.graphviz.org. If it still does not 
+work as planned, then make sure that the directory where "dot.exe"
+is located is inside the global ``PATH`` environment variable. 
+Closing all applications that may use quex and reopening them
+ensures that the new setting is communicated correctly to quex.

@@ -30,6 +30,7 @@ int main(int argc, char** argv)
         if (token_p->type_id() == QUEX_TKN_TERMINATION)
             break;
         // (*) print out token information
+        cerr.flush();
 #   if defined (QUEX_OPTION_CONVERTER_ICU) || defined (QUEX_OPTION_CONVERTER_ICONV)
         cout << *token_p << endl;
 #   else
@@ -38,6 +39,7 @@ int main(int argc, char** argv)
         cout << (const char*)(token_p->get_text().c_str());
         cout << "' " << endl;
 #   endif
+        cout.flush();
     }
 
     TEST_EPILOG

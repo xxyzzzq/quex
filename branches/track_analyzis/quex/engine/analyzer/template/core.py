@@ -3,7 +3,7 @@ import quex.engine.state_machine.core             as     state_machine
 import quex.engine.analyzer.template.gain         as     templates_gain
 from   quex.engine.analyzer.template.common       import get_state_list, TemplateState
 import quex.engine.analyzer.template.combine_maps as     combine_maps
-from   quex.blackboard                            import TargetStateIndices
+from   quex.blackboard                            import E_StateIndices
 
 from   collections import defaultdict
 from   itertools   import ifilter, chain
@@ -155,7 +155,7 @@ import sys
         a scalar, if Ik maps to the same target state for all involved 
                   states.
 
-                  If TLk == TargetStateIndices.RECURSIVE, then all involved states
+                  If TLk == E_StateIndices.RECURSIVE, then all involved states
                   trigger recursively.
 
         a list, if Ik maps to different target states for each involved

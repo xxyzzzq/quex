@@ -8,7 +8,7 @@ import quex.input.regular_expression.engine       as regex
 import quex.engine.analyzer.core                  as core
 import quex.engine.analyzer.position_register_map as position_register_map
 from   quex.engine.generator.base                 import get_combined_state_machine
-from   quex.engine.state_machine.state_core_info  import EngineTypes
+from   quex.engine.state_machine.state_core_info  import E_EngineTypes
 import help_drawing
 
 if "--hwut-info" in sys.argv:
@@ -79,7 +79,7 @@ sm                 = sm.normalized_clone()
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help_drawing.if_DRAW_in_sys_argv(sm)
 
-analyzer = core.Analyzer(sm, EngineTypes.FORWARD)
+analyzer = core.Analyzer(sm, E_EngineTypes.FORWARD)
 
 #for state in analyzer:
 #    print state.get_string(InputF=False, TransitionMapF=False)

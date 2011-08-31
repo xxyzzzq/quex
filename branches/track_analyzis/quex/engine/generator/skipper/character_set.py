@@ -4,7 +4,7 @@ from   quex.engine.generator.languages.address            import get_label, get_
 import quex.engine.generator.languages.variable_db        as     variable_db
 from   quex.engine.generator.skipper.common               import *
 from   quex.engine.state_machine.transition_map           import TransitionMap 
-from   quex.engine.state_machine.state_core_info          import EngineTypes 
+from   quex.engine.state_machine.state_core_info          import E_EngineTypes 
 from   quex.blackboard                                    import setup as Setup
 from   quex.engine.misc.string_handling                   import blue_print
 
@@ -95,7 +95,7 @@ def get_skipper(TriggerSet):
     transition_block.do(iteration_code, 
                         transition_map.get_trigger_map(), 
                         skipper_index, 
-                        EngineTypes.ELSE,
+                        E_EngineTypes.ELSE,
                         GotoReload_Str="goto %s;" % get_label("$reload", skipper_index))
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
