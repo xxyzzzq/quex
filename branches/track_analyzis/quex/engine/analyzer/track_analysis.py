@@ -1,4 +1,4 @@
-from   quex.engine.state_machine.state_core_info import E_PostContextIDs, E_AcceptanceIDs
+from   quex.engine.state_machine.state_core_info import E_PostContextIDs, E_AcceptanceIDs, E_PreContextIDs
 from   quex.blackboard                           import E_StateIndices
 from   quex.engine.misc.enum                     import Enum
 
@@ -491,7 +491,7 @@ class AcceptanceTrace(object):
     def __init__(self, InitStateIndex):
         self.__trace_db = { 
             E_AcceptanceIDs.FAILURE: 
-                  AcceptanceTraceEntry(PreContextID                 = None, 
+                  AcceptanceTraceEntry(PreContextID                 = E_PreContextIDs.NONE, 
                                        PatternID                    = E_AcceptanceIDs.FAILURE, 
                                        MinTransitionN_ToAcceptance  = 0,
                                        AcceptingStateIndex          = InitStateIndex, 
@@ -537,8 +537,8 @@ class AcceptanceTrace(object):
                 entry.transition_n_since_positioning = operation(entry.transition_n_since_positioning)
 
         for origin in Origins:
-            pattern_id      = origin.state_machine_id
             pre_context_id  = extract_pre_context_id(origin)
+            pattern_id      = origin.state_machine_id
             post_context_id = origin.post_context_id()
 
             # (1) Acceptance:
@@ -559,22 +559,27 @@ class AcceptanceTrace(object):
                 if not self.__compete(StateIndex, origin): 
                     continue
                 if origin.post_context_id() != E_PostContextIDs.NONE:  # Restore --> adapt the 'store trace'
-                    self.__trace_db[pattern_id].pre_context_id        = pre_context_id
-                    self.__trace_db[pattern_id].accepting_state_index = StateIndex
+                    self.__trace_db[pattern_id].pre_context_id                 = pre_context_id
+                    self.__trace_db[pattern_id].accepting_state_index          = StateIndex
+                    self.__trace_db[pattern_id].min_transition_n_to_acceptance = CurrentPathLength
                     continue
-                accepting_state_index = StateIndex
+                accepting_state_index          = StateIndex
+                min_transition_n_to_acceptance = CurrentPathLength
             else:
                 if not origin.store_input_position_f(): continue
-                accepting_state_index = E_StateIndices.VOID
+                pre_context_id                 = E_PreContextIDs.NONE
+                accepting_state_index          = E_StateIndices.VOID
+                min_transition_n_to_acceptance = E_TransitionN.VOID
 
             # Add entry to the Database 
             self.__trace_db[pattern_id] = \
-                    AcceptanceTraceEntry(pre_context_id, pattern_id,
-                                         MinTransitionN_ToAcceptance  = CurrentPathLength,
+                    AcceptanceTraceEntry(pre_context_id, 
+                                         pattern_id,
+                                         MinTransitionN_ToAcceptance  = min_transition_n_to_acceptance,
                                          AcceptingStateIndex          = accepting_state_index, 
                                          TransitionN_SincePositioning = 0,
                                          PositioningStateIndex        = StateIndex, 
-                                         PostContextID                = origin.post_context_id())
+                                         PostContextID                = post_context_id)
 
         assert len(self.__trace_db) >= 1
 
@@ -587,31 +592,33 @@ class AcceptanceTrace(object):
            Recall: Length of pattern match is more important than precedence.
         """
         assert Origin.is_acceptance()
+        ThePatternID = Origin.state_machine_id
 
         # NOTE: There are also traces, which are only 'position storage infos'.
         #       Those have accepting state index == VOID.
         if Origin.is_unconditional_acceptance():
             # -- Abolish all previous traces.
-            condition = lambda x: x.accepting_state_index != E_StateIndices.VOID
+            for entry in ifilter(lambda x: x.accepting_state_index != E_StateIndices.VOID, 
+                                 self.__trace_db.values()):
+                if   entry.pre_context_id == E_PreContextIDs.NONE:
+                    del self.__trace_db[entry.pattern_id]
+                elif entry.accepting_state_index != StateIndex:
+                    del self.__trace_db[entry.pattern_id]
+                elif entry.pattern_id < ThePatternID:
+                    return False
         else:
             ThePreContextID = extract_pre_context_id(Origin)
             # -- Abolish only traces with the same pre-context id
-            # NOTE: There might be more than one pattern with the same pre-context,
-            #       e.g. pre-context 'Begin-of-Line'.
-            condition = lambda x:     x.accepting_state_index != E_StateIndices.VOID \
-                                  and x.pre_context_id        == ThePreContextID 
 
-        # Abolishment-loop based on 'condition'
-        ThePatternID = Origin.state_machine_id
-        for entry in ifilter(condition, self.__trace_db.values()):
-            # The origin of 'entry' is of the same state as the 'Origin'.
-            # => Pattern ID decides.
-            if     entry.accepting_state_index == StateIndex \
-               and entry.pattern_id < ThePatternID:
-                # When 'entry' entered the database, 
-                # it must have abolished all dominated patterns
-                return False
-            del self.__trace_db[entry.pattern_id]
+            # Abolishment-loop based on 'condition'
+            for entry in ifilter(lambda x:     x.accepting_state_index != E_StateIndices.VOID,
+                                 self.__trace_db.values()):
+                if entry.pre_context_id != ThePreContextID: 
+                    continue
+                elif entry.accepting_state_index != StateIndex:
+                    del self.__trace_db[entry.pattern_id]
+                elif entry.pattern_id < ThePatternID:
+                    return False
 
         return True
 
@@ -739,7 +746,7 @@ class AcceptanceTraceEntry(object):
         txt.append("    .post_context_id                = %s\n" % repr(self.post_context_id))
         return "".join(txt)
 
-AcceptanceTraceEntry_Void = AcceptanceTraceEntry(PreContextID                 = None, 
+AcceptanceTraceEntry_Void = AcceptanceTraceEntry(PreContextID                 = E_PreContextIDs.NONE, 
                                                  PatternID                    = E_AcceptanceIDs.VOID, 
                                                  MinTransitionN_ToAcceptance  = 0,
                                                  AcceptingStateIndex          = E_StateIndices.VOID,  
@@ -751,7 +758,7 @@ def extract_pre_context_id(Origin):
     """This function basically describes how pre-context-ids and 
        'begin-of-line' pre-context are expressed by an integer.
     """
-    if   Origin.pre_context_begin_of_line_f(): return -1   # PreContextIDs.BEGIN_OF_LINE
-    elif Origin.pre_context_id() == -1:        return None # PreContextIDs.NONE
+    if   Origin.pre_context_begin_of_line_f(): return E_PreContextIDs.BEGIN_OF_LINE
+    elif Origin.pre_context_id() == -1:        return E_PreContextIDs.NONE
     else:                                      return Origin.pre_context_id()
 

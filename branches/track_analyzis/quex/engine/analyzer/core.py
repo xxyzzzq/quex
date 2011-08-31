@@ -26,7 +26,8 @@ from   quex.engine.analyzer.track_analysis        import \
                                                          E_TransitionN
 from   quex.engine.state_machine.state_core_info  import E_PostContextIDs, \
                                                          E_AcceptanceIDs, \
-                                                         E_EngineTypes
+                                                         E_EngineTypes, \
+                                                         E_PreContextIDs
 from   quex.engine.misc.enum                      import Enum
 
 
@@ -163,7 +164,7 @@ class Analyzer:
                 ## assert origin.pre_context_id() != -1
 
             # No pre-context --> restore last acceptance
-            checker.append(DropOut_CheckerElement(None, E_AcceptanceIDs.VOID))
+            checker.append(DropOut_CheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
 
             # Triggering states need to store acceptance as soon as they are entered
             for trace in TheAcceptanceTraceList:
@@ -203,8 +204,8 @@ class Analyzer:
         # Clean Up the checker and the router:
         # (1) there is no check after the unconditional acceptance
         result = DropOut()
-        for i, dummy in ifilter(lambda x:     x[1].pre_context_id is None 
-                                          and x[1].acceptance_id != E_AcceptanceIDs.FAILURE, 
+        for i, dummy in ifilter(lambda x:     x[1].pre_context_id == E_PreContextIDs.NONE   \
+                                          and x[1].acceptance_id  != E_AcceptanceIDs.FAILURE, 
                                 enumerate(checker)):
             result.checker = checker[:i+1]
             break
@@ -328,21 +329,21 @@ class Analyzer:
         #              different pattern_ids.
 
         # -- No Pre-Context (must be in every trace)
-        pattern_id = prototype[None].pattern_id
+        pattern_id = prototype.get(E_PreContextIDs.NONE).pattern_id
         # Iterate over remainder (Prototype is not considered)
-        for trace in ifilter(lambda trace: pattern_id != trace[None].pattern_id, 
+        for trace in ifilter(lambda trace: pattern_id != trace[E_PreContextIDs.NONE].pattern_id, 
                              islice(TheAcceptanceTraceList, 1, None)):
             return False
 
-        # -- Begin-of-Line (pre-context-id == -1)
-        x = prototype.get(-1)
+        # -- Begin-of-Line 
+        x = prototype.get(E_PreContextIDs.BEGIN_OF_LINE)
         if x is None:
             # According to (1) no other trace will have a Begin-of-Line pre-context
             pass
         else:
             # According to (1) every trace will contain 'begin-of-line' pre-context
             acceptance_id = x.pattern_id
-            for trace in ifilter(lambda trace: trace[-1].pattern_id != acceptance_id,
+            for trace in ifilter(lambda trace: trace[E_PreContextIDs.BEGIN_OF_LINE].pattern_id != acceptance_id,
                                  islice(TheAcceptanceTraceList, 1, None)):
                 return False
 
@@ -504,7 +505,8 @@ class AnalyzerState(object):
             self.drop_out = None 
         elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
             self.drop_out = DropOut()
-            self.drop_out.checker.append(DropOut_CheckerElement(None, E_AcceptanceIDs.VOID))
+            self.drop_out.checker.append(DropOut_CheckerElement(E_PreContextIDs.NONE, 
+                                                                E_AcceptanceIDs.VOID))
             self.drop_out.router.append(DropOut_RouterElement(E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK, 
                                                               E_TransitionN.IRRELEVANT, 
                                                               E_PostContextIDs.IRRELEVANT))
@@ -651,7 +653,7 @@ class Entry(object):
         result = []
         for pre_context_id, acceptance_id in sorted(self.accepter.iteritems(), key=itemgetter(1)):
             result.append((pre_context_id, acceptance_id))   
-            if pre_context_id is None: break
+            if pre_context_id == E_PreContextIDs.NONE: break
         return result
 
     def get_positioner_db(self):
@@ -693,7 +695,7 @@ class Entry(object):
             txt.append("    .accepter:\n")
             if_str = "if     "
             for pre_context_id, acceptance_id in self.get_accepter():
-                if pre_context_id is not None:
+                if pre_context_id != E_PreContextIDs.NONE:
                     txt.append("        %s %s: " % (if_str, repr_pre_context_id(pre_context_id)))
                 else:
                     txt.append("        ")
@@ -709,7 +711,7 @@ class Entry(object):
             for post_context_id, pre_context_id_list in positioner.iteritems():
                 pre_list = map(repr_pre_context_id, pre_context_id_list)
                 if len(positioner) != 1: txt.append("            ")
-                if None not in pre_context_id_list:
+                if E_PreContextIDs.NONE not in pre_context_id_list:
                     txt.append("if %s: " % repr(pre_list)[1:-1])
                 txt.append(" %s = input_p;\n" % repr_position_register(post_context_id))
 
@@ -857,8 +859,8 @@ class DropOut(object):
         """
         if E_AcceptanceIDs.TERMINAL_PRE_CONTEXT_CHECK in imap(lambda x: x.acceptance_id, self.router):
             assert len(self.checker) == 1
-            assert self.checker[0].pre_context_id is None
-            assert self.checker[0].acceptance_id == E_AcceptanceIDs.VOID
+            assert self.checker[0].pre_context_id == E_PreContextIDs.NONE
+            assert self.checker[0].acceptance_id  == E_AcceptanceIDs.VOID
             assert len(self.router) == 1
             return [None, self.router[0]]
 
@@ -892,7 +894,7 @@ class DropOut(object):
                 txt = []
                 if_str = "if"
                 for easy in info:
-                    if easy[0].pre_context_id is None:
+                    if easy[0].pre_context_id == E_PreContextIDs.NONE:
                         txt.append("    %s goto %s;\n" % \
                                    (repr_positioning(easy[1].positioning, easy[1].post_context_id),
                                     repr_acceptance_id(easy[1].acceptance_id)))
@@ -908,7 +910,7 @@ class DropOut(object):
         txt = ["    Checker:\n"]
         if_str = "if     "
         for element in self.checker:
-            if element.pre_context_id is not None:
+            if element.pre_context_id != E_PreContextIDs.NONE:
                 txt.append("        %s %s\n" % (if_str, repr(element)))
             else:
                 txt.append("        accept = %s\n" % repr_acceptance_id(element.acceptance_id))
@@ -1047,10 +1049,10 @@ class DropOut_RouterElement(object):
                                           repr_acceptance_id(self.acceptance_id))
         
 def repr_pre_context_id(Value):
-    if   Value is None: return "Always"
-    elif Value == -1:   return "BeginOfLine"
-    elif Value >= 0:    return "PreContext_%i" % Value
-    else:               assert False
+    if   Value == E_PreContextIDs.NONE:          return "Always"
+    elif Value == E_PreContextIDs.BEGIN_OF_LINE: return "BeginOfLine"
+    elif Value >= 0:                             return "PreContext_%i" % Value
+    else:                                        assert False
 
 def repr_acceptance_id(Value, PatternStrF=True):
     if   Value == E_AcceptanceIDs.VOID:                       return "last_acceptance"
