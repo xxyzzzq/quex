@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.core import Entry, \
                                         EntryBackward, \
                                         EntryBackwardInputPositionDetection
-from   quex.engine.state_machine.state_core_info import EngineTypes
+from   quex.engine.state_machine.state_core_info import E_EngineTypes
 from   quex.blackboard import setup as Setup
 
 from   itertools import imap
@@ -17,18 +17,18 @@ def do(txt, TheState, TheAnalyzer):
     PositionRegisterMap = TheAnalyzer.position_register_map
 
     if  (not TheState.init_state_f) or \
-        (TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION): 
+        (TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION): 
         txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
     else:
         txt.append("\n\n")
 
-    if isinstance(TheState.entry, Entry):
+    entry = TheState.entry
+
+    if isinstance(entry, Entry):
         __doors(txt, TheState, PositionRegisterMap)
         __accepter(txt, TheState.entry.get_accepter())
-        return True
 
-    entry = TheState.entry
-    if isinstance(entry, EntryBackward):
+    elif isinstance(entry, EntryBackward):
         LanguageDB.STATE_ENTRY(txt, TheState)
         for pre_context_id in entry.pre_context_fulfilled_set:
             txt.append("    %s\n" % LanguageDB.ASSIGN("pre_context_%i_fulfilled_f" % pre_context_id, "true"))
@@ -43,7 +43,6 @@ def do(txt, TheState, TheAnalyzer):
             # No drop-out, no transition map required
             return False
     return True
-
 
 def __doors(txt, TheState, PositionRegisterMap):
     LanguageDB = Setup.language_db

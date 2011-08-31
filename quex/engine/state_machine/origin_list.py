@@ -1,4 +1,4 @@
-from quex.engine.state_machine.state_core_info import StateCoreInfo, PostContextIDs
+from quex.engine.state_machine.state_core_info import StateCoreInfo, E_PostContextIDs
 
 class StateOriginList(object):
     __slots__ = ('__list')
@@ -98,7 +98,7 @@ class StateOriginList(object):
 
     def contains_post_context_flag(self):
         for origin in self.__list:
-            if origin.post_context_id() != PostContextIDs.NONE: return True
+            if origin.post_context_id() != E_PostContextIDs.NONE: return True
         return False                                
 
     def contains_store_input_position(self):

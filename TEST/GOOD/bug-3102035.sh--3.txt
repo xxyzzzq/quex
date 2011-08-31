@@ -6,5 +6,5 @@
 ##
 ## would appear. If they do not, then everything is fine.
 quex -i case3.qx  --engine Case3 --language C 
-gcc  -I./ -I/home/fschaef/prj/quex/trunk -Wall -W -Wconversion -pedantic  -DPRINT_TOKEN -DPRINT_LINE_COLUMN_NUMBER -c Case3.c -o Case3.o
+gcc  -I./ -I<<QUEX_PATH>> -Wall -W -Wconversion -pedantic  -DPRINT_TOKEN -DPRINT_LINE_COLUMN_NUMBER -c Case3.c -o Case3.o
 rm Case3.c

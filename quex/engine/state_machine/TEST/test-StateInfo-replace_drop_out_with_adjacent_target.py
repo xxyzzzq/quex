@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.engine.state_machine.core import *
-from quex.blackboard                import TargetStateIndices
+from quex.blackboard                import E_StateIndices
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Replace Drop-Out with Adjacent Target"
@@ -25,7 +25,7 @@ def output_trigger_map(tm, BeforeF):
         fh = sys.stdout
 
     for trigger_interval, target_index in tm:
-        if target_index is TargetStateIndices.DROP_OUT:
+        if target_index is E_StateIndices.DROP_OUT:
             fh.write(trigger_interval.gnuplot_string(-1) + "\n")
         else:   
             fh.write(trigger_interval.gnuplot_string(target_index) + "\n")

@@ -118,7 +118,8 @@ sm  = sm.normalized_clone()
 # For DEBUG purposes: specify 'DRAW' on command line
 help_drawing.if_DRAW_in_sys_argv(sm)
 
-print sm.get_string(NormalizeF=False)
+print sm.get_string(NormalizeF=True)
+# print sm.get_string(NormalizeF=False)
 
 analyzer = core.Analyzer(sm)
 

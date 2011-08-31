@@ -1,6 +1,6 @@
-from   quex.blackboard                         import       setup as Setup, TargetStateIndices
+from   quex.blackboard                         import       setup as Setup, E_StateIndices
 import quex.engine.state_machine.index          as           sm_index
-from   quex.engine.state_machine.state_core_info          import EngineTypes
+from   quex.engine.state_machine.state_core_info          import E_EngineTypes
 import quex.engine.generator.state_coder.transition_block as transition_block
 from   quex.engine.generator.state_coder.transition_code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import Variable
@@ -202,7 +202,7 @@ def do(Data):
     iteration_code = []
     transition_block.do(iteration_code, trigger_map, 
                         StateIndex     = counter_index, 
-                        EngineType     = EngineTypes.INDENTATION_COUNTER,
+                        EngineType     = E_EngineTypes.INDENTATION_COUNTER,
                         GotoReload_Str = "goto %s;" % get_label("$reload", counter_index))
 
     comment_str    = LanguageDB["$comment"]("Skip whitespace at line begin; count indentation.")
@@ -263,9 +263,9 @@ def arrange_trigger_map(trigger_map):
      
      #  -- insert lower and upper 'drop-out-transitions'
      if trigger_map[0][0].begin != -sys.maxint: 
-         trigger_map.insert(0, [Interval(-sys.maxint, trigger_map[0][0].begin), TargetStateIndices.DROP_OUT])
+         trigger_map.insert(0, [Interval(-sys.maxint, trigger_map[0][0].begin), E_StateIndices.DROP_OUT])
      if trigger_map[-1][0].end != sys.maxint: 
-         trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), TargetStateIndices.DROP_OUT])
+         trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), E_StateIndices.DROP_OUT])
 
      #  -- fill gaps
      previous_end = -sys.maxint
@@ -274,7 +274,7 @@ def arrange_trigger_map(trigger_map):
      while i < size:
          interval = trigger_map[i][0]
          if interval.begin != previous_end: 
-             trigger_map.insert(i, [Interval(previous_end, interval.begin), TargetStateIndices.DROP_OUT])
+             trigger_map.insert(i, [Interval(previous_end, interval.begin), E_StateIndices.DROP_OUT])
              i    += 1
              size += 1
          i += 1

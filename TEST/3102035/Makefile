@@ -3,6 +3,7 @@
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
 .PHONY: clean
+# .SECONDARY: Case1.c
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)

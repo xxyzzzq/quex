@@ -8,7 +8,7 @@ import quex.input.regular_expression.engine  as regex
 from   quex.engine.generator.base            import get_combined_state_machine
 import quex.engine.analyzer.core             as core
 from   quex.engine.analyzer.core                 import InputActions
-from   quex.engine.state_machine.state_core_info import EngineTypes
+from   quex.engine.state_machine.state_core_info import E_EngineTypes
 import help_drawing
 
 from   operator import attrgetter
@@ -31,7 +31,7 @@ help_drawing.if_DRAW_in_sys_argv(sm)
 
 print sm.get_string(NormalizeF=False)
 
-analyzer = core.Analyzer(sm, EngineTypes.BACKWARD_INPUT_POSITION)
+analyzer = core.Analyzer(sm, E_EngineTypes.BACKWARD_INPUT_POSITION)
 
 for state in sorted(analyzer, key=attrgetter("index")):
     assert state.input == InputActions.DECREMENT_THEN_DEREF

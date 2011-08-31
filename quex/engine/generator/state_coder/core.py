@@ -1,11 +1,11 @@
 from   quex.engine.analyzer.core import Analyzer, \
                                         AnalyzerState
-from   quex.engine.state_machine.state_core_info          import EngineTypes, AcceptanceIDs
+from   quex.engine.state_machine.state_core_info          import E_EngineTypes, E_AcceptanceIDs
 from   quex.engine.generator.languages.address            import Address
 import quex.engine.generator.state_coder.transition_block as transition_block
 import quex.engine.generator.state_coder.entry            as entry
 import quex.engine.generator.state_coder.drop_out         as drop_out
-from   quex.blackboard import TargetStateIndices, \
+from   quex.blackboard import E_StateIndices, \
                               setup as Setup
 
 def do(txt, TheState, TheAnalyzer):
@@ -14,12 +14,19 @@ def do(txt, TheState, TheAnalyzer):
 
     LanguageDB = Setup.language_db
 
-    if entry.do(txt, TheState, TheAnalyzer):
+    if TheState.init_state_forward_f:
+        init_state_forward_entry(txt)
+        transition_block_f = True
+    else:
+        transition_block_f = entry.do(txt, TheState, TheAnalyzer)
+
+    if transition_block_f:
         input_do(txt, TheState)
         transition_block.do(txt, TheState.transition_map, TheState.index, TheState.engine_type, TheState.init_state_f)
         drop_out.do(txt, TheState, TheAnalyzer)
 
-    epilog_if_init_state_do(txt, TheState)
+    if TheState.init_state_forward_f:
+        init_state_forward_epilog(txt, TheState, TheAnalyzer)
 
     LanguageDB.REPLACE_INDENT(txt)
 
@@ -38,22 +45,25 @@ def input_do(txt, TheState):
        is not increased, since it already stands on the right position from
        the last analyzis step. When the init state is entered from any 'normal'
        state it enters via the 'epilog' generated in the function 
-       epilog_if_init_state_do().
+       init_state_forward_epilog().
     """
     LanguageDB = Setup.language_db
     LanguageDB.ACCESS_INPUT(txt, TheState.input)
 
-def epilog_if_init_state_do(txt, TheState):
+def init_state_forward_entry(txt):
     LanguageDB = Setup.language_db
 
-    if not TheState.init_state_forward_f: return 
-    # NOTE: TheState.state_is_entered_f is not enough, for example the init state
-    #       reload procedure, might rely on the init state label being defined.
+    txt.append(LanguageDB.LABEL_INIT_STATE_TRANSITION_BLOCK())
 
+def init_state_forward_epilog(txt, TheState, TheAnalyzer):
+    assert TheState.init_state_forward_f
+
+    LanguageDB = Setup.language_db
+
+    entry.do(txt, TheState, TheAnalyzer)
     txt.extend([
         "\n", 
-        Address("$entry", TheState.index),                                       "\n",
         "    ", LanguageDB.INPUT_P_INCREMENT,                                    "\n",
-        "    ", LanguageDB.GOTO(TargetStateIndices.INIT_STATE_TRANSITION_BLOCK), "\n",
+        "    ", LanguageDB.GOTO(E_StateIndices.INIT_STATE_TRANSITION_BLOCK), "\n",
     ])
     return txt

@@ -15,8 +15,8 @@
 import quex.engine.generator.languages.cpp       as     cpp
 import quex.engine.generator.languages.python    as     python
 from   quex.engine.generator.languages.address   import *
-from   quex.engine.state_machine.state_core_info import EngineTypes, AcceptanceIDs
-from   quex.blackboard                           import TargetStateIndices
+from   quex.engine.state_machine.state_core_info import E_EngineTypes, E_AcceptanceIDs
+from   quex.blackboard                           import E_StateIndices
 from   quex.engine.analyzer.core                 import InputActions
 from   copy                                      import copy
 
@@ -160,12 +160,12 @@ class LDB(dict):
     INPUT_P_TO_LEXEME_START = "QUEX_NAME(Buffer_seek_lexeme_start)(&me->buffer);"
 
     def __label_name(self, StateIndex, FromStateIndex=None):
-        if StateIndex in TargetStateIndices:
-            assert StateIndex != TargetStateIndices.DROP_OUT
-            assert StateIndex != TargetStateIndices.RELOAD_PROCEDURE
+        if StateIndex in E_StateIndices:
+            assert StateIndex != E_StateIndices.DROP_OUT
+            assert StateIndex != E_StateIndices.RELOAD_PROCEDURE
             return {
-                TargetStateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK",
-                TargetStateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
+                E_StateIndices.INIT_STATE_TRANSITION_BLOCK: "INIT_STATE_TRANSITION_BLOCK",
+                E_StateIndices.END_OF_PRE_CONTEXT_CHECK:    "END_OF_PRE_CONTEXT_CHECK",
             }[StateIndex]
 
         elif FromStateIndex is not None: 
@@ -178,6 +178,9 @@ class LDB(dict):
         if NewlineF: return "%s:\n" % self.__label_name(StateIndex, FromStateIndex)
         else:        return "%s: "  % self.__label_name(StateIndex, FromStateIndex)
 
+    def LABEL_INIT_STATE_TRANSITION_BLOCK(self):
+        return "%s:\n" % self.__label_name(E_StateIndices.INIT_STATE_TRANSITION_BLOCK)
+
     def LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
         return "BIP_DETECTOR_%i" % StateMachineID
 
@@ -188,7 +191,7 @@ class LDB(dict):
         # Only for normal 'forward analysis' the from state is of interest.
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
-        if FromStateIndex is not None and EngineType == EngineTypes.FORWARD:
+        if FromStateIndex is not None and EngineType == E_EngineTypes.FORWARD:
             return "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
         else:
             return "goto %s;" % self.__label_name(TargetStateIndex)
@@ -197,11 +200,11 @@ class LDB(dict):
         return get_address("$drop-out", StateIndex, U=True)
 
     def GOTO_RELOAD(self, StateIndex, InitStateIndexF, EngineType, ReturnStateIndexStr):
-        if   EngineType == EngineTypes.FORWARD: 
+        if   EngineType == E_EngineTypes.FORWARD: 
             direction = "FORWARD"
-        elif EngineType == EngineTypes.BACKWARD_PRE_CONTEXT:
+        elif EngineType == E_EngineTypes.BACKWARD_PRE_CONTEXT:
             direction = "BACKWARD"
-        elif EngineType == EngineTypes.BACKWARD_INPUT_POSITION:
+        elif EngineType == E_EngineTypes.BACKWARD_INPUT_POSITION:
             # There is never a reload on backward input position detection.
             # The lexeme to parse must lie inside the borders!
             return ""
@@ -210,7 +213,7 @@ class LDB(dict):
 
         if ReturnStateIndexStr is not None: 
             state_reference = ReturnStateIndexStr
-        elif InitStateIndexF and EngineType == EngineTypes.FORWARD:
+        elif InitStateIndexF and EngineType == E_EngineTypes.FORWARD:
             state_reference = "QUEX_LABEL(%i)" % get_address("$entry",    StateIndex, U=True)
             else_reference  = "QUEX_LABEL(%i)" % get_address("$terminal-EOF", U=True) 
         else:                           
@@ -224,16 +227,16 @@ class LDB(dict):
                % (get_label("$reload-%s" % direction, U=True), state_reference, else_reference)
 
     def GOTO_TERMINAL(self, AcceptanceID):
-        if AcceptanceID == AcceptanceIDs.VOID: 
+        if AcceptanceID == E_AcceptanceIDs.VOID: 
             return "QUEX_GOTO_TERMINAL(last_acceptance);"
-        elif AcceptanceID == AcceptanceIDs.FAILURE:
+        elif AcceptanceID == E_AcceptanceIDs.FAILURE:
             return "goto _%i; /* TERMINAL_FAILURE */" % get_address("$terminal-FAILURE")
         else:
             assert isinstance(AcceptanceID, (int, long))
             return "goto TERMINAL_%i;" % AcceptanceID
 
     def ACCEPTANCE(self, AcceptanceID):
-        if AcceptanceID == AcceptanceIDs.FAILURE:
+        if AcceptanceID == E_AcceptanceIDs.FAILURE:
             return "QUEX_LABEL(%i)" % get_address("$terminal-FAILURE")
         else:
             return "%i" % AcceptanceID
@@ -287,9 +290,9 @@ class LDB(dict):
     def STATE_ENTRY(self, txt, TheState, FromStateIndex=None, NewlineF=True, BIPD_ID=None):
         label = None
         if TheState.init_state_f:
-            if   TheState.engine_type == EngineTypes.FORWARD: 
-                index = TargetStateIndices.INIT_STATE_TRANSITION_BLOCK
-            elif TheState.engine_type == EngineTypes.BACKWARD_INPUT_POSITION:
+            if   TheState.engine_type == E_EngineTypes.FORWARD: 
+                index = TheState.index
+            elif TheState.engine_type == E_EngineTypes.BACKWARD_INPUT_POSITION:
                 label = "%s:\n" % self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(BIPD_ID) 
             else:
                 index = TheState.index
@@ -302,7 +305,7 @@ class LDB(dict):
         if FromStateIndex is None:
             if TheState.init_state_forward_f: 
                 txt.append("    __quex_debug_init_state();\n")
-            elif TheState.engine_type == EngineTypes.FORWARD:
+            elif TheState.engine_type == E_EngineTypes.FORWARD:
                 txt.append("    __quex_debug_state(%i);\n" % TheState.index)
             else:
                 txt.append("    __quex_debug_state_backward(%i);\n" % TheState.index)

@@ -98,10 +98,10 @@ if __name__ == "__main__":
     #                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     except KeyboardInterrupt: 
-        print
         error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
-    # except Exception, x:
+    #except Exception, x:
     #    on_exception(x, "Exception occured -- please, report a bug under\n" + \
     #                    " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+
 

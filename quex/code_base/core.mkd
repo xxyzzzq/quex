@@ -69,7 +69,7 @@ __QUEX_CORE = \
     ./temporary_macros_off \
     ./test_environment/StrangeStream)
 
-ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)
+ifeq ($(QUEX_PATH), $(QUEX_DEV_PATH))
     QUEX_CORE = $(__QUEX_CORE)
 else
     QUEX_CORE =#

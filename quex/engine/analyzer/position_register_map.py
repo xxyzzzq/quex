@@ -7,7 +7,7 @@ def do(analyzer):
 
                post-context-id --> position register index
 
-       where post-context-id == PostContextIDs.NONE means
+       where post-context-id == E_PostContextIDs.NONE means
        'last_acceptance_position'.  The position register index starts from
        0 and ends with N, where N-1 is the number of required position
        registers. It can directly be used as index into an array of
@@ -52,7 +52,7 @@ def do(analyzer):
     """
     # IMPORTANT: When we talk about 'post_context' this includes the 
     #            last acceptance position. Indeed, the last acceptance
-    #            position is coded as 'PostContextIDs.NONE'.
+    #            position is coded as 'E_PostContextIDs.NONE'.
 
     # (1) Determine: -- Set of all present post-context-ids that are related to store/restore.
     #                -- Sets of post_context_ids that store their positions in exactly the

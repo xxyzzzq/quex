@@ -13,20 +13,21 @@ StateOriginInfo_ERROR                       = -1
 PreContextIDs  = Enum("NONE",    
                       "BEGIN_OF_LINE", 
                       "_DEBUG_NAME_PreContextIDs")
-AcceptanceIDs  = Enum("FAILURE", 
+E_AcceptanceIDs  = Enum("FAILURE", 
                       "PRE_CONTEXT_FULFILLED", 
                       "TERMINAL_PRE_CONTEXT_CHECK", 
                       "TERMINAL_BACKWARD_INPUT_POSITION", 
                       "VOID", 
-                      "_DEBUG_NAME_AcceptanceIDs")
-PostContextIDs = Enum("NONE", 
-                      "_DEBUG_NAME_PostContextIDs")
-EngineTypes    = Enum("FORWARD", 
+                      "_DEBUG_NAME_E_AcceptanceIDs")
+E_PostContextIDs = Enum("NONE", 
+                        "IRRELEVANT",
+                        "_DEBUG_NAME_E_PostContextIDs")
+E_EngineTypes    = Enum("FORWARD", 
                       "BACKWARD_PRE_CONTEXT", 
                       "BACKWARD_INPUT_POSITION",
                       "INDENTATION_COUNTER",
                       "ELSE",                       # skipper, or whatever ...
-                      "_DEBUG_EngineTypes")
+                      "_DEBUG_E_EngineTypes")
 
 class StateCoreInfo(object): 
     """-- store input position: if an origin is flagged that way it 
@@ -64,16 +65,16 @@ class StateCoreInfo(object):
                  "__pseudo_ambiguous_post_context_id")
 
     def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
-                 PostContextID=PostContextIDs.NONE, PreContext_StateMachineID=-1L,
+                 PostContextID=E_PostContextIDs.NONE, PreContext_StateMachineID=-1L,
                  PreContext_BeginOfLineF=False,
                  PseudoAmbiguousPostConditionID=-1L):
         assert type(StateIndex) == long
-        assert    StateMachineID in AcceptanceIDs \
+        assert    StateMachineID in E_AcceptanceIDs \
                or (isinstance(StateMachineID, long) and StateMachineID >= 0) 
-        assert PostContextID == PostContextIDs.NONE \
+        assert PostContextID == E_PostContextIDs.NONE \
                or PostContextID >= 0
                
-        # NOT: StateMachineID != AcceptanceIDs.FAILURE => AcceptanceF == False
+        # NOT: StateMachineID != E_AcceptanceIDs.FAILURE => AcceptanceF == False
         #      State core info objects are also used for non-acceptance states of patterns
 
         self.state_machine_id = StateMachineID
@@ -142,10 +143,15 @@ class StateCoreInfo(object):
         if Other.__pre_context_begin_of_line_f:  self.__pre_context_begin_of_line_f = True 
 
         if Other.__pre_context_id != -1L:                   self.__pre_context_id  = Other.__pre_context_id 
-        if Other.__post_context_id != PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
+        if Other.__post_context_id != E_PostContextIDs.NONE:  self.__post_context_id = Other.__post_context_id
 
         if Other.__pseudo_ambiguous_post_context_id != -1L: 
             self.__pseudo_ambiguous_post_context_id = Other.__pseudo_ambiguous_post_context_id
+
+    def is_unconditional_acceptance(self):
+        return     self.__acceptance_f \
+               and self.__pre_context_id == -1 \
+               and self.__pre_context_begin_of_line_f == False
 
     def is_acceptance(self):
         return self.__acceptance_f
@@ -176,7 +182,7 @@ class StateCoreInfo(object):
 
     def set_post_context_id(self, Value):
         assert   (isinstance(Value, long) and Value >= 0) \
-               or Value in PostContextIDs
+               or Value in E_PostContextIDs
         self.__post_context_id = Value
 
     def set_post_context_backward_detector_sm_id(self, Value):
@@ -199,7 +205,7 @@ class StateCoreInfo(object):
         return self.__pseudo_ambiguous_post_context_id
 
     def is_end_of_post_contexted_core_pattern(self):
-        return self.post_context_id() != PostContextIDs.NONE and self.store_input_position_f()
+        return self.post_context_id() != E_PostContextIDs.NONE and self.store_input_position_f()
                             
     def type(self):
         Acc   = self.is_acceptance()
@@ -262,7 +268,7 @@ class StateCoreInfo(object):
             else:                   return ""
 
         if StateMachineAndStateInfoF:
-            if self.state_machine_id != AcceptanceIDs.FAILURE:
+            if self.state_machine_id != E_AcceptanceIDs.FAILURE:
                 appendix += ", " + repr(self.state_machine_id).replace("L", "")
             if self.state_index != -1L:
                 appendix += ", " + repr(self.state_index).replace("L", "")
@@ -270,7 +276,7 @@ class StateCoreInfo(object):
             appendix += ", A"
         if self.__store_input_position_f:        
             appendix += ", S"
-        if self.__post_context_id != PostContextIDs.NONE:  # post context id determined 'register' where input position
+        if self.__post_context_id != E_PostContextIDs.NONE:  # post context id determined 'register' where input position
             #                                              # stored
             appendix += ", P" + repr(self.__post_context_id).replace("L", "")
         if self.__pre_context_id != -1L:            

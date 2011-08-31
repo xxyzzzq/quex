@@ -1,4 +1,4 @@
-from   quex.engine.state_machine.state_core_info       import EngineTypes
+from   quex.engine.state_machine.state_core_info       import E_EngineTypes
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.generator.languages.address         import get_address, \
                                                               get_plain_strings, \
@@ -10,7 +10,7 @@ from   quex.engine.generator.state_machine_decorator   import StateMachineDecora
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.base                      import GeneratorBase
 from   quex.engine.analyzer.core                       import Analyzer
-from   quex.blackboard                                 import TargetStateIndices, \
+from   quex.blackboard                                 import E_StateIndices, \
                                                               setup as Setup
 
 class Generator(GeneratorBase):
@@ -93,6 +93,15 @@ class Generator(GeneratorBase):
 
         txt  = [ LanguageDB["$header-definitions"](LanguageDB) ]
         txt += get_plain_strings(analyzer_function)
+        for i, element in enumerate(txt):
+            if not isinstance(element, (str, unicode)):
+                print element.__class__.__name__
+                for k in range(max(0,i-10)):
+                    print "before:", k, txt[k]
+                print ">>>>>>>", i, txt[i]
+                for k in range(i+1, min(i+10, len(txt))):
+                    print "after: ", k, txt[k]
+                assert False
         return txt
 
     def __code_pre_context_state_machine(self):
@@ -110,11 +119,11 @@ class Generator(GeneratorBase):
             txt.append(comment)
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
-        analyzer = Analyzer(self.pre_context_sm, EngineTypes.BACKWARD_PRE_CONTEXT)
+        analyzer = Analyzer(self.pre_context_sm, E_EngineTypes.BACKWARD_PRE_CONTEXT)
         msg      = state_machine_coder.do(analyzer)
         txt.extend(msg)
 
-        txt.append("\n%s" % LanguageDB.LABEL(TargetStateIndices.END_OF_PRE_CONTEXT_CHECK))
+        txt.append("\n%s" % LanguageDB.LABEL(E_StateIndices.END_OF_PRE_CONTEXT_CHECK))
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt.append("    %s\n" % LanguageDB.INPUT_P_TO_LEXEME_START)
@@ -139,7 +148,7 @@ class Generator(GeneratorBase):
             txt.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
 
         # -- implement the state machine itself
-        analyzer           = Analyzer(self.sm, EngineTypes.FORWARD)
+        analyzer           = Analyzer(self.sm, E_EngineTypes.FORWARD)
         state_machine_code = state_machine_coder.do(analyzer)
         txt.extend(state_machine_code)
 
@@ -189,7 +198,7 @@ class Generator(GeneratorBase):
                                                        "\nEND: BACKWARD DETECTOR STATE MACHINE"))
             txt.append("\n")
 
-        analyzer      = Analyzer(SM, EngineTypes.BACKWARD_INPUT_POSITION)
+        analyzer      = Analyzer(SM, E_EngineTypes.BACKWARD_INPUT_POSITION)
         function_body = state_machine_coder.do(analyzer)
 
         txt.extend(function_body)

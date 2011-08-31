@@ -8,8 +8,9 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-make INPUT=$1
-./lexer $1.txt
+make INPUT=$1  2>&1 > tmp2.txt
+./lexer $1.txt      >> tmp2.txt
+../quex_pathify.sh  tmp2.txt
 
 # cleansening
 rm -f Simple Simple-* Simple.cpp lexer

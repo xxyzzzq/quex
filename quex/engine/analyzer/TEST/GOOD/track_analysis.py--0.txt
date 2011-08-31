@@ -16,7 +16,7 @@ State 0:
 
 State 1:
   .entry:
-     .positioner:
+    .positioner:
         .from 0: <nothing>
   .drop_out:
      goto Pattern1;
