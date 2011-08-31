@@ -10,9 +10,9 @@ StateOriginInfo_ERROR                       = -1
 # Special Signal Values for 'pre_context_id'
 # Add a member '_DEBUG_NAME_Xyz' so that the type of an enum value can
 # be determined by value.EnumType[-1]
-PreContextIDs  = Enum("NONE",    
-                      "BEGIN_OF_LINE", 
-                      "_DEBUG_NAME_PreContextIDs")
+E_PreContextIDs  = Enum("NONE",    
+                        "BEGIN_OF_LINE", 
+                        "_DEBUG_NAME_PreContextIDs")
 E_AcceptanceIDs  = Enum("FAILURE", 
                       "PRE_CONTEXT_FULFILLED", 
                       "TERMINAL_PRE_CONTEXT_CHECK", 
