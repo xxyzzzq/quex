@@ -20,7 +20,7 @@ State 1:
 
 State 2:
   .entry:
-    Terminated
+    Terminated (5)
   .drop_out:
     <unreachable code>
 

@@ -594,32 +594,45 @@ class AcceptanceTrace(object):
         assert Origin.is_acceptance()
         ThePatternID = Origin.state_machine_id
 
+        ## print "##SI", StateIndex, Origin
+        ## print "##before:", self.__trace_db
         # NOTE: There are also traces, which are only 'position storage infos'.
         #       Those have accepting state index == VOID.
         if Origin.is_unconditional_acceptance():
-            # -- Abolish all previous traces.
+            ## print "##UC"
+            # Abolish:
+            # -- all previous traces (accepting_state_index != StateIndex)
+            # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
             for entry in ifilter(lambda x: x.accepting_state_index != E_StateIndices.VOID, 
                                  self.__trace_db.values()):
-                if   entry.pre_context_id == E_PreContextIDs.NONE:
+                if   entry.accepting_state_index != StateIndex:
                     del self.__trace_db[entry.pattern_id]
-                elif entry.accepting_state_index != StateIndex:
+                elif entry.pattern_id == E_AcceptanceIDs.FAILURE or entry.pattern_id >= ThePatternID:
                     del self.__trace_db[entry.pattern_id]
-                elif entry.pattern_id < ThePatternID:
+                elif entry.pre_context_id == E_PreContextIDs.NONE:
+                    ## print "##dominated by:", entry
+                    ## print "##after/false:", self.__trace_db
                     return False
         else:
+            ## print "##C"
             ThePreContextID = extract_pre_context_id(Origin)
-            # -- Abolish only traces with the same pre-context id
-
-            # Abolishment-loop based on 'condition'
-            for entry in ifilter(lambda x:     x.accepting_state_index != E_StateIndices.VOID,
+            # Abolish only traces with the same pre-context id:
+            # -- all previous traces (accepting_state_index != StateIndex)
+            # -- traces of same state, if they are dominated (pattern_id > ThePatternID)
+            for entry in ifilter(lambda x: x.accepting_state_index != E_StateIndices.VOID,
                                  self.__trace_db.values()):
                 if entry.pre_context_id != ThePreContextID: 
                     continue
                 elif entry.accepting_state_index != StateIndex:
                     del self.__trace_db[entry.pattern_id]
-                elif entry.pattern_id < ThePatternID:
+                elif entry.pattern_id >= ThePatternID:
+                    del self.__trace_db[entry.pattern_id]
+                else:
+                    ## print "##dominated by:", entry
+                    ## print "##after/false:", self.__trace_db
                     return False
 
+        ## print "##after:", self.__trace_db
         return True
 
     def delete_non_accepting_traces(self):
