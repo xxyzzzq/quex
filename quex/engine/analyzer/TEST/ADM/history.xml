@@ -1,4 +1,4 @@
-<history date="Wed Aug 31 14:38:27 2011" element-n="286">
+<history date="Thu Sep  1 07:16:08 2011" element-n="293">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -332,5 +332,14 @@
     </day>
     <day year="2011" month="08" day="26">
         <crc-error time="17:20:57" application="track_analysis.py" choice="0" database-crc="-1697566280" real-crc="-1621947889"/>
+    </day>
+    <day year="2011" month="09" day="01">
+        <crc-error time="05:14:08" application="track_analysis-pre-post.py" choice="7" database-crc="-271776777" real-crc="-74339613"/>
+        <crc-error time="05:14:15" application="track_analysis-pre-post.py" choice="9" database-crc="1983642577" real-crc="-1788599857"/>
+        <crc-error time="05:14:34" application="track_analysis-pre.py" choice="8" database-crc="1839917694" real-crc="-1453191981"/>
+        <crc-error time="05:14:42" application="track_analysis-pre.py" choice="9" database-crc="2135741193" real-crc="-1421624309"/>
+        <crc-error time="05:14:50" application="track_analysis-pre.py" choice="10" database-crc="1319101657" real-crc="-319153257"/>
+        <crc-error time="05:14:57" application="track_analysis-pre.py" choice="11" database-crc="985773932" real-crc="906865089"/>
+        <crc-error time="05:15:59" application="track_analysis-backward-input-position-detection.py" choice="" database-crc="813964485" real-crc="-2079954003"/>
     </day>
 </history>
