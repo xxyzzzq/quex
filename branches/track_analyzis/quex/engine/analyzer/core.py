@@ -17,6 +17,39 @@
 
     For administrative purposes, other data such as the 'state_index' is 
     stored along with the AnalyzerState object.
+
+
+================================================================================
+================================================================================
+The implementation of the state has the following basic elements:
+
+*-----------------------------------------------------------------------------*
+
+   Input:       Access the input character.
+
+   Entry:       [OPTIONAL] Store information to be used by successor states.
+
+   TriggerMap:  All triggers that transit on a character to specific 
+                successor state.
+
+   DropOut:     Handle the case that input character does not trigger in
+                trigger map.
+
+*-----------------------------------------------------------------------------*
+
+Accordingly, each state will be represented by a new 'state' consisting
+of four objects:
+
+    .input          <-- class Input
+    .successor_info <-- class SuccessorInfo
+    .trigger_map    <-- list of pairs (interval, target_state_index)
+    .drop_out       <-- class DropOut
+
+The following sections elaborate on the these objects and how they have
+to perform. The classes 'Input', 'SuccessorInfo' and 'DropOut' allow
+to access the information that resulted from the track analyzis. After
+reading the following, review their class interfaces.
+
 """
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
@@ -101,9 +134,9 @@ class Analyzer:
     @property
     def state_machine_id(self):      return self.__state_machine_id
 
-    def get_drop_out_object(self, state, TheAcceptanceTraceList):
+    def get_drop_out_object(self, state, TheTraceList):
         """A state may be reached via multiple paths. For each path there is 
-           a separate AcceptanceTrace. Each AcceptanceTrace tells what has to
+           a separate Trace. Each Trace tells what has to
            happen in the state depending on the pre-contexts being fulfilled 
            or not (if there are even any pre-context patterns).
 
@@ -127,17 +160,17 @@ class Analyzer:
                  for one entry, or is undetermined, then the positions must be
                  stored by the related state and restored in the current state.
         """
-        assert len(TheAcceptanceTraceList) != 0
+        assert len(TheTraceList) != 0
 
         checker = []  # map: pre-context-flag --> acceptance_id
         router  = []  # map: acceptance_id    --> (positioning, 'goto terminal_id')
 
         # (*) Acceptance Detector
-        if self.analyze_acceptance_uniformity(TheAcceptanceTraceList):
+        if self.analyze_acceptance_uniformity(TheTraceList):
             # (1) Uniform Traces
             #     Use one trace as prototype to generate the mapping of 
             #     pre-context flag vs. acceptance.
-            prototype = TheAcceptanceTraceList[0]
+            prototype = TheTraceList[0]
             checker   = map(lambda x: DropOut_CheckerElement(x[0], x[1].pattern_id), 
                             prototype.get_priorized_list())
             # Note: (1.1) Unconditional Acceptance Exists, and
@@ -147,7 +180,7 @@ class Analyzer:
         else:
             # (2) Non-Uniform Traces
             # (2.1) Unconditional Acceptance Exists
-            #       => According to AcceptanceTrace.update() all influence from past traces 
+            #       => According to Trace.update() all influence from past traces 
             #          is nulled.
             #       => Thus, a state with an unconditional will have **only** the traces
             #          of its own state and is therefore **uniform**.
@@ -167,13 +200,13 @@ class Analyzer:
             checker.append(DropOut_CheckerElement(E_PreContextIDs.NONE, E_AcceptanceIDs.VOID))
 
             # Triggering states need to store acceptance as soon as they are entered
-            for trace in TheAcceptanceTraceList:
+            for trace in TheTraceList:
                 for element in trace:
                     accepting_state = self.__state_db[element.accepting_state_index]
                     accepting_state.entry.accepter[element.pre_context_id] = element.pattern_id
 
         # Terminal Router
-        for pattern_id, info in self.analyze_positioning(TheAcceptanceTraceList).iteritems():
+        for pattern_id, info in self.analyze_positioning(TheTraceList).iteritems():
             assert pattern_id != E_AcceptanceIDs.VOID
             router.append(DropOut_RouterElement(pattern_id, 
                                                 info.transition_n_since_positioning, 
@@ -228,9 +261,9 @@ class Analyzer:
         result.trivialize()
         return result
 
-    def analyze_positioning(self, TheAcceptanceTraceList):
+    def analyze_positioning(self, TheTraceList):
         """A given state can be reached by (possibly) multiple paths from
-           the initial state. Each path relates to an 'AcceptanceTrace'
+           the initial state. Each path relates to an 'Trace'
            object that is determined by passed acceptance states.
 
            Arrange the information for each acceptance id: It is determined
@@ -265,7 +298,7 @@ class Analyzer:
         # -- If the positioning differs for one element in the trace list, or 
         # -- one element has undetermined positioning, 
         # => then the acceptance relates to undetermined positioning.
-        for trace in TheAcceptanceTraceList:
+        for trace in TheTraceList:
             for element in trace:
                 info = trace_by_pattern_id.get(element.pattern_id)
                 if info is None:
@@ -283,10 +316,10 @@ class Analyzer:
 
         return trace_by_pattern_id
 
-    def analyze_acceptance_uniformity(self, TheAcceptanceTraceList):
+    def analyze_acceptance_uniformity(self, TheTraceList):
         """Acceptance Uniformity:
 
-               For each trace in TheAcceptanceTraceList, it holds that for
+               For each trace in TheTraceList, it holds that for
                any given pre-context: The trace accepts the same pattern.
         
            Consequently, the following cases cancel uniformity:
@@ -314,12 +347,12 @@ class Analyzer:
            RETURNS: True  -- uniform.
                     False -- not uniform.
         """
-        prototype   = TheAcceptanceTraceList[0]
+        prototype   = TheTraceList[0]
         id_sequence = prototype.get_priorized_pre_context_id_list()
 
         # Check (1) and (2)
         for trace in ifilter(lambda trace: id_sequence != trace.get_priorized_pre_context_id_list(),
-                             islice(TheAcceptanceTraceList, 1, None)):
+                             islice(TheTraceList, 1, None)):
             return False
 
         # If the function did not return yet, then (1) and (2) are negative.
@@ -332,7 +365,7 @@ class Analyzer:
         pattern_id = prototype.get(E_PreContextIDs.NONE).pattern_id
         # Iterate over remainder (Prototype is not considered)
         for trace in ifilter(lambda trace: pattern_id != trace[E_PreContextIDs.NONE].pattern_id, 
-                             islice(TheAcceptanceTraceList, 1, None)):
+                             islice(TheTraceList, 1, None)):
             return False
 
         # -- Begin-of-Line 
@@ -344,7 +377,7 @@ class Analyzer:
             # According to (1) every trace will contain 'begin-of-line' pre-context
             acceptance_id = x.pattern_id
             for trace in ifilter(lambda trace: trace[E_PreContextIDs.BEGIN_OF_LINE].pattern_id != acceptance_id,
-                                 islice(TheAcceptanceTraceList, 1, None)):
+                                 islice(TheTraceList, 1, None)):
                 return False
 
         # Checks (1), (2), and (3) did not find anything 'bad' --> uniform acceptance.
